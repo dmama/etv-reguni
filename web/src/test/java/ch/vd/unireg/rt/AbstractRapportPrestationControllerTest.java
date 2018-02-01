@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.rt;
+package ch.vd.unireg.rt;
 
-import ch.vd.uniregctb.common.WebTest;
+import ch.vd.unireg.common.WebTest;
 
 public abstract class AbstractRapportPrestationControllerTest extends WebTest {
 

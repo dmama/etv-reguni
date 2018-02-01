@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
+package ch.vd.unireg.evenement.civil.interne.obtentionpermis;
 
 import org.junit.Test;
 
@@ -10,18 +10,18 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.MockTiersDAO;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.MockTiersDAO;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
  * Test de l'adapter de l'obtention de nationalité :

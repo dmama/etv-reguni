@@ -25,10 +25,10 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 /**
  * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.

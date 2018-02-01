@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -20,27 +20,27 @@ import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.DienstbarkeitExtended;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BergwerkElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BodenbedeckungElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BodenbedeckungListElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.FolioElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GebaeudeElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GemeinschaftElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GewoehnlichesMiteigentumElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GrundstueckEigentumAnteilElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GrundstueckNummerElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.HerrenlosEigentumElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.JuristischePersonstammElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.LiegenschaftElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.NatuerlichePersonstammElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.SdrElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.StockwerksEinheitElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.UnbekanntesGrundstueckElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.LastRechtGruppeElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.BergwerkElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.BodenbedeckungElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.BodenbedeckungListElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.FolioElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.GebaeudeElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.GemeinschaftElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.GewoehnlichesMiteigentumElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.GrundstueckEigentumAnteilElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.GrundstueckNummerElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.HerrenlosEigentumElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.JuristischePersonstammElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.LiegenschaftElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.NatuerlichePersonstammElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.SdrElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.StockwerksEinheitElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.UnbekanntesGrundstueckElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.servitude.DienstbarkeitElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.servitude.LastRechtGruppeElement;
 
 public class XmlHelperRFImpl implements XmlHelperRF {
 
@@ -78,8 +78,8 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		servitudeContext = JAXBContext.newInstance(DienstbarkeitElement.class);
 		servitudeEtendueContext = JAXBContext.newInstance(DienstbarkeitExtendedElement.class);
 		groupeBeneficiairesContext = JAXBContext.newInstance(LastRechtGruppeElement.class);
-		beneficiaireContext = JAXBContext.newInstance(ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.NatuerlichePersonstammElement.class,
-		                                              ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.JuristischePersonstammElement.class);
+		beneficiaireContext = JAXBContext.newInstance(ch.vd.unireg.registrefoncier.dataimport.elements.servitude.NatuerlichePersonstammElement.class,
+		                                              ch.vd.unireg.registrefoncier.dataimport.elements.servitude.JuristischePersonstammElement.class);
 	}
 
 	@Override

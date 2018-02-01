@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.situationfamille;
+package ch.vd.unireg.validation.situationfamille;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class SituationFamilleValidatorTest extends AbstractValidatorTest<SituationFamille> {
 

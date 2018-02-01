@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 /**
  * Interface permettant de manipuler toutes les entités pouvant être annulées

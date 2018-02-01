@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party.control;
+package ch.vd.unireg.evenement.party.control;
 
 public class ControlRuleException extends Exception {
 

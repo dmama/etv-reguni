@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.servlet;
+package ch.vd.unireg.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,10 +12,10 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
-import ch.vd.uniregctb.common.ActionErrors;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.HttpHelper;
-import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.unireg.common.ActionErrors;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.HttpHelper;
+import ch.vd.unireg.metier.MetierServiceException;
 
 /**
  * Ce resolver va détecter les erreurs de validation et d'action, et rediriger automatiquement l'appelant vers la dernière page valide (à utiliser en conjonction avec un filtre {@link

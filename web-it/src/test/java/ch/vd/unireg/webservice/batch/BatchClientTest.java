@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.batch;
+package ch.vd.unireg.webservice.batch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,12 +10,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.common.WebitTest;
-import ch.vd.uniregctb.ubr.BatchRunnerClient;
-import ch.vd.uniregctb.ubr.BatchRunnerClientException;
-import ch.vd.uniregctb.ubr.JobDescription;
-import ch.vd.uniregctb.ubr.JobParamDescription;
-import ch.vd.uniregctb.ubr.JobStatus;
+import ch.vd.unireg.common.WebitTest;
+import ch.vd.unireg.ubr.BatchRunnerClient;
+import ch.vd.unireg.ubr.BatchRunnerClientException;
+import ch.vd.unireg.ubr.JobDescription;
+import ch.vd.unireg.ubr.JobParamDescription;
+import ch.vd.unireg.ubr.JobStatus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

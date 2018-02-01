@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.separation.validator;
+package ch.vd.unireg.separation.validator;
 
 import java.util.List;
 
@@ -9,15 +9,15 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.ValidatorHelper;
-import ch.vd.uniregctb.metier.MetierService;
-import ch.vd.uniregctb.separation.view.SeparationRecapView;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.utils.ValidatorUtils;
+import ch.vd.unireg.common.ValidatorHelper;
+import ch.vd.unireg.metier.MetierService;
+import ch.vd.unireg.separation.view.SeparationRecapView;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.utils.ValidatorUtils;
 
 public class SeparationRecapValidator implements Validator {
 

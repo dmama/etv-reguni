@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.Quote;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.unireg.common.UniregJUnit4Runner;
+import ch.vd.unireg.registrefoncier.Fraction;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

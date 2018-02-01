@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 public interface ServiceCivilLogger {
 

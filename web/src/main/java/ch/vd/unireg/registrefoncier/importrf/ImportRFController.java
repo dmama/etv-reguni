@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.importrf;
+package ch.vd.unireg.registrefoncier.importrf;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -20,19 +20,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.HttpHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
-import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.HttpHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.registrefoncier.RegistreFoncierImportService;
+import ch.vd.unireg.scheduler.JobAlreadyStartedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
 
 import static java.util.stream.Collectors.toList;
 

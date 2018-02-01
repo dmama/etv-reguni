@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 
 import org.hibernate.Query;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class DocumentEFactureDAOImpl extends BaseDAOImpl<DocumentEFacture, Long> implements DocumentEFactureDAO {
 

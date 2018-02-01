@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class IndexationManagerImpl implements IndexationManager {
 

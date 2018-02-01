@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -18,8 +18,8 @@ import java.util.Set;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @Table(name = "EVENEMENT_REQDES")
@@ -53,7 +53,7 @@ public class EvenementReqDes extends HibernateEntity {
 	}
 
 	@Column(name = "XML", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
+	@Type(type = "ch.vd.unireg.hibernate.StringAsClobUserType")
 	public String getXml() {
 		return xml;
 	}
@@ -72,7 +72,7 @@ public class EvenementReqDes extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_ACTE", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateActe() {
 		return dateActe;
 	}

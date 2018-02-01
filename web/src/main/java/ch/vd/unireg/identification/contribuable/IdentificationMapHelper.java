@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,14 +12,14 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.common.ApplicationConfig;
-import ch.vd.uniregctb.common.CommonMapHelper;
-import ch.vd.uniregctb.common.StringComparator;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.common.ApplicationConfig;
+import ch.vd.unireg.common.CommonMapHelper;
+import ch.vd.unireg.common.StringComparator;
+import ch.vd.unireg.evenement.identification.contribuable.Demande.PrioriteEmetteur;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
 
 public class IdentificationMapHelper extends CommonMapHelper {
 

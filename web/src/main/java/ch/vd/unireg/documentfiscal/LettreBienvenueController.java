@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
 
 @Controller
 @RequestMapping(value = "/autresdocs/lettrebienvenue")

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.security.IfoSecProcedure;
-import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.security.IfoSecService;
-import ch.vd.uniregctb.security.Role;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.security.IfoSecProcedure;
+import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.security.IfoSecService;
+import ch.vd.unireg.security.Role;
 
 /**
  * Ce contrôleur affiche des informations sur les procédures Ifosec allouées sur l'utilisateur courant. Il est donc en read-only.

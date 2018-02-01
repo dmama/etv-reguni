@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.evenement.organisation.view;
+package ch.vd.unireg.evenement.organisation.view;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.organisation.OrganisationView;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.organisation.OrganisationView;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationElementListeRechercheView implements Serializable {
 

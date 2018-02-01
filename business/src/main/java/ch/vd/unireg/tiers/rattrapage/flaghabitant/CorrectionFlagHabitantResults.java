@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
+package ch.vd.unireg.tiers.rattrapage.flaghabitant;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
 
 public class CorrectionFlagHabitantResults extends JobResults<Long, CorrectionFlagHabitantResults> {
 

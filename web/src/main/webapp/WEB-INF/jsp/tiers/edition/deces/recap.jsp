@@ -11,7 +11,7 @@
 	    </li>
 	</tiles:put>
   	<tiles:put name="body">
-	    <%--@elvariable id="recap" type="ch.vd.uniregctb.deces.view.DecesRecapView"--%>
+	    <%--@elvariable id="recap" type="ch.vd.unireg.deces.view.DecesRecapView"--%>
 
 	    <!-- Bandeau -->
 	    <c:set var="titre"><fmt:message key="label.caracteristiques.personne"/></c:set>

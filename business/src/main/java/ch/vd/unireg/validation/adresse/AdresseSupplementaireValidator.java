@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.adresse;
+package ch.vd.unireg.validation.adresse;
 
-import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.unireg.adresse.AdresseSupplementaire;
 
 public abstract class AdresseSupplementaireValidator<T extends AdresseSupplementaire> extends AdresseTiersValidator<T> {
 }

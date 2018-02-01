@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,23 +17,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.DelegatingValidator;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.manager.AutorisationManager;
-import ch.vd.uniregctb.tiers.manager.Autorisations;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.DelegatingValidator;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.manager.AutorisationManager;
+import ch.vd.unireg.tiers.manager.Autorisations;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/entreprise/etats")

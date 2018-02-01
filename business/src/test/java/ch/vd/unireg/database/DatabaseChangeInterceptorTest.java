@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,54 +12,54 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.data.MockDataEventService;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.PrincipalCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
-import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
-import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.type.CategorieIdentifiant;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.data.MockDataEventService;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.EstimationRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.ImplantationRF;
+import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
+import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
+import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
+import ch.vd.unireg.registrefoncier.RegroupementCommunauteRF;
+import ch.vd.unireg.registrefoncier.SituationRF;
+import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
+import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
+import ch.vd.unireg.registrefoncier.TypeCommunaute;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.IdentificationPersonne;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.Tutelle;
+import ch.vd.unireg.type.CategorieIdentifiant;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -473,7 +473,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-24979] Ce test vérifie que la méthode {@link ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF#getLinkedEntities(ch.vd.uniregctb.common.linkedentity.LinkedEntityContext, boolean)}
+	 * [SIFISC-24979] Ce test vérifie que la méthode {@link ch.vd.unireg.registrefoncier.DroitProprieteImmeubleRF#getLinkedEntities(ch.vd.unireg.common.linkedentity.LinkedEntityContext, boolean)}
 	 * ne crashe pas lorsqu'on ajoute un lien entre immeubles et que l'immeuble dominant est possédé par une communauté.
 	 */
 	@Test

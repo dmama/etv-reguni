@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import ch.vd.registre.base.validation.ValidationResults;
 

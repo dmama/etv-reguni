@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.evenement.organisation.manager;
+package ch.vd.unireg.evenement.organisation.manager;
 
 import java.util.List;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationSummaryView;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.view.EvenementOrganisationCriteriaView;
+import ch.vd.unireg.evenement.organisation.view.EvenementOrganisationDetailView;
+import ch.vd.unireg.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
+import ch.vd.unireg.evenement.organisation.view.EvenementOrganisationSummaryView;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersException;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -26,7 +26,7 @@ public interface EvenementOrganisationManager {
 	 * @param id ID d'evenement
 	 * @return la structure EvenementOrganisationDetailView correspondant à l'id
 	 *
-	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
+	 * @throws ch.vd.unireg.adresse.AdressesResolutionException ...
 	 * @throws ServiceInfrastructureException ...
 	 */
 	EvenementOrganisationDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
@@ -38,7 +38,7 @@ public interface EvenementOrganisationManager {
 	 * @param id ID d'evenement
 	 * @return la structure EvenementOrganisationSummaryView correspondant à l'id
 	 *
-	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
+	 * @throws ch.vd.unireg.adresse.AdressesResolutionException ...
 	 * @throws ServiceInfrastructureException ...
 	 */
 	EvenementOrganisationSummaryView getSummary(Long id) throws AdresseException, ServiceInfrastructureException;
@@ -68,7 +68,7 @@ public interface EvenementOrganisationManager {
 	 * @param bean critères de recherche tel que saisie par l'utilisateur
 	 * @param pagination information sur la pagination pour la requete sous-jacente
 	 * @return une liste d'evenement pret à afficher
-	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
+	 * @throws ch.vd.unireg.adresse.AdressesResolutionException ...
 	 */
 	List<EvenementOrganisationElementListeRechercheView> find(EvenementOrganisationCriteriaView bean, ParamPagination pagination) throws AdresseException;
 

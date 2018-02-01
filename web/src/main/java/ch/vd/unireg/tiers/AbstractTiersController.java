@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -11,11 +11,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.param.manager.ParamApplicationManager;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.common.AbstractSimpleFormController;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.param.manager.ParamApplicationManager;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet métier donné.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction;
+package ch.vd.unireg.transaction;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.utils.LogLevel;
 
 /**
  * Classe de tracing des temps passés dans les méthode de l'interface {@link javax.transaction.TransactionManager}

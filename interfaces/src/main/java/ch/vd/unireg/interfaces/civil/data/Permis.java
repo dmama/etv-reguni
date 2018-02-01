@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.type.TypePermis;
 
 public interface Permis extends DateRange {
 

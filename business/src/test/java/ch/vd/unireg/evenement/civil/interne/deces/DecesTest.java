@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.deces;
+package ch.vd.unireg.evenement.civil.interne.deces;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -16,15 +16,15 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

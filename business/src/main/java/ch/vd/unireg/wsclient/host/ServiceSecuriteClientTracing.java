@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.wsclient.host;
+package ch.vd.unireg.wsclient.host;
 
 import java.util.Arrays;
 
@@ -13,8 +13,8 @@ import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.unireg.wsclient.host.interfaces.SecuriteException;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClient;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientException;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, InitializingBean, DisposableBean {
 

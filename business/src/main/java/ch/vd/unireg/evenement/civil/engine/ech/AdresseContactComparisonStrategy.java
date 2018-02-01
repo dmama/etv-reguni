@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseContactComparisonStrategy implements IndividuComparisonStrategy {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import ch.vd.uniregctb.admin.AuditLogBean.AuditView;
-import ch.vd.uniregctb.audit.AuditLineDAO;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.unireg.admin.AuditLogBean.AuditView;
+import ch.vd.unireg.audit.AuditLineDAO;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 
 /**
  * Controller spring permettant la visualisation des logs d'audit

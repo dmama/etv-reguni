@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common.linkedentity;
+package ch.vd.unireg.common.linkedentity;
 
 public enum LinkedEntityPhase {
 	/**

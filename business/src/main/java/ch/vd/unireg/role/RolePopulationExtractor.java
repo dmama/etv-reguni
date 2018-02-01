@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
 
 /**
  * Interface de définition d'un extracteur de population pour les rôles

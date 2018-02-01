@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.DisposableBean;

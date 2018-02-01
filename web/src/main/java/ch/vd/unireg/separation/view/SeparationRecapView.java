@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.separation.view;
+package ch.vd.unireg.separation.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.type.EtatCivil;
 
 public class SeparationRecapView {
 

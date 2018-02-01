@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.CategorieEtranger;
+import ch.vd.unireg.type.CategorieEtranger;
 
 /**
  * Classe de transtypage pour Hibernate : CategorieEtranger <--> varchar

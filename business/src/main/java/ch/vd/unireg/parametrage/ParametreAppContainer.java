@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.LockHelper;
+import ch.vd.unireg.common.LockHelper;
 
 class ParametreAppContainer implements ParametreAppAccessor {
 

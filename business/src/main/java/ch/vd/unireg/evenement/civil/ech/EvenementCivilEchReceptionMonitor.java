@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 /**
  * Interface utilisée pour récupérer l'information du nombre d'événements civils e-CH

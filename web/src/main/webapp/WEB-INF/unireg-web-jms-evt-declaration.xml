@@ -5,7 +5,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="evenementDeclarationDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.EvenementNamespaceDispatchingEsbHandler">
+	<bean id="evenementDeclarationDispatchingEsbHandler" class="ch.vd.unireg.evenement.EvenementNamespaceDispatchingEsbHandler">
 		<property name="handlers">
 			<util:map>
 				<entry key="http://www.vd.ch/fiscalite/unireg/event/di/input/1" value-ref="evenementDeclarationEsbHandlerV1"/>
@@ -14,7 +14,7 @@
 		</property>
 	</bean>
 
-	<bean id="evenementDeclarationListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="evenementDeclarationListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementDeclarationDispatchingEsbHandler" />
 		<property name="destinationName" value="${extprop.jms.queue.evtDeclaration.input}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -22,12 +22,12 @@
 		<property name="description" value="Réception des évènements de quittance des DI electroniques"/>
 	</bean>
 
-	<bean id="evenementDeclarationEsbHandlerV1" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationEsbHandlerV1">
+	<bean id="evenementDeclarationEsbHandlerV1" class="ch.vd.unireg.evenement.di.EvenementDeclarationEsbHandlerV1">
 		<property name="handler" ref="evenementDeclarationService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="evenementDeclarationEsbHandlerV2" class="ch.vd.uniregctb.evenement.declaration.EvenementDeclarationEsbHandlerV2">
+	<bean id="evenementDeclarationEsbHandlerV2" class="ch.vd.unireg.evenement.declaration.EvenementDeclarationEsbHandlerV2">
 		<property name="handlers">
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck" value-ref="quittancementHandler"/>
@@ -36,7 +36,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
-	<bean id="quittancementHandler" class="ch.vd.uniregctb.evenement.declaration.QuittancementDeclaration">
+	<bean id="quittancementHandler" class="ch.vd.unireg.evenement.declaration.QuittancementDeclaration">
 		<property name="bamMessageSender" ref="bamMessageSender"/>
 		<property name="diService" ref="diService"/>
 		<property name="qsncService" ref="qsncService"/>
@@ -44,14 +44,14 @@
 		<property name="validationService" ref="validationService"/>
 	</bean>
 
-	<bean id="evenementDeclarationPPSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSenderImpl">
+	<bean id="evenementDeclarationPPSender" class="ch.vd.unireg.evenement.di.EvenementDeclarationPPSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.pp.output}" />
 		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pp.output.enabled}" />
 	</bean>
 
-	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.declaration.EvenementDeclarationPMSenderImpl">
+	<bean id="evenementDeclarationPMSender" class="ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestinationDI" value="${extprop.jms.queue.evtDeclaration.pm.output.di}" />
@@ -59,7 +59,7 @@
 		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pm.output.enabled}" />
 	</bean>
 
-	<bean id="evenementLiberationDeclarationImpotSender" class="ch.vd.uniregctb.evenement.di.EvenementLiberationDeclarationImpotSenderImpl">
+	<bean id="evenementLiberationDeclarationImpotSender" class="ch.vd.unireg.evenement.di.EvenementLiberationDeclarationImpotSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.liberation.output}" />

@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.interfaces;
+package ch.vd.unireg.interfaces;
 
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

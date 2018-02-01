@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -8,21 +8,21 @@ import org.junit.Test;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
-import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
-import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
-import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCanton;
+import ch.vd.unireg.tiers.AllegementFiscalCantonCommune;
+import ch.vd.unireg.tiers.AllegementFiscalCommune;
+import ch.vd.unireg.tiers.CapitalFiscalEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.FlagEntreprise;
+import ch.vd.unireg.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.unireg.tiers.MontantMonetaire;
+import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 

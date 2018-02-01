@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.decision.aci;
+package ch.vd.unireg.decision.aci;
 
 import java.util.Comparator;
 
-import ch.vd.uniregctb.tiers.DecisionAciView;
+import ch.vd.unireg.tiers.DecisionAciView;
 
 public class DecisionAciViewComparator implements Comparator<DecisionAciView> {
 

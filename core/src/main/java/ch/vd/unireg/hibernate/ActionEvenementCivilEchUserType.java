@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
 
 /**
  * Classe de transtypage pour Hibernate : ActionEvenementCivilEch <--> varchar

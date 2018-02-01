@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,14 +17,14 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 @SuppressWarnings("JavaDoc")
 public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {

@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.general.view;
+package ch.vd.unireg.general.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.NatureTiers;
+import ch.vd.unireg.tiers.NatureTiers;
 
 /**
  * TiersGeneralView

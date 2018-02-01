@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.evenement.civil.interne.ignore;
+package ch.vd.unireg.evenement.civil.interne.ignore;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 
 public class EvenementCivilIgnoreTest extends AbstractEvenementCivilInterneTest {
 

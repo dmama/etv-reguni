@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.fourreNeutre;
+package ch.vd.unireg.fourreNeutre;
 
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Tiers;
 
 public class FourreNeutreHelperImpl implements FourreNeutreHelper {
 

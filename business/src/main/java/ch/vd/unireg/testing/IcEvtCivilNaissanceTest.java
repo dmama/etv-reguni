@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.testing;
+package ch.vd.unireg.testing;
 
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -7,13 +7,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilProcessor;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public class IcEvtCivilNaissanceTest extends InContainerTest {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.registrefoncier.SituationRF;
 
 public interface SituationRFDAO extends GenericDAO<SituationRF, Long> {
 

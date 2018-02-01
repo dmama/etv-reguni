@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
-import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.tiers.Mandat;
+import ch.vd.unireg.tiers.TiersService;
 
 public class MandatairePerceptionView extends MandataireView {
 

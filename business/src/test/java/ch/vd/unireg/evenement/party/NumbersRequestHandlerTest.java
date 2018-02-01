@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,19 +17,19 @@ import ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest;
 import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

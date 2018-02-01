@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.metier.modeimposition;
+package ch.vd.unireg.metier.modeimposition;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersException;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersException;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
 
 /**
  * Resolver du mode d'imposition pour le cas mariage.
@@ -35,7 +35,7 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 	 * @param contribuable le nouveau MenageCommun
 	 * @param date la date de mariage
 	 *
-	 * @see CreationCoupleModeImpositionResolver#resolve(ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate)
+	 * @see CreationCoupleModeImpositionResolver#resolve(ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate)
 	 */
 	@Override
 	public Imposition resolve(ContribuableImpositionPersonnesPhysiques contribuable, RegDate date) throws ModeImpositionResolverException {

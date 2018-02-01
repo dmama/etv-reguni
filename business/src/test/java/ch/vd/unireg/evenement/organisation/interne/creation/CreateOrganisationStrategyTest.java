@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.creation;
+package ch.vd.unireg.evenement.organisation.interne.creation;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,23 +14,23 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.evenement.organisation.interne.AbstractEvenementOrganisationInterneTest;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
-import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalServiceImpl;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MockTiersDAO;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.unireg.evenement.organisation.interne.AbstractEvenementOrganisationInterneTest;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.evenement.organisation.interne.MessageSuiviPreExecution;
+import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.regimefiscal.RegimeFiscalServiceImpl;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.MockTiersDAO;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static ch.vd.unireg.interfaces.infra.mock.MockCommune.Lausanne;
 import static ch.vd.unireg.interfaces.infra.mock.MockCommune.Zurich;
-import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
-import static ch.vd.uniregctb.type.TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION;
+import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION;
 
 /**
  * @author Raphaël Marmier, 2015-09-07

@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscale;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscalePP;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -93,7 +93,7 @@ public class PeriodeFiscaleServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Verifie que la coherence ds {@link ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP} en fonction de leur {@link PeriodeFiscale}.
+	 * Verifie que la coherence ds {@link ch.vd.unireg.declaration.ParametrePeriodeFiscalePP} en fonction de leur {@link PeriodeFiscale}.
 	 * => les années des termes doivent bien être l'année suivante.
 	 */
 	private void checkParametresPeriodeFiscalePP(PeriodeFiscale pf) {

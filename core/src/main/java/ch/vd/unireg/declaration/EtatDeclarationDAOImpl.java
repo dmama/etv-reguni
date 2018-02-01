@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
 
 public class EtatDeclarationDAOImpl extends BaseDAOImpl<EtatDocumentFiscal, Long> implements EtatDeclarationDAO {
 	public EtatDeclarationDAOImpl() {

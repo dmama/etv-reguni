@@ -1,27 +1,27 @@
-package ch.vd.uniregctb.evenement.civil.interne.changement.arrivee;
+package ch.vd.unireg.evenement.civil.interne.changement.arrivee;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class CorrectionDateArrivee extends EvenementCivilInterne {
 

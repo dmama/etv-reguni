@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,16 +12,16 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Qualification;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.Qualification;
+import ch.vd.unireg.type.TypeAdresseRetour;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeContribuable;
 
 public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImpositionCalculator<ContribuableImpositionPersonnesPhysiques> {
 

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.decision.aci;
+package ch.vd.unireg.decision.aci;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.DecisionAci;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.DecisionAci;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class EditDecisionAciView implements Annulable {
 	private Long id;

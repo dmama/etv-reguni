@@ -3,18 +3,18 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Bean client interfacesService MOCK -->
-	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService">
+	<bean id="serviceInfrastructureService" class="ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService">
 		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
 	<!-- Bean client ServiceCivil MOCK -->
-	<bean id="serviceCivilServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil">
+	<bean id="serviceCivilServiceMock" class="ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 	<alias alias="serviceCivilService" name="serviceCivilServiceMock"/>
 
 	<!-- Bean client ServiceOrganisation MOCK -->
-	<bean id="serviceOrganisationServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation">
+	<bean id="serviceOrganisationServiceMock" class="ch.vd.unireg.interfaces.service.mock.ProxyServiceOrganisation">
 		<constructor-arg index="0" ref="serviceInfrastructureService"/>
 	</bean>
 	<alias alias="serviceOrganisationService" name="serviceOrganisationServiceMock"/>
@@ -24,7 +24,7 @@
 	<alias alias="serviceUpiRaw" name="serviceUpiMock"/>
 
 	<!-- Bean client interfacesService MOCK -->
-	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService"/>
+	<bean id="serviceSecuriteServiceHost" class="ch.vd.unireg.interfaces.service.mock.ProxyServiceSecuriteService"/>
 	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceHost"/>
 
 </beans>

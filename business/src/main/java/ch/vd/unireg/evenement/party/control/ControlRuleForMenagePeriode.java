@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.evenement.party.control;
+package ch.vd.unireg.evenement.party.control;
 
 import java.util.List;
 
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Règle MC.1 - Recherche d'un ménage commun assujetti sur la PF

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,17 +12,17 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 public class DroitAccesServiceImpl implements DroitAccesService {
 

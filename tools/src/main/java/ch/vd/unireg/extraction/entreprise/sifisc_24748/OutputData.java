@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction.entreprise.sifisc_24748;
+package ch.vd.unireg.extraction.entreprise.sifisc_24748;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason;

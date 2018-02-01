@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role.before2016;
+package ch.vd.unireg.role.before2016;
 
 import java.util.List;
 
@@ -10,13 +10,13 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.FormeLegaleHisto;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Informations sur un contribuable PM dans le fichier des rôles pour une periode fiscale (= un bouclement)

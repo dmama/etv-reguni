@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal.rattrapage;
+package ch.vd.unireg.regimefiscal.rattrapage;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.regimefiscal.RegimeFiscalConsolide;
 
 public class RattrapageRegimesFiscauxJobResults extends AbstractJobResults<Long, RattrapageRegimesFiscauxJobResults> {
 

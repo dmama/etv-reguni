@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.evenementExterne;
+package ch.vd.unireg.admin.evenementExterne;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.common.EncodingFixHelper;
-import ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.unireg.common.EncodingFixHelper;
+import ch.vd.unireg.jms.MessageListenerContainerJmxInterface;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
 
 @Controller
 @RequestMapping(value = "/admin/jms")

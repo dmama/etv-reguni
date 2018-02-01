@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
 
 /**
  * Classe servant au feedback de l'opération de rattachement. Si des établissements secondaires

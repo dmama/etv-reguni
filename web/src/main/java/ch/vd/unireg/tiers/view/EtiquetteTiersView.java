@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.Optional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
 
 public class EtiquetteTiersView implements Annulable, DateRange {
 

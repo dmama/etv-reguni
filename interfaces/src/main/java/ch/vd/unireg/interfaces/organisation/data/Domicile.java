@@ -9,8 +9,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.tiers.LocalizedDateRange;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.LocalizedDateRange;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class Domicile implements Serializable, CollatableDateRange<Domicile>, DateRangeLimitable<Domicile>, LocalizedDateRange {
 

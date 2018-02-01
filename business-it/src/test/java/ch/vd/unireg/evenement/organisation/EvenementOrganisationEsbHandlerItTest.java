@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,11 +22,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 

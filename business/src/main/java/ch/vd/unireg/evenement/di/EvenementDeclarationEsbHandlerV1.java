@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -23,13 +23,13 @@ import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
 import ch.vd.unireg.xml.event.di.input.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.di.input.v1.QuittancementDeclarationImpot;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.jms.EsbMessageHelper;
 
 public class EvenementDeclarationEsbHandlerV1 implements EsbMessageHandler, InitializingBean {
 

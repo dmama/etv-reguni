@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.documentfiscal;
+package ch.vd.unireg.validation.documentfiscal;
 
-import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscal;
 
 public class EtatAutreDocumentFiscalValidator extends EtatDocumentFiscalValidator<EtatAutreDocumentFiscal> {
 

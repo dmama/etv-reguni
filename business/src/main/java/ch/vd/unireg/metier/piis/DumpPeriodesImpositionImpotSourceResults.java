@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.piis;
+package ch.vd.unireg.metier.piis;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class DumpPeriodesImpositionImpotSourceResults extends AbstractJobResults<Long, DumpPeriodesImpositionImpotSourceResults> {
 

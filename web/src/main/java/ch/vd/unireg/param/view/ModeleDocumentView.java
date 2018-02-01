@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.param.view;
+package ch.vd.unireg.param.view;
 
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.type.TypeDocument;
 
 public class ModeleDocumentView {
 	

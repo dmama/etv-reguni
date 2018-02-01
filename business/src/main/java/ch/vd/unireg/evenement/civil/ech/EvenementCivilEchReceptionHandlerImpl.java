@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,13 +11,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
-import ch.vd.uniregctb.load.BasicLoadMonitor;
-import ch.vd.uniregctb.load.LoadAverager;
-import ch.vd.uniregctb.stats.LoadMonitorable;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
+import ch.vd.unireg.load.BasicLoadMonitor;
+import ch.vd.unireg.load.LoadAverager;
+import ch.vd.unireg.stats.LoadMonitorable;
+import ch.vd.unireg.stats.StatsService;
 
 public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchReceptionHandler, EvenementCivilEchReceptionMonitor, InitializingBean, DisposableBean {
 

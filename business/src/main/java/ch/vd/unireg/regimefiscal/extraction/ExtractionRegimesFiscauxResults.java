@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal.extraction;
+package ch.vd.unireg.regimefiscal.extraction;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -12,8 +12,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.tiers.RegimeFiscal;
 
 public class ExtractionRegimesFiscauxResults extends AbstractJobResults<Long, ExtractionRegimesFiscauxResults> {
 

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.TiersVisuView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.entreprise.TiersVisuView"--%>
 
 <unireg:setAuth var="autorisations" tiersId="${command.entreprise.id}"/>
 
@@ -176,7 +176,7 @@
 				};
 
 				<%-- Initialisation de la page si la session contient des informations sur le contribuable --%>
-				<%--@elvariable id="degExoVisuCriteria" type="ch.vd.uniregctb.registrefoncier.allegement.DegrevementExonerationVisuSessionData"--%>
+				<%--@elvariable id="degExoVisuCriteria" type="ch.vd.unireg.registrefoncier.allegement.DegrevementExonerationVisuSessionData"--%>
 				<c:set var="degExoVisuCriteria" value="${sessionScope.degExoVisuCriteria}"/>
 				<c:if test="${degExoVisuCriteria != null && degExoVisuCriteria.idContribuable == command.entreprise.id}">
 				$(function() {

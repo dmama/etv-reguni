@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.List;
 

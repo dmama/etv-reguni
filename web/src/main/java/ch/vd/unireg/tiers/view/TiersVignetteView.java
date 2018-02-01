@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import javax.servlet.http.HttpServletRequest;
 

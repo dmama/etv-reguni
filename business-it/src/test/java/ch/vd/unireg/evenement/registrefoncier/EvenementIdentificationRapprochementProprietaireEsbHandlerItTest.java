@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,12 +14,12 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.registrefoncier.RapprochementManuelTiersRFService;
 
 public class EvenementIdentificationRapprochementProprietaireEsbHandlerItTest extends EvenementTest {
 

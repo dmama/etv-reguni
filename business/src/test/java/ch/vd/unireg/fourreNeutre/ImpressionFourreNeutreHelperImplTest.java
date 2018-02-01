@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fourreNeutre;
+package ch.vd.unireg.fourreNeutre;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,11 +6,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.Sexe;
 
 public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 

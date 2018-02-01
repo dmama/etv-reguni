@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
 
 public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults> {
 

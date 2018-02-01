@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.testing;
+package ch.vd.unireg.testing;
 
 import java.util.List;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
 
 public class IcTiersDAOTest extends InContainerTest {
 

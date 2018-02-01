@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -22,19 +22,19 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.BatchIterator;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.StackedThreadLocal;
-import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.common.ThreadSwitch;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.StackedThreadLocal;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.common.ThreadSwitch;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Intercepteur de collecte des entreprises modifiées pour une éventuelle annonce de la modification à l'IDE

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -15,18 +15,18 @@ import org.junit.Test;
 
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.mock.MockGenreImpotMandataire;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TypeTiers;
-import ch.vd.uniregctb.type.TypeMandat;
-import ch.vd.uniregctb.utils.UniregProperties;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.type.TypeMandat;
+import ch.vd.unireg.utils.UniregProperties;
 
 public class ConfigurationMandataireTest extends WithoutSpringTest {
 

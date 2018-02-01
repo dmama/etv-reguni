@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -12,13 +12,13 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 

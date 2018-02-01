@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
 

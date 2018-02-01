@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.organisation.engine;
+package ch.vd.unireg.evenement.organisation.engine;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 /**
  * Interface du service utilisé par le batch de relance des événements organisation

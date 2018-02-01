@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.type.Type;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.hibernate.FillHoleGenerator;
+import ch.vd.unireg.hibernate.FillHoleGenerator;
 
 /**
  * @author xciabi

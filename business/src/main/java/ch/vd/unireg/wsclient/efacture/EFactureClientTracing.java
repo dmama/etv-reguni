@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.wsclient.efacture;
+package ch.vd.unireg.wsclient.efacture;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 public class EFactureClientTracing implements EFactureClient, InitializingBean, DisposableBean {
 

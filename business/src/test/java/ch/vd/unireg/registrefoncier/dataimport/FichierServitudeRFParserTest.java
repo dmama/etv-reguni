@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.NatuerlichePersonGb;
 import ch.vd.capitastra.rechteregister.NatuerlichePersonstamm;
 import ch.vd.capitastra.rechteregister.Personstamm;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
+import ch.vd.unireg.common.UniregJUnit4Runner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +40,7 @@ public class FichierServitudeRFParserTest {
 	@Test
 	public void testParseServitudes() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_servitudes_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_servitudes_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier
@@ -83,7 +83,7 @@ public class FichierServitudeRFParserTest {
 	@Test
 	public void testParseGroupesBeneficiaireDeServitudes() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_groupes_beneficiaires_servitudes_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_groupes_beneficiaires_servitudes_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier
@@ -128,7 +128,7 @@ public class FichierServitudeRFParserTest {
 	@Test
 	public void testParseBeneficiaireDeServitudes() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_beneficiaires_servitudes_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_beneficiaires_servitudes_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier

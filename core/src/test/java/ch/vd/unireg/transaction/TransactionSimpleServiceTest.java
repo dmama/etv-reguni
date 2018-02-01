@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.transaction;
+package ch.vd.unireg.transaction;
 
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.transaction.dao.SimpleDao;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.transaction.dao.SimpleDao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
-	"/ch/vd/uniregctb/transaction/SimpleServiceTest-spring.xml"
+	"/ch/vd/unireg/transaction/SimpleServiceTest-spring.xml"
 })
 public class TransactionSimpleServiceTest extends CoreDAOTest {
 

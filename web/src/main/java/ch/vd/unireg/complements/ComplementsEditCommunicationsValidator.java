@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.complements;
+package ch.vd.unireg.complements;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.utils.ValidatorUtils;
+import ch.vd.unireg.utils.ValidatorUtils;
 
 public class ComplementsEditCommunicationsValidator implements Validator {
 

@@ -12,7 +12,7 @@
 <display:table
 		name="command.decisionsAci" id="decisionAci" pagesize="${command.nombreElementsTable}"
 		requestURI="${url}" sort="list"
-		class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 	<display:column sortable ="true" titleKey="label.for.abrege">
 			<c:choose>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil;
+package ch.vd.unireg.evenement.civil;
 
 import java.util.Collections;
 import java.util.Date;
@@ -13,10 +13,10 @@ import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.dbutils.QueryFragment;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.dbutils.QueryFragment;
+import ch.vd.unireg.type.EtatEvenementCivil;
 
 public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TYP_EVT>> extends BaseDAOImpl<EVT, Long> {
 

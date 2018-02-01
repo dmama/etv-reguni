@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 /**
  * Différents types de demande d'identification de contribuable

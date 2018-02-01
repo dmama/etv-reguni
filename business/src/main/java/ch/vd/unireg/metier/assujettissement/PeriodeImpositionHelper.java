@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 
 /**
  * Quelques méthodes utiles quand on travaille avec les périodes d'imposition

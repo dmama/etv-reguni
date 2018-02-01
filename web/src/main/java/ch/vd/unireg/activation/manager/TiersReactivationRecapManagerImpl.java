@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.activation.manager;
+package ch.vd.unireg.activation.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.activation.ActivationDesactivationHelper;
-import ch.vd.uniregctb.activation.ActivationService;
-import ch.vd.uniregctb.activation.ActivationServiceException;
-import ch.vd.uniregctb.activation.view.TiersReactivationRecapView;
-import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.activation.ActivationDesactivationHelper;
+import ch.vd.unireg.activation.ActivationService;
+import ch.vd.unireg.activation.ActivationServiceException;
+import ch.vd.unireg.activation.view.TiersReactivationRecapView;
+import ch.vd.unireg.general.manager.TiersGeneralManager;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 public class TiersReactivationRecapManagerImpl implements TiersReactivationRecapManager{
 

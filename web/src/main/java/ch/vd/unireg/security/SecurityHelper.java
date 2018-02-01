@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.List;
 
 import org.springframework.util.Assert;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.Niveau;
 
 /**
  * Provider de sécurité qui regroupe la sécurité d'IFOSec (authentification) et celle d'Unireg (accès aux dossiers) et l'expose avec une interface statique.
@@ -20,7 +20,7 @@ public class SecurityHelper {
 	 * Vérifie que l'opérateur courant possède le rôle spécifié.
 	 * <p/>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un dossier particulier. Pour cela, il faut utiliser la méthode {@link
-	 * #getDroitAcces(SecurityProviderInterface, ch.vd.uniregctb.tiers.Tiers)}.
+	 * #getDroitAcces(SecurityProviderInterface, ch.vd.unireg.tiers.Tiers)}.
 	 *
 	 * @param provider le security provider courant
 	 * @param role     le rôle dont on veut vérifier l'allocation.
@@ -36,7 +36,7 @@ public class SecurityHelper {
 	 * Vérifie si l'opérateur courant possède au moins un des rôles spécifiés.
 	 * <p/>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un dossier particulier. Pour cela, il faut utiliser la méthode {@link
-	 * #getDroitAcces(SecurityProviderInterface, ch.vd.uniregctb.tiers.Tiers)}.
+	 * #getDroitAcces(SecurityProviderInterface, ch.vd.unireg.tiers.Tiers)}.
 	 *
 	 * @param provider le security provider courant
 	 * @param roles    les rôles dont on veut vérifier l'allocation.
@@ -60,7 +60,7 @@ public class SecurityHelper {
 	 * Vérifie si l'opérateur spécifié possède au moins un des rôles spécifiés.
 	 * <p/>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un dossier particulier. Pour cela, il faut utiliser la méthode {@link
-	 * #getDroitAcces(SecurityProviderInterface, ch.vd.uniregctb.tiers.Tiers)}.
+	 * #getDroitAcces(SecurityProviderInterface, ch.vd.unireg.tiers.Tiers)}.
 	 *
 	 * @param provider le security provider courant
 	 * @param visa     le visa de l'opérateur
@@ -81,7 +81,7 @@ public class SecurityHelper {
 	 * Vérifie que l'opérateur spécifié possède le rôle spécifié.
 	 * <p/>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un dossier particulier. Pour cela, il faut utiliser la méthode {@link
-	 * #getDroitAcces(SecurityProviderInterface, ch.vd.uniregctb.tiers.Tiers)}.
+	 * #getDroitAcces(SecurityProviderInterface, ch.vd.unireg.tiers.Tiers)}.
 	 *
 	 * @param provider         le security provider courant
 	 * @param role             le rôle dont on veut vérifier l'allocation.

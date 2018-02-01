@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.container.Keyed;
-import ch.vd.uniregctb.common.Equalator;
+import ch.vd.unireg.common.Equalator;
 
 /**
  * Spécificité de collecteur de données dont le résultat est exprimable sous la forme d'un ensemble de listes indexées par une clé de regroupement

@@ -2,11 +2,11 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <c:set var="page" value="${param.page}" />
 
-<%--@elvariable id="editDemandeDegrevementCommand" type="ch.vd.uniregctb.registrefoncier.allegement.EditDemandeDegrevementView"--%>
+<%--@elvariable id="editDemandeDegrevementCommand" type="ch.vd.unireg.registrefoncier.allegement.EditDemandeDegrevementView"--%>
 
 <c:if test="${not empty editDemandeDegrevementCommand.delais}">
 
-	<display:table 	name="editDemandeDegrevementCommand.delais" id="delai" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<display:table 	name="editDemandeDegrevementCommand.delais" id="delai" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 		<display:column titleKey="label.date.demande">
 			<unireg:regdate regdate="${delai.dateDemande}" />
 		</display:column>

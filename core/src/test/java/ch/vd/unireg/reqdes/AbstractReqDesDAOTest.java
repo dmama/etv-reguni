@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 import java.util.Date;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CoreDAOTest;
+import ch.vd.unireg.common.CoreDAOTest;
 
 public abstract class AbstractReqDesDAOTest extends CoreDAOTest {
 

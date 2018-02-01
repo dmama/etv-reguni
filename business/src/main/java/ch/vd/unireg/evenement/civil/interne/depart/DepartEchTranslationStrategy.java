@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.evenement.civil.interne.depart;
+package ch.vd.unireg.evenement.civil.interne.depart;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Gère l'interprétation d'un événement de départ issu de RCPers : il peut être principal ou secondaire selon l'adresse qui se ferme.

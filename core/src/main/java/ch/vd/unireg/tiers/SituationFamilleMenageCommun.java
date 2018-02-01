@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -11,8 +11,8 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TarifImpotSource;
 
 @Entity
 @DiscriminatorValue("SituationFamilleMenageCommun")
@@ -43,7 +43,7 @@ public class SituationFamilleMenageCommun extends SituationFamille {
 	}
 
 	@Column(name = "TARIF_APPLICABLE", length = LengthConstants.SITUATIONFAMILLE_TARIF)
-	@Type(type = "ch.vd.uniregctb.hibernate.TarifImpotSourceUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TarifImpotSourceUserType")
 	public TarifImpotSource getTarifApplicable() {
 		return tarifApplicable;
 	}

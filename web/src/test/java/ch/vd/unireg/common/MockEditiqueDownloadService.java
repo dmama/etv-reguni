@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.unireg.editique.EditiqueResultatDocument;
 
 public class MockEditiqueDownloadService implements EditiqueDownloadService {
 

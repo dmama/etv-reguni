@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 public interface IdentificationContribuableRequestHandler<REQ, RESP> {
 

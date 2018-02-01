@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.cache;
+package ch.vd.unireg.cache;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Statistics;

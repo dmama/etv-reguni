@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -20,10 +20,10 @@ import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 
 /**
  * Surface d'un immeuble inscrit au registre foncier.

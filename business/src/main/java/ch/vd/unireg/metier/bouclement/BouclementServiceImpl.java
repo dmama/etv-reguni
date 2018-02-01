@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.bouclement;
+package ch.vd.unireg.metier.bouclement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,9 +21,9 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.type.DayMonth;
 
 /**
  * Implémentation du service de fourniture d'information autour des bouclements et exercices comptables

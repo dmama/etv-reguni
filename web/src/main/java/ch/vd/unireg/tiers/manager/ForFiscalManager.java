@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.tiers.view.TiersEditView;
 
 /**
  * Service à disposition du controller pour gérer un for fiscal

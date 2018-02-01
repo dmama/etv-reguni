@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -32,31 +32,31 @@ import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePayment
 import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationResponse;
 import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AttachmentDescriptor;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.CsvHelper;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.ServiceException;
 
 /**
  * Handler qui publie la population des personnes morales soumises aux acomptes

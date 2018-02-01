@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.Qualification;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.Qualification;
+import ch.vd.unireg.type.TypeDocument;
 
 public class InformationsDocumentAdapter {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,10 +17,10 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.HistoriqueCommune;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.adresse.HistoriqueCommune;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.interfaces.model.AdressesCiviles;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 
 public interface ServiceCivilService {
 
@@ -34,7 +34,7 @@ public interface ServiceCivilService {
 	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
 	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return les adresses civiles de l'individu spécifié.
-	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
+	 * @throws ch.vd.unireg.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
 	 */
 	AdressesCiviles getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException;
@@ -46,7 +46,7 @@ public interface ServiceCivilService {
 	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
 	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return l'historique des adresses civiles de l'individu spécifié; ou <b>null</b> si l'individu n'existe pas.
-	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
+	 * @throws ch.vd.unireg.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
 	 */
 	AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException;
@@ -60,7 +60,7 @@ public interface ServiceCivilService {
 	 *                      données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @param seulementVaud <code>true</code> si on ne s'intéresse qu'aux communes vaudoises (i.e. commune <code>null</code> pour HC/HS)
 	 * @return une liste des communes de domiciles fréquentées depuis la date de référence
-	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
+	 * @throws ch.vd.unireg.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
 	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException
 	 *          en cas d'erreur dans les données d'infrastructure

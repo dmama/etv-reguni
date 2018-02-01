@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.identification.contribuable.manager;
+package ch.vd.unireg.identification.contribuable.manager;
 
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsResultView;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesStatsResultView;
 
 public interface IdentificationMessagesStatsManager {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rcent.annonce;
+package ch.vd.unireg.rcent.annonce;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

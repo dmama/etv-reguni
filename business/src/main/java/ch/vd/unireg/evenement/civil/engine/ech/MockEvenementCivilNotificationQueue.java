@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.time.Duration;
 import java.util.Collection;
 
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
 
 public class MockEvenementCivilNotificationQueue implements EvenementCivilNotificationQueue {
 

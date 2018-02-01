@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.utils;
+package ch.vd.unireg.utils;
 
 import java.beans.PropertyEditorSupport;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
 
 /**
  * Editeur qui permet d'afficher et de parser les numéros cantonaux (format : xxx-xxx-xxx).

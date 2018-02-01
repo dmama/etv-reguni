@@ -21,7 +21,7 @@
 		</layout>
 	</appender>
 
-	<logger name="ch.vd.uniregctb">
+	<logger name="ch.vd.unireg">
 		<level value="DEBUG" />
 	</logger>
 

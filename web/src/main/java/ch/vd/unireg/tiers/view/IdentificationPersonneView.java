@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.IdentificationPersonne;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 /**
  * Structure model pour l'ecran d'edition de IdentificationPersonne

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 /**
  * @author Raphaël Marmier, 2016-01-22, <raphael.marmier@vd.ch>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +20,10 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.TestData;
-import ch.vd.uniregctb.common.WebMockMvcTest;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.TestData;
+import ch.vd.unireg.common.WebMockMvcTest;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
 

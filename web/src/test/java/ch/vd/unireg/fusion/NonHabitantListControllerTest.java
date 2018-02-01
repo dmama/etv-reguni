@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fusion;
+package ch.vd.unireg.fusion;
 
 import java.util.Map;
 

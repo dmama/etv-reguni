@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 /**
  * Ce service expose des méthodes utilitaire pour obtenir des informations et pour agir sur la base de données Unireg.

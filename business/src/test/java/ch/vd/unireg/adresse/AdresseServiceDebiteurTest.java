@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,19 +13,19 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.ContactImpotSource;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.tiers.ContactImpotSource;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
-import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdresse;
-import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdressesEquals;
+import static ch.vd.unireg.adresse.AdresseTestCase.assertAdresse;
+import static ch.vd.unireg.adresse.AdresseTestCase.assertAdressesEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

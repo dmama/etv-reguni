@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.processor;
+package ch.vd.unireg.registrefoncier.dataimport.processor;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,48 +16,48 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
-import ch.vd.uniregctb.registrefoncier.QuotePartRF;
-import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
-import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.ServitudeRF;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
-import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
-import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.EstimationRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
+import ch.vd.unireg.registrefoncier.QuotePartRF;
+import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.unireg.registrefoncier.RegroupementCommunauteRF;
+import ch.vd.unireg.registrefoncier.ServitudeRF;
+import ch.vd.unireg.registrefoncier.SituationRF;
+import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
+import ch.vd.unireg.registrefoncier.TypeCommunaute;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
+import ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.unireg.registrefoncier.dao.CommuneRFDAO;
+import ch.vd.unireg.registrefoncier.dao.DroitRFDAO;
+import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
+import ch.vd.unireg.registrefoncier.processor.MutationRFProcessorTestCase;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -143,7 +143,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la commune qui correspond à l'immeuble
@@ -232,7 +232,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf_sans_estimation_fiscale.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf_sans_estimation_fiscale.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la commune qui correspond à l'immeuble
@@ -321,7 +321,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -465,7 +465,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf_estimation_en_revision.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf_estimation_en_revision.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -565,7 +565,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -688,7 +688,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -813,7 +813,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -938,7 +938,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -1061,7 +1061,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -1163,7 +1163,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -1246,7 +1246,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf_sans_estimation_fiscale.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf_sans_estimation_fiscale.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
@@ -1348,7 +1348,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		});
 
 		// le même immeuble mais avec une quote-part différente
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf_sans_estimation_fiscale.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/processor/mutation_immeuble_rf_sans_estimation_fiscale.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base

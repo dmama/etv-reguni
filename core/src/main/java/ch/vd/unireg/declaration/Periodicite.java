@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,14 +24,14 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.type.PeriodeDecompte;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.type.PeriodeDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 //TODO(BNM) Reflechir a une implementation plus simple:
 // ajouter une propriété PeriodicitéDecompte et supprimer toutes la hierarchie de classe
 
@@ -65,7 +65,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 
 	@Override
 	@Column(name = "DATE_DEBUT", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -82,7 +82,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 	 */
 	@Override
 	@Column(name = "DATE_FIN")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -179,7 +179,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 	}
 
 	@Column(name = "PERIODICITE_TYPE", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.PeriodiciteDecompteUserType")
+	@Type(type = "ch.vd.unireg.hibernate.PeriodiciteDecompteUserType")
 	public PeriodiciteDecompte getPeriodiciteDecompte() {
 		return periodiciteDecompte;
 	}
@@ -240,7 +240,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 	}
 
 	@Column(name = "PERIODE_DECOMPTE", length = LengthConstants.DPI_PERIODE_DECOMPTE)
-	@Type(type = "ch.vd.uniregctb.hibernate.PeriodeDecompteUserType")
+	@Type(type = "ch.vd.unireg.hibernate.PeriodeDecompteUserType")
 	public PeriodeDecompte getPeriodeDecompte() {
 		return periodeDecompte;
 	}

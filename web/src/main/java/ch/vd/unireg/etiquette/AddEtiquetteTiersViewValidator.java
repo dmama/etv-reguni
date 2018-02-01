@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.etiquette;
+package ch.vd.unireg.etiquette;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.tiers.view.DateRangeViewValidator;
+import ch.vd.unireg.tiers.view.DateRangeViewValidator;
 
 public class AddEtiquetteTiersViewValidator extends DateRangeViewValidator implements Validator {
 

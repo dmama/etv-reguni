@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.activation.view;
+package ch.vd.unireg.activation.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.unireg.general.view.TiersGeneralView;
 
 public class TiersReactivationRecapView {
 

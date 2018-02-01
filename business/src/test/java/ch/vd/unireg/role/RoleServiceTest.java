@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,28 +28,28 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.LocalisationFiscale;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.tiers.LocalisationFiscale;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypePermis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -1352,7 +1352,7 @@ public class RoleServiceTest extends BusinessTest {
 
 	/**
 	 * [SIFISC-13803] NPE dans le calcul des rôles de l'OID si on avait, dans le même OID, un for fermé suivi par un for ouvert dans la liste
-	 * présentée par {@link ch.vd.uniregctb.tiers.Tiers#getForsFiscauxValidAt(RegDate)}
+	 * présentée par {@link ch.vd.unireg.tiers.Tiers#getForsFiscauxValidAt(RegDate)}
 	 */
 	@Test
 	public void testContribuableHorsSuisseAvecPlusieursImmeublesDansMemeOID() throws Exception {

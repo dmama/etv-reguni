@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,13 +14,13 @@ import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.GebaeudeArt;
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.unireg.common.ProgrammingException;
+import ch.vd.unireg.common.UniregJUnit4Runner;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.ImplantationRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

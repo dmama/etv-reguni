@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.tache;
+package ch.vd.unireg.validation.tache;
 
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.unireg.tiers.TacheAnnulationDeclarationImpot;
 
 public class TacheAnnulationDeclarationImpotValidator extends TacheValidator<TacheAnnulationDeclarationImpot> {
 

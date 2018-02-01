@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.activation.validator;
+package ch.vd.unireg.activation.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.activation.view.TiersReactivationRecapView;
+import ch.vd.unireg.activation.view.TiersReactivationRecapView;
 
 public class TiersReactivationRecapValidator implements Validator {
 

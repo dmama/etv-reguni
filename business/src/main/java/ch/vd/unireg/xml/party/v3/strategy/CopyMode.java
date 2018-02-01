@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v3.strategy;
+package ch.vd.unireg.xml.party.v3.strategy;
 
 /**
  * Mode de copie des parts d'un Tiers.

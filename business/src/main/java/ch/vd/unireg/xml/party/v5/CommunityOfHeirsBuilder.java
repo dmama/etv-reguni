@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,11 +16,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirLeader;
 import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirMember;
 import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.DataHelper;
 
 public abstract class CommunityOfHeirsBuilder {
 

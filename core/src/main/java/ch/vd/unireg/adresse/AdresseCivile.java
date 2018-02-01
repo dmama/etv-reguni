@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -9,8 +9,8 @@ import javax.persistence.Entity;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Adresse courrier de l'individu ou de l'un des individus du ménage commun
@@ -30,7 +30,7 @@ public class AdresseCivile extends AdresseTiers {
 	}
 
 	@Column(name = "STYPE", length = LengthConstants.ADRESSE_TYPECIVIL)
-	@Type(type="ch.vd.uniregctb.hibernate.TypeAdresseCivilLegacyUserType")
+	@Type(type="ch.vd.unireg.hibernate.TypeAdresseCivilLegacyUserType")
 	public TypeAdresseCivil getType() {
 		return type;
 	}

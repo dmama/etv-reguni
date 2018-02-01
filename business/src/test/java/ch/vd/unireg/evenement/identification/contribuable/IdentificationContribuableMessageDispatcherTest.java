@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class IdentificationContribuableMessageDispatcherTest extends WithoutSpringTest {
 

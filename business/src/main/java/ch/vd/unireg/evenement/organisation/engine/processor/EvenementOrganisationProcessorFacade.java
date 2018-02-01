@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.evenement.organisation.engine.processor;
+package ch.vd.unireg.evenement.organisation.engine.processor;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
 
 /**
  * Classe de façade du processing des événements organisation reçus de RCEnt

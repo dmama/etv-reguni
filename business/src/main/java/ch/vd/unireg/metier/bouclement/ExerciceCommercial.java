@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.bouclement;
+package ch.vd.unireg.metier.bouclement;
 
 import java.io.Serializable;
 

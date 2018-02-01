@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fourreNeutre.view;
+package ch.vd.unireg.fourreNeutre.view;
 
 public class FourreNeutreView {
 	private long tiersId;

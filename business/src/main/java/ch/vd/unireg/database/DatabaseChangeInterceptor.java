@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -11,23 +11,23 @@ import org.hibernate.type.Type;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Cette classe intercepte les changements appliqués au tiers dans la base de données et propage l'information au database service.

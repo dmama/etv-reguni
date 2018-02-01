@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,10 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.tiers.TiersService;
 
 public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSegment, ImportCodesSegmentResults> {
 

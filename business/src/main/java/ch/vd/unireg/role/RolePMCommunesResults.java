@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,11 +10,11 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersService;
 
 public class RolePMCommunesResults extends RolePMResults<RolePMCommunesResults> {
 

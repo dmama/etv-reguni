@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.etiquette;
+package ch.vd.unireg.etiquette;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,12 +18,12 @@ import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.tiers.Tiers;
 
 @Entity
 @Table(name = "ETIQUETTE_TIERS")

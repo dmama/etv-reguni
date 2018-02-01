@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -23,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.Sexe;
 
 /**
  * Être humain sous l'angle du droit, individualisée par ses caractéristiques, telles que son
@@ -298,7 +298,7 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	 * @return la date de naissance de la personne physique, ou <b>null</b> si cette information n'est pas connue.
 	 */
 	@Column(name = "NH_DATE_NAISSANCE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType", parameters = { @Parameter(name = "allowPartial", value = "true") })
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType", parameters = { @Parameter(name = "allowPartial", value = "true") })
 	public RegDate getDateNaissance() {
 		return dateNaissance;
 	}
@@ -308,7 +308,7 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	}
 
 	@Column(name = "NH_SEXE", length = LengthConstants.TIERS_SEXE)
-	@Type(type = "ch.vd.uniregctb.hibernate.SexeUserType")
+	@Type(type = "ch.vd.unireg.hibernate.SexeUserType")
 	public Sexe getSexe() {
 		return sexe;
 	}
@@ -339,7 +339,7 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	}
 
 	@Column(name = "NH_CAT_ETRANGER", length = LengthConstants.TIERS_CATETRANGER)
-	@Type(type = "ch.vd.uniregctb.hibernate.CategorieEtrangerUserType")
+	@Type(type = "ch.vd.unireg.hibernate.CategorieEtrangerUserType")
 	public CategorieEtranger getCategorieEtranger() {
 		return categorieEtranger;
 	}
@@ -349,7 +349,7 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	}
 
 	@Column(name = "NH_DATE_DEBUT_VALID_AUTORIS")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebutValiditeAutorisation() {
 		return dateDebutValiditeAutorisation;
 	}
@@ -359,7 +359,7 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	}
 
 	@Column(name = "DATE_DECES")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDeces() {
 		return dateDeces;
 	}

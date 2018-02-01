@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -22,14 +22,14 @@ import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePayment
 import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationResponse;
 import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AttachmentDescriptor;
 import ch.vd.unireg.xml.event.party.v2.Response;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.xml.DataHelper;
 
 /**
  * Classe de test du listener de requêtes de collecte de la population PM des acomptes. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.

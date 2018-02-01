@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pm;
+package ch.vd.unireg.declaration.ordinaire.pm;
 
 import java.text.SimpleDateFormat;
 
@@ -13,17 +13,17 @@ import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.editique.ConstantesEditique;
+import ch.vd.unireg.editique.EditiqueAbstractHelperImpl;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiquePrefixeHelper;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 
 /**
  * Rassemblement des méthodes utiles pour la constitution d'un document de sommation de DI PM à envoyer à l'éditique

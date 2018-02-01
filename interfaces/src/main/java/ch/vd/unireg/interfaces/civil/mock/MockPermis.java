@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.type.TypePermis;
 
 public class MockPermis implements Permis {
 

@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.uniregctb.common.Loggable;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.common.Loggable;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Interface générique permettant de représenter aussi bien une adresses civile et qu'une adresse fiscale.
@@ -127,7 +127,7 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 
     /**
      * @return le numéro de l'adresse. Par exemple : "3bis".
-     * @see ch.vd.uniregctb.adresse.AdresseGenerique#getRue()
+     * @see ch.vd.unireg.adresse.AdresseGenerique#getRue()
      */
     String getNumero();
 
@@ -153,7 +153,7 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 
     /**
      * @return la rue de l'adresse. Par exemple : "Avenue de Beaulieu".
-     * @see ch.vd.uniregctb.adresse.AdresseGenerique#getNumero()
+     * @see ch.vd.unireg.adresse.AdresseGenerique#getNumero()
      */
     String getRue();
 

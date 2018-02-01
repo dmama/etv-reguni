@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,27 +21,27 @@ import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteVirtuelRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.DroitVirtuelHeriteRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
-import ch.vd.uniregctb.registrefoncier.ServitudeRF;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
-import ch.vd.uniregctb.registrefoncier.UsufruitVirtuelRF;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitHabitationRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteImmeubleRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonneRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteVirtuelRF;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.DroitVirtuelHeriteRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.unireg.registrefoncier.ServitudeRF;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
+import ch.vd.unireg.registrefoncier.UsufruitVirtuelRF;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 
 @SuppressWarnings("Duplicates")
 public abstract class LandRightBuilder {

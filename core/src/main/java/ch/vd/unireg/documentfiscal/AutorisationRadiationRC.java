@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -18,7 +18,7 @@ public class AutorisationRadiationRC extends AutreDocumentFiscal {
 	private RegDate dateDemande;
 
 	@Column(name = "AR_DATE_DEMANDE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDemande() {
 		return dateDemande;
 	}

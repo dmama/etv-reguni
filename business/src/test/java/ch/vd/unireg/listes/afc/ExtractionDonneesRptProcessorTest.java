@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.afc;
+package ch.vd.unireg.listes.afc;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,22 +12,22 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.MotifAssujettissement;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 

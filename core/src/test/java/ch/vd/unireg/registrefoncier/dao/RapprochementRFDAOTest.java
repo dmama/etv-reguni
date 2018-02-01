@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.Comparator;
 import java.util.List;
@@ -8,13 +8,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
 public class RapprochementRFDAOTest extends CoreDAOTest {
 

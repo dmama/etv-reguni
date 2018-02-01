@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.engine;
+package ch.vd.unireg.evenement.organisation.engine;
 
 import java.util.List;
 
@@ -6,20 +6,20 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
-import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
-import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorFacade;
-import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
-import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationProcessingMode;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationService;
+import ch.vd.unireg.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
+import ch.vd.unireg.evenement.organisation.engine.processor.EvenementOrganisationProcessorFacade;
+import ch.vd.unireg.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
+import ch.vd.unireg.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 public abstract class AbstractEvenementOrganisationProcessorTest extends BusinessTest {
 	

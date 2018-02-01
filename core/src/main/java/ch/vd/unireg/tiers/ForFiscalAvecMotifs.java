@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,11 +7,11 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @Entity
 public abstract class ForFiscalAvecMotifs extends ForFiscal {
@@ -36,7 +36,7 @@ public abstract class ForFiscalAvecMotifs extends ForFiscal {
 	}
 
 	@Column(name = "MOTIF_OUVERTURE", length = LengthConstants.FOR_MOTIF)
-	@Type(type = "ch.vd.uniregctb.hibernate.MotifForUserType")
+	@Type(type = "ch.vd.unireg.hibernate.MotifForUserType")
 	public MotifFor getMotifOuverture() {
 		return motifOuverture;
 	}
@@ -46,7 +46,7 @@ public abstract class ForFiscalAvecMotifs extends ForFiscal {
 	}
 
 	@Column(name = "MOTIF_FERMETURE", length = LengthConstants.FOR_MOTIF)
-	@Type(type = "ch.vd.uniregctb.hibernate.MotifForUserType")
+	@Type(type = "ch.vd.unireg.hibernate.MotifForUserType")
 	public MotifFor getMotifFermeture() {
 		return motifFermeture;
 	}

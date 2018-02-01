@@ -6,7 +6,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>ch.vd.uniregctb</groupId>
+	<groupId>ch.vd.unireg</groupId>
 	<artifactId>uniregctb-ubr</artifactId>
 	<packaging>jar</packaging>
 
@@ -19,7 +19,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>uniregctb-ubr-data</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -152,7 +152,7 @@
 					<archive>
 						<manifestEntries>
 							<mode>development</mode>
-							<Main-Class>ch.vd.uniregctb.ubr.BatchRunnerApp</Main-Class>
+							<Main-Class>ch.vd.unireg.ubr.BatchRunnerApp</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -10,11 +10,11 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
-import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
-import ch.vd.uniregctb.transaction.TxSyncManager;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.registrefoncier.RegistreFoncierImportService;
+import ch.vd.unireg.scheduler.JobAlreadyStartedException;
+import ch.vd.unireg.transaction.TxSyncManager;
 
 /**
  * Handler qui reçoit les événements de mutation sur les immeubles de la part du registre foncier (Capitastra)

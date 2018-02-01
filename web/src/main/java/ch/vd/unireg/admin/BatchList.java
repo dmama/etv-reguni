@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.springframework.context.support.MessageSourceAccessor;
 
-import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobDefinition;
 
 /**
  * Form backing object de la page de démarrage des batches

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.individu;
+package ch.vd.unireg.individu;
 
-import ch.vd.uniregctb.common.BaseComparator;
+import ch.vd.unireg.common.BaseComparator;
 
 public class PermisViewComparator extends BaseComparator<PermisView>{
 	public PermisViewComparator() {

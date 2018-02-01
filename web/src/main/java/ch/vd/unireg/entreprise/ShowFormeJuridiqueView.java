@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.FormeLegaleHisto;
+import ch.vd.unireg.tiers.Source;
+import ch.vd.unireg.tiers.Sourced;
 
 public class ShowFormeJuridiqueView implements Sourced<Source>, Annulable, DateRange {
 

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.io.IOException;
 import java.util.UUID;
 
-import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.unireg.editique.EditiqueResultatDocument;
 
 public class MockDelayedDownloadService implements DelayedDownloadService {
 

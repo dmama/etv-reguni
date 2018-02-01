@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.rt.validator;
+package ch.vd.unireg.rt.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.rt.view.RapportPrestationView;
+import ch.vd.unireg.rt.view.RapportPrestationView;
 
 public class RapportPrestationEditValidator implements Validator {
 

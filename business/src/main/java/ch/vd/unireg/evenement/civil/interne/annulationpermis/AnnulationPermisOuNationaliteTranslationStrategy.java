@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.evenement.civil.interne.annulationpermis;
+package ch.vd.unireg.evenement.civil.interne.annulationpermis;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
+import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 
 /**
  * Règles métiers permettant de traiter les événements suivants :

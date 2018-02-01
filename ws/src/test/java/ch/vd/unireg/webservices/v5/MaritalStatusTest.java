@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.webservices.v5;
+package ch.vd.unireg.webservices.v5;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.type.EtatCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

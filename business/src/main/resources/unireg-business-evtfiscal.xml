@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	
 	<!-- Section Evenement Fiscal -->
-	<bean id="evenementFiscalService" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalServiceImpl">
+	<bean id="evenementFiscalService" class="ch.vd.unireg.evenement.fiscal.EvenementFiscalServiceImpl">
 		<property name="evenementFiscalDAO" ref="evenementFiscalDAO" />
 		<property name="evenementFiscalSender" ref="evenementFiscalSender" />
 	</bean>

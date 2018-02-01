@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pm;
+package ch.vd.unireg.declaration.ordinaire.pm;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,28 +20,28 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.AddAndSaveHelper;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAddAndSaveAccessor;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.AddAndSaveHelper;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.DeclarationException;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.declaration.IdentifiantDeclaration;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAddAndSaveAccessor;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationsDIsPMProcessor {
 

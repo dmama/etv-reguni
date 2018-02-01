@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -15,16 +15,16 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.avatar.TypeAvatar;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.indexer.IndexableData;
-import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.indexer.OurOwnReader;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.avatar.TypeAvatar;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.indexer.IndexableData;
+import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.indexer.OurOwnReader;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersIndexableData extends IndexableData {

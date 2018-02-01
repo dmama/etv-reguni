@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Résultats détaillés de l'exécution du job de fusion de communes.

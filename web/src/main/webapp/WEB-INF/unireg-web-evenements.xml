@@ -4,22 +4,22 @@
 
 	<!-- Evénements civils -->
 
-	<bean id="evtCivCriteriaValidator" class="ch.vd.uniregctb.evenement.common.EvenementCivilCriteriaValidator" />
+	<bean id="evtCivCriteriaValidator" class="ch.vd.unireg.evenement.common.EvenementCivilCriteriaValidator" />
 
-	<bean id="evtCivEchCriteriaValidator" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchCriteriaValidator" />
-	<bean id="evtOrganisationCriteriaValidator" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCriteriaValidator" />
+	<bean id="evtCivEchCriteriaValidator" class="ch.vd.unireg.evenement.ech.EvenementCivilEchCriteriaValidator" />
+	<bean id="evtOrganisationCriteriaValidator" class="ch.vd.unireg.evenement.organisation.EvenementOrganisationCriteriaValidator" />
 
-	<bean id="evtCivController" abstract="true" class="ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController">
+	<bean id="evtCivController" abstract="true" class="ch.vd.unireg.evenement.common.AbstractEvenementCivilController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	<bean id="evtCivRegPPController" class="ch.vd.uniregctb.evenement.regpp.EvenementCivilRegPPController" parent="evtCivController">
+	<bean id="evtCivRegPPController" class="ch.vd.unireg.evenement.regpp.EvenementCivilRegPPController" parent="evtCivController">
 		<property name="validator" ref="evtCivCriteriaValidator" />
 		<property name="manager" ref="evtCivRegPPManager" />
 	</bean>
 
-	<bean id="evtCivEchController" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchController" parent="evtCivController">
+	<bean id="evtCivEchController" class="ch.vd.unireg.evenement.ech.EvenementCivilEchController" parent="evtCivController">
 		<property name="validator" ref="evtCivEchCriteriaValidator" />
 		<property name="manager" ref="evtCivEchManager" />
 	</bean>
@@ -32,24 +32,24 @@
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="evtOrganisationController" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationController" parent="evtCivController">
+	<bean id="evtOrganisationController" class="ch.vd.unireg.evenement.organisation.EvenementOrganisationController" parent="evtCivController">
 		<property name="validator" ref="evtOrganisationCriteriaValidator" />
 		<property name="manager" ref="evtOrganisationManager" />
 		<property name="cappingLevelProvider" ref="evenementOrganisationTraitementCapping"/>
 	</bean>
 
-	<bean id="evtCivRegPPManager" class="ch.vd.uniregctb.evenement.regpp.manager.EvenementCivilRegPPManagerImpl" parent="evtCivManager">
+	<bean id="evtCivRegPPManager" class="ch.vd.unireg.evenement.regpp.manager.EvenementCivilRegPPManagerImpl" parent="evtCivManager">
 		<property name="evenementDAO" ref="evenementCivilRegPPDAO" />
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
 	</bean>
 
-	<bean id="evtCivEchManager" class="ch.vd.uniregctb.evenement.ech.manager.EvenementCivilEchManagerImpl" parent="evtCivManager">
+	<bean id="evtCivEchManager" class="ch.vd.unireg.evenement.ech.manager.EvenementCivilEchManagerImpl" parent="evtCivManager">
 		<property name="evenementService" ref="evtCivilEchService" />
 		<property name="evenementNotificationQueue" ref="evtCivilEchNotificationQueue" />
 		<property name="evenementProcessor" ref="evtCivilEchProcessor" />
 	</bean>
 
-	<bean id="evtOrganisationManager" class="ch.vd.uniregctb.evenement.organisation.manager.EvenementOrganisationManagerImpl">
+	<bean id="evtOrganisationManager" class="ch.vd.unireg.evenement.organisation.manager.EvenementOrganisationManagerImpl">
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
@@ -62,7 +62,7 @@
 
 	<!-- Evénements notaires -->
 
-	<bean id="evtReqDesController" class="ch.vd.uniregctb.evenement.reqdes.EvenementReqDesController">
+	<bean id="evtReqDesController" class="ch.vd.unireg.evenement.reqdes.EvenementReqDesController">
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>

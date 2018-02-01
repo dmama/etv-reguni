@@ -3,7 +3,7 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="dataEventJmsListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="dataEventJmsListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="dataEventJmsHandler"/>
 		<property name="destinationName" value="${extprop.jms.queue.db.event.input}"/>
 		<property name="concurrentConsumers" value="${extprop.jms.queue.db.event.consumers}"/>
@@ -11,7 +11,7 @@
 		<property name="internal" value="true" /> <!-- [UNIREG-3242] utilisation d'une queue interne -->
 	</bean>
 
-	<bean id="dataEventJmsHandler" class="ch.vd.uniregctb.data.DataEventJmsHandler">
+	<bean id="dataEventJmsHandler" class="ch.vd.unireg.data.DataEventJmsHandler">
 		<property name="dataEventService" ref="dataEventService" />
 		<property name="evenementFiscalSender" ref="evenementFiscalSender"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>

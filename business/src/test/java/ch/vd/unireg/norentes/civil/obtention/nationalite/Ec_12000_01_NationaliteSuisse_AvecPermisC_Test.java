@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.obtention.nationalite;
+package ch.vd.unireg.norentes.civil.obtention.nationalite;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 public class Ec_12000_01_NationaliteSuisse_AvecPermisC_Test extends NorentesTest {
 

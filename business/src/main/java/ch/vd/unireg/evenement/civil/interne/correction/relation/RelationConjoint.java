@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.correction.relation;
+package ch.vd.unireg.evenement.civil.interne.correction.relation;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 /**
  * Structure commune entre les relations "conjoint" qui viennent du civil et celles qui viennent du fiscal
@@ -31,7 +31,7 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 	 * @param dateFin date de fin de la relation
 	 * @param noIndividuConjoint numéro d'individu civil du conjoint
 	 * @param conjointFiscalConnu <code>true</code> si un conjoint fiscal existe, <code>false</code> si marié seul fiscal
-	 * @see #from(ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.tiers.PersonnePhysique)
+	 * @see #from(ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, ch.vd.unireg.tiers.PersonnePhysique)
 	 * @see #from(ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, ch.vd.unireg.interfaces.civil.data.RelationVersIndividu)
 	 */
 	RelationConjoint(RegDate dateDebut, RegDate dateFin, Long noIndividuConjoint, boolean conjointFiscalConnu) {

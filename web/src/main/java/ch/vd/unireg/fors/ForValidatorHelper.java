@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import org.springframework.validation.Errors;
 
-import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.tiers.validator.MotifsForHelper;
+import ch.vd.unireg.type.MotifFor;
 
 public abstract class ForValidatorHelper {
 

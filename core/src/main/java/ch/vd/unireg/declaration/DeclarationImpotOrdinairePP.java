@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -7,10 +7,10 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.CodeControleHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.type.Qualification;
+import ch.vd.unireg.common.CodeControleHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.type.Qualification;
 
 @Entity
 @DiscriminatorValue("DI")
@@ -31,7 +31,7 @@ public class DeclarationImpotOrdinairePP extends DeclarationImpotOrdinaire {
 	private Integer codeSegment;
 
 	@Column(name = "QUALIFICATION", length = LengthConstants.DI_QUALIF)
-	@Type(type = "ch.vd.uniregctb.hibernate.QualificationUserType")
+	@Type(type = "ch.vd.unireg.hibernate.QualificationUserType")
 	public Qualification getQualification() {
 		return qualification;
 	}

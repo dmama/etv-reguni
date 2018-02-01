@@ -16,16 +16,16 @@
 		<property name="wcPool" ref="ifoSecWebClientPool" />
 	</bean>
 
-	<bean id="serviceSecuriteServiceHostRest" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfacesRest">
+	<bean id="serviceSecuriteServiceHostRest" class="ch.vd.unireg.interfaces.service.host.ServiceSecuriteHostInterfacesRest">
 		<property name="client" ref="serviceSecuriteClient" />
 	</bean>
 
-	<bean id="serviceSecuriteServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteTracing">
+	<bean id="serviceSecuriteServiceTracing" class="ch.vd.unireg.interfaces.service.ServiceSecuriteTracing">
 		<property name="target" ref="serviceSecuriteServiceHostRest" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceSecuriteClientTracing" class="ch.vd.uniregctb.wsclient.host.ServiceSecuriteClientTracing">
+	<bean id="serviceSecuriteClientTracing" class="ch.vd.unireg.wsclient.host.ServiceSecuriteClientTracing">
 		<property name="statsService" ref="statsService"/>
 		<property name="target" ref="serviceSecuriteClientRaw"/>
 	</bean>

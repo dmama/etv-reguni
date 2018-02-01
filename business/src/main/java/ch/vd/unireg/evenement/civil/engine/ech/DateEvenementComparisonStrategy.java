@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

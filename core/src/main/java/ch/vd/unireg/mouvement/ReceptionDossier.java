@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -11,8 +11,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
 
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.type.Localisation;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.type.Localisation;
 
 /**
  * Classe de base des mouvements de dossiers de type "réception"

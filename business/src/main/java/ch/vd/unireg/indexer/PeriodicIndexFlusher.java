@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.DefaultThreadFactory;
-import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
+import ch.vd.unireg.common.DefaultThreadFactory;
+import ch.vd.unireg.common.DefaultThreadNameGenerator;
 
 /**
  * Flusher périodique des indexers présents

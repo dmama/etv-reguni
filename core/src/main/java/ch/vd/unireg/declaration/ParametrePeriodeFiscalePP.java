@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -7,8 +7,8 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.type.TypeContribuable;
 
 @Entity
 @DiscriminatorValue(value = "PP")
@@ -50,7 +50,7 @@ public class ParametrePeriodeFiscalePP extends ParametrePeriodeFiscaleDI impleme
 	}
 
 	@Column(name = "DATE_FIN_ENVOI_MASSE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFinEnvoiMasseDI() {
 		return dateFinEnvoiMasseDI;
 	}
@@ -60,7 +60,7 @@ public class ParametrePeriodeFiscalePP extends ParametrePeriodeFiscaleDI impleme
 	}
 
 	@Column(name = "TERME_GEN_SOMM_REGL")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getTermeGeneralSommationReglementaire() {
 		return termeGeneralSommationReglementaire;
 	}
@@ -70,7 +70,7 @@ public class ParametrePeriodeFiscalePP extends ParametrePeriodeFiscaleDI impleme
 	}
 
 	@Column(name = "TERME_GEN_SOMM_EFFECT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getTermeGeneralSommationEffectif() {
 		return termeGeneralSommationEffectif;
 	}

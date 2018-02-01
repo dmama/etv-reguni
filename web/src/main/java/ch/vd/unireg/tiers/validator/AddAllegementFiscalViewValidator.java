@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import java.math.BigDecimal;
 
 import org.springframework.validation.Errors;
 
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.view.AddAllegementFiscalView;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.view.AddAllegementFiscalView;
 
 public class AddAllegementFiscalViewValidator extends AbstractAllegementFiscalViewValidator {
 

@@ -167,7 +167,7 @@
 			<c:set var="bind" value="command.${param.path}.permisView" scope="request"/>
 			<spring:bind path="${bind}" >
 				<c:if test="${not empty status.value}">
-					<display:table 	name="${status.value}" id="row" pagesize="10" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+					<display:table 	name="${status.value}" id="row" pagesize="10" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 						<display:column titleKey="label.type" style="width: 33%">
 							<fmt:message key="option.type.permis.${row.typePermis}"/>
 						</display:column>

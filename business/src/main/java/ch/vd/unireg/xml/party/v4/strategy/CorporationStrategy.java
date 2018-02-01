@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v4.strategy;
+package ch.vd.unireg.xml.party.v4.strategy;
 
 
 import java.util.ArrayList;
@@ -29,25 +29,25 @@ import ch.vd.unireg.xml.party.corporation.v4.MonetaryAmount;
 import ch.vd.unireg.xml.party.corporation.v4.TaxSystem;
 import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.unireg.xml.party.v4.UidNumberList;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.CapitalHisto;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v4.BusinessYearBuilder;
-import ch.vd.uniregctb.xml.party.v4.CorporationFlagBuilder;
-import ch.vd.uniregctb.xml.party.v4.TaxLighteningBuilder;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.CapitalHisto;
+import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.FlagEntreprise;
+import ch.vd.unireg.tiers.FormeLegaleHisto;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v4.BusinessYearBuilder;
+import ch.vd.unireg.xml.party.v4.CorporationFlagBuilder;
+import ch.vd.unireg.xml.party.v4.TaxLighteningBuilder;
 
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 

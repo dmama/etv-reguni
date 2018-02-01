@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +24,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseGenerique;
 
 public interface ServiceInfrastructureService {
 

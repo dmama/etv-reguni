@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.common;
+package ch.vd.unireg.evenement.civil.common;
 
 /**
  * Différentes options de comportement disponibles dans le traitement des événements civils.

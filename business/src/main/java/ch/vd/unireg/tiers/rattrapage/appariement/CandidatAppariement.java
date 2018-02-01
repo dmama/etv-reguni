@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.tiers.rattrapage.appariement;
+package ch.vd.unireg.tiers.rattrapage.appariement;
 
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.LocalizedDateRange;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.LocalizedDateRange;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class CandidatAppariement {
 

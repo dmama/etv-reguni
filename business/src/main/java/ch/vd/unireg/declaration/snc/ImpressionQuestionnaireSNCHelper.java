@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.declaration.snc;
+package ch.vd.unireg.declaration.snc;
 
 import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.editique.EditiqueAbstractHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 public interface ImpressionQuestionnaireSNCHelper extends EditiqueAbstractHelper {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,24 +14,24 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalServiceImpl;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalServiceImpl;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
 public class RappelFormulairesDemandeDegrevementICIProcessorTest extends BusinessTest {
 

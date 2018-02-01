@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.registrefoncier.SituationRF;
 
 public class RappelFormulairesDemandeDegrevementICIResults extends AbstractJobResults<Long, RappelFormulairesDemandeDegrevementICIResults> {
 

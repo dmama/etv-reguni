@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,8 +12,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.tiers.Etablissement;
 
 /**
  * @author Raphaël Marmier, 2016-08-31, <raphael.marmier@vd.ch>

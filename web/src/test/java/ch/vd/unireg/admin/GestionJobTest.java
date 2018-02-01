@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -7,10 +7,10 @@ import java.util.Map;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobDefinition.JobStatut;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobDefinition.JobStatut;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -11,15 +11,15 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.FusionDeCommunesRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamCommune;
-import ch.vd.uniregctb.scheduler.JobParamRegDate;
-import ch.vd.uniregctb.scheduler.JobParamString;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.document.FusionDeCommunesRapport;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamCommune;
+import ch.vd.unireg.scheduler.JobParamRegDate;
+import ch.vd.unireg.scheduler.JobParamString;
 
 /**
  * Job qui effectue les changements sur les fors fiscaux suite à une fusion de communes.

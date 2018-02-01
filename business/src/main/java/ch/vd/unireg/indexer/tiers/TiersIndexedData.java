@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.io.Serializable;
 import java.util.List;
@@ -8,13 +8,13 @@ import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.avatar.TypeAvatar;
-import ch.vd.uniregctb.indexer.lucene.DocumentExtractorHelper;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.avatar.TypeAvatar;
+import ch.vd.unireg.indexer.lucene.DocumentExtractorHelper;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 public class TiersIndexedData implements Serializable {
 

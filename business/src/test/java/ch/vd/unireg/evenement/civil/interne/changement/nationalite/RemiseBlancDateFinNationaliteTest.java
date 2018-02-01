@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.changement.nationalite;
+package ch.vd.unireg.evenement.civil.interne.changement.nationalite;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -10,9 +10,9 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.type.TypePermis;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

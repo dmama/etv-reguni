@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Ensemble de services métiers de haut niveau, incluant toutes les régles fiscales nécessaires pour maintenir la cohérence des données.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -9,10 +9,10 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
-import ch.vd.uniregctb.common.CodeControleHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.common.CodeControleHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalAvecSuivi;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
 
 @Entity
 @DiscriminatorValue(value = "DemandeDegrevement")

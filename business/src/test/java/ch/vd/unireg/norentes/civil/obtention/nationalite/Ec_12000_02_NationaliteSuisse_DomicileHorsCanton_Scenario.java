@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.civil.obtention.nationalite;
+package ch.vd.unireg.norentes.civil.obtention.nationalite;
 
 import java.util.Set;
 
@@ -10,21 +10,21 @@ import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender;
-import ch.vd.uniregctb.norentes.annotation.Check;
-import ch.vd.uniregctb.norentes.annotation.Etape;
-import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.fiscal.CollectingEvenementFiscalSender;
+import ch.vd.unireg.norentes.annotation.Check;
+import ch.vd.unireg.norentes.annotation.Etape;
+import ch.vd.unireg.norentes.common.EvenementCivilScenario;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TexteCasePostale;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
+import ch.vd.unireg.type.TypePermis;
 
 /**
  * Scénario d'un événement obtention de nationalité suisse d'un individu non-habitant dont l'adresse de domicile est hors-canton

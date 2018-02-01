@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.source;
+package ch.vd.unireg.declaration.source;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,12 +14,12 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.CategorieImpotSource;
 
 public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults> {
 

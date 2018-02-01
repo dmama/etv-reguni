@@ -1,22 +1,22 @@
-package ch.vd.uniregctb.param.manager;
+package ch.vd.unireg.param.manager;
 
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.param.view.ModeleDocumentView;
-import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePMEditView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePPEditView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleSNCEditView;
-import ch.vd.uniregctb.type.ModeleFeuille;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscaleEmolument;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscalePM;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscalePP;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscaleSNC;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.param.view.ModeleDocumentView;
+import ch.vd.unireg.param.view.ModeleFeuilleDocumentView;
+import ch.vd.unireg.param.view.ParametrePeriodeFiscalePMEditView;
+import ch.vd.unireg.param.view.ParametrePeriodeFiscalePPEditView;
+import ch.vd.unireg.param.view.ParametrePeriodeFiscaleSNCEditView;
+import ch.vd.unireg.type.ModeleFeuille;
 
 public interface ParamPeriodeManager {
 

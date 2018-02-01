@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="periodes" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.PeriodeFiscaleView>"--%>
+<%--@elvariable id="periodes" type="java.util.List<ch.vd.unireg.registrefoncier.allegement.PeriodeFiscaleView>"--%>
 
 <c:set var="commandName" value="${param.commandName}"/>
 <c:set var="allowPeriodeEdit" value="${param.allowPeriodeEdit}"/>       <%-- true / false --%>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -17,8 +17,8 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.DayMonthHelper;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.DayMonthHelper;
 
 /**
  * Tag jsp qui permet d'afficher diverse valeurs spécifiques à Unireg.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.piis;
+package ch.vd.unireg.metier.piis;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -16,20 +16,20 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.DumpPeriodesImpositionImpotSourceRapport;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 

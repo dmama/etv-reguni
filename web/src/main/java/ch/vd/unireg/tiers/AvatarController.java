@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.avatar.AvatarService;
-import ch.vd.uniregctb.avatar.ImageData;
-import ch.vd.uniregctb.avatar.TypeAvatar;
+import ch.vd.unireg.avatar.AvatarService;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.avatar.TypeAvatar;
 
 @Controller
 public class AvatarController {

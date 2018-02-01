@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.util.Iterator;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -4,7 +4,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.dossiers.apparentes" /></span></legend>
 
-	<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersEditView"--%>
+	<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersEditView"--%>
 	<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
 	<c:if test="${autorisations.autresRapports}">
 	<table border="0">
@@ -44,7 +44,7 @@
 			</c:if>
 		</c:forEach>
 
-		<display:table name="command.dossiersApparentes" id="dossierApparente" pagesize="10" requestURI="list.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="command.dossiersApparentes" id="dossierApparente" pagesize="10" requestURI="list.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:column sortable ="true" titleKey="label.rapport.tiers">
 				<fmt:message key="option.rapport.entre.tiers.${dossierApparente.sensRapportEntreTiers}.${dossierApparente.typeRapportEntreTiers}" />
 				<c:if test="${dossierApparente.toolTipMessage != null}">

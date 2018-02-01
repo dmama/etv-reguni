@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.log;
+package ch.vd.unireg.log;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

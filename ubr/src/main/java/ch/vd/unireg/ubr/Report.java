@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.ubr;
+package ch.vd.unireg.ubr;
 
 import java.io.IOException;
 import java.io.InputStream;

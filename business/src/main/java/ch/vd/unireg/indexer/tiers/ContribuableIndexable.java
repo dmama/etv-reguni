@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,24 +12,24 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.avatar.AvatarService;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.avatar.AvatarService;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public abstract class ContribuableIndexable<T extends Contribuable> extends TiersIndexable<T> {
 

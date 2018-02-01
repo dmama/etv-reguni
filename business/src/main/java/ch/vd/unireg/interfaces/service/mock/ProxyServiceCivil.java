@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service.mock;
+package ch.vd.unireg.interfaces.service.mock;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,13 +20,13 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.HistoriqueCommune;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.adresse.HistoriqueCommune;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.interfaces.model.AdressesCiviles;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Proxy du service civil à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance

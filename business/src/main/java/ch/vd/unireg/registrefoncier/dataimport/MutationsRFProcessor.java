@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,27 +20,27 @@ import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.SubStatusManager;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.BatimentRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.MutationRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.ServitudeRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor;
-import ch.vd.uniregctb.xml.ExceptionHelper;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.SubStatusManager;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.dataimport.processor.AyantDroitRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.BatimentRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.DroitRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.MutationRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.ServitudeRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor;
+import ch.vd.unireg.xml.ExceptionHelper;
 
 /**
  * Processeur responsable de traiter les mutations du registre foncier.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,21 +9,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.Erreur;
-import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.ErreurType;
-import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.Ignore;
-import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.IgnoreType;
-import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.Situation;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.SituationFamilleDAO;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.situationfamille.ReinitialiserBaremeDoubleGainResults.Erreur;
+import ch.vd.unireg.situationfamille.ReinitialiserBaremeDoubleGainResults.ErreurType;
+import ch.vd.unireg.situationfamille.ReinitialiserBaremeDoubleGainResults.Ignore;
+import ch.vd.unireg.situationfamille.ReinitialiserBaremeDoubleGainResults.IgnoreType;
+import ch.vd.unireg.situationfamille.ReinitialiserBaremeDoubleGainResults.Situation;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.SituationFamilleDAO;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TarifImpotSource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

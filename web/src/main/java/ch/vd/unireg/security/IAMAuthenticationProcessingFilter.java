@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,8 +21,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.EncodingFixHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.EncodingFixHelper;
 
 /**
  * Ce filtre permet de récupérer les informations d'autentification renseignées par IAM : le visa, prénom/nom et les rôles. Il vérifie ensuite que l'utilisateur possède bien un des rôles nécessaires

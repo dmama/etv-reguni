@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,9 +9,9 @@ import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
 
 /**
  * Classe de base abstraite représentant une période d'imposition.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,18 +23,18 @@ import ch.vd.registre.webscreenshot.WebScreenshot;
 import ch.vd.registre.webscreenshot.WebScreenshotDoc;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForsParType;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.validation.fors.ForFiscalValidator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.HashSet;
 import java.util.List;
@@ -22,29 +22,29 @@ import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.IndividuNotFoundException;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.validation.ValidationService;
 
 public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 

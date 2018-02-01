@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.ObjectKey;
-import ch.vd.uniregctb.cache.PersistentCache;
-import ch.vd.uniregctb.cache.SimpleCacheStats;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.ObjectKey;
+import ch.vd.unireg.cache.PersistentCache;
+import ch.vd.unireg.cache.SimpleCacheStats;
 
 /**
  * Implémente un cache persistant où chaque objet est stocké sous forme de fichier sur le disque. Les fichiers sont stockés sous une arborescence de répertoire pour éviter d'avoir tous les fichiers en

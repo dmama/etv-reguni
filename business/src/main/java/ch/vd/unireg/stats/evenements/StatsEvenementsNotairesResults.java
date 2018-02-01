@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats.evenements;
+package ch.vd.unireg.stats.evenements;
 
 import java.util.Collections;
 import java.util.Date;
@@ -11,8 +11,8 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.uniregctb.reqdes.ErreurTraitement;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.ErreurTraitement;
+import ch.vd.unireg.reqdes.EtatTraitement;
 
 public class StatsEvenementsNotairesResults {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.inbox;
+package ch.vd.unireg.admin.inbox;
 
 import java.io.IOException;
 import java.io.InputStream;

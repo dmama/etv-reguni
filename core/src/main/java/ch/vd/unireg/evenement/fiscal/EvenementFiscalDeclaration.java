@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.unireg.declaration.Declaration;
 
 @Entity
 public abstract class EvenementFiscalDeclaration extends EvenementFiscalTiers {

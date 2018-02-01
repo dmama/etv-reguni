@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.registrefoncier.communaute;
+package ch.vd.unireg.registrefoncier.communaute;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
 
 public class TiersIndexedDataWithCommunauteView extends TiersIndexedDataView {
 

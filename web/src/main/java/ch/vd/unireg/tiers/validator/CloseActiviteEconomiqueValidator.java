@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.view.CloseActiviteEconomiqueView;
+import ch.vd.unireg.tiers.view.CloseActiviteEconomiqueView;
 
 public class CloseActiviteEconomiqueValidator implements Validator {
 

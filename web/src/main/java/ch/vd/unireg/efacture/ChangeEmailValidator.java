@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

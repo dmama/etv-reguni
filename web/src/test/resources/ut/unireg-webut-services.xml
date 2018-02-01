@@ -2,32 +2,32 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="uniregExternalProperties" class="ch.vd.uniregctb.utils.MockUniregProperties"/>
+	<bean id="uniregExternalProperties" class="ch.vd.unireg.utils.MockUniregProperties"/>
 
-	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender" />
+	<bean id="evenementFiscalSender" class="ch.vd.unireg.evenement.fiscal.CollectingEvenementFiscalSender" />
 
-	<bean id="evenementLiberationDeclarationImpotSender" class="ch.vd.uniregctb.evenement.di.MockEvenementLiberationDeclarationImpotSender"/>
+	<bean id="evenementLiberationDeclarationImpotSender" class="ch.vd.unireg.evenement.di.MockEvenementLiberationDeclarationImpotSender"/>
 
-	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.MockEvenementDocumentSortantSender"/>
+	<bean id="evenementDocumentSortantSender" class="ch.vd.unireg.evenement.docsortant.MockEvenementDocumentSortantSender"/>
 
-	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilNotificationQueue"/>
+	<bean id="evtCivilEchNotificationQueue" class="ch.vd.unireg.evenement.civil.engine.ech.MockEvenementCivilNotificationQueue"/>
 
-	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEvenementProcessor"/>
+	<bean id="evtCivilEchProcessor" class="ch.vd.unireg.evenement.civil.engine.ech.MockEvenementCivilEvenementProcessor"/>
 
-	<bean id="servletService" class="ch.vd.uniregctb.servlet.MockServletService"/>
+	<bean id="servletService" class="ch.vd.unireg.servlet.MockServletService"/>
 
-	<bean id="extractionService" class="ch.vd.uniregctb.extraction.MockExtractionService"/>
+	<bean id="extractionService" class="ch.vd.unireg.extraction.MockExtractionService"/>
 
-	<bean id="inboxService" class="ch.vd.uniregctb.inbox.MockInboxService"/>
+	<bean id="inboxService" class="ch.vd.unireg.inbox.MockInboxService"/>
 
-	<bean id="editiqueDownloadService" class="ch.vd.uniregctb.common.MockEditiqueDownloadService"/>
+	<bean id="editiqueDownloadService" class="ch.vd.unireg.common.MockEditiqueDownloadService"/>
 
-	<bean id="delayedDownloadService" class="ch.vd.uniregctb.common.MockDelayedDownloadService"/>
+	<bean id="delayedDownloadService" class="ch.vd.unireg.common.MockDelayedDownloadService"/>
 
-	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor"/>
+	<bean id="reqdesEventProcessor" class="ch.vd.unireg.evenement.reqdes.engine.MockEvenementReqDesProcessor"/>
 
-	<bean id="evtOrganisationNotificationQueue" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationNotificationQueue"/>
+	<bean id="evtOrganisationNotificationQueue" class="ch.vd.unireg.evenement.organisation.engine.MockEvenementOrganisationNotificationQueue"/>
 
-	<bean id="evtOrganisationProcessor" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationEvenementProcessor"/>
+	<bean id="evtOrganisationProcessor" class="ch.vd.unireg.evenement.organisation.engine.MockEvenementOrganisationEvenementProcessor"/>
 
 </beans>

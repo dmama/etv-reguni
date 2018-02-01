@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.search.SearchTiersFilterWithPostFiltering;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.search.SearchTiersFilterWithPostFiltering;
+import ch.vd.unireg.tiers.TiersCriteria;
 
 /**
  * Filtre spécialisé pour l'écran de recherche de la première ou la seconde personne physique dans la constitution d'un couple.

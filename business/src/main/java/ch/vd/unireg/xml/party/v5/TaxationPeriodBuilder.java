@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxationPeriod;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.xml.DataHelper;
 
 public class TaxationPeriodBuilder {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -14,8 +14,8 @@ import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
 
 @Entity
 @Table(name = "BORDEREAU_MVT_DOSSIER")
@@ -28,7 +28,7 @@ public class BordereauMouvementDossier extends HibernateEntity {
 
 	/**
 	 * Le contenu du bordereau = mouvements de dossiers
-	 * (tous les mouvements insérés ici doivent implémenter l'interface ch.vd.uniregctb.mouvement.ElementDeBordereau)
+	 * (tous les mouvements insérés ici doivent implémenter l'interface ch.vd.unireg.mouvement.ElementDeBordereau)
 	 */
 	private Set<MouvementDossier> contenu;
 

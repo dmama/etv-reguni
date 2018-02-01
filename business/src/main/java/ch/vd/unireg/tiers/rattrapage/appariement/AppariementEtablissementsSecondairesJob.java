@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.appariement;
+package ch.vd.unireg.tiers.rattrapage.appariement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,17 +11,17 @@ import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamBoolean;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.scheduler.JobParamString;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.AppariementEtablissementsSecondairesRapport;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamBoolean;
+import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.scheduler.JobParamString;
+import ch.vd.unireg.tiers.TiersService;
 
 public class AppariementEtablissementsSecondairesJob extends JobDefinition {
 

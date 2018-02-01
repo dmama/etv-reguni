@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.common.view;
+package ch.vd.unireg.evenement.common.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.individu.IndividuView;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.unireg.adresse.AdresseEnvoi;
+import ch.vd.unireg.individu.IndividuView;
+import ch.vd.unireg.type.EtatEvenementCivil;
 
 abstract public class EvenementCivilDetailView implements Serializable {
 

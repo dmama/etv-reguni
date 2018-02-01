@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.bouclement;
+package ch.vd.unireg.metier.bouclement;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -11,12 +11,12 @@ import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Bean utilitaire pour les fonctionnalités spécifiques aux exercices commerciaux exposés par Unireg

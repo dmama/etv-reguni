@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v6.cache;
+package ch.vd.unireg.webservices.v6.cache;
 
 import org.apache.commons.lang3.StringUtils;
 

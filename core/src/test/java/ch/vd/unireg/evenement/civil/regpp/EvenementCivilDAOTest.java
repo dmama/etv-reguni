@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.regpp;
+package ch.vd.unireg.evenement.civil.regpp;
 
 import java.util.List;
 
@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

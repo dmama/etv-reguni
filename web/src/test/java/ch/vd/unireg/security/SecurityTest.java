@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
 
 public abstract class SecurityTest extends WebTest {
 

@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import java.io.Serializable;
 
-import ch.vd.uniregctb.reqdes.ErreurTraitement;
+import ch.vd.unireg.reqdes.ErreurTraitement;
 
 /**
  * Classe de visualisation des données d'une erreur / d'un warning

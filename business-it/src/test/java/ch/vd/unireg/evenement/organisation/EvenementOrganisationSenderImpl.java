@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -30,9 +30,9 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 /**
  * Implémentation de la fonctionalité de test d'envoi d'un événement organisation

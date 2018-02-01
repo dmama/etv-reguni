@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  *         </ul>
  *     </li>
  * </ul>
- * @see ch.vd.uniregctb.common.LengthConstants#FLAG_ENTREPRISE_TYPE
+ * @see ch.vd.unireg.common.LengthConstants#FLAG_ENTREPRISE_TYPE
  */
 public enum TypeFlagEntreprise {
 

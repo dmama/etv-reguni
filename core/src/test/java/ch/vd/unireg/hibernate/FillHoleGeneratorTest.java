@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,10 +11,10 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.migreg.MigrationError;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.migreg.MigrationError;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 import static org.junit.Assert.assertEquals;
 

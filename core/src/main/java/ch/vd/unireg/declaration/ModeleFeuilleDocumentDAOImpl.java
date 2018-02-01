@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class ModeleFeuilleDocumentDAOImpl extends BaseDAOImpl<ModeleFeuilleDocument, Long> implements ModeleFeuilleDocumentDAO {
 

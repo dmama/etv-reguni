@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pm;
+package ch.vd.unireg.declaration.ordinaire.pm;
 
 import java.util.List;
 
@@ -12,28 +12,28 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 

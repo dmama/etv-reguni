@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.common;
+package ch.vd.unireg.evenement.common;
 
 /**
  * @author Raphaël Marmier, 2016-12-13, <raphael.marmier@vd.ch>

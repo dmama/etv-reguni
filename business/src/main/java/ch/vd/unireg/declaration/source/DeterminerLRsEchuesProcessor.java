@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.source;
+package ch.vd.unireg.declaration.source;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,22 +26,22 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
-import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationEchue;
+import ch.vd.unireg.declaration.ListeRecapitulativeDAO;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.CategorieImpotSource;
 
 /**
  * Processeur chargé de la détermination des LR échues

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.acces.parDossier.manager;
+package ch.vd.unireg.acces.parDossier.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView;
-import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
-import ch.vd.uniregctb.security.DroitAccesException;
+import ch.vd.unireg.acces.parDossier.view.DossierEditRestrictionView;
+import ch.vd.unireg.acces.parDossier.view.DroitAccesView;
+import ch.vd.unireg.security.DroitAccesException;
 
 /**
  * Interface qui gère le controller DossierEditRestrictionController

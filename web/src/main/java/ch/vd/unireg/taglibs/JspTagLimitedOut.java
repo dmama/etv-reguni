@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import java.io.Reader;

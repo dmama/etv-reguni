@@ -26,7 +26,7 @@
 		<!-- Debut délais -->
 		<fieldset class="information">
 			<legend><span><fmt:message key="label.delais"/></span></legend>
-			<display:table 	name="questionnaire.delais" id="delai" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table 	name="questionnaire.delais" id="delai" pagesize="10" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column titleKey="label.date.demande" style="width: 30%;">
 					<unireg:regdate regdate="${delai.dateDemande}" />
 				</display:column>
@@ -63,7 +63,7 @@
 			</c:if>
 
 			<c:if test="${not empty questionnaire.etats}">
-				<display:table name="questionnaire.etats" id="etat" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				<display:table name="questionnaire.etats" id="etat" pagesize="10" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 					<display:column titleKey="label.date.obtention" style="width: 30%;">
 						<unireg:regdate regdate="${etat.dateObtention}"/>
 						<c:if test="${!etat.annule && etat.etat == 'RAPPELE'}">

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.messageidentification;
+package ch.vd.unireg.indexer.messageidentification;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,11 +9,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.indexer.lucene.DocumentExtractorHelper;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.evenement.identification.contribuable.Demande;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.indexer.lucene.DocumentExtractorHelper;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
 
 public class MessageIdentificationIndexedData implements Serializable {
 

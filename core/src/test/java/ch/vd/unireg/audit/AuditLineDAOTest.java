@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
 import java.util.Date;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
+import ch.vd.unireg.common.CoreDAOTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

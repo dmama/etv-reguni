@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.unireg.common.FiscalDateHelper;
 
 public class ChoixDeclarationImpotView {
 

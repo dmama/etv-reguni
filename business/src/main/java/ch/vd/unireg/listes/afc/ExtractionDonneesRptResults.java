@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.afc;
+package ch.vd.unireg.listes.afc;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,21 +17,21 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
-import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.ListesResults;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.metier.assujettissement.DecompositionForsAnneeComplete;
+import ch.vd.unireg.metier.assujettissement.MotifAssujettissement;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public abstract class ExtractionDonneesRptResults extends ListesResults<ExtractionDonneesRptResults> {
 

@@ -7,14 +7,14 @@
 
 	<!-- Service Infrastructure -->
 	
-	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
+	<bean id="serviceInfrastructureService" class="ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl">
 		<property name="rawService" ref="serviceInfrastructureRaw" />
 		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
 	<!-- Service Civil -->
 
-	<bean id="serviceCivilService" class="ch.vd.uniregctb.interfaces.service.ServiceCivilImpl">
+	<bean id="serviceCivilService" class="ch.vd.unireg.interfaces.service.ServiceCivilImpl">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="target" ref="serviceCivilRaw"/>
 		<property name="serviceLogger" ref="serviceCivilLogger"/>
@@ -22,14 +22,14 @@
 
 	<!-- Service Organisation -->
 
-	<bean id="serviceOrganisationService" class="ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl">
+	<bean id="serviceOrganisationService" class="ch.vd.unireg.interfaces.service.ServiceOrganisationImpl">
 		<property name="target" ref="serviceOrganisationRaw"/>
 		<property name="serviceInfra" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<!-- Service Securité -->
 
-	<bean id="serviceSecuriteCache" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteCache">
+	<bean id="serviceSecuriteCache" class="ch.vd.unireg.interfaces.service.ServiceSecuriteCache">
 		<property name="target" ref="serviceSecuriteServiceTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceSecurite" />

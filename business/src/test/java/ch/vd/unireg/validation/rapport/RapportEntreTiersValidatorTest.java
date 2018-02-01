@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.rapport;
+package ch.vd.unireg.validation.rapport;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -7,16 +7,16 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.AssujettissementParSubstitution;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tutelle;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

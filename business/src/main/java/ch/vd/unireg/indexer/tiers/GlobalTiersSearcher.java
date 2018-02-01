@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.util.List;
 import java.util.Set;
@@ -6,11 +6,11 @@ import java.util.concurrent.BlockingQueue;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.Fuse;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersFilter;
+import ch.vd.unireg.common.Fuse;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersFilter;
 
 /**
  * Classe principale de recherche de tiers suivant certains criteres

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.situation.surcharge;
+package ch.vd.unireg.registrefoncier.situation.surcharge;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.registrefoncier.CapitastraURLProvider;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.CapitastraURLProvider;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
 
 /**
  * Données résumées d'un immeuble RF.

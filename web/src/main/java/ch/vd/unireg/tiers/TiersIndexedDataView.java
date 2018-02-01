@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.List;
 
@@ -6,11 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.avatar.TypeAvatar;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.avatar.TypeAvatar;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.indexer.tiers.MenageCommunIndexable;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 public class TiersIndexedDataView implements Annulable {
 

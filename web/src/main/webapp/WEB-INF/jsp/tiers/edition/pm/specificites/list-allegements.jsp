@@ -19,7 +19,7 @@
 			</table>
 
 			<c:if test="${not empty allegements}">
-				<display:table name="allegements" id="af" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/allegement/edit-list.do" sort="list">
+				<display:table name="allegements" id="af" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" requestURI="/allegement/edit-list.do" sort="list">
 					<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 						<unireg:regdate regdate="${af.dateDebut}"/>
 					</display:column>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parentes;
+package ch.vd.unireg.parentes;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,18 +19,18 @@ import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.MultipleSwitch;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.tiers.ParenteUpdateResult;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.MultipleSwitch;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplate;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.tiers.ParenteUpdateResult;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiersDAO;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class CalculParentesProcessor {
 

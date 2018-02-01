@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 /**
  * Les types des différents états possibles d'une entreprise

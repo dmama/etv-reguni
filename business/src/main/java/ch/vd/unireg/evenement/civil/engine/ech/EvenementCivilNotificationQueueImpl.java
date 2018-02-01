@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -26,11 +26,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.AgeTrackingBlockingQueueMixer;
-import ch.vd.uniregctb.common.Aged;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
+import ch.vd.unireg.common.AgeTrackingBlockingQueueMixer;
+import ch.vd.unireg.common.Aged;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchService;
 
 /**
  * Classe utilitaire qui joue le rôle d'une queue bloquante pour le traitement des événements civils reçus de RCPers

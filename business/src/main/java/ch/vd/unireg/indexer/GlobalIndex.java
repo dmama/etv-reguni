@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +20,7 @@ import ch.vd.registre.simpleindexer.ReadOnlyCallback;
 import ch.vd.registre.simpleindexer.Searcher;
 import ch.vd.registre.simpleindexer.WriteCallback;
 import ch.vd.registre.simpleindexer.Writer;
-import ch.vd.uniregctb.indexer.lucene.IndexProvider;
+import ch.vd.unireg.indexer.lucene.IndexProvider;
 
 /**
  * Cette classe est le point d'entrée unique vers l'indexeur Lucene. Il gère notamment l'initialisation des ressources, l'accès concurrent

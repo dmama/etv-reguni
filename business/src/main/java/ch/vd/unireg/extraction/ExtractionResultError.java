@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
 /**
  * Résultat en erreur

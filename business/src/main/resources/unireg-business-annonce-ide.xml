@@ -5,12 +5,12 @@
 	
 	<!-- Section annonce à l'IDE -->
 
-	<bean id="annonceIDEService" class="ch.vd.uniregctb.evenement.ide.AnnonceIDEServiceImpl">
+	<bean id="annonceIDEService" class="ch.vd.unireg.evenement.ide.AnnonceIDEServiceImpl">
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
 		<property name="annonceIDESender" ref="annonceIDESender" />
 	</bean>
 
-	<bean id="serviceIDEService" class="ch.vd.uniregctb.evenement.ide.ServiceIDEServiceImpl">
+	<bean id="serviceIDEService" class="ch.vd.unireg.evenement.ide.ServiceIDEServiceImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="annonceIDEService" ref="annonceIDEService" />
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
@@ -19,7 +19,7 @@
 		<property name="serviceOrganisation" ref="serviceOrganisationService" />
 	</bean>
 
-	<bean id="reponseIDEProcessor" class="ch.vd.uniregctb.evenement.ide.ReponseIDEProcessorImpl">
+	<bean id="reponseIDEProcessor" class="ch.vd.unireg.evenement.ide.ReponseIDEProcessorImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
 	</bean>

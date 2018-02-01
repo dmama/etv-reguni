@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.TiersView"--%>
-<%--@elvariable id="data" type="ch.vd.uniregctb.entreprise.TiersView"--%>
-<%--@elvariable id="etablissement" type="ch.vd.uniregctb.entreprise.EtablissementView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.entreprise.TiersView"--%>
+<%--@elvariable id="data" type="ch.vd.unireg.entreprise.TiersView"--%>
+<%--@elvariable id="etablissement" type="ch.vd.unireg.entreprise.EtablissementView"--%>
 
 <c:choose>
 	<c:when test="${command != null}">
@@ -110,7 +110,7 @@
 				</table>
 			</c:if>
 
-			<display:table name="${etablissement.domiciles}" id="domicile" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="${etablissement.domiciles}" id="domicile" requestURI="${page}.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 					<unireg:regdate regdate="${domicile.dateDebut}"/>
 				</display:column>

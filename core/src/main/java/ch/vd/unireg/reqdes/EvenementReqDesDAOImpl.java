@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class EvenementReqDesDAOImpl extends BaseDAOImpl<EvenementReqDes, Long> implements EvenementReqDesDAO {
 

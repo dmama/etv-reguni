@@ -8,7 +8,7 @@
   	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <%--@elvariable id="criteria" type="ch.vd.uniregctb.tiers.view.TiersCriteriaView"--%>
+	    <%--@elvariable id="criteria" type="ch.vd.unireg.tiers.view.TiersCriteriaView"--%>
 	    <form:form method="get" id="formRecherchePP" commandName="criteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
@@ -20,7 +20,7 @@
 			</fieldset>
 		</form:form>
 
-		<display:table name="list" id="row" pagesize="25" requestURI="/registrefoncier/communaute/searchTiers.do" class="display" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="list" id="row" pagesize="25" requestURI="/registrefoncier/communaute/searchTiers.do" class="display" sort="list" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.personne.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.personne.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>

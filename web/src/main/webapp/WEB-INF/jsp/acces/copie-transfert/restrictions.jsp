@@ -6,7 +6,7 @@
 		<display:table
 				name="command.droitsAccesView" id="restriction" pagesize="25" sort="external"
 				requestURI="${url}" partialList="true" size="command.size"
-				class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 		
 			<display:column sortable="false" titleKey="label.type.restriction">
 				<fmt:message key="option.type.droit.acces.${restriction.type}"  />

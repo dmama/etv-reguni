@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.type.TypeContribuable;
 
 /**
  * Classe de base des actions d'annulation de DI

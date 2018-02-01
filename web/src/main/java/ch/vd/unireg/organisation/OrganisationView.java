@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.organisation;
+package ch.vd.unireg.organisation;
 
 import java.io.Serializable;
 
@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  *

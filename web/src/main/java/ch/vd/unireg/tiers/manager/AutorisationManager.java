@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public interface AutorisationManager {
 

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.party.control;
+package ch.vd.unireg.evenement.party.control;
 
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Classe abstraire representant les règles de contrôle sur les tiers composés c'est à dire ménage ou Parent en ménage

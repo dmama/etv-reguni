@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AbstractJobResults;
+import ch.vd.unireg.common.AbstractJobResults;
 
 public class RappelLettresBienvenueResults extends AbstractJobResults<Long, RappelLettresBienvenueResults> {
 

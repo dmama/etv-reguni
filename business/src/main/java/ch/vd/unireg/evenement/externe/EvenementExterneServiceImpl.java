@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,13 +7,13 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationRetournee;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class EvenementExterneServiceImpl implements EvenementExterneService {
 

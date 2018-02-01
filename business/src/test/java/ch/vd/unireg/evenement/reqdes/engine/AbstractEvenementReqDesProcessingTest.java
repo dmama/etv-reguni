@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.engine;
+package ch.vd.unireg.evenement.reqdes.engine;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -6,19 +6,19 @@ import java.util.HashSet;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
-import ch.vd.uniregctb.reqdes.EvenementReqDes;
-import ch.vd.uniregctb.reqdes.EvenementReqDesDAO;
-import ch.vd.uniregctb.reqdes.InformationsActeur;
-import ch.vd.uniregctb.reqdes.ModeInscription;
-import ch.vd.uniregctb.reqdes.PartiePrenante;
-import ch.vd.uniregctb.reqdes.RolePartiePrenante;
-import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
-import ch.vd.uniregctb.reqdes.TypeInscription;
-import ch.vd.uniregctb.reqdes.TypeRole;
-import ch.vd.uniregctb.reqdes.UniteTraitement;
-import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.EvenementReqDes;
+import ch.vd.unireg.reqdes.EvenementReqDesDAO;
+import ch.vd.unireg.reqdes.InformationsActeur;
+import ch.vd.unireg.reqdes.ModeInscription;
+import ch.vd.unireg.reqdes.PartiePrenante;
+import ch.vd.unireg.reqdes.RolePartiePrenante;
+import ch.vd.unireg.reqdes.TransactionImmobiliere;
+import ch.vd.unireg.reqdes.TypeInscription;
+import ch.vd.unireg.reqdes.TypeRole;
+import ch.vd.unireg.reqdes.UniteTraitement;
+import ch.vd.unireg.reqdes.UniteTraitementDAO;
 
 public abstract class AbstractEvenementReqDesProcessingTest extends BusinessTest {
 

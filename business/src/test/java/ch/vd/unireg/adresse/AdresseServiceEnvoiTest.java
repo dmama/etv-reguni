@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.List;
 
@@ -20,24 +20,24 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.ContactImpotSource;
-import ch.vd.uniregctb.tiers.Curatelle;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.ContactImpotSource;
+import ch.vd.unireg.tiers.Curatelle;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.Tutelle;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TexteCasePostale;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

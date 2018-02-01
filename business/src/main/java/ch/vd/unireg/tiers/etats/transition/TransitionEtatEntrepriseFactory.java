@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers.etats.transition;
+package ch.vd.unireg.tiers.etats.transition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 
 /**
  * @author Raphaël Marmier, 2016-01-22, <raphael.marmier@vd.ch>

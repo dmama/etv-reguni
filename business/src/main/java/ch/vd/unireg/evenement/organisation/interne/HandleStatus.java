@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.organisation.interne;
+package ch.vd.unireg.evenement.organisation.interne;
 
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
 
 public enum HandleStatus {
 

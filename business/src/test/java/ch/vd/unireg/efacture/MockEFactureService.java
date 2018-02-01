@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.type.TypeDocument;
 
 /**
  * Toute modification passe par des entités {@link Action} pour simuler le côté asynchrone de certaines communications avec le véritable service,

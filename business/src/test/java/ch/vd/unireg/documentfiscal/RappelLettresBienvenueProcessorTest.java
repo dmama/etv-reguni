@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,14 +12,14 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.type.TypeLettreBienvenue;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeLettreBienvenue;
 
 public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 

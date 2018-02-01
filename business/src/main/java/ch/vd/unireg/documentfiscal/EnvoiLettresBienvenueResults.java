@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -7,8 +7,8 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.type.TypeLettreBienvenue;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.type.TypeLettreBienvenue;
 
 public class EnvoiLettresBienvenueResults extends AbstractJobResults<Long, EnvoiLettresBienvenueResults> {
 

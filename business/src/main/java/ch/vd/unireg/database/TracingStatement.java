@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.stats.ServiceTracing;
+import ch.vd.unireg.stats.ServiceTracing;
 
 public class TracingStatement implements Statement {
 

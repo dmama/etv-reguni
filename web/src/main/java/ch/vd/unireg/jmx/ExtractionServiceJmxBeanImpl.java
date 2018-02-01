@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,9 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.common.TimeHelper;
-import ch.vd.uniregctb.extraction.ExtractionJob;
-import ch.vd.uniregctb.extraction.ExtractionService;
+import ch.vd.unireg.common.TimeHelper;
+import ch.vd.unireg.extraction.ExtractionJob;
+import ch.vd.unireg.extraction.ExtractionService;
 
 /**
  * Implémentation du bean JMX de monitoring des extractions asynchrones

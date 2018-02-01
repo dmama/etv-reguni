@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,8 +10,8 @@ import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.unireg.common.UniregJUnit4Runner;
+import ch.vd.unireg.registrefoncier.EstimationRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

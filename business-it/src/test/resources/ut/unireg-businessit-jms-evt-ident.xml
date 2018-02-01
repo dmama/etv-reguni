@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	                       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="identificationContribuableRequestHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEsbHandler">
+	<bean id="identificationContribuableRequestHandler" class="ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEsbHandler">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="handlers">
 			<util:map>
@@ -15,22 +15,22 @@
 		</property>
 	</bean>
 
-	<bean id="identificationContribuableRequestHandlerV2" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV2">
+	<bean id="identificationContribuableRequestHandlerV2" class="ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV2">
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="identificationContribuableRequestHandlerV3" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV3">
+	<bean id="identificationContribuableRequestHandlerV3" class="ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV3">
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="identificationContribuableRequestHandlerV4" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV4">
+	<bean id="identificationContribuableRequestHandlerV4" class="ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV4">
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="identCtbMessageListenerAutomatique" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="identCtbMessageListenerAutomatique" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="identificationContribuableRequestHandler" />
 		<property name="destinationName" value="${testprop.jms.queue.ident.ctb.input}"/>
 		<property name="concurrentConsumers" value="1"/>

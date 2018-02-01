@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import java.io.InputStream;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamLong;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.Document;
+import ch.vd.unireg.document.DocumentService;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamLong;
 
 /**
  * Job qui charge la contenu de la base de données à partir d'un fichier sur le disque du serveur.

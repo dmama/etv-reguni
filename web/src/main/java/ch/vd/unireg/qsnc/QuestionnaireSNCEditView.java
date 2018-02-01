@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.qsnc;
+package ch.vd.unireg.qsnc;
 
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.view.QuestionnaireSNCView;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 

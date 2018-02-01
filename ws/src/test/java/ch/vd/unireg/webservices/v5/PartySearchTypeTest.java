@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v5;
+package ch.vd.unireg.webservices.v5;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.v3.PartyType;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersCriteria;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

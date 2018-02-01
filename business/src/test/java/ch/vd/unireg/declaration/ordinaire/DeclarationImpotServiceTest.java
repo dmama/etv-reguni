@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire;
+package ch.vd.unireg.declaration.ordinaire;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,67 +23,67 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TicketService;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
-import ch.vd.uniregctb.editique.EditiqueCompositionService;
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
-import ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSender;
-import ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPPSender;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheCriteria;
-import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.ModeleFeuille;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeTache;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TicketService;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationException;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationRetournee;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleDocumentDAO;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor;
+import ch.vd.unireg.declaration.ordinaire.pp.DeterminationDIsPPResults;
+import ch.vd.unireg.declaration.ordinaire.pp.EnvoiDIsPPResults;
+import ch.vd.unireg.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
+import ch.vd.unireg.editique.EditiqueCompositionService;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.evenement.di.EvenementDeclarationPPSender;
+import ch.vd.unireg.evenement.di.MockEvenementDeclarationPPSender;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalService;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tache;
+import ch.vd.unireg.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.unireg.tiers.TacheCriteria;
+import ch.vd.unireg.tiers.TacheDAO;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPP;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.ModeleFeuille;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseRetour;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatTache;
+import ch.vd.unireg.type.TypeTache;
+import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -2329,7 +2329,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "1234");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "1234");
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
@@ -2354,7 +2354,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "1234");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "1234");
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
@@ -2379,7 +2379,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "1234");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "1234");
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
@@ -2404,7 +2404,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "41C");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "41C");
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
@@ -2431,7 +2431,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "23");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "23");
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 

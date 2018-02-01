@@ -2,13 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="decesListController" class="ch.vd.uniregctb.deces.DecesController">
+	<bean id="decesListController" class="ch.vd.unireg.deces.DecesController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="metierService" ref="metierService"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="criteriaValidator">
-			<bean class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator">
+			<bean class="ch.vd.unireg.tiers.validator.TiersCriteriaValidator">
 				<!-- allowsEmpty -->
 				<constructor-arg value="true"/>
 			</bean>
@@ -16,12 +16,12 @@
 		<property name="recapValidator" ref="decesRecapValidator"/>
 	</bean>
 
-	<bean id="decesRecapValidator" class="ch.vd.uniregctb.deces.validator.DecesRecapValidator" >
+	<bean id="decesRecapValidator" class="ch.vd.unireg.deces.validator.DecesRecapValidator" >
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 	</bean>
 
-	<bean id="annulationDecesController" class="ch.vd.uniregctb.annulation.deces.AnnulationDecesController">
+	<bean id="annulationDecesController" class="ch.vd.unireg.annulation.deces.AnnulationDecesController">
 		<property name="validator" ref="tiersCriteriaValidator"/>
 		<property name="manager" ref="annulationDecesRecapManager"/>
 		<property name="tiersService" ref="tiersService"/>
@@ -29,7 +29,7 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	<bean id="annulationDecesRecapManager" class="ch.vd.uniregctb.annulation.deces.manager.AnnulationDecesRecapManagerImpl"  >
+	<bean id="annulationDecesRecapManager" class="ch.vd.unireg.annulation.deces.manager.AnnulationDecesRecapManagerImpl"  >
 		<property name="metierService" ref="metierService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />

@@ -9,7 +9,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class SeatConverter extends RangedToRangeBaseConverter<Integer, Domicile> {
 

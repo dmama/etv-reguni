@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.json;
+package ch.vd.unireg.json;
 
 /**
  * Catégories disponibles pour l'auto-completion des champs d'infrastructures.

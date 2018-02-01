@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.rt.view;
+package ch.vd.unireg.rt.view;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.rapport.SensRapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class RapportPrestationView implements Annulable, DateRange {
 

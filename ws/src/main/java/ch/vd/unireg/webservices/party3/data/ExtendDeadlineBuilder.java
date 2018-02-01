@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.unireg.webservices.party3.data;
 
 import ch.vd.unireg.webservices.party3.ExtendDeadlineCode;
 import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationKey;
-import ch.vd.uniregctb.webservices.party3.exception.ExtendDeadlineError;
+import ch.vd.unireg.webservices.party3.exception.ExtendDeadlineError;
 
 public class ExtendDeadlineBuilder {
 

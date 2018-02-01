@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesMorales;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
+import ch.vd.unireg.type.TypeAdresseRetour;
+import ch.vd.unireg.type.TypeDocument;
 
 public class ImprimerNouvelleDeclarationImpotView {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 
 import static org.junit.Assert.assertEquals;
 

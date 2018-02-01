@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.validation.rapport;
+package ch.vd.unireg.validation.rapport;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 public abstract class RapportEntreTiersValidator<T extends RapportEntreTiers> extends DateRangeEntityValidator<T> {
 

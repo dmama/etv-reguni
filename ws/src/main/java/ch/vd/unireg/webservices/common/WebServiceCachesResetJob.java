@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.unireg.webservices.common;
 
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
 
 public class WebServiceCachesResetJob extends JobDefinition {
 

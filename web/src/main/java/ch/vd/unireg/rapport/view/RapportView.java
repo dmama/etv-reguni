@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport.view;
+package ch.vd.unireg.rapport.view;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,24 +9,24 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.BaseComparator;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
-import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
-import ch.vd.uniregctb.tiers.ActiviteEconomique;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
-import ch.vd.uniregctb.tiers.RepresentationLegale;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.TiersWebHelper;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.BaseComparator;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.rapport.SensRapportEntreTiers;
+import ch.vd.unireg.rapport.TypeRapportEntreTiersWeb;
+import ch.vd.unireg.tiers.ActiviteEconomique;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RepresentationConventionnelle;
+import ch.vd.unireg.tiers.RepresentationLegale;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.TiersWebHelper;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Classe utilisée pour le fromBackingObject du RapportController

@@ -21,7 +21,7 @@
 
 	<c:if test="${not empty command.regimesFiscauxVD}">
 
-		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 20%;">
 				<unireg:regdate regdate="${regimesVD.dateDebut}"/>
 			</display:column>
@@ -70,7 +70,7 @@
 
 	<c:if test="${not empty command.regimesFiscauxCH}">
 
-		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 20%;">
 				<unireg:regdate regdate="${regimesCH.dateDebut}"/>
 			</display:column>

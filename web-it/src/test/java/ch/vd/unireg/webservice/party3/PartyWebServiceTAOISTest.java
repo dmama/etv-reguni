@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.party3;
+package ch.vd.unireg.webservice.party3;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;

@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

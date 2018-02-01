@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.interfaces.model.TypeNoOfs;
+import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.Source;
+import ch.vd.unireg.tiers.Sourced;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class ShowSiegeView implements Sourced<Source>, DateRange, Annulable {
 

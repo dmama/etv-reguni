@@ -13,18 +13,18 @@
 
 	<bean id="globalTiersSearcherRemoting" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.url}/tiersSearcher.remoting" />
-		<property name="serviceInterface" value="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher" />
+		<property name="serviceInterface" value="ch.vd.unireg.indexer.tiers.GlobalTiersSearcher" />
 		<property name="executor" ref="webHttpRequestExecutor" />
 	</bean>
 
-	<bean id="globalTiersSearcherTracing" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherTracing">
+	<bean id="globalTiersSearcherTracing" class="ch.vd.unireg.indexer.tiers.GlobalTiersSearcherTracing">
 		<property name="target" ref="globalTiersSearcherRemoting"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
 	<alias alias="globalTiersSearcher" name="globalTiersSearcherTracing"/>
 
-	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl">
+	<bean id="statsService" class="ch.vd.unireg.stats.StatsServiceImpl">
 		<property name="logPeriode" value="${extprop.stats.log.period}"/>
 	</bean>
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.piunjour;
+package ch.vd.unireg.rattrapage.piunjour;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -33,10 +33,10 @@ import ch.vd.unireg.xml.party.taxresidence.v4.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxationPeriod;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.utils.WebServiceV7Helper;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.utils.WebServiceV7Helper;
+import ch.vd.unireg.xml.DataHelper;
 
 public class Job {
 

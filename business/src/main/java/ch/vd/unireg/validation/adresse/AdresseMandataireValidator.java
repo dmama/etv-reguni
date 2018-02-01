@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.adresse;
+package ch.vd.unireg.validation.adresse;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 public abstract class AdresseMandataireValidator<T extends AdresseMandataire> extends DateRangeEntityValidator<T> {
 

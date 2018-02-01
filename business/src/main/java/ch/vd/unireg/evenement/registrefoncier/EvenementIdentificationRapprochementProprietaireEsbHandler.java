@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +11,15 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
-import ch.vd.uniregctb.evenement.identification.contribuable.XmlEntityAdapter;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.Reponse;
+import ch.vd.unireg.evenement.identification.contribuable.XmlEntityAdapter;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.registrefoncier.RapprochementManuelTiersRFService;
 
 /**
  * Handler qui reçoit les réponses d'identification manuelle des rapprochements propriétaire

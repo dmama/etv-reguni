@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheInterface;
 
 /**
  * Interface implémentée par le service de calcul des statistiques afin de pouvoir aller voir

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,14 +11,14 @@ import ch.vd.capitastra.grundstueck.JuristischePersonstamm;
 import ch.vd.capitastra.grundstueck.NatuerlichePersonstamm;
 import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
+import ch.vd.unireg.common.UniregJUnit4Runner;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.TypeCommunaute;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.changement.conjoint;
+package ch.vd.unireg.evenement.civil.interne.changement.conjoint;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -6,20 +6,20 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class CorrectionConjoint extends EvenementCivilInterne {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb;
+package ch.vd.unireg;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.security.UniregSecurityDetails;
-import ch.vd.uniregctb.utils.UniregProperties;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.security.UniregSecurityDetails;
+import ch.vd.unireg.utils.UniregProperties;
 
 /**
  * Contrôleur de logout. Invalide simplement la session. Ne retourne pas de vue pour éviter que l'appel à une JSP ne provoque l'ouverture d'une autre session vide.

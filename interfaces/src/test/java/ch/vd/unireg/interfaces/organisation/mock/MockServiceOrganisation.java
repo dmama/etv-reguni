@@ -32,7 +32,7 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public abstract class MockServiceOrganisation implements ServiceOrganisationRaw {
 

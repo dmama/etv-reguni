@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresPersonne;
+import ch.vd.unireg.tiers.TiersCriteria;
 
 public abstract class IdentificationContribuableHelper {
 

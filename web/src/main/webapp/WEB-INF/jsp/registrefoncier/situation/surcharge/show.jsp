@@ -6,7 +6,7 @@
 	<tiles:put name="head">
 	</tiles:put>
 
-	<%--@elvariable id="currentSituation" type="ch.vd.uniregctb.registrefoncier.situation.surcharge.SituationFullView"--%>
+	<%--@elvariable id="currentSituation" type="ch.vd.unireg.registrefoncier.situation.surcharge.SituationFullView"--%>
 	<tiles:put name="title">
 		<fmt:message key="title.selection.fraction.commune">
 			<fmt:param>${currentSituation.noParcelle}</fmt:param>
@@ -55,9 +55,9 @@
 		<fieldset class="information">
 			<legend><span><fmt:message key="title.surcharge.fraction" /></span></legend>
 
-			<%--@elvariable id="surcharge" type="ch.vd.uniregctb.registrefoncier.situation.surcharge.SituationSurchargeView"--%>
+			<%--@elvariable id="surcharge" type="ch.vd.unireg.registrefoncier.situation.surcharge.SituationSurchargeView"--%>
 			<%--@elvariable id="mapFaitieresFractions" type="java.util.Map"--%>
-			<%--@elvariable id="fraction" type="ch.vd.uniregctb.tiers.view.CommuneView"--%>
+			<%--@elvariable id="fraction" type="ch.vd.unireg.tiers.view.CommuneView"--%>
 			<form:form method="post" commandName="surcharge" action="show.do${retourParams}" htmlEscape="false">
 				<form:hidden path="situationId"/>
 				<table border="0">
@@ -90,7 +90,7 @@
 			<fieldset class="information">
 				<legend><span><fmt:message key="title.autres.situations" /></span></legend>
 
-				<display:table name="otherSituations" id="situation" class="display_table" requestURI="/registrefoncier/situation/surcharge/list.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				<display:table name="otherSituations" id="situation" class="display_table" requestURI="/registrefoncier/situation/surcharge/list.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 					<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucune.situation.trouve"/></span></display:setProperty>
 					<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.une.situation.trouve"/></span></display:setProperty>
 					<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.situations.trouvees"/></span></display:setProperty>

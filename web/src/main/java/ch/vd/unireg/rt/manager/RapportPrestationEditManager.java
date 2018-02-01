@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.rt.manager;
+package ch.vd.unireg.rt.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.rt.view.DebiteurListView;
-import ch.vd.uniregctb.rt.view.RapportPrestationView;
-import ch.vd.uniregctb.rt.view.SourcierListView;
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.rt.view.DebiteurListView;
+import ch.vd.unireg.rt.view.RapportPrestationView;
+import ch.vd.unireg.rt.view.SourcierListView;
+import ch.vd.unireg.type.Niveau;
 
 public interface RapportPrestationEditManager {
 

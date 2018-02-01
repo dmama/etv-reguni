@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatTache;
 
 /**
  * Action permettant d'annuler une déclaration d'impôt PM créant une tâche d'annulation.

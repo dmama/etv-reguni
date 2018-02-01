@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fourreNeutre;
+package ch.vd.unireg.fourreNeutre;
 
 import java.text.SimpleDateFormat;
 
@@ -12,20 +12,20 @@ import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.editique.ConstantesEditique;
+import ch.vd.unireg.editique.EditiqueAbstractHelperImpl;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiquePrefixeHelper;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.Tiers;
 
 public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionFourreNeutreHelper {
 	private static final String CODE_DOCUMENT_FOURRE_NEUTRE = TypeDocumentEditique.FOURRE_NEUTRE.getCodeDocumentEditique().substring(0, 4);

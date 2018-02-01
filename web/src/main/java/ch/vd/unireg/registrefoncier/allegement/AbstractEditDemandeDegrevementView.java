@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
 
 public abstract class AbstractEditDemandeDegrevementView {
 

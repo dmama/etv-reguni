@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.correction.relation;
+package ch.vd.unireg.evenement.civil.interne.correction.relation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class RelationConjointTest extends WithoutSpringTest {
 

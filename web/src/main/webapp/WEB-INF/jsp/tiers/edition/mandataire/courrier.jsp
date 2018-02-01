@@ -2,8 +2,8 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <%--@elvariable id="idMandant" type="java.lang.Long"--%>
-<%--@elvariable id="mandats" type="java.util.List<ch.vd.uniregctb.mandataire.MandataireCourrierEditView>"--%>
-<%--@elvariable id="accesMandataires" type="ch.vd.uniregctb.mandataire.AccesMandatairesView"--%>
+<%--@elvariable id="mandats" type="java.util.List<ch.vd.unireg.mandataire.MandataireCourrierEditView>"--%>
+<%--@elvariable id="accesMandataires" type="ch.vd.unireg.mandataire.AccesMandatairesView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
@@ -49,7 +49,7 @@
 			</c:if>
 
 			<c:if test="${not empty mandats}">
-				<display:table name="${mandats}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
+				<display:table name="${mandats}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableAnnulableDateRangeDecorator">
 					<display:column titleKey="label.type" style="width: 30ex;">
 						<fmt:message key="option.mandat.type.${courrier.typeMandat}"/>
 						<c:if test="${courrier.libelleGenreImpot != null}">

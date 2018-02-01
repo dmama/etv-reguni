@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.listesnominatives;
+package ch.vd.unireg.listes.listesnominatives;
 
 /**
  * Type d'adresse à fournir dans le batch des listes nominatives

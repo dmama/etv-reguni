@@ -19,7 +19,7 @@
 
 		<!-- Debut liste de tous les rapports -->
 		<c:if test="${not empty command.rapports}">
-			<display:table name="command.rapports" id="rapportPrestation" requestURI="/rapports-prestation/list.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="command.rapports" id="rapportPrestation" requestURI="/rapports-prestation/list.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 				<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 					<unireg:regdate regdate="${rapportPrestation.dateDebut}"/>

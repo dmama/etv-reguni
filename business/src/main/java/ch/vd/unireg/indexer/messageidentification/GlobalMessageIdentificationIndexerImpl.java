@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.messageidentification;
+package ch.vd.unireg.indexer.messageidentification;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,16 +20,16 @@ import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.IndexableData;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.identification.contribuable.IdentCtbDAO;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
+import ch.vd.unireg.indexer.IndexableData;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.utils.LogLevel;
 
 public class GlobalMessageIdentificationIndexerImpl implements GlobalMessageIdentificationIndexer {
 

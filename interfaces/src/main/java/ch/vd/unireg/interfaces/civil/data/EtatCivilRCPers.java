@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.evd0001.v5.MaritalData;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 public class EtatCivilRCPers implements EtatCivil, Serializable {
 

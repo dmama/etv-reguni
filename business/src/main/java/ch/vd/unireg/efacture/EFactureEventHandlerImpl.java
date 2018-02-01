@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -19,18 +19,18 @@ import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeDocument;
 
 public class EFactureEventHandlerImpl implements EFactureEventHandler {
 

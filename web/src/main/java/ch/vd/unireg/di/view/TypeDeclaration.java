@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
+import ch.vd.unireg.type.TypeDocument;
 
 public enum TypeDeclaration {
 

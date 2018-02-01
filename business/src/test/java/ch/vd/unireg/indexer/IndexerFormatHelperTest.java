@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 

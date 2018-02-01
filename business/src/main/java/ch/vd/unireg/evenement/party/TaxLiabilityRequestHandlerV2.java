@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,16 +16,16 @@ import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.evenement.party.control.ControlRuleException;
-import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlEchec;
-import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlResult;
-import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlService;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.evenement.party.control.ControlRuleException;
+import ch.vd.unireg.evenement.party.control.TaxLiabilityControlEchec;
+import ch.vd.unireg.evenement.party.control.TaxLiabilityControlResult;
+import ch.vd.unireg.evenement.party.control.TaxLiabilityControlService;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.xml.ServiceException;
 
 public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest> implements RequestHandlerV1<T> {
 

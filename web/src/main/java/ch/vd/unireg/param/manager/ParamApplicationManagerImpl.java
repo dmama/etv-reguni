@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.param.manager;
+package ch.vd.unireg.param.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.param.view.ParamApplicationView;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.parametrage.ParametreEnum;
+import ch.vd.unireg.param.view.ParamApplicationView;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.parametrage.ParametreEnum;
 
 
 /**
@@ -28,7 +28,7 @@ public class ParamApplicationManagerImpl implements ParamApplicationManager{
 
 
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.param.manager.ParamApplicationManager#reset()
+	 * @see ch.vd.unireg.param.manager.ParamApplicationManager#reset()
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -38,7 +38,7 @@ public class ParamApplicationManagerImpl implements ParamApplicationManager{
 	}
 
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.param.manager.ParamApplicationManager#save(ch.vd.uniregctb.param.view.ParamApplicationForm)
+	 * @see ch.vd.unireg.param.manager.ParamApplicationManager#save(ch.vd.unireg.param.view.ParamApplicationForm)
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -49,7 +49,7 @@ public class ParamApplicationManagerImpl implements ParamApplicationManager{
 	}
 
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.param.manager.ParamApplicationManager#getDefaut(ch.vd.uniregctb.parametrage.ParametreEnum)
+	 * @see ch.vd.unireg.param.manager.ParamApplicationManager#getDefaut(ch.vd.unireg.parametrage.ParametreEnum)
 	 */
 	@Override
 	@Transactional(readOnly = true)

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.changement.sexe;
+package ch.vd.unireg.evenement.civil.interne.changement.sexe;
 
 import java.util.List;
 
@@ -12,12 +12,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.type.Sexe;
 
 public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	private static final long NUMERO_CONTRIBUABLE = 6791L;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.piis;
+package ch.vd.unireg.metier.piis;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,26 +20,26 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
-import ch.vd.uniregctb.metier.common.Fraction;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportPrestationImposable;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
+import ch.vd.unireg.metier.common.Fraction;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportPrestationImposable;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositionImpotSourceService {
 

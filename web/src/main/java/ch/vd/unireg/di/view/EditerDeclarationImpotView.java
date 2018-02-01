@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,19 +13,19 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.declaration.view.DelaiDocumentFiscalView;
-import ch.vd.uniregctb.declaration.view.EtatDocumentFiscalView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationRetournee;
+import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
+import ch.vd.unireg.declaration.view.EtatDocumentFiscalView;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class EditerDeclarationImpotView {
 

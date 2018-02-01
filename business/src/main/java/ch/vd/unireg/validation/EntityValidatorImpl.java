@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;

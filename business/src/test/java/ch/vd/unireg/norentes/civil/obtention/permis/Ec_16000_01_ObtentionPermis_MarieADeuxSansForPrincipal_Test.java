@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.obtention.permis;
+package ch.vd.unireg.norentes.civil.obtention.permis;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Test norentes de l'événement d'obtention d'un permis C sur un membre d'un couple non assujetti

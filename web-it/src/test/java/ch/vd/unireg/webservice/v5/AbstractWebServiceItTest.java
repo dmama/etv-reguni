@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.v5;
+package ch.vd.unireg.webservice.v5;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -26,7 +26,7 @@ import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import ch.vd.uniregctb.common.WebitTest;
+import ch.vd.unireg.common.WebitTest;
 
 public abstract class AbstractWebServiceItTest extends WebitTest {
 

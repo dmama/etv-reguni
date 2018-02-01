@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.util.Iterator;
 

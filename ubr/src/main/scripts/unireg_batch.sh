@@ -15,4 +15,4 @@ while read jar; do
 done < <(find "${basedir}/../lib" -type f -name "*.jar")
 
 #echo "Classpath: $cp"
-$JAVA_HOME/bin/java -cp "$cp" ch.vd.uniregctb.ubr.BatchRunnerApp "$@"
+$JAVA_HOME/bin/java -cp "$cp" ch.vd.unireg.ubr.BatchRunnerApp "$@"

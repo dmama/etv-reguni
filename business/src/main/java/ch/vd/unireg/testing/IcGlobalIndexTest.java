@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.testing;
+package ch.vd.unireg.testing;
 
 import java.util.List;
 
@@ -9,12 +9,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersCriteria;
 
 public class IcGlobalIndexTest extends InContainerTest {
 

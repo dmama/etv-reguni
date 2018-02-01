@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public interface Adresse extends DateRange, AdresseAvecCommune {
 

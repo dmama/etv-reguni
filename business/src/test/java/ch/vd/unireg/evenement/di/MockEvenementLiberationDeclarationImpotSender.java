@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 
 public class MockEvenementLiberationDeclarationImpotSender implements EvenementLiberationDeclarationImpotSender {
 

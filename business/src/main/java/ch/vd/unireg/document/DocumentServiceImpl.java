@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.document;
+package ch.vd.unireg.document;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,8 +24,8 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 
 /**
  * {@inheritDoc}

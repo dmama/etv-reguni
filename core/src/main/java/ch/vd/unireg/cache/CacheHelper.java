@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.cache;
+package ch.vd.unireg.cache;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,8 +24,8 @@ import net.sf.ehcache.Element;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.utils.LogLevel;
 
 /**
  * Ensemble de méthodes disponibles pour la gestion des données en cache

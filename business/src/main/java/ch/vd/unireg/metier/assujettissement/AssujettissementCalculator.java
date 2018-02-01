@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForsParType;
 
 /**
  * Interface de base des calculateurs d'assujettissement par type de contribuable

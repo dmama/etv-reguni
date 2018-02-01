@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import noNamespace.FichierImpressionDocument;
 
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.type.TypeDocument;
 
 public interface ImpressionDocumentEfactureHelper {
 

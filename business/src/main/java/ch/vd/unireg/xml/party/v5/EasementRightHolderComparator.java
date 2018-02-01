@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.util.Comparator;
 import java.util.List;
@@ -8,16 +8,16 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreComparator;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.registrefoncier.CommunauteRFMembreComparator;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * [SIFISC-23957] Comparateur qui permet d'ordonner les membres d'une servitude RF selon les mêmes règles métier qui détermine le leader d'une communauté de propriétaires.
  *
- * @see ch.vd.uniregctb.registrefoncier.CommunauteRFMembreComparator
+ * @see ch.vd.unireg.registrefoncier.CommunauteRFMembreComparator
  */
 public class EasementRightHolderComparator implements Comparator<RightHolder> {
 

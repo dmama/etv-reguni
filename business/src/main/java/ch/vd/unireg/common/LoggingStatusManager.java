@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import org.slf4j.Logger;
 
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.utils.LogLevel;
 
 /**
  * Status manager qui n'interrompt jamais le processus et ne fait que logger les messages.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.perfs;
+package ch.vd.unireg.webservices.party3.perfs;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,8 +26,8 @@ import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.uniregctb.common.ReflexionUtils;
-import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
+import ch.vd.unireg.common.ReflexionUtils;
+import ch.vd.unireg.perfs.PerfsAccessFileIterator;
 
 /**
  * Thread qui exécute un certain nombre de requêtes au web-service, puis s'arrête.

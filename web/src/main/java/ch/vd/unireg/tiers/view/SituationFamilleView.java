@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.TarifImpotSource;
 
 public class SituationFamilleView implements Comparable<SituationFamilleView>, Annulable {
 

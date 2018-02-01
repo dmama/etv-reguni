@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.type.Sexe;
 
 public class SexeComparisonStrategy implements IndividuComparisonStrategy {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -20,9 +20,9 @@ import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.Personstamm;
-import ch.vd.uniregctb.registrefoncier.dataimport.FichierImmeublesRFParser;
-import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl;
+import ch.vd.unireg.registrefoncier.dataimport.FichierImmeublesRFParser;
+import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
+import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRFImpl;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 

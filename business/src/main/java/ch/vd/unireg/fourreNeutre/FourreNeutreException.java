@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fourreNeutre;
+package ch.vd.unireg.fourreNeutre;
 
 public class FourreNeutreException extends Exception {
 

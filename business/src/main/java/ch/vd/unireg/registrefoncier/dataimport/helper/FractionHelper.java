@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Quote;
-import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.Fraction;
 
 public abstract class FractionHelper {
 	private FractionHelper() {

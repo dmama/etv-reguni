@@ -1,21 +1,21 @@
-package ch.vd.uniregctb.registrefoncier.importrf;
+package ch.vd.unireg.registrefoncier.importrf;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
-import ch.vd.uniregctb.supergra.EntityKey;
-import ch.vd.uniregctb.supergra.EntityType;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierImportService;
+import ch.vd.unireg.supergra.EntityKey;
+import ch.vd.unireg.supergra.EntityType;
 
 public class EvenementRFMutationView {
 

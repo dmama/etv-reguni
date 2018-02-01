@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -6,7 +6,7 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import ch.vd.uniregctb.document.Document;
+import ch.vd.unireg.document.Document;
 
 /**
  * Tag jsp permettant d'afficher un icon du document en fonction de son type et de le télécharger

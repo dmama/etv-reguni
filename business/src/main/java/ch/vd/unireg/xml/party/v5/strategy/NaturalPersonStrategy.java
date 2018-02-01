@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5.strategy;
+package ch.vd.unireg.xml.party.v5.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,33 +45,33 @@ import ch.vd.unireg.xml.party.person.v5.ResidencyPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ExceptionHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v5.EasementRightHolderComparator;
-import ch.vd.uniregctb.xml.party.v5.LandRightBuilder;
-import ch.vd.uniregctb.xml.party.v5.ResidencyPeriodBuilder;
-import ch.vd.uniregctb.xml.party.v5.WithholdingTaxationPeriodBuilder;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.DroitRFRangeMetierComparator;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.IdentificationPersonne;
+import ch.vd.unireg.tiers.IndividuNotFoundException;
+import ch.vd.unireg.tiers.OriginePersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ExceptionHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
+import ch.vd.unireg.xml.party.v5.LandRightBuilder;
+import ch.vd.unireg.xml.party.v5.ResidencyPeriodBuilder;
+import ch.vd.unireg.xml.party.v5.WithholdingTaxationPeriodBuilder;
 
 @SuppressWarnings("Duplicates")
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ch.vd.uniregctb.xml.party.v3.strategy.NaturalPersonStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ch.vd.unireg.xml.party.v3.strategy.NaturalPersonStrategy.class);
 	private static final String CH_AHV = "CH.AHV"; // voir spécification eCH-0044
 	private static final String CH_ZAR = "CH.ZAR";
 

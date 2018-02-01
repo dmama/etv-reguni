@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
-import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
+import ch.vd.unireg.tiers.DonneeCivileEntreprise;
 
 /**
  * Juste histoire de structurer un peu

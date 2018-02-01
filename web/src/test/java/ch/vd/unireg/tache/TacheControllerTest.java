@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +11,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.common.WebMockMvcTest;
-import ch.vd.uniregctb.tache.view.NouveauDossierListView;
-import ch.vd.uniregctb.tache.view.TacheListView;
+import ch.vd.unireg.common.WebMockMvcTest;
+import ch.vd.unireg.tache.view.NouveauDossierListView;
+import ch.vd.unireg.tache.view.TacheListView;
 
 public class TacheControllerTest extends WebMockMvcTest {
 

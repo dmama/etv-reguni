@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.lr.view.ListeRecapitulativeDetailView;
+import ch.vd.unireg.lr.view.ListeRecapitulativeDetailView;
 
 /**
  * Service qui fournit les methodes pour visualiser une liste recapitulative

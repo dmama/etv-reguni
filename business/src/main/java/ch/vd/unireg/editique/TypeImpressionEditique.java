@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 /**
  * Différents types d'impressions associés aux documents éditique

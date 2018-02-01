@@ -13,8 +13,8 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesREE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.UniregJUnit4Runner;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 import static ch.vd.unireg.interfaces.civil.data.IndividuRCPersTest.assertAdresse;
 import static org.junit.Assert.assertEquals;

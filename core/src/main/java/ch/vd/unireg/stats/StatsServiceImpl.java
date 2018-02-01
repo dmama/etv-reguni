@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,9 +27,9 @@ import ch.vd.registre.asciiart.table.Options;
 import ch.vd.registre.asciiart.table.Row;
 import ch.vd.registre.asciiart.table.Table;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.common.TimeHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.common.TimeHelper;
 
 public class StatsServiceImpl implements InitializingBean, DisposableBean, StatsService, StatsExposureInterface {
 

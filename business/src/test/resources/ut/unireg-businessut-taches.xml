@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<!-- Override du tache service défini dans unireg-businessut-service.xml pour quand même avec une implémentation complète du service -->
-	<bean id="tacheService" class="ch.vd.uniregctb.tache.TacheServiceImpl">
+	<bean id="tacheService" class="ch.vd.unireg.tache.TacheServiceImpl">
 		<property name="tacheDAO" ref="tacheDAO" />
 		<property name="diDAO" ref="diDAO" />
 		<property name="questionnaireSNCDAO" ref="questionnaireSNCDAO"/>

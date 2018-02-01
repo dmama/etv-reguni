@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.correction.adresse;
+package ch.vd.unireg.norentes.civil.correction.adresse;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 public class Ec_43000_01_CorrectionAdresse_MemeCommune_Test extends NorentesTest {
 

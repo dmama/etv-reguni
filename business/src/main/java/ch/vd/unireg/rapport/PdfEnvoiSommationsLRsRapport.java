@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
@@ -7,9 +7,9 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.declaration.source.EnvoiSommationLRsResults;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.

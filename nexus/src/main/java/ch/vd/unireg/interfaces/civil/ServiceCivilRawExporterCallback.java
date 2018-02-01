@@ -3,7 +3,7 @@ package ch.vd.unireg.interfaces.civil;
 import java.util.Map;
 
 import ch.vd.unireg.servlet.remoting.HttpInvokerServiceExporterWithCustomHeaderCallback;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilLogger;
+import ch.vd.unireg.interfaces.service.ServiceCivilLogger;
 
 public class ServiceCivilRawExporterCallback implements HttpInvokerServiceExporterWithCustomHeaderCallback {
 

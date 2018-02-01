@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <%--@elvariable id="idDebiteur" type="java.lang.Long"--%>
-<%--@elvariable id="listesRecapitulatives" type="java.util.List<ch.vd.uniregctb.lr.view.ListeRecapitulativeView>"--%>
+<%--@elvariable id="listesRecapitulatives" type="java.util.List<ch.vd.unireg.lr.view.ListeRecapitulativeView>"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.edition.lrs.debiteur" /></tiles:put>
@@ -34,7 +34,7 @@
 			</table>
 
 			<c:if test="${not empty listesRecapitulatives}">
-				<display:table name="listesRecapitulatives" id="lr" pagesize="10" requestURI="edit-debiteur.do" class="display" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				<display:table name="listesRecapitulatives" id="lr" pagesize="10" requestURI="edit-debiteur.do" class="display" sort="list" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 					<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.lr.trouvee" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.lr.trouvee" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.lrs.trouvees" /></span></display:setProperty>

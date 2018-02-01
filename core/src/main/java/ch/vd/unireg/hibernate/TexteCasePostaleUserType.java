@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.unireg.type.TexteCasePostale;
 
 /**
  * Classe de transtypage pour Hibernate : TexteCasePostale <--> varchar

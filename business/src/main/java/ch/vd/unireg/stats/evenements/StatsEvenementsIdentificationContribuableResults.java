@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats.evenements;
+package ch.vd.unireg.stats.evenements;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.type.Sexe;
 
 public class StatsEvenementsIdentificationContribuableResults {
 

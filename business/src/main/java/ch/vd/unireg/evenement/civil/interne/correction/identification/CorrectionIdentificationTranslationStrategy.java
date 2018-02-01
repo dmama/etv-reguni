@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.evenement.civil.interne.correction.identification;
+package ch.vd.unireg.evenement.civil.interne.correction.identification;
 
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
-import ch.vd.uniregctb.evenement.civil.interne.changement.dateNaissance.CorrectionDateNaissance;
-import ch.vd.uniregctb.evenement.civil.interne.changement.identificateur.AnnulationIdentificateur;
-import ch.vd.uniregctb.evenement.civil.interne.changement.identificateur.ChangementIdentificateur;
-import ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNom;
-import ch.vd.uniregctb.evenement.civil.interne.changement.sexe.ChangementSexe;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterneComposite;
+import ch.vd.unireg.evenement.civil.interne.changement.dateNaissance.CorrectionDateNaissance;
+import ch.vd.unireg.evenement.civil.interne.changement.identificateur.AnnulationIdentificateur;
+import ch.vd.unireg.evenement.civil.interne.changement.identificateur.ChangementIdentificateur;
+import ch.vd.unireg.evenement.civil.interne.changement.nom.ChangementNom;
+import ch.vd.unireg.evenement.civil.interne.changement.sexe.ChangementSexe;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
 
 public class CorrectionIdentificationTranslationStrategy implements EvenementCivilEchTranslationStrategy {
 

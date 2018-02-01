@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TacheEnvoiQuestionnaireSNC;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatTache;
 
 /**
  * Action de synchronization pour l'ajout d'un nouveau questionnaire SNC

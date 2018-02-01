@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migreg;
+package ch.vd.unireg.migreg;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
+import ch.vd.unireg.common.CoreDAOTest;
 
 public class MigrationErrorDAOTest extends CoreDAOTest {
 

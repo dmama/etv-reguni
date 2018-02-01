@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.civil.depart;
+package ch.vd.unireg.norentes.civil.depart;
 
 import java.util.Collection;
 
@@ -8,8 +8,8 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.norentes.common.EvenementCivilScenario;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public abstract class DepartScenario extends EvenementCivilScenario {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.appariement;
+package ch.vd.unireg.tiers.rattrapage.appariement;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -19,14 +19,14 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Processeur d'appariement d'établissements secondaires

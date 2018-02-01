@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -21,9 +21,9 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  *
@@ -81,7 +81,7 @@ public abstract class EvenementExterne extends HibernateEntity {
 	 * @return the message
 	 */
 	@Column(name = "MESSAGE")
-	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
+	@Type(type = "ch.vd.unireg.hibernate.StringAsClobUserType")
 	public String getMessage() {
 		return message;
 	}
@@ -117,7 +117,7 @@ public abstract class EvenementExterne extends HibernateEntity {
 	 * @return the etat
 	 */
 	@Column(name = "ETAT", length = LengthConstants.EVTEXTERNE_ETAT)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeEtatEvenementUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeEtatEvenementUserType")
 	public EtatEvenementExterne getEtat() {
 		return etat;
 	}

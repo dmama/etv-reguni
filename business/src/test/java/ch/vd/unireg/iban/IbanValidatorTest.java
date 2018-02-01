@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.iban;
+package ch.vd.unireg.iban;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.unireg.common.BusinessTest;
 
 public class IbanValidatorTest extends BusinessTest {
 

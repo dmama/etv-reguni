@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.civil.arrivee;
+package ch.vd.unireg.norentes.civil.arrivee;
 
 import java.util.Set;
 
@@ -9,19 +9,19 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
-import ch.vd.uniregctb.norentes.annotation.Check;
-import ch.vd.uniregctb.norentes.annotation.Etape;
-import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreur;
+import ch.vd.unireg.norentes.annotation.Check;
+import ch.vd.unireg.norentes.annotation.Etape;
+import ch.vd.unireg.norentes.common.EvenementCivilScenario;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
+import ch.vd.unireg.type.TypePermis;
 
 /**
  * Scénario qui teste l'arrivée l'une personne mariée seule, alors qu'elle existe déjà dans le registre comme composant d'un ménage actif
@@ -58,7 +58,7 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 	private long evenementId;
 
 	/**
-	 * @see ch.vd.uniregctb.norentes.common.EvenementCivilScenario#initServiceCivil()
+	 * @see ch.vd.unireg.norentes.common.EvenementCivilScenario#initServiceCivil()
 	 */
 	@Override
 	protected void initServiceCivil() {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
@@ -68,107 +68,107 @@ import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdresseSupplementaire;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.EntityKey;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.FiscalDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.GentilComparator;
-import ch.vd.uniregctb.common.GentilDateRangeExtendedAdapterCallback;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.LiteralStringHelper;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.common.NationaliteHelper;
-import ch.vd.uniregctb.common.NumeroIDEHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.Rerangeable;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.ide.ServiceIDEService;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
-import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
-import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.situationfamille.VueSituationFamille;
-import ch.vd.uniregctb.tache.TacheService;
-import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
-import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
-import ch.vd.uniregctb.tiers.etats.TransitionEtatEntrepriseService;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.CategorieIdentifiant;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.PeriodeDecompte;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.StatutMenageCommun;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
-import ch.vd.uniregctb.type.TypeMandat;
-import ch.vd.uniregctb.type.TypePermis;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
-import ch.vd.uniregctb.validation.ValidationService;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdresseSupplementaire;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.EntityKey;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.FiscalDateHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.GentilComparator;
+import ch.vd.unireg.common.GentilDateRangeExtendedAdapterCallback;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.LiteralStringHelper;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.common.NationaliteHelper;
+import ch.vd.unireg.common.NumeroIDEHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.Rerangeable;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.evenement.ide.ServiceIDEService;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationErreur;
+import ch.vd.unireg.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.model.AdressesCiviles;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.bouclement.BouclementService;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
+import ch.vd.unireg.parentes.ParenteUpdateInfo;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.situationfamille.VueSituationFamille;
+import ch.vd.unireg.tache.TacheService;
+import ch.vd.unireg.tiers.Contribuable.FirstForsList;
+import ch.vd.unireg.tiers.dao.RemarqueDAO;
+import ch.vd.unireg.tiers.etats.TransitionEtatEntrepriseService;
+import ch.vd.unireg.tiers.etats.transition.TransitionEtatEntreprise;
+import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
+import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.CategorieIdentifiant;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.PeriodeDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.StatutMenageCommun;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeEvenementErreur;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.type.TypeMandat;
+import ch.vd.unireg.type.TypePermis;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.validation.ValidationInterceptor;
+import ch.vd.unireg.validation.ValidationService;
+import ch.vd.unireg.xml.DataHelper;
 
 /**
  * Service de recherche des tiers. Effectue conjointement la recherche en base et dans le moteur de recherche.
@@ -866,7 +866,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
     /* (non-Javadoc)
-	 * @see ch.vd.uniregctb.tiers.TiersService#changeNHenMenage(long)
+	 * @see ch.vd.unireg.tiers.TiersService#changeNHenMenage(long)
 	 */
     // ATTENTION: cette fonction ne doit être appelée que si c'est STRICTEMENT nécessaire!!!
     @Override
@@ -1821,8 +1821,8 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes morales
-	 * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesMorales, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
-	 * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, GenreImpot)}
+	 * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesMorales, ch.vd.registre.base.date.RegDate, ch.vd.unireg.type.MotifFor,
+	 * ch.vd.registre.base.date.RegDate, ch.vd.unireg.type.MotifFor, ch.vd.unireg.type.MotifRattachement, int, ch.vd.unireg.type.TypeAutoriteFiscale, GenreImpot)}
 	 *
 	 *
 	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
@@ -5217,7 +5217,7 @@ public class TiersServiceImpl implements TiersService {
      * @param periode une période
      * @return <b>vrai</b> si le contribuable possède au moins un for actif pendant la période spécifiée; <b>faux</b> autrement.
      */
-    public static boolean isForActifSurPeriode(final ch.vd.uniregctb.tiers.Contribuable ctb, final DateRangeHelper.Range periode) {
+    public static boolean isForActifSurPeriode(final ch.vd.unireg.tiers.Contribuable ctb, final DateRangeHelper.Range periode) {
 
         for (ForFiscal f : ctb.getForsFiscaux()) {
             if (DateRangeHelper.intersect(f, periode) && !f.isAnnule()) {

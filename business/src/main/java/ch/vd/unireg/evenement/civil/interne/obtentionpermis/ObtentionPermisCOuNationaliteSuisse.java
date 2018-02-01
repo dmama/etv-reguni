@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
+package ch.vd.unireg.evenement.civil.interne.obtentionpermis;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -8,33 +8,33 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.FiscalDateHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.metier.common.DecalageDateHelper;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.FiscalDateHelper;
+import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
+import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.metier.common.DecalageDateHelper;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
  * Règles métiers permettant de traiter les événements suivants :

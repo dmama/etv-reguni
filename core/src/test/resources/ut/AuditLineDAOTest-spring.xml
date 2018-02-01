@@ -8,7 +8,7 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="auditLineDAOTestService" class="ch.vd.uniregctb.audit.AuditLineDAOTestServiceImpl">
+	<bean id="auditLineDAOTestService" class="ch.vd.unireg.audit.AuditLineDAOTestServiceImpl">
 	</bean>
 
 </beans>

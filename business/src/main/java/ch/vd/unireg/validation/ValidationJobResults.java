@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,12 +9,12 @@ import java.util.Set;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.TypeTiers;
 
 /**
  * Contient les données brutes permettant de générer le rapport de l'exécution de la validation des tiers.

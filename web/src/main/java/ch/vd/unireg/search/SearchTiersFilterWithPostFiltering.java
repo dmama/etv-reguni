@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.search;
+package ch.vd.unireg.search;
 
 import java.util.List;
 
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 
 public interface SearchTiersFilterWithPostFiltering extends SearchTiersFilter {
 

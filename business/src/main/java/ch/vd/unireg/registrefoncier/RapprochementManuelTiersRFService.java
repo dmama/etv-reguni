@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Service qui expose les méthodes utilisées dans le cadre des rapprochements manuels entre les tiers RF

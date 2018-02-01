@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.registrefoncier.situation.surcharge;
+package ch.vd.unireg.registrefoncier.situation.surcharge;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.registrefoncier.CapitastraURLProvider;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.tiers.view.CommuneView;
+import ch.vd.unireg.registrefoncier.CapitastraURLProvider;
+import ch.vd.unireg.registrefoncier.SituationRF;
+import ch.vd.unireg.tiers.view.CommuneView;
 
 /**
  * Vue détaillée d'une situation d'un immeuble.

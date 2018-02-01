@@ -2,21 +2,21 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="scheduler" class="ch.vd.uniregctb.scheduler.OverrideSchedulerFactoryBean">
+	<bean id="scheduler" class="ch.vd.unireg.scheduler.OverrideSchedulerFactoryBean">
 		<property name="schedulerName" value="schedulerQuartz" />
 	</bean>
 
-	<bean id="batchScheduler" class="ch.vd.uniregctb.scheduler.BatchSchedulerImpl">
+	<bean id="batchScheduler" class="ch.vd.unireg.scheduler.BatchSchedulerImpl">
 		<property name="scheduler" ref="scheduler" />
 		<property name="timeoutOnStopAll" value="5" />		<!-- minutes d'attente max dans l'appel à stopAllRunningJobs() -->
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="cronTab" class="ch.vd.uniregctb.scheduler.CronTab">
+	<bean id="cronTab" class="ch.vd.unireg.scheduler.CronTab">
 		<property name="scheduler" ref="batchScheduler"/>
 		<property name="definitions" >
 			<list>
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="wsCacheResetJob"/>
 					<!-- reset le cache des web-services à 0h01 le 1er janvier de chaque année -->
 					<property name="cronExpression" value="${extprop.crontab.ws.cache.reset}"/>

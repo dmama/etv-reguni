@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.iban.IbanHelper;
+import ch.vd.unireg.iban.IbanHelper;
 
 @SuppressWarnings("UnusedDeclaration")
 public class CompteBancaireView implements DateRange {

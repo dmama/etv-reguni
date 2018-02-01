@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,23 +20,23 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.GentilIterator;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
-import ch.vd.uniregctb.stats.evenements.StatistiqueEvenementInfo;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsOrganisationsResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsPersonnesResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsNotairesResults;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.CsvHelper;
+import ch.vd.unireg.common.GentilIterator;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.evenement.externe.EtatEvenementExterne;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.stats.evenements.StatistiqueEvenementInfo;
+import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsOrganisationsResults;
+import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsPersonnesResults;
+import ch.vd.unireg.stats.evenements.StatsEvenementsExternesResults;
+import ch.vd.unireg.stats.evenements.StatsEvenementsIdentificationContribuableResults;
+import ch.vd.unireg.stats.evenements.StatsEvenementsNotairesResults;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 /**
  * Rapport des statistiques des événements reçus par Unireg

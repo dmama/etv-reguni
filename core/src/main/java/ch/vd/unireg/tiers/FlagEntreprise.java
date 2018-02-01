@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,12 +17,12 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
 
 /**
  * Une durée de validité (depuis une année jusqu'à une autre, cette dernière étant optionnelle)

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.Set;
 
@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
 
 public interface ModeleCommunauteRFDAO extends GenericDAO<ModeleCommunauteRF, Long> {
 

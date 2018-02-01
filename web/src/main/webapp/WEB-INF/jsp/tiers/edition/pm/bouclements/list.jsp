@@ -11,7 +11,7 @@
 			<legend><span><fmt:message key="label.exercices.commerciaux" /></span></legend>
 
 			<c:if test="${not empty exercices}">
-				<display:table name="exercices" id="ex" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/exercices/list.do">
+				<display:table name="exercices" id="ex" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" requestURI="/exercices/list.do">
 					<display:column titleKey="label.date.debut" style="width: 50%;">
 						<c:choose>
 							<c:when test="${ex.first}">

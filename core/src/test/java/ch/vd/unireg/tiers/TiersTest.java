@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.HashSet;
 import java.util.List;
@@ -9,19 +9,19 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.mouvement.EnvoiDossier;
-import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.mouvement.EnvoiDossier;
+import ch.vd.unireg.mouvement.EnvoiDossierVersCollaborateur;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,15 +17,15 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public abstract class RolePopulationExtractorImpl<T extends Contribuable> implements RolePopulationExtractor<T> {
 

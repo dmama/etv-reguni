@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import java.util.List;
 
@@ -18,18 +18,18 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.view.AdresseView;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.view.AdresseView;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 @SuppressWarnings({"JavaDoc"})
 public class TiersAdresseValidatorTest extends WebTest {

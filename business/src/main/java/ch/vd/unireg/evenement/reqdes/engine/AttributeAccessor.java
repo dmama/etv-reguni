@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.reqdes.engine;
+package ch.vd.unireg.evenement.reqdes.engine;
 
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 /**
  * Interface de base d'un accesseur de valeur d'attribut sur une personne physique

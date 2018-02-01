@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.springframework.web.util.HtmlUtils;
 
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
 
 public class JspTagMultiline extends BodyTagSupport {
 

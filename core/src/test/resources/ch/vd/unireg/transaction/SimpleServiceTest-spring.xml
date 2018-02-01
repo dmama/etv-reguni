@@ -8,15 +8,15 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-	<bean id="simpleDAO" class="ch.vd.uniregctb.transaction.dao.SimpleDao">
+	<bean id="simpleDAO" class="ch.vd.unireg.transaction.dao.SimpleDao">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
-	<bean id="service1" class="ch.vd.uniregctb.transaction.impl.SimpleService1Impl">
+	<bean id="service1" class="ch.vd.unireg.transaction.impl.SimpleService1Impl">
 		<property name="dao" ref="simpleDAO" />
 	</bean>
 
-	<bean id="service2" class="ch.vd.uniregctb.transaction.impl.SimpleService2Impl">
+	<bean id="service2" class="ch.vd.unireg.transaction.impl.SimpleService2Impl">
 		<property name="dao" ref="simpleDAO" />
 		<property name="service" ref="service1" />
 	</bean>

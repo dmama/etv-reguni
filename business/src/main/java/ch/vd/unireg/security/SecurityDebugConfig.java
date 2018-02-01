@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.EncodingFixHelper;
-import ch.vd.uniregctb.utils.UniregProperties;
+import ch.vd.unireg.common.EncodingFixHelper;
+import ch.vd.unireg.utils.UniregProperties;
 
 /**
  * Permet de récupérer les informations de debug liées à la sécurité. Ces informations doivent être stockées dans un fichier properties.

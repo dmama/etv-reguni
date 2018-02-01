@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.tiers.TiersService;
 
 public abstract class TachesResults<E, R extends JobResults<E, R>> extends JobResults<E, R> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.communaute;
+package ch.vd.unireg.registrefoncier.communaute;
 
 import java.util.List;
 
@@ -8,8 +8,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.registrefoncier.allegement.AbstractEditDegrevementViewValidator;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.registrefoncier.allegement.AbstractEditDegrevementViewValidator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

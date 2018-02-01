@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 /**
  * Enumération du niveau d'association avec le registre civil d'une entreprise.

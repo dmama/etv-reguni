@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Assert;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.unireg.common.BusinessTest;
 
 public abstract class AbstractIndividuComparisonStrategyTest extends BusinessTest {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rt;
+package ch.vd.unireg.rt;
 
 import java.util.Map;
 

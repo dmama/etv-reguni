@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.Comparator;
 import java.util.List;
@@ -12,13 +12,13 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * [SIFISC-23747] Comparateur qui permet d'ordonner les membres d'une communauté RF selon les règles métier qui détermine le leader de la communauté. Le leader de la communauté est le premier membre de la liste triée.

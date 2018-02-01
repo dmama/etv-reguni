@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.List;
 
@@ -11,11 +11,11 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 
 /**
  * Processor qui applique la date limite d'exclusion à tous les contribuables spécifiés par leur numéros, et génère un rapport.

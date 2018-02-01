@@ -3,7 +3,7 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="localiteInvalideMatcherService" class="ch.vd.uniregctb.adresse.LocaliteInvalideMatcherServiceImpl">
+	<bean id="localiteInvalideMatcherService" class="ch.vd.unireg.adresse.LocaliteInvalideMatcherServiceImpl">
 		<property name="enabled" value="${testprop.localite.invalide.regexp.enabled}" />
 		<property name="localitesInvalides" value="${testprop.localite.invalide.regexp.patterns}" />
 		<property name="fauxPositifs" value="${testprop.localite.invalide.regexp.faux.positifs}" />

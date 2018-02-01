@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="statusController" class="ch.vd.uniregctb.admin.status.StatusController">
+	<bean id="statusController" class="ch.vd.unireg.admin.status.StatusController">
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="identSearcher" ref="globalMessageIdentificationSearcher"/>
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -17,15 +17,15 @@
 		<property name="serviceEFactureChecker" ref="serviceEFactureChecker" />
 	</bean>
 
-	<bean id="autoCompleteInfraController" class="ch.vd.uniregctb.json.AutoCompleteInfraController">
+	<bean id="autoCompleteInfraController" class="ch.vd.unireg.json.AutoCompleteInfraController">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="autoCompleteSecurityController" class="ch.vd.uniregctb.json.AutoCompleteSecurityController">
+	<bean id="autoCompleteSecurityController" class="ch.vd.unireg.json.AutoCompleteSecurityController">
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 	</bean>
 
-	<bean id="infoIFOSecController" class="ch.vd.uniregctb.admin.InfoIFOSecController">
+	<bean id="infoIFOSecController" class="ch.vd.unireg.admin.InfoIFOSecController">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="ifoSecService" ref="ifoSecService" />
 	</bean>

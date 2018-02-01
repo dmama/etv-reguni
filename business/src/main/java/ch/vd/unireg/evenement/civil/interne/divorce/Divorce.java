@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.evenement.civil.interne.divorce;
+package ch.vd.unireg.evenement.civil.interne.divorce;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.separation.SeparationOuDivorce;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.interne.separation.SeparationOuDivorce;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 
 /**
  * Adapter pour le divorce.

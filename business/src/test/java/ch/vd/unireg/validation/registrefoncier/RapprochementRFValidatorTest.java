@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -7,13 +7,13 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeRapprochementRF;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class RapprochementRFValidatorTest extends AbstractValidatorTest<RapprochementRF> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -13,20 +13,20 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.JobTest;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.editique.batch.EditiqueListeRecapJob;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.common.JobTest;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.editique.batch.EditiqueListeRecapJob;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 
 @SuppressWarnings({"JavaDoc"})
 public class EditiqueListeRecapJobTest extends JobTest {
 
-	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/editique/ListeRecapJobTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/unireg/editique/ListeRecapJobTest.xml";
 
 	private BatchScheduler batchScheduler;
 	private TiersDAO tiersDAO;

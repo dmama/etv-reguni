@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 @Entity
 @DiscriminatorValue(value = "IMPRESSION_FOURRE_NEUTRE")

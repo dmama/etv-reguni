@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.time.Duration;
 
@@ -26,7 +26,7 @@ public interface TicketService {
 	 * @param key key identifying the action to get a ticket for
 	 * @param timeout maximal time to wait for the ticket (<code>null</code> means "wait forever if necessary", 0 or negative means "do not wait")
 	 * @return a ticket granting access to the action identified by the given key
-	 * @throws ch.vd.uniregctb.common.TicketTimeoutException if no access could be granted in the given timeframe
+	 * @throws ch.vd.unireg.common.TicketTimeoutException if no access could be granted in the given timeframe
 	 * @throws java.lang.InterruptedException in case the thread is interrupted during wait
 	 * @throws java.lang.NullPointerException if the key is <code>null</code>
 	 */

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 class DemandeAvecHistoBuilderForUnitTests extends DemandeBuilderForUnitTests {
 

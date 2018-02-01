@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 /**
  * Exception dénotant une erreur de logique dans l'exécution d'un programme.

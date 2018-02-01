@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.tache.validator;
+package ch.vd.unireg.tache.validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tache.view.TacheCriteriaView;
-import ch.vd.uniregctb.utils.ValidatorUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.tache.view.TacheCriteriaView;
+import ch.vd.unireg.utils.ValidatorUtils;
 
 public class TacheListValidator implements Validator {
 

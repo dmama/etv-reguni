@@ -21,7 +21,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Quelques méthodes pratiques d'interprétation des données dans le cadre des organisations

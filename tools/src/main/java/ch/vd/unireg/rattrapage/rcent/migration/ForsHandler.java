@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.rcent.migration;
+package ch.vd.unireg.rattrapage.rcent.migration;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -9,10 +9,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * INFO;8226;Inactive;CHE104488701;101448657;For principal COMMUNE_OU_FRACTION_VD/5561 [28.12.1987 -> 23.11.1999] généré.

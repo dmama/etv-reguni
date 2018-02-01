@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.ech.view;
+package ch.vd.unireg.evenement.ech.view;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.common.view.EvenementCivilCriteriaView;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.evenement.common.view.EvenementCivilCriteriaView;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView<TypeEvenementCivilEch> {
 

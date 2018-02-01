@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.HttpDocumentFetcher;
-import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
-import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
-import ch.vd.uniregctb.servlet.ServletService;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.HttpDocumentFetcher;
+import ch.vd.unireg.common.MimeTypeHelper;
+import ch.vd.unireg.identification.contribuable.manager.IdentificationMessagesEditManager;
+import ch.vd.unireg.identification.contribuable.view.DemandeIdentificationView;
+import ch.vd.unireg.servlet.ServletService;
 
 @Controller
 @RequestMapping(value = "/identification/gestion-messages")

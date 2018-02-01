@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 

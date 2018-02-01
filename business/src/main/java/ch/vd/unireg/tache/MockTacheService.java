@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -8,14 +8,14 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.tache.sync.SynchronizeAction;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.tache.sync.SynchronizeAction;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.TypeTache;
 
 /**
  * Implémentation du tâche service qui ne fait absolument rien.

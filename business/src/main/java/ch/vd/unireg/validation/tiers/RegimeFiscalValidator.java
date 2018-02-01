@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,10 +12,10 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalServiceException;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalServiceException;
+import ch.vd.unireg.tiers.RegimeFiscal;
 
 public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal> {
 

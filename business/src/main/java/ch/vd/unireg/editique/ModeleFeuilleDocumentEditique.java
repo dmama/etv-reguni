@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.type.ModeleFeuille;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.type.ModeleFeuille;
 
 public class ModeleFeuilleDocumentEditique {
 

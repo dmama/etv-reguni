@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.complements.ComplementsEditCommunicationsValidator;
-import ch.vd.uniregctb.complements.ComplementsEditCoordonneesFinancieresValidator;
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.tiers.view.CreateNonHabitantView;
+import ch.vd.unireg.complements.ComplementsEditCommunicationsValidator;
+import ch.vd.unireg.complements.ComplementsEditCoordonneesFinancieresValidator;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.tiers.view.CreateNonHabitantView;
 
 public class CreateNonHabitantViewValidator implements Validator {
 

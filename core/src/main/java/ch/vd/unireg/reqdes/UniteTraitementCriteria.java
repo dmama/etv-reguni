@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 import ch.vd.registre.base.date.RegDate;
 

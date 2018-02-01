@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction.impl;
+package ch.vd.unireg.transaction.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,7 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.transaction.dao.SimpleDao;
+import ch.vd.unireg.transaction.dao.SimpleDao;
 
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 public class SimpleServiceImpl {

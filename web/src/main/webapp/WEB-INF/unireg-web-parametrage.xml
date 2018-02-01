@@ -6,16 +6,16 @@
 		Configuration des beans pour : Paramètre d'application 
 	 -->
 
-	<bean id="paramApplicationManager" class="ch.vd.uniregctb.param.manager.ParamApplicationManagerImpl">
+	<bean id="paramApplicationManager" class="ch.vd.unireg.param.manager.ParamApplicationManagerImpl">
 		<property name="service" ref="parametreAppService" />
 	</bean>
 
-	<bean id="paramApplicationController"  class="ch.vd.uniregctb.param.ParamApplicationController">
+	<bean id="paramApplicationController"  class="ch.vd.unireg.param.ParamApplicationController">
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
 		<property name="validator" ref="paramApplicationValidator" />
 	</bean>
 
-	<bean id="paramApplicationValidator" class="ch.vd.uniregctb.param.validator.ParamApplicationValidator">
+	<bean id="paramApplicationValidator" class="ch.vd.unireg.param.validator.ParamApplicationValidator">
 	</bean>
 
 
@@ -24,7 +24,7 @@
 	 -->
 
 	<!--  Le manager -->
-	<bean id="paramPeriodeManager" class="ch.vd.uniregctb.param.manager.ParamPeriodeManagerImpl">
+	<bean id="paramPeriodeManager" class="ch.vd.unireg.param.manager.ParamPeriodeManagerImpl">
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
 		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO" />
@@ -33,19 +33,19 @@
 	</bean>
 
 	<!-- Les validators -->
-	<bean id="parametrePeriodeFiscalePPValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscalePPValidator" />
-	<bean id="parametrePeriodeFiscalePMValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscalePMValidator" />
-	<bean id="parametrePeriodeFiscaleSNCValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscaleSNCValidator" />
-	<bean id="modeleFeuilleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleFeuilleDocumentValidator">
+	<bean id="parametrePeriodeFiscalePPValidator" class="ch.vd.unireg.param.validator.ParametrePeriodeFiscalePPValidator" />
+	<bean id="parametrePeriodeFiscalePMValidator" class="ch.vd.unireg.param.validator.ParametrePeriodeFiscalePMValidator" />
+	<bean id="parametrePeriodeFiscaleSNCValidator" class="ch.vd.unireg.param.validator.ParametrePeriodeFiscaleSNCValidator" />
+	<bean id="modeleFeuilleDocumentValidator" class="ch.vd.unireg.param.validator.ModeleFeuilleDocumentValidator">
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
 	</bean>
-	<bean id="modeleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleDocumentValidator">
+	<bean id="modeleDocumentValidator" class="ch.vd.unireg.param.validator.ModeleDocumentValidator">
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 	</bean>
 
 	<!-- Les Controlleurs -->
 
-	<bean id="parametrePeriodeController" class="ch.vd.uniregctb.param.ParamPeriodeController">
+	<bean id="parametrePeriodeController" class="ch.vd.unireg.param.ParamPeriodeController">
 		<property name="manager" ref="paramPeriodeManager" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="messageSource" ref="messageSource" />
@@ -59,7 +59,7 @@
 		</property>
 	</bean>
 
-	<bean id="modeleFeuilleDocumentController" class="ch.vd.uniregctb.param.ModeleFeuilleDocumentController">
+	<bean id="modeleFeuilleDocumentController" class="ch.vd.unireg.param.ModeleFeuilleDocumentController">
 		<property name="manager" ref="paramPeriodeManager" />
 		<property name="messageSource" ref="messageSource" />
 		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO" />

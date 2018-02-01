@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,20 +18,20 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.tiers.CapitalHisto;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
-import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.tiers.CapitalHisto;
+import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.FormeLegaleHisto;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.RaisonSocialeHisto;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.view.DomicileEtablissementView;
+import ch.vd.unireg.tiers.view.EtatEntrepriseView;
 
 /**
  * Re-organisation des informations de l'entreprise pour l'affichage Web

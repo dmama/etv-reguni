@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,10 +9,10 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
 
 @Entity
 public abstract class DeclarationImpotOrdinaire extends DeclarationAvecNumeroSequence {
@@ -66,7 +66,7 @@ public abstract class DeclarationImpotOrdinaire extends DeclarationAvecNumeroSeq
 	 * @return une date correspondant au délai de retour; ou <i>null</i> si l'information n'est pas disponible.
 	 */
 	@Column(name = "DELAI_RETOUR_IMPRIME")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDelaiRetourImprime() {
 		return delaiRetourImprime;
 	}
@@ -76,7 +76,7 @@ public abstract class DeclarationImpotOrdinaire extends DeclarationAvecNumeroSeq
 	}
 
 	@Column(name = "TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeContribuableUserType")
 	public TypeContribuable getTypeContribuable() {
 		return typeContribuable;
 	}

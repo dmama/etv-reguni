@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,12 +23,12 @@ import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.dbutils.QueryFragment;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.dbutils.QueryFragment;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisation, Long> implements EvenementOrganisationDAO {
 

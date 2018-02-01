@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,28 +23,28 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Remarque;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
-import ch.vd.uniregctb.tiers.view.DebiteurEditView;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.PeriodeDecompte;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Remarque;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.dao.RemarqueDAO;
+import ch.vd.unireg.tiers.view.DebiteurEditView;
+import ch.vd.unireg.tiers.view.TiersEditView;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.PeriodeDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -62,7 +62,7 @@ public class TiersEditManagerTest extends WebTest {
 	private RemarqueDAO remarqueDAO;
 
 	/**
-	 * @see ch.vd.uniregctb.common.AbstractCoreDAOTest#onSetUp()
+	 * @see ch.vd.unireg.common.AbstractCoreDAOTest#onSetUp()
 	 */
 	@Override
 	public void onSetUp() throws Exception {

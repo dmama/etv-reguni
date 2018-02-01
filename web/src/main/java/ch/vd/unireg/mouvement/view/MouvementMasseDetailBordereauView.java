@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
 import java.util.List;
 
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.type.TypeMouvement;
 
 /**
  * Classe de view/command pour le détail des bordereaux à imprimer

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,14 +23,14 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
-import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
-import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
 
 /**
  * Entreprise connue du registre des personnes morales de l'ACI
@@ -394,7 +394,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	}
 
 	@Column(name = "DATE_DEBUT_PREMIER_EXERCICE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebutPremierExerciceCommercial() {
 		return dateDebutPremierExerciceCommercial;
 	}

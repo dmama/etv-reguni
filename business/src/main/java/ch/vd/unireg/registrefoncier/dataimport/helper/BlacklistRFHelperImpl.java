@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.Arrays;
 import java.util.HashSet;

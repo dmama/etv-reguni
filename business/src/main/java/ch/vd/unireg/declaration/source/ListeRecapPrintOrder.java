@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.declaration.source;
+package ch.vd.unireg.declaration.source;
 
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
+import ch.vd.unireg.adresse.AdresseEnvoi;
 
 public class ListeRecapPrintOrder {
 

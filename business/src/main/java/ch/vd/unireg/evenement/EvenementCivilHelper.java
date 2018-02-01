@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.unireg.evenement;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.evenement.common.EvenementErreur;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 public abstract class EvenementCivilHelper {
 

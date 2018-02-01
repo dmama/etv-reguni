@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.iban;
+package ch.vd.unireg.iban;
 
 /**
  * Exception lancée lorsque le format d'un code IBAN est incorrect.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -17,13 +17,13 @@ import ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest;
 import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TypeTiers;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.xml.ServiceException;
 
 public class NumbersRequestHandler implements RequestHandlerV1<NumbersRequest> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.dbutils;
+package ch.vd.unireg.dbutils;
 
 public class TooManyTiersException extends Exception {
 

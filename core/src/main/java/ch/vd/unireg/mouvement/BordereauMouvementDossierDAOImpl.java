@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 /**
  * Implémentation du DAO pour les bordereaux d'envoi de dossiers

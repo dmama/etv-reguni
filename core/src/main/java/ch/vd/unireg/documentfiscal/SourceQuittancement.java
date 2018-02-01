@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 /**
  * [SIFISC-1782] La source du quittancement de la déclaration (CEDI, ADDI ou manuel).

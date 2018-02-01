@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7.cache;
+package ch.vd.unireg.webservices.v7.cache;
 
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.etiquette;
+package ch.vd.unireg.etiquette;
 
 import ch.vd.registre.base.date.RegDate;
 

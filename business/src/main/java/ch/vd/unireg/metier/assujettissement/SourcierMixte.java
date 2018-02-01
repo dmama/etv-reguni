@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Assujettissement de type sourcier mixte; c'est-à-dire pour un contribuable imposé à la source mais qui remplit une déclaration d'impôt

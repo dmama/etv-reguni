@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,23 +20,23 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscalHelper;
-import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.unireg.adresse.AdresseCivile;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalHelper;
+import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.tiers.DonneeCivileEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.FlagEntreprise;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
 
 public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesValidator<Entreprise> {
 

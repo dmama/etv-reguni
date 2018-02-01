@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.worker;
+package ch.vd.unireg.worker;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

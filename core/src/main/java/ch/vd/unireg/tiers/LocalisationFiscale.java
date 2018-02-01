@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Interface qui définit un accès à une localisation (= type autorité fiscale + numéro OFS)

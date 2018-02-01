@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import ch.vd.registre.base.date.RegDate;
 

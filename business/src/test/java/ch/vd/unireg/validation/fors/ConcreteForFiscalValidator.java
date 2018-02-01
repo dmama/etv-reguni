@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.fors;
+package ch.vd.unireg.validation.fors;
 
-import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscal;
 
 /**
  * Le validateur utilisé dans ce test et exposé dans spring sous le nom concreteTestForFiscalValidator

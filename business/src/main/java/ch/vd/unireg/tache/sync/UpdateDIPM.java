@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesMorales;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 
 public class UpdateDIPM extends UpdateDI<PeriodeImpositionPersonnesMorales, DeclarationImpotOrdinairePM> {
 

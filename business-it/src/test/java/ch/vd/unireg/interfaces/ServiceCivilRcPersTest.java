@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.interfaces;
+package ch.vd.unireg.interfaces;
 
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 public class ServiceCivilRcPersTest extends AbstractServiceCivilTest {
 

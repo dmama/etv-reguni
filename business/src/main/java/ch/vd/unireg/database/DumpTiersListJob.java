@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -12,16 +12,16 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.DatabaseDump;
-import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamBoolean;
-import ch.vd.uniregctb.scheduler.JobParamFile;
-import ch.vd.uniregctb.scheduler.JobParamString;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.DatabaseDump;
+import ch.vd.unireg.document.DocumentService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamBoolean;
+import ch.vd.unireg.scheduler.JobParamFile;
+import ch.vd.unireg.scheduler.JobParamString;
 
 public class DumpTiersListJob extends JobDefinition {
 

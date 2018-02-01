@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.activation.manager;
+package ch.vd.unireg.activation.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.activation.view.TiersAnnulationRecapView;
+import ch.vd.unireg.activation.view.TiersAnnulationRecapView;
 
 public interface TiersAnnulationRecapManager {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 /**
  * Classe de base des exceptions touchant les adresses fiscales.

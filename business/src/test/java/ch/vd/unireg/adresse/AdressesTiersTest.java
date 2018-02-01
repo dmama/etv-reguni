@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

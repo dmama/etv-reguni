@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,14 +6,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
-import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleDocumentDAO;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
+import ch.vd.unireg.param.ModeleFeuilleDocumentComparator;
+import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
+import ch.vd.unireg.type.TypeDocument;
 
 @SuppressWarnings("UnusedDeclaration")
 public class ImprimerDuplicataDeclarationImpotView {

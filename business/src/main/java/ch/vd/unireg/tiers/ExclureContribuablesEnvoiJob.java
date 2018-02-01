@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamFile;
-import ch.vd.uniregctb.scheduler.JobParamRegDate;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.ExclureContribuablesEnvoiRapport;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamFile;
+import ch.vd.unireg.scheduler.JobParamRegDate;
 
 /**
  * Job qui applique la date limite d'exclusion à tous les contribuables spécifiés par leur numéros, et génère un rapport.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.regpp;
+package ch.vd.unireg.evenement.civil.regpp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,11 +20,11 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 @Entity
 @Table(name = "EVENEMENT_CIVIL")
@@ -83,7 +83,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_EVENEMENT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateEvenement() {
 		return dateEvenement;
 	}
@@ -111,7 +111,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	}
 
 	@Column(name = "TYPE", length = LengthConstants.EVTCIVILREG_TYPE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeEvenementCivilUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeEvenementCivilUserType")
 	public TypeEvenementCivil getType() {
 		return type;
 	}
@@ -132,7 +132,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	}
 
 	@Column(name = "ETAT", length = LengthConstants.EVTCIVILREG_ETAT)
-	@Type(type = "ch.vd.uniregctb.hibernate.EtatEvenementCivilUserType")
+	@Type(type = "ch.vd.unireg.hibernate.EtatEvenementCivilUserType")
 	@Index(name = "IDX_EV_CIV_ETAT")
 	public EtatEvenementCivil getEtat() {
 		return etat;

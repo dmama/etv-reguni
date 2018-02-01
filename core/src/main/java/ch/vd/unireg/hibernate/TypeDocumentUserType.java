@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.type.TypeDocument;
 
 /**
  * Classe de transtypage pour Hibernate : TypeDocument <--> varchar

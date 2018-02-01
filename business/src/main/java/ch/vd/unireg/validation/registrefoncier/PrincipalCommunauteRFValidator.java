@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.registrefoncier.PrincipalCommunauteRF;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 public class PrincipalCommunauteRFValidator extends DateRangeEntityValidator<PrincipalCommunauteRF> {
 	@Override

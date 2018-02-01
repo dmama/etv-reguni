@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.communaute;
+package ch.vd.unireg.registrefoncier.communaute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Information d'un modèle de communauté restreinte à un tiers donné.

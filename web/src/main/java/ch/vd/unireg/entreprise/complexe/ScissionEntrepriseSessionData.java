@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -8,8 +8,8 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 /**
  * Structure de données posée en session sous le nom {@link ScissionEntrepriseController#SCISSION_NAME}

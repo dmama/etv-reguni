@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.droitacces;
+package ch.vd.unireg.validation.droitacces;
 
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 public class DroitAccesValidator extends DateRangeEntityValidator<DroitAcces> {
 

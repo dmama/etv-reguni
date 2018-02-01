@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -39,13 +39,13 @@ import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalException;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSender;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalException;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalSender;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Bean qui traite les messages JMS de modification de la database pour propager l'information au database service

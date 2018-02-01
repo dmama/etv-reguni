@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.rapport.travail;
+package ch.vd.unireg.evenement.rapport.travail;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravailType;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.xml.DataHelper;
 
 public class MiseAjourRapportTravail {
 	private String businessId;

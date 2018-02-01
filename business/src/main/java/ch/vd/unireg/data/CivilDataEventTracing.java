@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 public class CivilDataEventTracing implements CivilDataEventListener, InitializingBean, DisposableBean {
 

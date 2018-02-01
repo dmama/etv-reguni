@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.editique.EditiqueResultatDocument;
+import ch.vd.unireg.editique.EditiqueResultatDocument;
 
 public class DelayedDownloadServiceImpl implements DelayedDownloadService, InitializingBean, DisposableBean {
 

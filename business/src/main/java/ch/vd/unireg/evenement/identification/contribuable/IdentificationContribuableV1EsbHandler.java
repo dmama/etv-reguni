@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,14 +18,14 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
 
 /**
  * Classe technique qui reçoit des événements de demande d'identification de contribuable, et qui permet d'envoyer les réponses.
@@ -155,7 +155,7 @@ public class IdentificationContribuableV1EsbHandler implements IdentificationCon
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandler#sendReponse(ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable)
+	 * @see ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableMessageHandler#sendReponse(ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable)
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)

@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.unireg.type.TarifImpotSource;
 
 /**
  * Permet d'adapter une situation de famille de ménage commun en fonction de nouvelles dates de début/fin.

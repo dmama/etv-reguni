@@ -1,21 +1,21 @@
-package ch.vd.uniregctb.listes.afc;
+package ch.vd.unireg.listes.afc;
 
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMProcessor;
-import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
-import ch.vd.uniregctb.listes.afc.pm.ModeExtraction;
-import ch.vd.uniregctb.listes.afc.pm.VersionWS;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.listes.afc.pm.ExtractionDonneesRptPMProcessor;
+import ch.vd.unireg.listes.afc.pm.ExtractionDonneesRptPMResults;
+import ch.vd.unireg.listes.afc.pm.ModeExtraction;
+import ch.vd.unireg.listes.afc.pm.VersionWS;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Service utilisé par l'extraction des listes des données de référence RPT

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import javax.validation.Valid;
 
@@ -20,16 +20,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.efacture.manager.EfactureManager;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.efacture.manager.EfactureManager;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.utils.RegDateEditor;
+import ch.vd.unireg.utils.WebContextUtils;
 
 @Controller
 @RequestMapping(value = "/efacture")

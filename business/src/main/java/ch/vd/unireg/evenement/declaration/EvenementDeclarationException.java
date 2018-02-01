@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.evenement.declaration;
+package ch.vd.unireg.evenement.declaration;
 
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 public class EvenementDeclarationException extends EsbBusinessException {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.importcleanup;
+package ch.vd.unireg.registrefoncier.importcleanup;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,18 +8,18 @@ import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.MockStatusManager;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
-import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierImportService;
-import ch.vd.uniregctb.transaction.MockTransactionManager;
+import ch.vd.unireg.common.MockStatusManager;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.MockEvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.MockEvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
+import ch.vd.unireg.registrefoncier.MockRegistreFoncierImportService;
+import ch.vd.unireg.transaction.MockTransactionManager;
 
-import static ch.vd.uniregctb.common.WithoutSpringTest.assertEmpty;
+import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 

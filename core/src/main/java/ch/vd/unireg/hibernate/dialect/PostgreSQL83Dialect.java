@@ -22,7 +22,7 @@
  * Boston, MA  02110-1301  USA
  *
  */
-package ch.vd.uniregctb.hibernate.dialect;
+package ch.vd.unireg.hibernate.dialect;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;

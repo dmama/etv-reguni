@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.declaration;
+package ch.vd.unireg.evenement.declaration;
 
 import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
@@ -21,24 +21,24 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
 import ch.vd.unireg.xml.event.declaration.v2.DeclarationIdentifier;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
-import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.snc.QuestionnaireSNCService;
-import ch.vd.uniregctb.jms.BamMessageHelper;
-import ch.vd.uniregctb.jms.BamMessageSender;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.validation.ValidationService;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
+import ch.vd.unireg.declaration.DeclarationException;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
+import ch.vd.unireg.jms.BamMessageHelper;
+import ch.vd.unireg.jms.BamMessageSender;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.validation.ValidationService;
+import ch.vd.unireg.xml.DataHelper;
 
 public class QuittancementDeclaration implements EvenementDeclarationHandler<DeclarationAck>, InitializingBean {
 

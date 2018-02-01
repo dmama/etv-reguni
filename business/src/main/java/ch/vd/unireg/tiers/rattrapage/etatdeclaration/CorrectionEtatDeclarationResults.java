@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.etatdeclaration;
+package ch.vd.unireg.tiers.rattrapage.etatdeclaration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,11 +7,11 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class CorrectionEtatDeclarationResults extends JobResults<Long, CorrectionEtatDeclarationResults> {
 

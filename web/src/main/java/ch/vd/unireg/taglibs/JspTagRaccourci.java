@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -8,7 +8,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAware {
 

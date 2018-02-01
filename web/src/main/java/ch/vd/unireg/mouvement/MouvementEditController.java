@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.validation.Valid;
 
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.tache.manager.TacheListManager;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.tache.manager.TacheListManager;
 
 @Controller
 @RequestMapping(value = "/mouvement")

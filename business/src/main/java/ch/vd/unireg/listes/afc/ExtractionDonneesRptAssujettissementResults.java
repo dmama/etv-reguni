@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.afc;
+package ch.vd.unireg.listes.afc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,27 +8,27 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.declaration.ForsList;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.DecompositionFors;
-import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
-import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
-import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
-import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.ForGestion;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.declaration.ForsList;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.DecompositionFors;
+import ch.vd.unireg.metier.assujettissement.DecompositionForsAnneeComplete;
+import ch.vd.unireg.metier.assujettissement.HorsCanton;
+import ch.vd.unireg.metier.assujettissement.HorsSuisse;
+import ch.vd.unireg.metier.assujettissement.SourcierPur;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.tiers.ForGestion;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Classe de base des résultats qui présentent une ligne par période d'assujettissement (cas des sourciers purs, en particulier, pour lesquels

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction;
+package ch.vd.unireg.transaction;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;

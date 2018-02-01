@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.etiquette;
+package ch.vd.unireg.validation.etiquette;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 /**
  * Validateur d'une étiquette liable à un tiers

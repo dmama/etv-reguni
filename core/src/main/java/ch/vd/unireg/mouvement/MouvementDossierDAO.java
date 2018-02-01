@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.pagination.ParamSorting;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamSorting;
 
 public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> {
 

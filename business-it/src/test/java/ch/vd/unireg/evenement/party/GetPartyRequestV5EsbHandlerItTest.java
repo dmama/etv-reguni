@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,19 +24,19 @@ import ch.vd.unireg.xml.party.taxresidence.v4.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriodType;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

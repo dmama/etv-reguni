@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.inbox;
+package ch.vd.unireg.inbox;
 
 import java.io.IOException;
 import java.util.List;

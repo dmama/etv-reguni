@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.wsclient.host;
+package ch.vd.unireg.wsclient.host;
 
 import java.util.Arrays;
 
@@ -16,8 +16,8 @@ import ch.vd.infrastructure.registre.common.model.rest.ListeInstitutionsFinancie
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientException;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 public class ServiceInfrastructureClientTracing implements ServiceInfrastructureClient, InitializingBean, DisposableBean {
 

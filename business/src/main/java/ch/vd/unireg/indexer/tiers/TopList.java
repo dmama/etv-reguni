@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.util.ArrayList;
 import java.util.Collection;

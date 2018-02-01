@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.tiers.Contribuable;
 
 /**
  * Tiers au registre foncier. Un tiers est soit une personne physique, soit une personne morale.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,26 +15,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersDAO.Parts;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersDAO.Parts;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 

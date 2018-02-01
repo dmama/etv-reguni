@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
  * Une notification d'échéance (= qui ouvre la porte à la taxation d'office) a été émise pour la déclaration

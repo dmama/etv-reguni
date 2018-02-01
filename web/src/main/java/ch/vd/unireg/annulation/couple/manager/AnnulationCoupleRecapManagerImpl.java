@@ -1,21 +1,21 @@
-package ch.vd.uniregctb.annulation.couple.manager;
+package ch.vd.unireg.annulation.couple.manager;
 
 import java.util.Optional;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.metier.MetierService;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.general.manager.TiersGeneralManager;
+import ch.vd.unireg.metier.MetierService;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapManager {
 

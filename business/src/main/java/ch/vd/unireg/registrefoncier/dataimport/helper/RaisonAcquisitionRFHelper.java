@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,11 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Rechtsgrund;
-import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
 
-import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.getAffaire;
-import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.getMotif;
-import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.numeroAffaireEquals;
+import static ch.vd.unireg.registrefoncier.dataimport.helper.DroitRFHelper.getAffaire;
+import static ch.vd.unireg.registrefoncier.dataimport.helper.DroitRFHelper.getMotif;
+import static ch.vd.unireg.registrefoncier.dataimport.helper.DroitRFHelper.numeroAffaireEquals;
 
 public abstract class RaisonAcquisitionRFHelper {
 

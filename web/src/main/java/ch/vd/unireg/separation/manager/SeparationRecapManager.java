@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.separation.manager;
+package ch.vd.unireg.separation.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.type.EtatCivil;
 
 
 public interface SeparationRecapManager {

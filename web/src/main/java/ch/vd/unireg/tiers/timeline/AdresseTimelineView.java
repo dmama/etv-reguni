@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.timeline;
+package ch.vd.unireg.tiers.timeline;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,8 +8,8 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.adresse.AdresseCouche;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
+import ch.vd.unireg.adresse.AdresseCouche;
+import ch.vd.unireg.adresse.AdresseEnvoi;
 
 /**
  * Form backing object pour la page de visualisation de l'historique des adresses d'un contribuable

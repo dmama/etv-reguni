@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rcent.annonce;
+package ch.vd.unireg.rcent.annonce;
 
 /**
  * Interface pour les données qui exposent un identifiant d'entreprise

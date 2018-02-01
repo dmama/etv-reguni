@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.retourdi.pp;
+package ch.vd.unireg.evenement.retourdi.pp;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -11,23 +11,23 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.jms.BamMessageHelper;
-import ch.vd.uniregctb.jms.BamMessageSender;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleDocumentDAO;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.jms.BamMessageHelper;
+import ch.vd.unireg.jms.BamMessageSender;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.validation.ValidationService;
 
 public class EvenementCediServiceImpl implements EvenementCediService {
 

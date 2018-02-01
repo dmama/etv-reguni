@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role.before2016;
+package ch.vd.unireg.role.before2016;
 
 import java.util.Map;
 
@@ -7,10 +7,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.RolesOIPMRapport;
-import ch.vd.uniregctb.scheduler.JobCategory;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.RolesOIPMRapport;
+import ch.vd.unireg.scheduler.JobCategory;
 
 /**
  * Job qui produit les rôles pour l'OIPM (= l'ensemble des entreprises liées au canton)

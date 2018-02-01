@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 
 @SuppressWarnings("UnusedDeclaration")
 public class AjouterDelaiDeclarationView extends AbstractEditionDelaiDeclarationView {

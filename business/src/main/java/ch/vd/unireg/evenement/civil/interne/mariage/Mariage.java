@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.mariage;
+package ch.vd.unireg.evenement.civil.interne.mariage;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -9,25 +9,25 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 
 /**
@@ -252,7 +252,7 @@ public class Mariage extends EvenementCivilInterne {
 
 		// état civil pour traitement
 		final EtatCivil etatCivil = context.getServiceCivil().getEtatCivilActif(contribuable.getNumeroIndividu(), getDate());
-		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
+		final ch.vd.unireg.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
 		
 		try {
 			// [SIFISC-6021] Le comportement de reconstitution des ménages n'est pas encore bien défini, on shunte les modif en attendant d'en savoir plus ...

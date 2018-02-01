@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.view.SituationFamilleView;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.view.SituationFamilleView;
 
 
 /**

@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.List;
 
 import org.junit.Test;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
-import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.SituationRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.ImportRFTestClass;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
+import ch.vd.unireg.registrefoncier.dao.CommuneRFDAO;
+import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.dao.SituationRFDAO;
+import ch.vd.unireg.registrefoncier.dataimport.ImportRFTestClass;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

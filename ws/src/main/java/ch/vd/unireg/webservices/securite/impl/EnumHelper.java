@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.webservices.securite.impl;
+package ch.vd.unireg.webservices.securite.impl;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.webservices.securite.NiveauAutorisation;
+import ch.vd.unireg.webservices.securite.NiveauAutorisation;
 
 /**
  * Classe utilitaire pour convertir des enums de <i>core</i> dans ceux de <i>web</i>.
@@ -10,7 +10,7 @@ import ch.vd.uniregctb.webservices.securite.NiveauAutorisation;
  */
 public class EnumHelper {
 
-	public static NiveauAutorisation coreToWeb(ch.vd.uniregctb.type.Niveau niveau) {
+	public static NiveauAutorisation coreToWeb(ch.vd.unireg.type.Niveau niveau) {
 		if (niveau == null) {
 			return null;
 		}

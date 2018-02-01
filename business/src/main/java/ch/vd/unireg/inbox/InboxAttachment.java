@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.inbox;
+package ch.vd.unireg.inbox;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import ch.vd.uniregctb.common.TypedDataContainer;
+import ch.vd.unireg.common.TypedDataContainer;
 
 /**
  * Attachement téléchargeable

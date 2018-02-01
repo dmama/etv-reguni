@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import org.jetbrains.annotations.Nullable;
 

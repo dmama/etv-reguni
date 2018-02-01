@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.type.Niveau;
 
 /**
  * Classe de transtypage pour Hibernate : Niveau <--> varchar

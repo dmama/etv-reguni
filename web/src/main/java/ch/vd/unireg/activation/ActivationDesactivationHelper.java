@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.activation;
+package ch.vd.unireg.activation;
 
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.NatureTiers;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.NatureTiers;
 
 /**
  * Quelques méthodes utilitaires autour de l'activation et la désactivation de tiers

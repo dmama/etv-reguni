@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.organisation.engine.processor;
+package ch.vd.unireg.evenement.organisation.engine.processor;
 
 import java.util.List;
 
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
 
 /**
  * Volontairement laissée au niveau package pour un peu plus d'encapsulation

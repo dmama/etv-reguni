@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.batch;
+package ch.vd.unireg.admin.batch;
 
 import java.util.Map;
 

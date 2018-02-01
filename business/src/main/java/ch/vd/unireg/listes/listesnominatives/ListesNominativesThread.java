@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.listesnominatives;
+package ch.vd.unireg.listes.listesnominatives;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -12,14 +12,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.ListesThread;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.ListesThread;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Thread utilisé dans la génération des listes nominatives

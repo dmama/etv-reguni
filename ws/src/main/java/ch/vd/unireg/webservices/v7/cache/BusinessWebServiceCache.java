@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7.cache;
+package ch.vd.unireg.webservices.v7.cache;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -49,24 +49,24 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.uniregctb.avatar.ImageData;
-import ch.vd.uniregctb.cache.CacheHelper;
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.KeyDumpableCache;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.utils.LogLevel;
-import ch.vd.uniregctb.webservices.common.AccessDeniedException;
-import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.webservices.common.WebServiceHelper;
-import ch.vd.uniregctb.webservices.v7.BusinessWebService;
-import ch.vd.uniregctb.webservices.v7.PartySearchType;
-import ch.vd.uniregctb.webservices.v7.SearchMode;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.cache.CacheHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.EhCacheStats;
+import ch.vd.unireg.cache.KeyDumpableCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.utils.LogLevel;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.common.WebServiceHelper;
+import ch.vd.unireg.webservices.v7.BusinessWebService;
+import ch.vd.unireg.webservices.v7.PartySearchType;
+import ch.vd.unireg.webservices.v7.SearchMode;
+import ch.vd.unireg.xml.ServiceException;
 
 @SuppressWarnings("Duplicates")
 public class BusinessWebServiceCache implements BusinessWebService, UniregCacheInterface, KeyDumpableCache, InitializingBean, DisposableBean {

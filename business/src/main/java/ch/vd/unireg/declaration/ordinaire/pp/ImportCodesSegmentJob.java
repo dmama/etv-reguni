@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -18,15 +18,15 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamFile;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.document.ImportCodesSegmentRapport;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamFile;
 
 public class ImportCodesSegmentJob extends JobDefinition {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public abstract class AbstractProcessusComplexeRechercheController extends AbstractProcessusComplexeController implements InitializingBean {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal;
+package ch.vd.unireg.regimefiscal;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRangeHelper;

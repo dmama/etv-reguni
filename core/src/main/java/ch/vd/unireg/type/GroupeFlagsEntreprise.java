@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 /**
  * Les différents groupes de flags d'entreprises... qui peuvent contenir des flags mutuellement

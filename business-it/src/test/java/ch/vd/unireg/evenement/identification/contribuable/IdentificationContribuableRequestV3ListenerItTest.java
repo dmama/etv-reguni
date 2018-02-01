@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -27,10 +27,10 @@ import ch.vd.unireg.xml.event.identification.request.v3.ObjectFactory;
 import ch.vd.unireg.xml.event.identification.response.v3.IdentificationContribuableResponse;
 import ch.vd.unireg.xml.event.identification.response.v3.IdentificationResult;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

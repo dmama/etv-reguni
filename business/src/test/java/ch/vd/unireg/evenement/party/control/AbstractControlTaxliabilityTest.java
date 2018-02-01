@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.party.control;
+package ch.vd.unireg.evenement.party.control;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

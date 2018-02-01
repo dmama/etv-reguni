@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -11,13 +11,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher.CheckCallback;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher.CheckCallback;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.tiers.TiersDAO;
 
 /**
  * Batch qui vérifie les cohérence des données de l'indexeur avec les données de la base.

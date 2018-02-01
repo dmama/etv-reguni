@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 /**
  * Les différents états possibles d'un délai de déclaration

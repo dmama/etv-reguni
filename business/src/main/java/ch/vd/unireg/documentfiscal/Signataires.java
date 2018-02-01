@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.Collections;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
 
 /**
  * Classe contenant les informations des signataires d'un document émis

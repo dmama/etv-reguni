@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.HashMap;
 
@@ -17,28 +17,28 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.TraiterImportRFJob;
-import ch.vd.uniregctb.registrefoncier.dataimport.TraiterMutationsRFJob;
-import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
-import ch.vd.uniregctb.registrefoncier.key.BatimentRFKey;
-import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;
-import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
-import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.unireg.registrefoncier.dao.BatimentRFDAO;
+import ch.vd.unireg.registrefoncier.dao.CommuneRFDAO;
+import ch.vd.unireg.registrefoncier.dao.DroitRFDAO;
+import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.dataimport.TraiterImportRFJob;
+import ch.vd.unireg.registrefoncier.dataimport.TraiterMutationsRFJob;
+import ch.vd.unireg.registrefoncier.key.AyantDroitRFKey;
+import ch.vd.unireg.registrefoncier.key.BatimentRFKey;
+import ch.vd.unireg.registrefoncier.key.CommuneRFKey;
+import ch.vd.unireg.registrefoncier.key.DroitRFKey;
+import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobAlreadyStartedException;
 
 public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportService, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
 

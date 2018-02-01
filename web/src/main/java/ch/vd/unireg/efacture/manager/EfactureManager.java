@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture.manager;
+package ch.vd.unireg.efacture.manager;
 
 import java.math.BigInteger;
 
@@ -6,10 +6,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
-import ch.vd.uniregctb.efacture.EvenementEfactureException;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.efacture.DestinataireAvecHistoView;
+import ch.vd.unireg.efacture.EvenementEfactureException;
+import ch.vd.unireg.type.TypeDocument;
 
 public interface EfactureManager {
 

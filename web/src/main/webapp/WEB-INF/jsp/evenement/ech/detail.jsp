@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.evenement.ech.view.EvenementEchDetailView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.evenement.ech.view.EvenementEchDetailView"--%>
 
 <unireg:nextRowClass reset="1"/>
 <!-- Debut Caracteristiques generales -->

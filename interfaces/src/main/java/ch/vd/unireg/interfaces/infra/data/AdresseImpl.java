@@ -14,7 +14,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseImpl implements Adresse, Serializable {
 

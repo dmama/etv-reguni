@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.xmlbeans.XmlObject;
@@ -29,18 +29,18 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.utils.LogLevel;
 
 /**
  * Bean qui permet d'envoyer des événements externes (en version 1, legacy).

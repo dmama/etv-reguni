@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.infra;
+package ch.vd.unireg.evenement.infra;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,7 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

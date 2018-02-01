@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.acces.parUtilisateur.view;
+package ch.vd.unireg.acces.parUtilisateur.view;
 
 import java.util.List;
 
-import ch.vd.uniregctb.general.view.UtilisateurView;
+import ch.vd.unireg.general.view.UtilisateurView;
 
 public class UtilisateurEditRestrictionView {
 

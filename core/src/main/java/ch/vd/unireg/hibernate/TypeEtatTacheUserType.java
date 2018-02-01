@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.type.TypeEtatTache;
 
 /**
  * Classe de transtypage pour Hibernate : TypeEtatTache <--> varchar

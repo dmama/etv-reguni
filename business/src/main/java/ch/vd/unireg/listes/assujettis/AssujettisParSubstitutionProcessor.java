@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.assujettis;
+package ch.vd.unireg.listes.assujettis;
 
 import java.util.List;
 
@@ -13,14 +13,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.tiers.AssujettissementParSubstitution;
+import ch.vd.unireg.tiers.TiersService;
 
 public class AssujettisParSubstitutionProcessor {
 

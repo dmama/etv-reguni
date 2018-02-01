@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.processor;
+package ch.vd.unireg.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -10,16 +10,16 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
-import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.helper.CommuneRFHelper;
-import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.dao.CommuneRFDAO;
+import ch.vd.unireg.registrefoncier.dataimport.MutationsRFProcessorResults;
+import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
+import ch.vd.unireg.registrefoncier.dataimport.helper.CommuneRFHelper;
+import ch.vd.unireg.registrefoncier.key.CommuneRFKey;
 
 public class CommuneRFProcessor implements MutationRFProcessor {
 

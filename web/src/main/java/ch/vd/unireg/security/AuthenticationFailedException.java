@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import org.springframework.security.core.AuthenticationException;
 

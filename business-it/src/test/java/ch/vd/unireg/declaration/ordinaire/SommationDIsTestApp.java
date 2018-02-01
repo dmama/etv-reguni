@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.declaration.ordinaire;
+package ch.vd.unireg.declaration.ordinaire;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BusinessItTestApplication;
-import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BusinessItTestApplication;
+import ch.vd.unireg.common.LoggingStatusManager;
 
 /**
  * Programme de test des performances des batch de sommation des déclaration d'impôt ordinaires. Il s'agit d'un programme stand-alone car le

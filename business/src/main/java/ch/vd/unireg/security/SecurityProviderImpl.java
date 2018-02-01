@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.type.Niveau;
 
 /**
  * Implémentation du provider de sécurité qui regroupe la sécurité d'IFOSec (authentification) et celle d'Unireg (accès aux dossiers).

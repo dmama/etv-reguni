@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7.cache;
+package ch.vd.unireg.webservices.v7.cache;
 
 import java.io.Serializable;
 import java.util.EnumSet;
@@ -9,9 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.cache.CacheValueWithParts;
-import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
-import ch.vd.uniregctb.xml.party.v5.PartyBuilder;
+import ch.vd.unireg.cache.CacheValueWithParts;
+import ch.vd.unireg.cache.CompletePartsCallbackWithException;
+import ch.vd.unireg.xml.party.v5.PartyBuilder;
 
 /**
  * Container d'une valeur mise en cache pour un tiers sorti d'un GetParty

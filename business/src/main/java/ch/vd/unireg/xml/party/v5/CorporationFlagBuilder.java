@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.corporation.v5.CorporationFlag;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.tiers.FlagEntreprise;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 
 public class CorporationFlagBuilder {
 

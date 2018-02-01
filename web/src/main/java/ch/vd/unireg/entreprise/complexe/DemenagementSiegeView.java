@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class DemenagementSiegeView {
 

@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import ch.vd.uniregctb.reqdes.ErreurTraitement;
-import ch.vd.uniregctb.reqdes.PartiePrenante;
-import ch.vd.uniregctb.reqdes.UniteTraitement;
+import ch.vd.unireg.reqdes.ErreurTraitement;
+import ch.vd.unireg.reqdes.PartiePrenante;
+import ch.vd.unireg.reqdes.UniteTraitement;
 
 public class ReqDesUniteTraitementDetailedView extends ReqDesUniteTraitementAbstractView {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,10 @@ import org.springframework.core.io.Resource;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementHelper;
-import ch.vd.uniregctb.jms.EsbBusinessErrorCollector;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementHelper;
+import ch.vd.unireg.jms.EsbBusinessErrorCollector;
+import ch.vd.unireg.jms.EsbMessageValidator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

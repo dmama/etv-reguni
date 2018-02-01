@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.MontantMonetaire;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class EntrepriseCivilView {
 

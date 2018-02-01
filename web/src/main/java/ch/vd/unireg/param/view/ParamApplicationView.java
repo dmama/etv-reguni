@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.param.view;
+package ch.vd.unireg.param.view;
 
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.parametrage.ParametreEnum;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.parametrage.ParametreEnum;
 
 /**
  * Classe mappant le formulaire de saisie de /param/application.jsp

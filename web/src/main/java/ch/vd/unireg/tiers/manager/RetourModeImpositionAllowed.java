@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 public enum RetourModeImpositionAllowed {
 

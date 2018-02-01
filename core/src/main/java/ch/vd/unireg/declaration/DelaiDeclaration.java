@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -9,7 +9,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
-import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 
 @Entity
 @DiscriminatorValue("DELAI_DECLARATION")

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.tiers.dao;
+package ch.vd.unireg.tiers.dao;
 
 import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.tiers.DecisionAci;
+import ch.vd.unireg.tiers.DecisionAci;
 
 public interface DecisionAciDAO extends GenericDAO<DecisionAci, Long> {
 

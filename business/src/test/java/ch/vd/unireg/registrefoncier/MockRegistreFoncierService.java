@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.List;
 import java.util.Set;
@@ -10,8 +10,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.tiers.Contribuable;
 
 public class MockRegistreFoncierService implements RegistreFoncierService {
 	@Override

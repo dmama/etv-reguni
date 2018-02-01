@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.stats.evenements;
+package ch.vd.unireg.stats.evenements;
 
 import org.hibernate.dialect.Oracle10gDialect;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.unireg.common.BusinessTest;
 
 public class StatistiquesEvenementsServiceTest extends BusinessTest {
 

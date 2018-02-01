@@ -31,21 +31,21 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<bean id="errorsController" class="ch.vd.uniregctb.errors.ErrorsController" />
+	<bean id="errorsController" class="ch.vd.unireg.errors.ErrorsController" />
 
-	<bean id="indexController" class="ch.vd.uniregctb.IndexController" />
+	<bean id="indexController" class="ch.vd.unireg.IndexController" />
 
-	<bean id="oidController" class="ch.vd.uniregctb.security.ChooseOIDController">
+	<bean id="oidController" class="ch.vd.unireg.security.ChooseOIDController">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
-	<bean id="authenticationController" class="ch.vd.uniregctb.security.AuthenticationController" />
+	<bean id="authenticationController" class="ch.vd.unireg.security.AuthenticationController" />
 
-	<bean id="logoutController" class="ch.vd.uniregctb.LogoutController">
+	<bean id="logoutController" class="ch.vd.unireg.LogoutController">
 		<property name="uniregProperties" ref="uniregExternalProperties" />
 	</bean>
 
-	<bean class="ch.vd.uniregctb.about.AboutController"/>
+	<bean class="ch.vd.unireg.about.AboutController"/>
 
 	<!-- View Resolver -->
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -55,16 +55,16 @@
 	</bean>
 
 
-	<bean id="webCivilService" class="ch.vd.uniregctb.individu.WebCivilServiceImpl">
+	<bean id="webCivilService" class="ch.vd.unireg.individu.WebCivilServiceImpl">
 		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 
-	<bean id="entrepriseService" class="ch.vd.uniregctb.entreprise.EntrepriseServiceImpl">
+	<bean id="entrepriseService" class="ch.vd.unireg.entreprise.EntrepriseServiceImpl">
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormController">
+	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.unireg.common.AbstractSimpleFormController">
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
@@ -72,8 +72,8 @@
 		<property name="host" value="smtp.vd.ch" />
 	</bean>
 
-	<bean id="httpDocumentFetcherRaw" class="ch.vd.uniregctb.common.HttpDocumentFetcherImpl"/>
-	<bean id="httpDocumentFetcherTracing" class="ch.vd.uniregctb.common.HttpDocumentFetcherTracing">
+	<bean id="httpDocumentFetcherRaw" class="ch.vd.unireg.common.HttpDocumentFetcherImpl"/>
+	<bean id="httpDocumentFetcherTracing" class="ch.vd.unireg.common.HttpDocumentFetcherTracing">
 		<property name="statsService" ref="statsService"/>
 		<property name="target" ref="httpDocumentFetcherRaw"/>
 	</bean>
@@ -86,40 +86,40 @@
 		<property name="subject" value="Une exception est survenue sur Unireg ${project.version}" />
 	</bean>
 
-	<bean id="emailNotificationService" class="ch.vd.uniregctb.common.EmailNotificationService">
+	<bean id="emailNotificationService" class="ch.vd.unireg.common.EmailNotificationService">
 		<constructor-arg ref="mailSender" />
 		<constructor-arg ref="templateMessage" />
 	</bean>
 
-	<bean id="jspTagInfra" class="ch.vd.uniregctb.taglibs.JspTagInfra">
+	<bean id="jspTagInfra" class="ch.vd.unireg.taglibs.JspTagInfra">
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="jspTagDatedInfra" class="ch.vd.uniregctb.taglibs.JspTagDatedInfraBean">
+	<bean id="jspTagDatedInfra" class="ch.vd.unireg.taglibs.JspTagDatedInfraBean">
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="jspTagBatchForm" class="ch.vd.uniregctb.taglibs.JspTagBatchForm">
+	<bean id="jspTagBatchForm" class="ch.vd.unireg.taglibs.JspTagBatchForm">
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
-	<bean id="jspTagInfraEditor" class="ch.vd.uniregctb.taglibs.formInput.InfrastructureEditor">
+	<bean id="jspTagInfraEditor" class="ch.vd.unireg.taglibs.formInput.InfrastructureEditor">
 		<constructor-arg>
 			<null />
 		</constructor-arg>
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="jspTagLocaliation" class="ch.vd.uniregctb.taglibs.JspTagLocalisation">
+	<bean id="jspTagLocaliation" class="ch.vd.unireg.taglibs.JspTagLocalisation">
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="jspTagRaccourci" class="ch.vd.uniregctb.taglibs.JspTagRaccourci">
+	<bean id="jspTagRaccourci" class="ch.vd.unireg.taglibs.JspTagRaccourci">
 	</bean>
 
-	<bean id="jspTagToggleAffichage" class="ch.vd.uniregctb.taglibs.JspTagToggleAffichage" />
+	<bean id="jspTagToggleAffichage" class="ch.vd.unireg.taglibs.JspTagToggleAffichage" />
 
-	<bean id="jspTagBandeauContribuable" class="ch.vd.uniregctb.taglibs.JspTagBandeauTiers">
+	<bean id="jspTagBandeauContribuable" class="ch.vd.unireg.taglibs.JspTagBandeauTiers">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
@@ -131,46 +131,46 @@
 
 	</bean>
 
-	<bean id="jspTagAdresseMandataire" class="ch.vd.uniregctb.taglibs.JspTagAdresseMandataire">
+	<bean id="jspTagAdresseMandataire" class="ch.vd.unireg.taglibs.JspTagAdresseMandataire">
 		<property name="adresseService" ref="adresseService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-	<bean id="jspTagInteroperabilite" class="ch.vd.uniregctb.taglibs.JspTagInteroperabilite"/>
+	<bean id="jspTagInteroperabilite" class="ch.vd.unireg.taglibs.JspTagInteroperabilite"/>
 
-	<bean id="jspTagSetAutorisations" class="ch.vd.uniregctb.taglibs.JspTagSetAutorisations">
+	<bean id="jspTagSetAutorisations" class="ch.vd.unireg.taglibs.JspTagSetAutorisations">
 		<property name="cache" ref="autorisationCache"/>
 	</bean>
 
-	<bean id="printPCLManager" class="ch.vd.uniregctb.print.PrintPCLManagerImpl">
+	<bean id="printPCLManager" class="ch.vd.unireg.print.PrintPCLManagerImpl">
 		<property name="localApp" value="${extprop.editique.localapp}" />
 	</bean>
 
-	<bean id="validatorHelper" class="ch.vd.uniregctb.common.ValidatorHelperImpl">
+	<bean id="validatorHelper" class="ch.vd.unireg.common.ValidatorHelperImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 
-	<bean id="retourEditiqueControllerHelper" class="ch.vd.uniregctb.common.RetourEditiqueControllerHelperImpl">
+	<bean id="retourEditiqueControllerHelper" class="ch.vd.unireg.common.RetourEditiqueControllerHelperImpl">
 		<property name="downloadService" ref="editiqueDownloadService"/>
 		<property name="delayedDownloadService" ref="delayedDownloadService"/>
 	</bean>
 
-	<bean id="delaiController" class="ch.vd.uniregctb.delai.DelaiController">
+	<bean id="delaiController" class="ch.vd.unireg.delai.DelaiController">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="messageSource" ref="messageSource"/>
 	</bean>
 
-	<bean id="copieConformeController" class="ch.vd.uniregctb.copieConforme.CopieConformeController">
+	<bean id="copieConformeController" class="ch.vd.unireg.copieConforme.CopieConformeController">
 		<property name="helper" ref="retourEditiqueControllerHelper" />
 		<property name="copieConformeManager" ref="copieConformeManager" />
 	</bean>
 
-	<bean id="copieConformeManager" class="ch.vd.uniregctb.copieConforme.CopieConformeManagerImpl">
+	<bean id="copieConformeManager" class="ch.vd.unireg.copieConforme.CopieConformeManagerImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="diService" ref="diService"/>
 		<property name="lrService" ref="lrService"/>
@@ -179,12 +179,12 @@
 		<property name="editiqueService" ref="editiqueService"/>
 	</bean>
 
-	<bean id="controllerUtils" class="ch.vd.uniregctb.common.ControllerUtilsImpl">
+	<bean id="controllerUtils" class="ch.vd.unireg.common.ControllerUtilsImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="tiersService" ref="tiersService" />
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
-	<bean id="searchCriteriaRemovalController" class="ch.vd.uniregctb.common.SearchCriteriaRemovalController"/>
+	<bean id="searchCriteriaRemovalController" class="ch.vd.unireg.common.SearchCriteriaRemovalController"/>
 
 </beans>

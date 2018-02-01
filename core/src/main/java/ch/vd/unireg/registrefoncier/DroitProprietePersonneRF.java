@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -11,7 +11,7 @@ import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 
 @Entity
 public abstract class DroitProprietePersonneRF extends DroitProprieteRF {

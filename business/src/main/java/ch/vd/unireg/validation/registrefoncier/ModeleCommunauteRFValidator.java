@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import java.util.Set;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.PrincipalCommunauteRF;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
-import ch.vd.uniregctb.validation.ValidationService;
-import ch.vd.uniregctb.validation.tiers.TiersValidator;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
+import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
+import ch.vd.unireg.validation.EntityValidatorImpl;
+import ch.vd.unireg.validation.ValidationService;
+import ch.vd.unireg.validation.tiers.TiersValidator;
 
 public class ModeleCommunauteRFValidator extends EntityValidatorImpl<ModeleCommunauteRF> {
 

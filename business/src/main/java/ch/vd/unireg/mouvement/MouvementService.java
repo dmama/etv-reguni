@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
 
 public interface MouvementService {
 

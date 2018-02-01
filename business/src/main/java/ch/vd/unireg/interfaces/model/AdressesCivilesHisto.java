@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.model;
+package ch.vd.unireg.interfaces.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -9,8 +9,8 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Contient toutes les adresses civiles d'un individu ou d'une entreprise regroupées par type
@@ -82,7 +82,7 @@ public class AdressesCivilesHisto {
 	/**
 	 * @param strict si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
 	 *               (dans la mesure du possible) pour ne pas lever d'exception.
-	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
+	 * @throws ch.vd.unireg.common.DonneesCivilesException
 	 *          en cas d'incohérence des données
 	 */
 	public void finish(boolean strict) throws DonneesCivilesException {
@@ -145,13 +145,13 @@ public class AdressesCivilesHisto {
 					else if (debutSuivante != null) {
 						// on adapte la date de fin de l'adresse précédente
 						final RegDate nouvelleFin = debutSuivante.getOneDayBefore();
-						ch.vd.uniregctb.interfaces.model.AdresseAdapter adapted = new ch.vd.uniregctb.interfaces.model.AdresseAdapter(previous, previous.getDateDebut(), nouvelleFin);
+						ch.vd.unireg.interfaces.model.AdresseAdapter adapted = new ch.vd.unireg.interfaces.model.AdresseAdapter(previous, previous.getDateDebut(), nouvelleFin);
 						adresses.set(i - 1, adapted);
 					}
 					else {
 						// on adapte la date de début de l'adresse courante
 						final RegDate nouveauDebut = finPrecedente.getOneDayAfter();
-						ch.vd.uniregctb.interfaces.model.AdresseAdapter adapted = new ch.vd.uniregctb.interfaces.model.AdresseAdapter(current, nouveauDebut, current.getDateFin());
+						ch.vd.unireg.interfaces.model.AdresseAdapter adapted = new ch.vd.unireg.interfaces.model.AdresseAdapter(current, nouveauDebut, current.getDateFin());
 						adresses.set(i, adapted);
 					}
 				}

@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.evenement.civil.interne.changement.nationalite;
+package ch.vd.unireg.evenement.civil.interne.changement.nationalite;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 
 public class CorrectionDateFinNationaliteSuisse extends CorrectionDateFinNationalite {
 

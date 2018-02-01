@@ -10,4 +10,4 @@ do
         fi
 done
 
-java -cp $classpath ch.vd.uniregctb.extraction.entreprise.photosimpa.Job $*
+java -cp $classpath ch.vd.unireg.extraction.entreprise.photosimpa.Job $*

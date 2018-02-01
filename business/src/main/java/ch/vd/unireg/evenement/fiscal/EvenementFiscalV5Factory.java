@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

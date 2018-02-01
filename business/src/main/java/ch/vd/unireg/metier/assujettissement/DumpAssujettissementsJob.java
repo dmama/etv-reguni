@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,17 +14,17 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.scheduler.JobParamString;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplate;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.scheduler.JobParamString;
+import ch.vd.unireg.tiers.Contribuable;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.json;
+package ch.vd.unireg.json;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.general.manager;
+package ch.vd.unireg.general.manager;
 
-import ch.vd.uniregctb.general.view.UtilisateurView;
+import ch.vd.unireg.general.view.UtilisateurView;
 
 public interface UtilisateurManager {
 

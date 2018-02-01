@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import java.util.List;
 import java.util.Map;
@@ -15,18 +15,18 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.document.AnnoncesIDERapport;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamBoolean;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.document.AnnoncesIDERapport;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamBoolean;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class AnnonceIDEJob extends JobDefinition {
 

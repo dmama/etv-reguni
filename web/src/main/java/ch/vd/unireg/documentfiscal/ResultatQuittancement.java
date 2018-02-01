@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
 
 public class ResultatQuittancement {
 

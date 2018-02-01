@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import org.junit.Test;
 

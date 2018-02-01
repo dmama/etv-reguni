@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.webservices.v5;
+package ch.vd.unireg.webservices.v5;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,7 +14,7 @@ public class WithholdingTaxDeclarationPeriodicityTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(WithholdingTaxDeclarationPeriodicity.class, ch.vd.uniregctb.type.PeriodiciteDecompte.class);
+		assertEnumLengthEquals(WithholdingTaxDeclarationPeriodicity.class, ch.vd.unireg.type.PeriodiciteDecompte.class);
 
 		// vérification que toutes les valeurs sont mappées sur quelque chose
 		for (PeriodiciteDecompte pd : PeriodiciteDecompte.values()) {

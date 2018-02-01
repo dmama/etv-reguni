@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Interface du bean qui permet de savoir si l'onglet "Mandataires" est visualisable, voire éditable (par principe et en fonction des droits plus fin de l'utilisateur)

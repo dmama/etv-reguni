@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.util.List;
 import java.util.Set;
@@ -6,26 +6,26 @@ import java.util.Set;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.avatar.AvatarService;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
-import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.NatureJuridique;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.avatar.AvatarService;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.FormeLegaleHisto;
+import ch.vd.unireg.tiers.OrganisationNotFoundException;
+import ch.vd.unireg.tiers.RaisonSocialeHisto;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.NatureJuridique;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesIndexable<Entreprise> {
 

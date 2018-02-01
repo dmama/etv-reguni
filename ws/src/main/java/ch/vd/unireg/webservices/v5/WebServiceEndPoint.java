@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v5;
+package ch.vd.unireg.webservices.v5;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -50,17 +50,17 @@ import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.uniregctb.avatar.ImageData;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
-import ch.vd.uniregctb.webservices.common.AccessDeniedException;
-import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.webservices.common.WebServiceHelper;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.indexer.EmptySearchCriteriaException;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.common.WebServiceHelper;
+import ch.vd.unireg.xml.ServiceException;
 
 public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 

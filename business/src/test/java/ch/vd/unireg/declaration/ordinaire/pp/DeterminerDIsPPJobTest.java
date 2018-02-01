@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import java.util.HashMap;
 
@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.JobTest;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.common.JobTest;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import org.springframework.validation.Errors;
 
-import ch.vd.uniregctb.tiers.view.EditFlagEntrepriseView;
+import ch.vd.unireg.tiers.view.EditFlagEntrepriseView;
 
 public class EditFlagEntrepriseViewValidator extends AbstractFlagEntrepriseViewValidator {
 

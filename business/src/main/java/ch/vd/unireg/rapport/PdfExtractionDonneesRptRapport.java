@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
@@ -10,12 +10,12 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
-import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.unireg.common.CsvHelper;
+import ch.vd.unireg.common.ListesResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.listes.afc.ExtractionDonneesRptResults;
+import ch.vd.unireg.type.ModeImposition;
 
 /**
  * Générateur du rapport PDF d'exécution du batch d'extraction des listes des données de référence RPT

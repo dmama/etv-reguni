@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.wsclient.bvrplus;
+package ch.vd.unireg.wsclient.bvrplus;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClientException;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra.view;
+package ch.vd.unireg.supergra.view;
 
 public class Mc2PpView {
 	private long id;

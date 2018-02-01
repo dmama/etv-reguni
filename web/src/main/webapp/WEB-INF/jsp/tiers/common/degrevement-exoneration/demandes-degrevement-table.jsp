@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="demandesDegrevement" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.DemandeDegrevementICIView>"--%>
+<%--@elvariable id="demandesDegrevement" type="java.util.List<ch.vd.unireg.registrefoncier.allegement.DemandeDegrevementICIView>"--%>
 
 <c:set value="${param.mode}" var="mode"/>       <%-- 'visu' ou 'edit' --%>
 
@@ -10,7 +10,7 @@
 	<label class="noprint" for="histoDemandesDegrevement"><fmt:message key="label.historique"/></label>
 </c:if>
 
-<display:table name="${demandesDegrevement}" id="demande" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator" htmlId="demandesDegrevement">
+<display:table name="${demandesDegrevement}" id="demande" class="display" decorator="ch.vd.unireg.decorator.TableAnnulableDateRangeDecorator" htmlId="demandesDegrevement">
 	<display:column titleKey="label.periode.fiscale">
 		<c:out value="${demande.periodeFiscale}"/>
 	</display:column>

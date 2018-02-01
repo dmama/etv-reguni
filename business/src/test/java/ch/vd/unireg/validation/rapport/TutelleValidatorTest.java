@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.validation.rapport;
+package ch.vd.unireg.validation.rapport;
 
 import java.util.Collections;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RepresentationLegale;
-import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RepresentationLegale;
+import ch.vd.unireg.tiers.Tutelle;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
 

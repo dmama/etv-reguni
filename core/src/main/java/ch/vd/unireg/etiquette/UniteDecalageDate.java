@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.etiquette;
+package ch.vd.unireg.etiquette;
 
 import java.util.Map;
 import java.util.Optional;

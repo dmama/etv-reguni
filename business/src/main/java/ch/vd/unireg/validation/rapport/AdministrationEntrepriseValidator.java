@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.rapport;
+package ch.vd.unireg.validation.rapport;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.AdministrationEntreprise;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.AdministrationEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
 
 public class AdministrationEntrepriseValidator extends RapportEntreTiersValidator<AdministrationEntreprise> {
 

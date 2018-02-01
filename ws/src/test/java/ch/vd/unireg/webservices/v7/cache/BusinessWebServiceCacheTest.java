@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7.cache;
+package ch.vd.unireg.webservices.v7.cache;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -78,50 +78,50 @@ import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.uniregctb.common.WebserviceTest;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.efacture.EFactureServiceProxy;
-import ch.vd.uniregctb.efacture.MockEFactureService;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
-import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeDroitAcces;
-import ch.vd.uniregctb.type.TypeMandat;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
-import ch.vd.uniregctb.webservices.common.AccessDeniedException;
-import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.webservices.v7.BusinessWebService;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.WebserviceTest;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.efacture.EFactureServiceProxy;
+import ch.vd.unireg.efacture.MockEFactureService;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
+import ch.vd.unireg.registrefoncier.TypeCommunaute;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.tiers.SituationFamillePersonnePhysique;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeDroitAcces;
+import ch.vd.unireg.type.TypeMandat;
+import ch.vd.unireg.type.TypeRapprochementRF;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.v7.BusinessWebService;
+import ch.vd.unireg.xml.ServiceException;
 
-import static ch.vd.uniregctb.webservices.v7.BusinessWebServiceTest.assertFoundEntry;
+import static ch.vd.unireg.webservices.v7.BusinessWebServiceTest.assertFoundEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -244,7 +244,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 				final PeriodeFiscale periode = addPeriodeFiscale(2003);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(di, date(2003, 1, 10));
 				addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
@@ -318,7 +318,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				PersonnePhysique monsieur = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
 				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
-				ch.vd.uniregctb.tiers.MenageCommun mc = ensemble.getMenage();
+				ch.vd.unireg.tiers.MenageCommun mc = ensemble.getMenage();
 				mc.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 
 				SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
@@ -653,7 +653,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final ch.vd.uniregctb.tiers.MenageCommun mc = hibernateTemplate.get(ch.vd.uniregctb.tiers.MenageCommun.class, ids.menage);
+				final ch.vd.unireg.tiers.MenageCommun mc = hibernateTemplate.get(ch.vd.unireg.tiers.MenageCommun.class, ids.menage);
 				assertNotNull(mc);
 
 				final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
@@ -1749,7 +1749,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 				final PeriodeFiscale periode = addPeriodeFiscale(2004);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(di, date(2004, 1, 10));
 
 				return eric.getNumero();
@@ -1856,7 +1856,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 				final PeriodeFiscale periode = addPeriodeFiscale(2004);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(di, date(2004, 1, 10));
 
 				return eric.getNumero();

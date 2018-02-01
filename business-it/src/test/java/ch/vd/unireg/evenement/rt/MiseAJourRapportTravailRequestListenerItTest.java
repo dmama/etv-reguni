@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.rt;
+package ch.vd.unireg.evenement.rt;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -12,13 +12,13 @@ import ch.vd.unireg.xml.event.rt.request.v1.CreationProlongationRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.FermetureRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

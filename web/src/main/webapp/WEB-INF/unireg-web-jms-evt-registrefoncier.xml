@@ -5,7 +5,7 @@
 
 	<!-- Evénements du Registre Foncier -->
 
-	<bean id="evtRFImportEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="evtRFImportEventListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evtRFImportEventEsbHandler"/>
 		<property name="destinationName" value="${extprop.jms.queue.evtRfImport}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -13,7 +13,7 @@
 		<property name="description" value="Réception des événements du registre foncier concernant les immeubles"/>
 	</bean>
 
-	<bean id="evtRFImportEventEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportEsbHandler">
+	<bean id="evtRFImportEventEsbHandler" class="ch.vd.unireg.evenement.registrefoncier.EvenementRFImportEsbHandler">
 		<property name="txSyncManager" ref="txSyncManager" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
 		<property name="serviceImportRF" ref="serviceImportRF"/>
@@ -21,7 +21,7 @@
 
 	<!-- Evénements d'identification manuelle pour les rapprochements propriétaires -->
 
-	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evtIdentificationRapprochementRFEsbHandler"/>
 		<property name="destinationName" value="${extprop.jms.queue.evtRapprochementTiersRF}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -29,12 +29,12 @@
 		<property name="description" value="Réception des événements d'identification manuelle des rapprochements 'propriétaire'"/>
 	</bean>
 
-	<bean id="evtIdentificationRapprochementRFEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementIdentificationRapprochementProprietaireEsbHandler">
+	<bean id="evtIdentificationRapprochementRFEsbHandler" class="ch.vd.unireg.evenement.registrefoncier.EvenementIdentificationRapprochementProprietaireEsbHandler">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="handler" ref="rapprochementProprietaireHandler"/>
 	</bean>
 
-	<bean id="rapprochementProprietaireHandler" class="ch.vd.uniregctb.evenement.registrefoncier.RapprochementProprietaireHandlerImpl">
+	<bean id="rapprochementProprietaireHandler" class="ch.vd.unireg.evenement.registrefoncier.RapprochementProprietaireHandlerImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>

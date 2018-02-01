@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 public class AdressesResolutionException extends AdresseException {
 

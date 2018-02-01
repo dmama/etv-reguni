@@ -37,8 +37,8 @@ import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationD
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationFunction;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationLocation;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

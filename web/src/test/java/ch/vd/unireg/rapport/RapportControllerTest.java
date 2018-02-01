@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -16,23 +16,23 @@ import org.springframework.web.util.NestedServletException;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.rapport.view.RapportView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Curatelle;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MockTiersService;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.rapport.view.RapportView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Curatelle;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MockTiersService;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RepresentationConventionnelle;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.Tutelle;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

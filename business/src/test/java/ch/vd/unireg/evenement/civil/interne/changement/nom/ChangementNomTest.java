@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.changement.nom;
+package ch.vd.unireg.evenement.civil.interne.changement.nom;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -13,13 +13,13 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersDAO;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

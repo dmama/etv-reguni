@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.suisseoupermiscresident;
+package ch.vd.unireg.listes.suisseoupermiscresident;
 
 import java.util.Map;
 
@@ -8,15 +8,15 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
-import ch.vd.uniregctb.listes.ListesTiersService;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.ListeContribuablesResidentsSansForVaudoisRapport;
+import ch.vd.unireg.listes.ListesTiersService;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamInteger;
 
 /**
  * Job qui compile une liste des contribuables suisses ou avec permis C, dont l'adresse principale est sur Vaud

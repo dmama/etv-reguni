@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import java.util.List;
 
@@ -14,24 +14,24 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.situationfamille.VueSituationFamille.Source;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.SituationFamilleDAO;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.situationfamille.VueSituationFamille.Source;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.SituationFamilleDAO;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.tiers.SituationFamillePersonnePhysique;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TarifImpotSource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

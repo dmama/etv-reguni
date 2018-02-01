@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 /**
  * Exception lancée par le service des autres documents fiscaux en cas de souci

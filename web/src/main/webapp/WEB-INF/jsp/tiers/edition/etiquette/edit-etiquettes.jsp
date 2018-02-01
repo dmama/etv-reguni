@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <%--@elvariable id="tiersId" type="java.lang.Long"--%>
-<%--@elvariable id="etiquettes" type="java.util.List<ch.vd.uniregctb.tiers.view.EtiquetteTiersView>"--%>
+<%--@elvariable id="etiquettes" type="java.util.List<ch.vd.unireg.tiers.view.EtiquetteTiersView>"--%>
 
 <unireg:setAuth var="autorisations" tiersId="${tiersId}"/>
 
@@ -29,7 +29,7 @@
 			</c:if>
 
 			<c:if test="${not empty etiquettes}">
-				<display:table name="${etiquettes}" id="etiq" requestURI="edit-list.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				<display:table name="${etiquettes}" id="etiq" requestURI="edit-list.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 					<display:column sortable="true" titleKey="label.libelle" sortProperty="libelle" style="width: 20%;">
 						<c:out value="${etiq.libelle}"/>
 					</display:column>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party4.cache;
+package ch.vd.unireg.webservices.party4.cache;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,15 +18,15 @@ import ch.vd.unireg.webservices.party4.SearchPartyRequest;
 import ch.vd.unireg.webservices.party4.SearchPartyResponse;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.v2.PartyInfo;
-import ch.vd.uniregctb.common.WebserviceTest;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
-import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.webservices.party4.impl.PartyWebServiceEndPoint;
+import ch.vd.unireg.common.WebserviceTest;
+import ch.vd.unireg.interfaces.service.mock.DefaultMockServiceSecurite;
+import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.webservices.party4.impl.PartyWebServiceEndPoint;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TypeAdressePM;
+import ch.vd.unireg.type.TypeAdressePM;
 
 /**
  * Classe de transtypage pour Hibernate : TypeAdressePM <--> varchar

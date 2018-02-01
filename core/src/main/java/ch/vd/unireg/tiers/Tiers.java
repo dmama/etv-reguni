@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -41,18 +41,18 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.BusinessComparable;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.BusinessComparable;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.documentfiscal.DocumentFiscal;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Personne avec laquelle l'ACI entretien une relation, de nature fiscale ou autre. Cette
@@ -144,11 +144,11 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Id
 	@Column(name = "NUMERO")
 	@GeneratedValue(generator = "tiersSequence")
-	@GenericGenerator(name = "tiersSequence", strategy = "ch.vd.uniregctb.tiers.TiersMultiSequenceGenerator")
+	@GenericGenerator(name = "tiersSequence", strategy = "ch.vd.unireg.tiers.TiersMultiSequenceGenerator")
 	/*
-	 * @GenericGenerator(name = "tiersSequence", strategy = "ch.vd.uniregctb.tiers.MultiSequenceGenerator", parameters = { @Parameter(name =
+	 * @GenericGenerator(name = "tiersSequence", strategy = "ch.vd.unireg.tiers.MultiSequenceGenerator", parameters = { @Parameter(name =
 	 * "max_lo", value = "50"), @Parameter(name = "sequence", value = "S_TIERS"), @Parameter(name = "entitiesSequencesMap", value =
-	 * "ch.vd.uniregctb.tiers.Habitant=S_HABITANT, ch.vd.uniregctb.tiers.NonHabitant=S_NON_HABITANT"), @Parameter(name = "sequenceOffset",
+	 * "ch.vd.unireg.tiers.Habitant=S_HABITANT, ch.vd.unireg.tiers.NonHabitant=S_NON_HABITANT"), @Parameter(name = "sequenceOffset",
 	 * value = "1000000") } )
 	 */
 	public Long getNumero() {
@@ -721,7 +721,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return la date à partir de laquelle le tiers devra être réindexé; ou <b>null</b> si le tiers n'a pas besoin d'être réindexé dans le futur.
 	 */
 	@Column(name = "REINDEX_ON")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getReindexOn() {
 		return reindexOn;
 	}
@@ -771,7 +771,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	/**
 	 * Propriété présente pour afficher les données dans SuperGRA et la validation... Pour le véritable affichage, lui préférer l'accès par le DAO.
-	 * @see ch.vd.uniregctb.tiers.dao.RemarqueDAO#getRemarques(Long)
+	 * @see ch.vd.unireg.tiers.dao.RemarqueDAO#getRemarques(Long)
 	 */
 	@OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "tiers")
 	public Set<Remarque> getRemarques() {
@@ -780,7 +780,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	/**
 	 * Propriété présente pour afficher les données dans SuperGRA, ne doit pas être utilisée autrement
-	 * @see ch.vd.uniregctb.tiers.dao.RemarqueDAO#save(Object)
+	 * @see ch.vd.unireg.tiers.dao.RemarqueDAO#save(Object)
 	 */
 	@Deprecated
 	public void setRemarques(Set<Remarque> remarques) {

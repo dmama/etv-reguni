@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v3.strategy;
+package ch.vd.unireg.xml.party.v3.strategy;
 
 import java.util.Set;
 
@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.adminauth.v3.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.ExceptionHelper;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.ExceptionHelper;
+import ch.vd.unireg.xml.ServiceException;
 
 public class AdminAuthStrategy extends TaxPayerStrategy<AdministrativeAuthority> {
 

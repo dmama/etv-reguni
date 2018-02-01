@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.utils.LogLevel;
 
 /*
  * Longueur de colonne : 14

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.jms.EsbMessageHelper;
 
 /**
  * Handler de messages ESB d'identification capable de déterminer s'il faut utiliser la version xmlbeans ou la version jaxb2

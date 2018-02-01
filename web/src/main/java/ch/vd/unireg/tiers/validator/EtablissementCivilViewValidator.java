@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
@@ -6,9 +6,9 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.NumeroIDEHelper;
-import ch.vd.uniregctb.tiers.view.EtablissementCivilView;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.NumeroIDEHelper;
+import ch.vd.unireg.tiers.view.EtablissementCivilView;
 
 public class EtablissementCivilViewValidator implements Validator {
 

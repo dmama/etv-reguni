@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,16 +18,16 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 /**
  * Classe qui permet de validation la cohérence des données d'un tiers dans un thread autonome.

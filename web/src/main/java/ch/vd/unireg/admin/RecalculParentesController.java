@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 @Controller
 public class RecalculParentesController {

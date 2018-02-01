@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
-import ch.vd.uniregctb.common.DelegatingValidator;
+import ch.vd.unireg.common.DelegatingValidator;
 
 public class EFactureValidator extends DelegatingValidator {
 

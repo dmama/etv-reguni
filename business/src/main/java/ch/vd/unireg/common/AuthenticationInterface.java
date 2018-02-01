@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 public final class AuthenticationInterface implements ch.vd.shared.batchtemplate.AuthenticationInterface {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.search;
+package ch.vd.unireg.search;
 
 public interface SearchTiersFilterFactory {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
+package ch.vd.unireg.tiers.rattrapage.flaghabitant;
 
 import java.util.List;
 
@@ -9,13 +9,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Processeur utilisé lors des tentatives de remettre d'aplomb les flags "habitant" des personnes physiques en fonction de leurs adresses de résidences civiles

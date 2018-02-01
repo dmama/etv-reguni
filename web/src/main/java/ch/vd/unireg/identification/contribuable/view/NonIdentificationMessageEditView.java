@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.identification.contribuable.view;
+package ch.vd.unireg.identification.contribuable.view;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
 
 public class NonIdentificationMessageEditView {
 

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.general.manager;
+package ch.vd.unireg.general.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Methodes relatives au cartouche contribuable

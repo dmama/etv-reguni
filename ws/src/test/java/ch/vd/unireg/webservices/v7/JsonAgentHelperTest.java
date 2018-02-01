@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import java.util.Random;
 
@@ -11,7 +11,7 @@ import ch.vd.unireg.xml.party.agent.v1.Agent;
 import ch.vd.unireg.xml.party.agent.v1.AgentType;
 import ch.vd.unireg.xml.party.agent.v1.GeneralAgent;
 import ch.vd.unireg.xml.party.agent.v1.SpecialAgent;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

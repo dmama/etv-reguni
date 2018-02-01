@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.unireg.common.CollectionsUtils;
 
 public class PermisListImpl implements PermisList, Serializable {
 

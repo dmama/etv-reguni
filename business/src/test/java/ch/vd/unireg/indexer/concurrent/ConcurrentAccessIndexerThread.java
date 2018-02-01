@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.indexer.concurrent;
+package ch.vd.unireg.indexer.concurrent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.MockIndexable;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
+import ch.vd.unireg.indexer.MockIndexable;
 
 public class ConcurrentAccessIndexerThread extends AbstractConcurrentAccessThread {
 

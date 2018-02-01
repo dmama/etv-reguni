@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.tache.sync.SynchronizeAction;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.tache.sync.SynchronizeAction;
 
 public class TacheSyncResults extends AbstractJobResults<Long, TacheSyncResults> {
 

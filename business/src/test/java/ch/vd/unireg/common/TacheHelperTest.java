@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.parametrage.MockParameterAppService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.parametrage.MockParameterAppService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.type.TypeContribuable;
 
 public class TacheHelperTest extends WithoutSpringTest {
 

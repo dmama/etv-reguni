@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <tiles:insert template="/WEB-INF/jsp/templates/templateDialog.jsp">
-	<%--@elvariable id="annonce" type="ch.vd.uniregctb.annonceIDE.AnnonceIDEView"--%>
+	<%--@elvariable id="annonce" type="ch.vd.unireg.annonceIDE.AnnonceIDEView"--%>
 	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 		<fieldset class="information">

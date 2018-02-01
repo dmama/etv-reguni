@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal;
+package ch.vd.unireg.regimefiscal;
 
 /**
  * @author Raphaël Marmier, 2017-01-25, <raphael.marmier@vd.ch>

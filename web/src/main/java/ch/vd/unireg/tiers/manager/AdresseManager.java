@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.view.AdresseView;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.tiers.view.AdresseView;
+import ch.vd.unireg.tiers.view.TiersEditView;
 
 /**
  * Service offrant les methodes permettant de gerer le controller TiersAdresseController

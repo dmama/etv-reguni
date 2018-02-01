@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;

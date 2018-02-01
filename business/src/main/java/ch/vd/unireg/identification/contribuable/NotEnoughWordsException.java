@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 /**
  * Exception envoyée par le {@link IdentificationContribuableHelper} dans les méthodes où on demande d'enlever le dernier mot d'un champ

@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.situationfamille;
+package ch.vd.unireg.validation.situationfamille;
 
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 /**
  * Validateur des situations de famille

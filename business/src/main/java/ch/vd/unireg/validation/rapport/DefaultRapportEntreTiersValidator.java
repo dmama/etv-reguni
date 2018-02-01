@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.rapport;
+package ch.vd.unireg.validation.rapport;
 
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportEntreTiers;
 
 public class DefaultRapportEntreTiersValidator extends RapportEntreTiersValidator<RapportEntreTiers> {
 

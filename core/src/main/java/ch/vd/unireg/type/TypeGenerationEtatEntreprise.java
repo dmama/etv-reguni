@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 /**
  * Type de traitement qui a présidé à la génération d'un état d'entreprise

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -12,20 +12,20 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackException;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.type.CategorieIdentifiant;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.FormeJuridique;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.type.CategorieIdentifiant;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.FormeJuridique;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class TiersBasic {
 

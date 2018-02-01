@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.servlet;
+package ch.vd.unireg.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;

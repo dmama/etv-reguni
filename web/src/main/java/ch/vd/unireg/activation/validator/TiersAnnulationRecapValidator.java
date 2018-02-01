@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.activation.validator;
+package ch.vd.unireg.activation.validator;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.activation.view.TiersAnnulationRecapView;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.activation.view.TiersAnnulationRecapView;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 public class TiersAnnulationRecapValidator implements Validator {
 

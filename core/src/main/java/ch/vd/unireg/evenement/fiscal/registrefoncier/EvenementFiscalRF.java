@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.evenement.fiscal.registrefoncier;
+package ch.vd.unireg.evenement.fiscal.registrefoncier;
 
 import javax.persistence.Entity;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 
 /**
- * Classe de base des événements fiscaux qui concernent les données du Registre Foncier. A la différences des événements fiscaux traditionnels ({@link ch.vd.uniregctb.evenement.fiscal.EvenementFiscalTiers}), ces événements ne sont pas forcément
+ * Classe de base des événements fiscaux qui concernent les données du Registre Foncier. A la différences des événements fiscaux traditionnels ({@link ch.vd.unireg.evenement.fiscal.EvenementFiscalTiers}), ces événements ne sont pas forcément
  * rattaché à un tiers.
  */
 @Entity

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v4;
+package ch.vd.unireg.xml.party.v4;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,21 +15,21 @@ import ch.vd.unireg.xml.party.person.v4.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v4.NaturalPerson;
 import ch.vd.unireg.xml.party.v4.Party;
 import ch.vd.unireg.xml.party.v4.PartyPart;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v4.strategy.AdminAuthStrategy;
-import ch.vd.uniregctb.xml.party.v4.strategy.CommonHouseholdStrategy;
-import ch.vd.uniregctb.xml.party.v4.strategy.CorporationStrategy;
-import ch.vd.uniregctb.xml.party.v4.strategy.DebtorStrategy;
-import ch.vd.uniregctb.xml.party.v4.strategy.EstablishmentStrategy;
-import ch.vd.uniregctb.xml.party.v4.strategy.NaturalPersonStrategy;
-import ch.vd.uniregctb.xml.party.v4.strategy.OtherCommunityStrategy;
-import ch.vd.uniregctb.xml.party.v4.strategy.PartyStrategy;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v4.strategy.AdminAuthStrategy;
+import ch.vd.unireg.xml.party.v4.strategy.CommonHouseholdStrategy;
+import ch.vd.unireg.xml.party.v4.strategy.CorporationStrategy;
+import ch.vd.unireg.xml.party.v4.strategy.DebtorStrategy;
+import ch.vd.unireg.xml.party.v4.strategy.EstablishmentStrategy;
+import ch.vd.unireg.xml.party.v4.strategy.NaturalPersonStrategy;
+import ch.vd.unireg.xml.party.v4.strategy.OtherCommunityStrategy;
+import ch.vd.unireg.xml.party.v4.strategy.PartyStrategy;
 
 public class PartyBuilder {
 
@@ -58,11 +58,11 @@ public class PartyBuilder {
 		map.put(clazz, strategy);
 	}
 
-	public static NaturalPerson newNaturalPerson(ch.vd.uniregctb.tiers.PersonnePhysique right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public static NaturalPerson newNaturalPerson(ch.vd.unireg.tiers.PersonnePhysique right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		return naturalPersonStrategy.newFrom(right, parts, context);
 	}
 
-	public static CommonHousehold newCommonHousehold(ch.vd.uniregctb.tiers.MenageCommun right, Set<PartyPart> parts, Context context) throws ServiceException {
+	public static CommonHousehold newCommonHousehold(ch.vd.unireg.tiers.MenageCommun right, Set<PartyPart> parts, Context context) throws ServiceException {
 		return commonHouseholdStrategy.newFrom(right, parts, context);
 	}
 

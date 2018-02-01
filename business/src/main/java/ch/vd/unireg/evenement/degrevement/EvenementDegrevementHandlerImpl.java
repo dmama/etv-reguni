@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.degrevement;
+package ch.vd.unireg.evenement.degrevement;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -30,26 +30,26 @@ import ch.vd.unireg.xml.event.degrevement.v1.Message;
 import ch.vd.unireg.xml.event.degrevement.v1.TypDateAttr;
 import ch.vd.unireg.xml.event.degrevement.v1.TypEntMax12Attr;
 import ch.vd.unireg.xml.event.degrevement.v1.TypPctPosDecMax32Attr;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.documentfiscal.DemandeDegrevementICIHelper;
-import ch.vd.uniregctb.foncier.DegrevementICI;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.foncier.DonneesLoiLogement;
-import ch.vd.uniregctb.foncier.DonneesUtilisation;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.MineRF;
-import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
-import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.documentfiscal.DemandeDegrevementICIHelper;
+import ch.vd.unireg.foncier.DegrevementICI;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.foncier.DonneesLoiLogement;
+import ch.vd.unireg.foncier.DonneesUtilisation;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.unireg.registrefoncier.EstimationRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.MineRF;
+import ch.vd.unireg.registrefoncier.PartCoproprieteRF;
+import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Handler métier des retours des données de dégrèvement

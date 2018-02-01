@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.detector;
+package ch.vd.unireg.registrefoncier.dataimport.detector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,27 +21,27 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.capitastra.rechteregister.BelastetesGrundstueck;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ServitudeRF;
-import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
-import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.helper.ServitudesRFHelper;
-import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
-import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplate;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.ServitudeRF;
+import ch.vd.unireg.registrefoncier.dao.DroitRFDAO;
+import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.dataimport.MutationsRFDetectorResults;
+import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
+import ch.vd.unireg.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
+import ch.vd.unireg.registrefoncier.dataimport.helper.ServitudesRFHelper;
+import ch.vd.unireg.registrefoncier.key.DroitRFKey;
+import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
 
 public class ServitudeRFDetector {
 

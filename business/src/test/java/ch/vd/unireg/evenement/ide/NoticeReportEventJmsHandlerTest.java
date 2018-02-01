@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,8 +10,8 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.depart;
+package ch.vd.unireg.norentes.civil.depart;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Cette classe teste l'évenement de départ d'un individu en dehors du canton

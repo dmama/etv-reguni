@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.validation.bouclement;
+package ch.vd.unireg.validation.bouclement;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class BouclementValidatorTest extends AbstractValidatorTest<Bouclement> {
 

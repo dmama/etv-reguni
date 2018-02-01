@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public abstract class AbstractAdresseResidenceComparisonStrategyTest extends AbstractAdresseComparisonStrategyTest {
 

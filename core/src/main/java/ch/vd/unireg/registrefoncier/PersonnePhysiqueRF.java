@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -8,7 +8,7 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @DiscriminatorValue("PersonnePhysique")
@@ -37,7 +37,7 @@ public class PersonnePhysiqueRF extends TiersRF {
 	}
 
 	@Column(name = "DATE_NAISSANCE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType", parameters = {@Parameter(name = "allowPartial", value = "true")})
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType", parameters = {@Parameter(name = "allowPartial", value = "true")})
 	public RegDate getDateNaissance() {
 		return dateNaissance;
 	}

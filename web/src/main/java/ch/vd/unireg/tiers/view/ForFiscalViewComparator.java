@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import ch.vd.uniregctb.common.GentilComparator;
+import ch.vd.unireg.common.GentilComparator;
 
 /**
  * Compare les vues sur les fors fiscaux compte tenu de l'algorithme de tri suivant:

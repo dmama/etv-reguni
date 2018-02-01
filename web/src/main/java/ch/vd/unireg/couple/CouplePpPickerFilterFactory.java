@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
-import ch.vd.uniregctb.search.SearchTiersFilter;
-import ch.vd.uniregctb.search.SearchTiersFilterFactory;
+import ch.vd.unireg.search.SearchTiersFilter;
+import ch.vd.unireg.search.SearchTiersFilterFactory;
 
 public class CouplePpPickerFilterFactory implements SearchTiersFilterFactory {
 

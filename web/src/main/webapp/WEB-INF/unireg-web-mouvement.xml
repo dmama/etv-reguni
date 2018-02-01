@@ -2,40 +2,40 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<bean id="mouvementMapHelper" class="ch.vd.uniregctb.mouvement.MouvementMapHelper" >
+	<bean id="mouvementMapHelper" class="ch.vd.unireg.mouvement.MouvementMapHelper" >
 		<property name="messageSource" ref="messageSource"/>
 	</bean>
 
-	<bean id="mouvementEditValidator" class="ch.vd.uniregctb.mouvement.validator.MouvementEditValidator" >
+	<bean id="mouvementEditValidator" class="ch.vd.unireg.mouvement.validator.MouvementEditValidator" >
 	</bean>
 
-	<bean id="abstractMouvementController" class="ch.vd.uniregctb.mouvement.AbstractMouvementController" abstract="true">
+	<bean id="abstractMouvementController" class="ch.vd.unireg.mouvement.AbstractMouvementController" abstract="true">
 		<property name="mouvementEditManager" ref="mouvementEditManager" />
 		<property name="mouvementMapHelper" ref="mouvementMapHelper" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 	
-	<bean id="mouvementEditController" class="ch.vd.uniregctb.mouvement.MouvementEditController" parent="abstractMouvementController">
+	<bean id="mouvementEditController" class="ch.vd.unireg.mouvement.MouvementEditController" parent="abstractMouvementController">
 		<property name="tacheListManager" ref="tacheListManager" />
 		<property name="validator" ref="mouvementEditValidator" />
 	</bean>
 
-	<bean id="mouvementEditManager" class="ch.vd.uniregctb.mouvement.manager.MouvementEditManagerImpl" parent="abstractMouvementManager"/>
+	<bean id="mouvementEditManager" class="ch.vd.unireg.mouvement.manager.MouvementEditManagerImpl" parent="abstractMouvementManager"/>
 
-	<bean id="mouvementMasseManager" class="ch.vd.uniregctb.mouvement.manager.MouvementMasseManagerImpl" parent="abstractMouvementManager">
+	<bean id="mouvementMasseManager" class="ch.vd.unireg.mouvement.manager.MouvementMasseManagerImpl" parent="abstractMouvementManager">
 		<property name="mouvementService" ref="mouvementService"/>
 		<property name="bordereauDAO" ref="bordereauMouvementDossierDAO"/>
 		<property name="extractionService" ref="extractionService" />
 	</bean>
 
-	<bean id="bordereauMouvementDossierController" class="ch.vd.uniregctb.mouvement.BordereauController">
+	<bean id="bordereauMouvementDossierController" class="ch.vd.unireg.mouvement.BordereauController">
 		<property name="mouvementManager" ref="mouvementMasseManager"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="mouvementMasseController" class="ch.vd.uniregctb.mouvement.MouvementMasseController">
+	<bean id="mouvementMasseController" class="ch.vd.unireg.mouvement.MouvementMasseController">
 		<property name="mouvementManager" ref="mouvementMasseManager"/>
 		<property name="mouvementMapHelper" ref="mouvementMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>

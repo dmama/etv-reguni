@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -30,23 +30,23 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
-import ch.vd.uniregctb.evenement.common.AjaxResponseMessage;
-import ch.vd.uniregctb.evenement.organisation.manager.EvenementOrganisationManager;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationSummaryView;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.evenement.common.AbstractEvenementCivilController;
+import ch.vd.unireg.evenement.common.AjaxResponseMessage;
+import ch.vd.unireg.evenement.organisation.manager.EvenementOrganisationManager;
+import ch.vd.unireg.evenement.organisation.view.EvenementOrganisationCriteriaView;
+import ch.vd.unireg.evenement.organisation.view.EvenementOrganisationDetailView;
+import ch.vd.unireg.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
+import ch.vd.unireg.evenement.organisation.view.EvenementOrganisationSummaryView;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
 
 
 @Controller

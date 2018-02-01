@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.lr.view;
+package ch.vd.unireg.lr.view;
 
 /**
  * Raison pour laquelle le résultat de recherche des LR doit être vide, avec le texte d'explication correspondant

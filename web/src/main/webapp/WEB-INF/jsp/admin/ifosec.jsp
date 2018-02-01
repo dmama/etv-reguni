@@ -22,13 +22,13 @@
 					<tr><td style="font-weight: bold">Oid</td><td><%--@elvariable id="oid" type="java.lang.Integer"--%>
 					<c:out value="${oid}" /></td><td>n/a</td></tr>
 					<tr><td style="font-weight: bold">Procédures Unireg</td><td>
-						<%--@elvariable id="proceduresUnireg" type="java.util.List<ch.vd.uniregctb.security.IfoSecProcedure>"--%>
+						<%--@elvariable id="proceduresUnireg" type="java.util.List<ch.vd.unireg.security.IfoSecProcedure>"--%>
 						<ul>
 						<c:forEach items="${proceduresUnireg}" var="p">
 							<li><c:out value="${p.code}"/> (<c:out value="${p.designation}"/>)</li>
 						</c:forEach>
 						</ul>
-						<%--@elvariable id="rolesIfoSecByPass" type="java.util.List<ch.vd.uniregctb.security.Role>"--%>
+						<%--@elvariable id="rolesIfoSecByPass" type="java.util.List<ch.vd.unireg.security.Role>"--%>
 						<c:if test="${not empty rolesIfoSecByPass}">
 							<span style="color: red;">(plus les procédures bypassées suivantes:
 								<ul>
@@ -39,7 +39,7 @@
 							)</span>
 						</c:if>
 					</td><td>
-						<%--@elvariable id="roles" type="ch.vd.uniregctb.security.Role[]"--%>
+						<%--@elvariable id="roles" type="ch.vd.unireg.security.Role[]"--%>
 						<ul>
 						<c:forEach items="${roles}" var="r">
 							<authz:authorize ifAnyGranted="${r.code}">
@@ -51,7 +51,7 @@
 						</ul>
 					</td></tr>
 					<tr><td style="font-weight: bold">Procédures autres applications</td><td>
-						<%--@elvariable id="proceduresAutres" type="java.util.List<ch.vd.uniregctb.security.IfoSecProcedure>"--%>
+						<%--@elvariable id="proceduresAutres" type="java.util.List<ch.vd.unireg.security.IfoSecProcedure>"--%>
 						<ul>
 						<c:forEach items="${proceduresAutres}" var="p">
 							<li><c:out value="${p.code}"/> (<c:out value="${p.designation}"/>)</li>

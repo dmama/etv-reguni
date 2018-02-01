@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,18 +23,18 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
-import ch.vd.uniregctb.role.before2016.InfoContribuable;
-import ch.vd.uniregctb.role.before2016.InfoContribuablePM;
-import ch.vd.uniregctb.role.before2016.InfoContribuablePP;
-import ch.vd.uniregctb.role.before2016.ProduireRolesResults;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.CsvHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.assujettissement.MotifAssujettissement;
+import ch.vd.unireg.role.before2016.InfoContribuable;
+import ch.vd.unireg.role.before2016.InfoContribuablePM;
+import ch.vd.unireg.role.before2016.InfoContribuablePP;
+import ch.vd.unireg.role.before2016.ProduireRolesResults;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les communes ou les OID (avant 2016 !!)

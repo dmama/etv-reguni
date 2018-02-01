@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 public class AddDegrevementView extends AbstractEditDegrevementView {
 

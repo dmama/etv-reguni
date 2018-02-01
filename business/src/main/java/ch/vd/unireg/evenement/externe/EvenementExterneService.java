@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 public interface EvenementExterneService extends EvenementExterneHandler {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -12,16 +12,16 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.EntityKey;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.common.ThreadSwitch;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.unireg.common.EntityKey;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.common.ThreadSwitch;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
 
 public class ValidationInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 

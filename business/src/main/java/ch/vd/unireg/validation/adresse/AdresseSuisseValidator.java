@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.adresse;
+package ch.vd.unireg.validation.adresse;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.unireg.adresse.AdresseSuisse;
 
 public class AdresseSuisseValidator extends AdresseSupplementaireValidator<AdresseSuisse> {
 

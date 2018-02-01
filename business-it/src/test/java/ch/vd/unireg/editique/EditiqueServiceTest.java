@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import java.util.Collections;
 
@@ -10,23 +10,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl;
-import ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl;
-import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
-import ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler;
-import ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl;
-import ch.vd.uniregctb.editique.impl.LegacyEditiqueHelperImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelperImpl;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.editique.impl.EditiqueCompositionServiceImpl;
+import ch.vd.unireg.editique.impl.EditiqueRetourImpressionStorageServiceImpl;
+import ch.vd.unireg.editique.impl.EditiqueServiceImpl;
+import ch.vd.unireg.editique.impl.EvenementEditiqueEsbHandler;
+import ch.vd.unireg.editique.impl.EvenementEditiqueSenderImpl;
+import ch.vd.unireg.editique.impl.LegacyEditiqueHelperImpl;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.jms.GentilEsbMessageListenerContainer;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.tache.ImpressionNouveauxDossiersHelperImpl;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

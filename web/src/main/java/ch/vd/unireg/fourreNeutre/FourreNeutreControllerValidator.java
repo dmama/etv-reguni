@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.fourreNeutre;
+package ch.vd.unireg.fourreNeutre;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.fourreNeutre.view.FourreNeutreView;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.fourreNeutre.view.FourreNeutreView;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class FourreNeutreControllerValidator implements Validator {
 

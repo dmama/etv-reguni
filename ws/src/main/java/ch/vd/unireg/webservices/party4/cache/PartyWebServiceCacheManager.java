@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.webservices.party4.cache;
+package ch.vd.unireg.webservices.party4.cache;
 
 import java.util.Set;
 
-import ch.vd.uniregctb.webservices.common.WebServiceEventInterface;
+import ch.vd.unireg.webservices.common.WebServiceEventInterface;
 
 /**
  * Cette classe maintient le cache du web-service cohérent en fonction des modifications apportées dans la base de données Unireg.

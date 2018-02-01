@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.rt.view;
+package ch.vd.unireg.rt.view;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public class DebiteurListView extends TiersCriteriaView {
 

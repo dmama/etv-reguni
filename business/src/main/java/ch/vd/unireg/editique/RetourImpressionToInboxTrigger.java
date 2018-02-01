@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import ch.vd.uniregctb.inbox.InboxAttachment;
-import ch.vd.uniregctb.inbox.InboxService;
+import ch.vd.unireg.inbox.InboxAttachment;
+import ch.vd.unireg.inbox.InboxService;
 
 /**
  * Trigger utilisé pour envoyer un retour d'impression un peu lent vers l'inbox du demandeur

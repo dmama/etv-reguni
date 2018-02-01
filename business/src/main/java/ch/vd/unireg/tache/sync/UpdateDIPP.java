@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 
 public class UpdateDIPP extends UpdateDI<PeriodeImpositionPersonnesPhysiques, DeclarationImpotOrdinairePP> {
 

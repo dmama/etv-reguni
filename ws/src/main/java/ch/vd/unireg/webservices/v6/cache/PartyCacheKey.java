@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v6.cache;
+package ch.vd.unireg.webservices.v6.cache;
 
 /**
  * Classe de base des clés de cache associée à un tiers

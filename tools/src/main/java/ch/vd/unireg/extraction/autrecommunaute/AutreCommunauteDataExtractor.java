@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction.autrecommunaute;
+package ch.vd.unireg.extraction.autrecommunaute;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -23,9 +23,9 @@ import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
 import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.utils.WebServiceV5Helper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.utils.WebServiceV5Helper;
 
 public class AutreCommunauteDataExtractor {
 

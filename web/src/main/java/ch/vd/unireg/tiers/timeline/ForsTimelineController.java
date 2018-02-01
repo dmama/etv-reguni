@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.timeline;
+package ch.vd.unireg.tiers.timeline;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,29 +17,29 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.ForGestion;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.metier.assujettissement.SourcierPur;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.tiers.ForGestion;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Contrôleur pour l'affichage de l'historique des fors fiscaux et des assujettissements d'un contribuable

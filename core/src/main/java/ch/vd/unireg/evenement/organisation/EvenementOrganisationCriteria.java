@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,8 +6,8 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 /*
  * Classe générique qui convient pour les critères de recherche sur les évenements organisation.

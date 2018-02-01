@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.civil.naissance;
+package ch.vd.unireg.norentes.civil.naissance;
 
 import java.util.List;
 
@@ -10,14 +10,14 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.norentes.annotation.Check;
-import ch.vd.uniregctb.norentes.annotation.Etape;
-import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.norentes.annotation.Check;
+import ch.vd.unireg.norentes.annotation.Etape;
+import ch.vd.unireg.norentes.common.EvenementCivilScenario;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
  * Traitement d'une naissance d'unn enfant

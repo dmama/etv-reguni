@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 /**
  * Implémentation du handler de messages d'identification de contribuable qui ne fait rien.

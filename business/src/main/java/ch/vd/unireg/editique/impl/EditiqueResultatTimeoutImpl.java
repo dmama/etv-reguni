@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import ch.vd.technical.esb.ErrorType;
-import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
+import ch.vd.unireg.editique.EditiqueResultatTimeout;
 
 public class EditiqueResultatTimeoutImpl extends BaseEditiqueResultatImpl implements EditiqueResultatTimeout {
 

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
 
 /**
  * Quelques méthodes bien pratiques quand on travaille avec les mouvements de dossier
@@ -26,7 +26,7 @@ public abstract class MouvementDossierHelper {
 	}
 
 	/**
-	 * Renvoie une exception si le rôle {@link ch.vd.uniregctb.security.Role#MVT_DOSSIER_MASSE} n'est pas associé au principal
+	 * Renvoie une exception si le rôle {@link ch.vd.unireg.security.Role#MVT_DOSSIER_MASSE} n'est pas associé au principal
 	 * @throws AccessDeniedException en cas d'accès interdit
 	 * @param securityProvider le security provider
 	 */

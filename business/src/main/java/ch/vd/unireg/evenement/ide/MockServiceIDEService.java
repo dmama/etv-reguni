@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.tiers.Entreprise;
 
 /**
  * @author Raphaël Marmier, 2016-10-13, <raphael.marmier@vd.ch>

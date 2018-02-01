@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.civil.interne.changement;
+package ch.vd.unireg.evenement.civil.interne.changement;
 
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
+import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 
 /**
  * Handler avec comportement par défaut la réindexation de l'individu à l'origine de l'événement.

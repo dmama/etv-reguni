@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
-<%@ page import="ch.vd.uniregctb.common.LengthConstants" %>
+<%@ page import="ch.vd.unireg.common.LengthConstants" %>
 <c:set var="id" value="${param.id}" />
 
-<%--@elvariable id="data" type="ch.vd.uniregctb.tiers.view.CreateEtablissementView"--%>
+<%--@elvariable id="data" type="ch.vd.unireg.tiers.view.CreateEtablissementView"--%>
 <%--@elvariable id="ctbAssocie" type="java.lang.Long"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">

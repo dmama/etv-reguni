@@ -13,7 +13,7 @@
 
 	<!-- Service civil -->
 
-	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.civil.ServiceCivilRemoteLogger">
+	<bean id="serviceCivilLogger" class="ch.vd.unireg.interfaces.civil.ServiceCivilRemoteLogger">
 		<property name="executor" ref="nexusHttpRequestExecutor"/>
 	</bean>
 
@@ -73,18 +73,18 @@
 	<!-- Data Event Service du cache centralisé Nexus -->
 	<bean id="nexusDataEventService" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/dataEventService.remoting" />
-		<property name="serviceInterface" value="ch.vd.uniregctb.data.CivilDataEventListener"/>
+		<property name="serviceInterface" value="ch.vd.unireg.data.CivilDataEventListener"/>
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
-	<bean id="nexusDataEventTracing" class="ch.vd.uniregctb.data.CivilDataEventTracing">
+	<bean id="nexusDataEventTracing" class="ch.vd.unireg.data.CivilDataEventTracing">
 		<property name="target" ref="nexusDataEventService"/>
 		<property name="statsService" ref="statsService"/>
 		<property name="serviceName" value="NexusDataEvent"/>
 	</bean>
 
 	<!-- Listener qui permet au cache centralisé Nexus de recevoir les notifications lors des changements sur les individus et les organisations -->
-	<bean id="nexusDataEventListener" class="ch.vd.uniregctb.data.CivilDataEventSlaveServiceListener">
+	<bean id="nexusDataEventListener" class="ch.vd.unireg.data.CivilDataEventSlaveServiceListener">
 		<property name="master" ref="dataEventService"/>
 		<property name="slave" ref="nexusDataEventTracing"/>
 	</bean>

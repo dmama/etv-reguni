@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra.view;
+package ch.vd.unireg.supergra.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,12 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.supergra.EntityKey;
-import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.supergra.EntityKey;
+import ch.vd.unireg.supergra.delta.AttributeUpdate;
 
 /**
- * Le form-backing object de la méthode {@link ch.vd.uniregctb.supergra.SuperGraController#showEntity(ch.vd.uniregctb.supergra.EntityType, long, org.springframework.ui.Model, javax.servlet.http.HttpServletRequest)}.
+ * Le form-backing object de la méthode {@link ch.vd.unireg.supergra.SuperGraController#showEntity(ch.vd.unireg.supergra.EntityType, long, org.springframework.ui.Model, javax.servlet.http.HttpServletRequest)}.
  */
 public class EntityView implements Duplicable<EntityView> {
 

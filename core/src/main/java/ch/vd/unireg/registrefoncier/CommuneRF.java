@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -11,8 +11,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @Table(name = "RF_COMMUNE", uniqueConstraints = @UniqueConstraint(name = "IDx_COMMUNE_NO_OFS", columnNames = "NO_OFS"))

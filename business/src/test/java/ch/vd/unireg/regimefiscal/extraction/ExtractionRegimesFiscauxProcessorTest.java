@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal.extraction;
+package ch.vd.unireg.regimefiscal.extraction;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,11 +8,11 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.Sexe;
 
 public class ExtractionRegimesFiscauxProcessorTest extends BusinessTest {
 

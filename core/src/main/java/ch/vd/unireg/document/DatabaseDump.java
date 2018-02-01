@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.document;
+package ch.vd.unireg.document;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;

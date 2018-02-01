@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party.control;
+package ch.vd.unireg.evenement.party.control;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
 
 public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlService {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.situation.surcharge;
+package ch.vd.unireg.registrefoncier.situation.surcharge;
 
 
 import org.springframework.validation.Errors;

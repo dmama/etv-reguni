@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import javax.validation.Valid;
 import java.io.BufferedReader;
@@ -26,20 +26,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.admin.ScriptBean.DBUnitMode;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.database.DatabaseService;
-import ch.vd.uniregctb.document.DatabaseDump;
-import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.admin.ScriptBean.DBUnitMode;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.database.DatabaseService;
+import ch.vd.unireg.document.DatabaseDump;
+import ch.vd.unireg.document.DocumentService;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Cette classe est le controlleur correspondant au cas d'utilisation "Lancer un script DBUnit".

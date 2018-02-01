@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.validation.bouclement;
+package ch.vd.unireg.validation.bouclement;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public class BouclementValidator extends EntityValidatorImpl<Bouclement> {
 

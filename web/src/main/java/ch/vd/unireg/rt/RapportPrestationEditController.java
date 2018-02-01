@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rt;
+package ch.vd.unireg.rt;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,11 +9,11 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import ch.vd.uniregctb.rt.manager.RapportPrestationEditManager;
-import ch.vd.uniregctb.rt.view.RapportPrestationView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.unireg.rt.manager.RapportPrestationEditManager;
+import ch.vd.unireg.rt.view.RapportPrestationView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
 
 public class RapportPrestationEditController  extends AbstractRapportPrestationController {
 

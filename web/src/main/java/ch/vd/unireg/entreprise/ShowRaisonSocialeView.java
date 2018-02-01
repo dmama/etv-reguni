@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.RaisonSocialeHisto;
+import ch.vd.unireg.tiers.Source;
+import ch.vd.unireg.tiers.Sourced;
 
 public class ShowRaisonSocialeView implements Sourced<Source>, Annulable, DateRange {
 

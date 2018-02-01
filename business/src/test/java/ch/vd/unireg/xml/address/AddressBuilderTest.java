@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.address;
+package ch.vd.unireg.xml.address;
 
 import org.junit.Test;
 
@@ -8,12 +8,12 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.LocaliteInvalideMatcherService;
-import ch.vd.uniregctb.common.NpaEtLocalite;
-import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.LocaliteInvalideMatcherService;
+import ch.vd.unireg.common.NpaEtLocalite;
+import ch.vd.unireg.common.RueEtNumero;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

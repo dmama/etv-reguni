@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.webservices.v7.cache;
+package ch.vd.unireg.webservices.v7.cache;
 
 import java.util.Set;
 
-import ch.vd.uniregctb.webservices.common.WebServiceEventInterface;
+import ch.vd.unireg.webservices.common.WebServiceEventInterface;
 
 public class BusinessWebServiceCacheEventListener implements WebServiceEventInterface {
 

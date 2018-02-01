@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.unireg.evenement;
 
 import java.io.InputStream;
 

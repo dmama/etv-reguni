@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 /**
  * Les différents types possibles de rapprochement entre un tiers RF et un contribuable Unireg

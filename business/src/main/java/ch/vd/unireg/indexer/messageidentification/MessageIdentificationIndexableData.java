@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.indexer.messageidentification;
+package ch.vd.unireg.indexer.messageidentification;
 
 import org.apache.lucene.document.Document;
 
-import ch.vd.uniregctb.indexer.IndexableData;
+import ch.vd.unireg.indexer.IndexableData;
 
 public class MessageIdentificationIndexableData extends IndexableData {
 

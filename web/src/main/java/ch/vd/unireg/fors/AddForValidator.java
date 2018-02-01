@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public abstract class AddForValidator implements Validator {
 

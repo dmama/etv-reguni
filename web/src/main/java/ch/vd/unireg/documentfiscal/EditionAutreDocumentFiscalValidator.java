@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,7 +7,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.utils.ValidatorUtils;
+import ch.vd.unireg.utils.ValidatorUtils;
 
 /**
  * @author Raphaël Marmier, 2017-12-05, <raphael.marmier@vd.ch>

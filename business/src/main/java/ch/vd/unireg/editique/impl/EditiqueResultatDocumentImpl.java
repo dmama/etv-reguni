@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
-import ch.vd.uniregctb.editique.EditiqueResultatDocument;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.editique.EditiqueResultatDocument;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 public final class EditiqueResultatDocumentImpl extends BaseEditiqueResultatImpl implements EditiqueResultatDocument {
 

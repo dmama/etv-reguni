@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.changement.dateNaissance;
+package ch.vd.unireg.norentes.civil.changement.dateNaissance;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 public class Ec_41010_01_CorrectionDateNaissance_Test extends NorentesTest {
 

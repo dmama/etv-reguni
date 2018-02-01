@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
 
 public class MutationsRFDetectorResults {
 

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="ajouterView" type="ch.vd.uniregctb.documentfiscal.EditionDelaiAutreDocumentFiscalView"--%>
+<%--@elvariable id="ajouterView" type="ch.vd.unireg.documentfiscal.EditionDelaiAutreDocumentFiscalView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head"/>
@@ -13,7 +13,7 @@
 		</fmt:message>
 	</tiles:put>
 	<tiles:put name="body">
-		<%--@elvariable id="ajouterView" type="ch.vd.uniregctb.documentfiscal.EditionDelaiAutreDocumentFiscalView"--%>
+		<%--@elvariable id="ajouterView" type="ch.vd.unireg.documentfiscal.EditionDelaiAutreDocumentFiscalView"--%>
 		<form:form method="post" name="theForm" id="formAddDelai" action="ajouter.do" modelAttribute="ajouterView">
 
 			<form:errors cssClass="error"/>

@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.document.Document;
+import ch.vd.unireg.utils.LogLevel;
 
 public class Audit {
 

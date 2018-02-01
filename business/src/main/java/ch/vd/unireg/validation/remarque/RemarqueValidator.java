@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.remarque;
+package ch.vd.unireg.validation.remarque;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.Remarque;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.tiers.Remarque;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public class RemarqueValidator extends EntityValidatorImpl<Remarque> {
 

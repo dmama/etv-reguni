@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersVisuView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersVisuView"--%>
 <c:choose>
 	<c:when test="${command != null}">
 		<c:set var="entreprise" value="${command.entreprise}" /><%-- TiersVisuController --%>
@@ -9,7 +9,7 @@
 		<c:set var="entreprise" value="${data}" /><%-- CivilEditController --%>
 	</c:when>
 </c:choose>
-<%--@elvariable id="entreprise" type="ch.vd.uniregctb.entreprise.EntrepriseView"--%>
+<%--@elvariable id="entreprise" type="ch.vd.unireg.entreprise.EntrepriseView"--%>
 
 <c:set var="page" value="${param.page}"/>
 <c:set var="nombreElementsTable" value="${param.nombreElementsTable}"/>
@@ -116,7 +116,7 @@
 				</table>
 			</c:if>
 				<%-- Ca ne marche pas avec : pagesize="${nombreElementsTable}" --%>
-			<display:table name="${entreprise.raisonsSociales}" id="raisonSociale" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="${entreprise.raisonsSociales}" id="raisonSociale" requestURI="${page}.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 					<unireg:regdate regdate="${raisonSociale.dateDebut}"/>
 				</display:column>
@@ -156,7 +156,7 @@
 					<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
 				</c:if>
 
-				<display:table name="${entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				<display:table name="${entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="${page}.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 					<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 						<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
 					</display:column>
@@ -190,7 +190,7 @@
 				</table>
 			</c:if>
 
-			<display:table name="${entreprise.sieges}" id="sieges" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="${entreprise.sieges}" id="sieges" requestURI="${page}.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 					<unireg:regdate regdate="${sieges.dateDebut}"/>
 				</display:column>
@@ -247,7 +247,7 @@
 				</table>
 			</c:if>
 
-			<display:table name="${entreprise.formesJuridiques}" id="formeJuridique" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="${entreprise.formesJuridiques}" id="formeJuridique" requestURI="${page}.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 					<unireg:regdate regdate="${formeJuridique.dateDebut}"/>
 				</display:column>
@@ -296,7 +296,7 @@
 			</c:if>
 
 			<fmt:setLocale value="ch" scope="page"/>
-			<display:table name="${entreprise.capitaux}" id="capital" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="${entreprise.capitaux}" id="capital" requestURI="${page}.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 					<unireg:regdate regdate="${capital.dateDebut}"/>
 				</display:column>

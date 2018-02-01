@@ -1,21 +1,21 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 
 public class TaxResidenceBuilder {
-	public static TaxResidence newMainTaxResidence(ch.vd.uniregctb.tiers.ForFiscal forFiscal, boolean virtuel) {
+	public static TaxResidence newMainTaxResidence(ch.vd.unireg.tiers.ForFiscal forFiscal, boolean virtuel) {
 		final TaxResidence f = newOtherTaxResidence(forFiscal, virtuel);
 
-		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipalPP) {
-			final ch.vd.uniregctb.tiers.ForFiscalPrincipalPP forPrincipal = (ch.vd.uniregctb.tiers.ForFiscalPrincipalPP) forFiscal;
+		if (forFiscal instanceof ch.vd.unireg.tiers.ForFiscalPrincipalPP) {
+			final ch.vd.unireg.tiers.ForFiscalPrincipalPP forPrincipal = (ch.vd.unireg.tiers.ForFiscalPrincipalPP) forFiscal;
 			f.setTaxationMethod(EnumHelper.coreToXMLv4(forPrincipal.getModeImposition()));
 		}
 		return f;
 	}
 
-	public static TaxResidence newOtherTaxResidence(ch.vd.uniregctb.tiers.ForFiscal forFiscal, boolean virtuel) {
+	public static TaxResidence newOtherTaxResidence(ch.vd.unireg.tiers.ForFiscal forFiscal, boolean virtuel) {
 		final TaxResidence f = new TaxResidence();
 
 		f.setDateFrom(DataHelper.coreToXMLv2(forFiscal.getDateDebut()));
@@ -26,14 +26,14 @@ public class TaxResidenceBuilder {
 		f.setTaxationAuthorityFSOId(forFiscal.getNumeroOfsAutoriteFiscale());
 		f.setVirtual(virtuel);
 
-		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalAvecMotifs) {
-			final ch.vd.uniregctb.tiers.ForFiscalAvecMotifs forMotifs = (ch.vd.uniregctb.tiers.ForFiscalAvecMotifs) forFiscal;
+		if (forFiscal instanceof ch.vd.unireg.tiers.ForFiscalAvecMotifs) {
+			final ch.vd.unireg.tiers.ForFiscalAvecMotifs forMotifs = (ch.vd.unireg.tiers.ForFiscalAvecMotifs) forFiscal;
 			f.setStartReason(EnumHelper.coreToXMLv4(forMotifs.getMotifOuverture()));
 			f.setEndReason(EnumHelper.coreToXMLv4(forMotifs.getMotifFermeture()));
 		}
 
-		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) {
-			final ch.vd.uniregctb.tiers.ForFiscalRevenuFortune forRevenu = (ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) forFiscal;
+		if (forFiscal instanceof ch.vd.unireg.tiers.ForFiscalRevenuFortune) {
+			final ch.vd.unireg.tiers.ForFiscalRevenuFortune forRevenu = (ch.vd.unireg.tiers.ForFiscalRevenuFortune) forFiscal;
 			f.setTaxLiabilityReason(EnumHelper.coreToXMLv4(forRevenu.getMotifRattachement()));
 		}
 		return f;

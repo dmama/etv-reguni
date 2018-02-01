@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.Tag;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 public class JspTagTestMode extends TagSupport {
 

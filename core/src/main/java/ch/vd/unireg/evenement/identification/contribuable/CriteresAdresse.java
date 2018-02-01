@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.persistence.Column;
 
@@ -221,7 +221,7 @@ public class CriteresAdresse {
 	 * Détermine s'il s'agit d'une adresse suisse ou étrangère.
 	 */
 	@Column(name = "ADR_TYPE")
-	@Type(type = "ch.vd.uniregctb.hibernate.identification.contribuable.TypeAdresseCriteresAdresseUserType")
+	@Type(type = "ch.vd.unireg.hibernate.identification.contribuable.TypeAdresseCriteresAdresseUserType")
 	public TypeAdresse getTypeAdresse() {
 		return typeAdresse;
 	}

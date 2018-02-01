@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.unireg.common.CollectionsUtils;
 
 /**
  * Contient les fors fiscaux d'un contribuable à un moment donné, décomposés par types et triés dans l'ordre chronologique.

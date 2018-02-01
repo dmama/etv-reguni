@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.retourdi;
+package ch.vd.unireg.evenement.retourdi;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,25 +17,25 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.evenement.retourdi.pm.AdresseRaisonSociale;
-import ch.vd.uniregctb.evenement.retourdi.pm.Localisation;
-import ch.vd.uniregctb.evenement.retourdi.pp.EvenementCedi;
-import ch.vd.uniregctb.evenement.retourdi.pp.EvenementCediException;
-import ch.vd.uniregctb.evenement.retourdi.pp.Pf2015V2Handler;
-import ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V1Handler;
-import ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V2Handler;
-import ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V1Handler;
-import ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V2Handler;
-import ch.vd.uniregctb.evenement.retourdi.pp.Pf2018V1Handler;
-import ch.vd.uniregctb.evenement.retourdi.pp.RetourDI;
-import ch.vd.uniregctb.evenement.retourdi.pp.V1Handler;
-import ch.vd.uniregctb.evenement.retourdi.pp.V2Handler;
-import ch.vd.uniregctb.evenement.retourdi.pp.V3Handler;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.evenement.retourdi.pm.AdresseRaisonSociale;
+import ch.vd.unireg.evenement.retourdi.pm.Localisation;
+import ch.vd.unireg.evenement.retourdi.pp.EvenementCedi;
+import ch.vd.unireg.evenement.retourdi.pp.EvenementCediException;
+import ch.vd.unireg.evenement.retourdi.pp.Pf2015V2Handler;
+import ch.vd.unireg.evenement.retourdi.pp.Pf2016V1Handler;
+import ch.vd.unireg.evenement.retourdi.pp.Pf2016V2Handler;
+import ch.vd.unireg.evenement.retourdi.pp.Pf2017V1Handler;
+import ch.vd.unireg.evenement.retourdi.pp.Pf2017V2Handler;
+import ch.vd.unireg.evenement.retourdi.pp.Pf2018V1Handler;
+import ch.vd.unireg.evenement.retourdi.pp.RetourDI;
+import ch.vd.unireg.evenement.retourdi.pp.V1Handler;
+import ch.vd.unireg.evenement.retourdi.pp.V2Handler;
+import ch.vd.unireg.evenement.retourdi.pp.V3Handler;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -216,10 +216,10 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 	private enum XmlVersionPM {
 		V1 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action) {
-				return new ch.vd.uniregctb.evenement.retourdi.pm.V1Handler() {
+			public RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.unireg.evenement.retourdi.pm.RetourDI> action) {
+				return new ch.vd.unireg.evenement.retourdi.pm.V1Handler() {
 					@Override
-					protected void traiterRetour(ch.vd.uniregctb.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
+					protected void traiterRetour(ch.vd.unireg.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
 						action.accept(retour);
 					}
 				};
@@ -227,10 +227,10 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		V2 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action) {
-				return new ch.vd.uniregctb.evenement.retourdi.pm.V2Handler() {
+			public RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.unireg.evenement.retourdi.pm.RetourDI> action) {
+				return new ch.vd.unireg.evenement.retourdi.pm.V2Handler() {
 					@Override
-					protected void traiterRetour(ch.vd.uniregctb.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
+					protected void traiterRetour(ch.vd.unireg.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
 						action.accept(retour);
 					}
 				};
@@ -242,7 +242,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		 * constructeur de handler pour une version de la XSD, qui appelle le {@link Consumer} fourni
 		 * @param action action lancée par le handler construit
 		 */
-		public abstract RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action);
+		public abstract RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.unireg.evenement.retourdi.pm.RetourDI> action);
 
 		@Override
 		public String toString() {
@@ -270,7 +270,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 			list.add(pp.buildHandler(consumer));
 		}
 		for (XmlVersionPM pm : XmlVersionPM.values()) {
-			final Consumer<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> consumer = evt -> Assert.fail("un message " + accepted + " ne devrait pas arriver dans le canal " + pm);
+			final Consumer<ch.vd.unireg.evenement.retourdi.pm.RetourDI> consumer = evt -> Assert.fail("un message " + accepted + " ne devrait pas arriver dans le canal " + pm);
 			list.add(pm.buildHandler(consumer));
 		}
 		return list;
@@ -283,10 +283,10 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 	 * @param collector collection qui récupérera tous les événements correspondant à la version acceptée
 	 * @return une liste de tous les handlers
 	 */
-	private static List<RetourDiHandler<?>> buildHandlers(XmlVersionPM accepted, List<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> collector) {
+	private static List<RetourDiHandler<?>> buildHandlers(XmlVersionPM accepted, List<ch.vd.unireg.evenement.retourdi.pm.RetourDI> collector) {
 		final List<RetourDiHandler<?>> list = new ArrayList<>();
 		for (XmlVersionPM pm : XmlVersionPM.values()) {
-			final Consumer<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> consumer;
+			final Consumer<ch.vd.unireg.evenement.retourdi.pm.RetourDI> consumer;
 			if (pm == accepted) {
 				consumer = buildCollectingAndNotifyingConsumer(collector);
 			}
@@ -329,7 +329,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/retour_di.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/retour_di.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -365,7 +365,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/retour_di_presque_vide.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/retour_di_presque_vide.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -397,7 +397,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2.0-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2.0-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -429,7 +429,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-3.0-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-3.0-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -461,7 +461,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-3.2-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-3.2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -495,7 +495,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2015.2-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2015.2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -527,7 +527,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2016.1-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2016.1-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -559,7 +559,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2016.2-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2016.2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -591,7 +591,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2017.1-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2017.1-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -623,7 +623,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2017.2-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2017.2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -655,7 +655,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2018.1-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2018.1-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -681,13 +681,13 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testIBC_V1() throws Exception {
 
-		final List<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> events = new ArrayList<>();
+		final List<ch.vd.unireg.evenement.retourdi.pm.RetourDI> events = new ArrayList<>();
 		final List<RetourDiHandler<?>> handlers = buildHandlers(XmlVersionPM.V1, events);
 		esbHandler.setHandlers(handlers);
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pm/IBC-1-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pm/IBC-1-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -697,7 +697,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
-		final ch.vd.uniregctb.evenement.retourdi.pm.RetourDI q = events.get(0);
+		final ch.vd.unireg.evenement.retourdi.pm.RetourDI q = events.get(0);
 		assertNotNull(q);
 		assertEquals(518L, q.getNoCtb());
 		assertEquals(2016, q.getPf());
@@ -736,13 +736,13 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testIBC_V2() throws Exception {
 
-		final List<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> events = new ArrayList<>();
+		final List<ch.vd.unireg.evenement.retourdi.pm.RetourDI> events = new ArrayList<>();
 		final List<RetourDiHandler<?>> handlers = buildHandlers(XmlVersionPM.V2, events);
 		esbHandler.setHandlers(handlers);
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pm/IBC-2-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pm/IBC-2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -752,7 +752,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
-		final ch.vd.uniregctb.evenement.retourdi.pm.RetourDI q = events.get(0);
+		final ch.vd.unireg.evenement.retourdi.pm.RetourDI q = events.get(0);
 		assertNotNull(q);
 		assertEquals(518L, q.getNoCtb());
 		assertEquals(2016, q.getPf());

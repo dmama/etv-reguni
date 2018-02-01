@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.engine;
+package ch.vd.unireg.evenement.organisation.engine;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -15,34 +15,34 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
-import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
-import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
-import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.uniregctb.metier.MetierServicePM;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationCappingLevelProvider;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationErreur;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationService;
+import ch.vd.unireg.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
+import ch.vd.unireg.evenement.organisation.engine.translator.NiveauCappingEtat;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
+import ch.vd.unireg.metier.MetierServicePM;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.rattrapage.appariement.AppariementService;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementErreur;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
-import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
  * Test de quelques cas de capping en erreur

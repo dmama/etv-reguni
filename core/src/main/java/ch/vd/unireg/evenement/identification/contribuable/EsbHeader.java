@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -74,7 +74,7 @@ public class EsbHeader {
 	}
 
 	@Column(name = "META_DATA", length = 1023)
-	@Type(type = "ch.vd.uniregctb.hibernate.JsonMapUserType")
+	@Type(type = "ch.vd.unireg.hibernate.JsonMapUserType")
 	public Map<String, String> getMetadata() {
 		return metadata;
 	}

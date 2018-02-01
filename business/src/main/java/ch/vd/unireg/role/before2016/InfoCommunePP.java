@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.role.before2016;
+package ch.vd.unireg.role.before2016;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Classe concrète des informations pour les rôles PM d'une commune

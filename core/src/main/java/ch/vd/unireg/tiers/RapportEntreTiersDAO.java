@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.List;
 import java.util.Set;
@@ -6,8 +6,8 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long> {
 

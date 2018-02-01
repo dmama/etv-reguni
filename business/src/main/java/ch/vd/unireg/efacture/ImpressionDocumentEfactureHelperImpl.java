@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.text.SimpleDateFormat;
 
@@ -13,14 +13,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.editique.EditiqueAbstractLegacyHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiquePrefixeHelper;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.editique.ZoneAffranchissementEditique;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeDocument;
 
 public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionDocumentEfactureHelper {
 	private static final String VERSION_XSD = "1.0";

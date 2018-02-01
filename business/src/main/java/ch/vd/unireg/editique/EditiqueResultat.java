@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 /**
  * Représente le résultat retourné par Editique suite à une demande de création de document.

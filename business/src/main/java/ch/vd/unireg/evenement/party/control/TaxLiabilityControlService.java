@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party.control;
+package ch.vd.unireg.evenement.party.control;
 
 import java.util.Set;
 
@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.ModeImposition;
 
 public interface TaxLiabilityControlService {
 

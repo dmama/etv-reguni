@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForsParType;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.validation.ValidationService;
 
 public abstract class ContribuableImpositionPersonnesPhysiquesValidator<T extends ContribuableImpositionPersonnesPhysiques> extends ContribuableValidator<T> {
 

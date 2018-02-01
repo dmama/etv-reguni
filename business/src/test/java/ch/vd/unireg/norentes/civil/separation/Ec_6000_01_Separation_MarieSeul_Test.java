@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.separation;
+package ch.vd.unireg.norentes.civil.separation;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Cette classe teste l'événement séparation pour le cas d'une personne mariée seule.

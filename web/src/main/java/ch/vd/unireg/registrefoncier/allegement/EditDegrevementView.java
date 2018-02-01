@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
-import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.unireg.foncier.DegrevementICI;
 
 public class EditDegrevementView extends AbstractEditDegrevementView {
 

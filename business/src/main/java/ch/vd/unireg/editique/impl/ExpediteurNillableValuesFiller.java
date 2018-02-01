@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import noNamespace.InfoEnteteDocumentDocument1;
 

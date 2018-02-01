@@ -4,7 +4,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
-	<%--@elvariable id="rapportEditView" type="ch.vd.uniregctb.rapport.view.RapportView"--%>
+	<%--@elvariable id="rapportEditView" type="ch.vd.unireg.rapport.view.RapportView"--%>
 	<tiles:put name="title">
 		<fmt:message key="title.edition.rapport">
 			<fmt:param>

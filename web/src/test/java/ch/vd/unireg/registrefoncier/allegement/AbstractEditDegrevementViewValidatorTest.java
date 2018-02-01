@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
-import ch.vd.uniregctb.common.WebTest;
+import ch.vd.unireg.common.WebTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

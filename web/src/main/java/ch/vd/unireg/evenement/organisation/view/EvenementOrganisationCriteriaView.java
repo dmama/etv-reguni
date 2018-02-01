@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.view;
+package ch.vd.unireg.evenement.organisation.view;
 
 import java.util.Date;
 
@@ -7,13 +7,13 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCriteria;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationCriteria;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
-public class EvenementOrganisationCriteriaView extends EvenementOrganisationCriteria<ch.vd.uniregctb.type.TypeEvenementOrganisation> {
+public class EvenementOrganisationCriteriaView extends EvenementOrganisationCriteria<ch.vd.unireg.type.TypeEvenementOrganisation> {
 
 	public static final String TOUS = "TOUS";
 
@@ -42,7 +42,7 @@ public class EvenementOrganisationCriteriaView extends EvenementOrganisationCrit
 			setType(null);
 		}
 		else {
-			ch.vd.uniregctb.type.TypeEvenementOrganisation type = Enum.valueOf(getTypeClass(), typeEvenement);
+			ch.vd.unireg.type.TypeEvenementOrganisation type = Enum.valueOf(getTypeClass(), typeEvenement);
 			if (type != null) {
 				setType(type);
 			}

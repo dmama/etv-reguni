@@ -8,7 +8,7 @@
 
 	<bean name="remoteTiersSearch" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
 		<property name="service" ref="globalTiersSearcher" />
-		<property name="serviceInterface" value="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher" />
+		<property name="serviceInterface" value="ch.vd.unireg.indexer.tiers.GlobalTiersSearcher" />
 	</bean>
 
 </beans>

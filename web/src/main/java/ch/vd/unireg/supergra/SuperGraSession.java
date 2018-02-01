@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.unireg.supergra;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.uniregctb.supergra.delta.Delta;
+import ch.vd.unireg.supergra.delta.Delta;
 
 /**
  * Données stockées dans la session Web pour le mode d'édition SuperGra.

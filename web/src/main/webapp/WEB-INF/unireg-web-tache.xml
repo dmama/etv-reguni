@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="tacheListManager" class="ch.vd.uniregctb.tache.manager.TacheListManagerImpl" >
+	<bean id="tacheListManager" class="ch.vd.unireg.tache.manager.TacheListManagerImpl" >
 		<property name="tacheDAO" ref="tacheDAO" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="adresseService" ref="adresseService" />
@@ -15,14 +15,14 @@
 		<property name="autorisationCache" ref="autorisationCache"/>
 	</bean>
 
-	<bean id="tacheController" class="ch.vd.uniregctb.tache.TacheController">
+	<bean id="tacheController" class="ch.vd.unireg.tache.TacheController">
 		<property name="tacheMapHelper" ref="tacheMapHelper" />
 		<property name="tacheListManager" ref="tacheListManager"/>
 		<property name="editiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	<bean id="tacheMapHelper" class="ch.vd.uniregctb.tache.TacheMapHelper">
+	<bean id="tacheMapHelper" class="ch.vd.unireg.tache.TacheMapHelper">
 		<property name="messageSource" ref="messageSource"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
@@ -31,7 +31,7 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 	
-	<bean id="postItController" class="ch.vd.uniregctb.tache.PostItController">
+	<bean id="postItController" class="ch.vd.unireg.tache.PostItController">
 		<property name="tacheService" ref="tacheService" />
 	</bean>
 	

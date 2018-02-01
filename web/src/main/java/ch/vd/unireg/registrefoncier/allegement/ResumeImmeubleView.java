@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.util.Optional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleHelper;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.registrefoncier.EstimationRF;
+import ch.vd.unireg.registrefoncier.ImmeubleHelper;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 
 public class ResumeImmeubleView {
 

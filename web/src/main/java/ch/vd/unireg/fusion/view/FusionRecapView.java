@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.fusion.view;
+package ch.vd.unireg.fusion.view;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.unireg.general.view.TiersGeneralView;
 
 public class FusionRecapView {
 

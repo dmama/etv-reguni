@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 
-import ch.vd.uniregctb.common.Duplicable;
+import ch.vd.unireg.common.Duplicable;
 
 @Entity
 @DiscriminatorValue(value = "ExonerationIFONC")

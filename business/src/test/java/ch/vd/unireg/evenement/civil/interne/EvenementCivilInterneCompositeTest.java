@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne;
+package ch.vd.unireg.evenement.civil.interne;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -9,15 +9,15 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.tiers.MockTiersDAO;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.tiers.MockTiersDAO;
+import ch.vd.unireg.tiers.TiersDAO;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

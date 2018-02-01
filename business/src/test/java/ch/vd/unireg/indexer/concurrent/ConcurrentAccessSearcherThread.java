@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.indexer.concurrent;
+package ch.vd.unireg.indexer.concurrent;
 
 import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.SearchCallback;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
+import ch.vd.unireg.indexer.SearchCallback;
 
 public class ConcurrentAccessSearcherThread extends AbstractConcurrentAccessThread {
 

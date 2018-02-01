@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.xml.party.v4;
+package ch.vd.unireg.xml.party.v4;
 
 import ch.vd.unireg.xml.party.relation.v3.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType;
-import ch.vd.uniregctb.tiers.Parente;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.tiers.Parente;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 
 public class RelationBetweenPartiesBuilder {
 
-	public static RelationBetweenParties newRelationBetweenParties(ch.vd.uniregctb.tiers.RapportEntreTiers rapport, Long autreTiersNumero) {
+	public static RelationBetweenParties newRelationBetweenParties(ch.vd.unireg.tiers.RapportEntreTiers rapport, Long autreTiersNumero) {
 		final RelationBetweenParties r = new RelationBetweenParties();
 		r.setType(EnumHelper.coreToXMLv3(rapport.getType()));
 		r.setDateFrom(DataHelper.coreToXMLv2(rapport.getDateDebut()));
@@ -16,15 +16,15 @@ public class RelationBetweenPartiesBuilder {
 		r.setCancellationDate(DataHelper.coreToXMLv2(rapport.getAnnulationDate()));
 		r.setOtherPartyNumber(autreTiersNumero.intValue());
 
-		if (rapport instanceof ch.vd.uniregctb.tiers.RapportPrestationImposable) {
-			final ch.vd.uniregctb.tiers.RapportPrestationImposable rpi = (ch.vd.uniregctb.tiers.RapportPrestationImposable) rapport;
+		if (rapport instanceof ch.vd.unireg.tiers.RapportPrestationImposable) {
+			final ch.vd.unireg.tiers.RapportPrestationImposable rpi = (ch.vd.unireg.tiers.RapportPrestationImposable) rapport;
 
 			r.setEndDateOfLastTaxableItem(DataHelper.coreToXMLv2(rpi.getFinDernierElementImposable()));
 		}
 
 		// [UNIREG-2662] ajout de l'attribut extensionExecutionForcee
-		if (rapport instanceof ch.vd.uniregctb.tiers.RepresentationConventionnelle) {
-			final ch.vd.uniregctb.tiers.RepresentationConventionnelle repres = (ch.vd.uniregctb.tiers.RepresentationConventionnelle) rapport;
+		if (rapport instanceof ch.vd.unireg.tiers.RepresentationConventionnelle) {
+			final ch.vd.unireg.tiers.RepresentationConventionnelle repres = (ch.vd.unireg.tiers.RepresentationConventionnelle) rapport;
 			r.setExtensionToForcedExecution(repres.getExtensionExecutionForcee());
 		}
 		return r;

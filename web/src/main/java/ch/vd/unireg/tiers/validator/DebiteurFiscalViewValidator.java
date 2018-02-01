@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.tiers.view.DebiteurFiscalView;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.tiers.view.DebiteurFiscalView;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 
 public class DebiteurFiscalViewValidator implements Validator {
 

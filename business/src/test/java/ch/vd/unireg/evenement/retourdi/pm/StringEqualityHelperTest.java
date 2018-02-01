@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class StringEqualityHelperTest extends WithoutSpringTest {
 

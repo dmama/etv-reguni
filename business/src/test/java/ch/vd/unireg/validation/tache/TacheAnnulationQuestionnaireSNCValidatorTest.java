@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.validation.tache;
+package ch.vd.unireg.validation.tache;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TacheAnnulationQuestionnaireSNC;
+import ch.vd.unireg.type.TypeEtatTache;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
 

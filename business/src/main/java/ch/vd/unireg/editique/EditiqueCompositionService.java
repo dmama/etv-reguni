@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import javax.jms.JMSException;
 import java.math.BigInteger;
@@ -10,25 +10,25 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.declaration.snc.QuestionnaireSNCService;
-import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
-import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
-import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
-import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
-import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
+import ch.vd.unireg.documentfiscal.AutorisationRadiationRC;
+import ch.vd.unireg.documentfiscal.DemandeBilanFinal;
+import ch.vd.unireg.documentfiscal.LettreBienvenue;
+import ch.vd.unireg.documentfiscal.LettreTypeInformationLiquidation;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.fourreNeutre.FourreNeutre;
+import ch.vd.unireg.mouvement.BordereauMouvementDossier;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeDocument;
 
 public interface EditiqueCompositionService {
 
@@ -137,7 +137,7 @@ public interface EditiqueCompositionService {
 	 * déclaration.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * ch.vd.uniregctb.declaration.source.ListeRecapService#imprimerLR(ch.vd.uniregctb.tiers.DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate)}
+	 * ch.vd.unireg.declaration.source.ListeRecapService#imprimerLR(ch.vd.unireg.tiers.DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate)}
 	 *
 	 * @param lr            la LR à imprimer
 	 */
@@ -235,7 +235,7 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la confirmation de délai pour la {@link DeclarationImpotOrdinairePP} et le {@link ch.vd.uniregctb.declaration.DelaiDeclaration} spécifié
+	 * Imprime la confirmation de délai pour la {@link DeclarationImpotOrdinairePP} et le {@link ch.vd.unireg.declaration.DelaiDeclaration} spécifié
 	 *
 	 * @param di
 	 * @param delai

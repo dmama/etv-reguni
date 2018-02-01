@@ -4,6 +4,6 @@
 
 	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
 
-	<bean id="rapprochementManuelTiersRFService" class="ch.vd.uniregctb.registrefoncier.MockRapprochementManuelTiersRFService"/>
+	<bean id="rapprochementManuelTiersRFService" class="ch.vd.unireg.registrefoncier.MockRapprochementManuelTiersRFService"/>
 
 </beans>

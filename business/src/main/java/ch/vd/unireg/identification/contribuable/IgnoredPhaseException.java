@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 /**
  * Exception lancée par la mécanique à plusieurs phases de l'algorithme d'identification de contribuable quand le NAVS13 est inconnu

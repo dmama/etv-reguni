@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class TexteCasePostaleTest extends WithoutSpringTest {
 

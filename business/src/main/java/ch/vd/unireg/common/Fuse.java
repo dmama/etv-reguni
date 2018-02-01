@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 /**
  * Classe qui permet de déclarer un "fusible", une transition qui ne peut se faire

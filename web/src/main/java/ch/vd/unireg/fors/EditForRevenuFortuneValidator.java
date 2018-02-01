@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import org.springframework.validation.Errors;
 
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
-import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.tiers.validator.MotifsForHelper;
+import ch.vd.unireg.type.GenreImpot;
 
 public abstract class EditForRevenuFortuneValidator extends EditForAvecMotifsValidator {
 

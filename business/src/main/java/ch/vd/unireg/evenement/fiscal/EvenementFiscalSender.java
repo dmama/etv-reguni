@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 /**
  * Interface qui permet d'envoyer des événements fiscaux

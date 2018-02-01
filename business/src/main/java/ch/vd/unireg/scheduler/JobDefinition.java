@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.scheduler;
+package ch.vd.unireg.scheduler;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -34,12 +34,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.type.RestrictedAccess;
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.Document;
+import ch.vd.unireg.type.RestrictedAccess;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Classe regroupant les informations d'affichage du job quartz

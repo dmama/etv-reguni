@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 /**Classe utilitaire permettande de stocker le visa et le nom d'un operateur ayant effectuer une identification manuelle
  *

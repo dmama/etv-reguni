@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.type.TypePermis;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

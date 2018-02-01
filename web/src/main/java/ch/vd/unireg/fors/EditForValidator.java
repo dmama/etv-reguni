@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.load.MethodCallDescriptor;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.load.MethodCallDescriptor;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
 
 /**
  * Façade du service civil raw à utiliser pour exposer le service civil en spring remoting.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra.validators;
+package ch.vd.unireg.supergra.validators;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
@@ -6,12 +6,12 @@ import org.springframework.validation.Validator;
 
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.supergra.view.Mc2PpView;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.supergra.view.Mc2PpView;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class Mc2PpValidator implements Validator {
 

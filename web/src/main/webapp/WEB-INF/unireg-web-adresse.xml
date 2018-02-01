@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="adresseController" class="ch.vd.uniregctb.tiers.AdresseController">
+	<bean id="adresseController" class="ch.vd.unireg.tiers.AdresseController">
 		<property name="adresseManager" ref="adresseManager"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
@@ -10,7 +10,7 @@
 		<property name="editAdresseValidator" ref="tiersAdresseValidator"/>
 	</bean>
 
-	<bean id="tiersAdresseValidator" class="ch.vd.uniregctb.tiers.validator.TiersAdresseValidator" >
+	<bean id="tiersAdresseValidator" class="ch.vd.unireg.tiers.validator.TiersAdresseValidator" >
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
@@ -18,11 +18,11 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="closeAdresseValidator" class="ch.vd.uniregctb.tiers.validator.CloseAdresseValidator" >
+	<bean id="closeAdresseValidator" class="ch.vd.unireg.tiers.validator.CloseAdresseValidator" >
 		<property name="tiersService" ref="tiersService" />
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 	
-	<bean id="adresseManager" class="ch.vd.uniregctb.tiers.manager.AdresseManagerImpl" parent="tiersManager"/>
+	<bean id="adresseManager" class="ch.vd.unireg.tiers.manager.AdresseManagerImpl" parent="tiersManager"/>
 
 </beans>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import ch.vd.registre.base.date.RegDate;
 

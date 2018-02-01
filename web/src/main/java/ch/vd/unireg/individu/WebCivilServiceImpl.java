@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.individu;
+package ch.vd.unireg.individu;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,10 +18,10 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.utils.WebContextUtils;
 
 /**
  * Re-organisation des informations de l'individu
@@ -45,7 +45,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 
 	/**
 	 * {@inheritDoc}
-	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si on ne retrouve pas d'individu correspondant
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException si on ne retrouve pas d'individu correspondant
 	 */
 	@Override
 	public IndividuView getIndividu(Long numeroIndividu) {
@@ -60,7 +60,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 
 	/**
 	 * {@inheritDoc}
-	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException Si on ne trouve l'individu ni pas son numero ou par un numero d'evt
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException Si on ne trouve l'individu ni pas son numero ou par un numero d'evt
 	 */
 	@Override
 	public IndividuView getIndividu(Long numeroIndividu, Long numeroEvenement) {

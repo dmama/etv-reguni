@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,11 +12,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.registrefoncier.TypeDroit;
-import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.registrefoncier.TypeDroit;
+import ch.vd.unireg.registrefoncier.key.AyantDroitRFKey;
 
 public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> implements AyantDroitRFDAO {
 	protected AyantDroitRFDAOImpl() {

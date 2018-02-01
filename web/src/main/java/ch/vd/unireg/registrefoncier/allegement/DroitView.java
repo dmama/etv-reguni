@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
+import ch.vd.unireg.registrefoncier.DroitHabitationRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
 
 public class DroitView implements DateRange {
 

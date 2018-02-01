@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,15 +21,15 @@ import ch.vd.unireg.xml.event.party.taxliab.v2.MinorInfo;
 import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlService;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.evenement.party.control.TaxLiabilityControlService;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -10,8 +10,8 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CodeControleHelper;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.common.CodeControleHelper;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 
 @Entity
 @DiscriminatorValue("DIPM")
@@ -49,7 +49,7 @@ public class DeclarationImpotOrdinairePM extends DeclarationImpotOrdinaire {
 	}
 
 	@Column(name = "DATE_DEBUT_EXERCICE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebutExerciceCommercial() {
 		return dateDebutExerciceCommercial;
 	}
@@ -59,7 +59,7 @@ public class DeclarationImpotOrdinairePM extends DeclarationImpotOrdinaire {
 	}
 
 	@Column(name = "DATE_FIN_EXERCICE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFinExerciceCommercial() {
 		return dateFinExerciceCommercial;
 	}

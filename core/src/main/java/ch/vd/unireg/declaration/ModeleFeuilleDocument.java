@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.unireg.common.HibernateEntity;
 
 @Entity
 @Table(name = "MODELE_FEUILLE_DOC")

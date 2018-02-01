@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.declaration;
+package ch.vd.unireg.evenement.declaration;
 
 import ch.vd.registre.base.date.RegDate;
 

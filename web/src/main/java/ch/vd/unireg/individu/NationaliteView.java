@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.individu;
+package ch.vd.unireg.individu;
 
 import java.io.Serializable;
 import java.util.Comparator;

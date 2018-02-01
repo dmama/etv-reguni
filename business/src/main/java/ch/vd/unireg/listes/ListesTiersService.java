@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.listes;
+package ch.vd.unireg.listes;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
-import ch.vd.uniregctb.listes.listesnominatives.TypeAdresse;
-import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.listes.listesnominatives.ListesNominativesResults;
+import ch.vd.unireg.listes.listesnominatives.TypeAdresse;
+import ch.vd.unireg.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 
 /**
  * Interface du service pour les listes de tiers

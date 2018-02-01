@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="tiersImportController" class="ch.vd.uniregctb.admin.TiersImportController">
+	<bean id="tiersImportController" class="ch.vd.unireg.admin.TiersImportController">
 		<property name="globalIndexer" ref="globalTiersIndexer" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="docService" ref="docService" />
@@ -10,27 +10,27 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="databasePreviewController" class="ch.vd.uniregctb.admin.DatabasePreviewController">
+	<bean id="databasePreviewController" class="ch.vd.unireg.admin.DatabasePreviewController">
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 
 	<!-- Accès à l'inbox -->
-	<bean id="inboxController" class="ch.vd.uniregctb.admin.inbox.InboxController">
+	<bean id="inboxController" class="ch.vd.unireg.admin.inbox.InboxController">
 		<property name="inboxService" ref="inboxService"/>
 		<property name="extractionService" ref="extractionService"/>
 		<property name="pclManager" ref="printPCLManager"/>
 	</bean>
 
 	<!-- Gestion des batchs  -->
-	<bean id="batchController" class="ch.vd.uniregctb.admin.batch.BatchController">
+	<bean id="batchController" class="ch.vd.unireg.admin.batch.BatchController">
 		<property name="batchScheduler" ref="batchScheduler" />
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="messageSource" ref="messageSource"/>
 	</bean>
 
-	<bean id="queuesJmsController" class="ch.vd.uniregctb.admin.evenementExterne.QueuesJmsController">
+	<bean id="queuesJmsController" class="ch.vd.unireg.admin.evenementExterne.QueuesJmsController">
 
 		<property name="securityProvider" ref="securityProviderCache" />
 
@@ -61,7 +61,7 @@
 	</bean>
 
 	<!-- Gestion de l'indexation  -->
-	<bean id="gestionIndexationController" class="ch.vd.uniregctb.admin.GestionIndexationController">
+	<bean id="gestionIndexationController" class="ch.vd.unireg.admin.GestionIndexationController">
 		<property name="globalIndex" ref="globalTiersIndex" />
 		<property name="indexationManager" ref="indexationManager" />
 		<property name="serviceCivil" ref="serviceCivilService" />
@@ -69,20 +69,20 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="indexationManager" class="ch.vd.uniregctb.admin.IndexationManagerImpl">
+	<bean id="indexationManager" class="ch.vd.unireg.admin.IndexationManagerImpl">
 		<property name="tiersIndexer" ref="globalTiersIndexer" />
 		<property name="dataEventService" ref="dataEventService"/>
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
 	<!-- Gestion de tracing -->
-	<bean id="auditLogController" class="ch.vd.uniregctb.admin.AuditLogController">
+	<bean id="auditLogController" class="ch.vd.unireg.admin.AuditLogController">
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<!-- Dump de la base de donnee -->
-	<bean id="databaseDumpController" class="ch.vd.uniregctb.admin.DatabaseDumpController">
+	<bean id="databaseDumpController" class="ch.vd.unireg.admin.DatabaseDumpController">
 		<property name="databaseService" ref="databaseService" />
 		<property name="docService" ref="docService" />
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -92,28 +92,28 @@
 	</bean>
 
 	<!-- Gestion des documents -->
-	<bean id="documentController" class="ch.vd.uniregctb.document.DocumentController">
+	<bean id="documentController" class="ch.vd.unireg.document.DocumentController">
 		<property name="docService" ref="docService" />
 		<property name="servletService" ref="servletService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<!-- Gestion du recalcul des parentés -->
-	<bean id="recalculParentesController" class="ch.vd.uniregctb.admin.RecalculParentesController">
+	<bean id="recalculParentesController" class="ch.vd.unireg.admin.RecalculParentesController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
 
 	<!-- Gestion du recalcul du flag habitant -->
-	<bean id="recalculFlagHabitant" class="ch.vd.uniregctb.admin.RecalculFlagHabitantController">
+	<bean id="recalculFlagHabitant" class="ch.vd.unireg.admin.RecalculFlagHabitantController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
 
 	<!-- Indexer flusher -->
-	<bean id="periodicIndexFlusher" class="ch.vd.uniregctb.indexer.PeriodicIndexFlusher">
+	<bean id="periodicIndexFlusher" class="ch.vd.unireg.indexer.PeriodicIndexFlusher">
 		<property name="indexers">
 			<util:map>
 				<entry key="Tiers" value-ref="globalTiersIndexRaw"/>

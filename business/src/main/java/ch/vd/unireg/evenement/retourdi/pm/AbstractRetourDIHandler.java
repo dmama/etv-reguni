@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Classe de base des traitements de retour des DI PM

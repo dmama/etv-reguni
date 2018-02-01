@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.unireg.type.TarifImpotSource;
 
 /**
  * Classe de transtypage pour Hibernate : TarifImpotSource <--> varchar

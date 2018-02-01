@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
@@ -299,7 +299,7 @@ public final class DayMonth implements Serializable, Comparable<DayMonth> {
 	}
 
 	/**
-	 * @return <code>true</code> si les deux {@link ch.vd.uniregctb.type.DayMonth} passés en paramètres peuvent être considérés comme pointant vers le même jour du mois
+	 * @return <code>true</code> si les deux {@link ch.vd.unireg.type.DayMonth} passés en paramètres peuvent être considérés comme pointant vers le même jour du mois
 	 * (= il y a un nombre de mois entier entre deux dates sur ces ancres)
 	 */
 	public static boolean isSameDayOfMonth(DayMonth dm1, DayMonth dm2) {

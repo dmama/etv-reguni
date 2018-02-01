@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.unireg.type.GenreImpot;
 
 /**
  * Classe de transtypage pour Hibernate : GenreImpot <--> varchar

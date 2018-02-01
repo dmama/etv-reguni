@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml;
+package ch.vd.unireg.xml;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,28 +22,28 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
-import ch.vd.uniregctb.indexer.tiers.CollectiviteAdministrativeIndexable;
-import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
-import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
-import ch.vd.uniregctb.indexer.tiers.EtablissementIndexable;
-import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
-import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
-import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.FormulePolitesse;
-import ch.vd.uniregctb.xml.address.AddressBuilder;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.indexer.tiers.AutreCommunauteIndexable;
+import ch.vd.unireg.indexer.tiers.CollectiviteAdministrativeIndexable;
+import ch.vd.unireg.indexer.tiers.DebiteurPrestationImposableIndexable;
+import ch.vd.unireg.indexer.tiers.EntrepriseIndexable;
+import ch.vd.unireg.indexer.tiers.EtablissementIndexable;
+import ch.vd.unireg.indexer.tiers.HabitantIndexable;
+import ch.vd.unireg.indexer.tiers.MenageCommunIndexable;
+import ch.vd.unireg.indexer.tiers.NonHabitantIndexable;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.FormulePolitesse;
+import ch.vd.unireg.xml.address.AddressBuilder;
 
 /**
  * Cette helper effectue la traduction des classes venant de 'core' en classes 'XML'.
@@ -428,7 +428,7 @@ public abstract class DataHelper {
 		return valeur;
 	}
 
-	public static ch.vd.unireg.xml.party.v1.PartyInfo coreToXMLv1(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+	public static ch.vd.unireg.xml.party.v1.PartyInfo coreToXMLv1(ch.vd.unireg.indexer.tiers.TiersIndexedData value) {
 		if (value == null) {
 			return null;
 		}
@@ -448,7 +448,7 @@ public abstract class DataHelper {
 		return i;
 	}
 
-	public static ch.vd.unireg.xml.party.v2.PartyInfo coreToXMLv2(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+	public static ch.vd.unireg.xml.party.v2.PartyInfo coreToXMLv2(ch.vd.unireg.indexer.tiers.TiersIndexedData value) {
 		if (value == null) {
 			return null;
 		}
@@ -476,7 +476,7 @@ public abstract class DataHelper {
 		return i;
 	}
 
-	public static ch.vd.unireg.xml.party.v3.PartyInfo coreToXMLv3(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+	public static ch.vd.unireg.xml.party.v3.PartyInfo coreToXMLv3(ch.vd.unireg.indexer.tiers.TiersIndexedData value) {
 		if (value == null) {
 			return null;
 		}
@@ -514,7 +514,7 @@ public abstract class DataHelper {
 		return i;
 	}
 
-	public static ch.vd.unireg.xml.party.v4.PartyInfo coreToXMLv4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+	public static ch.vd.unireg.xml.party.v4.PartyInfo coreToXMLv4(ch.vd.unireg.indexer.tiers.TiersIndexedData value) {
 		if (value == null) {
 			return null;
 		}
@@ -552,7 +552,7 @@ public abstract class DataHelper {
 		return i;
 	}
 
-	public static ch.vd.unireg.xml.party.v5.PartyInfo coreToXMLv5(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+	public static ch.vd.unireg.xml.party.v5.PartyInfo coreToXMLv5(ch.vd.unireg.indexer.tiers.TiersIndexedData value) {
 		if (value == null) {
 			return null;
 		}
@@ -711,7 +711,7 @@ public abstract class DataHelper {
 	 * @param tiers les données indexés du tiers
 	 * @return le type du tiers; ou <b>null</b> si le type de tiers n'est pas connu.
 	 */
-	public static ch.vd.unireg.xml.party.v1.PartyType getPartyTypeV1(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v1.PartyType getPartyTypeV1(ch.vd.unireg.indexer.tiers.TiersIndexedData tiers) {
 
 		final String typeAsString = tiers.getTiersType();
 
@@ -728,7 +728,7 @@ public abstract class DataHelper {
 	 * @param tiers les données indexés du tiers
 	 * @return le type du tiers; ou <b>null</b> si le type de tiers n'est pas connu.
 	 */
-	public static ch.vd.unireg.xml.party.v2.PartyType getPartyTypeV2(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v2.PartyType getPartyTypeV2(ch.vd.unireg.indexer.tiers.TiersIndexedData tiers) {
 
 		final String typeAsString = tiers.getTiersType();
 
@@ -739,7 +739,7 @@ public abstract class DataHelper {
 		return indexedData2TypeV2.get(typeAsString);
 	}
 
-	public static ch.vd.unireg.xml.party.v3.PartyType getPartyTypeV3(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v3.PartyType getPartyTypeV3(ch.vd.unireg.indexer.tiers.TiersIndexedData tiers) {
 
 		final String typeAsString = tiers.getTiersType();
 
@@ -750,7 +750,7 @@ public abstract class DataHelper {
 		return indexedData2TypeV3.get(typeAsString);
 	}
 
-	public static ch.vd.unireg.xml.party.v4.PartyType getPartyTypeV4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v4.PartyType getPartyTypeV4(ch.vd.unireg.indexer.tiers.TiersIndexedData tiers) {
 
 		final String typeAsString = tiers.getTiersType();
 
@@ -761,7 +761,7 @@ public abstract class DataHelper {
 		return indexedData2TypeV4.get(typeAsString);
 	}
 
-	public static ch.vd.unireg.xml.party.v5.PartyType getPartyTypeV5(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v5.PartyType getPartyTypeV5(ch.vd.unireg.indexer.tiers.TiersIndexedData tiers) {
 
 		final String typeAsString = tiers.getTiersType();
 
@@ -772,7 +772,7 @@ public abstract class DataHelper {
 		return indexedData2TypeV5.get(typeAsString);
 	}
 
-	public static ch.vd.unireg.xml.party.v3.NaturalPersonSubtype getNaturalPersonSubtypeV3(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v3.NaturalPersonSubtype getNaturalPersonSubtypeV3(ch.vd.unireg.indexer.tiers.TiersIndexedData tiers) {
 		final String typeAsString = tiers.getTiersType();
 
 		if (StringUtils.isEmpty(typeAsString)) {
@@ -782,7 +782,7 @@ public abstract class DataHelper {
 		return indexedData2NaturalPersonSubtypeV3.get(typeAsString);
 	}
 
-	public static ch.vd.unireg.xml.party.v4.NaturalPersonSubtype getNaturalPersonSubtypeV4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v4.NaturalPersonSubtype getNaturalPersonSubtypeV4(ch.vd.unireg.indexer.tiers.TiersIndexedData tiers) {
 		final String typeAsString = tiers.getTiersType();
 
 		if (StringUtils.isEmpty(typeAsString)) {
@@ -792,7 +792,7 @@ public abstract class DataHelper {
 		return indexedData2NaturalPersonSubtypeV4.get(typeAsString);
 	}
 
-	public static ch.vd.unireg.xml.party.v5.NaturalPersonSubtype getNaturalPersonSubtypeV5(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v5.NaturalPersonSubtype getNaturalPersonSubtypeV5(ch.vd.unireg.indexer.tiers.TiersIndexedData tiers) {
 		final String typeAsString = tiers.getTiersType();
 
 		if (StringUtils.isEmpty(typeAsString)) {

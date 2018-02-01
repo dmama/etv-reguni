@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.mouvement.validator;
+package ch.vd.unireg.mouvement.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.type.Localisation;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.type.Localisation;
+import ch.vd.unireg.type.TypeMouvement;
 
 public class MouvementEditValidator implements Validator {
 

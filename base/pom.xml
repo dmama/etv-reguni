@@ -6,7 +6,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>ch.vd.uniregctb</groupId>
+	<groupId>ch.vd.unireg</groupId>
 	<artifactId>uniregctb</artifactId>
 	<!-- BEGIN_LVERSION -->
 	<version>18R2.A.0-SNAPSHOT</version>
@@ -527,7 +527,7 @@
 					</additionalparam>
 					<maxmemory>1024m</maxmemory>
 					<aggregate>true</aggregate>
-					<excludePackageNames>javax.jws.*:ch.vd.uniregctb.webservices.*</excludePackageNames>
+					<excludePackageNames>javax.jws.*:ch.vd.unireg.webservices.*</excludePackageNames>
 					<links>
 						<link>http://docs.oracle.com/javase/7/docs/api/</link>
 					</links>
@@ -745,17 +745,17 @@
 		<!-- Database settings -->
 		<oracle.version>12.1.0.2.0</oracle.version>
 		<oracle.jdbc.dataSourceClassName>oracle.jdbc.xa.client.OracleXADataSource</oracle.jdbc.dataSourceClassName>
-		<oracle.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar</oracle.hibernate.dialect>
+		<oracle.hibernate.dialect>ch.vd.unireg.hibernate.dialect.Oracle10gDialectWithNVarChar</oracle.hibernate.dialect>
 		<oracle.hibernate.query.substitutions>true 1, false 0</oracle.hibernate.query.substitutions>
 
 		<postgresql.version>42.1.1</postgresql.version>
 		<postgresql.jdbc.dataSourceClassName>org.postgresql.xa.PGXADataSource</postgresql.jdbc.dataSourceClassName>
-		<postgresql.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.PostgreSQL83Dialect</postgresql.hibernate.dialect>
+		<postgresql.hibernate.dialect>ch.vd.unireg.hibernate.dialect.PostgreSQL83Dialect</postgresql.hibernate.dialect>
 		<postgresql.hibernate.query.substitutions/>
 
 		<h2.version>1.4.195</h2.version>
 		<h2.jdbc.dataSourceClassName>org.h2.jdbcx.JdbcDataSource</h2.jdbc.dataSourceClassName>
-		<h2.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar</h2.hibernate.dialect>
+		<h2.hibernate.dialect>ch.vd.unireg.hibernate.dialect.Oracle10gDialectWithNVarChar</h2.hibernate.dialect>
 		<h2.hibernate.query.substitutions>true 1, false 0</h2.hibernate.query.substitutions>
 
 		<dbunit.version>2.2.3</dbunit.version>

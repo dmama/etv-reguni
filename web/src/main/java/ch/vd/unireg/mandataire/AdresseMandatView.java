@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import java.util.List;
 

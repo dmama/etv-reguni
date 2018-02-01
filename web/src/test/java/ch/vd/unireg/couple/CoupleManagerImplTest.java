@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,25 +20,25 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.security.DroitAccesDAO;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.SituationFamilleDAO;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TarifImpotSource;
-import ch.vd.uniregctb.type.TypeDroitAcces;
-import ch.vd.uniregctb.validation.EntityValidator;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.security.DroitAccesDAO;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.SituationFamilleDAO;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TarifImpotSource;
+import ch.vd.unireg.type.TypeDroitAcces;
+import ch.vd.unireg.validation.EntityValidator;
+import ch.vd.unireg.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
-		"classpath:ch/vd/uniregctb/couple/manager/config.xml"
+		"classpath:ch/vd/unireg/couple/manager/config.xml"
 })
 public class CoupleManagerImplTest extends BusinessTest {
 

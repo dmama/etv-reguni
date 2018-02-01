@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -18,10 +18,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.dbutils.QueryFragment;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.dbutils.QueryFragment;
 
 public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements AuditLineDAO, InitializingBean {
 
@@ -101,7 +101,7 @@ public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements Au
 
 	/**
 	 *
-	 * @see ch.vd.uniregctb.audit.AuditLineDAO#insertLineInNewTx(ch.vd.uniregctb.audit.AuditLine)
+	 * @see ch.vd.unireg.audit.AuditLineDAO#insertLineInNewTx(ch.vd.unireg.audit.AuditLine)
 	 */
 	@Override
 	public void insertLineInNewTx(final AuditLine line) {

@@ -14,8 +14,8 @@
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 
-	    <%--@elvariable id="command" type="ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieListView"--%>
-	    <%--@elvariable id="parametresApp" type="ch.vd.uniregctb.param.view.ParamApplicationView"--%>
+	    <%--@elvariable id="command" type="ch.vd.unireg.contribuableAssocie.view.ContribuableAssocieListView"--%>
+	    <%--@elvariable id="parametresApp" type="ch.vd.unireg.param.view.ParamApplicationView"--%>
 
 	    <!-- Caractéristiques générales -->
 	    <c:set var="titre"><fmt:message key="caracteristiques.debiteur.is"/></c:set>

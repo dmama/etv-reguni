@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.messageidentification;
+package ch.vd.unireg.indexer.messageidentification;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -14,13 +14,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.StackedThreadLocal;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.common.ThreadSwitch;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.StackedThreadLocal;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.common.ThreadSwitch;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
 
 public class MessageIdentificationIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 

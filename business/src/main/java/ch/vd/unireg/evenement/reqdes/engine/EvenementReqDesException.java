@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.engine;
+package ch.vd.unireg.evenement.reqdes.engine;
 
 /**
  * Exception checkée qui permet d'arrêter le traitement d'une unité de traitement

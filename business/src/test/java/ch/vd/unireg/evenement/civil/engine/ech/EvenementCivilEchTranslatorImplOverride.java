@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchTranslatorImplOverride extends EvenementCivilEchTranslatorImpl {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.Iterator;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
+import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
+import ch.vd.unireg.registrefoncier.key.SurfaceAuSolRFKey;
 
 public class MockSurfaceAuSolRFDAO implements SurfaceAuSolRFDAO {
 	@Nullable

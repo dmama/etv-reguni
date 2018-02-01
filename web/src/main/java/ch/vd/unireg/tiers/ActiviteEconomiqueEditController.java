@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.validation.Valid;
 
@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
-import ch.vd.uniregctb.rapport.view.RapportView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.manager.AutorisationManager;
-import ch.vd.uniregctb.tiers.manager.Autorisations;
-import ch.vd.uniregctb.tiers.validator.CloseActiviteEconomiqueValidator;
-import ch.vd.uniregctb.tiers.view.CloseActiviteEconomiqueView;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.rapport.SensRapportEntreTiers;
+import ch.vd.unireg.rapport.view.RapportView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.tiers.manager.AutorisationManager;
+import ch.vd.unireg.tiers.manager.Autorisations;
+import ch.vd.unireg.tiers.validator.CloseActiviteEconomiqueValidator;
+import ch.vd.unireg.tiers.view.CloseActiviteEconomiqueView;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping("/dossiers-apparentes/activite-economique")

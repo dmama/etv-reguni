@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.tiers.etats.transition;
+package ch.vd.unireg.tiers.etats.transition;
 
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 /**
  * Représente l'opération de transition d'un état à l'autre de l'entreprise.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 
 public class VarianteCalculRolePPOffices extends VarianteCalculRolePP<RolePPOfficesResults> {
 

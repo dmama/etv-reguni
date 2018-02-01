@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport.validator;
+package ch.vd.unireg.rapport.validator;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
@@ -6,12 +6,12 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.rapport.view.SetPrincipalView;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.rapport.view.SetPrincipalView;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class SetPrincipalValidator implements Validator {
 

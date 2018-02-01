@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -42,7 +42,7 @@ public class Erreur {
 	}
 
 	@Column(name = "ERREUR_TYPE", length = 9)
-	@Type(type = "ch.vd.uniregctb.hibernate.identification.contribuable.TypeErreurIdentCtbUserType")
+	@Type(type = "ch.vd.unireg.hibernate.identification.contribuable.TypeErreurIdentCtbUserType")
 	public TypeErreur getType() {
 		return type;
 	}

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.io.Serializable;
 
@@ -11,16 +11,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FlashMessage;
-import ch.vd.uniregctb.common.MockControllerUtils;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.FlashMessage;
+import ch.vd.unireg.common.MockControllerUtils;
+import ch.vd.unireg.common.UniregJUnit4Runner;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.Entreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

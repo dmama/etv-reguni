@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,18 +18,18 @@ import ch.vd.editique.unireg.CTypeAdresse;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseEnvoi;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 public abstract class EditiqueAbstractLegacyHelper {
 
@@ -177,7 +177,7 @@ public abstract class EditiqueAbstractLegacyHelper {
 				.filter(e -> e.isActive() && e.isExpediteurDocuments() && !e.isAnnule())                        // seulement si étiquette valide, non-annulée, et marquée comme intéressante pour l'envoi de documents
 				.map(Etiquette::getCollectiviteAdministrative)                                                  // passage à la collectivité administrative liée
 				.filter(Objects::nonNull)                                                                       // seulement si une telle collectivité administrative existe
-				.map(ch.vd.uniregctb.tiers.CollectiviteAdministrative::getNumeroCollectiviteAdministrative)     // extraction du numéro de la collectivité administrative
+				.map(ch.vd.unireg.tiers.CollectiviteAdministrative::getNumeroCollectiviteAdministrative)     // extraction du numéro de la collectivité administrative
 				.findFirst()                                                                                    // on prend de tout de façon le premier qui sort
 				.orElse(null);
 	}

@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">
+	<bean id="tiersManager" class="ch.vd.unireg.tiers.manager.TiersManager">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
 		<property name="adresseService" ref="adresseService" />
@@ -20,14 +20,14 @@
 		 -->
 	</bean>
 	
-	<bean id="coupleManager" class="ch.vd.uniregctb.couple.CoupleManagerImpl">
+	<bean id="coupleManager" class="ch.vd.unireg.couple.CoupleManagerImpl">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="droitAccesService" ref="droitAccesService" />
 	</bean>
 
-	<bean id="validatorHelper" class="ch.vd.uniregctb.common.ValidatorHelperImpl">
+	<bean id="validatorHelper" class="ch.vd.unireg.common.ValidatorHelperImpl">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="situationFamilleService" ref="situationFamilleService"/>
 	</bean>

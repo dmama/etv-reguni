@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -12,11 +12,11 @@ import org.springframework.ui.Model;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public class TiersSearchHelper {
 
@@ -98,8 +98,8 @@ public class TiersSearchHelper {
 	 * Effectue la recherche de tiers selon les critères donnés
 	 * @param criteria critères de recherche
 	 * @return la liste des données correspondant aux critères (peut être vide, mais pas <code>null</code>)
-	 * @throws ch.vd.uniregctb.indexer.TooManyResultsIndexerException si le nombre de résultats trouvés est trop grand
-	 * @throws ch.vd.uniregctb.indexer.EmptySearchCriteriaException si les critères donnés se résument à "aucun critère"
+	 * @throws ch.vd.unireg.indexer.TooManyResultsIndexerException si le nombre de résultats trouvés est trop grand
+	 * @throws ch.vd.unireg.indexer.EmptySearchCriteriaException si les critères donnés se résument à "aucun critère"
 	 * @throws IndexerException en cas de problème
 	 */
 	public List<TiersIndexedDataView> search(TiersCriteriaView criteria) throws IndexerException {

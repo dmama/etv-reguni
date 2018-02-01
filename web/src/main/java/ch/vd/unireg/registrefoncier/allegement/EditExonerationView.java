@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
-import ch.vd.uniregctb.foncier.ExonerationIFONC;
+import ch.vd.unireg.foncier.ExonerationIFONC;
 
 public class EditExonerationView extends AbstractEditExonerationView {
 

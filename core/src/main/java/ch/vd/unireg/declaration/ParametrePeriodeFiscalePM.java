@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -6,8 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeContribuable;
 
 @Entity
 @DiscriminatorValue(value = "PM")

@@ -11,14 +11,14 @@
           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties -->
-	<bean id="bypassSecurityFilter" class="ch.vd.uniregctb.security.DevSecurityBypassProcessingFilter" />
+	<bean id="bypassSecurityFilter" class="ch.vd.unireg.security.DevSecurityBypassProcessingFilter" />
 
 	<!-- Bean qui permet d'utiliser le champ 'access' dans les tags authz:authorize -->
 	<bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
 
 	<!-- Récupère les paramètres renseignés par IAM et les stocke dans le context de sécurité -->
-	<bean id="iamAuthFilter" class="ch.vd.uniregctb.security.IAMAuthenticationProcessingFilter">
-		<property name="detailsClass" value="ch.vd.uniregctb.security.UniregSecurityDetails" />
+	<bean id="iamAuthFilter" class="ch.vd.unireg.security.IAMAuthenticationProcessingFilter">
+		<property name="detailsClass" value="ch.vd.unireg.security.UniregSecurityDetails" />
 		<property name="allowedRoles">
 			<set>
 				<value>user</value>
@@ -28,13 +28,13 @@
 		</property>
 	</bean>
 
-	<bean id="accessLoggerFilter" class="ch.vd.uniregctb.security.AccessLogProcessingFilter" />
+	<bean id="accessLoggerFilter" class="ch.vd.unireg.security.AccessLogProcessingFilter" />
 
 	<!-- Filtre qui stocker la dernière URL valide pour utilisation dans le ActionExceptionResolver -->
-	<bean id="actionExceptionFilter" class="ch.vd.uniregctb.servlet.ActionExceptionFilter" />
+	<bean id="actionExceptionFilter" class="ch.vd.unireg.servlet.ActionExceptionFilter" />
 
 	<!-- Filtre qui loggue toutes les exceptions qui sortent directement des autres filtres... !-->
-	<bean id="lastChanceExceptionLoggingFilter" class="ch.vd.uniregctb.servlet.LastChanceExceptionLoggingFilter"/>
+	<bean id="lastChanceExceptionLoggingFilter" class="ch.vd.unireg.servlet.LastChanceExceptionLoggingFilter"/>
 
 	<!-- Filtre sur les adresses IP -->
 	<bean id="remoteHostSpringFilter" class="ch.vd.unireg.servlet.security.RemoteHostSpringFilter">
@@ -43,12 +43,12 @@
 	</bean>
 
 	<!-- Filtre de choix de l'OId -->
-	<bean id="chooseOIDFilter" class="ch.vd.uniregctb.security.ChooseOIDProcessingFilter">
+	<bean id="chooseOIDFilter" class="ch.vd.unireg.security.ChooseOIDProcessingFilter">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
 	<!-- Récupère le profil IFOSec et le stocke dans le context de sécurité -->
-	<bean id="ifoSecProfileFilter" class="ch.vd.uniregctb.security.IFOSecProfileProcessingFilter">
+	<bean id="ifoSecProfileFilter" class="ch.vd.unireg.security.IFOSecProfileProcessingFilter">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
@@ -75,7 +75,7 @@
 
 	<!-- ======================== AUTHENTICATION ======================= -->
 
-	<bean id="securityDebugConfig" class="ch.vd.uniregctb.security.SecurityDebugConfig">
+	<bean id="securityDebugConfig" class="ch.vd.unireg.security.SecurityDebugConfig">
 		<property name="properties" ref="uniregExternalProperties" />
 		<property name="ifoSecService" ref="ifoSecService" />
 	</bean>
@@ -127,23 +127,23 @@
 
 	<!-- ================================================================ -->
 
-	<bean id="securiteDossierService" class="ch.vd.uniregctb.security.SecuriteDossierServiceImpl">
+	<bean id="securiteDossierService" class="ch.vd.unireg.security.SecuriteDossierServiceImpl">
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
 	</bean>
 
-	<bean id="ifoSecService" class="ch.vd.uniregctb.security.IfoSecServiceImpl">
+	<bean id="ifoSecService" class="ch.vd.unireg.security.IfoSecServiceImpl">
 		<property name="securiteService" ref="serviceSecuriteService" />
 	</bean>
 	
-	<bean id="securityProviderImpl" class="ch.vd.uniregctb.security.SecurityProviderImpl" depends-on="securityDebugConfig,auditManager">
+	<bean id="securityProviderImpl" class="ch.vd.unireg.security.SecurityProviderImpl" depends-on="securityDebugConfig,auditManager">
 		<property name="securiteDossierService" ref="securiteDossierService" />
 		<property name="ifoSecService" ref="ifoSecService" />
 	</bean>
 
-	<bean id="securityProviderCache" class="ch.vd.uniregctb.security.SecurityProviderCache">
+	<bean id="securityProviderCache" class="ch.vd.unireg.security.SecurityProviderCache">
 		<property name="target" ref="securityProviderImpl" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="securityProvider" />
@@ -160,7 +160,7 @@
 	<!-- Proxys Automatiques pour les classes advisées avec un aspect AspectJ -->
 	<aop:aspectj-autoproxy/>
 	<!-- Aspect pour géreer la sécurité applicative de manière déclarative avec l'annotation unireg @SecurityCheck -->
-	<bean id="securityCheckAspect" class="ch.vd.uniregctb.security.SecurityCheckAspect">
+	<bean id="securityCheckAspect" class="ch.vd.unireg.security.SecurityCheckAspect">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 

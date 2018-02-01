@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.acces.parUtilisateur.view;
+package ch.vd.unireg.acces.parUtilisateur.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 public class DroitAccesUtilisateurView extends BaseDroitAccesDossierView implements Annulable {
 

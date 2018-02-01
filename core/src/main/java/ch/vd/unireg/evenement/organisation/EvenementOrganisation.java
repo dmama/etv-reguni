@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,13 +27,13 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 @Entity
 @Table(name = "EVENEMENT_ORGANISATION")
@@ -135,7 +135,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	}
 
 	@Column(name = "TYPE", length = LengthConstants.EVTORGANISATION_TYPE, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeEvenementOrganisationUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeEvenementOrganisationUserType")
 	public TypeEvenementOrganisation getType() {
 		return type;
 	}
@@ -145,7 +145,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	}
 
 	@Column(name = "ETAT", length = LengthConstants.EVTORGANISATION_ETAT, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.EtatEvenementOrganisationUserType")
+	@Type(type = "ch.vd.unireg.hibernate.EtatEvenementOrganisationUserType")
 	@Index(name = "IDX_EV_ORGA_ETAT")
 	public EtatEvenementOrganisation getEtat() {
 		return etat;
@@ -165,7 +165,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_EVENEMENT", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateEvenement() {
 		return dateEvenement;
 	}

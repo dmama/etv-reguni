@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -43,23 +43,23 @@ import ch.vd.unireg.xml.event.fiscal.v2.OuvertureFor;
 import ch.vd.unireg.xml.event.fiscal.v2.OuvertureRegimeFiscal;
 import ch.vd.unireg.xml.event.fiscal.v2.TypeEvenementFiscalDeclaration;
 import ch.vd.unireg.xml.event.fiscal.v2.TypeInformationComplementaire;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.utils.LogLevel;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCommune;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.utils.LogLevel;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 
 /**
  * Bean qui permet d'envoyer des événements externes (en version 2).

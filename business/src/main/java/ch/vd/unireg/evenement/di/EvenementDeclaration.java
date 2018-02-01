@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 public class EvenementDeclaration {
 }

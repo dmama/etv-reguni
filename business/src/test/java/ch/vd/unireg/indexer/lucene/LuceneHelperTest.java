@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.indexer.lucene;
+package ch.vd.unireg.indexer.lucene;
 
 import org.apache.lucene.search.Query;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
 
 import static org.junit.Assert.assertNull;
 

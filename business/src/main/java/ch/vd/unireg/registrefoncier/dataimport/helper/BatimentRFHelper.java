@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.HashSet;
 import java.util.List;
@@ -9,12 +9,12 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
-import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.key.BatimentRFKey;
+import ch.vd.unireg.common.ProgrammingException;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.ImplantationRF;
+import ch.vd.unireg.registrefoncier.key.BatimentRFKey;
 
 public abstract class BatimentRFHelper {
 

@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchService;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.metier.MetierService;
 
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
 	

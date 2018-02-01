@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 /**
  * @author Raphaël Marmier, 2016-07-07, <raphael.marmier@vd.ch>

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.admin.inbox;
+package ch.vd.unireg.admin.inbox;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import ch.vd.uniregctb.print.PrintPCLManager;
+import ch.vd.unireg.print.PrintPCLManager;
 
 /**
  * Stratégie de téléchargement de contenu utilisée par les flux PCL (avec ou sans encapsulation localapp)

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import org.springframework.validation.Errors;
 
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class AddForSecondaireValidator extends AddForRevenuFortuneValidator {
 

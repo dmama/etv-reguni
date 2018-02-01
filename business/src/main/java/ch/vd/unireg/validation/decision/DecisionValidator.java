@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.decision;
+package ch.vd.unireg.validation.decision;
 
-import ch.vd.uniregctb.tiers.DecisionAci;
-import ch.vd.uniregctb.validation.tiers.LocalisationDateeValidator;
+import ch.vd.unireg.tiers.DecisionAci;
+import ch.vd.unireg.validation.tiers.LocalisationDateeValidator;
 
 /**
  * Classe de  validation des décisions ACI

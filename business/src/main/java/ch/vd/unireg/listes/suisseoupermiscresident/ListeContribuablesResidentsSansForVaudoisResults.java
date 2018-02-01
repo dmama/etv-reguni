@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.suisseoupermiscresident;
+package ch.vd.unireg.listes.suisseoupermiscresident;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -6,11 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.ListesResults;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResults<ListeContribuablesResidentsSansForVaudoisResults> {
 

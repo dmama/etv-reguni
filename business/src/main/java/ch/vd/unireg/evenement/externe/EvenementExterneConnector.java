@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import org.springframework.core.io.ClassPathResource;
 

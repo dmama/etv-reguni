@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.ignore;
+package ch.vd.unireg.norentes.civil.ignore;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 public class Ec_0_01_Ech99_Test extends NorentesTest {
 

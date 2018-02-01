@@ -1,4 +1,4 @@
-package ch.vd.uniregctb;
+package ch.vd.unireg;
 
 import java.io.IOException;
 

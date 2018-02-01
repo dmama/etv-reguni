@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.common.Equalator;
+import ch.vd.unireg.common.Equalator;
 
 /**
  * Spécificité de collecteur de données dont le résultat est exprimable sous la forme d'une liste à une seule dimension

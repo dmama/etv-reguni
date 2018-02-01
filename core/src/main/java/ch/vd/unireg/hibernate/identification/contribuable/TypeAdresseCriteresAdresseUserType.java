@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.hibernate.identification.contribuable;
+package ch.vd.unireg.hibernate.identification.contribuable;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
-import ch.vd.uniregctb.hibernate.EnumUserType;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
+import ch.vd.unireg.hibernate.EnumUserType;
 
 /**
  * Classe de transtypage pour Hibernate : Adresse.TypeAdresse <--> varchar

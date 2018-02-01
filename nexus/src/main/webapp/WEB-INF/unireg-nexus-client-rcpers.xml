@@ -20,7 +20,7 @@
 		<property name="upiGetInfoPersonPath" value="${extprop.webservice.rcpers.upiGetInfoPersonPath}" />
 	</bean>
 
-	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">
+	<bean id="rcPersClientTracing" class="ch.vd.unireg.wsclient.rcpers.RcPersClientTracing">
 		<property name="target" ref="rcPersClientRaw"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>

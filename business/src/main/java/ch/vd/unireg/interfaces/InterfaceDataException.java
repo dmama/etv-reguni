@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces;
+package ch.vd.unireg.interfaces;
 
 /**
  * Exception levée lorsque les données en provenance des interfaces ne sont pas cohérentes et nécessitent une correction dans une autre

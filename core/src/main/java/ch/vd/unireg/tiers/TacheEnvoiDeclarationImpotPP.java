@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -10,13 +10,13 @@ import java.util.Set;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.Qualification;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.Qualification;
+import ch.vd.unireg.type.TypeAdresseRetour;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatTache;
+import ch.vd.unireg.type.TypeTache;
 
 @Entity
 @DiscriminatorValue("ENVOI_DI_PP")
@@ -63,7 +63,7 @@ public class TacheEnvoiDeclarationImpotPP extends TacheEnvoiDeclarationImpot {
 	}
 
 	@Column(name = "QUALIFICATION", length = LengthConstants.DI_QUALIF )
-	@Type(type = "ch.vd.uniregctb.hibernate.QualificationUserType")
+	@Type(type = "ch.vd.unireg.hibernate.QualificationUserType")
 	public Qualification getQualification() {
 		return qualification;
 	}
@@ -82,7 +82,7 @@ public class TacheEnvoiDeclarationImpotPP extends TacheEnvoiDeclarationImpot {
 	}
 
 	@Column(name = "DECL_ADRESSE_RETOUR", length = LengthConstants.DI_ADRESSE_RETOUR)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeAdresseRetourUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeAdresseRetourUserType")
 	public TypeAdresseRetour getAdresseRetour() {
 		return adresseRetour;
 	}

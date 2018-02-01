@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.rcent.nocantonal;
+package ch.vd.unireg.rattrapage.rcent.nocantonal;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
 
 /**
  * Classe de job utilitaire qui prend deux fichiers, l'un contenant un mapping entre des numéros IDE et des numéros cantonaux (en provenance de RCEnt),

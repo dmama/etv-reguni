@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.arrivee;
+package ch.vd.unireg.norentes.civil.arrivee;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Cette classe teste l'arrivée sépraée des evenements civils d'unne famille, aussi appelé

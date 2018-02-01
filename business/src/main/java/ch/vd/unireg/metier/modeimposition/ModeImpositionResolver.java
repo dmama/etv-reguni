@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.metier.modeimposition;
+package ch.vd.unireg.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
 
 /**
  * Classe de base pour les resolvers de mode d'imposition

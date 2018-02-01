@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.iam;
+package ch.vd.unireg.evenement.iam;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.unireg.type.ModeCommunication;
 
 /**
  * Données utiles à Unireg extraites de l'événement JMS envoyé par le portail IAM suite à l'enregistrement d'un débiteur.

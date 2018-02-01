@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.unireg.webservices.common;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,27 +7,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalAllegementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationRappelable;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationSommable;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalEnvoiLettreBienvenue;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFlagEntreprise;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalImpressionFourreNeutre;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRegimeFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSituationFamille;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalAllegementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDeclarationRappelable;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDeclarationSommable;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalEnvoiLettreBienvenue;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalFlagEntreprise;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalImpressionFourreNeutre;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalParente;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalRegimeFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalSituationFamille;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
+import ch.vd.unireg.tiers.RegimeFiscal;
 
 public abstract class EvenementFiscalDescriptionHelper {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.util.function.Function;
 
@@ -10,14 +10,14 @@ import ch.vd.unireg.xml.party.landregistry.v1.CorporationIdentity;
 import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolderIdentity;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.xml.DataHelper;
 
 public abstract class RightHolderBuilder {
 	private RightHolderBuilder() {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,10 +12,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 @SuppressWarnings({"JavaDoc"})
 public class RapportEntreTiersTest extends CoreDAOTest {

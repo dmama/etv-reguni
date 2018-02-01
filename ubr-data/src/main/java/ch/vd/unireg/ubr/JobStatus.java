@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.ubr;
+package ch.vd.unireg.ubr;
 
 /**
  * Etat d'un job tel que présenté par le WS batch

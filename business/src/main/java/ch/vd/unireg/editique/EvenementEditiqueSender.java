@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.xmlbeans.XmlObject;

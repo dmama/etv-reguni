@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.qsnc;
+package ch.vd.unireg.qsnc;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

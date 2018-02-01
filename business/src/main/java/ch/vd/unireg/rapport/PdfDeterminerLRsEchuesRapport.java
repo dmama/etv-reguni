@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
@@ -10,10 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
+import ch.vd.unireg.common.CsvHelper;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.declaration.source.DeterminerLRsEchuesResults;
 
 /**
  * Rapport PDF d'exécution du batch d'échéance des LRs

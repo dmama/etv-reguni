@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import java.util.Date;
 import java.util.List;
 
-import ch.vd.uniregctb.audit.AuditLevel;
-import ch.vd.uniregctb.audit.AuditLine;
-import ch.vd.uniregctb.audit.AuditLineCriteria;
-import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.unireg.audit.AuditLevel;
+import ch.vd.unireg.audit.AuditLine;
+import ch.vd.unireg.audit.AuditLineCriteria;
+import ch.vd.unireg.document.Document;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 
 /**
  * Contient une liste des lignes d'audits.

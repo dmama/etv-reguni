@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction;
+package ch.vd.unireg.transaction;
 
 import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;

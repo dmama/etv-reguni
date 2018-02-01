@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.EntityKey;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.EntityKey;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Droit de propriété entre un immeuble bénéficiaire et un immeuble grevé.

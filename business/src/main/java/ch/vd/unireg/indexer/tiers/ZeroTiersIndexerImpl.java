@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.util.Collection;
 import java.util.Set;
@@ -6,10 +6,10 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.tiers.TypeTiers;
 
 public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 

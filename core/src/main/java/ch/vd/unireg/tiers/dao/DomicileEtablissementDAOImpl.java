@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.tiers.dao;
+package ch.vd.unireg.tiers.dao;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.tiers.DomicileEtablissement;
 
 public class DomicileEtablissementDAOImpl extends BaseDAOImpl<DomicileEtablissement, Long> implements DomicileEtablissementDAO {
 

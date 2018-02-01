@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import org.junit.Test;
 
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.unireg.type.TexteCasePostale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

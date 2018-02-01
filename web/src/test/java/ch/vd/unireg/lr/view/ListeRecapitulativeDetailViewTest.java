@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.lr.view;
+package ch.vd.unireg.lr.view;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,13 +12,13 @@ import org.springframework.context.MessageSource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
-import ch.vd.uniregctb.common.MockMessageSource;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.view.DelaiDocumentFiscalView;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.common.MockMessageSource;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 

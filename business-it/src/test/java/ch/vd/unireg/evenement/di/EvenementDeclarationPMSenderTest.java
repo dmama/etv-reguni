@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 import java.util.regex.Pattern;
 
@@ -9,10 +9,10 @@ import org.springframework.core.io.Resource;
 
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationPMSenderImpl;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSenderImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

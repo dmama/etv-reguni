@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -18,11 +18,11 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.load.BasicLoadMonitor;
-import ch.vd.uniregctb.load.LoadAverager;
-import ch.vd.uniregctb.stats.LoadMonitorable;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.load.BasicLoadMonitor;
+import ch.vd.unireg.load.LoadAverager;
+import ch.vd.unireg.stats.LoadMonitorable;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, InitializingBean, DisposableBean {
 

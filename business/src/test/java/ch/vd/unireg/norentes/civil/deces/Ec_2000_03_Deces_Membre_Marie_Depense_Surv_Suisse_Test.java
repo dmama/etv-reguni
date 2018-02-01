@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.deces;
+package ch.vd.unireg.norentes.civil.deces;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Test extends NorentesTest {
 

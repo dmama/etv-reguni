@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.TiersVisuView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.entreprise.TiersVisuView"--%>
 
 <unireg:setAuth var="autorisations" tiersId="${command.entreprise.id}"/>
 
@@ -21,7 +21,7 @@
 	<legend><span><fmt:message key="label.autres.documents.fiscaux.suivis"/></span></legend>
 
 	<c:if test="${not empty command.autresDocumentsFiscauxSuivis}">
-		<display:table name="${command.autresDocumentsFiscauxSuivis}" id="docFiscal" htmlId="docFiscalAvecSuivi" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
+		<display:table name="${command.autresDocumentsFiscauxSuivis}" id="docFiscal" htmlId="docFiscalAvecSuivi" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
 			<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
 				${docFiscal.libelleTypeDocument}
 			</display:column>
@@ -77,7 +77,7 @@
 	<legend><span><fmt:message key="label.autres.documents.fiscaux.non.suivis"/></span></legend>
 
 	<c:if test="${not empty command.autresDocumentsFiscauxNonSuivis}">
-		<display:table name="${command.autresDocumentsFiscauxNonSuivis}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
+		<display:table name="${command.autresDocumentsFiscauxNonSuivis}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
 			<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
 				${docFiscal.libelleTypeDocument}
 			</display:column>

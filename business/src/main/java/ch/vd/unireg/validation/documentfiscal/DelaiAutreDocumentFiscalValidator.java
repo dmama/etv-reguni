@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.validation.documentfiscal;
+package ch.vd.unireg.validation.documentfiscal;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.documentfiscal.DelaiAutreDocumentFiscal;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.documentfiscal.DelaiAutreDocumentFiscal;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public class DelaiAutreDocumentFiscalValidator extends EntityValidatorImpl<DelaiAutreDocumentFiscal> {
 

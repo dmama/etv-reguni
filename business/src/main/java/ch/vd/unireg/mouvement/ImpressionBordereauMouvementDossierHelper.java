@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import noNamespace.FichierImpressionDocument;
 
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 public interface ImpressionBordereauMouvementDossierHelper {
 

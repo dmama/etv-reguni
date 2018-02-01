@@ -1,15 +1,15 @@
 /**
  *
  */
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TexteCasePostale;
 
 /**
  * Adresse libre non issue d'une adresse de l'individu ou de l'adresse courrier du représentant légal
@@ -88,7 +88,7 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 
 	@Override
 	@Column(name = "TEXTE_CASE_POSTALE", length = LengthConstants.ADRESSE_TYPESUPPLEM)
-	@Type(type = "ch.vd.uniregctb.hibernate.TexteCasePostaleUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TexteCasePostaleUserType")
 	public TexteCasePostale getTexteCasePostale() {
 		return texteCasePostale;
 	}

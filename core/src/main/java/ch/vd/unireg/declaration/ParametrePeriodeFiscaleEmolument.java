@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -8,8 +8,8 @@ import javax.persistence.Enumerated;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeDocumentEmolument;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeDocumentEmolument;
 
 @Entity
 @DiscriminatorValue(value = "EMOL")

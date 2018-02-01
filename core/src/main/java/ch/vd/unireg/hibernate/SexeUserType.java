@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.type.Sexe;
 
 /**
  * Classe de transtypage pour Hibernate : Sexe <--> varchar

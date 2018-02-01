@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,69 +32,69 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.FiscalDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.efacture.EFactureService;
-import ch.vd.uniregctb.efacture.EvenementEfactureException;
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.etiquette.EtiquetteService;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.modeimposition.DecesModeImpositionResolver;
-import ch.vd.uniregctb.metier.modeimposition.DivorceModeImpositionResolver;
-import ch.vd.uniregctb.metier.modeimposition.FusionMenagesResolver;
-import ch.vd.uniregctb.metier.modeimposition.MariageModeImpositionResolver;
-import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver;
-import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolverException;
-import ch.vd.uniregctb.metier.modeimposition.TerminaisonCoupleModeImpositionResolver;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportEntreTiersException;
-import ch.vd.uniregctb.tiers.Remarque;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersException;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TarifImpotSource;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.utils.UniregModeHelper;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.FiscalDateHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.efacture.EFactureService;
+import ch.vd.unireg.efacture.EvenementEfactureException;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.etiquette.EtiquetteService;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.modeimposition.DecesModeImpositionResolver;
+import ch.vd.unireg.metier.modeimposition.DivorceModeImpositionResolver;
+import ch.vd.unireg.metier.modeimposition.FusionMenagesResolver;
+import ch.vd.unireg.metier.modeimposition.MariageModeImpositionResolver;
+import ch.vd.unireg.metier.modeimposition.ModeImpositionResolver;
+import ch.vd.unireg.metier.modeimposition.ModeImpositionResolverException;
+import ch.vd.unireg.metier.modeimposition.TerminaisonCoupleModeImpositionResolver;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalAutreElementImposable;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.tiers.ForsParType;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportEntreTiersException;
+import ch.vd.unireg.tiers.Remarque;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.tiers.SituationFamillePersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersException;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.dao.RemarqueDAO;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TarifImpotSource;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.utils.UniregModeHelper;
+import ch.vd.unireg.validation.ValidationInterceptor;
+import ch.vd.unireg.validation.ValidationService;
 
 public class MetierServiceImpl implements MetierService {
 
@@ -307,7 +307,7 @@ public class MetierServiceImpl implements MetierService {
 		return (MotifFor.DEPART_HC == motif || MotifFor.DEPART_HS == motif);
 	}
 
-	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement) throws MetierServiceException {
+	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.unireg.type.EtatCivil etatCivilFamille, Long numeroEvenement) throws MetierServiceException {
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, date);
 
@@ -711,7 +711,7 @@ public class MetierServiceImpl implements MetierService {
 		return retour;
 	}
 
-	private void updateSituationFamilleMariage(MenageCommun menageCommun, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {
+	private void updateSituationFamilleMariage(MenageCommun menageCommun, RegDate date, ch.vd.unireg.type.EtatCivil etatCivilFamille) {
 
 		/*
 		 * S'il y a un non-habitant dans le couple, la situation de
@@ -733,12 +733,12 @@ public class MetierServiceImpl implements MetierService {
 
 		EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menageCommun, date);
 		PersonnePhysique principal = couple.getPrincipal();
-		ch.vd.uniregctb.type.EtatCivil etatCivilPrincipal = situationFamilleService.getEtatCivil(principal, date, true);
+		ch.vd.unireg.type.EtatCivil etatCivilPrincipal = situationFamilleService.getEtatCivil(principal, date, true);
 		if (!principal.isHabitantVD()) {
 			auMoinsUnNonHabitant = true;
 		}
 		PersonnePhysique conjoint = couple.getConjoint();
-		ch.vd.uniregctb.type.EtatCivil etatCivilConjoint = null;
+		ch.vd.unireg.type.EtatCivil etatCivilConjoint = null;
 		if (conjoint != null) {
 			etatCivilConjoint = situationFamilleService.getEtatCivil(conjoint, date, true);
 			if (!conjoint.isHabitantVD()) {
@@ -776,7 +776,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	@Override
-	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille,
+	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.unireg.type.EtatCivil etatCivilFamille,
 	                          Long numeroEvenement) throws MetierServiceException {
 		/*
 		 * Création d'un tiers MenageCommun
@@ -856,7 +856,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	@Override
-	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille,
+	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.unireg.type.EtatCivil etatCivilFamille,
 	                                    Long numeroEvenement) throws MetierServiceException {
 
 		final RegDate dateFinRapport = getDateMaxRapportPourCauseDeces(principal, conjoint);
@@ -943,7 +943,7 @@ public class MetierServiceImpl implements MetierService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MenageCommun reconstitueMenage(MenageCommun menage, PersonnePhysique pp, RegDate date, @Nullable String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {
+	public MenageCommun reconstitueMenage(MenageCommun menage, PersonnePhysique pp, RegDate date, @Nullable String remarque, ch.vd.unireg.type.EtatCivil etatCivilFamille) {
 
 		/*
 		 * ajout du tiers précédemment absent au ménage commun
@@ -1061,7 +1061,7 @@ public class MetierServiceImpl implements MetierService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MenageCommun fusionneMenages(MenageCommun menagePrincipal, MenageCommun menageConjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) throws MetierServiceException {
+	public MenageCommun fusionneMenages(MenageCommun menagePrincipal, MenageCommun menageConjoint, String remarque, ch.vd.unireg.type.EtatCivil etatCivilFamille) throws MetierServiceException {
 
 		final MenageCommun menageChoisi = getMenageForFusion(menagePrincipal, menageConjoint);
 		final MenageCommun autreMenage = (menageChoisi == menagePrincipal ? menageConjoint : menagePrincipal);
@@ -1478,7 +1478,7 @@ public class MetierServiceImpl implements MetierService {
 
 	/**
 	 *
-	 * @see ch.vd.uniregctb.metier.MetierService#validateSeparation(ch.vd.uniregctb.tiers.MenageCommun, ch.vd.registre.base.date.RegDate)
+	 * @see ch.vd.unireg.metier.MetierService#validateSeparation(ch.vd.unireg.tiers.MenageCommun, ch.vd.registre.base.date.RegDate)
 	 */
 	@Override
 	public ValidationResults validateSeparation(MenageCommun menage, RegDate date) {
@@ -1528,7 +1528,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	@Override
-	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement) throws
+	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.unireg.type.EtatCivil etatCivilFamille, Long numeroEvenement) throws
 			MetierServiceException {
 		if (menage == null) {
 			throw new MetierServiceException("Le ménage est null");
@@ -1583,7 +1583,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	private void updateSituationFamilleSeparation(MenageCommun menageCommun, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivil) throws MetierServiceException {
+	private void updateSituationFamilleSeparation(MenageCommun menageCommun, RegDate date, ch.vd.unireg.type.EtatCivil etatCivil) throws MetierServiceException {
 		for (SituationFamille sf : menageCommun.getSituationsFamilleSorted()) {
 			if (sf.getDateDebut().isAfter(date)) {
 				throw new MetierServiceException("Des situations famille actives existent après la date de séparation. Veuillez les annuler manuellement.");
@@ -1602,7 +1602,7 @@ public class MetierServiceImpl implements MetierService {
 			boolean sansEtatCivil = false;
 			boolean etatCivilDifferent = false;
 
-			ch.vd.uniregctb.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date, true);
+			ch.vd.unireg.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date, true);
 
 			if (!pp.isHabitantVD()) {
 				nonHabitant = true;
@@ -1703,7 +1703,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Mise à jour de la situation de famille
 		 */
-		ch.vd.uniregctb.type.EtatCivil etatCivilFamille = mariesOuPacses(menage);
+		ch.vd.unireg.type.EtatCivil etatCivilFamille = mariesOuPacses(menage);
 		updateSituationFamilleAnnulationSeparation(menage, date, etatCivilFamille);
 	}
 
@@ -1712,25 +1712,25 @@ public class MetierServiceImpl implements MetierService {
 	 *
 	 * Se base sur le sexe des personnes constituant le ménage s'il y a 2 personnes
 	 * ou interroge le civil pour les mariés seuls.
-	 * Si on ne trouve pas l'info dans le civil par défaut on renvoie {@link ch.vd.uniregctb.type.EtatCivil#MARIE}
+	 * Si on ne trouve pas l'info dans le civil par défaut on renvoie {@link ch.vd.unireg.type.EtatCivil#MARIE}
 	 *
 	 * @param menage le ménage commun en question
 	 *
 	 * @return
 	 *  <ul>
-	 *      <li>{@link ch.vd.uniregctb.type.EtatCivil#MARIE} pour un mariage ou si on arrive pas a determiner l'information avec certitude;</li>
-	 *      <li>{@link ch.vd.uniregctb.type.EtatCivil#LIE_PARTENARIAT_ENREGISTRE} pour un pacs</li>
+	 *      <li>{@link ch.vd.unireg.type.EtatCivil#MARIE} pour un mariage ou si on arrive pas a determiner l'information avec certitude;</li>
+	 *      <li>{@link ch.vd.unireg.type.EtatCivil#LIE_PARTENARIAT_ENREGISTRE} pour un pacs</li>
 	 *  </ul>
 	 */
-	private ch.vd.uniregctb.type.EtatCivil mariesOuPacses(MenageCommun menage) {
+	private ch.vd.unireg.type.EtatCivil mariesOuPacses(MenageCommun menage) {
 		final Set<PersonnePhysique> personnePhysiqueSet = tiersService.getPersonnesPhysiques(menage);
 		final PersonnePhysique[] personnes = personnePhysiqueSet.toArray(new PersonnePhysique[personnePhysiqueSet.size()]);
 		final PersonnePhysique tiers1 = personnes[0];
 		final PersonnePhysique tiers2 = personnes.length > 1 ? personnes[1] : null;
-		ch.vd.uniregctb.type.EtatCivil etatCivilFamille = ch.vd.uniregctb.type.EtatCivil.MARIE;
+		ch.vd.unireg.type.EtatCivil etatCivilFamille = ch.vd.unireg.type.EtatCivil.MARIE;
 		if (personnes.length >= 2) {
 			if (tiersService.isMemeSexe(tiers1, tiers2)) {
-				etatCivilFamille = ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE;
+				etatCivilFamille = ch.vd.unireg.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE;
 			}
 		} else {
 			// Dans le cas d'un marié seul, on peut avoir à faire à un partenartiat enregistré
@@ -1742,7 +1742,7 @@ public class MetierServiceImpl implements MetierService {
 		return etatCivilFamille;
 	}
 
-	private void updateSituationFamilleAnnulationSeparation(MenageCommun menage, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {
+	private void updateSituationFamilleAnnulationSeparation(MenageCommun menage, RegDate date, ch.vd.unireg.type.EtatCivil etatCivilFamille) {
 		// Annulation de la situation de famille des membres du ménage
 		cancelSituationFamilleMembresMenage(date, menage);
 		// Réouverture de la situation de famille du ménage
@@ -1757,7 +1757,7 @@ public class MetierServiceImpl implements MetierService {
 					auMoinsUnNonHabitant = true;
 				}
 				else {
-					ch.vd.uniregctb.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date, true);
+					ch.vd.unireg.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date, true);
 					if (etatCivilActif != etatCivilFamille) {
 						etatsCivilsDifferents = true;
 					}
@@ -2154,7 +2154,7 @@ public class MetierServiceImpl implements MetierService {
 						final SituationFamille situationFamille = new SituationFamillePersonnePhysique();
 						situationFamille.setDateDebut(lendemainDeces);
 						situationFamille.setDateFin(dateDecesVeuf);
-						situationFamille.setEtatCivil(ch.vd.uniregctb.type.EtatCivil.VEUF);
+						situationFamille.setEtatCivil(ch.vd.unireg.type.EtatCivil.VEUF);
 						situationFamille.setNombreEnfants(nombreEnfants);
 						situationFamilleService.addSituationFamille(situationFamille, veuf);
 					}

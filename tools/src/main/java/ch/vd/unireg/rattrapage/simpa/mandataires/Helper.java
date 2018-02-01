@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.simpa.mandataires;
+package ch.vd.unireg.rattrapage.simpa.mandataires;
 
 import java.io.BufferedReader;
 import java.io.IOException;

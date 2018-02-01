@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.param.validator;
+package ch.vd.unireg.param.validator;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -7,7 +7,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleSNCEditView;
+import ch.vd.unireg.param.view.ParametrePeriodeFiscaleSNCEditView;
 
 public class ParametrePeriodeFiscaleSNCValidator implements Validator {
 

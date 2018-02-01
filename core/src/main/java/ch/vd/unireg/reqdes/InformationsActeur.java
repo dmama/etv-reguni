@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.LengthConstants;
 
 @Embeddable
 public class InformationsActeur {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.LockHelper;
+import ch.vd.unireg.common.LockHelper;
 
 /**
  * <p>Cette classe possède une unique méthode {@link LocaliteInvalideMatcherServiceImpl#match} qui permet de controler si un libellé de commune est valide.

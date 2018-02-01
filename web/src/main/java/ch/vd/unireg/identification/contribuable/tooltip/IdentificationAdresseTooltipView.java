@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.identification.contribuable.tooltip;
+package ch.vd.unireg.identification.contribuable.tooltip;
 
-import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseGenerique;
 
 public class IdentificationAdresseTooltipView {
 

@@ -12,7 +12,7 @@ import ch.vd.evd0025.v1.MapEntry;
 import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 /**
  * Representation interne pour UNIREG de la classe {@link RegistrationRequest} de evd-25

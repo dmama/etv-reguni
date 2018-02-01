@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,17 +8,17 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.ForDebiteurPrestationImposable;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorTest<DebiteurPrestationImposable> {
 

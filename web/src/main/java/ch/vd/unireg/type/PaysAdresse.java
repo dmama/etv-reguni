@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 
 /**

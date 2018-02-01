@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.importcleanup;
+package ch.vd.unireg.registrefoncier.importcleanup;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
 
 public class CleanupRFProcessorResults extends JobResults<Long, CleanupRFProcessorResults> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v2;
+package ch.vd.unireg.xml.party.v2;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,17 +13,17 @@ import ch.vd.unireg.xml.party.person.v2.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v2.NaturalPerson;
 import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyPart;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v2.strategy.AdminAuthStrategy;
-import ch.vd.uniregctb.xml.party.v2.strategy.CommonHouseholdStrategy;
-import ch.vd.uniregctb.xml.party.v2.strategy.CorporationStrategy;
-import ch.vd.uniregctb.xml.party.v2.strategy.DebtorStrategy;
-import ch.vd.uniregctb.xml.party.v2.strategy.NaturalPersonStrategy;
-import ch.vd.uniregctb.xml.party.v2.strategy.PartyStrategy;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v2.strategy.AdminAuthStrategy;
+import ch.vd.unireg.xml.party.v2.strategy.CommonHouseholdStrategy;
+import ch.vd.unireg.xml.party.v2.strategy.CorporationStrategy;
+import ch.vd.unireg.xml.party.v2.strategy.DebtorStrategy;
+import ch.vd.unireg.xml.party.v2.strategy.NaturalPersonStrategy;
+import ch.vd.unireg.xml.party.v2.strategy.PartyStrategy;
 
 public class PartyBuilder {
 
@@ -43,11 +43,11 @@ public class PartyBuilder {
 		strategies.put(AdministrativeAuthority.class, adminAuthStrategy);
 	}
 
-	public static NaturalPerson newNaturalPerson(ch.vd.uniregctb.tiers.PersonnePhysique right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public static NaturalPerson newNaturalPerson(ch.vd.unireg.tiers.PersonnePhysique right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		return naturalPersonStrategy.newFrom(right, parts, context);
 	}
 
-	public static CommonHousehold newCommonHousehold(ch.vd.uniregctb.tiers.MenageCommun right, Set<PartyPart> parts, Context context) throws ServiceException {
+	public static CommonHousehold newCommonHousehold(ch.vd.unireg.tiers.MenageCommun right, Set<PartyPart> parts, Context context) throws ServiceException {
 		return commonHouseholdStrategy.newFrom(right, parts, context);
 	}
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party4.impl;
+package ch.vd.unireg.webservices.party4.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,57 +60,57 @@ import ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyInfo;
 import ch.vd.unireg.xml.party.v2.PartyType;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.avatar.TypeAvatar;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.source.ListeRecapService;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.jms.BamMessageHelper;
-import ch.vd.uniregctb.jms.BamMessageSender;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.NumerosOfficesImpot;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersDAO.Parts;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.webservices.party4.data.AcknowledgeTaxDeclarationBuilder;
-import ch.vd.uniregctb.webservices.party4.data.BatchPartyBuilder;
-import ch.vd.uniregctb.webservices.party4.data.DebtorInfoBuilder;
-import ch.vd.uniregctb.webservices.party4.data.ExtendDeadlineBuilder;
-import ch.vd.uniregctb.webservices.party4.exception.ExtendDeadlineError;
-import ch.vd.uniregctb.webservices.party4.exception.TaxDeclarationAcknowledgeError;
-import ch.vd.uniregctb.xml.BusinessHelper;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v2.PartyBuilder;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.avatar.TypeAvatar;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.declaration.source.ListeRecapService;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.indexer.EmptySearchCriteriaException;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.jms.BamMessageHelper;
+import ch.vd.unireg.jms.BamMessageSender;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.NumerosOfficesImpot;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersDAO.Parts;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.webservices.party4.data.AcknowledgeTaxDeclarationBuilder;
+import ch.vd.unireg.webservices.party4.data.BatchPartyBuilder;
+import ch.vd.unireg.webservices.party4.data.DebtorInfoBuilder;
+import ch.vd.unireg.webservices.party4.data.ExtendDeadlineBuilder;
+import ch.vd.unireg.webservices.party4.exception.ExtendDeadlineError;
+import ch.vd.unireg.webservices.party4.exception.TaxDeclarationAcknowledgeError;
+import ch.vd.unireg.xml.BusinessHelper;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v2.PartyBuilder;
 
 public class PartyWebServiceImpl implements PartyWebService {
 
@@ -250,7 +250,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 					if (value != null
 							&& (value.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(value.getCategorieImpotSource()))
 							&& (value.getTypeAvatar() == null || !TA_IGNORES.contains(value.getTypeAvatar()))) {
-						final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXMLv2(value);
+						final PartyInfo info = ch.vd.unireg.xml.DataHelper.coreToXMLv2(value);
 						set.add(info);
 					}
 				}
@@ -281,20 +281,20 @@ public class PartyWebServiceImpl implements PartyWebService {
 	public Party getParty(GetPartyRequest params) throws WebServiceException {
 
 		try {
-			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
+			final ch.vd.unireg.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
 			if (tiers == null) {
 				return null;
 			}
 
 			final Party data;
 			final Set<ch.vd.unireg.xml.party.v2.PartyPart> parts = DataHelper.webToXML(params.getParts());
-			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
-				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+			if (tiers instanceof ch.vd.unireg.tiers.PersonnePhysique) {
+				final ch.vd.unireg.tiers.PersonnePhysique personne = (ch.vd.unireg.tiers.PersonnePhysique) tiers;
 				BusinessHelper.warmIndividusV2(personne, parts, context);
 				data = PartyBuilder.newNaturalPerson(personne, parts, context);
 			}
-			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
-				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+			else if (tiers instanceof ch.vd.unireg.tiers.MenageCommun) {
+				final ch.vd.unireg.tiers.MenageCommun menage = (ch.vd.unireg.tiers.MenageCommun) tiers;
 				BusinessHelper.warmIndividusV2(menage, parts, context);
 				data = PartyBuilder.newCommonHousehold(menage, parts, context);
 			}
@@ -344,15 +344,15 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 			final Map<Long, Object> results = mapParties(toLongSet(partyNumbers), null, DataHelper.webToXML(params.getParts()), new MapCallback() {
 				@Override
-				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<ch.vd.unireg.xml.party.v2.PartyPart> parts, RegDate date, Context context) {
+				public Object map(ch.vd.unireg.tiers.Tiers tiers, Set<ch.vd.unireg.xml.party.v2.PartyPart> parts, RegDate date, Context context) {
 					try {
 						final Party t;
-						if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
-							final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+						if (tiers instanceof ch.vd.unireg.tiers.PersonnePhysique) {
+							final ch.vd.unireg.tiers.PersonnePhysique personne = (ch.vd.unireg.tiers.PersonnePhysique) tiers;
 							t = PartyBuilder.newNaturalPerson(personne, parts, context);
 						}
-						else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
-							final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+						else if (tiers instanceof ch.vd.unireg.tiers.MenageCommun) {
+							final ch.vd.unireg.tiers.MenageCommun menage = (ch.vd.unireg.tiers.MenageCommun) tiers;
 							t = PartyBuilder.newCommonHousehold(menage, parts, context);
 						}
 						else if (tiers instanceof Entreprise) {
@@ -540,7 +540,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 * @return les parties de la couche business.
 	 */
 	protected static Set<Parts> xmlToCoreWithForsFiscaux(Set<ch.vd.unireg.xml.party.v2.PartyPart> parts) {
-		Set<Parts> coreParts = ch.vd.uniregctb.xml.DataHelper.xmlToCoreV2(parts);
+		Set<Parts> coreParts = ch.vd.unireg.xml.DataHelper.xmlToCoreV2(parts);
 		if (coreParts == null) {
 			coreParts = EnumSet.noneOf(Parts.class);
 		}
@@ -562,7 +562,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
 
 		try {
-			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
+			final ch.vd.unireg.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
 			if (tiers == null) {
 				return null;
 			}
@@ -584,7 +584,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public GetTaxOfficesResponse getTaxOffices(GetTaxOfficesRequest params) throws WebServiceException {
 		try {
-			final NumerosOfficesImpot offices = context.tiersService.getOfficesImpot(params.getMunicipalityFSOId(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getDate()));
+			final NumerosOfficesImpot offices = context.tiersService.getOfficesImpot(params.getMunicipalityFSOId(), ch.vd.unireg.xml.DataHelper.xmlToCore(params.getDate()));
 			if (offices == null) {
 				return null;
 			}
@@ -605,7 +605,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	public void setAutomaticReimbursementBlocking(final SetAutomaticReimbursementBlockingRequest params) throws WebServiceException {
 
 		try {
-			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
+			final ch.vd.unireg.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
 			// [SIPM] Les établissements étaient complètement ignorés avant la v6 (= en fait, il n'y en avait pas, mais maintenant, ils arrivent...)
 			if (tiers == null || tiers instanceof Etablissement) {
 				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getPartyNumber() + " n'existe pas.", BusinessExceptionCode.UNKNOWN_PARTY);
@@ -632,7 +632,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	public DebtorInfo getDebtorInfo(GetDebtorInfoRequest params) throws WebServiceException {
 
 		try {
-			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getDebtorNumber());
+			final ch.vd.unireg.tiers.Tiers tiers = context.tiersService.getTiers(params.getDebtorNumber());
 			if (tiers == null) {
 				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getDebtorNumber() + " n'existe pas.", BusinessExceptionCode.UNKNOWN_PARTY);
 			}
@@ -747,7 +747,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		final TaxDeclarationKey key = request.getKey();
 
-		final ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) context.tiersDAO.get((long) key.getTaxpayerNumber());
+		final ch.vd.unireg.tiers.Contribuable ctb = (ch.vd.unireg.tiers.Contribuable) context.tiersDAO.get((long) key.getTaxpayerNumber());
 		if (ctb == null) {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_UNKNOWN_TAXPAYER, "Le contribuable est inconnu.");
 		}
@@ -766,7 +766,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'émise' (état=[" + etat + "]).");
 		}
 
-		final RegDate newDeadline = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
+		final RegDate newDeadline = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate oldDeadline = declaration.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
 		final RegDate today = RegDate.get();
 
@@ -779,7 +779,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 					"Le délai spécifié [" + RegDateHelper.dateToDisplayString(newDeadline) + "] est antérieur ou égal au délai existant [" + RegDateHelper.dateToDisplayString(oldDeadline) + "].");
 		}
 
-		final RegDate applicationDate = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getApplicationDate());
+		final RegDate applicationDate = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getApplicationDate());
 		if (applicationDate.isAfter(today)) {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_INVALID_APPLICATION_DATE,
 					"La date de demande spécifiée [" + RegDateHelper.dateToDisplayString(applicationDate) + "] est postérieure à la date du jour [" + RegDateHelper.dateToDisplayString(today) + "].");
@@ -853,13 +853,13 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 *
 	 * @param demande la demande de quittancement à traiter
 	 * @return la réponse de la demande de quittancement en cas de traitement effectué.
-	 * @throws ch.vd.uniregctb.webservices.party4.exception.TaxDeclarationAcknowledgeError
+	 * @throws ch.vd.unireg.webservices.party4.exception.TaxDeclarationAcknowledgeError
 	 *          une erreur explicite en cas d'impossibilité d'effectuer le traitement.
 	 */
 	private AcknowledgeTaxDeclarationResponse handleRequest(AcknowledgeTaxDeclarationRequest demande) throws TaxDeclarationAcknowledgeError {
 
 		final int number = demande.getKey().getTaxpayerNumber();
-		final ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) context.tiersDAO.get((long) number);
+		final ch.vd.unireg.tiers.Contribuable ctb = (ch.vd.unireg.tiers.Contribuable) context.tiersDAO.get((long) number);
 		if (ctb == null) {
 			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_UNKNOWN_TAXPAYER, "Le contribuable est inconnu.");
 		}
@@ -881,7 +881,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_CANCELLED_TAX_DECLARATION, "La déclaration a été annulée entre-temps.");
 		}
 
-		final RegDate dateRetour = ch.vd.uniregctb.xml.DataHelper.xmlToCore(demande.getAcknowledgeDate());
+		final RegDate dateRetour = ch.vd.unireg.xml.DataHelper.xmlToCore(demande.getAcknowledgeDate());
 		if (RegDateHelper.isBeforeOrEqual(dateRetour, declaration.getDateExpedition(), NullDateBehavior.EARLIEST)) {
 			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_INVALID_ACKNOWLEDGE_DATE,
 					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
@@ -924,7 +924,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 * @param numeroSequenceDI le numéro de séquence de la déclaration pour le contribuable et la période considérés
 	 * @return une déclaration d'impôt ordinaire, ou <b>null</b> si aucune déclaration correspondant aux critère n'est trouvée.
 	 */
-	private static DeclarationImpotOrdinaire findDeclaration(final ch.vd.uniregctb.tiers.Contribuable contribuable, final int annee, int numeroSequenceDI) {
+	private static DeclarationImpotOrdinaire findDeclaration(final ch.vd.unireg.tiers.Contribuable contribuable, final int annee, int numeroSequenceDI) {
 
 		// [SIFISC-1227] Nous avons des cas où le numéro de séquence a été ré-utilisé après annulation d'une DI précédente
 		// -> on essaie toujours de renvoyer la déclaration non-annulée qui correspond et, s'il n'y en a pas, de renvoyer

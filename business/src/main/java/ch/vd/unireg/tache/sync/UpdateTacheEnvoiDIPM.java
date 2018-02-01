@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPM;
 
 /**
  * Action qui permet de mettre à jour la catégorie d'entreprise sur une tâche d'envoi de déclaration d'impôt PM

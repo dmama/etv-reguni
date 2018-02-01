@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 /**
  * Le type d'entité du registre foncier sur lesquelles des mutations peuvent exister.

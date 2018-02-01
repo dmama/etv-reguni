@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TypeTiers;
-import ch.vd.uniregctb.type.TypeMandat;
-import ch.vd.uniregctb.utils.UniregProperties;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.type.TypeMandat;
+import ch.vd.unireg.utils.UniregProperties;
 
 /**
  * Configuration basée sur les propriétés de configuration présentes par exemple dans le fichier unireg.properties

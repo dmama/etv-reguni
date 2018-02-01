@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
 import java.util.List;
 
 /**
  * Service asynchrone d'extraction de données (génération de gros CSV par exemple) - les résulats sont poussés dans le service d'inbox
- * @see ch.vd.uniregctb.inbox.InboxService
+ * @see ch.vd.unireg.inbox.InboxService
  */
 public interface ExtractionService {
 

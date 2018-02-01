@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.xml.party.v4;
+package ch.vd.unireg.xml.party.v4;
 
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.xml.EnumHelper;
 
 public class EBillingStatusBuilder {
 

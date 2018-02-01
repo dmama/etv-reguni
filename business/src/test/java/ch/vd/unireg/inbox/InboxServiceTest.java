@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.inbox;
+package ch.vd.unireg.inbox;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class InboxServiceTest extends WithoutSpringTest {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.util.HashSet;
 import java.util.List;
@@ -9,13 +9,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingDescription;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
-import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
+import ch.vd.unireg.registrefoncier.ImplantationRF;
+import ch.vd.unireg.xml.DataHelper;
 
-import static ch.vd.uniregctb.common.AbstractSpringTest.assertEmpty;
+import static ch.vd.unireg.common.AbstractSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 

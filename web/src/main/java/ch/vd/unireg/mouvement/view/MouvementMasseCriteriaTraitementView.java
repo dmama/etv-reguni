@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
-import ch.vd.uniregctb.type.Localisation;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.type.Localisation;
+import ch.vd.unireg.type.TypeMouvement;
 
 /**
  * Vue pour la recherche des mouvements de dossiers de masse implémentée dans

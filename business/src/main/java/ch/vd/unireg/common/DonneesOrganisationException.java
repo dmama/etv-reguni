@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 public class DonneesOrganisationException extends RuntimeException {
 	public DonneesOrganisationException(String message) {

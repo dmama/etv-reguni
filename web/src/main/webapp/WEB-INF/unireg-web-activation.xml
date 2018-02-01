@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="tiersActivationController" class="ch.vd.uniregctb.activation.TiersActivationController">
+	<bean id="tiersActivationController" class="ch.vd.unireg.activation.TiersActivationController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="tiersAnnulationRecapManager" ref="tiersAnnulationRecapManager"/>
@@ -10,17 +10,17 @@
 		<property name="tiersReactivationRecapManager" ref="tiersReactivationRecapManager"/>
 	</bean>
 
-	<bean id="tiersAnnulationRecapManager" class="ch.vd.uniregctb.activation.manager.TiersAnnulationRecapManagerImpl">
+	<bean id="tiersAnnulationRecapManager" class="ch.vd.unireg.activation.manager.TiersAnnulationRecapManagerImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="activationService" ref="activationService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 	
-	<bean id="tiersAnnulationRecapValidator" class="ch.vd.uniregctb.activation.validator.TiersAnnulationRecapValidator" >
+	<bean id="tiersAnnulationRecapValidator" class="ch.vd.unireg.activation.validator.TiersAnnulationRecapValidator" >
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 	
-	<bean id="tiersReactivationRecapManager" class="ch.vd.uniregctb.activation.manager.TiersReactivationRecapManagerImpl">
+	<bean id="tiersReactivationRecapManager" class="ch.vd.unireg.activation.manager.TiersReactivationRecapManagerImpl">
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="activationService" ref="activationService" />

@@ -37,12 +37,12 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypePermis;
-import ch.vd.uniregctb.type.TypePermisInvalideException;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypePermis;
+import ch.vd.unireg.type.TypePermisInvalideException;
 
 import static ch.vd.unireg.interfaces.InterfacesTestHelper.newLocalisation;
 import static org.junit.Assert.assertEquals;

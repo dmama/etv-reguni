@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.List;
 
@@ -6,12 +6,12 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.FormulePolitesse;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.interfaces.model.AdressesCiviles;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.FormulePolitesse;
 
 public interface AdresseService {
 

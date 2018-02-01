@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.type.TypeContribuable;
 
 /**
  * Classe de transtypage pour Hibernate : TypeContribuable <--> varchar

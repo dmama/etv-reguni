@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.common.ComparisonHelper;
+import ch.vd.unireg.common.ComparisonHelper;
 
 @Entity
 @DiscriminatorValue("CollectiviteAdministrative")

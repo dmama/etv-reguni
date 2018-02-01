@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * @author Raphaël Marmier, 2015-12-22

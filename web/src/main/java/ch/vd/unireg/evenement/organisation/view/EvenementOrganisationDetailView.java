@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.view;
+package ch.vd.unireg.evenement.organisation.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.evenement.common.view.TiersAssocieView;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.uniregctb.organisation.OrganisationView;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.adresse.AdresseEnvoi;
+import ch.vd.unireg.evenement.common.view.TiersAssocieView;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.organisation.OrganisationView;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 /**
  * Structure permettant l'affichage de la page de detail de l'evenement

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -7,9 +7,9 @@ import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.indexer.lucene.FSIndexProvider;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
 
 import static org.junit.Assert.assertEquals;
 

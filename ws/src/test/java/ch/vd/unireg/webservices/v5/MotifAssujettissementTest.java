@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v5;
+package ch.vd.unireg.webservices.v5;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
-import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
+import ch.vd.unireg.metier.assujettissement.MotifAssujettissement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

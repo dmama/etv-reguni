@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.remarque;
+package ch.vd.unireg.remarque;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,9 +6,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.HtmlHelper;
-import ch.vd.uniregctb.tiers.Remarque;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.HtmlHelper;
+import ch.vd.unireg.tiers.Remarque;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RemarqueView implements Annulable {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role.before2016;
+package ch.vd.unireg.role.before2016;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10,11 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Contient les données brutes permettant de générer le rapport "rôles pour les communes".

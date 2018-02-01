@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.LockHelper;
+import ch.vd.unireg.common.LockHelper;
 
 /**
  * Service de validation des entités

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5.strategy;
+package ch.vd.unireg.xml.party.v5.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ServiceException;
 
 public class OtherCommunityStrategy extends TaxPayerStrategy<OtherCommunity> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v3.strategy;
+package ch.vd.unireg.xml.party.v3.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,20 +30,20 @@ import ch.vd.unireg.xml.party.person.v3.ParentFullName;
 import ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.v3.UidNumberList;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ExceptionHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v3.WithholdingTaxationPeriodBuilder;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.IdentificationPersonne;
+import ch.vd.unireg.tiers.IndividuNotFoundException;
+import ch.vd.unireg.tiers.OriginePersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ExceptionHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v3.WithholdingTaxationPeriodBuilder;
 
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
@@ -52,7 +52,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	private static final String CH_ZAR = "CH.ZAR";
 
 	@Override
-	public NaturalPerson newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public NaturalPerson newFrom(ch.vd.unireg.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final NaturalPerson pp = new NaturalPerson();
 		initBase(pp, right, context);
 		initParts(pp, right, parts, context);
@@ -68,10 +68,10 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	}
 
 	@Override
-	protected void initBase(NaturalPerson to, ch.vd.uniregctb.tiers.Tiers from, Context context) throws ServiceException {
+	protected void initBase(NaturalPerson to, ch.vd.unireg.tiers.Tiers from, Context context) throws ServiceException {
 		super.initBase(to, from, context);
 
-		final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) from;
+		final ch.vd.unireg.tiers.PersonnePhysique personne = (ch.vd.unireg.tiers.PersonnePhysique) from;
 		if (!personne.isHabitantVD()) {
 			to.setOfficialName(personne.getNom());
 			to.setFirstName(personne.getPrenomUsuel());

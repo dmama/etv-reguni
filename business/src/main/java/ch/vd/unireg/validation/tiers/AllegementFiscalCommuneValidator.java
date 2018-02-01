@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -7,8 +7,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.AllegementFiscalCommune;
 
 public class AllegementFiscalCommuneValidator extends AllegementFiscalCantonCommuneValidator<AllegementFiscalCommune> {
 

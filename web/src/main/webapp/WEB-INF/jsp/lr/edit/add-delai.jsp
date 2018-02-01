@@ -7,7 +7,7 @@
 <%--@elvariable id="dateFin" type="ch.vd.registre.base.date.RegDate"--%>
 <%--@elvariable id="idListe" type="java.lang.Long"--%>
 <%--@elvariable id="ancienDelai" type="ch.vd.registre.base.date.RegDate"--%>
-<%--@elvariable id="addDelaiCommand" type="ch.vd.uniregctb.lr.view.DelaiAddView"--%>
+<%--@elvariable id="addDelaiCommand" type="ch.vd.unireg.lr.view.DelaiAddView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 

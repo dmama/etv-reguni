@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.metier.piis;
+package ch.vd.unireg.metier.piis;
 
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 /**
  * Service de calcul des périodes d'imposition pour l'impôt source

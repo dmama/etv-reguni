@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -9,7 +9,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import ch.vd.uniregctb.security.UniregSecurityDetails;
+import ch.vd.unireg.security.UniregSecurityDetails;
 
 public abstract class AuthenticationHelper {
 

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.rapport.view;
+package ch.vd.unireg.rapport.view;
 
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public class RapportListView extends TiersCriteriaView {
 

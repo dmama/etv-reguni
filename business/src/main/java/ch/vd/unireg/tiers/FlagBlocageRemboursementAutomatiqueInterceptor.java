@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -14,15 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.StackedThreadLocal;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.StackedThreadLocal;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Intercepteur de transaction qui recalcule de manière différée (juste avant le commit de la transaction)

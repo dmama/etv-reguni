@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
 /**
  * Résultat fourni par l'exécuteur de l'extraction

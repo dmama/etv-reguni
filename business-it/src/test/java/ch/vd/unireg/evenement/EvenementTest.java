@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.unireg.evenement;
 
 import javax.jms.ConnectionFactory;
 import java.util.Date;
@@ -17,14 +17,14 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.jms.EsbBusinessErrorCollector;
-import ch.vd.uniregctb.jms.EsbBusinessErrorHandler;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer;
-import ch.vd.uniregctb.utils.UniregProperties;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.jms.EsbBusinessErrorCollector;
+import ch.vd.unireg.jms.EsbBusinessErrorHandler;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.jms.GentilEsbMessageListenerContainer;
+import ch.vd.unireg.utils.UniregProperties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

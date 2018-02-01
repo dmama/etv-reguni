@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.acomptes;
+package ch.vd.unireg.acomptes;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,31 +11,31 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.declaration.ForsList;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
-import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
-import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
-import ch.vd.uniregctb.metier.assujettissement.Indigent;
-import ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
-import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.ForGestion;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.ListesResults;
+import ch.vd.unireg.declaration.ForsList;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.DiplomateSuisse;
+import ch.vd.unireg.metier.assujettissement.HorsCanton;
+import ch.vd.unireg.metier.assujettissement.HorsSuisse;
+import ch.vd.unireg.metier.assujettissement.Indigent;
+import ch.vd.unireg.metier.assujettissement.SourcierMixteArt137Al1;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.metier.assujettissement.VaudoisDepense;
+import ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.tiers.ForGestion;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class AcomptesResults extends ListesResults<AcomptesResults> {
 

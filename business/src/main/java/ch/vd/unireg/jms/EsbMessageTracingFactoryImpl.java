@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 public class EsbMessageTracingFactoryImpl implements EsbMessageTracingFactory, InitializingBean, DisposableBean {
 

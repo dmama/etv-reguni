@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.norentes.common;
+package ch.vd.unireg.norentes.common;
 
 import java.util.Collection;
 
-import ch.vd.uniregctb.norentes.common.NorentesContext.EtapeContext;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.norentes.common.NorentesContext.EtapeContext;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public interface NorentesManager {
 

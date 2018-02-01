@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,12 +6,12 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.NumeroIDEHelper;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.NumeroIDEHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Informations sur le mandataire général annoncé dans la déclaration

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.detector;
+package ch.vd.unireg.registrefoncier.dataimport.detector;
 
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.cache.ObjectKey;
+import ch.vd.unireg.cache.ObjectKey;
 
 /**
  * Classe qui permet d'adapter un ID du registre foncier (= une String) à une clé utilisable avec un cache persistent Unireg.

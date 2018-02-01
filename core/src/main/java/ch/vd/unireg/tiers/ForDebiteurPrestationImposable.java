@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.unireg.type.GenreImpot;
 
 @Entity
 @DiscriminatorValue("ForDebiteurPrestationImposable")

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.ubr;
+package ch.vd.unireg.ubr;
 
 /**
  * Quelques constantes utiles pour la manipulation des jobs

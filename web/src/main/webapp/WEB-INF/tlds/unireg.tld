@@ -10,7 +10,7 @@
 	<tag>
 		<description>display numCTB</description>
 		<name>numCTB</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagNoCTB</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagNoCTB</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>field advertiser object</description>
@@ -28,7 +28,7 @@
 	<tag>
 		<description>display numAVS</description>
 		<name>numAVS</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagNoAVS</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagNoAVS</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>field advertiser object</description>
@@ -40,7 +40,7 @@
 	<tag>
 		<description>display ancienNumAVS</description>
 		<name>ancienNumeroAVS</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagAncienNoAVS</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagAncienNoAVS</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>field advertiser object</description>
@@ -52,7 +52,7 @@
 	<tag>
 		<description>display numIDE</description>
 		<name>numIDE</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagNoIDE</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagNoIDE</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>field advertiser object</description>
@@ -64,7 +64,7 @@
 	<tag>
 		<description>display a formatted cantonal id</description>
 		<name>cantonalId</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagCantonalId</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagCantonalId</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>formatted or unformatted input cantonal id</description>
@@ -76,7 +76,7 @@
 	<tag>
 		<description>display date</description>
 		<name>date</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatDate</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagFormatDate</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>field advertiser object</description>
@@ -88,7 +88,7 @@
 	<tag>
 		<description>display RegDate</description>
 		<name>regdate</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatRegDate</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagFormatRegDate</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>RegDate value</description>
@@ -112,7 +112,7 @@
 	<tag>
 		<description>display Date to String</description>
 		<name>sdate</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatDateToString</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagFormatDateToString</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>format Date</description>
@@ -124,7 +124,7 @@
 	<tag>
 		<description>display a currency</description>
 		<name>currency</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatCurrency</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagFormatCurrency</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>currency value to format</description>
@@ -137,14 +137,14 @@
 	<tag>
 		<description>display user</description>
 		<name>user</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagUser</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagUser</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 
 	<tag>
 		<description>Constuit le formulaire qui permet de démarrer un batch (paramètres compris)</description>
 		<name>batchForm</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagBatchForm</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagBatchForm</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>le batch</description>
@@ -157,7 +157,7 @@
 	<tag>
 		<description>Icon et liens vers un document</description>
 		<name>document</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagDocument</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagDocument</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>le document</description>
@@ -170,7 +170,7 @@
 	<tag>
 		<description>Interface sur le service infrastructure</description>
 		<name>infra</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagInfra</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagInfra</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>le type de l'entité (canton/collectivite/officeImpot/rue)</description>
@@ -207,7 +207,7 @@
 	<tag>
 		<description>Interface sur les communes du service infrastructure</description>
 		<name>commune</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagCommune</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagCommune</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>le numéro OFS de la commune</description>
@@ -244,7 +244,7 @@
 	<tag>
 		<description>Interface sur les pays du service infrastructure</description>
 		<name>pays</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagPays</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagPays</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>le numéro OFS du pays</description>
@@ -281,7 +281,7 @@
 	<tag>
 		<description>Interface sur les localités postales du service infrastructure</description>
 		<name>localite</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagLocalite</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagLocalite</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>le numéro d'ordre postal de la localité</description>
@@ -318,7 +318,7 @@
 	<tag>
 		<description>Affiche une localisation</description>
 		<name>localisation</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagLocalisation</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagLocalisation</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>la localistation à afficher</description>
@@ -343,7 +343,7 @@
 	<tag>
 		<description>Tag qui retourne alternativement les classes 'odd' et 'even' à chaque appel.</description>
 		<name>nextRowClass</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagNextRowClass</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagNextRowClass</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Si renseigné, reset le compteur de lignes interne à la valeur spécifiée et ne retourne rien</description>
@@ -362,7 +362,7 @@
 	<tag>
 		<description>Tag jsp qui permet d'afficher diverse valeurs spécifiques à Unireg.</description>
 		<name>out</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagOut</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagOut</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Le type de la propriété à éditer</description>
@@ -387,7 +387,7 @@
 	<tag>
 		<description>Tag qui génère un champ d'édition pour la propriété spécifiée dans un formulaire.</description>
 		<name>formInput</name>
-		<tag-class>ch.vd.uniregctb.taglibs.formInput.JspTagFormInput</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.formInput.JspTagFormInput</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>L'id html assigné au champ</description>
@@ -424,7 +424,7 @@
 	<tag>
 		<description>Tag qui d'afficher une valeur (comme "c:out") mais qui tronque sa représentation string si elle dépasse une certaine limite.</description>
 		<name>limitedOut</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagLimitedOut</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagLimitedOut</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Limite de longueur à ne pas dépasser.</description>
@@ -464,7 +464,7 @@
 	<tag>
 		<description>Tag qui génère un lien vers un éditeur supergra pour une entité ou une collection d'une entité</description>
 		<name>superGraLink</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagSuperGraLink</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagSuperGraLink</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Le type de l'entité à éditer</description>
@@ -495,21 +495,21 @@
 	<tag>
 		<description>Permet d'afficher du contenu uniquement si le test mode est activé dans le fichier de configuration</description>
 		<name>testMode</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagTestMode</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagTestMode</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 
 	<tag>
 		<description>Nom de l'environnement de déploiement d'après la propriété externe extprop.environnement</description>
 		<name>environnement</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagEnvironnement</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagEnvironnement</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 
 	<tag>
 		<description>Permet d'afficher du contenu uniquement dans les environnements spécifiés.</description>
 		<name>ifEnv</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagIfEnv</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagIfEnv</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Affiche le contenu en développement</description>
@@ -564,28 +564,28 @@
 	<tag>
 		<description>Permet d'afficher du contenu uniquement si le mode E-Facture est actif</description>
 		<name>ifEfacture</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagIfEfacture</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagIfEfacture</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 
 	<tag>
 		<description>Permet d'afficher du contenu uniquement si le mode ReqDes est actif</description>
 		<name>ifReqDes</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagIfReqDes</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagIfReqDes</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 
 	<tag>
 		<description>Affiche un message d'avertissement lorsqu'un offset est spécifié sur la date courante</description>
 		<name>dateOffset</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagDateOffset</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagDateOffset</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 
 	<tag>
 		<description>Affiche une icône d'annulation</description>
 		<name>raccourciAnnuler</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Annuler</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Annuler</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -622,7 +622,7 @@
 	<tag>
 		<description>Affiche une icône d'abandon de saisie</description>
 		<name>raccourciAbandonner</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Abandonner</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Abandonner</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -659,7 +659,7 @@
 	<tag>
 		<description>Affiche une icône d'accès aux détails</description>
 		<name>raccourciDetail</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Detail</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Detail</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -696,7 +696,7 @@
 	<tag>
 		<description>Affiche une icône d'accès à une liste complète (= déplier/plus)</description>
 		<name>raccourciDeplier</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Deplier</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Deplier</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -733,7 +733,7 @@
 	<tag>
 		<description>Affiche une icône de restractation d'une liste complète (= plier/moins)</description>
 		<name>raccourciPlier</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Plier</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Plier</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -770,7 +770,7 @@
 	<tag>
 		<description>Affiche un bouton qui soumet un formulaire vers une autre page lorsqu'il est cliqué.</description>
 		<name>buttonTo</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagButtonTo</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagButtonTo</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>L'id du bouton.</description>
@@ -837,7 +837,7 @@
 	<tag>
 		<description>Affiche un lien vers une autre page.</description>
 		<name>linkTo</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagLinkTo</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagLinkTo</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Le texte du button.</description>
@@ -886,7 +886,7 @@
 	<tag>
 		<description>Affiche une icône d'impression</description>
 		<name>raccourciImprimer</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Imprimer</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Imprimer</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -923,7 +923,7 @@
 	<tag>
 		<description>Affiche une icône de modification</description>
 		<name>raccourciModifier</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Modifier</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Modifier</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -960,7 +960,7 @@
 	<tag>
 		<description>Affiche une icône d'enregistrement</description>
 		<name>raccourciEnregistrer</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Enregistrer</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Enregistrer</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -997,7 +997,7 @@
 	<tag>
 		<description>Affiche une icône d'ajout</description>
 		<name>raccourciAjouter</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Ajouter</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Ajouter</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1034,7 +1034,7 @@
 	<tag>
 		<description>Affiche une icône de consultation</description>
 		<name>consulterLog</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagConsulterLog</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagConsulterLog</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Nature de l'entité</description>
@@ -1052,7 +1052,7 @@
 	<tag>
 		<description>Affiche une icône d'information</description>
 		<name>consulterInfoTraitement</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagConsulterInfoTraitement</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagConsulterInfoTraitement</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>date du traitement</description>
@@ -1076,7 +1076,7 @@
 	<tag>
 		<description>Affiche une icône d'alerte</description>
 		<name>raccourciAlerter</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Alerter</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Alerter</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1113,7 +1113,7 @@
 	<tag>
 		<description>Affiche une icône de démarrage</description>
 		<name>raccourciDemarrer</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Demarrer</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Demarrer</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1149,7 +1149,7 @@
 	<tag>
 		<description>Affiche une icône d'arrêt</description>
 		<name>raccourciArreter</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Arreter</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Arreter</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1186,7 +1186,7 @@
 	<tag>
 		<description>Affiche une icône d'identification</description>
 		<name>raccourciIdentifier</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Identifier</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Identifier</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1223,7 +1223,7 @@
 	<tag>
 		<description>Affiche une icône de ré-initialisation</description>
 		<name>raccourciReinit</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Reinit</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Reinit</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1260,7 +1260,7 @@
 	<tag>
 		<description>Affiche une icône pour monter d'un cran une ressource</description>
 		<name>raccourciMoveUp</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$MoveUp</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$MoveUp</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1297,7 +1297,7 @@
 	<tag>
 		<description>Affiche une icône pour descendre d'un cran une ressource</description>
 		<name>raccourciMoveDown</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$MoveDown</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$MoveDown</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1334,7 +1334,7 @@
 	<tag>
 		<description>Affiche une icône pour reouvrir un for Debiteur</description>
 		<name>raccourciReOpen</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$ReOpen</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$ReOpen</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1371,7 +1371,7 @@
 	<tag>
 		<description>Affiche une icône pour ouvrir un historique</description>
 		<name>raccourciHistorique</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Historique</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Historique</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
@@ -1408,7 +1408,7 @@
 	<tag>
 		<description>Affiche un lien pour réduire ou augmenter le nombre de ligne affichées pour un tableau</description>
 		<name>raccourciToggleAffichage</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagToggleAffichage</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagToggleAffichage</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>id du tableau à gérer</description>
@@ -1438,7 +1438,7 @@
 	<tag>
 		<description>Permet d'afficher une call-stack (cachée par défaut)</description>
 		<name>callstack</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagCallstack</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagCallstack</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>le message d'entête à afficher avant la callstack</description>
@@ -1463,7 +1463,7 @@
 	<tag>
 		<description>Permet de quitter la page d'edition et de retourner à la page de visualisation</description>
 		<name>RetourButton</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRetourButton</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagRetourButton</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>lien de retour</description>
@@ -1500,7 +1500,7 @@
 	<tag>
 		<description>Affiche le bandeau d'un contribuable</description>
 		<name>bandeauTiers</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagBandeauTiers</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagBandeauTiers</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>le numéro de contribuable</description>
@@ -1579,7 +1579,7 @@
 	<tag>
 		<description>Affiche une adresse mandataire sur plusieurs lignes</description>
 		<name>adresseMandataire</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagAdresseMandataire</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagAdresseMandataire</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>l'identifiant de l'adresse mandataire</description>
@@ -1598,7 +1598,7 @@
 	<tag>
 		<description>Affiche une adresse de demande d'annonce à l'IDE sur plusieurs lignes</description>
 		<name>adresseAnnonce</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagAdresseAnnonce</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagAdresseAnnonce</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>l'adresse d'une demande d'annonce</description>
@@ -1611,7 +1611,7 @@
 	<tag>
 		<description>Affiche la combo des liens d'inter-opérabilité d'un tiers</description>
 		<name>interoperabilite</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagInteroperabilite</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagInteroperabilite</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Numéro du tiers</description>
@@ -1620,7 +1620,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description>Nature du tiers : voir ch.vd.uniregctb.tiers.NatureTiers</description>
+			<description>Nature du tiers : voir ch.vd.unireg.tiers.NatureTiers</description>
 			<name>natureTiers</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1637,7 +1637,7 @@
 	<tag>
 		<description>Affiche une durée donnée en millisecondes dans un format plus 'lisible'</description>
 		<name>duration</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagDuration</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagDuration</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Durée en millisecondes</description>
@@ -1680,7 +1680,7 @@
 	<tag>
 		<description>Affiche l'icône correspondant à un MIME-type donné</description>
 		<name>documentIcon</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagDocumentIcon</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagDocumentIcon</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>MIME-type dont on veut afficher une icône</description>
@@ -1693,7 +1693,7 @@
 	<tag>
 		<description>Affiche une barre de progression en pourcentage</description>
 		<name>percentIndicator</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagPercentIndicator</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagPercentIndicator</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Largeur en pixel de la barre de progression (100px par défaut)</description>
@@ -1712,7 +1712,7 @@
 	<tag>
 		<description>Stocke les autorisations en écriture de l'utilisateur courant sur un tiers dans une variable JSTL.</description>
 		<name>setAuth</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagSetAutorisations</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagSetAutorisations</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Nom de la variable exportée dans le scope et qui contiendra les autorisations calculées.</description>
@@ -1737,7 +1737,7 @@
 	<tag>
 		<description>Affiche un nom courrier sur plusieurs lignes séparées par des &lt;br/&gt;</description>
 		<name>multiline</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagMultiline</tag-class>
+		<tag-class>ch.vd.unireg.taglibs.JspTagMultiline</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Collection de chaînes de caractères</description>
@@ -1749,12 +1749,12 @@
 
 	<function>
 		<name>startsWith</name>
-		<function-class>ch.vd.uniregctb.taglibs.JstlFunctionUtils</function-class>
+		<function-class>ch.vd.unireg.taglibs.JstlFunctionUtils</function-class>
 		<function-signature>boolean startsWith( java.lang.String, java.lang.String )</function-signature>
 	</function>
 	<function>
 		<name>equals</name>
-		<function-class>ch.vd.uniregctb.taglibs.JstlFunctionUtils</function-class>
+		<function-class>ch.vd.unireg.taglibs.JstlFunctionUtils</function-class>
 		<function-signature>boolean equals( java.lang.String, java.lang.String )</function-signature>
 	</function>
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -10,7 +10,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Effectue la traduction d'un attribut de type TypeAdresseCivil (en une colonne VARCHAR, et inversément) en gardant la compatibilité de persistence du type EnumTypeAdresse ('C' = COURRIER, 'P' =

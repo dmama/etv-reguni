@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.MessageSource;
 
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.ContactImpotSource;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.ContactImpotSource;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class DebiteurView implements Annulable {
 

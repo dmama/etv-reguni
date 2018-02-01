@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.messageidentification;
+package ch.vd.unireg.indexer.messageidentification;
 
 import java.util.List;
 
@@ -9,16 +9,16 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
-import ch.vd.uniregctb.evenement.identification.contribuable.EsbHeader;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresPersonne;
+import ch.vd.unireg.evenement.identification.contribuable.Demande;
+import ch.vd.unireg.evenement.identification.contribuable.EsbHeader;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
+import ch.vd.unireg.tiers.TypeTiers;
 
 public class MessageIdentificationIndexerHibernateInterceptorTest extends BusinessTest {
 

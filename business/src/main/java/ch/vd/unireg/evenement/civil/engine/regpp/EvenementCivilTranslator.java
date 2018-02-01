@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.civil.engine.regpp;
+package ch.vd.unireg.evenement.civil.engine.regpp;
 
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 
 /**
  * Cette interface expose les méthodes qui permette de traduire des événements civils externes en événements civils internes.

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.metier.common;
+package ch.vd.unireg.metier.common;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.type.MotifFor;
 
 /**
  * Représente une fraction de l'assujettissement avec un effet décalé. Précisement, il s'agit d'une fraction qui impacte les fors fiscaux qui commencent ou se terminent <b>durant une période</b> et

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.common;
+package ch.vd.unireg.norentes.common;
 
 import java.util.List;
 
@@ -6,18 +6,18 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilProcessor;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.TacheDAO;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public abstract class EvenementCivilScenario extends EvenementScenario {
 

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.civil.engine.regpp;
+package ch.vd.unireg.evenement.civil.engine.regpp;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 
 
 /**

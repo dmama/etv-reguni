@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.evenement.externe.TypeQuittance;
+import ch.vd.unireg.evenement.externe.TypeQuittance;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class TypeQuittanceUserType extends EnumUserType<TypeQuittance> {

@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.type.EtatCivil;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class CoupleInfoView {

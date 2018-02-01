@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.math.BigDecimal;
 
-import ch.vd.uniregctb.foncier.ExonerationIFONC;
+import ch.vd.unireg.foncier.ExonerationIFONC;
 
 public abstract class AbstractEditExonerationView extends AbstractYearRangeView {
 

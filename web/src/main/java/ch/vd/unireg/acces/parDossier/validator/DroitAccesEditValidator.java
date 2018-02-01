@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.acces.parDossier.validator;
+package ch.vd.unireg.acces.parDossier.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
+import ch.vd.unireg.acces.parDossier.view.DroitAccesView;
 
 public class DroitAccesEditValidator implements Validator {
 

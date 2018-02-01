@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.tache.view;
+package ch.vd.unireg.tache.view;
 
 import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.manager.Autorisations;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.manager.Autorisations;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatTache;
 
 /**
  * Vue nécessaire pour la liste de taches

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,17 +10,17 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdressePM;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.adresse.AdresseCivile;
+import ch.vd.unireg.adresse.AdressePM;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.ForDebiteurPrestationImposable;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForsParType;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Validateur de Débiteur de Prestation Imposable

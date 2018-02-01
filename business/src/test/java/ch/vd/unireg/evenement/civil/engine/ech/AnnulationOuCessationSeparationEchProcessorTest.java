@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 
 import org.springframework.transaction.TransactionStatus;
@@ -9,17 +9,17 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TarifImpotSource;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TarifImpotSource;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,8 +32,8 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 	 * pour un menage avec une seul personne physique
 	 * @throws Exception
 	 */
-	public void testSituationFamille(final ch.vd.uniregctb.type.EtatCivil etatCivilEnMenage,
-	                                 final ch.vd.uniregctb.type.EtatCivil etatCivilSepare,
+	public void testSituationFamille(final ch.vd.unireg.type.EtatCivil etatCivilEnMenage,
+	                                 final ch.vd.unireg.type.EtatCivil etatCivilSepare,
 	                                 final ActionEvenementCivilEch typeAction,
 	                                 final TypeEvenementCivilEch typeEvenement) throws Exception {
 
@@ -84,8 +84,8 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 						dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 						MockCommune.Echallens);
 
-				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.uniregctb.type.EtatCivil.CELIBATAIRE);
-				addSituation(monsieurDame, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.uniregctb.type.EtatCivil.CELIBATAIRE);
+				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
+				addSituation(monsieurDame, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
 				addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
 				addSituation(monsieur, dateSeparation,null, 0, etatCivilSepare);
 				addSituation(monsieurDame, dateSeparation,null, 0, etatCivilSepare);
@@ -162,8 +162,8 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 	 * pour un menage avec une seul personne physique
 	 * @throws Exception
 	 */
-	public void testSituationFamilleMarieSeul(final ch.vd.uniregctb.type.EtatCivil etatCivilEnMenage,
-	                                          final ch.vd.uniregctb.type.EtatCivil etatCivilSepare,
+	public void testSituationFamilleMarieSeul(final ch.vd.unireg.type.EtatCivil etatCivilEnMenage,
+	                                          final ch.vd.unireg.type.EtatCivil etatCivilSepare,
 	                                          final ActionEvenementCivilEch typeAction,
 	                                          final TypeEvenementCivilEch typeEvenement) throws Exception {
 
@@ -198,7 +198,7 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 						dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 						dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 						MockCommune.Echallens);
-				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.uniregctb.type.EtatCivil.CELIBATAIRE);
+				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.unireg.type.EtatCivil.CELIBATAIRE);
 				addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
 				addSituation(monsieur, dateSeparation,null, 0, etatCivilSepare);
 				return null;

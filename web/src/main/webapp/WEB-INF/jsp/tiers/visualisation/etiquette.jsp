@@ -34,7 +34,7 @@
 	<c:if test="${not empty command.etiquettes}">
 
 		<unireg:nextRowClass reset="1"/>
-		<display:table name="command.etiquettes" id="etiquette" requestURI="/tiers/visu.do" htmlId="etiq-prn" sort="list" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="command.etiquettes" id="etiquette" requestURI="/tiers/visu.do" htmlId="etiq-prn" sort="list" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:column sortable="true" titleKey="label.libelle" sortProperty="libelle" style="width: 20%;">
 				<c:out value="${etiquette.libelle}"/>
 			</display:column>
@@ -75,7 +75,7 @@
 		<c:if test="${not empty command.etiquettesConjoint}">
 
 			<unireg:nextRowClass reset="1"/>
-			<display:table name="command.etiquettesConjoint" id="etiquette" requestURI="/tiers/visu.do" htmlId="etiq-cjt" sort="list" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
+			<display:table name="command.etiquettesConjoint" id="etiquette" requestURI="/tiers/visu.do" htmlId="etiq-cjt" sort="list" class="display" decorator="ch.vd.unireg.decorator.TableAnnulableDateRangeDecorator">
 				<display:column sortable="true" titleKey="label.libelle" sortProperty="libelle" style="width: 20%;">
 					<c:out value="${etiquette.libelle}"/>
 				</display:column>

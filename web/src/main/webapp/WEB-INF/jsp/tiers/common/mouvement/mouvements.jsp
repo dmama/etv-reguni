@@ -10,7 +10,7 @@
 <c:if test="${not empty command.mouvements}">
 	<display:table
 			name="command.mouvements" id="mouvement" pagesize="10"
-			requestURI="${url}" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator"
+			requestURI="${url}" decorator="ch.vd.unireg.decorator.TableEntityDecorator"
 			class="display">
 
 		<display:column sortable ="true" titleKey="label.type.mouvement">

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpSession;
 
@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.fusion.HabitantListController;
-import ch.vd.uniregctb.fusion.NonHabitantListController;
-import ch.vd.uniregctb.rt.DebiteurListController;
-import ch.vd.uniregctb.rt.SourcierListController;
+import ch.vd.unireg.fusion.HabitantListController;
+import ch.vd.unireg.fusion.NonHabitantListController;
+import ch.vd.unireg.rt.DebiteurListController;
+import ch.vd.unireg.rt.SourcierListController;
 
 /**
  * Contrôleur qui regroupe les actions /reset-search.do des contrôleurs pas encore passés en Spring 3+

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 
 import java.util.Map;
 
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 
 /**
  * Interface de callback pour traiter les événements Declaration.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.snc;
+package ch.vd.unireg.declaration.snc;
 
 import java.util.Set;
 
@@ -6,12 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.DeclarationException;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.tiers.Entreprise;
 
 /**
  * Service autour des questionnaires SNC : génération de tâches en masse, émissions, rappels...

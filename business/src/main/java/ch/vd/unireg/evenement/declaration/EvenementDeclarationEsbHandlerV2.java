@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.declaration;
+package ch.vd.unireg.evenement.declaration;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -23,12 +23,12 @@ import org.xml.sax.SAXException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.event.declaration.v2.DeclarationEvent;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.jms.EsbMessageHelper;
 
 public class EvenementDeclarationEsbHandlerV2 implements EsbMessageHandler, InitializingBean {
 

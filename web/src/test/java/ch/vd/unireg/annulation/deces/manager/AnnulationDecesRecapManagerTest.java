@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.annulation.deces.manager;
+package ch.vd.unireg.annulation.deces.manager;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,18 +12,18 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.annulation.deces.view.AnnulationDecesRecapView;
-import ch.vd.uniregctb.common.BusinessTestingConstants;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.annulation.deces.view.AnnulationDecesRecapView;
+import ch.vd.unireg.common.BusinessTestingConstants;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @ContextConfiguration(locations = BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES)       // je veux le véritable tache-service !
 public class AnnulationDecesRecapManagerTest extends WebTest {

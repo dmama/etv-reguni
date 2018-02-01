@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.parentes;
+package ch.vd.unireg.parentes;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Parente;
+import ch.vd.unireg.tiers.Parente;
 
 public final class ParenteUpdateInfo implements Comparable<ParenteUpdateInfo> {
 

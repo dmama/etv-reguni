@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.key;
+package ch.vd.unireg.registrefoncier.key;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,11 +6,11 @@ import java.util.List;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.unireg.type.EtatEvenementCivil;
 
 public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProcessingStrategy<Object> {
 

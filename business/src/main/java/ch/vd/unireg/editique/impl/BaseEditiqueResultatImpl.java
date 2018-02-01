@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultat;
 
 /**
  * Classe de base des résultats éditiques

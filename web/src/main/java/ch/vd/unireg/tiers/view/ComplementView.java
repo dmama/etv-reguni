@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Form backing-object de l'onglet "complément" associé à un tiers.

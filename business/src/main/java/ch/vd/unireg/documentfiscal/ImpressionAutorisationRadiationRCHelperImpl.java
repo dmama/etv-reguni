@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -16,16 +16,16 @@ import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.editique.ConstantesEditique;
+import ch.vd.unireg.editique.EditiqueAbstractHelperImpl;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiquePrefixeHelper;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Tiers;
 
 public class ImpressionAutorisationRadiationRCHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionAutorisationRadiationRCHelper {
 

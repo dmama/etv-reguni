@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -12,7 +12,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
-import ch.vd.uniregctb.common.MimeTypeHelper;
+import ch.vd.unireg.common.MimeTypeHelper;
 
 public class JspTagDocumentIcon extends BodyTagSupport {
 

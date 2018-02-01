@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.iam;
+package ch.vd.unireg.evenement.iam;
 
-import ch.vd.uniregctb.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessCode;
 
 /**
  * Exception métier liée à un événement IAM.

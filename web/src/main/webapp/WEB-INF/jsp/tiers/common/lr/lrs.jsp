@@ -10,7 +10,7 @@
 </c:set>
 
 <c:if test="${not empty command.lrs}">
-	<display:table name="command.lrs" id="lr" pagesize="10" requestURI="${url}" class="display" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<display:table name="command.lrs" id="lr" pagesize="10" requestURI="${url}" class="display" sort="list" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 		<c:if test="${page == 'edit'}">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.lr.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.lr.trouvee" /></span></display:setProperty>

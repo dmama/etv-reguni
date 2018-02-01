@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 /**
  * Interface du composant qui est capable, comme par exemple au démarrage de l'application,

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.tiers.manager.MouvementVisuManager;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.tiers.manager.MouvementVisuManager;
+import ch.vd.unireg.utils.WebContextUtils;
 
 /**
  * Controller pour l'overlay de visualisation du détail du mouvement

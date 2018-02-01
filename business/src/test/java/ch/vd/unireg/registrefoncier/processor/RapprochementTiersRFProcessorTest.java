@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.processor;
+package ch.vd.unireg.registrefoncier.processor;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,29 +18,29 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRapprochementTiersRF;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
-import ch.vd.uniregctb.registrefoncier.MockRapprochementManuelTiersRFService;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalRapprochementTiersRF;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.unireg.registrefoncier.MockRapprochementManuelTiersRFService;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.registrefoncier.dao.RapprochementRFDAO;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
 public class RapprochementTiersRFProcessorTest extends BusinessTest {
 

@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest;
-import ch.vd.uniregctb.evenement.party.control.ControlRuleException;
-import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlResult;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.evenement.party.control.ControlRuleException;
+import ch.vd.unireg.evenement.party.control.TaxLiabilityControlResult;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.tiers.Tiers;
 
 public class PeriodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHandlerV2<PeriodicTaxLiabilityRequest> {
 

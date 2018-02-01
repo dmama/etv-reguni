@@ -1,20 +1,20 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.adresse.AdressesTiers;
-import ch.vd.uniregctb.adresse.AdressesTiersHisto;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.adresse.AdressesTiers;
+import ch.vd.unireg.adresse.AdressesTiersHisto;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public abstract class TiersHelper {
 

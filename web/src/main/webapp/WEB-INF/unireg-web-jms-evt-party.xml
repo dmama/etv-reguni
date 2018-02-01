@@ -4,7 +4,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="partyRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="partyRequestListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="partyRequestDispatchingEsbHandler"/>
 		<property name="destinationName" value="${extprop.jms.queue.party.service}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -14,7 +14,7 @@
 
 	<!-- Différenciation entre les hiérarchies de requêtes -->
 
-	<bean id="partyRequestDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.EvenementNamespaceDispatchingEsbHandler">
+	<bean id="partyRequestDispatchingEsbHandler" class="ch.vd.unireg.evenement.EvenementNamespaceDispatchingEsbHandler">
 		<property name="handlers">
 			<util:map>
 				<entry key="http://www.vd.ch/fiscalite/unireg/event/party/request/1" value-ref="partyRequestEsbHandlerV1"/>
@@ -26,7 +26,7 @@
 
 	<!-- Pour les requêtes qui héritent de party/request/1 -->
 
-	<bean id="partyRequestEsbHandlerV1" class="ch.vd.uniregctb.evenement.party.PartyRequestEsbHandlerV1">
+	<bean id="partyRequestEsbHandlerV1" class="ch.vd.unireg.evenement.party.PartyRequestEsbHandlerV1">
 		<property name="handlers">
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
@@ -50,7 +50,7 @@
 
 	<!-- Pour les requêtes qui héritent de party/request/2 -->
 
-	<bean id="partyRequestEsbHandlerV2" class="ch.vd.uniregctb.evenement.party.PartyRequestEsbHandlerV2">
+	<bean id="partyRequestEsbHandlerV2" class="ch.vd.unireg.evenement.party.PartyRequestEsbHandlerV2">
 		<property name="handlers">
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest" value-ref="advancePaymentCorporationsRequestHandler" />
@@ -64,7 +64,7 @@
 
 	<!-- Pour les requêtes qui héritent de infra/request/1 -->
 
-	<bean id="infraRequestEsbHandler" class="ch.vd.uniregctb.evenement.infra.InfraRequestEsbHandler">
+	<bean id="infraRequestEsbHandler" class="ch.vd.unireg.evenement.infra.InfraRequestEsbHandler">
 		<property name="handlers">
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesRequest" value-ref="taxOfficesRequestHandlerV1"/>
@@ -76,41 +76,18 @@
 
 	<!-- les handlers spécifiques -->
 
-	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">
+	<bean id="addressRequestHandler" class="ch.vd.unireg.evenement.party.AddressRequestHandler">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="numberRequestHandler" class="ch.vd.uniregctb.evenement.party.NumbersRequestHandler">
+	<bean id="numberRequestHandler" class="ch.vd.unireg.evenement.party.NumbersRequestHandler">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="partyRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV1">
-		<property name="adresseService" ref="adresseService" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="situationService" ref="situationFamilleService" />
-		<property name="ibanValidator" ref="ibanValidator" />
-		<property name="parametreService" ref="parametreAppService" />
-		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="lrService" ref="lrService" />
-		<property name="diService" ref="diService" />
-		<property name="bamMessageSender" ref="bamMessageSender" />
-		<property name="assujettissementService" ref="assujettissementService" />
-		<property name="periodeImpositionService" ref="periodeImpositionService" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
-		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
-		<property name="evenementFiscalService" ref="evenementFiscalService"/>
-		<property name="regimeFiscalService" ref="regimeFiscalService"/>
-	</bean>
-
-	<bean id="partyRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV2">
+	<bean id="partyRequestHandlerV1" class="ch.vd.unireg.evenement.party.PartyRequestHandlerV1">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -133,7 +110,7 @@
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
-	<bean id="partyRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV3">
+	<bean id="partyRequestHandlerV2" class="ch.vd.unireg.evenement.party.PartyRequestHandlerV2">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -150,15 +127,13 @@
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
-		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
-		<property name="EFactureService" ref="efactureService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
-	<bean id="partyRequestHandlerV4" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV4">
+	<bean id="partyRequestHandlerV3" class="ch.vd.unireg.evenement.party.PartyRequestHandlerV3">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -183,7 +158,7 @@
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
-	<bean id="partyRequestHandlerV5" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV5">
+	<bean id="partyRequestHandlerV4" class="ch.vd.unireg.evenement.party.PartyRequestHandlerV4">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -208,53 +183,78 @@
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
-	<bean id="createNonresidentRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV1">
+	<bean id="partyRequestHandlerV5" class="ch.vd.unireg.evenement.party.PartyRequestHandlerV5">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="EFactureService" ref="efactureService"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
+	</bean>
+
+	<bean id="createNonresidentRequestHandlerV1" class="ch.vd.unireg.evenement.party.CreateNonresidentRequestHandlerV1">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="createNonresidentRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV2">
+	<bean id="createNonresidentRequestHandlerV2" class="ch.vd.unireg.evenement.party.CreateNonresidentRequestHandlerV2">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="createNonresidentByVNRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.CreateNonresidentByVNRequestHandlerV1">
+	<bean id="createNonresidentByVNRequestHandlerV1" class="ch.vd.unireg.evenement.party.CreateNonresidentByVNRequestHandlerV1">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="serviceUpi" ref="serviceUpiRaw"/>
 		<property name="tiersSearcher" ref="globalTiersSearcher"/>
 	</bean>
 
-	<bean id="aperiodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandlerV2">
+	<bean id="aperiodicTaxLiabilityRequestHandlerV2" class="ch.vd.unireg.evenement.party.AperiodicTaxLiabilityRequestHandlerV2">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
 	</bean>
 
-	<bean id="periodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.PeriodicTaxLiabilityRequestHandlerV2">
+	<bean id="periodicTaxLiabilityRequestHandlerV2" class="ch.vd.unireg.evenement.party.PeriodicTaxLiabilityRequestHandlerV2">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
 	</bean>
 
-	<bean id="aperiodicTaxLiabilityRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandlerV3">
+	<bean id="aperiodicTaxLiabilityRequestHandlerV3" class="ch.vd.unireg.evenement.party.AperiodicTaxLiabilityRequestHandlerV3">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
 	</bean>
 
-	<bean id="periodicTaxLiabilityRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.PeriodicTaxLiabilityRequestHandlerV3">
+	<bean id="periodicTaxLiabilityRequestHandlerV3" class="ch.vd.unireg.evenement.party.PeriodicTaxLiabilityRequestHandlerV3">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
 	</bean>
 
-	<bean id="periodicFiscalActivityRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.PeriodicFiscalActivityRequestHandlerV1">
+	<bean id="periodicFiscalActivityRequestHandlerV1" class="ch.vd.unireg.evenement.party.PeriodicFiscalActivityRequestHandlerV1">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="advancePaymentCorporationsRequestHandler" class="ch.vd.uniregctb.evenement.party.AdvancePaymentCorporationsRequestHandler">
+	<bean id="advancePaymentCorporationsRequestHandler" class="ch.vd.unireg.evenement.party.AdvancePaymentCorporationsRequestHandler">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="assujettissementService" ref="assujettissementService"/>
 		<property name="tiersService" ref="tiersService"/>
@@ -262,7 +262,7 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="taxOfficesRequestHandlerV1" class="ch.vd.uniregctb.evenement.infra.TaxOfficesRequestHandlerV1">
+	<bean id="taxOfficesRequestHandlerV1" class="ch.vd.unireg.evenement.infra.TaxOfficesRequestHandlerV1">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />

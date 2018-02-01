@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ech.manager;
+package ch.vd.unireg.evenement.ech.manager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,26 +8,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
-import ch.vd.uniregctb.evenement.common.manager.EvenementCivilManagerImpl;
-import ch.vd.uniregctb.evenement.common.view.ErreurEvenementCivilView;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchDetailView;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchGrappeView;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchService;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchProcessor;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
+import ch.vd.unireg.evenement.common.manager.EvenementCivilManagerImpl;
+import ch.vd.unireg.evenement.common.view.ErreurEvenementCivilView;
+import ch.vd.unireg.evenement.ech.view.EvenementCivilEchCriteriaView;
+import ch.vd.unireg.evenement.ech.view.EvenementCivilEchDetailView;
+import ch.vd.unireg.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
+import ch.vd.unireg.evenement.ech.view.EvenementCivilEchGrappeView;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.IndividuNotFoundException;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 

@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.tiers.dao;
+package ch.vd.unireg.tiers.dao;
 
 import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.tiers.Remarque;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.tiers.Remarque;
 
 public class RemarqueDAOImpl extends BaseDAOImpl<Remarque, Long> implements RemarqueDAO {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.v6;
+package ch.vd.unireg.webservice.v6;
 
 import java.util.regex.Pattern;
 

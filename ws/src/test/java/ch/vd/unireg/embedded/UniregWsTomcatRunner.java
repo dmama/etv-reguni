@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.embedded;
+package ch.vd.unireg.embedded;
 
 import java.io.File;
 
@@ -63,13 +63,13 @@ public class UniregWsTomcatRunner {
 		System.setProperty("editique.locale.sync.attente.timeout", "30");
 		System.setProperty("editique.locale.async.attente.delai", "10");
 
-		System.setProperty("oracle.hibernate.dialect", "ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar");
+		System.setProperty("oracle.hibernate.dialect", "ch.vd.unireg.hibernate.dialect.Oracle10gDialectWithNVarChar");
 		System.setProperty("oracle.hibernate.query.substitutions", "true 1, false 0");
 
 		System.setProperty("extprop.hibernate.hbm2ddl.mode", "validate");
 
 		final String userDbPath;
-		final File userDb = new File("src/test/resources/ch/vd/uniregctb/embedded/tomcat-users.xml");
+		final File userDb = new File("src/test/resources/ch/vd/unireg/embedded/tomcat-users.xml");
 		if (userDb.exists()) {
 			userDbPath = userDb.getPath();
 		}

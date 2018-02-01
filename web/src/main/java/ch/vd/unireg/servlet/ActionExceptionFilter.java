@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.servlet;
+package ch.vd.unireg.servlet;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,12 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.uniregctb.common.URLHelper;
+import ch.vd.unireg.common.URLHelper;
 
 /**
  * Ce filtre intercepte toutes les requêtes Http de type GET et qui demandent une page Html et stocke la dernière URL dans la session. <p/> Utilisé en conjonction avec la classe {@link
  * ActionExceptionResolver}, il permet de réafficher la dernière page visitée qui a levé une exception de type {@link ch.vd.registre.base.validation.ValidationException} ou {@link
- * ch.vd.uniregctb.common.ActionException}.
+ * ch.vd.unireg.common.ActionException}.
  */
 public class ActionExceptionFilter extends GenericFilterBean {
 

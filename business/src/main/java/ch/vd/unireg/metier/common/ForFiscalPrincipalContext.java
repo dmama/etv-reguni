@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.common;
+package ch.vd.unireg.metier.common;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,9 +8,9 @@ import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
 
 /**
  * Un for fiscal principal et son contexte, c'est-à-dire les fors fiscaux principaux qui précèdent et qui suivent immédiatement (et par extension en une suite continue).

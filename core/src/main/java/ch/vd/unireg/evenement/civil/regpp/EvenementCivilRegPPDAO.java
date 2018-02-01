@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.regpp;
+package ch.vd.unireg.evenement.civil.regpp;
 
 import java.util.Collection;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
  * DAO des événements civils externes.

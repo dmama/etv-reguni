@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.Tache;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPP;
+import ch.vd.unireg.type.TypeEtatTache;
 
 /**
  * Action permettant d'ajouter une tâche d'envoi de déclaration d'impôt PP.

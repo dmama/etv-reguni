@@ -5,7 +5,7 @@
 
 
 
-	<bean id="fourreNeutreHelper" class="ch.vd.uniregctb.fourreNeutre.FourreNeutreHelperImpl">
+	<bean id="fourreNeutreHelper" class="ch.vd.unireg.fourreNeutre.FourreNeutreHelperImpl">
 		<property name="premierePeriodePP" value="2012"/>
 		<property name="premierePeriodePM" value="2012"/>
 		<property name="premierePeriodeIS" value="2012"/>

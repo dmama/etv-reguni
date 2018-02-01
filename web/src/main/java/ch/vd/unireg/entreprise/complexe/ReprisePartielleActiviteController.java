@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.tiers.Entreprise;
 
 @Controller
 @RequestMapping("/processuscomplexe/repriseactivite")

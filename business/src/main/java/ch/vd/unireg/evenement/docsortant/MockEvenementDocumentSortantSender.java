@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import java.util.Map;
 

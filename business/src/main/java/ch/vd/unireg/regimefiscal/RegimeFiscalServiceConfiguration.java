@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.regimefiscal;
+package ch.vd.unireg.regimefiscal;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 /**
  * @author Raphaël Marmier, 2017-05-03, <raphael.marmier@vd.ch>

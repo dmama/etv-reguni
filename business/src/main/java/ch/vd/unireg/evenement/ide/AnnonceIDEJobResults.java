@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.uniregctb.common.AbstractJobResults;
+import ch.vd.unireg.common.AbstractJobResults;
 
 public class AnnonceIDEJobResults extends AbstractJobResults<Long, AnnonceIDEJobResults> {
 

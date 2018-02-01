@@ -14,10 +14,10 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.load.MethodCallDescriptor;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.load.MethodCallDescriptor;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
 
 public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, DetailedLoadMonitorable {
 

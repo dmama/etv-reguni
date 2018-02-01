@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.mouvement.manager.MouvementEditManager;
-import ch.vd.uniregctb.type.Localisation;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.mouvement.manager.MouvementEditManager;
+import ch.vd.unireg.type.Localisation;
+import ch.vd.unireg.type.TypeMouvement;
 
 public class AbstractMouvementController {
 

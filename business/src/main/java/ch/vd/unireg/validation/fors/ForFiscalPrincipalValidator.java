@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.fors;
+package ch.vd.unireg.validation.fors;
 
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
 
 public abstract class ForFiscalPrincipalValidator<T extends ForFiscalPrincipal> extends ForFiscalRevenuFortuneValidator<T> {
 }

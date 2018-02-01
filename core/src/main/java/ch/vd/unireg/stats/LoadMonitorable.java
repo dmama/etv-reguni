@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
 /**
  * Interface implémentée par les services dont on peut monitorer la charge

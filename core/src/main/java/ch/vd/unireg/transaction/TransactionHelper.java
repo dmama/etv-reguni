@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction;
+package ch.vd.unireg.transaction;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;

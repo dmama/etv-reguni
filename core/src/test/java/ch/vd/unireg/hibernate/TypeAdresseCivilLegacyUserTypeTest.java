@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.sql.Connection;
 import java.util.List;
@@ -11,13 +11,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.adresse.AdresseCivile;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

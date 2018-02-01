@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.engine;
+package ch.vd.unireg.evenement.organisation.engine;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,10 +13,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
+import ch.vd.unireg.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
 
 public class EvenementOrganisationRetryProcessorImpl implements EvenementOrganisationRetryProcessor {
 	

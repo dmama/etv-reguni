@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.math.BigDecimal;
 
@@ -9,12 +9,12 @@ import ch.vd.unireg.xml.party.corporation.v5.LighteningType;
 import ch.vd.unireg.xml.party.corporation.v5.MunicipalityLighteningTarget;
 import ch.vd.unireg.xml.party.corporation.v5.TaxLightening;
 import ch.vd.unireg.xml.party.corporation.v5.TaxType;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
-import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCanton;
+import ch.vd.unireg.tiers.AllegementFiscalCantonCommune;
+import ch.vd.unireg.tiers.AllegementFiscalCommune;
+import ch.vd.unireg.tiers.AllegementFiscalConfederation;
+import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

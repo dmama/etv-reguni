@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 /**
  * Mode d'inscription d'une transaction immobilière dans un acte désigné

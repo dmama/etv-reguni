@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.piis;
+package ch.vd.unireg.metier.piis;
 
 import java.util.Iterator;
 import java.util.List;
@@ -11,19 +11,19 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.common.DecalageDateHelper;
-import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
-import ch.vd.uniregctb.metier.common.Fraction;
-import ch.vd.uniregctb.metier.common.FractionContrariante;
-import ch.vd.uniregctb.metier.common.FractionDecalee;
-import ch.vd.uniregctb.metier.common.Fractionnements;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.common.DecalageDateHelper;
+import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
+import ch.vd.unireg.metier.common.Fraction;
+import ch.vd.unireg.metier.common.FractionContrariante;
+import ch.vd.unireg.metier.common.FractionDecalee;
+import ch.vd.unireg.metier.common.Fractionnements;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 

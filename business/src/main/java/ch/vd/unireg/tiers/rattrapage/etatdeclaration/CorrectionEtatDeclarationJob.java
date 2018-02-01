@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.etatdeclaration;
+package ch.vd.unireg.tiers.rattrapage.etatdeclaration;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,21 +23,21 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.document.CorrectionEtatDeclarationRapport;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.tache.TacheSynchronizerInterceptor;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.validation.ValidationInterceptor;
 
 /**
  * [UNIREG-3183] Job qui supprime tous les doublons sur les états des déclarations

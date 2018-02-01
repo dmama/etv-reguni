@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import javax.activation.DataHandler;
 import java.util.List;
@@ -15,10 +15,10 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.technical.esb.util.EsbDataHandler;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierImportService;
-import ch.vd.uniregctb.transaction.MockTxSyncManager;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.registrefoncier.MockRegistreFoncierImportService;
+import ch.vd.unireg.transaction.MockTxSyncManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Exception renvoyée lors d'une erreur dans le moteur d'indexation et de

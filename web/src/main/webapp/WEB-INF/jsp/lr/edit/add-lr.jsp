@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="addListeCommand" type="ch.vd.uniregctb.lr.view.ListeRecapitulativeAddView"--%>
+<%--@elvariable id="addListeCommand" type="ch.vd.unireg.lr.view.ListeRecapitulativeAddView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.edition.lr" /></tiles:put>

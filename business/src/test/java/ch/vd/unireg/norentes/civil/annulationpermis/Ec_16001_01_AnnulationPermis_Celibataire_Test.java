@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.annulationpermis;
+package ch.vd.unireg.norentes.civil.annulationpermis;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Test norentes de l'événement annulation permis d'une personne celibataire.

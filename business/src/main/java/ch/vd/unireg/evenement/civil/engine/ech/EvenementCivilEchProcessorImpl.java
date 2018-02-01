@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -32,35 +32,35 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.PollingThread;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.EvenementCivilHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreurFactory;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchWrappingFacade;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.PollingThread;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.EvenementCivilHelper;
+import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilMessageCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreurFactory;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchWrappingFacade;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.parentes.ParentesSynchronizerInterceptor;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
 
 /**
  * Classe de processing des événements civils reçus de RCPers (événements e-CH)
@@ -648,7 +648,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @param referrers la liste des événements à traiter en même temps car tous forment un groupe
 	 * @param refDate date effective de validité de l'événement (en cas de groupe, cette date peut varier de la date de l'événement principal)
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'événement a été mis en erreur
-	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException en cas de problème métier
+	 * @throws ch.vd.unireg.evenement.civil.common.EvenementCivilException en cas de problème métier
 	 */
 	private boolean processEvent(EvenementCivilEch event, List<EvenementCivilEch> referrers, RegDate refDate, long evtIdForDataAfterEvent) throws EvenementCivilException {
 		String dateMove = StringUtils.EMPTY;

@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.registrefoncier.communaute;
+package ch.vd.unireg.registrefoncier.communaute;
 
 import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFPrincipalInfo;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.CommunauteRFPrincipalInfo;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersService;
 
 public class PrincipalCommunauteRFView implements Annulable {
 

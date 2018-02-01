@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v4;
+package ch.vd.unireg.xml.party.v4;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -7,10 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.corporation.v4.CorporationFlag;
 import ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.tiers.FlagEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 
 public class CorporationFlagBuilder {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,8 +7,8 @@ import org.springframework.beans.factory.DisposableBean;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 /**
  * Version spécialisée du template Esb qui relève les temps d'exécution des méthodes publiques.

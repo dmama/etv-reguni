@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

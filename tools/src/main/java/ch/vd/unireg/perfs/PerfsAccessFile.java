@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.perfs;
+package ch.vd.unireg.perfs;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -22,7 +22,7 @@ import ch.vd.unireg.xml.event.lr.event.v3.Liste;
 import ch.vd.unireg.xml.event.lr.event.v3.ObjectFactory;
 import ch.vd.unireg.xml.event.lr.event.v3.PeriodeDeclaration;
 import ch.vd.unireg.xml.event.lr.event.v3.Utilisateur;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 import static org.junit.Assert.assertNotNull;
 

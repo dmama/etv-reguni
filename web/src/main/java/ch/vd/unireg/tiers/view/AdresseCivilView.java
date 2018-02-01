@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -7,12 +7,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
-import ch.vd.uniregctb.adresse.AdresseServiceImpl;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.NpaEtLocalite;
-import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.adresse.AdresseCivileAdapter;
+import ch.vd.unireg.adresse.AdresseServiceImpl;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.NpaEtLocalite;
+import ch.vd.unireg.common.RueEtNumero;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseCivilView implements DateRange, Annulable {
 

@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.declaration.ordinaire.pm;
+package ch.vd.unireg.declaration.ordinaire.pm;
 
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class ImpressionLettreDecisionDelaiPMHelperParams {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @SuppressWarnings("UnusedDeclaration")
 public class AddForAutreImpotView implements AddForView {

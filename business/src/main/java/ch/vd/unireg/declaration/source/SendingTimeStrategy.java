@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.declaration.source;
+package ch.vd.unireg.declaration.source;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.type.PeriodeDecompte;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.PeriodeDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 
 /**
  * Stratégies qui savent dire s'il est temps d'envoyer une LR

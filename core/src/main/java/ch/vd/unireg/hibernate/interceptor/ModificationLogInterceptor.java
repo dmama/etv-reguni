@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.interceptor;
+package ch.vd.unireg.hibernate.interceptor;
 
 import java.io.Serializable;
 
@@ -9,9 +9,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
 
 public class ModificationLogInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean {
 

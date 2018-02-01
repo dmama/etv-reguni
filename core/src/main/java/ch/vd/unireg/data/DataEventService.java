@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 public interface DataEventService extends CivilDataEventService, FiscalDataEventService {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +9,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
 
 /**
  * Cette classe permet de mapper des IdentifiantAffaireRF dans une colonne de type string.

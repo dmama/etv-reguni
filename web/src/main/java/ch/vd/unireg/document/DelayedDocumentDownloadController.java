@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.document;
+package ch.vd.unireg.document;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.common.DelayedDownloadService;
-import ch.vd.uniregctb.common.EditiqueDownloadService;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.TypedDataContainer;
+import ch.vd.unireg.common.DelayedDownloadService;
+import ch.vd.unireg.common.EditiqueDownloadService;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.TypedDataContainer;
 
 @Controller
 public class DelayedDocumentDownloadController {

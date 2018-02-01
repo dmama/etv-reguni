@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -6,11 +6,11 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
 
 public class MotifsForHelperTest extends WithoutSpringTest {
 

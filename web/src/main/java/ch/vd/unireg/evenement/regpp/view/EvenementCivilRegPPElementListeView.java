@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.evenement.regpp.view;
+package ch.vd.unireg.evenement.regpp.view;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public class EvenementCivilRegPPElementListeView implements Serializable {
 

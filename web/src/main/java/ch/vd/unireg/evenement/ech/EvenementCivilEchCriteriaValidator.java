@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.ech;
+package ch.vd.unireg.evenement.ech;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.evenement.common.EvenementCivilCriteriaValidator;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
+import ch.vd.unireg.evenement.common.EvenementCivilCriteriaValidator;
+import ch.vd.unireg.evenement.ech.view.EvenementCivilEchCriteriaView;
 
 public class EvenementCivilEchCriteriaValidator extends EvenementCivilCriteriaValidator implements Validator  {
 

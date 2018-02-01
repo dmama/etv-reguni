@@ -14,7 +14,7 @@
 		<property name="wcPool" ref="hostIntWebClientPool" />
 	</bean>
 
-	<bean id="serviceInfrastructureClientTracing" class="ch.vd.uniregctb.wsclient.host.ServiceInfrastructureClientTracing">
+	<bean id="serviceInfrastructureClientTracing" class="ch.vd.unireg.wsclient.host.ServiceInfrastructureClientTracing">
 		<property name="statsService" ref="statsService"/>
 		<property name="target" ref="serviceInfrastructureClientRaw"/>
 	</bean>

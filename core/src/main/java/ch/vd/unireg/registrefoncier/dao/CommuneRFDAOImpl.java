@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.key.CommuneRFKey;
 
 public class CommuneRFDAOImpl extends BaseDAOImpl<CommuneRF, Long> implements CommuneRFDAO {
 	protected CommuneRFDAOImpl() {

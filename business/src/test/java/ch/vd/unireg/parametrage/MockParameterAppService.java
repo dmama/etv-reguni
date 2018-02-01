@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
 /**
  * Classe de mock pour le service des paramètres applicatifs

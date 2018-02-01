@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.lr.view;
+package ch.vd.unireg.lr.view;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 
 public class ListeRecapitulativeAddView implements DateRange {
 

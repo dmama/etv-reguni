@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 public final class ArchiveKey {
 
 	/**
-	 * @see ch.vd.uniregctb.editique.TypeDocumentEditique#name()
-	 * @see ch.vd.uniregctb.editique.TypeDocumentEditique
+	 * @see ch.vd.unireg.editique.TypeDocumentEditique#name()
+	 * @see ch.vd.unireg.editique.TypeDocumentEditique
 	 */
 	private final TypeDocumentEditique typeDocument;
 	private final String key;

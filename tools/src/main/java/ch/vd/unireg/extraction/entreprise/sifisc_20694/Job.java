@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction.entreprise.sifisc_20694;
+package ch.vd.unireg.extraction.entreprise.sifisc_20694;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -43,14 +43,14 @@ import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
 import ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.common.BatchIterator;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.utils.WebServiceV7Helper;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.utils.WebServiceV7Helper;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.xml.DataHelper;
 
 public class Job {
 

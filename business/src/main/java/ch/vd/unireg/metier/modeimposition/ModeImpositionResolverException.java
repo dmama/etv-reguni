@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.modeimposition;
+package ch.vd.unireg.metier.modeimposition;
 
 import org.apache.commons.lang3.StringUtils;
 

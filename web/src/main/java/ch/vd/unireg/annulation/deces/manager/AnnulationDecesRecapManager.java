@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.annulation.deces.manager;
+package ch.vd.unireg.annulation.deces.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.annulation.deces.view.AnnulationDecesRecapView;
-import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.unireg.annulation.deces.view.AnnulationDecesRecapView;
+import ch.vd.unireg.metier.MetierServiceException;
 
 public interface AnnulationDecesRecapManager {
 

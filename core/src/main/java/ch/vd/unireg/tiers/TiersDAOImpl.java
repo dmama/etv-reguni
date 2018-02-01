@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,18 +34,18 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.AddAndSaveHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.foncier.AllegementFoncier;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.AddAndSaveHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.documentfiscal.DocumentFiscal;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.foncier.AllegementFoncier;
 
 public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
@@ -1222,7 +1222,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.tiers.TiersDAO#getDebiteurPrestationImposableByNumero(java.lang.Long)
+	 * @see ch.vd.unireg.tiers.TiersDAO#getDebiteurPrestationImposableByNumero(java.lang.Long)
 	 */
 	@Override
 	public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {

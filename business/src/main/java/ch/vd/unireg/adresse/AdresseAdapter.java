@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 public abstract class AdresseAdapter implements AdresseGenerique {
 

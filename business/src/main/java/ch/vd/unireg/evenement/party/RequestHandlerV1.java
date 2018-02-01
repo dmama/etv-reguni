@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.event.party.v1.Response;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.xml.ServiceException;
 
 /**
  * Handler de requêtes sur les données de tiers.

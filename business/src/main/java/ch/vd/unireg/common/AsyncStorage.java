@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -153,7 +153,7 @@ public class AsyncStorage<K, V> {
 	}
 
 	/**
-	 * Interface du callback lors d'un appel à {@link AsyncStorage#doInLockedEnvironment(ch.vd.uniregctb.common.AsyncStorage.Action)}
+	 * Interface du callback lors d'un appel à {@link AsyncStorage#doInLockedEnvironment(ch.vd.unireg.common.AsyncStorage.Action)}
 	 * @param <K> type de la clé de stockage
 	 * @param <V> type de la valeur de stockage
 	 * @param <T> type de la valeur retournée par l'action
@@ -163,7 +163,7 @@ public class AsyncStorage<K, V> {
 		/**
 		 * Corps de l'action
 		 * @param entries Collection des éléments dans l'espace de stockage
-		 * @return Ce que l'action veut retourner (et qui servira de valeur de retour de l'appel à {@link AsyncStorage#doInLockedEnvironment(ch.vd.uniregctb.common.AsyncStorage.Action)}
+		 * @return Ce que l'action veut retourner (et qui servira de valeur de retour de l'appel à {@link AsyncStorage#doInLockedEnvironment(ch.vd.unireg.common.AsyncStorage.Action)}
 		 */
 		T execute(Iterable<Map.Entry<K, Mutable<V>>> entries);
 	}

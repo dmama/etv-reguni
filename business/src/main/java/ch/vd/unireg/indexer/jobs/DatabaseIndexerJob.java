@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.indexer.jobs;
+package ch.vd.unireg.indexer.jobs;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamEnum;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.scheduler.JobParamMultiSelectEnum;
-import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamEnum;
+import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.scheduler.JobParamMultiSelectEnum;
+import ch.vd.unireg.tiers.TypeTiers;
 
 /**
  * Job qui réindexe tout ou partie des tiers de la base de données

@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
+package ch.vd.unireg.tiers.rattrapage.flaghabitant;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.CorrectionFlagHabitantRapport;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Job qui remet d'aplomb les flags "habitant" des personnes physiques en

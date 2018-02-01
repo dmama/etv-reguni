@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.etats.transition;
+package ch.vd.unireg.tiers.etats.transition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 
 /**
  * Transition vers l'état "Absorbée"

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -11,20 +11,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.StackedThreadLocal;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.common.ThreadSwitch;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.StackedThreadLocal;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.common.ThreadSwitch;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * [UNIREG-2305] Cet interceptor recalcul automatiquement les tâches d'envoi et d'annulation de DIs sur les contribuables modifiées après le commit de chaque transaction.

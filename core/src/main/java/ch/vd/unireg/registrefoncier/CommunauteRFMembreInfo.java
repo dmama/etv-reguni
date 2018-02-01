@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.tiers.CommunauteHeritiers;
-import ch.vd.uniregctb.tiers.Heritage;
+import ch.vd.unireg.tiers.CommunauteHeritiers;
+import ch.vd.unireg.tiers.Heritage;
 
 /**
  * Les informations minimales sur les membres d'une communauté d'un point-de-vue Unireg.

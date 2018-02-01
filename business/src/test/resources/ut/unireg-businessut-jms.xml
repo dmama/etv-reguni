@@ -3,8 +3,8 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="jmsBroker" class="ch.vd.uniregctb.jms.StaticSingletonBrokerFactoryBean">
-		<property name="config" value="classpath:ch/vd/uniregctb/jms/activemq-broker.xml" />
+	<bean id="jmsBroker" class="ch.vd.unireg.jms.StaticSingletonBrokerFactoryBean">
+		<property name="config" value="classpath:ch/vd/unireg/jms/activemq-broker.xml" />
 		<property name="start" value="true" />
 	</bean>
 
@@ -20,33 +20,33 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
-	<bean id="identCtbMessageV1Handler" class="ch.vd.uniregctb.evenement.identification.contribuable.MockIdentificationContribuableMessageHandler"/>
+	<bean id="identCtbMessageV1Handler" class="ch.vd.unireg.evenement.identification.contribuable.MockIdentificationContribuableMessageHandler"/>
 
-	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender"/>
+	<bean id="evenementFiscalSender" class="ch.vd.unireg.evenement.fiscal.CollectingEvenementFiscalSender"/>
 
-	<bean id="annonceIDESender" class="ch.vd.uniregctb.evenement.ide.MockAnnonceIDESender"/>
+	<bean id="annonceIDESender" class="ch.vd.unireg.evenement.ide.MockAnnonceIDESender"/>
 
-	<bean id="evenementDeclarationPPSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPPSender"/>
-	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.declaration.MockEvenementDeclarationPMSender"/>
+	<bean id="evenementDeclarationPPSender" class="ch.vd.unireg.evenement.di.MockEvenementDeclarationPPSender"/>
+	<bean id="evenementDeclarationPMSender" class="ch.vd.unireg.evenement.declaration.MockEvenementDeclarationPMSender"/>
 
-	<bean id="eFactureMessageSender" class="ch.vd.uniregctb.efacture.MockEFactureMessageSender" />
+	<bean id="eFactureMessageSender" class="ch.vd.unireg.efacture.MockEFactureMessageSender" />
 
-	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
+	<bean id="bamMessageSender" class="ch.vd.unireg.jms.MockBamMessageSender"/>
 
-	<bean id="evtCivilEchProcessorRetry" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEchRetryProcessor"/>
+	<bean id="evtCivilEchProcessorRetry" class="ch.vd.unireg.evenement.civil.engine.ech.MockEvenementCivilEchRetryProcessor"/>
 
-	<bean id="evtOrganisationProcessorRetry" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationRetryProcessor"/>
+	<bean id="evtOrganisationProcessorRetry" class="ch.vd.unireg.evenement.organisation.engine.MockEvenementOrganisationRetryProcessor"/>
 
-	<bean id="evtReqDesRetryProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesRetryProcessor"/>
+	<bean id="evtReqDesRetryProcessor" class="ch.vd.unireg.evenement.reqdes.engine.MockEvenementReqDesRetryProcessor"/>
 
-	<bean id="evenementCivilEchStrategyParameters" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchStrategyParametersImpl">
+	<bean id="evenementCivilEchStrategyParameters" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchStrategyParametersImpl">
 		<property name="decalageMaxPourDepart" value="0"/>
 	</bean>
 
-	<bean id="raftEsbStore" class="ch.vd.uniregctb.evenement.MockRaftStore">
+	<bean id="raftEsbStore" class="ch.vd.unireg.evenement.MockRaftStore">
 	</bean>
 
-	<bean id="zipRaftEsbStore" class="ch.vd.uniregctb.evenement.MockRaftStore">
+	<bean id="zipRaftEsbStore" class="ch.vd.unireg.evenement.MockRaftStore">
 	</bean>
 
 </beans>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -21,32 +21,32 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalService;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.DroitHabitationRF;
+import ch.vd.unireg.registrefoncier.EstimationRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
-import static ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance;
+import static ch.vd.unireg.foncier.EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance;
 
 @SuppressWarnings("Duplicates")
 public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends BusinessTest {

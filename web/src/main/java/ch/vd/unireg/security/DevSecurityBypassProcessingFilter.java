@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,10 +21,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.interfaces.service.host.IfoSecProcedureImpl;
-import ch.vd.uniregctb.interfaces.service.host.IfoSecProfilImpl;
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.interfaces.service.host.IfoSecProcedureImpl;
+import ch.vd.unireg.interfaces.service.host.IfoSecProfilImpl;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties.

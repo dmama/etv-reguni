@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -11,13 +11,13 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.common.AsyncStorage;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatRecu;
-import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
-import ch.vd.uniregctb.editique.RetourImpressionTrigger;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.common.AsyncStorage;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatRecu;
+import ch.vd.unireg.editique.EditiqueRetourImpressionStorageService;
+import ch.vd.unireg.editique.RetourImpressionTrigger;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 /**
  * Implémentation du service de stockage des retours d'impression de l'éditique

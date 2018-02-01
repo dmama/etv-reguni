@@ -9,10 +9,10 @@
 		<property name="description" value="Unireg-UT"/>
 		<property name="annotatedClasses">
 			<list>
-				<value>ch.vd.uniregctb.hibernate.HibernateCollectionsTest$Tiers</value>
-				<value>ch.vd.uniregctb.hibernate.HibernateCollectionsTest$Personne</value>
-				<value>ch.vd.uniregctb.hibernate.HibernateCollectionsTest$Menage</value>
-				<value>ch.vd.uniregctb.hibernate.HibernateCollectionsTest$Rapport</value>
+				<value>ch.vd.unireg.hibernate.HibernateCollectionsTest$Tiers</value>
+				<value>ch.vd.unireg.hibernate.HibernateCollectionsTest$Personne</value>
+				<value>ch.vd.unireg.hibernate.HibernateCollectionsTest$Menage</value>
+				<value>ch.vd.unireg.hibernate.HibernateCollectionsTest$Rapport</value>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource" />

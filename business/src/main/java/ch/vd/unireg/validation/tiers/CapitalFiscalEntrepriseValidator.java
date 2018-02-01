@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.unireg.tiers.CapitalFiscalEntreprise;
+import ch.vd.unireg.tiers.MontantMonetaire;
 
 public class CapitalFiscalEntrepriseValidator extends DonneeCivileEntrepriseValidator<CapitalFiscalEntreprise> {
 

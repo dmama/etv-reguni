@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFProcessor;
-import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.document.RapprochementTiersRFRapport;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.registrefoncier.processor.RapprochementTiersRFProcessor;
+import ch.vd.unireg.registrefoncier.processor.RapprochementTiersRFResults;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamInteger;
 
 public class RapprocherTiersRFJob extends JobDefinition {
 

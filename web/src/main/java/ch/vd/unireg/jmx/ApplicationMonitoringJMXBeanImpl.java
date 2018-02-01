@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.registre.jmx.interfaces.ApplicationMonitoringJmxBean;
-import ch.vd.uniregctb.checker.ApplicationChecker;
+import ch.vd.unireg.checker.ApplicationChecker;
 
 @ManagedResource
 public class ApplicationMonitoringJMXBeanImpl implements ApplicationMonitoringJmxBean {

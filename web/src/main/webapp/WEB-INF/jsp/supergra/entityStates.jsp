@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="coll" type="ch.vd.uniregctb.supergra.view.CollectionView"--%>
-<%--@elvariable id="superGraSession" type="ch.vd.uniregctb.supergra.SuperGraSession"--%>
+<%--@elvariable id="coll" type="ch.vd.unireg.supergra.view.CollectionView"--%>
+<%--@elvariable id="superGraSession" type="ch.vd.unireg.supergra.SuperGraSession"--%>
 
 <div id="states_list">
 	<table class="sync_states" cellspacing="0" border="0"><tbody>

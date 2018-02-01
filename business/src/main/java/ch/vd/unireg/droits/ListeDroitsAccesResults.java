@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.droits;
+package ch.vd.unireg.droits;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 public class ListeDroitsAccesResults extends JobResults<Number, ListeDroitsAccesResults> {
 

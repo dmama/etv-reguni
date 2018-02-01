@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.junit.Test;
 
@@ -10,8 +10,8 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonStrategyTest {
 

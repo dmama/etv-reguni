@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
 
 public class JspTagNoIDE extends BodyTagSupport {
 

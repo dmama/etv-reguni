@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,18 +8,18 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
-import ch.vd.uniregctb.evenement.identification.contribuable.EsbHeader;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresPersonne;
+import ch.vd.unireg.evenement.identification.contribuable.Demande;
+import ch.vd.unireg.evenement.identification.contribuable.EsbHeader;
+import ch.vd.unireg.evenement.identification.contribuable.IdentCtbDAO;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.Reponse;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TypeTiers;
 
 public class RapprochementManuelTiersRFServiceImpl implements RapprochementManuelTiersRFService {
 

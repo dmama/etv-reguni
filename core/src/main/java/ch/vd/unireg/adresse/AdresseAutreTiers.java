@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -11,8 +11,8 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 @Entity
 @DiscriminatorValue("AdresseAutreTiers")
@@ -33,7 +33,7 @@ public class AdresseAutreTiers extends AdresseTiers {
 	}
 
 	@Column(name = "AUTRE_TYPE", length = LengthConstants.ADRESSE_TYPETIERS)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeAdresseTiersUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeAdresseTiersUserType")
 	public TypeAdresseTiers getType() {
 		return type;
 	}

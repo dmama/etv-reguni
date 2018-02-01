@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,7 +10,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.utils.LogLevel;
 
 /**
  * Service de notification d'exceptions par email.

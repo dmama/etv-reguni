@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxPeriod;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.WithholdingTaxDeclaration;
 import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

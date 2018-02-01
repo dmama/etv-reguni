@@ -9,7 +9,7 @@
 </c:if>
 <c:if test="${not empty command.rapportsPrestation}">
 		<display:table 	name="command.rapportsPrestation" id="rapportPrestation" pagesize="${pageSize}" 
-						requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator"
+						requestURI="${url}" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator"
 						sort="external" partialList="true" size="resultSize">
 			<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut" sortName="dateDebut">
 				<unireg:regdate regdate="${rapportPrestation.dateDebut}" format="dd.MM.yyyy"/>

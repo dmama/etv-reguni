@@ -18,7 +18,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
-import ch.vd.uniregctb.cache.UniregCacheManagerImpl;
+import ch.vd.unireg.cache.UniregCacheManagerImpl;
 
 public class ServiceInfrastructurePaysCacheTest {
 

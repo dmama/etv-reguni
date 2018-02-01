@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.documentfiscal;
+package ch.vd.unireg.validation.documentfiscal;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public abstract class EtatDocumentFiscalValidator<T extends EtatDocumentFiscal> extends EntityValidatorImpl<T> {
 

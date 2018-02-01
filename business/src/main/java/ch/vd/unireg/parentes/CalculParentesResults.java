@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parentes;
+package ch.vd.unireg.parentes;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.common.AbstractJobResults;
+import ch.vd.unireg.common.AbstractJobResults;
 
 public class CalculParentesResults extends AbstractJobResults<Long, CalculParentesResults> {
 

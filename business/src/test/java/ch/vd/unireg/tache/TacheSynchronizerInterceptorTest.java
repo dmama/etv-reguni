@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.io.File;
 import java.util.Collections;
@@ -18,36 +18,36 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.BusinessTestingConstants;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.evenement.retourdi.EvenementRetourDiEsbMessageHandler;
-import ch.vd.uniregctb.evenement.retourdi.RetourDiHandler;
-import ch.vd.uniregctb.evenement.retourdi.pp.EvenementCediService;
-import ch.vd.uniregctb.evenement.retourdi.pp.V1Handler;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tache.sync.AddDIPP;
-import ch.vd.uniregctb.tache.sync.SynchronizeAction;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.BusinessTestingConstants;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.evenement.retourdi.EvenementRetourDiEsbMessageHandler;
+import ch.vd.unireg.evenement.retourdi.RetourDiHandler;
+import ch.vd.unireg.evenement.retourdi.pp.EvenementCediService;
+import ch.vd.unireg.evenement.retourdi.pp.V1Handler;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tache.sync.AddDIPP;
+import ch.vd.unireg.tache.sync.SynchronizeAction;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tache;
+import ch.vd.unireg.tiers.TacheDAO;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPM;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatTache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -107,7 +107,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 
 		final long CTB_ID = 12500001L;
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/tache/event_retour_di.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/tache/event_retour_di.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// crée un contribuable assujetti entre 2008 et 2009, avec une seule déclaration 2009 (celle de 2008 manque) et qui ne possède pas de tâche d'envoi de DI (= création automatique à la prochaine modification)

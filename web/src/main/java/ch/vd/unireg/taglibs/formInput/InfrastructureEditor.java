@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs.formInput;
+package ch.vd.unireg.taglibs.formInput;
 
 import javax.servlet.jsp.JspException;
 
@@ -11,8 +11,8 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.json.InfraCategory;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.json.InfraCategory;
 
 public class InfrastructureEditor implements Editor {
 

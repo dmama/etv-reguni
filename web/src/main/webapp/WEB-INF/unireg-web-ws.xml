@@ -6,7 +6,7 @@
 							http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
 	<!-- Job pour le testing du BatchClient -->
-	<bean id="itBatchClientJob" parent="schedulerJob" class="ch.vd.uniregctb.webservices.batch.ItBatchClientJob" >
+	<bean id="itBatchClientJob" parent="schedulerJob" class="ch.vd.unireg.webservices.batch.ItBatchClientJob" >
 		<constructor-arg value="1" />
 		<constructor-arg value="IT - BatchClient testing job" />
 	</bean>
@@ -28,7 +28,7 @@
 		</jaxrs:providers>
 	</jaxrs:server>
 
-	<bean id="wsBatchEndPoint" class="ch.vd.uniregctb.webservices.batch.WebServiceEndPoint">
+	<bean id="wsBatchEndPoint" class="ch.vd.unireg.webservices.batch.WebServiceEndPoint">
 		<property name="batchScheduler" ref="batchScheduler"/>
 		<property name="documentService" ref="docService"/>
 	</bean>

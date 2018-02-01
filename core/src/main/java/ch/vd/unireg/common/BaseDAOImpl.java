@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.DataAccessException;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 
 public abstract class BaseDAOImpl<T, PK extends Serializable> extends GenericDAOImpl<T, PK> {
 

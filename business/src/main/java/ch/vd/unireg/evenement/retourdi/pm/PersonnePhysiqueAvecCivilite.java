@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.adresse.CiviliteSupplier;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.FormulePolitesse;
+import ch.vd.unireg.adresse.CiviliteSupplier;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.FormulePolitesse;
 
 final class PersonnePhysiqueAvecCivilite extends PersonnePhysique implements CiviliteSupplier {
 

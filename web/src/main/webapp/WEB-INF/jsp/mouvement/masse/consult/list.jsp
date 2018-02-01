@@ -20,7 +20,7 @@
 		</fieldset>
 
 		<c:if test="${found != null}">
-			<display:table name="found.results" id="mvt" pagesize="25" requestURI="/mouvement/masse/consulter.do" class="display_table" sort="external" size="found.resultSize" partialList="true" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="found.results" id="mvt" pagesize="25" requestURI="/mouvement/masse/consulter.do" class="display_table" sort="external" size="found.resultSize" partialList="true" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.mouvement.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.mouvement.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.mouvements.trouves" /></span></display:setProperty>

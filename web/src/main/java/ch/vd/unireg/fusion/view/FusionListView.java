@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.fusion.view;
+package ch.vd.unireg.fusion.view;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public class FusionListView extends TiersCriteriaView{
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.async;
+package ch.vd.unireg.indexer.async;
 
 import java.util.Collection;
 import java.util.Timer;
@@ -11,10 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
-import ch.vd.uniregctb.worker.DeadThreadException;
-import ch.vd.uniregctb.worker.WorkingQueue;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexerImpl;
+import ch.vd.unireg.worker.DeadThreadException;
+import ch.vd.unireg.worker.WorkingQueue;
 
 /**
  * Tiers indexer utilisé pour l'indexation ou fil-de-l'eau des tiers de la base de données.

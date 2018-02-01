@@ -1,7 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator;
 
 import ch.vd.evd0022.v3.Capital;
-import ch.vd.uniregctb.common.Equalator;
+import ch.vd.unireg.common.Equalator;
 
 public class CapitalEqualator implements Equalator<Capital> {
 

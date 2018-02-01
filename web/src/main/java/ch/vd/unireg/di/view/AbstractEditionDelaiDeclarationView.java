@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 
 public abstract class AbstractEditionDelaiDeclarationView {
 

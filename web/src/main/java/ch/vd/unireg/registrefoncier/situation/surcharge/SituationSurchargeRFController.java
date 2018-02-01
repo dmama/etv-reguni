@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.situation.surcharge;
+package ch.vd.unireg.registrefoncier.situation.surcharge;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -25,17 +25,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.registrefoncier.dao.SituationRFDAO;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
-import ch.vd.uniregctb.tiers.view.CommuneView;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.registrefoncier.SituationRF;
+import ch.vd.unireg.registrefoncier.dao.SituationRFDAO;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.tiers.view.CommuneView;
 
 /**
  * Contrôleur de gestion des surcharges de communes sur les situations RF (cas des fractions de communes).

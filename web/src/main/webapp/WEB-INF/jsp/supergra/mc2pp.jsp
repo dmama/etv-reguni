@@ -6,7 +6,7 @@
 
 	<tiles:put name="title" type="String">*** Mode Supergra ***</tiles:put>
 
-	<%--@elvariable id="mc2pp" type="ch.vd.uniregctb.supergra.view.mc2ppView"--%>
+	<%--@elvariable id="mc2pp" type="ch.vd.unireg.supergra.view.mc2ppView"--%>
 
 	<tiles:put name="actions" type="String">
 	</tiles:put>

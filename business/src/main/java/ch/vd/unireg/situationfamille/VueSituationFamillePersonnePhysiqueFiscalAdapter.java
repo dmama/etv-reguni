@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.type.EtatCivil;
 
 /**
  * Permet d'adapter une situation de famille de personne physique en provenance du fiscal.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.appariement;
+package ch.vd.unireg.tiers.rattrapage.appariement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,17 +26,17 @@ import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.tiers.ActiviteEconomique;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.LocalizedDateRange;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.tiers.ActiviteEconomique;
+import ch.vd.unireg.tiers.DomicileEtablissement;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.LocalizedDateRange;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class AppariementServiceImpl implements AppariementService {
 

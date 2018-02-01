@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.registrefoncier.situation.surcharge;
+package ch.vd.unireg.registrefoncier.situation.surcharge;
 
-import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.unireg.registrefoncier.SituationRF;
 
 /**
  * Données pour l'établissement d'une surcharge de commune sur une situation.

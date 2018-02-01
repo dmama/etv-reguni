@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.utils;
+package ch.vd.unireg.utils;
 
 import java.beans.PropertyEditorSupport;
 import java.text.ParseException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.DayMonthHelper;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.DayMonthHelper;
 
 public class DayMonthEditor extends PropertyEditorSupport {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement.manager;
+package ch.vd.unireg.mouvement.manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,23 +9,23 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.mouvement.EnvoiDossier;
-import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
-import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
-import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
-import ch.vd.uniregctb.mouvement.MouvementDossier;
-import ch.vd.uniregctb.mouvement.ReceptionDossier;
-import ch.vd.uniregctb.mouvement.ReceptionDossierArchives;
-import ch.vd.uniregctb.mouvement.ReceptionDossierClassementGeneral;
-import ch.vd.uniregctb.mouvement.ReceptionDossierClassementIndependants;
-import ch.vd.uniregctb.mouvement.ReceptionDossierPersonnel;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.mouvement.view.MouvementListView;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.Localisation;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.mouvement.EnvoiDossier;
+import ch.vd.unireg.mouvement.EnvoiDossierVersCollaborateur;
+import ch.vd.unireg.mouvement.EnvoiDossierVersCollectiviteAdministrative;
+import ch.vd.unireg.mouvement.EtatMouvementDossier;
+import ch.vd.unireg.mouvement.MouvementDossier;
+import ch.vd.unireg.mouvement.ReceptionDossier;
+import ch.vd.unireg.mouvement.ReceptionDossierArchives;
+import ch.vd.unireg.mouvement.ReceptionDossierClassementGeneral;
+import ch.vd.unireg.mouvement.ReceptionDossierClassementIndependants;
+import ch.vd.unireg.mouvement.ReceptionDossierPersonnel;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.mouvement.view.MouvementListView;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.type.Localisation;
+import ch.vd.unireg.type.TypeMouvement;
 
 public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl implements MouvementEditManager {
 
@@ -142,7 +142,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 				default:
 					throw new RuntimeException("Localisation non-supportée : " + mvtDetailView.getLocalisation());
 			}
-			final ch.vd.uniregctb.tiers.CollectiviteAdministrative caReceptrice = getTiersService().getOrCreateCollectiviteAdministrative(AuthenticationHelper.getCurrentOID());
+			final ch.vd.unireg.tiers.CollectiviteAdministrative caReceptrice = getTiersService().getOrCreateCollectiviteAdministrative(AuthenticationHelper.getCurrentOID());
 			reception.setCollectiviteAdministrativeReceptrice(caReceptrice);
 			mvt = reception;
 		}
@@ -150,7 +150,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 
 			final EnvoiDossier envoiDossier;
 			if (mvtDetailView.getNoCollAdmDestinataireEnvoi() != null) {
-				final ch.vd.uniregctb.tiers.CollectiviteAdministrative ca = getTiersService().getOrCreateCollectiviteAdministrative(mvtDetailView.getNoCollAdmDestinataireEnvoi());
+				final ch.vd.unireg.tiers.CollectiviteAdministrative ca = getTiersService().getOrCreateCollectiviteAdministrative(mvtDetailView.getNoCollAdmDestinataireEnvoi());
 				envoiDossier = new EnvoiDossierVersCollectiviteAdministrative(ca);
 			}
 			else if (mvtDetailView.getNumeroUtilisateurEnvoi() != null) {
@@ -159,7 +159,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 			else {
 				throw new RuntimeException("Type de mouvement d'envoi de dossier non supporté");
 			}
-			final ch.vd.uniregctb.tiers.CollectiviteAdministrative caEmettrice = getTiersService().getOrCreateCollectiviteAdministrative(AuthenticationHelper.getCurrentOID());
+			final ch.vd.unireg.tiers.CollectiviteAdministrative caEmettrice = getTiersService().getOrCreateCollectiviteAdministrative(AuthenticationHelper.getCurrentOID());
 			envoiDossier.setCollectiviteAdministrativeEmettrice(caEmettrice);
 			mvt = envoiDossier;
 

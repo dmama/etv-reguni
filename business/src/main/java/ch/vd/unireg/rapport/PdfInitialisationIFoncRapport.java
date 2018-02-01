@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
@@ -12,24 +12,24 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
+import ch.vd.unireg.common.CsvHelper;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.foncier.InitialisationIFoncResults;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitHabitationRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteImmeubleRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
 
 /**
  * Rapport PDF contenant le rapport de l'extraction des données nécessaires à l'initialisation de la taxation IFONC

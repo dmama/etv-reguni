@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement.manager;
+package ch.vd.unireg.mouvement.manager;
 
 import java.sql.Timestamp;
 import java.util.Comparator;
@@ -6,7 +6,7 @@ import java.util.Comparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.unireg.mouvement.MouvementDossier;
 
 /**
  * Les mouvements annulés sont de toute façon à la fin,

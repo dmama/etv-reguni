@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -6,9 +6,9 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
  * Déclaration émise, en attente de retour depuis le tiers. C'est le premier état de toute déclaration.

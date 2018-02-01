@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.copieConforme;
+package ch.vd.unireg.copieConforme;
 
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 /**
  * Manager des copies conformes de documents archivés dans Folders
@@ -49,7 +49,7 @@ public interface CopieConformeManager {
 	/**
 	 * Renvoie un document PDF identifié par sa clé d'archivage dans Folders
 	 * @param noCtb numéro du contribuable pour lequel on va chercher un document
-	 * @param typeDoc le type de document (voir {@link ch.vd.uniregctb.editique.TypeDocumentEditique})
+	 * @param typeDoc le type de document (voir {@link ch.vd.unireg.editique.TypeDocumentEditique})
 	 * @param key la clé d'archivage
 	 * @return document PDF
 	 */

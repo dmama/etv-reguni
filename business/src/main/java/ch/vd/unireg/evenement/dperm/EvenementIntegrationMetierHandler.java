@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.dperm;
+package ch.vd.unireg.evenement.dperm;
 
 import javax.xml.transform.Source;
 import java.util.Map;

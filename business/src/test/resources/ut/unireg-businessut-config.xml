@@ -4,24 +4,24 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="uniregModeHelper" class="ch.vd.uniregctb.utils.UniregModeHelper">
+	<bean id="uniregModeHelper" class="ch.vd.unireg.utils.UniregModeHelper">
 		<property name="testMode" value="true" />
 		<property name="environnement" value="UT" />
 		<property name="efactureEnabled" value="false" />
 		<property name="reqdesEnabled" value="true" />
 	</bean>
 
-	<bean id="sourcesMonoQuittancementDi" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
+	<bean id="sourcesMonoQuittancementDi" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet"/>
 
-	<bean id="sourcesQuittancementAvecLiberationPossible" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
+	<bean id="sourcesQuittancementAvecLiberationPossible" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet"/>
 
 	<!-- Identification des PM -->
 
-	<bean id="motsReservesIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+	<bean id="motsReservesIdentificationPM" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet">
 		<property name="elements" value="de, la, l, le, du, sa, sàrl, gmbh, ag, en liquidation"/>
 	</bean>
 
-	<bean id="caracteresSpeciauxIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+	<bean id="caracteresSpeciauxIdentificationPM" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet">
 		<property name="separatorRegExp" value="\s"/>
 		<property name="elements" value=", . ' - ;"/>
 	</bean>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.processor;
+package ch.vd.unireg.registrefoncier.processor;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -10,17 +10,17 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
 public class RapprochementTiersRFResults extends JobResults<Long, RapprochementTiersRFResults> {
 

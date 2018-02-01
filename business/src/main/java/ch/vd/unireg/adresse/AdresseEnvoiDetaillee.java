@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,11 +15,11 @@ import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
-import ch.vd.uniregctb.common.NpaEtLocalite;
-import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.FormulePolitesse;
+import ch.vd.unireg.common.NpaEtLocalite;
+import ch.vd.unireg.common.RueEtNumero;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.FormulePolitesse;
 
 /**
  * Adresse d'envoi du courrier avec détail des valeurs.

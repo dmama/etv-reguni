@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<parent>
-		<groupId>ch.vd.uniregctb</groupId>
+		<groupId>ch.vd.unireg</groupId>
 		<artifactId>uniregctb</artifactId>
 		<!-- BEGIN_LVERSION -->
 		<version>18R2.A.0-SNAPSHOT</version>
@@ -30,41 +30,41 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>uniregctb-wsclient-securite</artifactId>
 			<version>1.0.6</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-ws-party4</artifactId>
 			<version>${wsparty4.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-ws-v5</artifactId>
 			<version>${ws.v5.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-ws-v6</artifactId>
 			<version>${ws.v6.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-ws-v7</artifactId>
 			<version>${ws.v7.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
+			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-events</artifactId>
 		</dependency>
 		<dependency>
@@ -120,8 +120,8 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
-			<artifactId>jaxb2-catalog-resolver</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>jaxb2-catalog-resolver</artifactId>
 			<version>1.0.6</version>
 		</dependency>
 		<dependency>

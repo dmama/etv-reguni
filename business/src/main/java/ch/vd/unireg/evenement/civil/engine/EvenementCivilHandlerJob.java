@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.civil.engine;
+package ch.vd.unireg.evenement.civil.engine;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchRetryProcessor;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchRetryProcessor;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
 
 public class EvenementCivilHandlerJob extends JobDefinition {
 

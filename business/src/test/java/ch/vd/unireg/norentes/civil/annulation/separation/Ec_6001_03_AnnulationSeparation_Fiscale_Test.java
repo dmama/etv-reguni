@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.annulation.separation;
+package ch.vd.unireg.norentes.civil.annulation.separation;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Teste l'annulation de séparation d'un couple dans le registre fiscal.

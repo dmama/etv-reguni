@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.checker;
+package ch.vd.unireg.checker;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.tiers.TiersCriteria;
 
 public class TiersSearcherChecker implements StatusChecker {
 

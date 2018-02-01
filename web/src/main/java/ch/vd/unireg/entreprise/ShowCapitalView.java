@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.MontantMonetaireView;
-import ch.vd.uniregctb.tiers.CapitalHisto;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.MontantMonetaireView;
+import ch.vd.unireg.tiers.CapitalHisto;
+import ch.vd.unireg.tiers.MontantMonetaire;
+import ch.vd.unireg.tiers.Source;
+import ch.vd.unireg.tiers.Sourced;
 
 public class ShowCapitalView implements Sourced<Source>, Annulable, CollatableDateRange<ShowCapitalView> {
 

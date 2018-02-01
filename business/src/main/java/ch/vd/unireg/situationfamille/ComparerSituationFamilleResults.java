@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.tiers.TiersService;
 
 public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSituationFamilleResults> {
 	public boolean isInterrompu() {

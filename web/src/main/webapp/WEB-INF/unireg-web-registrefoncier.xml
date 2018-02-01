@@ -4,7 +4,7 @@
 
 	<!-- Import des données du RF -->
 
-	<bean id="blacklistRFHelper" class="ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelperImpl">
+	<bean id="blacklistRFHelper" class="ch.vd.unireg.registrefoncier.dataimport.helper.BlacklistRFHelperImpl">
 		<property name="blacklistedImmeubles" value="${extprop.rf.blacklist.immeubles}"/>
 	</bean>
 
@@ -24,38 +24,38 @@
 		<property name="syncOnCommit" value="false" />
 	</bean>
 
-	<bean id="importRFController" class="ch.vd.uniregctb.registrefoncier.importrf.ImportRFController">
+	<bean id="importRFController" class="ch.vd.unireg.registrefoncier.importrf.ImportRFController">
 		<property name="serviceImportRF" ref="serviceImportRF" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
 		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO" />
 	</bean>
 
-	<bean id="immeubleRFController" class="ch.vd.uniregctb.registrefoncier.immeuble.ImmeubleRFController">
+	<bean id="immeubleRFController" class="ch.vd.unireg.registrefoncier.immeuble.ImmeubleRFController">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
-	<bean id="communauteRFController" class="ch.vd.uniregctb.registrefoncier.communaute.CommunauteRFController">
+	<bean id="communauteRFController" class="ch.vd.unireg.registrefoncier.communaute.CommunauteRFController">
 		<property name="ayantDroitDAO" ref="ayantDroitRFDAO"/>
 		<property name="modeleCommunauteDAO" ref="modeleCommunauteRFDAO"/>
 		<property name="principalCommunauteRFDAO" ref="principalCommunauteRFDAO"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="criteriaValidator">
-			<bean class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator">
+			<bean class="ch.vd.unireg.tiers.validator.TiersCriteriaValidator">
 				<!-- allowsEmpty -->
 				<constructor-arg value="true"/>
 			</bean>
 		</property>
 		<property name="addPrincipalViewValidator">
-			<bean class="ch.vd.uniregctb.registrefoncier.communaute.AddPrincipalViewValidator"/>
+			<bean class="ch.vd.unireg.registrefoncier.communaute.AddPrincipalViewValidator"/>
 		</property>
 		<property name="registreFoncierService" ref="serviceRF"/>
 		<property name="communauteRFProcessor" ref="communauteRFProcessor"/>
 	</bean>
 
-	<bean id="situationSurchargeRFController" class="ch.vd.uniregctb.registrefoncier.situation.surcharge.SituationSurchargeRFController">
+	<bean id="situationSurchargeRFController" class="ch.vd.unireg.registrefoncier.situation.surcharge.SituationSurchargeRFController">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 		<property name="situationRFDAO" ref="situationRFDAO"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
@@ -65,7 +65,7 @@
 
 	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
 
-	<bean id="rapprochementManuelTiersRFService" class="ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFServiceImpl">
+	<bean id="rapprochementManuelTiersRFService" class="ch.vd.unireg.registrefoncier.RapprochementManuelTiersRFServiceImpl">
 		<property name="queueRetourPourIdentification" value="${extprop.jms.queue.evtRapprochementTiersRF}"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="emetteurDemandeIdentification" value="UNIREG"/>

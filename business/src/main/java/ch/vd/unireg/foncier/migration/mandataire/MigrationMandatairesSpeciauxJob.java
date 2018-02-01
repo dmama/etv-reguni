@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier.migration.mandataire;
+package ch.vd.unireg.foncier.migration.mandataire;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -18,18 +18,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.MigrationMandatairesSpeciauxRapport;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
-import ch.vd.uniregctb.scheduler.JobParamFile;
-import ch.vd.uniregctb.scheduler.JobParamRegDate;
-import ch.vd.uniregctb.scheduler.JobParamString;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.document.MigrationMandatairesSpeciauxRapport;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamDynamicEnum;
+import ch.vd.unireg.scheduler.JobParamFile;
+import ch.vd.unireg.scheduler.JobParamRegDate;
+import ch.vd.unireg.scheduler.JobParamString;
 
 public class MigrationMandatairesSpeciauxJob extends JobDefinition {
 

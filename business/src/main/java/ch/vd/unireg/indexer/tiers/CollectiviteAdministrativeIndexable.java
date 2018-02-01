@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.avatar.AvatarService;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.avatar.AvatarService;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.TiersService;
 
 public class CollectiviteAdministrativeIndexable extends ContribuableIndexable<CollectiviteAdministrative> {
 

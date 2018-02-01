@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,12 +11,12 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.uniregctb.individu.OrigineView;
-import ch.vd.uniregctb.reqdes.PartiePrenante;
-import ch.vd.uniregctb.reqdes.RolePartiePrenante;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.individu.OrigineView;
+import ch.vd.unireg.reqdes.PartiePrenante;
+import ch.vd.unireg.reqdes.RolePartiePrenante;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.Sexe;
 
 /**
  * Classe de visualisation des données d'une partie prenante

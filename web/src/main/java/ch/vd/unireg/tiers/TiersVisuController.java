@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,18 +11,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.tache.manager.TacheListManager;
-import ch.vd.uniregctb.tiers.manager.TiersEditManager;
-import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.utils.HttpSessionConstants;
-import ch.vd.uniregctb.utils.HttpSessionUtils;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.tache.manager.TacheListManager;
+import ch.vd.unireg.tiers.manager.TiersEditManager;
+import ch.vd.unireg.tiers.manager.TiersVisuManager;
+import ch.vd.unireg.tiers.view.TiersVisuView;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.utils.HttpSessionConstants;
+import ch.vd.unireg.utils.HttpSessionUtils;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier

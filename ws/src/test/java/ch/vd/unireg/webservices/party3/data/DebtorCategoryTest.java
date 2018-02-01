@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.unireg.webservices.party3.data;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -6,9 +6,9 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.webservices.party3.EnumTest;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.webservices.party3.EnumTest;
+import ch.vd.unireg.webservices.party3.impl.EnumHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

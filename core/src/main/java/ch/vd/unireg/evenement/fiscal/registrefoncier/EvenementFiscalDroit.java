@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal.registrefoncier;
+package ch.vd.unireg.evenement.fiscal.registrefoncier;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +8,7 @@ import javax.persistence.Enumerated;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 public abstract class EvenementFiscalDroit extends EvenementFiscalRF {

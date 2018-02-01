@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.infra;
+package ch.vd.unireg.evenement.infra;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.infra.v1.Request;
 import ch.vd.unireg.xml.event.infra.v1.Response;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.xml.ServiceException;
 
 public interface RequestHandler<T extends Request> {
 	/**

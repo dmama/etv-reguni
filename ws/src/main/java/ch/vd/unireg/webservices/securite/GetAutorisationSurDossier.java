@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.webservices.securite;
+package ch.vd.unireg.webservices.securite;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import ch.vd.uniregctb.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.common.UserLogin;
 
 /**
  * Paramètres de la méthode {@link SecuriteWebService#getAutorisationSurDossier(GetAutorisationSurDossier)}.

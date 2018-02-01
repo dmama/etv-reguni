@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.batch;
+package ch.vd.unireg.webservices.batch;
 
 import java.util.Map;
 
@@ -6,14 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamEnum;
-import ch.vd.uniregctb.scheduler.JobParamFile;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.scheduler.JobParamRegDate;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamEnum;
+import ch.vd.unireg.scheduler.JobParamFile;
+import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.scheduler.JobParamRegDate;
 
 public class ItBatchClientJob extends JobDefinition {
 

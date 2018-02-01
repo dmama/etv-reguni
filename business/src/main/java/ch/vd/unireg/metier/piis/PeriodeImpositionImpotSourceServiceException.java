@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.piis;
+package ch.vd.unireg.metier.piis;
 
 public class PeriodeImpositionImpotSourceServiceException extends Exception {
 

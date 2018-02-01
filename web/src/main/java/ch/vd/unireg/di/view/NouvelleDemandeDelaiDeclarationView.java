@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 @SuppressWarnings("UnusedDeclaration")
 public class NouvelleDemandeDelaiDeclarationView extends AbstractEditionDelaiDeclarationPMView {

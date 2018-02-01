@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 /**
  * Interface de lecture des paramètres utilisés dans le traitement des événements civils e-CH

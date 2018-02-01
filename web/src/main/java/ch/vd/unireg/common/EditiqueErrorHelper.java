@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
 
 /**
  * classe qui permet de factoriser quelques petites méthodes utilitaires

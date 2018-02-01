@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.hibernate.interceptor;
+package ch.vd.unireg.hibernate.interceptor;
 
 import java.io.Serializable;
 
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.unireg.common.HibernateEntity;
 
 /**
  * Interface définissant la méthode appelée par la classe ModificationNotifier lorsqu'une entité hibernate est ajoutée/modifiée dans la base de données d'Unireg.

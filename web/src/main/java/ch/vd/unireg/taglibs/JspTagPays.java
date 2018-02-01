@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 public class JspTagPays extends JspTagDatedInfra<Pays> {
 

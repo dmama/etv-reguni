@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -9,12 +9,12 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @Entity
 @DiscriminatorValue("ForFiscalPrincipal")           // TODO [SIPM] il faudra à terme modifier la valeur du discriminant, non ?
@@ -45,7 +45,7 @@ public class ForFiscalPrincipalPP extends ForFiscalPrincipal {
 	}
 
 	@Column(name = "MODE_IMPOSITION", length = LengthConstants.FOR_IMPOSITION)
-	@Type(type = "ch.vd.uniregctb.hibernate.ModeImpositionUserType")
+	@Type(type = "ch.vd.unireg.hibernate.ModeImpositionUserType")
 	public ModeImposition getModeImposition() {
 		return modeImposition;
 	}
@@ -63,7 +63,7 @@ public class ForFiscalPrincipalPP extends ForFiscalPrincipal {
 	/*
 		 * (non-Javadoc)
 		 *
-		 * @see ch.vd.uniregctb.tiers.ForFiscalRevenuFortune#equalsTo(java.lang.Object)
+		 * @see ch.vd.unireg.tiers.ForFiscalRevenuFortune#equalsTo(java.lang.Object)
 		 */
 	@Override
 	public boolean equalsTo(ForFiscal obj) {
@@ -79,7 +79,7 @@ public class ForFiscalPrincipalPP extends ForFiscalPrincipal {
 	}
 
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.common.Duplicable#duplicate()
+	 * @see ch.vd.unireg.common.Duplicable#duplicate()
 	 */
 	@Override
 	public ForFiscal duplicate() {

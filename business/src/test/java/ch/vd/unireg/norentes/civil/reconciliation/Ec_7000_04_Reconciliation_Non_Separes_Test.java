@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.reconciliation;
+package ch.vd.unireg.norentes.civil.reconciliation;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Scénario de réconciliation avec des habitants non séparés

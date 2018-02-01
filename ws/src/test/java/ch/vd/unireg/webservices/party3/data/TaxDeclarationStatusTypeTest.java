@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.unireg.webservices.party3.data;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -8,14 +8,14 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType;
-import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
-import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.webservices.party3.EnumTest;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
-import ch.vd.uniregctb.xml.party.v1.TaxDeclarationBuilder;
+import ch.vd.unireg.declaration.EtatDeclarationEchue;
+import ch.vd.unireg.declaration.EtatDeclarationEmise;
+import ch.vd.unireg.declaration.EtatDeclarationRetournee;
+import ch.vd.unireg.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.webservices.party3.EnumTest;
+import ch.vd.unireg.webservices.party3.impl.EnumHelper;
+import ch.vd.unireg.xml.party.v1.TaxDeclarationBuilder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -62,7 +62,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 			final EtatDeclarationSommee sommee = new EtatDeclarationSommee(dateObtention, dateEnvoiCourrier, null);
 			final TaxDeclarationStatus etatWeb = TaxDeclarationBuilder.newTaxDeclarationStatus(sommee);
 
-			assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(dateEnvoiCourrier), etatWeb.getDateFrom());
+			assertEquals(ch.vd.unireg.xml.DataHelper.coreToXMLv1(dateEnvoiCourrier), etatWeb.getDateFrom());
 		}
 
 		// Etat "EMIS"
@@ -72,7 +72,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 			final EtatDeclarationEmise emise = new EtatDeclarationEmise(dateObtention);
 			final TaxDeclarationStatus etatWeb = TaxDeclarationBuilder.newTaxDeclarationStatus(emise);
 
-			assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(dateObtention), etatWeb.getDateFrom());
+			assertEquals(ch.vd.unireg.xml.DataHelper.coreToXMLv1(dateObtention), etatWeb.getDateFrom());
 		}
 
 		// Etat "RETOURNE"
@@ -82,7 +82,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 			final EtatDeclarationRetournee retournee = new EtatDeclarationRetournee(dateObtention, "TEST");
 			final TaxDeclarationStatus etatWeb = TaxDeclarationBuilder.newTaxDeclarationStatus(retournee);
 
-			assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(dateObtention), etatWeb.getDateFrom());
+			assertEquals(ch.vd.unireg.xml.DataHelper.coreToXMLv1(dateObtention), etatWeb.getDateFrom());
 		}
 
 		// Etat "ECHU"
@@ -92,7 +92,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 			final EtatDeclarationEchue echue = new EtatDeclarationEchue(dateObtention);
 			final TaxDeclarationStatus etatWeb = TaxDeclarationBuilder.newTaxDeclarationStatus(echue);
 
-			assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(dateObtention), etatWeb.getDateFrom());
+			assertEquals(ch.vd.unireg.xml.DataHelper.coreToXMLv1(dateObtention), etatWeb.getDateFrom());
 		}
 	}
 }

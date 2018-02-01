@@ -27,12 +27,12 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.cache.UniregCacheManagerImpl;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.data.CivilDataEventListener;
-import ch.vd.uniregctb.data.CivilDataEventService;
-import ch.vd.uniregctb.stats.MockStatsService;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.cache.UniregCacheManagerImpl;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.data.CivilDataEventListener;
+import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.stats.MockStatsService;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 

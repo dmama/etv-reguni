@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.Qualification;
+import ch.vd.unireg.type.Qualification;
 
 /**
  * Classe de transtypage pour Hibernate : Qualification <--> varchar

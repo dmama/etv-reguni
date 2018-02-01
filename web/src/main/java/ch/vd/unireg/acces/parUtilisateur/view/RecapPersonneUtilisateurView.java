@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.acces.parUtilisateur.view;
+package ch.vd.unireg.acces.parUtilisateur.view;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.general.view.UtilisateurView;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.general.view.UtilisateurView;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 public class RecapPersonneUtilisateurView {
 

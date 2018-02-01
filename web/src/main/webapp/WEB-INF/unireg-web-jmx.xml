@@ -23,20 +23,20 @@
 		<property name="assembler" ref="jmxAssembler" />
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsEchJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsOrganisation" value-ref="evenementsOrganisationJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=IndexationOnTheFly" value-ref="onTheFlyTiersIndexerJmxBean"/>
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=AccessLoad" value-ref="webAccessLoadJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Connections,name=IfoSec" value-ref="ifoSecConnectionJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Connections,name=NexusRemoting" value-ref="nexusRemoteConnectionJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsEchJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=EvenementsOrganisation" value-ref="evenementsOrganisationJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=IndexationOnTheFly" value-ref="onTheFlyTiersIndexerJmxBean"/>
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=AccessLoad" value-ref="webAccessLoadJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Connections,name=IfoSec" value-ref="ifoSecConnectionJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Connections,name=NexusRemoting" value-ref="nexusRemoteConnectionJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
 			</map>
 		</property>
 	</bean>
@@ -47,26 +47,26 @@
 		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsMasse" value-ref="evtCivilEchMasseListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRetourDI" value-ref="evenementRetourDiListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=Identification" value-ref="identCtbMessageListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=IdentificationOnline" value-ref="identCtbMessageListenerOnline"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIamListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=PartyRequests" value-ref="partyRequestListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RapportTravailRequests" value-ref="rapportTravailRequestListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsDeclaration" value-ref="evenementDeclarationListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfacture" value-ref="evenementEfactureListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfactureResponse" value-ref="eFactureResponseListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=ReqDes" value-ref="reqdesEventListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsOrganisation" value-ref="evtOrganisationListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsImportRf" value-ref="evtRFImportEventListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourQuittanceAnnonceDocumentSortant" value-ref="retourDocumentSortantListener"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIntegrationMetier" value-ref="evenementIntegrationMetierListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsCivilsMasse" value-ref="evtCivilEchMasseListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsRetourDI" value-ref="evenementRetourDiListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=Identification" value-ref="identCtbMessageListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=IdentificationOnline" value-ref="identCtbMessageListenerOnline"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIamListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=PartyRequests" value-ref="partyRequestListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=RapportTravailRequests" value-ref="rapportTravailRequestListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsDeclaration" value-ref="evenementDeclarationListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsEfacture" value-ref="evenementEfactureListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsEfactureResponse" value-ref="eFactureResponseListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=ReqDes" value-ref="reqdesEventListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsOrganisation" value-ref="evtOrganisationListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsImportRf" value-ref="evtRFImportEventListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=RetourQuittanceAnnonceDocumentSortant" value-ref="retourDocumentSortantListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsIntegrationMetier" value-ref="evenementIntegrationMetierListener"/>
 			</map>
 		</property>
 	</bean>
@@ -75,25 +75,25 @@
 		<property name="managedInterfaces">
 			<list>
 				<value>org.springframework.context.Lifecycle</value>
-				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
+				<value>ch.vd.unireg.jms.MessageListenerContainerJmxInterface</value>
 			</list>
 		</property>
 	</bean>
 
 	<!-- bean qui exporte les contenus des inboxes par JMX -->
-	<bean id="inboxContentJmxBeanContainer" class="ch.vd.uniregctb.jmx.InboxContentJmxBeanContainer">
+	<bean id="inboxContentJmxBeanContainer" class="ch.vd.unireg.jmx.InboxContentJmxBeanContainer">
 		<property name="inboxService" ref="inboxService"/>
 		<property name="exporter" ref="jmxExporter"/>
-		<property name="objectNamePrefix" value="ch.vd.uniregctb-web:type=Monitoring,resourceName=Inboxes,name="/>
+		<property name="objectNamePrefix" value="ch.vd.unireg-web:type=Monitoring,resourceName=Inboxes,name="/>
 	</bean>
 
-	<bean id="statsJmxBeanContainer" class="ch.vd.uniregctb.stats.JmxStatContainer">
+	<bean id="statsJmxBeanContainer" class="ch.vd.unireg.stats.JmxStatContainer">
 		<property name="exporter" ref="jmxExporter"/>
 		<property name="statsService" ref="statsService"/>
-		<property name="objectName" value="ch.vd.uniregctb-web:type=Monitoring,name=Performances"/>
+		<property name="objectName" value="ch.vd.unireg-web:type=Monitoring,name=Performances"/>
 	</bean>
 
-	<bean name="applicationMonitoringJmxBean" class="ch.vd.uniregctb.jmx.ApplicationMonitoringJMXBeanImpl">
+	<bean name="applicationMonitoringJmxBean" class="ch.vd.unireg.jmx.ApplicationMonitoringJMXBeanImpl">
 		<property name="checker" ref="applicationChecker" />
 	</bean>
 
@@ -119,31 +119,31 @@
 
 	<bean name="preferencesPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
 		<constructor-arg ref="uniregExternalProperties" />
-		<constructor-arg><bean class="ch.vd.uniregctb.utils.UniregProperties$UniregPropertiesAdapterFactoryBean"/></constructor-arg>
+		<constructor-arg><bean class="ch.vd.unireg.utils.UniregProperties$UniregPropertiesAdapterFactoryBean"/></constructor-arg>
 	</bean>
 
-	<bean name="evenementsCivilsEchJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsEchJmxBeanImpl">
+	<bean name="evenementsCivilsEchJmxBean" class="ch.vd.unireg.jmx.EvenementsCivilsEchJmxBeanImpl">
 		<property name="monitor" ref="evtCivilEchReceptionHandler"/>
 		<property name="processor" ref="evtCivilEchProcessor"/>
 	</bean>
 
-	<bean name="evenementsOrganisationJmxBean" class="ch.vd.uniregctb.jmx.EvenementsOrganisationJmxBeanImpl">
+	<bean name="evenementsOrganisationJmxBean" class="ch.vd.unireg.jmx.EvenementsOrganisationJmxBeanImpl">
 		<property name="monitor" ref="evtOrganisationReceptionHandler"/>
 		<property name="processor" ref="evtOrganisationProcessor"/>
 		<property name="cappingSwitch" ref="evenementOrganisationTraitementCapping"/>
 	</bean>
 
-	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">
+	<bean name="retourImpressionJmxBean" class="ch.vd.unireg.jmx.RetourImpressionJmxBeanImpl">
 		<property name="storageService" ref="retourImpressionStorageService"/>
 		<property name="callerTimeout" value="${editique.locale.sync.attente.timeout}"/>
 		<property name="delayedDownloadService" ref="delayedDownloadService"/>
 	</bean>
 
-	<bean name="extractionServiceJmxBean" class="ch.vd.uniregctb.jmx.ExtractionServiceJmxBeanImpl">
+	<bean name="extractionServiceJmxBean" class="ch.vd.unireg.jmx.ExtractionServiceJmxBeanImpl">
 		<property name="extractionService" ref="extractionService"/>
 	</bean>
 
-	<bean name="onTheFlyTiersIndexerJmxBean" class="ch.vd.uniregctb.jmx.OnTheFlyTiersIndexerJmxBeanImpl">
+	<bean name="onTheFlyTiersIndexerJmxBean" class="ch.vd.unireg.jmx.OnTheFlyTiersIndexerJmxBeanImpl">
 		<property name="globalTiersIndexer" ref="globalTiersIndexer"/>
 	</bean>
 
@@ -162,16 +162,16 @@
 		</constructor-arg>
 	</bean>
 
-	<bean name="webAccessLoadJmxBean" class="ch.vd.uniregctb.load.DetailedLoadJmxBeanImpl">
+	<bean name="webAccessLoadJmxBean" class="ch.vd.unireg.load.DetailedLoadJmxBeanImpl">
 		<constructor-arg name="serviceName" value="WebAccess"/>
 		<constructor-arg name="service" ref="accessLoggerFilter"/>
 		<constructor-arg name="statsService" ref="statsService"/>
 	</bean>
 
-	<bean name="jmsAccessLoadJmxBean" class="ch.vd.uniregctb.jmx.ServiceLoadJmxBeanContainer">
+	<bean name="jmsAccessLoadJmxBean" class="ch.vd.unireg.jmx.ServiceLoadJmxBeanContainer">
 		<property name="statsService" ref="statsService"/>
 		<property name="exporter" ref="jmxExporter"/>
-		<property name="objectNamePrefix" value="ch.vd.uniregctb-web:type=Monitoring,resourceName=JmsLoad,name="/>
+		<property name="objectNamePrefix" value="ch.vd.unireg-web:type=Monitoring,resourceName=JmsLoad,name="/>
 		<property name="services">
 			<map>
 				<entry key="EvenementsCivilsMasse" value-ref="evtCivilEchMasseListener"/>

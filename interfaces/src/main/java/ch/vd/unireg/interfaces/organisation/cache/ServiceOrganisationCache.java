@@ -27,16 +27,16 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.uniregctb.cache.CacheHelper;
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.KeyDumpableCache;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.data.CivilDataEventListener;
-import ch.vd.uniregctb.data.CivilDataEventService;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.cache.CacheHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.EhCacheStats;
+import ch.vd.unireg.cache.KeyDumpableCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.data.CivilDataEventListener;
+import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.utils.LogLevel;
 
 public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregCacheInterface, KeyDumpableCache, CivilDataEventListener, InitializingBean, DisposableBean, ServiceOrganisationServiceWrapper {
 

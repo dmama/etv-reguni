@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.validation.fors;
+package ch.vd.unireg.validation.fors;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.ForFiscalAutreImpot;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
 

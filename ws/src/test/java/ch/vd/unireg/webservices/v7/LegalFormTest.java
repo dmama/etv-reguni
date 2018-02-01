@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxpayer.v5.LegalForm;
-import ch.vd.uniregctb.type.FormeJuridique;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.FormeJuridique;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

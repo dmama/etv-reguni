@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class RapportEntreTiersKey {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.simulation;
+package ch.vd.unireg.simulation;
 
 import java.util.List;
 
@@ -18,22 +18,22 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.tache.TacheService;
-import ch.vd.uniregctb.tache.sync.SynchronizeAction;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
-import ch.vd.uniregctb.tiers.ForFiscalDAO;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.tache.TacheService;
+import ch.vd.unireg.tache.sync.SynchronizeAction;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalAutreElementImposable;
+import ch.vd.unireg.tiers.ForFiscalDAO;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.utils.RegDateEditor;
+import ch.vd.unireg.validation.ValidationService;
 
 @SuppressWarnings("UnusedDeclaration")
 @Controller

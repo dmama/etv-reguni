@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.organisation.engine;
+package ch.vd.unireg.evenement.organisation.engine;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 public class MockEvenementOrganisationRetryProcessor implements EvenementOrganisationRetryProcessor {
 

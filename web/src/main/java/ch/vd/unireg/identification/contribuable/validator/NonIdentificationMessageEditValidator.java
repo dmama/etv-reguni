@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.identification.contribuable.validator;
+package ch.vd.unireg.identification.contribuable.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.identification.contribuable.view.NonIdentificationMessageEditView;
+import ch.vd.unireg.identification.contribuable.view.NonIdentificationMessageEditView;
 
 public class NonIdentificationMessageEditValidator implements Validator {
 

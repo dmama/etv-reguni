@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.servlet;
+package ch.vd.unireg.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,11 +15,11 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.NotificationService;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.NotificationService;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.security.AccessDeniedException;
 
 /**
  * Classe spécialisée qui notifie par email toute exception non-catchée par la servlet.

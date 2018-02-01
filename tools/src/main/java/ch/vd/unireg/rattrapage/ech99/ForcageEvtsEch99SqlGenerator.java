@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.ech99;
+package ch.vd.unireg.rattrapage.ech99;
 
 
 import java.io.BufferedReader;
@@ -17,7 +17,7 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
-import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.unireg.common.CsvHelper;
 
 public class ForcageEvtsEch99SqlGenerator {
 
@@ -62,7 +62,7 @@ public class ForcageEvtsEch99SqlGenerator {
 				evtIds.add(ids.toString());
 			}
 			root.put("TOTAL", evtTotal);
-			final Template temp = cfg.getTemplate("ch/vd/uniregctb/rattrapage/ech99/forcage-evts.sql.ftl", "UTF-8");
+			final Template temp = cfg.getTemplate("ch/vd/unireg/rattrapage/ech99/forcage-evts.sql.ftl", "UTF-8");
 			temp.process(root, out);
 			out.flush();
 		}

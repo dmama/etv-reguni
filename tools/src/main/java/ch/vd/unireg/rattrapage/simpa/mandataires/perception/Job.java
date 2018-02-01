@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.simpa.mandataires.perception;
+package ch.vd.unireg.rattrapage.simpa.mandataires.perception;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,11 +19,11 @@ import java.util.TreeMap;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.rattrapage.simpa.mandataires.Helper;
-import ch.vd.uniregctb.rattrapage.simpa.mandataires.MappingMigration;
-import ch.vd.uniregctb.rattrapage.simpa.mandataires.TypeTiers;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.rattrapage.simpa.mandataires.Helper;
+import ch.vd.unireg.rattrapage.simpa.mandataires.MappingMigration;
+import ch.vd.unireg.rattrapage.simpa.mandataires.TypeTiers;
+import ch.vd.unireg.type.TypeMandat;
 
 /**
  * [SIFISC-20397] Report des changements d'IBAN des mandats tiers de SIMPA vers Unireg

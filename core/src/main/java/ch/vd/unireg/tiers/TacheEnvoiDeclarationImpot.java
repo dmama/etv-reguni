@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,10 +8,10 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatTache;
 
 @Entity
 public abstract class TacheEnvoiDeclarationImpot extends TacheEnvoiDocument implements DateRange {
@@ -46,7 +46,7 @@ public abstract class TacheEnvoiDeclarationImpot extends TacheEnvoiDocument impl
 
 	@Override
 	@Column(name = "DECL_DATE_DEBUT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -57,7 +57,7 @@ public abstract class TacheEnvoiDeclarationImpot extends TacheEnvoiDocument impl
 
 	@Override
 	@Column(name = "DECL_DATE_FIN")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -72,7 +72,7 @@ public abstract class TacheEnvoiDeclarationImpot extends TacheEnvoiDocument impl
 	}
 
 	@Column(name = "DECL_TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeContribuableUserType")
 	@Index(name = "IDX_TACHE_TYPE_CTB")
 	public TypeContribuable getTypeContribuable() {
 		return typeContribuable;

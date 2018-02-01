@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7.cache;
+package ch.vd.unireg.webservices.v7.cache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,14 +35,14 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.uniregctb.avatar.ImageData;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.webservices.common.AccessDeniedException;
-import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.webservices.v7.BusinessWebService;
-import ch.vd.uniregctb.webservices.v7.PartySearchType;
-import ch.vd.uniregctb.webservices.v7.SearchMode;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.v7.BusinessWebService;
+import ch.vd.unireg.webservices.v7.PartySearchType;
+import ch.vd.unireg.webservices.v7.SearchMode;
+import ch.vd.unireg.xml.ServiceException;
 
 class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.rattrapage;
+package ch.vd.unireg.registrefoncier.rattrapage;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,21 +21,21 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRFListener;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.CommunauteRFProcessor;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.ProgrammingException;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.dataimport.processor.AffaireRF;
+import ch.vd.unireg.registrefoncier.dataimport.processor.AffaireRFListener;
+import ch.vd.unireg.registrefoncier.dataimport.processor.CommunauteRFProcessor;
 
 public class RattraperDatesMetierDroitRFProcessor {
 

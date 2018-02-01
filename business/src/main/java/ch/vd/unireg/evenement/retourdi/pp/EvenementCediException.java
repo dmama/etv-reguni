@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.evenement.retourdi.pp;
+package ch.vd.unireg.evenement.retourdi.pp;
 
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Exception métier liée à un événement CEDI.

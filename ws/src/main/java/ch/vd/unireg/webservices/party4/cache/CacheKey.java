@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party4.cache;
+package ch.vd.unireg.webservices.party4.cache;
 
 public abstract class CacheKey {
 

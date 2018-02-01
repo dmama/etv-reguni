@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.documentfiscal;
+package ch.vd.unireg.validation.documentfiscal;
 
 import java.util.List;
 
@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalEmis;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalEmis;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pm;
+package ch.vd.unireg.declaration.ordinaire.pm;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -11,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPM;
 
 public class EnvoiDIsPMResults extends AbstractJobResults<Long, EnvoiDIsPMResults> {
 

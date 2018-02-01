@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatTache;
 
 /**
  * Action permettant d'annuler une déclaration d'impôt PP soit directement soit en créant une tâche d'annulation.

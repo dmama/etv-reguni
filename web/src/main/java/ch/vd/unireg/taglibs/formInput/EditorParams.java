@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs.formInput;
+package ch.vd.unireg.taglibs.formInput;
 
 class EditorParams {
 

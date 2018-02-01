@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.engine.processor;
+package ch.vd.unireg.evenement.organisation.engine.processor;
 
 /**
  * @author Raphaël Marmier, 2015-07-27
@@ -13,9 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.common.PollingThread;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
+import ch.vd.unireg.common.PollingThread;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
 
 /**
  * Thread de traitement

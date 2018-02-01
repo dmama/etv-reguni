@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.party4;
+package ch.vd.unireg.webservice.party4;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v1.BankAccount;
-import ch.vd.uniregctb.webservice.party3.AbstractPartyWebServiceTest;
+import ch.vd.unireg.webservice.party3.AbstractPartyWebServiceTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.di;
+package ch.vd.unireg.di;
 
 import java.util.List;
 
@@ -14,23 +14,23 @@ import org.springframework.validation.ObjectError;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
-import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
-import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.ModeleFeuille;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.di.manager.DeclarationImpotEditManager;
+import ch.vd.unireg.di.view.AjouterEtatDeclarationView;
+import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.ModeleFeuille;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

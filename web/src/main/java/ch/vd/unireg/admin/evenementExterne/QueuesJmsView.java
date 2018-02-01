@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.evenementExterne;
+package ch.vd.unireg.admin.evenementExterne;
 
 @SuppressWarnings("UnusedDeclaration")
 public class QueuesJmsView {

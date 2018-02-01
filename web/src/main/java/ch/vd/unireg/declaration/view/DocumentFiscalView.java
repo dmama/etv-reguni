@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.view;
+package ch.vd.unireg.declaration.view;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,13 +8,13 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.SourceQuittancement;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.unireg.documentfiscal.DocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.documentfiscal.SourceQuittancement;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public abstract class DocumentFiscalView implements Annulable {
 

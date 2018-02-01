@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.qsnc;
+package ch.vd.unireg.qsnc;
 
 import java.util.List;
 
-import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
+import ch.vd.unireg.declaration.view.QuestionnaireSNCView;
 
 public class QuestionnairesSNCEditView {
 

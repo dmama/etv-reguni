@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import java.util.List;
 

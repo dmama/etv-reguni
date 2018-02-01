@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.TacheHelper;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.common.TacheHelper;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesMorales;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPM;
+import ch.vd.unireg.type.TypeEtatTache;
 
 /**
  * Action permettant d'ajouter une tâche d'envoi de déclaration d'impôt PM.

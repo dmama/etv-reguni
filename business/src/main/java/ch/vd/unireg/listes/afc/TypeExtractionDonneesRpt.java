@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.afc;
+package ch.vd.unireg.listes.afc;
 
 /**
  * Type de l'extraction des données de référence RPT à générer :

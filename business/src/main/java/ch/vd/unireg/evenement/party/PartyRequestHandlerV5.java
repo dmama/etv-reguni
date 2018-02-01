@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,41 +13,41 @@ import ch.vd.unireg.xml.event.party.party.v5.PartyRequest;
 import ch.vd.unireg.xml.event.party.party.v5.PartyResponse;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.source.ListeRecapService;
-import ch.vd.uniregctb.efacture.EFactureService;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.jms.BamMessageSender;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v5.PartyBuilder;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.declaration.source.ListeRecapService;
+import ch.vd.unireg.efacture.EFactureService;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.jms.BamMessageSender;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v5.PartyBuilder;
 
 public class PartyRequestHandlerV5 implements RequestHandlerV2<PartyRequest> {
 
@@ -176,12 +176,12 @@ public class PartyRequestHandlerV5 implements RequestHandlerV2<PartyRequest> {
 		try {
 			final Party data;
 			final Set<PartyPart> parts = DataHelper.toSet(PartyPart.class, request.getParts());
-			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
-				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+			if (tiers instanceof ch.vd.unireg.tiers.PersonnePhysique) {
+				final ch.vd.unireg.tiers.PersonnePhysique personne = (ch.vd.unireg.tiers.PersonnePhysique) tiers;
 				data = PartyBuilder.newNaturalPerson(personne, parts, context);
 			}
-			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
-				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+			else if (tiers instanceof ch.vd.unireg.tiers.MenageCommun) {
+				final ch.vd.unireg.tiers.MenageCommun menage = (ch.vd.unireg.tiers.MenageCommun) tiers;
 				data = PartyBuilder.newCommonHousehold(menage, parts, context);
 			}
 			else if (tiers instanceof Entreprise) {

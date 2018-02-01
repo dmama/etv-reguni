@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.wsclient.rcpers;
+package ch.vd.unireg.wsclient.rcpers;
 
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -13,8 +13,8 @@ import ch.vd.evd0001.v5.ListOfPersons;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 public class RcPersClientTracing implements RcPersClient, InitializingBean, DisposableBean {
 

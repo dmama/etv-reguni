@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,17 +9,17 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.registrefoncier.dao.RapprochementRFDAO;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
 public class RapprochementProprietaireHandlerImpl implements RapprochementProprietaireHandler {
 

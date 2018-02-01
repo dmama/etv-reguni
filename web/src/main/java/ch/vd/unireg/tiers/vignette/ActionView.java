@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.vignette;
+package ch.vd.unireg.tiers.vignette;
 
 public class ActionView {
 	private final String label;

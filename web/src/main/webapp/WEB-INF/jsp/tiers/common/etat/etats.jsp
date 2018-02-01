@@ -4,7 +4,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.etats" /></span></legend>
 	
-	<display:table 	name="command.etats" id="etat" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<display:table 	name="command.etats" id="etat" pagesize="10" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 		<display:column titleKey="label.date.obtention" >
 				<unireg:regdate regdate="${etat.dateObtention}" />
 				<c:if test="${!etat.annule && etat.etat == 'SOMME'}">

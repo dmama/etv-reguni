@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -20,11 +20,11 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.xml.event.di.liberation.v1.DemandeLiberation;
 import ch.vd.unireg.xml.event.di.liberation.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.di.liberation.v1.TypeDeclarationImpot;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbMessageValidator;
 
 /**
  * Implémentation du service d'envoi des messages de demande de libération des déclarations d'impôt

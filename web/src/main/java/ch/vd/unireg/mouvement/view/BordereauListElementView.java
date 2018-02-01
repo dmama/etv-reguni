@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.type.TypeMouvement;
 
 public class BordereauListElementView {
 

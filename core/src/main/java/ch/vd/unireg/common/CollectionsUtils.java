@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -179,7 +179,7 @@ public abstract class CollectionsUtils {
 
 	/**
 	 * @param col                   collection à transformer en chaîne de caractères
-	 * @param renderer              le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la collection
+	 * @param renderer              le {@link ch.vd.unireg.common.StringRenderer} à utiliser pour les éléments de la collection
 	 * @param separator             le séparateur à placer entre la représentation de chacun des éléments de la collection
 	 * @param emptyCollectionString la chaîne de caractère à afficher dans le cas d'une collection nulle ou vide
 	 * @param <T>                   type des éléments de la collection
@@ -203,7 +203,7 @@ public abstract class CollectionsUtils {
 
 	/**
 	 * @param col       collection à transformer en chaîne de caractères
-	 * @param renderer  le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la collection
+	 * @param renderer  le {@link ch.vd.unireg.common.StringRenderer} à utiliser pour les éléments de la collection
 	 * @param separator le séparateur à placer entre la représentation de chacun des éléments de la collection
 	 * @param <T>       type des éléments de la collection
 	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné (en cas de collection nulle ou vide, renvoie une chaîne vide)
@@ -331,8 +331,8 @@ public abstract class CollectionsUtils {
 
 	/**
 	 * @param map           map à transformer en chaîne de caractères
-	 * @param keyRenderer   le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les clé de la map
-	 * @param valueRenderer le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les valeurs de la map
+	 * @param keyRenderer   le {@link ch.vd.unireg.common.StringRenderer} à utiliser pour les clé de la map
+	 * @param valueRenderer le {@link ch.vd.unireg.common.StringRenderer} à utiliser pour les valeurs de la map
 	 * @param separator     le séparateur à placer entre la représentation de chacun des éléments de la collection
 	 * @param prefix        préfixe général de la chaîne de caractères
 	 * @param suffix        suffixe général de la chaîne de caractères

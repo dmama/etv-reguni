@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 /**
  * Classes de constantes contenants les ID des DAO.

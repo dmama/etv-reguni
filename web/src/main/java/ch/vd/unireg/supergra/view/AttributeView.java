@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.supergra.view;
+package ch.vd.unireg.supergra.view;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.supergra.EntityKey;
-import ch.vd.uniregctb.supergra.EntityType;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.supergra.EntityKey;
+import ch.vd.unireg.supergra.EntityType;
 
 /**
  * Vue d'un attribut d'une entité Hibernate édité dans le mode SuperGra.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
 /**
  * Interface implémentée par les entités capables de monitorer

@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
 
 /**
  * Les différentes catégories de population dans le cadre des envois des DIs PP en masse (voir [UNIREG-1976]).

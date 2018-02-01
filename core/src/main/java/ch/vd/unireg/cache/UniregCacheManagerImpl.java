@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.cache;
+package ch.vd.unireg.cache;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.utils.LogLevel;
 
 public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean {
 

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.EnumSet;
 
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifFor;
 
 public class RolePopulationPMExtractor extends RolePopulationExtractorImpl<Entreprise> {
 

@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.lr.manager;
+package ch.vd.unireg.lr.manager;
 
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.declaration.ListeRecapitulativeCriteria;
-import ch.vd.uniregctb.lr.view.ListeRecapitulativeSearchResult;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.declaration.ListeRecapitulativeCriteria;
+import ch.vd.unireg.lr.view.ListeRecapitulativeSearchResult;
 
 /**
  * Definition de services utiles pour la recherche de LR

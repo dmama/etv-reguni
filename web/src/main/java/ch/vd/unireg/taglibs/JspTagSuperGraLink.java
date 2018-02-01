@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -8,8 +8,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.supergra.EntityKey;
-import ch.vd.uniregctb.supergra.EntityType;
+import ch.vd.unireg.supergra.EntityKey;
+import ch.vd.unireg.supergra.EntityType;
 
 /**
  * Tag jsp qui permet de récupérer divers éléments du service infrastructure par id.

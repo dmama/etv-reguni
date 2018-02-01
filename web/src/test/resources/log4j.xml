@@ -25,13 +25,13 @@
 	</appender>
 
 	<!--  Cas general -->
-	<logger name="ch.vd.uniregctb">
+	<logger name="ch.vd.unireg">
 		<level value="DEBUG" />
 	</logger>
 
 
 	<!-- BEGIN Cas particuliers -->
-	<logger name="ch.vd.uniregctb.tiers.TiersHelper">
+	<logger name="ch.vd.unireg.tiers.TiersHelper">
 		<level value="INFO" />
 	</logger>
 	<!-- END Cas particuilers -->

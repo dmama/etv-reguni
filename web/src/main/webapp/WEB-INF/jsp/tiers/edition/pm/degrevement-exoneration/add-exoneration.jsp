@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <%--@elvariable id="idContribuable" type="java.lang.Long"--%>
-<%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.allegement.ResumeImmeubleView"--%>
+<%--@elvariable id="immeuble" type="ch.vd.unireg.registrefoncier.allegement.ResumeImmeubleView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">

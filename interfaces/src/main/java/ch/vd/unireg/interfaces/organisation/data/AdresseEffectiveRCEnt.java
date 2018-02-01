@@ -6,7 +6,7 @@ import ch.vd.evd0022.v3.Address;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseEffectiveRCEnt extends AdresseRCEnt<AdresseEffectiveRCEnt> {
 

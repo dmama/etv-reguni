@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.nh;
+package ch.vd.unireg.migration.nh;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -15,7 +15,7 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
-import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.unireg.common.CsvHelper;
 
 public class MigrationNonHabitantSqlGenerator {
 
@@ -48,7 +48,7 @@ public class MigrationNonHabitantSqlGenerator {
 				tiers.add(dataMap);
 				dataLine = input.readLine();
 			}
-			final Template temp = cfg.getTemplate("ch/vd/uniregctb/migration/nh/migration-nh.sql.ftl", "UTF-8");
+			final Template temp = cfg.getTemplate("ch/vd/unireg/migration/nh/migration-nh.sql.ftl", "UTF-8");
 			temp.process(root, out);
 			out.flush();
 		}

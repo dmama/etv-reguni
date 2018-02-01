@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.event.data.v1.Relationship;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 import static org.junit.Assert.assertNotNull;
 

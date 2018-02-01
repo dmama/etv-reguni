@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.iam;
+package ch.vd.unireg.evenement.iam;
 
 public interface EvenementIAMService {
 }

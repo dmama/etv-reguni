@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.jdbc;
+package ch.vd.unireg.indexer.jdbc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.IndexableData;
-import ch.vd.uniregctb.indexer.SearchCallback;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.RequiresNewTransactionDefinition;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
+import ch.vd.unireg.indexer.IndexableData;
+import ch.vd.unireg.indexer.SearchCallback;
 
 import static org.junit.Assert.assertEquals;
 

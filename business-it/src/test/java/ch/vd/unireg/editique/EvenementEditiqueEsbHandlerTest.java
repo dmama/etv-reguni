@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import java.io.File;
 import java.time.Duration;
@@ -16,9 +16,9 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler;
-import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.editique.impl.EvenementEditiqueEsbHandler;
+import ch.vd.unireg.evenement.EvenementTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -98,7 +98,7 @@ public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/editique/retour_impression.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/editique/retour_impression.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.messageidentification;
+package ch.vd.unireg.indexer.messageidentification;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,13 +15,13 @@ import org.apache.lucene.search.TopDocs;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.SearchAllCallback;
-import ch.vd.uniregctb.indexer.SearchCallback;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
+import ch.vd.unireg.indexer.SearchAllCallback;
+import ch.vd.unireg.indexer.SearchCallback;
 
 public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIdentificationSearcher {
 

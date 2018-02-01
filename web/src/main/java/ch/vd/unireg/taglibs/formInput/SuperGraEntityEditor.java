@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.taglibs.formInput;
+package ch.vd.unireg.taglibs.formInput;
 
 import javax.servlet.jsp.JspException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.tags.form.TagWriter;
 
-import ch.vd.uniregctb.supergra.EntityType;
+import ch.vd.unireg.supergra.EntityType;
 
 class SuperGraEntityEditor implements Editor {
 

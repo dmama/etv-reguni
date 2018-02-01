@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.listes.afc;
+package ch.vd.unireg.listes.afc;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
-import ch.vd.uniregctb.listes.afc.pm.ModeExtraction;
-import ch.vd.uniregctb.listes.afc.pm.VersionWS;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.listes.afc.pm.ExtractionDonneesRptPMResults;
+import ch.vd.unireg.listes.afc.pm.ModeExtraction;
+import ch.vd.unireg.listes.afc.pm.VersionWS;
 
 /**
  * Interface du service utilisé par l'extraction des listes des données de référence RPT

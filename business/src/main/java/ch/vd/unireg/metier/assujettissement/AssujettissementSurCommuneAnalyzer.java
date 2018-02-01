@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
 
 /**
  * Interface implémentée par les composants d'assujettissement et utilisable

@@ -1,28 +1,28 @@
-package ch.vd.uniregctb.copieConforme;
+package ch.vd.unireg.copieConforme;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.snc.QuestionnaireSNCService;
-import ch.vd.uniregctb.declaration.source.ListeRecapService;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueService;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationRappelee;
+import ch.vd.unireg.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
+import ch.vd.unireg.declaration.source.ListeRecapService;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalAvecSuivi;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalService;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueService;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 
 public class CopieConformeManagerImpl implements CopieConformeManager {
 

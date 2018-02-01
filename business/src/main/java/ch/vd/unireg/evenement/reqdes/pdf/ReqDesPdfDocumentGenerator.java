@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.pdf;
+package ch.vd.unireg.evenement.reqdes.pdf;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -7,7 +7,7 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 
-import ch.vd.uniregctb.common.ApplicationInfo;
+import ch.vd.unireg.common.ApplicationInfo;
 
 public abstract class ReqDesPdfDocumentGenerator {
 

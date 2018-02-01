@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.lr.validator;
+package ch.vd.unireg.lr.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.lr.view.DelaiAddView;
+import ch.vd.unireg.lr.view.DelaiAddView;
 
 public class DelaiAddViewValidator implements Validator {
 

@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 public interface RoleService {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -8,12 +8,12 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.editique.impl.EditiqueResultatDocumentImpl;
-import ch.vd.uniregctb.inbox.InboxAttachment;
-import ch.vd.uniregctb.inbox.InboxElement;
-import ch.vd.uniregctb.inbox.MockInboxService;
+import ch.vd.unireg.common.MimeTypeHelper;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.editique.impl.EditiqueResultatDocumentImpl;
+import ch.vd.unireg.inbox.InboxAttachment;
+import ch.vd.unireg.inbox.InboxElement;
+import ch.vd.unireg.inbox.MockInboxService;
 
 public class RetourImpressionToInboxTriggerTest extends WithoutSpringTest {
 

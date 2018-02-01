@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.unireg.supergra;
 
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.supergra.delta.Delta;
-import ch.vd.uniregctb.supergra.view.CollectionView;
-import ch.vd.uniregctb.supergra.view.EntityView;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.supergra.delta.Delta;
+import ch.vd.unireg.supergra.view.CollectionView;
+import ch.vd.unireg.supergra.view.EntityView;
 
 /**
  * Manager du mode SuperGra de Unireg. Il est responsable des opérations métier permettant de charger, créer et sauver les entités hibernate manipulées.

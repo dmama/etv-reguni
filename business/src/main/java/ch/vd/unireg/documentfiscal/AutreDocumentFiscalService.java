@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
-import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeLettreBienvenue;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
+import ch.vd.unireg.foncier.RappelFormulairesDemandeDegrevementICIResults;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.TypeLettreBienvenue;
 
 /**
  * Service qui gère les autres documents fiscaux

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class ValidationServiceTest extends WithoutSpringTest {
 

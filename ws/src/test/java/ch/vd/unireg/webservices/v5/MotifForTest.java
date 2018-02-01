@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v5;
+package ch.vd.unireg.webservices.v5;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.type.MotifFor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,11 +14,11 @@ import static org.junit.Assert.assertNull;
 
 public class MotifForTest extends EnumTest {
 
-	private static ch.vd.uniregctb.type.MotifFor[] buildAllowedCoreMotifsFor() {
+	private static ch.vd.unireg.type.MotifFor[] buildAllowedCoreMotifsFor() {
 		// tous les motifs actuels n'existent pas forcément dans le mapping de la version 5
-		final Set<MotifFor> set = EnumSet.complementOf(EnumSet.of(ch.vd.uniregctb.type.MotifFor.FUSION_ENTREPRISES,
-		                                                          ch.vd.uniregctb.type.MotifFor.FAILLITE));
-		return set.toArray(new ch.vd.uniregctb.type.MotifFor[set.size()]);
+		final Set<MotifFor> set = EnumSet.complementOf(EnumSet.of(ch.vd.unireg.type.MotifFor.FUSION_ENTREPRISES,
+		                                                          ch.vd.unireg.type.MotifFor.FAILLITE));
+		return set.toArray(new ch.vd.unireg.type.MotifFor[set.size()]);
 	}
 
 	@Test

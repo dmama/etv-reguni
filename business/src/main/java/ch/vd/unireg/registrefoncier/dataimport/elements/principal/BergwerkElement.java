@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.elements.principal;
+package ch.vd.unireg.registrefoncier.dataimport.elements.principal;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

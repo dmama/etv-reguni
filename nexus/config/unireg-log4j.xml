@@ -31,10 +31,6 @@
 		<level value="DEBUG" />
 	</logger>
 
-	<logger name="ch.vd.uniregctb">
-		<level value="DEBUG" />
-	</logger>
-
 	<logger name="ch.vd.unireg.servlet.remoting">
 		<level value="INFO" />
 	</logger>

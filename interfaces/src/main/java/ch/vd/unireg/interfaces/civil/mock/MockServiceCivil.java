@@ -45,12 +45,12 @@ import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.common.ProgrammingException;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
+import ch.vd.unireg.type.TypePermis;
 
 /**
  * Mock du Service Civil.
@@ -127,7 +127,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	/**
 	 * Ajoute un invidu à la map des individus.
-	 * <p/><b>Préférer l'utilisation de la méthode homonyme qui n'assume pas que le sexe est connu</b> : {@link #addIndividu(long, ch.vd.registre.base.date.RegDate, String, String, ch.vd.uniregctb.type.Sexe)}
+	 * <p/><b>Préférer l'utilisation de la méthode homonyme qui n'assume pas que le sexe est connu</b> : {@link #addIndividu(long, ch.vd.registre.base.date.RegDate, String, String, ch.vd.unireg.type.Sexe)}
 	 *
 	 * @param numero        numéro d'individu à utiliser
 	 * @param dateNaissance date de naissance du nouvel individu
@@ -188,7 +188,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	/**
 	 * Crée un invidu (sans l'ajouter à la map des individus).
-	 * <p/><b>Préférer l'utilisation de la méthode homonyme qui n'assume pas que le sexe est connu</b> : {@link #createIndividu(long, ch.vd.registre.base.date.RegDate, String, String, ch.vd.uniregctb.type.Sexe)}
+	 * <p/><b>Préférer l'utilisation de la méthode homonyme qui n'assume pas que le sexe est connu</b> : {@link #createIndividu(long, ch.vd.registre.base.date.RegDate, String, String, ch.vd.unireg.type.Sexe)}
 	 *
 	 * @param numero        numéro d'individu à utiliser
 	 * @param dateNaissance date de naissance du nouvel individu
@@ -608,7 +608,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see ch.vd.uniregctb.interfaces.service.HostCivilService#getAdressesActives(java.lang.Long, java.util.Date)
+	 * @see ch.vd.unireg.interfaces.service.HostCivilService#getAdressesActives(java.lang.Long, java.util.Date)
 	 */
 	public Collection<Adresse> getAdressesActives(Long numeroIndividu, RegDate date) {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
 import javax.validation.Valid;
 
@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.utils.TiersNumberEditor;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.utils.RegDateEditor;
+import ch.vd.unireg.utils.TiersNumberEditor;
 
 @Controller
 @RequestMapping(value = "/couple")

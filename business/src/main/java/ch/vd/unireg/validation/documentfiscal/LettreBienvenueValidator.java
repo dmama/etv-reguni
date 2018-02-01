@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.documentfiscal;
+package ch.vd.unireg.validation.documentfiscal;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.unireg.documentfiscal.LettreBienvenue;
 
 /**
  * Validateur des lettres de bienvenue

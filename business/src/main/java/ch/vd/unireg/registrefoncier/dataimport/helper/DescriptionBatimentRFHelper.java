@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.GebaeudeArt;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
+import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
 
 public abstract class DescriptionBatimentRFHelper {
 

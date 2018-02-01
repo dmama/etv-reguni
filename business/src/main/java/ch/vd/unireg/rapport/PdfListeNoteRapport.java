@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
@@ -11,12 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.common.CsvHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
+import ch.vd.unireg.type.MotifFor;
 
 /**
  * Rapport PDF d'exécution du batch de production de la liste des contribuables avec note

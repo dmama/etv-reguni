@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.degrevement;
+package ch.vd.unireg.evenement.degrevement;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,11 +24,11 @@ import org.xml.sax.SAXException;
 import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
 import ch.vd.unireg.xml.event.degrevement.v1.Message;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.dperm.EvenementIntegrationMetierHandler;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.dperm.EvenementIntegrationMetierHandler;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Handler spécifique pour les événements d'intégration métier du DPerm concernant les données de dégrèvement ICI

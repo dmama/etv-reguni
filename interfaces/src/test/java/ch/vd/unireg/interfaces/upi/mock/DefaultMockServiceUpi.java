@@ -5,7 +5,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.type.Sexe;
 
 public class DefaultMockServiceUpi extends MockServiceUpi {
 

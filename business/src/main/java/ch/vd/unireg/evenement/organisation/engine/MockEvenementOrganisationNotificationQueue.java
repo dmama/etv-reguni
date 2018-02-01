@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.organisation.engine;
+package ch.vd.unireg.evenement.organisation.engine;
 
 import java.time.Duration;
 import java.util.Collection;
 
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationProcessingMode;
 
 public class MockEvenementOrganisationNotificationQueue implements EvenementOrganisationNotificationQueue {
 

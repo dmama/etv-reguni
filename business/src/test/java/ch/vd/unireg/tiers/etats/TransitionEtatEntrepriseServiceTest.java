@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.etats;
+package ch.vd.unireg.tiers.etats;
 
 import java.util.Map;
 
@@ -6,20 +6,20 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.etats.transition.ToAbsorbeeTransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.ToDissouteTransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.ToEnFailliteTransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.ToEnLiquidationTransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.ToFondeeTransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.ToInscriteRCTransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.ToRadieeRCTransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.etats.transition.ToAbsorbeeTransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.ToDissouteTransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.ToEnFailliteTransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.ToEnLiquidationTransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.ToFondeeTransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.ToInscriteRCTransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.ToRadieeRCTransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.TransitionEtatEntreprise;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 
 /**
  * @author Raphaël Marmier, 2016-01-21, <raphael.marmier@vd.ch>

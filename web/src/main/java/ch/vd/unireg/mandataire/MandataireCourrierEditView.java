@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.Mandat;
+import ch.vd.unireg.tiers.TiersService;
 
 public class MandataireCourrierEditView extends MandataireCourrierView {
 

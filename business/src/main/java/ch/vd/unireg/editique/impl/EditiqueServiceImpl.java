@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import java.time.Duration;
 
@@ -9,21 +9,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatDocument;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
-import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
-import ch.vd.uniregctb.editique.EditiqueService;
-import ch.vd.uniregctb.editique.EvenementEditiqueSender;
-import ch.vd.uniregctb.editique.FormatDocumentEditique;
-import ch.vd.uniregctb.editique.RetourImpressionToInboxTrigger;
-import ch.vd.uniregctb.editique.RetourImpressionTrigger;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.inbox.InboxService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatDocument;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
+import ch.vd.unireg.editique.EditiqueResultatTimeout;
+import ch.vd.unireg.editique.EditiqueRetourImpressionStorageService;
+import ch.vd.unireg.editique.EditiqueService;
+import ch.vd.unireg.editique.EvenementEditiqueSender;
+import ch.vd.unireg.editique.FormatDocumentEditique;
+import ch.vd.unireg.editique.RetourImpressionToInboxTrigger;
+import ch.vd.unireg.editique.RetourImpressionTrigger;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.inbox.InboxService;
 
 /**
  * Implémentation standard de {@link EditiqueService}.

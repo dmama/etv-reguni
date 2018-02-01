@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.etiquette;
+package ch.vd.unireg.etiquette;
 
 import java.util.function.Function;
 
@@ -9,8 +9,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.type.TypeTiersEtiquette;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.type.TypeTiersEtiquette;
 
 public class EtiquetteTest extends CoreDAOTest {
 

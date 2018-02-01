@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.validation.rapport;
+package ch.vd.unireg.validation.rapport;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RepresentationLegale;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RepresentationLegale;
+import ch.vd.unireg.tiers.Tiers;
 
 public abstract class RepresentationLegaleValidator<T extends RepresentationLegale> extends RapportEntreTiersValidator<T> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,12 +16,12 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
-import ch.vd.uniregctb.foncier.AllegementFoncier;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.foncier.AllegementFoncier;
 
 public class MockTiersDAO implements TiersDAO {
 	

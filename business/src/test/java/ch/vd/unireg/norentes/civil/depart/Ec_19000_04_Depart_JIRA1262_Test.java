@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.norentes.civil.depart;
+package ch.vd.unireg.norentes.civil.depart;
 
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Test de l'événement de départ hors canton d'un habitant.

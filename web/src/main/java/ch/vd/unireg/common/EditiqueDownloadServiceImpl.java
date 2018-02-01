@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -9,9 +9,9 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.editique.EditiqueResultatDocument;
-import ch.vd.uniregctb.print.PrintPCLManager;
-import ch.vd.uniregctb.servlet.ServletService;
+import ch.vd.unireg.editique.EditiqueResultatDocument;
+import ch.vd.unireg.print.PrintPCLManager;
+import ch.vd.unireg.servlet.ServletService;
 
 /**
  * Service qui permet de factoriser la gestion IHM de réception et du téléchargement

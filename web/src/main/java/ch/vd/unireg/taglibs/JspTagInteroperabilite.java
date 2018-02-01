@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -16,8 +16,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class JspTagInteroperabilite extends BodyTagSupport implements MessageSourceAware {
 

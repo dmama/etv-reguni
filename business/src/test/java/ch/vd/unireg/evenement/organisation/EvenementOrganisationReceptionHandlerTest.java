@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 import java.util.List;
 
@@ -10,11 +10,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueueImpl;
-import ch.vd.uniregctb.stats.StatsServiceImpl;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.organisation.engine.EvenementOrganisationNotificationQueueImpl;
+import ch.vd.unireg.stats.StatsServiceImpl;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

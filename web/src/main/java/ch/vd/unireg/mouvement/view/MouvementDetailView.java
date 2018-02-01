@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
 import java.util.Date;
 
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.BaseComparator;
-import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
-import ch.vd.uniregctb.type.Localisation;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.BaseComparator;
+import ch.vd.unireg.mouvement.EtatMouvementDossier;
+import ch.vd.unireg.type.Localisation;
+import ch.vd.unireg.type.TypeMouvement;
 
 /**
  * Vue sur les mouvements de dossier

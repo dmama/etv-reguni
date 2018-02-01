@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import org.junit.Test;
 
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.tiers.Entreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -9,11 +9,11 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.party.taxliab.periodic.v3.PeriodicTaxLiabilityRequest;
 import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
-import ch.vd.uniregctb.evenement.party.control.ControlRuleException;
-import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlResult;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.evenement.party.control.ControlRuleException;
+import ch.vd.unireg.evenement.party.control.TaxLiabilityControlResult;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.EnumHelper;
 
 public class PeriodicTaxLiabilityRequestHandlerV3 extends TaxLiabilityRequestHandlerV3<PeriodicTaxLiabilityRequest> {
 

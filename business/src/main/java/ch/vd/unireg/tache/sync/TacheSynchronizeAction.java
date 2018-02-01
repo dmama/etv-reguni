@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 /**
  * Interface spécifique des actions de synchronisation qui ne touchent que les tâches d'envoi et d'annulation de document

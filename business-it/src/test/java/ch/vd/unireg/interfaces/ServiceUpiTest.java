@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.interfaces;
+package ch.vd.unireg.interfaces;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
-import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.unireg.common.BusinessItTest;
 
 public class ServiceUpiTest extends BusinessItTest {
 

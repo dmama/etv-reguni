@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml;
+package ch.vd.unireg.xml;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,9 +8,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
 
 public class BusinessHelperTest extends BusinessTest {
 

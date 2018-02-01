@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 
@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.MotifFor;
 
 @SuppressWarnings({"JavaDoc", "deprecation"})
 public class AssujettissementServiceTest extends MetierTest {

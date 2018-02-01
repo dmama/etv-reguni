@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 /**
  * Typologie des états de documents fiscaux. Tous les états ne s'appliquent pas à tous les documents.

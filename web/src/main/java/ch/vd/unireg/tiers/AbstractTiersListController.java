@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +14,12 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.utils.RegDateEditor;
 
 /**
  * Classe controller utilisée pour l'affichage de listes

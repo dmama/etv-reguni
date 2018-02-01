@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -12,16 +12,16 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
-import ch.vd.uniregctb.jms.BamMessageHelper;
-import ch.vd.uniregctb.jms.BamMessageSender;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.jms.BamMessageHelper;
+import ch.vd.unireg.jms.BamMessageSender;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.validation.ValidationService;
 
 public class EvenementDeclarationServiceImpl implements EvenementDeclarationService, EvenementDeclarationHandler {
 

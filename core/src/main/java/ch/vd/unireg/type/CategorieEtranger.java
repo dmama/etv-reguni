@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 /**
  * Genre de permis réglementant le séjour d'une personne étrangère en Suisse.

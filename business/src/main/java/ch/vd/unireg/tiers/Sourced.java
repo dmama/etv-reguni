@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 /**
  * Interface implémentée par une donnée pouvant provenir de différentes sources

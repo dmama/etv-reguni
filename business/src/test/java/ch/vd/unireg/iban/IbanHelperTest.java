@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.iban;
+package ch.vd.unireg.iban;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class IbanHelperTest extends WithoutSpringTest {
 

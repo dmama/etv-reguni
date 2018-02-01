@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.metier.piis;
+package ch.vd.unireg.metier.piis;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.metier.common.Fraction;
-import ch.vd.uniregctb.metier.common.FractionSimple;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.metier.common.Fraction;
+import ch.vd.unireg.metier.common.FractionSimple;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class PeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpositionImpotSource<PeriodeImpositionImpotSource.Type, PeriodeImpositionImpotSource> implements Duplicable<PeriodeImpositionImpotSource> {
 

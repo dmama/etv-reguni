@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="superGraSession" type="ch.vd.uniregctb.supergra.SuperGraSession"--%>
+<%--@elvariable id="superGraSession" type="ch.vd.unireg.supergra.SuperGraSession"--%>
 
 <c:if test="${!empty superGraSession.deltas}" >
 <div id="actions_list">

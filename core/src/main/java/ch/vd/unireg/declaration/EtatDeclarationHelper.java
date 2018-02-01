@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class EtatDeclarationHelper {
 

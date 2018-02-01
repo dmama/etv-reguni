@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.model;
+package ch.vd.unireg.interfaces.model;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Adapter qui permet de spécifier de nouvelles dates de début et de fin sur une adresse civile.

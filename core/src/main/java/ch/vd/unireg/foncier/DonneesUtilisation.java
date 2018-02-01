@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

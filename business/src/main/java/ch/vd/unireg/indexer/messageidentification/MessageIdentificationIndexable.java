@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.indexer.messageidentification;
+package ch.vd.unireg.indexer.messageidentification;
 
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
-import ch.vd.uniregctb.indexer.Indexable;
-import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresPersonne;
+import ch.vd.unireg.evenement.identification.contribuable.Demande;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.Reponse;
+import ch.vd.unireg.indexer.Indexable;
+import ch.vd.unireg.indexer.IndexerFormatHelper;
 
 public class MessageIdentificationIndexable implements Indexable {
 

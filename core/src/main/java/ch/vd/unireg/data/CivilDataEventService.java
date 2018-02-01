@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 /**
  * Interface du service de notification de changements sur les données Unireg, quand la source du changement

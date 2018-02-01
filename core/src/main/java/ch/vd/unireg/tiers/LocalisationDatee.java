@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -6,9 +6,9 @@ import javax.persistence.MappedSuperclass;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @MappedSuperclass
 public abstract class LocalisationDatee extends HibernateDateRangeEntity implements LocalizedDateRange {
@@ -32,7 +32,7 @@ public abstract class LocalisationDatee extends HibernateDateRangeEntity impleme
 	}
 
 	@Column(name = "TYPE_AUT_FISC", length = LengthConstants.FOR_AUTORITEFISCALE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeAutoriteFiscaleUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeAutoriteFiscaleUserType")
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
 		return typeAutoriteFiscale;
 	}

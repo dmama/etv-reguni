@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -21,24 +21,24 @@ import ch.vd.unireg.xml.event.docsortant.v1.CodeSupport;
 import ch.vd.unireg.xml.event.docsortant.v1.Document;
 import ch.vd.unireg.xml.event.docsortant.v1.Documents;
 import ch.vd.unireg.xml.event.docsortant.v1.Population;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalEmis;
-import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
-import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalEmis;
+import ch.vd.unireg.documentfiscal.LettreTypeInformationLiquidation;
+import ch.vd.unireg.editique.ConstantesEditique;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeRapprochementRF;
 
 public class EvenementDocumentSortantServiceTest extends BusinessTest {
 

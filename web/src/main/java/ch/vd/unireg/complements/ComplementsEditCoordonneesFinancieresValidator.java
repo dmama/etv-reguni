@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.complements;
+package ch.vd.unireg.complements;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.iban.IbanValidationException;
-import ch.vd.uniregctb.iban.IbanValidator;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.iban.IbanValidationException;
+import ch.vd.unireg.iban.IbanValidator;
 
 public class ComplementsEditCoordonneesFinancieresValidator implements Validator {
 

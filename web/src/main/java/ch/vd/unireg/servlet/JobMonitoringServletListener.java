@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.servlet;
+package ch.vd.unireg.servlet;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 
-import ch.vd.uniregctb.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.BatchScheduler;
 
 /**
  * Ce listener doit être placé après le listener du contexte Spring dans le fichier

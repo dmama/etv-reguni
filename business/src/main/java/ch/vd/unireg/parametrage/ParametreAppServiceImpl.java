@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
 
 /**
  * Classe métier representant les paramètres de l'application.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -27,16 +27,16 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.EntityKey;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.FusionEntreprises;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.EntityKey;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.FusionEntreprises;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
 
 @Entity
 public abstract class DroitProprieteRF extends DroitRF {

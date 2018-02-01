@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.snc;
+package ch.vd.unireg.declaration.snc;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.IdentifiantDeclaration;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
 
 public class EnvoiRappelsQuestionnairesSNCResults extends AbstractJobResults<IdentifiantDeclaration, EnvoiRappelsQuestionnairesSNCResults> {
 

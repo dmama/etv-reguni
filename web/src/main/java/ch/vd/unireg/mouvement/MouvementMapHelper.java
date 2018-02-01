@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.ui.Model;
 
-import ch.vd.uniregctb.common.ApplicationConfig;
-import ch.vd.uniregctb.common.CommonMapHelper;
-import ch.vd.uniregctb.type.Localisation;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.common.ApplicationConfig;
+import ch.vd.unireg.common.CommonMapHelper;
+import ch.vd.unireg.type.Localisation;
+import ch.vd.unireg.type.TypeMouvement;
 
 public class MouvementMapHelper extends CommonMapHelper {
 

@@ -2,14 +2,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evenementDeclarationPPSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSenderImpl">
+	<bean id="evenementDeclarationPPSender" class="ch.vd.unireg.evenement.di.EvenementDeclarationPPSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.pp.output}" />
 		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pp.output.enabled}" />
 	</bean>
 
-	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.declaration.EvenementDeclarationPMSenderImpl">
+	<bean id="evenementDeclarationPMSender" class="ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestinationDI" value="${extprop.jms.queue.evtDeclaration.pm.output.di}" />

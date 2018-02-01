@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service.host;
+package ch.vd.unireg.interfaces.service.host;
 
 import java.io.Serializable;
 

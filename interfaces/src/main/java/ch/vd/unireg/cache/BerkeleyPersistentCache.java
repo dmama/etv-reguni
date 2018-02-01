@@ -28,10 +28,10 @@ import org.apache.commons.collections4.Predicate;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.ObjectKey;
-import ch.vd.uniregctb.cache.PersistentCache;
-import ch.vd.uniregctb.cache.SimpleCacheStats;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.ObjectKey;
+import ch.vd.unireg.cache.PersistentCache;
+import ch.vd.unireg.cache.SimpleCacheStats;
 
 public class BerkeleyPersistentCache<T extends Serializable> implements PersistentCache<T>, InitializingBean, DisposableBean {
 

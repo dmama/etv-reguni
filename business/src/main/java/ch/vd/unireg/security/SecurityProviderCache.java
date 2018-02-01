@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,21 +21,21 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.cache.CacheHelper;
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.KeyDumpableCache;
-import ch.vd.uniregctb.cache.KeyValueDumpableCache;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.data.FiscalDataEventListener;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.cache.CacheHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.EhCacheStats;
+import ch.vd.unireg.cache.KeyDumpableCache;
+import ch.vd.unireg.cache.KeyValueDumpableCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.data.FiscalDataEventListener;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.utils.LogLevel;
 
 public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, FiscalDataEventListener, InitializingBean, DisposableBean {
 

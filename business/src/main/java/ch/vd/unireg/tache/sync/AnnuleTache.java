@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
-import ch.vd.uniregctb.tiers.TacheControleDossier;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
-import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
-import ch.vd.uniregctb.tiers.TacheNouveauDossier;
-import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.tiers.Tache;
+import ch.vd.unireg.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.unireg.tiers.TacheAnnulationQuestionnaireSNC;
+import ch.vd.unireg.tiers.TacheControleDossier;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPM;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPP;
+import ch.vd.unireg.tiers.TacheEnvoiQuestionnaireSNC;
+import ch.vd.unireg.tiers.TacheNouveauDossier;
+import ch.vd.unireg.tiers.TacheTransmissionDossier;
+import ch.vd.unireg.type.TypeContribuable;
 
 /**
  * Action permettant d'annuler une tâche devenue obsolète.

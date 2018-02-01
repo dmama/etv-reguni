@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 public class MockEvenementFiscalSender implements EvenementFiscalSender {
 

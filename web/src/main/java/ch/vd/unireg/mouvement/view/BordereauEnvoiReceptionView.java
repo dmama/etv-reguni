@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
 import java.util.List;
 
-import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
+import ch.vd.unireg.mouvement.EtatMouvementDossier;
 
 public class BordereauEnvoiReceptionView extends BordereauEnvoiView {
 

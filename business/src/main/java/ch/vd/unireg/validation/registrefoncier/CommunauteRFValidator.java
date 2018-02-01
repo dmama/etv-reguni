@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import java.util.Objects;
 import java.util.Set;
@@ -13,15 +13,15 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
-import ch.vd.uniregctb.validation.ValidationService;
-import ch.vd.uniregctb.validation.tiers.TiersValidator;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonneRF;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.RegroupementCommunauteRF;
+import ch.vd.unireg.validation.EntityValidatorImpl;
+import ch.vd.unireg.validation.ValidationService;
+import ch.vd.unireg.validation.tiers.TiersValidator;
 
 public class CommunauteRFValidator extends EntityValidatorImpl<CommunauteRF> {
 

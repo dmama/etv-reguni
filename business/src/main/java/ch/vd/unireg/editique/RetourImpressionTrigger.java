@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 /**
  * Interface implémentée par les trigger déclenchés à la réception

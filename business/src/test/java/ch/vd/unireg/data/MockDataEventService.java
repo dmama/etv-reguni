@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class MockDataEventService implements DataEventService {
 

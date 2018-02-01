@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.foncier.migration.mandataire;
+package ch.vd.unireg.foncier.migration.mandataire;
 
 import java.text.ParseException;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class DonneesMandatTest extends WithoutSpringTest {
 

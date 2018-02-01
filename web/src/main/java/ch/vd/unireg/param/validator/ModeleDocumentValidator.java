@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.param.validator;
+package ch.vd.unireg.param.validator;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.param.view.ModeleDocumentView;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.param.view.ModeleDocumentView;
 
 public class ModeleDocumentValidator implements Validator{
 

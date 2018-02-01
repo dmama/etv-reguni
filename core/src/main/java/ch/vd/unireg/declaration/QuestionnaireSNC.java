@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -8,7 +8,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 
 @Entity
 @DiscriminatorValue(value = "QSNC")
@@ -38,7 +38,7 @@ public class QuestionnaireSNC extends DeclarationAvecNumeroSequence {
 	 * @return une date correspondant au délai de retour imprimé sur le document
 	 */
 	@Column(name = "DELAI_RETOUR_IMPRIME")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDelaiRetourImprime() {
 		return delaiRetourImprime;
 	}

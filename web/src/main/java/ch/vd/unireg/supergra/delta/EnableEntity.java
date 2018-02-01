@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.supergra.delta;
+package ch.vd.unireg.supergra.delta;
 
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.supergra.EntityKey;
-import ch.vd.uniregctb.supergra.SuperGraContext;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.supergra.EntityKey;
+import ch.vd.unireg.supergra.SuperGraContext;
 
 /**
  * Désannulation d'une entité.

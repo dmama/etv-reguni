@@ -40,11 +40,11 @@
 		        <form:checkbox path="force" id="force" label="Forcé" onchange="submitForm()" onclick="submitForm()" />
 		    </span>
 
-			<%--@elvariable id="importEvent" type="ch.vd.uniregctb.registrefoncier.importrf.EvenementRFImportView"--%>
+			<%--@elvariable id="importEvent" type="ch.vd.unireg.registrefoncier.importrf.EvenementRFImportView"--%>
 			<%--@elvariable id="pageSize" type="java.lang.Long"--%>
 			<%--@elvariable id="count" type="java.lang.Long"--%>
 			<display:table name="list" id="importEvent" class="display_table" pagesize="${pageSize}" size="${count}" sort="external" partialList="true"
-			               requestURI="/registrefoncier/import/list.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			               requestURI="/registrefoncier/import/list.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.import.trouve"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.un.import.trouve"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.imports.trouves"/></span></display:setProperty>

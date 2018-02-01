@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import java.util.List;
 
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public interface EvenementCivilEchService {
 

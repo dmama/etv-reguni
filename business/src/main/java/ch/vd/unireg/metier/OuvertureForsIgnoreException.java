@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 /**
  * Classe utilisée pour signaler un contribuable ignoré

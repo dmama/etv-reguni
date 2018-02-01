@@ -22,11 +22,11 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
-import ch.vd.uniregctb.common.BatchIterator;
-import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class ServiceCivilRCPers implements ServiceCivilRaw {
 

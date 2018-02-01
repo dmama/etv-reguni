@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Assujettissement de type sourcier mixte au sens de l'article 137, alinéa 2 de la LI (revenu élevé)

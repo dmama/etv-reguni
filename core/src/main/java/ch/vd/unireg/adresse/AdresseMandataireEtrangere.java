@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @DiscriminatorValue("AdresseMandataireEtrangere")

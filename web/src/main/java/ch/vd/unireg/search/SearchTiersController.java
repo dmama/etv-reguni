@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.search;
+package ch.vd.unireg.search;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.NumeroIDEHelper;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.indexer.tiers.TopList;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.unireg.common.NumeroIDEHelper;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyClausesIndexerException;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.indexer.tiers.TopList;
+import ch.vd.unireg.tiers.TiersCriteria;
 
 @Controller
 @RequestMapping(value = "/search")

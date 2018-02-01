@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import org.junit.Test;
 
@@ -8,15 +8,15 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseEtrangere;
-import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.adresse.AdresseSupplementaireAdapter;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.adresse.AdresseEtrangere;
+import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.adresse.AdresseSupplementaireAdapter;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TexteCasePostale;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

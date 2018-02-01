@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersService;
 
 public class ListeDIsPPNonEmises extends AbstractEnvoiDIsPPResults<ListeDIsPPNonEmises> {
 

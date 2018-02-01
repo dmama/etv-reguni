@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
 
 /**
  * Action de synchronisation qui consiste à modifier le questionnaire existant (les dates...)

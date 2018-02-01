@@ -3,11 +3,11 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
-	<%--@elvariable id="messageData" type="ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView"--%>
-	<%--@elvariable id="message" type="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView"--%>
-	<%--@elvariable id="source" type="ch.vd.uniregctb.identification.contribuable.IdentificationController.Source"--%>
+	<%--@elvariable id="messageData" type="ch.vd.unireg.identification.contribuable.view.DemandeIdentificationView"--%>
+	<%--@elvariable id="message" type="ch.vd.unireg.identification.contribuable.view.IdentificationMessagesEditView"--%>
+	<%--@elvariable id="source" type="ch.vd.unireg.identification.contribuable.IdentificationController.Source"--%>
 	<%--@elvariable id="searchCtbErrorMessage" type="java.lang.String"--%>
-	<%--@elvariable id="found" type="java.util.List<ch.vd.uniregctb.tiers.TiersIndexedDataView>"--%>
+	<%--@elvariable id="found" type="java.util.List<ch.vd.unireg.tiers.TiersIndexedDataView>"--%>
 	<%--@elvariable id="hideSoumissionExpertise" type="java.lang.Boolean"--%>
 	<%--@elvariable id="hideNonIdentifiable" type="java.lang.Boolean"--%>
 
@@ -48,7 +48,7 @@
 				    <c:if test="${searchCtbErrorMessage != null}">
 					    <span class="error"><c:out value="${searchCtbErrorMessage}"/></span>
 				    </c:if>
-				    <display:table name="found" id="personne" pagesize="25" requestURI="edit.do" class="display_table" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				    <display:table name="found" id="personne" pagesize="25" requestURI="edit.do" class="display_table" sort="list" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 					    <display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.personne.trouvee" /></span></display:setProperty>
 					    <display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.personne.trouvee" /></span></display:setProperty>
 					    <display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>

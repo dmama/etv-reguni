@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.document;
+package ch.vd.unireg.document;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -12,8 +12,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
 
 /**
  * Classe d'indexe pour les documents générés par l'application et devant être stockés sur le disque du serveur pour consultation

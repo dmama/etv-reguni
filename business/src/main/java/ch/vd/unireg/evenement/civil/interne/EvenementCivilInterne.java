@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne;
+package ch.vd.unireg.evenement.civil.interne;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -14,29 +14,29 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.DecisionAci;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersException;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.DecisionAci;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.IndividuNotFoundException;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersException;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Implémentation des événement civils en provenance du host.
@@ -70,7 +70,7 @@ public abstract class EvenementCivilInterne {
 	 * @param evenement un événement civil externe
 	 * @param context   le context d'exécution de l'événement
 	 * @param options les options de traitement de l'événement
-	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
+	 * @throws ch.vd.unireg.evenement.civil.common.EvenementCivilException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
 	protected EvenementCivilInterne(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		this.context = context;
@@ -168,7 +168,7 @@ public abstract class EvenementCivilInterne {
 	 * Effectue le traitement métier voulu pour l'événement civil courant.
 	 * <p/>
 	 * Cette méthode lève une exception en cas d'erreur inattendue dans le traitement (la majorité des erreurs prévisibles devraient avoir été traitées dans la méthode {@link
-	 * #validate(ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector, ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector)}). Les éventuels avertissement sont renseignés dans la
+	 * #validate(ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector, ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector)}). Les éventuels avertissement sont renseignés dans la
 	 * collection de warnings passée en paramètre. Cette méthode retourne un status qui permet de savoir si l'événement est redondant ou non.
 	 * <p/>
 	 * En fonction des différentes valeurs renseignées par cette méthode, le framework de traitement des événements civils va déterminer l'état de l'événement civil de la manière suivante : <ul>
@@ -188,7 +188,7 @@ public abstract class EvenementCivilInterne {
 	 *
 	 * @param erreurs  les éventuelles erreurs trouvées (out)
 	 * @param warnings les éventuels warnings trouvés (out)
-	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
+	 * @throws ch.vd.unireg.evenement.civil.common.EvenementCivilException
 	 *          en cas d'erreur dans le traitement de l'événement civil.
 	 */
 	protected abstract void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
@@ -371,7 +371,7 @@ public abstract class EvenementCivilInterne {
 	/**
 	 * @param noIndividu un numéro d'individu
 	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu.
-	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
+	 * @throws ch.vd.unireg.evenement.civil.common.EvenementCivilException
 	 *          si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
 	protected final PersonnePhysique getPersonnePhysiqueOrThrowException(long noIndividu) throws EvenementCivilException {

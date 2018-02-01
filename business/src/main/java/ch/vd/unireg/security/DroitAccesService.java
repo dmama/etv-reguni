@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 /**
  * Service qui permet de gérer les droits d'accès (ajout, suppression, copie, transert) entre des opérateurs et des contribuables.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml;
+package ch.vd.unireg.xml;
 
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.bus.spring.SpringBus;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,15 +13,15 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

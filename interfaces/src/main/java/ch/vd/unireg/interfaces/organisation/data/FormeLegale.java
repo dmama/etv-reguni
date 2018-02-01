@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 /**
  * Les différentes formes légale en provenance du registre des entreprises

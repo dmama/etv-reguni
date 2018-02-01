@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.common;
+package ch.vd.unireg.evenement.common;
 
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 /**
  * Interface commune à toutes les erreurs des événements civils et organisation

@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.corporation.v5.LighteningType;
 import ch.vd.unireg.xml.party.corporation.v5.TaxLightening;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCantonCommune;
+import ch.vd.unireg.tiers.AllegementFiscalCommune;
+import ch.vd.unireg.tiers.AllegementFiscalConfederation;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 
 public class TaxLighteningBuilder {
 

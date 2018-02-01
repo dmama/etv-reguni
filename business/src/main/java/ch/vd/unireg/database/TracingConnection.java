@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-import ch.vd.uniregctb.stats.ServiceTracing;
+import ch.vd.unireg.stats.ServiceTracing;
 
 /**
  * Connection de débugging qui stocke la callstack de l'appelant à l'ouverture.

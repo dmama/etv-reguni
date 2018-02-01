@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,9 +22,9 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.documentfiscal.DocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
  * <!-- begin-user-doc -->
@@ -143,7 +143,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 */
 	@Override
 	@Column(name = "DATE_DEBUT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		// begin-user-code
 		return dateDebut;
@@ -170,7 +170,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 */
 	@Override
 	@Column(name = "DATE_FIN")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
 		// begin-user-code
 		return dateFin;
@@ -233,7 +233,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	}
 
 	/**
-	 * Repris de {@link ch.vd.uniregctb.common.HibernateDateRangeEntity}, description avec début et fin.
+	 * Repris de {@link ch.vd.unireg.common.HibernateDateRangeEntity}, description avec début et fin.
 	 */
 	@Override
 	public String toString() {

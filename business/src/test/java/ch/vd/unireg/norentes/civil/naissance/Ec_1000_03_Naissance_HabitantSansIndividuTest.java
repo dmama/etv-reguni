@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.naissance;
+package ch.vd.unireg.norentes.civil.naissance;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Teste la naissance d'un individu qui existe deja

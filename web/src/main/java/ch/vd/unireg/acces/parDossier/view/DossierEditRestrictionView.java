@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.acces.parDossier.view;
+package ch.vd.unireg.acces.parDossier.view;
 
 import java.util.List;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.unireg.general.view.TiersGeneralView;
 
 public class DossierEditRestrictionView {
 

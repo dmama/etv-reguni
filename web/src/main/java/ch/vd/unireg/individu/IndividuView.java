@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.individu;
+package ch.vd.unireg.individu;
 
 import java.io.Serializable;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.type.Sexe;
 
 /**
  *

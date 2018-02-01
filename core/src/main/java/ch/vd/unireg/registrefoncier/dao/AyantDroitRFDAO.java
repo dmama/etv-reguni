@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.List;
 import java.util.Set;
@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.registrefoncier.TypeDroit;
-import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.registrefoncier.TypeDroit;
+import ch.vd.unireg.registrefoncier.key.AyantDroitRFKey;
 
 public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
 

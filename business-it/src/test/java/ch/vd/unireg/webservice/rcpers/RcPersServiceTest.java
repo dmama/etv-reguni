@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.rcpers;
+package ch.vd.unireg.webservice.rcpers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,9 +18,9 @@ import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.utils.UniregProperties;
-import ch.vd.uniregctb.utils.UniregPropertiesImpl;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.utils.UniregProperties;
+import ch.vd.unireg.utils.UniregPropertiesImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

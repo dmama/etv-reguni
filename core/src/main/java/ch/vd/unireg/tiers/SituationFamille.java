@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,12 +21,12 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.type.EtatCivil;
 
 @Entity
 @Table(name = "SITUATION_FAMILLE")
@@ -95,7 +95,7 @@ public abstract class SituationFamille extends HibernateDateRangeEntity implemen
 	}
 
 	@Column(name = "ETAT_CIVIL", length = LengthConstants.SITUATIONFAMILLE_ETATCIVIL)
-	@Type(type = "ch.vd.uniregctb.hibernate.EtatCivilUserType")
+	@Type(type = "ch.vd.unireg.hibernate.EtatCivilUserType")
 	public EtatCivil getEtatCivil() {
 		return etatCivil;
 	}

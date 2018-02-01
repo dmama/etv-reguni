@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.function.Supplier;
@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.servlet.ActionExceptionFilter;
+import ch.vd.unireg.servlet.ActionExceptionFilter;
 
 public abstract class HttpHelper {
 

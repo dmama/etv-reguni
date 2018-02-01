@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 
 public abstract class RaisonSocialeView implements DateRange {
 

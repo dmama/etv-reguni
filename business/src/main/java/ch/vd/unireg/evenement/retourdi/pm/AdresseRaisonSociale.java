@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,22 +25,22 @@ import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.uniregctb.adresse.AdresseAdapter;
-import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.CiviliteSupplier;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.StringComparator;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.adresse.AdresseAdapter;
+import ch.vd.unireg.adresse.AdresseCivileAdapter;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.CiviliteSupplier;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.common.StringComparator;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Utilisable pour l'adresse de l'entreprise comme pour l'adresse du mandataire, pour toute entité

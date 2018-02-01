@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.engine;
+package ch.vd.unireg.evenement.organisation.engine;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -26,11 +26,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.AgeTrackingBlockingQueueMixer;
-import ch.vd.uniregctb.common.Aged;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
+import ch.vd.unireg.common.AgeTrackingBlockingQueueMixer;
+import ch.vd.unireg.common.Aged;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationProcessingMode;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationService;
 
 /**
  * Classe utilitaire qui joue le rôle d'une queue bloquante pour le traitement des événements organisation reçus de RCEnt.

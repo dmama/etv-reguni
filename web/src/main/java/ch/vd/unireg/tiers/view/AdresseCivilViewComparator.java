@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.Arrays;
 import java.util.Comparator;
 
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.uniregctb.common.GentilComparator;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.GentilComparator;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Tri des adresses civiles par type (Courrier, Représentation, Poursuite, Domicile), puis par dates décroissantes.

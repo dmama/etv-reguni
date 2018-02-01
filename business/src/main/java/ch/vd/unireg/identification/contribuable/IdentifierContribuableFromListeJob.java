@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
@@ -15,18 +15,18 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamFile;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.IdentifierContribuableFromListeRapport;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresPersonne;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamFile;
+import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.type.Sexe;
 
 /**
  * Job qui ikdentifie des contribuables a partir d'une liste contenant des informations civiles

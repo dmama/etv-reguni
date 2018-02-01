@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.securite;
+package ch.vd.unireg.webservices.securite;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;

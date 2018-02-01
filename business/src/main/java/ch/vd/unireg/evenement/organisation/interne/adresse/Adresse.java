@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.adresse;
+package ch.vd.unireg.evenement.organisation.interne.adresse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,16 +8,16 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
+import ch.vd.unireg.tiers.Entreprise;
 
 /**
  * @author Raphaël Marmier, 2016-04-11

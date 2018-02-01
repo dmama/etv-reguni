@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.reception;
+package ch.vd.unireg.evenement.reqdes.reception;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -21,19 +21,19 @@ import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.xml.event.reqdes.v1.CreationModification;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
-import ch.vd.uniregctb.reqdes.EvenementReqDes;
-import ch.vd.uniregctb.reqdes.EvenementReqDesDAO;
-import ch.vd.uniregctb.reqdes.ModeInscription;
-import ch.vd.uniregctb.reqdes.PartiePrenante;
-import ch.vd.uniregctb.reqdes.RolePartiePrenante;
-import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
-import ch.vd.uniregctb.reqdes.TypeInscription;
-import ch.vd.uniregctb.reqdes.TypeRole;
-import ch.vd.uniregctb.reqdes.UniteTraitement;
-import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
-import ch.vd.uniregctb.type.CategorieEtranger;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.EvenementReqDes;
+import ch.vd.unireg.reqdes.EvenementReqDesDAO;
+import ch.vd.unireg.reqdes.ModeInscription;
+import ch.vd.unireg.reqdes.PartiePrenante;
+import ch.vd.unireg.reqdes.RolePartiePrenante;
+import ch.vd.unireg.reqdes.TransactionImmobiliere;
+import ch.vd.unireg.reqdes.TypeInscription;
+import ch.vd.unireg.reqdes.TypeRole;
+import ch.vd.unireg.reqdes.UniteTraitement;
+import ch.vd.unireg.reqdes.UniteTraitementDAO;
+import ch.vd.unireg.type.CategorieEtranger;
 
 public class ReqDesEventHandlerTest extends BusinessTest {
 

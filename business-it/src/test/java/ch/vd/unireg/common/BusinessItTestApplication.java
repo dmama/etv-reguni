@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -25,9 +25,9 @@ import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.database.DatabaseService;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.unireg.database.DatabaseService;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
 
 
 /**

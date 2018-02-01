@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.math.BigDecimal;
 
@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public abstract class AllegementFiscalValidatorTest<T extends AllegementFiscal> extends AbstractValidatorTest<T> {
 

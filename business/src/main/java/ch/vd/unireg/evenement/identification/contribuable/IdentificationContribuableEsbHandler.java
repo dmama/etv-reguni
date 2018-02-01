@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -38,15 +38,15 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.EsbMessageValidationHelper;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.EsbMessageValidationHelper;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.xml.ServiceException;
 
 public class IdentificationContribuableEsbHandler implements EsbMessageHandler, InitializingBean {
 

@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.Rerangeable;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.Rerangeable;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * @author Raphaël Marmier, 2016-01-07, <raphael.marmier@vd.ch>

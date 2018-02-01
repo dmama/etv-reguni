@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
-import ch.vd.uniregctb.indexer.lucene.IndexProvider;
+import ch.vd.unireg.indexer.lucene.IndexProvider;
 
 /**
  * Singleton statique du global index, c'est-à-dire qu'il peut-être partagé par plusieurs contextes Spring.

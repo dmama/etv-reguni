@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.webservices.party4.impl;
+package ch.vd.unireg.webservices.party4.impl;
 
 import ch.vd.unireg.webservices.party4.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.xml.ServiceException;
 
 public class ExceptionHelper {
 

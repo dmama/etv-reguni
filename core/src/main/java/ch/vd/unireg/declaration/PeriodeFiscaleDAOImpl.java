@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class PeriodeFiscaleDAOImpl extends BaseDAOImpl< PeriodeFiscale, Long> implements  PeriodeFiscaleDAO {
 

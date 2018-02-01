@@ -7,10 +7,10 @@
 <c:if test="${page == 'edit' }">
 	<c:set var="url" value="edit.do" />
 </c:if>
-<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersView"--%>
 <c:if test="${not empty command.contribuablesAssocies}">
 	<display:table 	name="command.contribuablesAssocies" id="contribuableAssocie" pagesize="10" 
-					requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+					requestURI="${url}" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 		<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
 			<a href="../tiers/visu.do?id=${contribuableAssocie.numero}"><unireg:numCTB numero="${contribuableAssocie.numero}"/></a>
 		</display:column>

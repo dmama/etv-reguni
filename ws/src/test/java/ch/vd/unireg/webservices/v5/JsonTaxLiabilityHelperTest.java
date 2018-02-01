@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v5;
+package ch.vd.unireg.webservices.v5;
 
 import java.util.Random;
 
@@ -20,7 +20,7 @@ import ch.vd.unireg.xml.party.taxresidence.v2.SwissDiplomat;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v2.Withholding;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

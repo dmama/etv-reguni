@@ -4,22 +4,22 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<!-- Audit -->
-	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
+	<bean id="auditManager" class="ch.vd.unireg.audit.AuditManager">
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<property name="appName" value="Unit Tests" />
 	</bean>
 
 	<!-- Transaction manager -->
 
-	<bean id="transactionManager" class="ch.vd.uniregctb.transaction.TransactionManagerFactoryBean">
+	<bean id="transactionManager" class="ch.vd.unireg.transaction.TransactionManagerFactoryBean">
 		<!-- [UNIREG-2060] désactivé le log des transactions, parce que de toutes façons les bases ne sont pas configurées pour la reprise automatique des transactions.
 		<property name="transactionLogDir" value="target/txlog"/>
 		-->
 		<property name="defaultTransactionTimeoutSeconds" value="86400"/>
-		<property name="jtaTransactionManagerClass" value="ch.vd.uniregctb.transaction.UniregJtaTransactionManager"/>
+		<property name="jtaTransactionManagerClass" value="ch.vd.unireg.transaction.UniregJtaTransactionManager"/>
 	</bean>
 
-	<bean id="jtaTransactionManager" class="ch.vd.uniregctb.transaction.UniregJtaTransactionManager" factory-method="getJtaTransactionManager" factory-bean="transactionManager" />
+	<bean id="jtaTransactionManager" class="ch.vd.unireg.transaction.UniregJtaTransactionManager" factory-method="getJtaTransactionManager" factory-bean="transactionManager" />
 
 	<alias alias="transactionSynchronizationRegistrar" name="jtaTransactionManager"/>
 
@@ -36,7 +36,7 @@
 		<property name="connectionManager" ref="jdbcConnectionManager"/>
 	</bean>
 
-	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.DynamicXAMCF">
+	<bean id="jdbcManagedConnectionFactory" class="ch.vd.unireg.datasource.DynamicXAMCF">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
 		<property name="oracleServerName" value="${testprop.oracle.jdbc.server}" />
 		<property name="oraclePortNumber" value="${testprop.oracle.jdbc.port}" />
@@ -51,21 +51,21 @@
 		<property name="postgresqlPassword" value="${testprop.postgresql.jdbc.password}" />
 	</bean>
 
-	<bean id="hibernateDialect" class="ch.vd.uniregctb.datasource.DynamicHibernateDialect">
+	<bean id="hibernateDialect" class="ch.vd.unireg.datasource.DynamicHibernateDialect">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
 		<property name="oracleDialectClass" value="${oracle.hibernate.dialect}" />
 		<property name="postgresqlDialectClass" value="${postgresql.hibernate.dialect}" />
 		<property name="h2DialectClass" value="${h2.hibernate.dialect}" />
 	</bean>
 
-	<bean id="hibernateDialectClassName" class="ch.vd.uniregctb.datasource.DynamicString">
+	<bean id="hibernateDialectClassName" class="ch.vd.unireg.datasource.DynamicString">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
 		<property name="oracleProperty" value="${oracle.hibernate.dialect}" />
 		<property name="postgresqlProperty" value="${postgresql.hibernate.dialect}" />
 		<property name="h2Property" value="${h2.hibernate.dialect}" />
 	</bean>
 
-	<bean id="hibernateQuerySubstitutions" class="ch.vd.uniregctb.datasource.DynamicString">
+	<bean id="hibernateQuerySubstitutions" class="ch.vd.unireg.datasource.DynamicString">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
 		<property name="oracleProperty" value="${oracle.hibernate.query.substitutions}" />
 		<property name="postgresqlProperty" value="${postgresql.hibernate.query.substitutions}" />

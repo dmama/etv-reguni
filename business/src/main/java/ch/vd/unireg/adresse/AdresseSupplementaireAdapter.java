@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.Tiers;
 
 /*
  * Cette classe permet d'adapter une adresse supplémentaire (= spécialité UniregCTB) à l'interface d'adresse générique.

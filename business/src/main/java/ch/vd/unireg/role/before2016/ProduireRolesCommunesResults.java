@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.role.before2016;
+package ch.vd.unireg.role.before2016;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.tiers.TiersService;
 
 public abstract class ProduireRolesCommunesResults<T extends ProduireRolesCommunesResults<T>> extends ProduireRolesResults<T> {
 

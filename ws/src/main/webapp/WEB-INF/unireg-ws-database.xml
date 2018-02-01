@@ -5,7 +5,7 @@
 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<!-- Audit -->
-	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
+	<bean id="auditManager" class="ch.vd.unireg.audit.AuditManager">
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<!-- BEGIN_LVERSION -->
 		<property name="appName" value="WebServices (version 18R2.A.0-SNAPSHOT)" />
@@ -14,21 +14,21 @@
 
 	<!-- Transaction manager -->
 
-	<bean id="transactionManager" class="ch.vd.uniregctb.transaction.TransactionManagerFactoryBean">
+	<bean id="transactionManager" class="ch.vd.unireg.transaction.TransactionManagerFactoryBean">
 		<!-- [UNIREG-2060] désactivé le log des transactions, parce que de toutes façons les bases ne sont pas configurées pour la reprise automatique des transactions.
 		<property name="transactionLogDir" value="${extprop.tx.logDir}"/>
 		-->
 		<property name="defaultTransactionTimeoutSeconds" value="${extprop.tx.timeout}"/>
-		<property name="jtaTransactionManagerClass" value="ch.vd.uniregctb.transaction.UniregJtaTransactionManager"/>
+		<property name="jtaTransactionManagerClass" value="ch.vd.unireg.transaction.UniregJtaTransactionManager"/>
 	</bean>
 
-	<bean id="jtaTransactionManager" class="ch.vd.uniregctb.transaction.UniregJtaTransactionManager" factory-method="getJtaTransactionManager" factory-bean="transactionManager" />
+	<bean id="jtaTransactionManager" class="ch.vd.unireg.transaction.UniregJtaTransactionManager" factory-method="getJtaTransactionManager" factory-bean="transactionManager" />
 
 	<alias alias="transactionSynchronizationRegistrar" name="jtaTransactionManager"/>
 
 	<!-- JDBC datasource -->
 
-	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.UniregXAMCF">
+	<bean id="jdbcManagedConnectionFactory" class="ch.vd.unireg.datasource.UniregXAMCF">
 		<property name="driverType" value="thin" />
 		<property name="serverName" value="${extprop.jdbc.server}" />
 		<property name="portNumber" value="${extprop.jdbc.port}" />
@@ -55,7 +55,7 @@
 		<property name="enabled" value="${extprop.jdbc.datasource.debug}" />
 	</bean>
 
-	<bean id="tracingDataSource" class="ch.vd.uniregctb.database.TracingDataSource">
+	<bean id="tracingDataSource" class="ch.vd.unireg.database.TracingDataSource">
 		<property name="target" ref="debugDataSource" />
 		<property name="statsService" ref="statsService" />
 		<property name="enabled" value="${extprop.jdbc.datasource.tracing}" />

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
+import ch.vd.unireg.mouvement.EtatMouvementDossier;
 
 /**
  * Classe de transtypage hibernate EtatMouvementDossier <-> varchar

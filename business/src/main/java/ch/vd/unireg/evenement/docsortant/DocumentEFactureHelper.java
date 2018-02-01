@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Quelques méthodes utilitaires autour de la fonctionnalité des documents sortants e-facture

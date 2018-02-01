@@ -1,26 +1,26 @@
-package ch.vd.uniregctb.evenement.organisation.interne;
+package ch.vd.unireg.evenement.organisation.interne;
 
 import java.util.List;
 
 import org.junit.Assert;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
-import ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.metier.MetierServicePM;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.common.EvenementErreur;
+import ch.vd.unireg.evenement.fiscal.CollectingEvenementFiscalSender;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationService;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.metier.MetierServicePM;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.rattrapage.appariement.AppariementService;
 
 public abstract class AbstractEvenementOrganisationInterneTest extends BusinessTest {
 

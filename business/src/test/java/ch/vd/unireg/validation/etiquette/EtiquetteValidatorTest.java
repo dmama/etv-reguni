@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.validation.etiquette;
+package ch.vd.unireg.validation.etiquette;
 
 import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class EtiquetteValidatorTest extends AbstractValidatorTest<Etiquette> {
 

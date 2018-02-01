@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.decorator;
+package ch.vd.unireg.decorator;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Annulable;
+import ch.vd.unireg.common.Annulable;
 
 /**
  * Décorateur utilisable pour les entités

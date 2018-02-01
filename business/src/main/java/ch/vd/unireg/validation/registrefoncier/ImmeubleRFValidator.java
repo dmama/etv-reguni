@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import java.util.Set;
 
@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public class ImmeubleRFValidator extends EntityValidatorImpl<ImmeubleRF> {
 	@Override

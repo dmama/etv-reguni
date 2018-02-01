@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.securite;
+package ch.vd.unireg.webservice.securite;
 
 import javax.xml.ws.BindingProvider;
 import java.net.URL;
@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.uniregctb.common.WebitTest;
+import ch.vd.unireg.common.WebitTest;
 import ch.vd.uniregctb.webservices.security.GetAutorisationSurDossier;
 import ch.vd.uniregctb.webservices.security.GetDossiersControles;
 import ch.vd.uniregctb.webservices.security.NiveauAutorisation;

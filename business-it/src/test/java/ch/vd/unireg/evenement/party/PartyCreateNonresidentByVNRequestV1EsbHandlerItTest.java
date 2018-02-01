@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,11 +11,11 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.common.v2.UserLogin;
 import ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNRequest;
 import ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNResponse;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

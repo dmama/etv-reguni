@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture.manager;
+package ch.vd.unireg.efacture.manager;
 
 import java.math.BigInteger;
 import java.time.Duration;
@@ -20,25 +20,25 @@ import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.efacture.ArchiveKey;
-import ch.vd.uniregctb.efacture.DemandeAvecHistoView;
-import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
-import ch.vd.uniregctb.efacture.DocumentEFacture;
-import ch.vd.uniregctb.efacture.DocumentEFactureDAO;
-import ch.vd.uniregctb.efacture.EFactureHelper;
-import ch.vd.uniregctb.efacture.EFactureResponseService;
-import ch.vd.uniregctb.efacture.EFactureService;
-import ch.vd.uniregctb.efacture.EtatDemandeView;
-import ch.vd.uniregctb.efacture.EtatDestinataireView;
-import ch.vd.uniregctb.efacture.EvenementEfactureException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.efacture.ArchiveKey;
+import ch.vd.unireg.efacture.DemandeAvecHistoView;
+import ch.vd.unireg.efacture.DestinataireAvecHistoView;
+import ch.vd.unireg.efacture.DocumentEFacture;
+import ch.vd.unireg.efacture.DocumentEFactureDAO;
+import ch.vd.unireg.efacture.EFactureHelper;
+import ch.vd.unireg.efacture.EFactureResponseService;
+import ch.vd.unireg.efacture.EFactureService;
+import ch.vd.unireg.efacture.EtatDemandeView;
+import ch.vd.unireg.efacture.EtatDestinataireView;
+import ch.vd.unireg.efacture.EvenementEfactureException;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class EfactureManagerImpl implements EfactureManager {
 

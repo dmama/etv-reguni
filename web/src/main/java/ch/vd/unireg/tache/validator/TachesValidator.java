@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.tache.validator;
+package ch.vd.unireg.tache.validator;
 
-import ch.vd.uniregctb.common.DelegatingValidator;
-import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
-import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
-import ch.vd.uniregctb.tache.view.TacheCriteriaView;
+import ch.vd.unireg.common.DelegatingValidator;
+import ch.vd.unireg.tache.view.ImpressionNouveauxDossiersView;
+import ch.vd.unireg.tache.view.NouveauDossierCriteriaView;
+import ch.vd.unireg.tache.view.TacheCriteriaView;
 
 public class TachesValidator extends DelegatingValidator {
 

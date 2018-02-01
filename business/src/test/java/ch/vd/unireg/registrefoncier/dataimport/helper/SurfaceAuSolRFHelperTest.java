@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,11 +12,11 @@ import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.CapiCode;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
+import ch.vd.unireg.common.UniregJUnit4Runner;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
+import ch.vd.unireg.registrefoncier.key.SurfaceAuSolRFKey;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

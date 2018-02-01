@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement.manager;
+package ch.vd.unireg.mouvement.manager;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.unireg.mouvement.MouvementDossier;
 
 public class AntiChronologiqueMouvementComparatorTest {
 

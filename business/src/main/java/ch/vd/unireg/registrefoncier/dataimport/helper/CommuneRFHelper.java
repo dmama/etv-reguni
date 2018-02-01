@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
 
 public abstract class CommuneRFHelper {
 	private CommuneRFHelper() {

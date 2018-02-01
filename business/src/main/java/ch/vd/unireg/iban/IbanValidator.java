@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.iban;
+package ch.vd.unireg.iban;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.utils.LogLevel;
 
 
 /**

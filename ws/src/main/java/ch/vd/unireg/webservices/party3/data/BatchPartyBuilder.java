@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.unireg.webservices.party3.data;
 
 import java.util.Map;
 

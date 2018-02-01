@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.evenement.civil.regpp;
+package ch.vd.unireg.evenement.civil.regpp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,10 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.evenement.common.EvenementErreur;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 /**
  * Erreur associée à un événement civil en provenance de RegPP
@@ -108,7 +108,7 @@ public class EvenementCivilRegPPErreur extends HibernateEntity implements Evenem
 
 	@Override
 	@Column(name = "TYPE", nullable = false, length = LengthConstants.EVTCIVILERREUR_TYPE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeEvenementErreurUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeEvenementErreurUserType")
 	public TypeEvenementErreur getType() {
 		return type;
 	}

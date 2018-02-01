@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class ParametreAppDAOImpl extends BaseDAOImpl<ParametreApp, String> implements ParametreAppDAO {
 

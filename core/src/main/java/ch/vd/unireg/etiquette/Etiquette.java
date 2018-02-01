@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.etiquette;
+package ch.vd.unireg.etiquette;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,11 +18,11 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.hibernate.ActionAutoEtiquetteUserType;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.type.TypeTiersEtiquette;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.hibernate.ActionAutoEtiquetteUserType;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.type.TypeTiersEtiquette;
 
 @Entity
 @Table(name = "ETIQUETTE")

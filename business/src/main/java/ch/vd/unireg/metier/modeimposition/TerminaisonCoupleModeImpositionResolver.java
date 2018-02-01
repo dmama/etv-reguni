@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.metier.modeimposition;
+package ch.vd.unireg.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Classe abstraite de base des resolvers de mode d'imposition lors de la terminaison d'un couple

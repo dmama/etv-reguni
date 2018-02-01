@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.inbox;
+package ch.vd.unireg.inbox;
 
 /**
  * Interface implémentée par les éléments expirables

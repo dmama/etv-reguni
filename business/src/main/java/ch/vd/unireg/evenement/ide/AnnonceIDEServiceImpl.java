@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.unireg.tiers.Etablissement;
 
 /**
  * @author Raphaël Marmier, 2016-08-15, <raphael.marmier@vd.ch>

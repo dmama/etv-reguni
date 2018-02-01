@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.fusion;
+package ch.vd.unireg.fusion;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public abstract class AbstractFusionControllerTest extends WebTest {
 

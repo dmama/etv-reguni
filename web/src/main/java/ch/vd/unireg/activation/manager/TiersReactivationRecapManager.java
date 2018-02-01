@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.activation.manager;
+package ch.vd.unireg.activation.manager;
 
-import ch.vd.uniregctb.activation.ActivationServiceException;
-import ch.vd.uniregctb.activation.view.TiersReactivationRecapView;
+import ch.vd.unireg.activation.ActivationServiceException;
+import ch.vd.unireg.activation.view.TiersReactivationRecapView;
 
 public interface TiersReactivationRecapManager {
 

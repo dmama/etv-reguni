@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,16 +9,16 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementPersonnesPhysiquesCalculator;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
-import ch.vd.uniregctb.metier.assujettissement.Indigent;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl;
-import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
-import ch.vd.uniregctb.parametrage.MockParameterAppService;
-import ch.vd.uniregctb.tiers.TiersServiceImpl;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.AssujettissementPersonnesPhysiquesCalculator;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementServiceImpl;
+import ch.vd.unireg.metier.assujettissement.Indigent;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionServiceImpl;
+import ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire;
+import ch.vd.unireg.parametrage.MockParameterAppService;
+import ch.vd.unireg.tiers.TiersServiceImpl;
 
 public class UNIREG1472 {
 	

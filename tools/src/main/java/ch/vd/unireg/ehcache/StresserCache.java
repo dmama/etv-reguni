@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.ehcache;
+package ch.vd.unireg.ehcache;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.xml.party.v3.Party;
-import ch.vd.uniregctb.utils.WebServiceV5Helper;
+import ch.vd.unireg.utils.WebServiceV5Helper;
 
 public class StresserCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StresserCache.class);

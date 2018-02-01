@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs.formInput;
+package ch.vd.unireg.taglibs.formInput;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -17,8 +17,8 @@ import org.springframework.web.servlet.tags.form.TagWriter;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.json.InfraCategory;
-import ch.vd.uniregctb.supergra.EntityType;
+import ch.vd.unireg.json.InfraCategory;
+import ch.vd.unireg.supergra.EntityType;
 
 /**
  * Tag qui génère un champ d'édition pour la propriété spécifiée dans un formulaire.

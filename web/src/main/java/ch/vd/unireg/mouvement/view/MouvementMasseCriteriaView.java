@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
 import java.util.Collection;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
-import ch.vd.uniregctb.type.Localisation;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.mouvement.EtatMouvementDossier;
+import ch.vd.unireg.type.Localisation;
+import ch.vd.unireg.type.TypeMouvement;
 
 /**
  * Critères de recherche pour les mouvements de masse

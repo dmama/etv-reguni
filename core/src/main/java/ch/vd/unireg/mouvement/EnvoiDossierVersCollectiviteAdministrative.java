@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -9,7 +9,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
 
 @Entity
 @DiscriminatorValue(value = "EnvoiVersCollAdm")

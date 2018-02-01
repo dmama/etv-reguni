@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 
 @ManagedResource
 public class OnTheFlyTiersIndexerJmxBeanImpl implements OnTheFlyTiersIndexerJmxBean {

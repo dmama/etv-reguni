@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
 import java.util.Set;
 
@@ -9,23 +9,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.metier.MetierService;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.security.DroitAccesException;
-import ch.vd.uniregctb.security.DroitAccesService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.metier.MetierService;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.security.DroitAccesException;
+import ch.vd.unireg.security.DroitAccesService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class CoupleManagerImpl implements CoupleManager {
 

@@ -6,8 +6,8 @@
 
 	<tiles:put name="title" type="String">*** Mode Supergra ***</tiles:put>
 
-	<%--@elvariable id="entity" type="ch.vd.uniregctb.supergra.view.EntityView"--%>
-	<%--@elvariable id="superGraSession" type="ch.vd.uniregctb.supergra.SuperGraSession"--%>
+	<%--@elvariable id="entity" type="ch.vd.unireg.supergra.view.EntityView"--%>
+	<%--@elvariable id="superGraSession" type="ch.vd.unireg.supergra.SuperGraSession"--%>
 
 	<tiles:put name="actions" type="String">
 		<ul>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.regpp.manager;
+package ch.vd.unireg.evenement.regpp.manager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,24 +10,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
-import ch.vd.uniregctb.evenement.common.manager.EvenementCivilManagerImpl;
-import ch.vd.uniregctb.evenement.common.view.ErreurEvenementCivilView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPDetailView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilProcessor;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreur;
+import ch.vd.unireg.evenement.common.manager.EvenementCivilManagerImpl;
+import ch.vd.unireg.evenement.common.view.ErreurEvenementCivilView;
+import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
+import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPDetailView;
+import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPElementListeView;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.IndividuNotFoundException;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
  * @inheritDoc

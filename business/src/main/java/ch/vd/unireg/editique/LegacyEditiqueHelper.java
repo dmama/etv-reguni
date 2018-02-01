@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import java.rmi.RemoteException;
 
@@ -11,13 +11,13 @@ import noNamespace.TypAdresse;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.adresse.AdresseEnvoi;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Interface du Helper éditique pour le bon vieux temps où les XSD éditiques étaient gérées par XmlBeans,

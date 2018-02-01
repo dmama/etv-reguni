@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evenementIamListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="evenementIamListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementIamEsbHandler" />
 		<property name="destinationName" value="${extprop.jms.queue.evtIAM}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -10,7 +10,7 @@
 		<property name="description" value="Réception des évènements IAM de mis à jour d’informations concernant les débiteurs."/>
 	</bean>
 
-	<bean id="evenementIamEsbHandler" class="ch.vd.uniregctb.evenement.iam.EvenementIamEsbHandler">
+	<bean id="evenementIamEsbHandler" class="ch.vd.unireg.evenement.iam.EvenementIamEsbHandler">
 		<property name="handler" ref="evenementIAMService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>

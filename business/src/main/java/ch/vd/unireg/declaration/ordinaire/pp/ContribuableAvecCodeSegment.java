@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 /**
  * Classe utilisée pour les données issues du fichier CSV passé en entrée du job d'import des codes segment

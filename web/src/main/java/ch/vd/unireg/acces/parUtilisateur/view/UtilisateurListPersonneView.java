@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.acces.parUtilisateur.view;
+package ch.vd.unireg.acces.parUtilisateur.view;
 
-import ch.vd.uniregctb.general.view.UtilisateurView;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.general.view.UtilisateurView;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public class UtilisateurListPersonneView extends TiersCriteriaView {
 

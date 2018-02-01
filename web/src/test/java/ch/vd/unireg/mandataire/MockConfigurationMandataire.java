@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 public class MockConfigurationMandataire implements ConfigurationMandataire {
 

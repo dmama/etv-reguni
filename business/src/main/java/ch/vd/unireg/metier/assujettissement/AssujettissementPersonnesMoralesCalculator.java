@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -18,27 +18,27 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
-import ch.vd.uniregctb.metier.common.Fraction;
-import ch.vd.uniregctb.metier.common.Fractionnements;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
+import ch.vd.unireg.metier.common.Fraction;
+import ch.vd.unireg.metier.common.Fractionnements;
+import ch.vd.unireg.regimefiscal.RegimeFiscalConsolide;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.tiers.ForsParType;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class AssujettissementPersonnesMoralesCalculator implements AssujettissementCalculator<Entreprise> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra.delta;
+package ch.vd.unireg.supergra.delta;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -10,16 +10,16 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.ReflexionUtils;
-import ch.vd.uniregctb.hibernate.meta.MetaEntity;
-import ch.vd.uniregctb.hibernate.meta.Property;
-import ch.vd.uniregctb.supergra.EntityKey;
-import ch.vd.uniregctb.supergra.EntityType;
-import ch.vd.uniregctb.supergra.SuperGraContext;
-import ch.vd.uniregctb.supergra.SuperGraManagerImpl;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.ReflexionUtils;
+import ch.vd.unireg.hibernate.meta.MetaEntity;
+import ch.vd.unireg.hibernate.meta.Property;
+import ch.vd.unireg.supergra.EntityKey;
+import ch.vd.unireg.supergra.EntityType;
+import ch.vd.unireg.supergra.SuperGraContext;
+import ch.vd.unireg.supergra.SuperGraManagerImpl;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Ajoute une nouvelle entité dans le mode SuperGra. Cette nouvelle entité peut être soit :

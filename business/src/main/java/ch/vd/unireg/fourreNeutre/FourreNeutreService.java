@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.fourreNeutre;
+package ch.vd.unireg.fourreNeutre;
 
-import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultat;
 
 public interface FourreNeutreService {
 	/**

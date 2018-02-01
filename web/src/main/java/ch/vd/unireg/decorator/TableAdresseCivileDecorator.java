@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.decorator;
+package ch.vd.unireg.decorator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.tiers.view.AdresseView;
+import ch.vd.unireg.tiers.view.AdresseView;
 
 public class TableAdresseCivileDecorator extends TableEntityDecorator {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,19 +23,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.uniregctb.common.Fuse;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.SearchAllCallback;
-import ch.vd.uniregctb.indexer.SearchCallback;
-import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersFilter;
+import ch.vd.unireg.common.Fuse;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.indexer.EmptySearchCriteriaException;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.SearchAllCallback;
+import ch.vd.unireg.indexer.SearchCallback;
+import ch.vd.unireg.indexer.TooManyClausesIndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersFilter;
 
 /**
  * Classe principale de recherche de tiers suivant certains criteres

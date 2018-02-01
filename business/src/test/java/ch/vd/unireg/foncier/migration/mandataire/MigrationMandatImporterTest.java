@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier.migration.mandataire;
+package ch.vd.unireg.foncier.migration.mandataire;
 
 import java.text.ParseException;
 import java.util.Collections;
@@ -12,13 +12,13 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.interfaces.infra.mock.MockGenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.adresse.AdresseMandataireSuisse;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.adresse.AdresseMandataireSuisse;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeMandat;
 
 public class MigrationMandatImporterTest extends BusinessTest {
 

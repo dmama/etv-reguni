@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.declaration.ordinaire.pm;
+package ch.vd.unireg.declaration.ordinaire.pm;
 
 import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.editique.EditiqueAbstractHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 public interface ImpressionLettreDecisionDelaiPMHelper extends EditiqueAbstractHelper {
 

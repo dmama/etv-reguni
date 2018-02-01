@@ -2,22 +2,22 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="globalTiersIndexer" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersIndexerImpl" />
+	<bean id="globalTiersIndexer" class="ch.vd.unireg.indexer.tiers.ZeroTiersIndexerImpl" />
 
-	<bean id="tacheService" class="ch.vd.uniregctb.tache.MockTacheService" />
-	<bean id="delaisService" class="ch.vd.uniregctb.parametrage.MockDelaisService" />
+	<bean id="tacheService" class="ch.vd.unireg.tache.MockTacheService" />
+	<bean id="delaisService" class="ch.vd.unireg.parametrage.MockDelaisService" />
 
-	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService" />
-	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService" />
-	<bean id="impressionDIPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionDeclarationImpotPersonnesPhysiquesHelper" />
-	<bean id="impressionSommationDIPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionSommationDIPersonnesPhysiquesHelper" />
-	<bean id="impressionSommationDIPMHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.MockImpressionSommationDIPersonnesMoralesHelper" />
-	<bean id="impressionSommationLRHelper" class="ch.vd.uniregctb.declaration.source.MockImpressionSommationLRHelper" />
-	<bean id="impressionConfirmationDelaiPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionConfirmationDelaiPPHelper" />
-	<bean id="impressionRappelQSNCHelper" class="ch.vd.uniregctb.declaration.snc.MockImpressionRappelQuestionnaireSNCHelper"/>
+	<bean id="editiqueService" class="ch.vd.unireg.editique.mock.MockEditiqueService" />
+	<bean id="editiqueCompositionService" class="ch.vd.unireg.editique.mock.MockEditiqueCompositionService" />
+	<bean id="impressionDIPPHelper" class="ch.vd.unireg.declaration.ordinaire.pp.MockImpressionDeclarationImpotPersonnesPhysiquesHelper" />
+	<bean id="impressionSommationDIPPHelper" class="ch.vd.unireg.declaration.ordinaire.pp.MockImpressionSommationDIPersonnesPhysiquesHelper" />
+	<bean id="impressionSommationDIPMHelper" class="ch.vd.unireg.declaration.ordinaire.pm.MockImpressionSommationDIPersonnesMoralesHelper" />
+	<bean id="impressionSommationLRHelper" class="ch.vd.unireg.declaration.source.MockImpressionSommationLRHelper" />
+	<bean id="impressionConfirmationDelaiPPHelper" class="ch.vd.unireg.declaration.ordinaire.pp.MockImpressionConfirmationDelaiPPHelper" />
+	<bean id="impressionRappelQSNCHelper" class="ch.vd.unireg.declaration.snc.MockImpressionRappelQuestionnaireSNCHelper"/>
 
-	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.MockEvenementDocumentSortantSender"/>
+	<bean id="evenementDocumentSortantSender" class="ch.vd.unireg.evenement.docsortant.MockEvenementDocumentSortantSender"/>
 
-	<bean id="serviceIDEService" class="ch.vd.uniregctb.evenement.ide.MockServiceIDEService"/>
+	<bean id="serviceIDEService" class="ch.vd.unireg.evenement.ide.MockServiceIDEService"/>
 
 </beans>

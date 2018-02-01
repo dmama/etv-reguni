@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -17,10 +17,10 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.technical.esb.jms.EsbMessageListenerContainer;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
 
 /**
  * Classe d'entrée des messages JMS de l'ESB dans Unireg, et qui loggue les appels et les
@@ -152,7 +152,7 @@ public class GentilEsbMessageListenerContainer extends EsbMessageListenerContain
 	/**
 	 * Appel du handler
 	 * @param message message à traiter
-	 * @throws ch.vd.uniregctb.jms.EsbBusinessException en cas de problème métier à envoyer en queue d'erreur
+	 * @throws ch.vd.unireg.jms.EsbBusinessException en cas de problème métier à envoyer en queue d'erreur
 	 * @throws Exception en cas de souci... causera un renvoi en DLQ
 	 */
 	private void handle(EsbMessage message) throws Exception {

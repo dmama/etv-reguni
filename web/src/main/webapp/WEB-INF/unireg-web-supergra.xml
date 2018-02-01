@@ -2,23 +2,23 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="superGraController" class="ch.vd.uniregctb.supergra.SuperGraController">
+	<bean id="superGraController" class="ch.vd.unireg.supergra.SuperGraController">
 		<property name="manager" ref="superGraManager"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="pp2McValidator" ref="pp2McValidator"/>
 		<property name="mc2PpValidator" ref="mc2PpValidator"/>
 	</bean>
 
-	<bean id="pp2McValidator" class="ch.vd.uniregctb.supergra.validators.Pp2McValidator">
+	<bean id="pp2McValidator" class="ch.vd.unireg.supergra.validators.Pp2McValidator">
 		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
-	<bean id="mc2PpValidator" class="ch.vd.uniregctb.supergra.validators.Mc2PpValidator">
+	<bean id="mc2PpValidator" class="ch.vd.unireg.supergra.validators.Mc2PpValidator">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="serviceCivil" ref="serviceCivilService"/>
 	</bean>
 
-	<bean id="superGraManager" class="ch.vd.uniregctb.supergra.SuperGraManagerImpl">
+	<bean id="superGraManager" class="ch.vd.unireg.supergra.SuperGraManagerImpl">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="annotatedClass" ref="hibernateAnnotatedClasses"/>

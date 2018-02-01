@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.unireg.type.CategorieImpotSource;
 
 /**
  * Classe de transtypage pour Hibernate : CategorieImpotSource <--> varchar

@@ -8,10 +8,10 @@
 	<!-- Job de testing in container -->
 	<bean id="inContainerTestingJob"
 			parent="schedulerJob"
-			class="ch.vd.uniregctb.testing.InContainerTestingJob" >
+			class="ch.vd.unireg.testing.InContainerTestingJob" >
 
 		<constructor-arg>
-			<util:constant static-field="ch.vd.uniregctb.testing.InContainerTestingJob.NAME" />
+			<util:constant static-field="ch.vd.unireg.testing.InContainerTestingJob.NAME" />
 		</constructor-arg>
 		<constructor-arg value="2" />
 		<constructor-arg value="IT - In container testing" />
@@ -29,7 +29,7 @@
 	</bean>
 	
 	<!-- Class abstraite de testing -->
-	<bean id="inContainerTest" abstract="true" class="ch.vd.uniregctb.testing.InContainerTest" >
+	<bean id="inContainerTest" abstract="true" class="ch.vd.unireg.testing.InContainerTest" >
 		<property name="dataSource" ref="dataSource" />
 		<property name="globalTiersIndexer" ref="globalTiersIndexer" />
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -38,17 +38,17 @@
 	</bean>
 
 	<!-- Test de la DAO des Tiers -->
-	<bean id="icTiersDAOTest" class="ch.vd.uniregctb.testing.IcTiersDAOTest" parent="inContainerTest" >
+	<bean id="icTiersDAOTest" class="ch.vd.unireg.testing.IcTiersDAOTest" parent="inContainerTest" >
 	</bean>
 
 	<!-- Test de l'indexer -->
-	<bean id="icGlobalIndex" class="ch.vd.uniregctb.testing.IcGlobalIndexTest" parent="inContainerTest">
+	<bean id="icGlobalIndex" class="ch.vd.unireg.testing.IcGlobalIndexTest" parent="inContainerTest">
 		<property name="globalTiersSearcher" ref="globalTiersSearcher" />
 		<property name="globalTiersIndexer" ref="globalTiersIndexer" />
 	</bean>
 
 	<!-- Test le traitement des evt civils -->
-	<bean id="icEvtCivilNaissanceTest" class="ch.vd.uniregctb.testing.IcEvtCivilNaissanceTest" parent="inContainerTest">
+	<bean id="icEvtCivilNaissanceTest" class="ch.vd.unireg.testing.IcEvtCivilNaissanceTest" parent="inContainerTest">
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 		<property name="serviceCivil" ref="serviceCivilService" />

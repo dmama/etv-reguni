@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.unireg.webservices.party3.data;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -9,12 +9,12 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.webservices.party3.EnumTest;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.webservices.party3.EnumTest;
+import ch.vd.unireg.webservices.party3.impl.EnumHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

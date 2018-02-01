@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.util.Iterator;
 import java.util.List;
@@ -12,7 +12,7 @@ import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.Interruptible;
 
 /**
- * Classe utilitaire qui reprend la fonctionnalité du {@link ch.vd.uniregctb.common.BatchTransactionTemplateWithResults} et ajoute celle de traiter les lots avec <i>n</i> threads en parallèle.
+ * Classe utilitaire qui reprend la fonctionnalité du {@link ch.vd.unireg.common.BatchTransactionTemplateWithResults} et ajoute celle de traiter les lots avec <i>n</i> threads en parallèle.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;

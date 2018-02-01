@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.before2016.InfoCommunePM;
-import ch.vd.uniregctb.role.before2016.InfoContribuablePM;
-import ch.vd.uniregctb.role.before2016.ProduireRolesPMCommunesResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.role.before2016.InfoCommunePM;
+import ch.vd.unireg.role.before2016.InfoContribuablePM;
+import ch.vd.unireg.role.before2016.ProduireRolesPMCommunesResults;
 
 public class PdfRolesPMCommunesRapport extends PdfRolesCommunesRapport<ProduireRolesPMCommunesResults, InfoContribuablePM, InfoCommunePM> {
 

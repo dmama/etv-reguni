@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml;
+package ch.vd.unireg.xml;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class DataHelperTest extends WithoutSpringTest {
 

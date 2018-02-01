@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * @author Raphaël Marmier, 2016-04-22, <raphael.marmier@vd.ch>

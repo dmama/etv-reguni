@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
 import ch.vd.registre.base.dao.GenericDAO;
 

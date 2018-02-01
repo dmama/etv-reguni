@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,10 +10,10 @@ import org.springframework.core.io.Resource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 public class EvenementFiscalV4SenderItTest extends EvenementTest {
 

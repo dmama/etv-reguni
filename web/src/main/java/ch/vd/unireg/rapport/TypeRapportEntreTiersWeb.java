@@ -1,9 +1,9 @@
 /**
  *
  */
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public enum TypeRapportEntreTiersWeb {
 	TUTELLE,

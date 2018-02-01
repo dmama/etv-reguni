@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.search;
+package ch.vd.unireg.search;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.avatar.TypeAvatar;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.indexer.tiers.TopList;
+import ch.vd.unireg.avatar.TypeAvatar;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.indexer.tiers.TopList;
 
 @SuppressWarnings("UnusedDeclaration")
 public class SearchTiersResults {

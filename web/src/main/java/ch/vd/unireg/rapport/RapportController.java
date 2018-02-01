@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -33,47 +33,47 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.rapport.manager.RapportEditManager;
-import ch.vd.uniregctb.rapport.view.RapportListView;
-import ch.vd.uniregctb.rapport.view.RapportView;
-import ch.vd.uniregctb.rapport.view.SetPrincipalView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.ContactImpotSource;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
-import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
-import ch.vd.uniregctb.tiers.RepresentationLegale;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.manager.AutorisationManager;
-import ch.vd.uniregctb.tiers.validator.RapportEditValidator;
-import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
-import ch.vd.uniregctb.tiers.view.DebiteurView;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.rapport.manager.RapportEditManager;
+import ch.vd.unireg.rapport.view.RapportListView;
+import ch.vd.unireg.rapport.view.RapportView;
+import ch.vd.unireg.rapport.view.SetPrincipalView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.ContactImpotSource;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportEntreTiersDAO;
+import ch.vd.unireg.tiers.RapportEntreTiersKey;
+import ch.vd.unireg.tiers.RepresentationLegale;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.manager.AutorisationManager;
+import ch.vd.unireg.tiers.validator.RapportEditValidator;
+import ch.vd.unireg.tiers.validator.TiersCriteriaValidator;
+import ch.vd.unireg.tiers.view.DebiteurView;
+import ch.vd.unireg.tiers.view.TiersEditView;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/rapport")
@@ -543,7 +543,7 @@ public class RapportController {
 	 * @param page      le numéro de page à retourner
 	 * @param pageSize  la taille des pages
 	 * @return les informations nécessaire à l'affichage d'une page de rapports du contribuable.
-	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 * @throws ch.vd.unireg.security.AccessDeniedException
 	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@ResponseBody
@@ -593,7 +593,7 @@ public class RapportController {
 	 *
 	 * @param tiersId   le numéro de tiers
 	 * @return les informations nécessaire à l'affichage d'une page de parentés du contribuable.
-	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 * @throws ch.vd.unireg.security.AccessDeniedException
 	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@ResponseBody
@@ -624,7 +624,7 @@ public class RapportController {
 	 *
 	 * @param tiersId le numéro de tiers
 	 * @return une liste de liens vers les débiteurs associés sous format JSON
-	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 * @throws ch.vd.unireg.security.AccessDeniedException
 	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@ResponseBody
@@ -651,7 +651,7 @@ public class RapportController {
 	 *
 	 * @param tiersId le numéro de tiers
 	 * @return une liste de liens vers les établissements sous format JSON
-	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 * @throws ch.vd.unireg.security.AccessDeniedException
 	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@ResponseBody

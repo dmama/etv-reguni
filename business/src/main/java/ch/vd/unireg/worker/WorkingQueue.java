@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.worker;
+package ch.vd.unireg.worker;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.InstantHelper;
-import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.unireg.common.ProgrammingException;
 
 public class WorkingQueue<T> {
 

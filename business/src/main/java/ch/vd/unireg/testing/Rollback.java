@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.testing;
+package ch.vd.unireg.testing;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

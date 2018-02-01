@@ -25,7 +25,7 @@
 						</table>
 					</authz:authorize>
 
-					<display:table name="fors" id="forFiscal" pagesize="10" requestURI="list.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+					<display:table name="fors" id="forFiscal" pagesize="10" requestURI="list.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 						<%-- Commune du for --%>
 						<display:column sortable="true" titleKey="label.commune">

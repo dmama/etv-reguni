@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.deces;
+package ch.vd.unireg.deces;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -21,22 +21,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.deces.view.DecesRecapView;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.metier.MetierService;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.deces.view.DecesRecapView;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.metier.MetierService;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.utils.RegDateEditor;
 
-import static ch.vd.uniregctb.tiers.AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME;
+import static ch.vd.unireg.tiers.AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME;
 
 @Controller
 @RequestMapping(value = "/deces")

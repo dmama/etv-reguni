@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.type.MotifFor;
 
 public interface EditForAvecMotifsView extends EditForView {
 

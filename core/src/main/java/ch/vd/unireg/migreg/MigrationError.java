@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migreg;
+package ch.vd.unireg.migreg;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.type.TypeMigRegError;
+import ch.vd.unireg.type.TypeMigRegError;
 
 @Entity
 @Table(name = "MIGREG_ERROR")

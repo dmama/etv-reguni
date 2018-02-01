@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.declaration.view;
+package ch.vd.unireg.declaration.view;
 
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 public class DeclarationView extends DocumentFiscalView {
 

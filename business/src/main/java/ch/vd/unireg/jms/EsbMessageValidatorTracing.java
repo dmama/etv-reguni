@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
-import ch.vd.uniregctb.stats.ServiceTracing;
+import ch.vd.unireg.stats.ServiceTracing;
 
 /**
  * Implémentation de tracing de la validation des messages ESB sortants

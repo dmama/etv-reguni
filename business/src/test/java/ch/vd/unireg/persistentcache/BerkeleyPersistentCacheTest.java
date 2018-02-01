@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.persistentcache;
+package ch.vd.unireg.persistentcache;
 
 import java.io.Serializable;
 
 import org.junit.Test;
 
 import ch.vd.unireg.cache.BerkeleyPersistentCache;
-import ch.vd.uniregctb.cache.ObjectKey;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.cache.ObjectKey;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

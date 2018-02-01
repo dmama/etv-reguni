@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,17 +9,17 @@ import org.springframework.validation.Errors;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.validation.fors.ForDebiteurPrestationImposableValidator;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.tiers.validator.MotifsForHelper;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.validation.fors.ForDebiteurPrestationImposableValidator;
 
 public class AddForDebiteurValidator extends AddForAvecMotifsValidator {
 

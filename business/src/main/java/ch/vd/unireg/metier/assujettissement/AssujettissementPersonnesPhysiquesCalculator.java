@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,22 +19,22 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.metier.common.DecalageDateHelper;
-import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
-import ch.vd.uniregctb.metier.common.Fraction;
-import ch.vd.uniregctb.metier.common.Fractionnements;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.metier.common.DecalageDateHelper;
+import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
+import ch.vd.unireg.metier.common.Fraction;
+import ch.vd.unireg.metier.common.Fractionnements;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.tiers.ForsParType;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Le calculateur d'assujettissement selon le régime des personnes physiques
@@ -115,10 +115,10 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	 * du jour d'arrivée jusqu'au jour de départ, précisemment.</li> <li><i>for fiscal secondaire</i> : valable du 1er janvier de l'année d'ouverture jusqu'au 31 décembre de l'année de fermeture.</li>
 	 * </ul> Il s'agit donc de règles générales, qui ne tiennent pas compte des fractionnements et des cas particuliers (voir ci-dessous).
 	 * <p/>
-	 * Les méthodes {@link #determineDateDebutAssujettissement(ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext, ch.vd.uniregctb.metier.common.Fractionnements)}
-	 * et {@link #determineDateFinAssujettissement(ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext, ch.vd.uniregctb.metier.common.Fractionnements)} déterminent
-	 * les durées des assujettissements pour raison de domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext)}
-	 * et {@link #determineDateFinNonAssujettissement(ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour
+	 * Les méthodes {@link #determineDateDebutAssujettissement(ch.vd.unireg.metier.common.ForFiscalPrincipalContext, ch.vd.unireg.metier.common.Fractionnements)}
+	 * et {@link #determineDateFinAssujettissement(ch.vd.unireg.metier.common.ForFiscalPrincipalContext, ch.vd.unireg.metier.common.Fractionnements)} déterminent
+	 * les durées des assujettissements pour raison de domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ch.vd.unireg.metier.common.ForFiscalPrincipalContext)}
+	 * et {@link #determineDateFinNonAssujettissement(ch.vd.unireg.metier.common.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour
 	 * raison de domicile hors-canton ou hors-Suisse (qui ne correspondent pas à des assujettissements vaudois et sont donc appelés des "non-assujettissements". Ces "non-assujettissements" sont
 	 * nécessaires plus tard pour fusionner les assujettissements économiques).
 	 * <p/>
@@ -1177,7 +1177,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		/**
 		 * Collections des motifs d'ouverture de for qui ne donnent normalement pas lieu à un début d'assujettissement
 		 * ou qui doivent, le cas échéant, laisser la priorité au motif d'ouverture du for "économique" - si existant à la même date - dans la méthode
-		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
+		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
 		 */
 		@SuppressWarnings({"deprecation"})
 		private static final Set<MotifAssujettissement> DEBUT_ASSUJETTISSEMENT = EnumSet.of(MotifAssujettissement.INDETERMINE,
@@ -1189,7 +1189,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		/**
 		 * Collections des motifs de fermeture de for qui ne donnent normalement pas lieu à une fin d'assujettissement
 		 * ou qui doivent, le cas échéant, laisser la priorité au motif de fermeture du for "économique" - si existant à la même date - dans la méthode
-		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
+		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
 		 */
 		@SuppressWarnings({"deprecation"})
 		private static final Set<MotifAssujettissement> FIN_ASSUJETTISSEMENT = EnumSet.of(MotifAssujettissement.INDETERMINE,

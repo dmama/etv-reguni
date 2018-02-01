@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.lucene;
+package ch.vd.unireg.indexer.lucene;
 
 import java.io.StringReader;
 
@@ -15,9 +15,9 @@ import org.apache.lucene.search.WildcardQuery;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.simpleindexer.LuceneData;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.OurOwnFrenchAnalyzer;
-import ch.vd.uniregctb.indexer.OurOwnStandardAnalyzer;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.OurOwnFrenchAnalyzer;
+import ch.vd.unireg.indexer.OurOwnStandardAnalyzer;
 
 /**
  * Classe aidant a transformer les criteres de recherche en Lucene Query

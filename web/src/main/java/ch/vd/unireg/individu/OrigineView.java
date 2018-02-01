@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.individu;
+package ch.vd.unireg.individu;
 
 import java.io.Serializable;
 
-import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
+import ch.vd.unireg.tiers.OriginePersonnePhysique;
 
 public class OrigineView implements Serializable {
 

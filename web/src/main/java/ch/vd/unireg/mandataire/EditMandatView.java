@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
-import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.Mandat;
+import ch.vd.unireg.type.TypeMandat;
 
 public class EditMandatView implements DateRange {
 

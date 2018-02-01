@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="docsAvecSuivi" type="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalListView"--%>
+<%--@elvariable id="docsAvecSuivi" type="ch.vd.unireg.documentfiscal.AutreDocumentFiscalListView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
@@ -20,7 +20,7 @@
 
 			<%--@elvariable id="isRadieeRCOuDissoute" type="java.lang.Boolean"--%>
 			<%--@elvariable id="typesLettreBienvenue" type="java.util.List"--%>
-			<%--@elvariable id="print" type="ch.vd.uniregctb.documentfiscal.ImprimerAutreDocumentFiscalView"--%>
+			<%--@elvariable id="print" type="ch.vd.unireg.documentfiscal.ImprimerAutreDocumentFiscalView"--%>
 			<form:form commandName="print" action="print.do" id="newDocForm" onsubmit="return NewAutreDoc.print();">
 
 				<form:hidden path="noEntreprise"/>
@@ -220,8 +220,8 @@
 			<legend><span><fmt:message key="label.autres.documents.fiscaux.suivis" /></span></legend>
 
 			<c:if test="${not empty docsAvecSuivi.docs}">
-				<%--@elvariable id="doc" type="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView"--%>
-				<display:table name="docsAvecSuivi.docs" id="doc" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/autresdocs/edit-list.do" sort="list">
+				<%--@elvariable id="doc" type="ch.vd.unireg.documentfiscal.AutreDocumentFiscalView"--%>
+				<display:table name="docsAvecSuivi.docs" id="doc" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" requestURI="/autresdocs/edit-list.do" sort="list">
 					<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.doc.trouve" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.doc.trouve" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.docs.trouves" /></span></display:setProperty>
@@ -288,7 +288,7 @@
 
 			<c:choose>
 				<c:when test="${not empty documents}">
-					<display:table name="${documents}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
+					<display:table name="${documents}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
 						<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
 							${docFiscal.libelleTypeDocument}
 						</display:column>

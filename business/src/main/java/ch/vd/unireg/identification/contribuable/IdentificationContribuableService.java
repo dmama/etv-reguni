@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,18 +9,18 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
-import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresEntreprise;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresPersonne;
+import ch.vd.unireg.evenement.identification.contribuable.Erreur;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 /**
  * Service d'identification de contribuable (fonctionnalité initialement demandée par l'application Meldewesen).

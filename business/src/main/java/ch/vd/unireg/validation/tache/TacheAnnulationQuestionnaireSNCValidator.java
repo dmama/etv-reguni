@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.tache;
+package ch.vd.unireg.validation.tache;
 
-import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
+import ch.vd.unireg.tiers.TacheAnnulationQuestionnaireSNC;
 
 public class TacheAnnulationQuestionnaireSNCValidator extends TacheValidator<TacheAnnulationQuestionnaireSNC> {
 

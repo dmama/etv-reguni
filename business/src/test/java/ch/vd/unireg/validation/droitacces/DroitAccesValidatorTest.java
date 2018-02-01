@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.validation.droitacces;
+package ch.vd.unireg.validation.droitacces;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
 

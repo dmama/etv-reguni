@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.Optional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 @Entity
 public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {

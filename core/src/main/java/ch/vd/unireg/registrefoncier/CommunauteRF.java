@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,9 +20,9 @@ import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.tiers.Contribuable;
 
 /**
  * Une communauté représente un groupement de tiers qui possèdent ensemble un droit sur un immeuble.

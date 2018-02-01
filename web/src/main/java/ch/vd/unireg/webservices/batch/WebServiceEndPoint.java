@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.batch;
+package ch.vd.unireg.webservices.batch;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -32,23 +32,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
-import ch.vd.uniregctb.scheduler.JobParamEnum;
-import ch.vd.uniregctb.scheduler.JobParamMultiSelectEnum;
-import ch.vd.uniregctb.scheduler.JobParamType;
-import ch.vd.uniregctb.ubr.JobConstants;
-import ch.vd.uniregctb.ubr.JobDescription;
-import ch.vd.uniregctb.ubr.JobNames;
-import ch.vd.uniregctb.ubr.JobParamDescription;
-import ch.vd.uniregctb.ubr.JobStatus;
-import ch.vd.uniregctb.ubr.JobWaitInformation;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.document.Document;
+import ch.vd.unireg.document.DocumentService;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobAlreadyStartedException;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamDynamicEnum;
+import ch.vd.unireg.scheduler.JobParamEnum;
+import ch.vd.unireg.scheduler.JobParamMultiSelectEnum;
+import ch.vd.unireg.scheduler.JobParamType;
+import ch.vd.unireg.ubr.JobConstants;
+import ch.vd.unireg.ubr.JobDescription;
+import ch.vd.unireg.ubr.JobNames;
+import ch.vd.unireg.ubr.JobParamDescription;
+import ch.vd.unireg.ubr.JobStatus;
+import ch.vd.unireg.ubr.JobWaitInformation;
 
 public class WebServiceEndPoint implements WebService {
 

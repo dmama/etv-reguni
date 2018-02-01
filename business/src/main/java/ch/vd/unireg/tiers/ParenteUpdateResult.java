@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
+import ch.vd.unireg.parentes.ParenteUpdateInfo;
 
 public final class ParenteUpdateResult {
 

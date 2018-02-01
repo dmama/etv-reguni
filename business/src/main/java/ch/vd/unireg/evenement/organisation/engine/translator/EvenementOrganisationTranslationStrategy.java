@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.organisation.engine.translator;
+package ch.vd.unireg.evenement.organisation.engine.translator;
 
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.tiers.Entreprise;
 
 public interface EvenementOrganisationTranslationStrategy {
 

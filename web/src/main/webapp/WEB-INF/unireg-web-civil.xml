@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="civilEditController" class="ch.vd.uniregctb.tiers.CivilEditController">
+	<bean id="civilEditController" class="ch.vd.unireg.tiers.CivilEditController">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
@@ -11,7 +11,7 @@
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 	
-	<bean id="civilEntrepriseEditController" class="ch.vd.uniregctb.entreprise.CivilEntrepriseEditController">
+	<bean id="civilEntrepriseEditController" class="ch.vd.unireg.entreprise.CivilEntrepriseEditController">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
@@ -21,7 +21,7 @@
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
-	<bean id="civilEtablissementEditController" class="ch.vd.uniregctb.entreprise.CivilEtablissementEditController">
+	<bean id="civilEtablissementEditController" class="ch.vd.unireg.entreprise.CivilEtablissementEditController">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="entrepriseService" ref="entrepriseService"/>

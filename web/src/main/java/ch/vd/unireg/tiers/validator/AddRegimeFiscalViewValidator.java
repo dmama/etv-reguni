@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.tiers.view.AddRegimeFiscalView;
+import ch.vd.unireg.tiers.view.AddRegimeFiscalView;
 
 public class AddRegimeFiscalViewValidator extends AbstractRegimeFiscalViewValidator implements Validator {
 

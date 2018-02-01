@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 public interface ValidatorHelper {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.async;
+package ch.vd.unireg.indexer.async;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,13 +25,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.indexer.IndexerBatchException;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAOImpl;
-import ch.vd.uniregctb.worker.BatchWorker;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.indexer.IndexerBatchException;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexerImpl;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAOImpl;
+import ch.vd.unireg.worker.BatchWorker;
 
 
 public class TiersIndexerWorker implements BatchWorker<Long> {

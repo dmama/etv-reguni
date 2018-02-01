@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 
 /**
  * Classe de base des actions d'envoi de DI

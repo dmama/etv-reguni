@@ -20,8 +20,8 @@ import ch.vd.unireg.interfaces.upi.ServiceUpiException;
 import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.type.Sexe;
 
 public class ServiceUpiRCPers implements ServiceUpiRaw {
 

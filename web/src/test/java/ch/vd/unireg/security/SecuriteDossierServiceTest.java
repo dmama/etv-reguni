@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.List;
 import java.util.Map;
@@ -24,9 +24,9 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 
 public class ServiceOrganisationImpl implements ServiceOrganisationService {
 

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
-import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.unireg.common.ObjectNotFoundException;
 
 /**
  * Exception spécialisée pour signaler proprement les cas où il n'est pas possible de trouver une organisation.

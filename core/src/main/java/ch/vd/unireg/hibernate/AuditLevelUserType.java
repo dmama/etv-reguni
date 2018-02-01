@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.audit.AuditLevel;
+import ch.vd.unireg.audit.AuditLevel;
 
 /**
  * Classe de transtypage pour Hibernate : AuditLevel <--> varchar

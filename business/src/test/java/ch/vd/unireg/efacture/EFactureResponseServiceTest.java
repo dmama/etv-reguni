@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -7,8 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.InstantHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.stats.MockStatsService;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.stats.MockStatsService;
 
 public class EFactureResponseServiceTest extends WithoutSpringTest {
 

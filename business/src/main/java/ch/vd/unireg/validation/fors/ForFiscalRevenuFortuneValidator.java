@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.validation.fors;
+package ch.vd.unireg.validation.fors;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuFortune> extends ForFiscalAvecMotifsValidator<T> {
 

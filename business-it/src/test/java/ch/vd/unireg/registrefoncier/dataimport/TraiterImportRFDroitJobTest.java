@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,30 +13,30 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.store.raft.ZipRaftEsbStore;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.Fraction;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
-import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.TypeCommunaute;
+import ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.unireg.registrefoncier.dao.CommuneRFDAO;
+import ch.vd.unireg.registrefoncier.dao.DroitRFDAO;
+import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobDefinition;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -74,7 +74,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 	public void testImportDroitsBaseVide() throws Exception {
 
 		// on va chercher le fichier d'import
-		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_droits_rf_hebdo.xml");
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_droits_rf_hebdo.xml");
 		assertNotNull(importFile);
 
 		// on l'upload dans Raft
@@ -305,7 +305,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 		final RegDate dateTroisiemeImport = RegDate.get(2016, 10, 1);
 
 		// on va chercher le fichier d'import
-		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_droits_rf_hebdo.xml");
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_droits_rf_hebdo.xml");
 		assertNotNull(importFile);
 
 		// on l'upload dans Raft
@@ -419,7 +419,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 	public void testImportDroitsAvecModifications() throws Exception {
 
 		// on va chercher le fichier d'import
-		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_droits_rf_hebdo.xml");
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_droits_rf_hebdo.xml");
 		assertNotNull(importFile);
 
 		// on l'upload dans Raft
@@ -601,7 +601,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 	public void testImportSuppressionDeDroits() throws Exception {
 
 		// on va chercher le fichier d'import
-		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_droits_vides_rf_hebdo.xml");
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_droits_vides_rf_hebdo.xml");
 		assertNotNull(importFile);
 
 		// on l'upload dans Raft

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.unireg.registrefoncier.EstimationRF;
 
-import static ch.vd.uniregctb.common.WithoutSpringTest.assertEmpty;
+import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

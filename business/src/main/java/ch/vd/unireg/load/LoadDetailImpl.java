@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.load;
+package ch.vd.unireg.load;
 
 import java.time.Duration;
 import java.time.Instant;
 
 import ch.vd.registre.base.date.InstantHelper;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.stats.LoadDetail;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.stats.LoadDetail;
 
 public class LoadDetailImpl<T> implements LoadDetail {
 	

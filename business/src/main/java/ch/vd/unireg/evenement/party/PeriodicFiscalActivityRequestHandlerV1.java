@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,15 +17,15 @@ import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.xml.ServiceException;
 
 public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandlerV1<PeriodicFiscalActivityRequest> {
 

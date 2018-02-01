@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -7,7 +7,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.utils.WebContextUtils;
 
 /**
  * Ce tag permet d'afficher un lien permettant d'afficher ou de réduire les lignes d'un tableau.

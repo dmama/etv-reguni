@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.cache;
+package ch.vd.unireg.cache;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.tiers.TiersDAO;
 
 /**
  * Service de préchauffage du cache du service civil

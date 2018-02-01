@@ -10,7 +10,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.unireg.type.TexteCasePostale;
 
 public class MockCollectiviteAdministrative implements CollectiviteAdministrative {
 

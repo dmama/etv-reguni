@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

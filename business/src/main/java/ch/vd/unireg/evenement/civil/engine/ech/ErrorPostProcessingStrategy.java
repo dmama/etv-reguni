@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.List;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
 
 /**
  * Interface implémentée par les stratégies de post-processing du reliquat des événements

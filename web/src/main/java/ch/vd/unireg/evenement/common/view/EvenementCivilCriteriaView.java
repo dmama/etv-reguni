@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.common.view;
+package ch.vd.unireg.evenement.common.view;
 
 import java.util.Date;
 
@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.type.EtatEvenementCivil;
 
 abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT> > extends EvenementCivilCriteria<TYPE_EVT> {
 

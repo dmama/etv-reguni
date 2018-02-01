@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.common;
+package ch.vd.unireg.norentes.common;
 
 import java.util.Collection;
 
@@ -6,10 +6,10 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.norentes.annotation.AfterClass;
-import ch.vd.uniregctb.norentes.annotation.BeforeClass;
-import ch.vd.uniregctb.norentes.annotation.EtapeAttribute;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.norentes.annotation.AfterClass;
+import ch.vd.unireg.norentes.annotation.BeforeClass;
+import ch.vd.unireg.norentes.annotation.EtapeAttribute;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public  abstract class NorentesScenario implements InitializingBean, BeanNameAware {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.export;
+package ch.vd.unireg.export;
 
 import org.displaytag.export.BaseExportView;
 

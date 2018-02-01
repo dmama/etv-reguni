@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="separationController" class="ch.vd.uniregctb.separation.SeparationController">
+	<bean id="separationController" class="ch.vd.unireg.separation.SeparationController">
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="messageSource" ref="messageSource"/>
@@ -11,19 +11,19 @@
 		<property name="separationRecapValidator" ref="separationRecapValidator"/>
 	</bean>
 
-	<bean id="separationRecapManager" class="ch.vd.uniregctb.separation.manager.SeparationRecapManagerImpl"  >
+	<bean id="separationRecapManager" class="ch.vd.unireg.separation.manager.SeparationRecapManagerImpl"  >
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 	</bean>
 
-	<bean id="separationRecapValidator" class="ch.vd.uniregctb.separation.validator.SeparationRecapValidator" >
+	<bean id="separationRecapValidator" class="ch.vd.unireg.separation.validator.SeparationRecapValidator" >
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="validatorHelper" ref="validatorHelper" />
 	</bean>
 
-	<bean id="annulationSeparationController" class="ch.vd.uniregctb.annulation.separation.AnnulationSeparationController">
+	<bean id="annulationSeparationController" class="ch.vd.unireg.annulation.separation.AnnulationSeparationController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="messageSource" ref="messageSource"/>
 		<property name="controllerUtils" ref="controllerUtils"/>

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
-import ch.vd.uniregctb.common.LiteralStringHelper;
+import ch.vd.unireg.common.LiteralStringHelper;
 
 public class RaisonSocialeViewValidator extends DateRangeViewValidator<RaisonSocialeView> {
 

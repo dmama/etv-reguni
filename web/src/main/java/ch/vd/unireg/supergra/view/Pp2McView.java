@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra.view;
+package ch.vd.unireg.supergra.view;
 
 import ch.vd.registre.base.date.RegDate;
 

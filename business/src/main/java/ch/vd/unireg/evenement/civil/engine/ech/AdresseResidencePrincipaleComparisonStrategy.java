@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseResidencePrincipaleComparisonStrategy extends AdresseResidenceComparisonStrategy {
 

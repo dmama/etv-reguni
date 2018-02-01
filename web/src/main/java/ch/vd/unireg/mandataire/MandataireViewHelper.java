@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import java.util.Comparator;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 public abstract class MandataireViewHelper {
 

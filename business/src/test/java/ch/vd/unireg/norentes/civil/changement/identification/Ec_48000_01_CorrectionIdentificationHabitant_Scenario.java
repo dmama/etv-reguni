@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.civil.changement.identification;
+package ch.vd.unireg.norentes.civil.changement.identification;
 
 import java.util.List;
 
@@ -11,16 +11,16 @@ import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.norentes.annotation.Check;
-import ch.vd.uniregctb.norentes.annotation.Etape;
-import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.norentes.annotation.Check;
+import ch.vd.unireg.norentes.annotation.Etape;
+import ch.vd.unireg.norentes.common.EvenementCivilScenario;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TexteCasePostale;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends EvenementCivilScenario {
 

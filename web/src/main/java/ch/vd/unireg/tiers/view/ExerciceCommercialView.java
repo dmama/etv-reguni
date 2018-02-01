@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 
 public class ExerciceCommercialView implements DateRange {
 

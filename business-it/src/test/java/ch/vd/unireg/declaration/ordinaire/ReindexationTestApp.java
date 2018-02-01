@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.declaration.ordinaire;
+package ch.vd.unireg.declaration.ordinaire;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BusinessItTestApplication;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BusinessItTestApplication;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 
 /**
  * Programme de test des performances de la ré-indexation. Il s'agit d'un programme stand-alone car le plugin jProfiler

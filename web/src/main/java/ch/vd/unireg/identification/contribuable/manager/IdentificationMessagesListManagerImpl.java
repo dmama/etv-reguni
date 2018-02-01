@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable.manager;
+package ch.vd.unireg.identification.contribuable.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,23 +11,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.identification.contribuable.IdentifiantUtilisateur;
-import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
-import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcher;
-import ch.vd.uniregctb.indexer.messageidentification.MessageIdentificationIndexedData;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.evenement.identification.contribuable.IdentCtbDAO;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.identification.contribuable.IdentifiantUtilisateur;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.identification.contribuable.view.IdentificationContribuableListCriteria;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesResultView;
+import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationSearcher;
+import ch.vd.unireg.indexer.messageidentification.MessageIdentificationIndexedData;
 
 public class IdentificationMessagesListManagerImpl implements IdentificationMessagesListManager {
 

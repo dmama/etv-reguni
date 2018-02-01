@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.mariage;
+package ch.vd.unireg.norentes.civil.mariage;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Test du scénario de reconstitution d'un ménage commun à partir de deux ménages communs incomplets.

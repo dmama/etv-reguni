@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.log;
+package ch.vd.unireg.log;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.log.RollingInMemoryWriter;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.log.RollingInMemoryWriter;
 
 public class RollingInMemoryWriterTest extends WithoutSpringTest {
 

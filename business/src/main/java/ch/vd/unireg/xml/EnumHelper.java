@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml;
+package ch.vd.unireg.xml;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -14,35 +14,35 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.xml.party.corporation.v5.LighteningType;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
-import ch.vd.uniregctb.avatar.TypeAvatar;
-import ch.vd.uniregctb.interfaces.model.CompteBancaire;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
-import ch.vd.uniregctb.registrefoncier.GenrePropriete;
-import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.FormeJuridique;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.StatutMenageCommun;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.avatar.TypeAvatar;
+import ch.vd.unireg.interfaces.model.CompteBancaire;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.TypeCommunaute;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCantonCommune;
+import ch.vd.unireg.tiers.AllegementFiscalConfederation;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.FormeJuridique;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.StatutMenageCommun;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.type.TypePermis;
 
 public abstract class EnumHelper {
 
-	public static ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus coreToXMLv1(ch.vd.uniregctb.type.EtatCivil etatCivil) {
+	public static ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus coreToXMLv1(ch.vd.unireg.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {
 			return null;
 		}
@@ -72,7 +72,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxpayer.v2.MaritalStatus coreToXMLv2(ch.vd.uniregctb.type.EtatCivil etatCivil) {
+	public static ch.vd.unireg.xml.party.taxpayer.v2.MaritalStatus coreToXMLv2(ch.vd.unireg.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {
 			return null;
 		}
@@ -102,7 +102,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus coreToXMLv3(ch.vd.uniregctb.type.EtatCivil etatCivil) {
+	public static ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus coreToXMLv3(ch.vd.unireg.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {
 			return null;
 		}
@@ -133,7 +133,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus coreToXMLv4(ch.vd.uniregctb.type.EtatCivil etatCivil) {
+	public static ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus coreToXMLv4(ch.vd.unireg.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {
 			return null;
 		}
@@ -164,7 +164,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxpayer.v5.MaritalStatus coreToXMLv5(ch.vd.uniregctb.type.EtatCivil etatCivil) {
+	public static ch.vd.unireg.xml.party.taxpayer.v5.MaritalStatus coreToXMLv5(ch.vd.unireg.type.EtatCivil etatCivil) {
 		if (etatCivil == null) {
 			return null;
 		}
@@ -512,7 +512,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxType coreToXMLv1(ch.vd.uniregctb.type.GenreImpot genreImpot) {
+	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxType coreToXMLv1(ch.vd.unireg.type.GenreImpot genreImpot) {
 		if (genreImpot == null) {
 			return null;
 		}
@@ -545,7 +545,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v2.TaxType coreToXMLv2(ch.vd.uniregctb.type.GenreImpot genreImpot) {
+	public static ch.vd.unireg.xml.party.taxresidence.v2.TaxType coreToXMLv2(ch.vd.unireg.type.GenreImpot genreImpot) {
 		if (genreImpot == null) {
 			return null;
 		}
@@ -578,7 +578,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxType coreToXMLv3(ch.vd.uniregctb.type.GenreImpot genreImpot) {
+	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxType coreToXMLv3(ch.vd.unireg.type.GenreImpot genreImpot) {
 		if (genreImpot == null) {
 			return null;
 		}
@@ -611,7 +611,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v4.TaxType coreToXMLv4(ch.vd.uniregctb.type.GenreImpot genreImpot) {
+	public static ch.vd.unireg.xml.party.taxresidence.v4.TaxType coreToXMLv4(ch.vd.unireg.type.GenreImpot genreImpot) {
 		if (genreImpot == null) {
 			return null;
 		}
@@ -644,7 +644,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason coreToXMLv1(ch.vd.uniregctb.type.MotifRattachement rattachement) {
+	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason coreToXMLv1(ch.vd.unireg.type.MotifRattachement rattachement) {
 		if (rattachement == null) {
 			return null;
 		}
@@ -683,7 +683,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason coreToXMLv2(ch.vd.uniregctb.type.MotifRattachement rattachement) {
+	public static ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason coreToXMLv2(ch.vd.unireg.type.MotifRattachement rattachement) {
 		if (rattachement == null) {
 			return null;
 		}
@@ -724,7 +724,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason coreToXMLv3(ch.vd.uniregctb.type.MotifRattachement rattachement) {
+	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason coreToXMLv3(ch.vd.unireg.type.MotifRattachement rattachement) {
 		if (rattachement == null) {
 			return null;
 		}
@@ -765,7 +765,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v4.TaxLiabilityReason coreToXMLv4(ch.vd.uniregctb.type.MotifRattachement rattachement) {
+	public static ch.vd.unireg.xml.party.taxresidence.v4.TaxLiabilityReason coreToXMLv4(ch.vd.unireg.type.MotifRattachement rattachement) {
 		if (rattachement == null) {
 			return null;
 		}
@@ -874,7 +874,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod coreToXMLv1(ch.vd.uniregctb.type.ModeImposition mode) {
+	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod coreToXMLv1(ch.vd.unireg.type.ModeImposition mode) {
 		if (mode == null) {
 			return null;
 		}
@@ -897,7 +897,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod coreToXMLv2(ch.vd.uniregctb.type.ModeImposition mode) {
+	public static ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod coreToXMLv2(ch.vd.unireg.type.ModeImposition mode) {
 		if (mode == null) {
 			return null;
 		}
@@ -920,7 +920,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod coreToXMLv3(ch.vd.uniregctb.type.ModeImposition mode) {
+	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod coreToXMLv3(ch.vd.unireg.type.ModeImposition mode) {
 		if (mode == null) {
 			return null;
 		}
@@ -943,7 +943,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v4.TaxationMethod coreToXMLv4(ch.vd.uniregctb.type.ModeImposition mode) {
+	public static ch.vd.unireg.xml.party.taxresidence.v4.TaxationMethod coreToXMLv4(ch.vd.unireg.type.ModeImposition mode) {
 		if (mode == null) {
 			return null;
 		}
@@ -1034,7 +1034,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod coreToXMLv1(ch.vd.uniregctb.type.PeriodeDecompte periodeDecompte) {
+	public static ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod coreToXMLv1(ch.vd.unireg.type.PeriodeDecompte periodeDecompte) {
 		if (periodeDecompte == null) {
 			return null;
 		}
@@ -1083,7 +1083,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod coreToXMLv2(ch.vd.uniregctb.type.PeriodeDecompte periodeDecompte) {
+	public static ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod coreToXMLv2(ch.vd.unireg.type.PeriodeDecompte periodeDecompte) {
 		if (periodeDecompte == null) {
 			return null;
 		}
@@ -1132,7 +1132,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriod coreToXMLv3(ch.vd.uniregctb.type.PeriodeDecompte periodeDecompte) {
+	public static ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriod coreToXMLv3(ch.vd.unireg.type.PeriodeDecompte periodeDecompte) {
 		if (periodeDecompte == null) {
 			return null;
 		}
@@ -1181,7 +1181,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity coreToXMLv1(ch.vd.uniregctb.type.PeriodiciteDecompte periodiciteDecompte) {
+	public static ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity coreToXMLv1(ch.vd.unireg.type.PeriodiciteDecompte periodiciteDecompte) {
 		if (periodiciteDecompte == null) {
 			return null;
 		}
@@ -1202,7 +1202,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity coreToXMLv2(ch.vd.uniregctb.type.PeriodiciteDecompte periodiciteDecompte) {
+	public static ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity coreToXMLv2(ch.vd.unireg.type.PeriodiciteDecompte periodiciteDecompte) {
 		if (periodiciteDecompte == null) {
 			return null;
 		}
@@ -1223,7 +1223,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity coreToXMLv3(ch.vd.uniregctb.type.PeriodiciteDecompte periodiciteDecompte) {
+	public static ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity coreToXMLv3(ch.vd.unireg.type.PeriodiciteDecompte periodiciteDecompte) {
 		if (periodiciteDecompte == null) {
 			return null;
 		}
@@ -1244,7 +1244,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory coreToXMLv1(ch.vd.uniregctb.type.CategorieEtranger categorie) {
+	public static ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory coreToXMLv1(ch.vd.unireg.type.CategorieEtranger categorie) {
 		if (categorie == null) {
 			return null;
 		}
@@ -1281,7 +1281,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory coreToXMLv2(ch.vd.uniregctb.type.CategorieEtranger categorie) {
+	public static ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory coreToXMLv2(ch.vd.unireg.type.CategorieEtranger categorie) {
 		if (categorie == null) {
 			return null;
 		}
@@ -1318,7 +1318,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType coreToXMLv3(ch.vd.uniregctb.type.CategorieEtranger categorie) {
+	public static ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType coreToXMLv3(ch.vd.unireg.type.CategorieEtranger categorie) {
 		if (categorie == null) {
 			return null;
 		}
@@ -1355,7 +1355,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType coreToXMLv4(ch.vd.uniregctb.type.CategorieEtranger categorie) {
+	public static ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType coreToXMLv4(ch.vd.unireg.type.CategorieEtranger categorie) {
 		if (categorie == null) {
 			return null;
 		}
@@ -1392,7 +1392,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v5.NaturalPersonCategoryType coreToXMLv5(ch.vd.uniregctb.type.CategorieEtranger categorie) {
+	public static ch.vd.unireg.xml.party.person.v5.NaturalPersonCategoryType coreToXMLv5(ch.vd.unireg.type.CategorieEtranger categorie) {
 		if (categorie == null) {
 			return null;
 		}
@@ -1629,7 +1629,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType coreToXMLv1(ch.vd.uniregctb.type.TypeRapportEntreTiers type) {
+	public static ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType coreToXMLv1(ch.vd.unireg.type.TypeRapportEntreTiers type) {
 		if (type == null) {
 			return null;
 		}
@@ -1656,7 +1656,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.relation.v2.RelationBetweenPartiesType coreToXMLv2(ch.vd.uniregctb.type.TypeRapportEntreTiers type) {
+	public static ch.vd.unireg.xml.party.relation.v2.RelationBetweenPartiesType coreToXMLv2(ch.vd.unireg.type.TypeRapportEntreTiers type) {
 		if (type == null) {
 			return null;
 		}
@@ -1696,7 +1696,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType coreToXMLv3(ch.vd.uniregctb.type.TypeRapportEntreTiers type) {
+	public static ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType coreToXMLv3(ch.vd.unireg.type.TypeRapportEntreTiers type) {
 		if (type == null) {
 			return null;
 		}
@@ -1738,7 +1738,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff coreToXMLv1(ch.vd.uniregctb.type.TarifImpotSource tarif) {
+	public static ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff coreToXMLv1(ch.vd.unireg.type.TarifImpotSource tarif) {
 		if (tarif == null) {
 			return null;
 		}
@@ -1753,7 +1753,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxpayer.v2.WithholdingTaxTariff coreToXMLv2(ch.vd.uniregctb.type.TarifImpotSource tarif) {
+	public static ch.vd.unireg.xml.party.taxpayer.v2.WithholdingTaxTariff coreToXMLv2(ch.vd.unireg.type.TarifImpotSource tarif) {
 		if (tarif == null) {
 			return null;
 		}
@@ -1769,7 +1769,7 @@ public abstract class EnumHelper {
 	}
 
 
-	public static ch.vd.unireg.xml.party.taxpayer.v3.WithholdingTaxTariff coreToXMLv3(ch.vd.uniregctb.type.TarifImpotSource tarif) {
+	public static ch.vd.unireg.xml.party.taxpayer.v3.WithholdingTaxTariff coreToXMLv3(ch.vd.unireg.type.TarifImpotSource tarif) {
 		if (tarif == null) {
 			return null;
 		}
@@ -1785,7 +1785,7 @@ public abstract class EnumHelper {
 	}
 
 
-	public static ch.vd.unireg.xml.party.taxpayer.v4.WithholdingTaxTariff coreToXMLv4(ch.vd.uniregctb.type.TarifImpotSource tarif) {
+	public static ch.vd.unireg.xml.party.taxpayer.v4.WithholdingTaxTariff coreToXMLv4(ch.vd.unireg.type.TarifImpotSource tarif) {
 		if (tarif == null) {
 			return null;
 		}
@@ -1800,7 +1800,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxpayer.v5.WithholdingTaxTariff coreToXMLv5(ch.vd.uniregctb.type.TarifImpotSource tarif) {
+	public static ch.vd.unireg.xml.party.taxpayer.v5.WithholdingTaxTariff coreToXMLv5(ch.vd.unireg.type.TarifImpotSource tarif) {
 		if (tarif == null) {
 			return null;
 		}
@@ -1815,7 +1815,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v1.DocumentType coreToXMLv1(ch.vd.uniregctb.type.TypeDocument type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v1.DocumentType coreToXMLv1(ch.vd.unireg.type.TypeDocument type) {
 		if (type == null) {
 			return null;
 		}
@@ -1835,7 +1835,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v2.DocumentType coreToXMLv2(ch.vd.uniregctb.type.TypeDocument type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v2.DocumentType coreToXMLv2(ch.vd.unireg.type.TypeDocument type) {
 		if (type == null) {
 			return null;
 		}
@@ -1855,7 +1855,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v3.DocumentType coreToXMLv3(ch.vd.uniregctb.type.TypeDocument type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v3.DocumentType coreToXMLv3(ch.vd.unireg.type.TypeDocument type) {
 		if (type == null) {
 			return null;
 		}
@@ -1875,7 +1875,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType coreToXMLv4(ch.vd.uniregctb.type.TypeDocument type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType coreToXMLv4(ch.vd.unireg.type.TypeDocument type) {
 		if (type == null) {
 			return null;
 		}
@@ -1901,7 +1901,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v5.OrdinaryTaxDeclarationType coreToXMLv5(ch.vd.uniregctb.type.TypeDocument type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v5.OrdinaryTaxDeclarationType coreToXMLv5(ch.vd.unireg.type.TypeDocument type) {
 		if (type == null) {
 			return null;
 		}
@@ -1927,7 +1927,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason coreToXMLv1(ch.vd.uniregctb.type.MotifFor ouverture) {
+	public static ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason coreToXMLv1(ch.vd.unireg.type.MotifFor ouverture) {
 		if (ouverture == null) {
 			return null;
 		}
@@ -1988,7 +1988,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason coreToXMLv2(ch.vd.uniregctb.type.MotifFor ouverture) {
+	public static ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason coreToXMLv2(ch.vd.unireg.type.MotifFor ouverture) {
 		if (ouverture == null) {
 			return null;
 		}
@@ -2053,7 +2053,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason coreToXMLv3(ch.vd.uniregctb.type.MotifFor ouverture) {
+	public static ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason coreToXMLv3(ch.vd.unireg.type.MotifFor ouverture) {
 		if (ouverture == null) {
 			return null;
 		}
@@ -2120,7 +2120,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason coreToXMLv4(ch.vd.uniregctb.type.MotifFor ouverture) {
+	public static ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason coreToXMLv4(ch.vd.unireg.type.MotifFor ouverture) {
 		if (ouverture == null) {
 			return null;
 		}
@@ -2187,7 +2187,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason coreToXMLv1(ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement ouverture) {
+	public static ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason coreToXMLv1(ch.vd.unireg.metier.assujettissement.MotifAssujettissement ouverture) {
 		if (ouverture == null) {
 			return null;
 		}
@@ -2249,7 +2249,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason coreToXMLv2(ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement ouverture) {
+	public static ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason coreToXMLv2(ch.vd.unireg.metier.assujettissement.MotifAssujettissement ouverture) {
 		if (ouverture == null) {
 			return null;
 		}
@@ -2315,7 +2315,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason coreToXMLv3(ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement ouverture) {
+	public static ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason coreToXMLv3(ch.vd.unireg.metier.assujettissement.MotifAssujettissement ouverture) {
 		if (ouverture == null) {
 			return null;
 		}
@@ -2383,7 +2383,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason coreToXMLv4(ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement ouverture) {
+	public static ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason coreToXMLv4(ch.vd.unireg.metier.assujettissement.MotifAssujettissement ouverture) {
 		if (ouverture == null) {
 			return null;
 		}
@@ -2451,7 +2451,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v1.Sex coreToXMLv1(ch.vd.uniregctb.type.Sexe sexe) {
+	public static ch.vd.unireg.xml.party.person.v1.Sex coreToXMLv1(ch.vd.unireg.type.Sexe sexe) {
 		if (sexe == null) {
 			return null;
 		}
@@ -2466,7 +2466,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v2.Sex coreToXMLv2(ch.vd.uniregctb.type.Sexe sexe) {
+	public static ch.vd.unireg.xml.party.person.v2.Sex coreToXMLv2(ch.vd.unireg.type.Sexe sexe) {
 		if (sexe == null) {
 			return null;
 		}
@@ -2481,7 +2481,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v3.Sex coreToXMLv3(ch.vd.uniregctb.type.Sexe sexe) {
+	public static ch.vd.unireg.xml.party.person.v3.Sex coreToXMLv3(ch.vd.unireg.type.Sexe sexe) {
 		if (sexe == null) {
 			return null;
 		}
@@ -2496,7 +2496,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v4.Sex coreToXMLv4(ch.vd.uniregctb.type.Sexe sexe) {
+	public static ch.vd.unireg.xml.party.person.v4.Sex coreToXMLv4(ch.vd.unireg.type.Sexe sexe) {
 		if (sexe == null) {
 			return null;
 		}
@@ -2511,7 +2511,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.person.v5.Sex coreToXMLv5(ch.vd.uniregctb.type.Sexe sexe) {
+	public static ch.vd.unireg.xml.party.person.v5.Sex coreToXMLv5(ch.vd.unireg.type.Sexe sexe) {
 		if (sexe == null) {
 			return null;
 		}

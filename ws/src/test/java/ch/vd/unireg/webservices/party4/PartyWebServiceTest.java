@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party4;
+package ch.vd.unireg.webservices.party4;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -92,41 +92,41 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyInfo;
 import ch.vd.unireg.xml.party.v2.PartyType;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.common.WebserviceTest;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.CategorieIdentifiant;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.type.TypePermis;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.common.WebserviceTest;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationEmise;
+import ch.vd.unireg.declaration.EtatDeclarationRetournee;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.CategorieIdentifiant;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypePermis;
+import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -170,21 +170,21 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final RegDate dateMariage = date(1990, 1, 1);
 				final RegDate veilleMariage = dateMariage.getOneDayBefore();
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique paul = addNonHabitant("Paul", "Duchemin", RegDate.get(1954, 3, 31), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				final ch.vd.unireg.tiers.PersonnePhysique paul = addNonHabitant("Paul", "Duchemin", RegDate.get(1954, 3, 31), ch.vd.unireg.type.Sexe.MASCULIN);
 				ids.paul = paul.getNumero();
-				addForPrincipal(paul, date(1974, 3, 31), ch.vd.uniregctb.type.MotifFor.MAJORITE, veilleMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				addForPrincipal(paul, date(1974, 3, 31), ch.vd.unireg.type.MotifFor.MAJORITE, veilleMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 						MockCommune.Lausanne);
 				addAdresseSuisse(paul, TypeAdresseTiers.COURRIER, date(1954, 3, 31), null, MockRue.Lausanne.AvenueDeBeaulieu);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique janine = addNonHabitant("Janine", "Duchemin", RegDate.get(1954, 3, 31), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				final ch.vd.unireg.tiers.PersonnePhysique janine = addNonHabitant("Janine", "Duchemin", RegDate.get(1954, 3, 31), ch.vd.unireg.type.Sexe.MASCULIN);
 				ids.janine = janine.getNumero();
-				addForPrincipal(janine, date(1974, 3, 31), ch.vd.uniregctb.type.MotifFor.MAJORITE, veilleMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				addForPrincipal(janine, date(1974, 3, 31), ch.vd.unireg.type.MotifFor.MAJORITE, veilleMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 						MockCommune.Lausanne);
 				addAdresseSuisse(janine, TypeAdresseTiers.COURRIER, date(1954, 3, 31), null, MockRue.Lausanne.AvenueJolimont);
 
-				final ch.vd.uniregctb.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(paul, janine, dateMariage, null);
+				final ch.vd.unireg.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(paul, janine, dateMariage, null);
 				ids.menage = ensemble.getMenage().getNumero();
-				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
 				return null;
 			}
@@ -251,19 +251,19 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 				final RegDate dateMariage = date(1976, 1, 1);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique jeanpierre = addNonHabitant("Jean-Pierre", "Bürki", RegDate.get(1947, 1, 11), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				final ch.vd.unireg.tiers.PersonnePhysique jeanpierre = addNonHabitant("Jean-Pierre", "Bürki", RegDate.get(1947, 1, 11), ch.vd.unireg.type.Sexe.MASCULIN);
 				ids.jeanpierre = jeanpierre.getNumero();
 				addAdresseSuisse(jeanpierre, TypeAdresseTiers.COURRIER, date(1947, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique marie = addNonHabitant("Marie", "Bürki", RegDate.get(1954, 1, 1), ch.vd.uniregctb.type.Sexe.FEMININ);
+				final ch.vd.unireg.tiers.PersonnePhysique marie = addNonHabitant("Marie", "Bürki", RegDate.get(1954, 1, 1), ch.vd.unireg.type.Sexe.FEMININ);
 				ids.marie = marie.getNumero();
 				addAdresseSuisse(marie, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueJolimont);
 
-				final ch.vd.uniregctb.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeanpierre, marie, dateMariage, null);
+				final ch.vd.unireg.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeanpierre, marie, dateMariage, null);
 				ids.menage = ensemble.getMenage().getNumero();
-				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique tuteur = addNonHabitant("Jacky", "Rod", RegDate.get(1947, 1, 1), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				final ch.vd.unireg.tiers.PersonnePhysique tuteur = addNonHabitant("Jacky", "Rod", RegDate.get(1947, 1, 1), ch.vd.unireg.type.Sexe.MASCULIN);
 				ids.tuteur = tuteur.getNumero();
 				addAdresseSuisse(tuteur, TypeAdresseTiers.COURRIER, date(1947, 1, 11), null, MockRue.Lausanne.BoulevardGrancy);
 
@@ -318,19 +318,19 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 				final RegDate dateMariage = date(1976, 1, 1);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique jeandaniel = addNonHabitant("Jean-Daniel", "Guex-Martin", RegDate.get(1947, 1, 11), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				final ch.vd.unireg.tiers.PersonnePhysique jeandaniel = addNonHabitant("Jean-Daniel", "Guex-Martin", RegDate.get(1947, 1, 11), ch.vd.unireg.type.Sexe.MASCULIN);
 				ids.jeandaniel = jeandaniel.getNumero();
 				addAdresseSuisse(jeandaniel, TypeAdresseTiers.COURRIER, date(1947, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique myriam = addNonHabitant("Myriam", "Guex-Martin", RegDate.get(1954, 1, 1), ch.vd.uniregctb.type.Sexe.FEMININ);
+				final ch.vd.unireg.tiers.PersonnePhysique myriam = addNonHabitant("Myriam", "Guex-Martin", RegDate.get(1954, 1, 1), ch.vd.unireg.type.Sexe.FEMININ);
 				ids.myriam = myriam.getNumero();
 				addAdresseSuisse(myriam, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueJolimont);
 
-				final ch.vd.uniregctb.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeandaniel, myriam, dateMariage, null);
+				final ch.vd.unireg.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeandaniel, myriam, dateMariage, null);
 				ids.menage = ensemble.getMenage().getNumero();
-				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				addForPrincipal(ensemble.getMenage(), dateMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique conseiller = addNonHabitant("Philippe", "Rossy", RegDate.get(1947, 1, 1), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				final ch.vd.unireg.tiers.PersonnePhysique conseiller = addNonHabitant("Philippe", "Rossy", RegDate.get(1947, 1, 1), ch.vd.unireg.type.Sexe.MASCULIN);
 				ids.conseiller = conseiller.getNumero();
 				addAdresseSuisse(conseiller, TypeAdresseTiers.COURRIER, date(1947, 1, 11), null, MockRue.Lausanne.BoulevardGrancy);
 
@@ -404,10 +404,10 @@ public class PartyWebServiceTest extends WebserviceTest {
 		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				ch.vd.uniregctb.tiers.PersonnePhysique tiia = addHabitant(noIndividuTiia);
+				ch.vd.unireg.tiers.PersonnePhysique tiia = addHabitant(noIndividuTiia);
 				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
 				ids.tiia = tiia.getId();
-				ch.vd.uniregctb.tiers.PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+				ch.vd.unireg.tiers.PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
 				ids.sylvie = sylvie.getId();
 				addCuratelle(tiia, sylvie, null, null);
 				return null;
@@ -477,10 +477,10 @@ public class PartyWebServiceTest extends WebserviceTest {
 			@Override
 			public Ids execute(TransactionStatus transactionStatus) throws Exception {
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1957, 10, 3), ch.vd.uniregctb.type.Sexe.MASCULIN);
-				addForPrincipal(pp, date(2009, 1, 1), ch.vd.uniregctb.type.MotifFor.ARRIVEE_HS, MockCommune.Croy);
+				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1957, 10, 3), ch.vd.unireg.type.Sexe.MASCULIN);
+				addForPrincipal(pp, date(2009, 1, 1), ch.vd.unireg.type.MotifFor.ARRIVEE_HS, MockCommune.Croy);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument modele = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				final ModeleDocument modele = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS));
 
@@ -496,7 +496,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		// quittancement de la DI
 		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
+		demande.setAcknowledgeDate(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(1);
@@ -553,15 +553,15 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final RegDate finAnnee = date(annee, 12, 31);
 				final RegDate venteImmeuble = finAnnee.addMonths(-3);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant(null, "Anonyme", date(1980, 10, 25), ch.vd.uniregctb.type.Sexe.MASCULIN);
+				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant(null, "Anonyme", date(1980, 10, 25), ch.vd.unireg.type.Sexe.MASCULIN);
 				pp.setNom(null);        // <-- c'est là le problème de validation
 
-				addForPrincipal(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-				addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
-						MockCommune.Aigle.getNoOFS(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
+				addForPrincipal(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+				addForSecondaire(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.unireg.type.MotifFor.VENTE_IMMOBILIER,
+						MockCommune.Aigle.getNoOFS(), ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final ModeleDocument md = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, debutAnnee, venteImmeuble, TypeContribuable.HORS_SUISSE, md);
 				final RegDate dateEmission = date(annee + 1, 1, 11);
@@ -582,7 +582,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		// quittancement de la DI
 		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
+		demande.setAcknowledgeDate(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(1);
@@ -649,10 +649,10 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final ModeleDocument md = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique validePP = addPersonnePhysiqueAvecFor("Alfred", "de Montauban", date(1980, 10, 25), ch.vd.uniregctb.type.Sexe.MASCULIN);
-				final ch.vd.uniregctb.tiers.PersonnePhysique invalidePP = addPersonnePhysiqueAvecFor(null, null, date(1986, 12, 5), ch.vd.uniregctb.type.Sexe.FEMININ);
+				final ch.vd.unireg.tiers.PersonnePhysique validePP = addPersonnePhysiqueAvecFor("Alfred", "de Montauban", date(1980, 10, 25), ch.vd.unireg.type.Sexe.MASCULIN);
+				final ch.vd.unireg.tiers.PersonnePhysique invalidePP = addPersonnePhysiqueAvecFor(null, null, date(1986, 12, 5), ch.vd.unireg.type.Sexe.FEMININ);
 
 				final DeclarationImpotOrdinaire valideDi = addDi(validePP, debutAnnee, venteImmeuble, pf, md);
 				final DeclarationImpotOrdinaire invalideDi = addDi(invalidePP, debutAnnee, venteImmeuble, pf, md);
@@ -662,15 +662,15 @@ public class PartyWebServiceTest extends WebserviceTest {
 				return null;
 			}
 
-			private ch.vd.uniregctb.tiers.PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, @Nullable String nom, RegDate dateNaissance, ch.vd.uniregctb.type.Sexe sexe) {
-				final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
-				addForPrincipal(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-				addForSecondaire(pp, debutAnnee, ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.uniregctb.type.MotifFor.VENTE_IMMOBILIER,
-						MockCommune.Aigle.getNoOFS(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
+			private ch.vd.unireg.tiers.PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, @Nullable String nom, RegDate dateNaissance, ch.vd.unireg.type.Sexe sexe) {
+				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
+				addForPrincipal(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+				addForSecondaire(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.unireg.type.MotifFor.VENTE_IMMOBILIER,
+						MockCommune.Aigle.getNoOFS(), ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
 				return pp;
 			}
 
-			private DeclarationImpotOrdinairePP addDi(ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, PeriodeFiscale pf, ModeleDocument md) {
+			private DeclarationImpotOrdinairePP addDi(ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, PeriodeFiscale pf, ModeleDocument md) {
 				final DeclarationImpotOrdinairePP di = addDeclarationImpot(ctb, pf, dateDebut, dateFin, TypeContribuable.HORS_SUISSE, md);
 				final RegDate dateEmission = date(annee + 1, 1, 11);
 				di.addEtat(new EtatDeclarationEmise(dateEmission));
@@ -689,7 +689,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		for (Ids ids : liste) {
 			final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-			demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
+			demande.setAcknowledgeDate(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get()));
 			demande.setKey(new OrdinaryTaxDeclarationKey());
 			demande.getKey().setTaxpayerNumber((int) ids.idCtb);
 			demande.getKey().setSequenceNumber(1);
@@ -756,21 +756,21 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique arnold = addNonHabitant("Arnold", "Lokker", date(1971, 3, 12), ch.vd.uniregctb.type.Sexe.MASCULIN);
-				addForPrincipal(arnold, date(1991, 3, 12), ch.vd.uniregctb.type.MotifFor.MAJORITE, veilleMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				final ch.vd.unireg.tiers.PersonnePhysique arnold = addNonHabitant("Arnold", "Lokker", date(1971, 3, 12), ch.vd.unireg.type.Sexe.MASCULIN);
+				addForPrincipal(arnold, date(1991, 3, 12), ch.vd.unireg.type.MotifFor.MAJORITE, veilleMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 						MockCommune.Bussigny);
 
-				final ch.vd.uniregctb.tiers.PersonnePhysique lucette = addNonHabitant("Lucette", "Tartare", date(1973, 5, 12), ch.vd.uniregctb.type.Sexe.FEMININ);
-				addForPrincipal(lucette, date(1993, 5, 12), ch.vd.uniregctb.type.MotifFor.MAJORITE, veilleMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				final ch.vd.unireg.tiers.PersonnePhysique lucette = addNonHabitant("Lucette", "Tartare", date(1973, 5, 12), ch.vd.unireg.type.Sexe.FEMININ);
+				addForPrincipal(lucette, date(1993, 5, 12), ch.vd.unireg.type.MotifFor.MAJORITE, veilleMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 						MockCommune.Cossonay);
 
-				final ch.vd.uniregctb.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(arnold, lucette, dateMariage, null);
-				final ch.vd.uniregctb.tiers.MenageCommun menage = ensemble.getMenage();
-				addForPrincipal(menage, dateMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+				final ch.vd.unireg.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(arnold, lucette, dateMariage, null);
+				final ch.vd.unireg.tiers.MenageCommun menage = ensemble.getMenage();
+				addForPrincipal(menage, dateMariage, ch.vd.unireg.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
 
 				// on clone les liens d'appartenance ménage et on les annule (de cette manière, l'ensemble reste valide mais avec des rapports annulés)
-				for (ch.vd.uniregctb.tiers.RapportEntreTiers r : menage.getRapportsObjet()) {
-					ch.vd.uniregctb.tiers.RapportEntreTiers clone = r.duplicate();
+				for (ch.vd.unireg.tiers.RapportEntreTiers r : menage.getRapportsObjet()) {
+					ch.vd.unireg.tiers.RapportEntreTiers clone = r.duplicate();
 					clone.setAnnule(true);
 					hibernateTemplate.merge(clone);
 				}
@@ -783,9 +783,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final ch.vd.uniregctb.tiers.PersonnePhysique arnold = hibernateTemplate.get(ch.vd.uniregctb.tiers.PersonnePhysique.class, id);
+				final ch.vd.unireg.tiers.PersonnePhysique arnold = hibernateTemplate.get(ch.vd.unireg.tiers.PersonnePhysique.class, id);
 				assertNotNull(arnold);
-				final Set<ch.vd.uniregctb.tiers.RapportEntreTiers> rapports = arnold.getRapportsSujet();
+				final Set<ch.vd.unireg.tiers.RapportEntreTiers> rapports = arnold.getRapportsSujet();
 				assertNotNull(rapports);
 				assertEquals(2, rapports.size()); // 2 rapports d'appartenance ménage identiques, mais un est annulé
 				return null;
@@ -814,9 +814,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 	private static void assertTaxResidence(RegDate debut, LiabilityChangeReason motifDebut, @Nullable RegDate fin, @Nullable LiabilityChangeReason motifFin, MockCommune commune, boolean virtuel,
 	                                       TaxResidence forFiscal) {
 		assertNotNull(forFiscal);
-		assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(debut), forFiscal.getDateFrom());
+		assertEquals(ch.vd.unireg.xml.DataHelper.coreToXMLv1(debut), forFiscal.getDateFrom());
 		assertEquals(motifDebut, forFiscal.getStartReason());
-		assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(fin), forFiscal.getDateTo());
+		assertEquals(ch.vd.unireg.xml.DataHelper.coreToXMLv1(fin), forFiscal.getDateTo());
 		assertEquals(motifFin, forFiscal.getEndReason());
 		assertEquals(TaxType.INCOME_WEALTH, forFiscal.getTaxType());
 		assertEquals(TaxationMethod.ORDINARY, forFiscal.getTaxationMethod());
@@ -868,11 +868,11 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final ch.vd.uniregctb.tiers.PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), ch.vd.uniregctb.type.Sexe.MASCULIN);
-				addForPrincipal(pp, date(annee, 1, 1), ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), ch.vd.uniregctb.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), ch.vd.uniregctb.type.MotifRattachement.IMMEUBLE_PRIVE);
+				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), ch.vd.unireg.type.Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final ModeleDocument md = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
 				diAnnulee.setAnnule(true);
 
@@ -889,7 +889,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		});
 
 		final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-		demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
+		demande.setAcknowledgeDate(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get()));
 		demande.setKey(new OrdinaryTaxDeclarationKey());
 		demande.getKey().setTaxpayerNumber((int) ids.ppId);
 		demande.getKey().setSequenceNumber(ids.noSequence);
@@ -948,7 +948,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final AcknowledgeTaxDeclarationRequest demande = new AcknowledgeTaxDeclarationRequest();
-				demande.setAcknowledgeDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get()));
+				demande.setAcknowledgeDate(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get()));
 				demande.setSource("TEST_QUITTANCEMENT");
 				demande.setKey(new OrdinaryTaxDeclarationKey());
 				demande.getKey().setTaxpayerNumber((int) ids.ppId);
@@ -2273,7 +2273,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Date today = ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get());
+		final Date today = ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get());
 
 		// il ne doit pas être possible d'ajouter un délai sur une déclaration dont l'état est différent d'émise.
 
@@ -2283,7 +2283,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2008, 1));
 			params.setApplicationDate(today);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
+			params.setNewDeadline(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2297,7 +2297,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2009, 1));
 			params.setApplicationDate(today);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
+			params.setNewDeadline(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2311,7 +2311,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2010, 1));
 			params.setApplicationDate(today);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
+			params.setNewDeadline(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2326,8 +2326,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
-			params.setApplicationDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
+			params.setApplicationDate(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
+			params.setNewDeadline(ch.vd.unireg.xml.DataHelper.coreToXMLv1(RegDate.get().addMonths(1)));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2357,7 +2357,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setLogin(login);
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
 			params.setApplicationDate(today);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(nouveauDelai));
+			params.setNewDeadline(ch.vd.unireg.xml.DataHelper.coreToXMLv1(nouveauDelai));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
@@ -2389,7 +2389,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
 			params.setApplicationDate(today);
 			final RegDate newDeadline = RegDate.get().addDays(10);
-			params.setNewDeadline(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(newDeadline));
+			params.setNewDeadline(ch.vd.unireg.xml.DataHelper.coreToXMLv1(newDeadline));
 
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);

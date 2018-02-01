@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.lucene;
+package ch.vd.unireg.indexer.lucene;
 
 import ch.vd.registre.simpleindexer.LuceneIndex;
 

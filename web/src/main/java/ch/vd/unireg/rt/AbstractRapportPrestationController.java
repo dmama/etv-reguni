@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.rt;
+package ch.vd.unireg.rt;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.unireg.common.AbstractSimpleFormController;
+import ch.vd.unireg.security.SecurityProviderInterface;
 
 public class AbstractRapportPrestationController extends AbstractSimpleFormController {
 

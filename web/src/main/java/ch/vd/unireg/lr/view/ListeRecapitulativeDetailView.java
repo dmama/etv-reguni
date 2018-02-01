@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.lr.view;
+package ch.vd.unireg.lr.view;
 
 import java.util.Comparator;
 import java.util.List;
@@ -8,15 +8,15 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.view.DelaiDocumentFiscalView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 

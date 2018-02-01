@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.utils;
+package ch.vd.unireg.utils;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;

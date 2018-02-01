@@ -50,7 +50,7 @@
 
 	<alias alias="serviceOrganisationRaw" name="serviceOrganisationCache"/>
 
-	<bean id="serviceOrganisation" class="ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl">
+	<bean id="serviceOrganisation" class="ch.vd.unireg.interfaces.service.ServiceOrganisationImpl">
 		<property name="target" ref="serviceOrganisationRaw"/>
 	</bean>
 	<alias name="serviceOrganisation" alias="serviceOrganisationService"/>

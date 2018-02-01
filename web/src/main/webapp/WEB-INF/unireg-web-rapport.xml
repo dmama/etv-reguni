@@ -2,13 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="abstractRapportPrestationController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.rt.AbstractRapportPrestationController">
+	<bean id="abstractRapportPrestationController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.unireg.rt.AbstractRapportPrestationController">
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
-	<bean id="debiteurListController" class="ch.vd.uniregctb.rt.DebiteurListController" parent="abstractTiersListController">
+	<bean id="debiteurListController" class="ch.vd.unireg.rt.DebiteurListController" parent="abstractTiersListController">
 		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.rt.view.DebiteurListView" />
+		<property name="commandClass" value="ch.vd.unireg.rt.view.DebiteurListView" />
 		<property name="commandName" value="command" />
 		<property name="formView" value="tiers/edition/rt/debiteur/list" />
 		<property name="successView" value="edit.do" />
@@ -16,9 +16,9 @@
 		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 
-	<bean id="sourcierListController" class="ch.vd.uniregctb.rt.SourcierListController" parent="abstractTiersListController">
+	<bean id="sourcierListController" class="ch.vd.unireg.rt.SourcierListController" parent="abstractTiersListController">
 		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.rt.view.SourcierListView" />
+		<property name="commandClass" value="ch.vd.unireg.rt.view.SourcierListView" />
 		<property name="commandName" value="command" />
 		<property name="formView" value="tiers/edition/rt/sourcier/list" />
 		<property name="successView" value="edit.do" />
@@ -26,9 +26,9 @@
 		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 
-	<bean id="rapportPrestationEditController" class="ch.vd.uniregctb.rt.RapportPrestationEditController" parent="abstractRapportPrestationController">
+	<bean id="rapportPrestationEditController" class="ch.vd.unireg.rt.RapportPrestationEditController" parent="abstractRapportPrestationController">
 		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.rt.view.RapportPrestationView" />
+		<property name="commandClass" value="ch.vd.unireg.rt.view.RapportPrestationView" />
 		<property name="commandName" value="command" />
 		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
 		<property name="formView" value="tiers/edition/rt/contrat/edit" />
@@ -36,7 +36,7 @@
 		<property name="validator" ref="rapportPrestationValidator" />
 	</bean>
 	
-	<bean id="rapportPrestationEditManager" class="ch.vd.uniregctb.rt.manager.RapportPrestationEditManagerImpl" >
+	<bean id="rapportPrestationEditManager" class="ch.vd.unireg.rt.manager.RapportPrestationEditManagerImpl" >
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
@@ -44,9 +44,9 @@
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
-	<bean id="rapportPrestationValidator" class="ch.vd.uniregctb.rt.validator.RapportPrestationEditValidator" />
+	<bean id="rapportPrestationValidator" class="ch.vd.unireg.rt.validator.RapportPrestationEditValidator" />
 
-	<bean id="rapportController" class="ch.vd.uniregctb.rapport.RapportController">
+	<bean id="rapportController" class="ch.vd.unireg.rapport.RapportController">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -63,7 +63,7 @@
 		<property name="setPrincipalValidator" ref="setPrincipalValidator" />
 	</bean>
 
-	<bean id="rapportEditManager" class="ch.vd.uniregctb.rapport.manager.RapportEditManagerImpl" parent="tiersManager">
+	<bean id="rapportEditManager" class="ch.vd.unireg.rapport.manager.RapportEditManagerImpl" parent="tiersManager">
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
@@ -71,30 +71,30 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 	</bean>
 
-	<bean id="rapportAddValidator" class="ch.vd.uniregctb.rapport.validator.RapportAddValidator" >
+	<bean id="rapportAddValidator" class="ch.vd.unireg.rapport.validator.RapportAddValidator" >
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
-	<bean id="rapportEditValidator" class="ch.vd.uniregctb.tiers.validator.RapportEditValidator" />
+	<bean id="rapportEditValidator" class="ch.vd.unireg.tiers.validator.RapportEditValidator" />
 
-	<bean id="setPrincipalValidator" class="ch.vd.uniregctb.rapport.validator.SetPrincipalValidator">
+	<bean id="setPrincipalValidator" class="ch.vd.unireg.rapport.validator.SetPrincipalValidator">
 		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
-	<bean id="rapportsPrestationEditController" class="ch.vd.uniregctb.tiers.RapportsPrestationEditController" parent="abstractTiersController">
+	<bean id="rapportsPrestationEditController" class="ch.vd.unireg.tiers.RapportsPrestationEditController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="commandClass" value="ch.vd.unireg.tiers.view.TiersEditView" />
 		<property name="formView" value="tiers/edition/rt/edit" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="rapportEditManager" ref="rapportEditManager" />
 	</bean>
 
-	<bean id="contribuableAssocieListController" class="ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieController">
+	<bean id="contribuableAssocieListController" class="ch.vd.unireg.contribuableAssocie.ContribuableAssocieController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="paramApplicationManager" ref="paramApplicationManager"/>
 		<property name="criteriaValidator">
-			<bean class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator">
+			<bean class="ch.vd.unireg.tiers.validator.TiersCriteriaValidator">
 				<!-- allowsEmpty -->
 				<constructor-arg value="true"/>
 			</bean>
@@ -103,7 +103,7 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	<bean id="activiteEconomiqueEditController" class="ch.vd.uniregctb.tiers.ActiviteEconomiqueEditController">
+	<bean id="activiteEconomiqueEditController" class="ch.vd.unireg.tiers.ActiviteEconomiqueEditController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="adresseService" ref="adresseService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>

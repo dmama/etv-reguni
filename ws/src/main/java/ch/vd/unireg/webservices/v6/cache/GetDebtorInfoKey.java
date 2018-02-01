@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v6.cache;
+package ch.vd.unireg.webservices.v6.cache;
 
 final class GetDebtorInfoKey extends PartyCacheKey {
 

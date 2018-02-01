@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 public enum Sexe {
 	FEMININ("Féminin"),

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.load;
+package ch.vd.unireg.load;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -6,7 +6,7 @@ import java.util.TimerTask;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.stats.LoadMonitorable;
+import ch.vd.unireg.stats.LoadMonitorable;
 
 /**
  * Classe qui est capable de calculer la moyenne de la charge sur un ws donné<p/>

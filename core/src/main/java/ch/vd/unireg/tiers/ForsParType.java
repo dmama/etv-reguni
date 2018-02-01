@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.unireg.common.AnnulableHelper;
 
 /**
  * Contient les fors fiscaux d'un contribuable décomposés par types et triés dans l'ordre chronologique.

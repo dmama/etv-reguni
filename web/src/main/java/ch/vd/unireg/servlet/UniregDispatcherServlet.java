@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.servlet;
+package ch.vd.unireg.servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +12,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.common.IdentityKey;
+import ch.vd.unireg.common.IdentityKey;
 
 /**
  * Dispatcher servlet dans lequel les exceptions "UnexpectedRollbackException" sont trappées et remontées sous la forme de leur rootCause

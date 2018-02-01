@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.evenement.reqdes.reception;
+package ch.vd.unireg.evenement.reqdes.reception;
 
 import ch.vd.unireg.xml.event.reqdes.v1.InscriptionType;
-import ch.vd.uniregctb.reqdes.TypeInscription;
+import ch.vd.unireg.reqdes.TypeInscription;
 
 public enum TypeInscriptionDansActe {
 

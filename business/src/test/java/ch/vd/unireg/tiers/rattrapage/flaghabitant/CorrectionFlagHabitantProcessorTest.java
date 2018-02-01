@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
+package ch.vd.unireg.tiers.rattrapage.flaghabitant;
 
 import java.util.List;
 
@@ -11,20 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Test du processeur de correction des flag habitant.
  * <p/>
- * <b>Note:</b> les tests <i>métier</i> de la fonctionnalité de correction du flag sont faits dans la classe {@link ch.vd.uniregctb.tiers.TiersServiceTest2}.
+ * <b>Note:</b> les tests <i>métier</i> de la fonctionnalité de correction du flag sont faits dans la classe {@link ch.vd.unireg.tiers.TiersServiceTest2}.
  */
 public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 

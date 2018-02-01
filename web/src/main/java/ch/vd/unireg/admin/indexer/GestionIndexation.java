@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.indexer;
+package ch.vd.unireg.admin.indexer;
 
 
 /**

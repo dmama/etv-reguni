@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -8,8 +8,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public abstract class DateRangeEntityValidator<T extends DateRange> extends EntityValidatorImpl<T> {
 

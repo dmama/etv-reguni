@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,9 +6,9 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionMonitor;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchReceptionMonitor;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchProcessor;
 
 @ManagedResource
 public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBean {

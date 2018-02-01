@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.individus;
+package ch.vd.unireg.identification.individus;
 
 import java.util.List;
 

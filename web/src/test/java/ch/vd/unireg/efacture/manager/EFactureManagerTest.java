@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture.manager;
+package ch.vd.unireg.efacture.manager;
 
 import java.math.BigInteger;
 import java.time.Duration;
@@ -18,15 +18,15 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
-import ch.vd.uniregctb.efacture.DummyEFactureService;
-import ch.vd.uniregctb.efacture.EFactureResponseService;
-import ch.vd.uniregctb.efacture.EFactureService;
-import ch.vd.uniregctb.efacture.EvenementEfactureException;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.efacture.DestinataireAvecHistoView;
+import ch.vd.unireg.efacture.DummyEFactureService;
+import ch.vd.unireg.efacture.EFactureResponseService;
+import ch.vd.unireg.efacture.EFactureService;
+import ch.vd.unireg.efacture.EvenementEfactureException;
+import ch.vd.unireg.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

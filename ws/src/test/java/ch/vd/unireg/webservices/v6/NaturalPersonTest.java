@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v6;
+package ch.vd.unireg.webservices.v6;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -6,8 +6,8 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.TypePermis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -22,7 +22,7 @@ public class NaturalPersonTest extends EnumTest {
 	public void testCategorieFromValue() {
 		assertNull(EnumHelper.coreToWeb((CategorieEtranger) null));
 		// la catégorie suisse n'existe pas dans core. assertEquals(NaturalPersonCategoryType.SUISSE,
-		// EnumHelper.coreToXMLv3(ch.vd.uniregctb.type.CategorieEtranger.SUISSE));
+		// EnumHelper.coreToXMLv3(ch.vd.unireg.type.CategorieEtranger.SUISSE));
 
 		// vérification que toutes les valeurs sont mappées sur quelque chose
 		final Set<CategorieEtranger> illegals = EnumSet.of(CategorieEtranger._01_SAISONNIER_A);

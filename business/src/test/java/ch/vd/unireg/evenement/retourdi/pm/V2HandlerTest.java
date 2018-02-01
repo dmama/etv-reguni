@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -24,10 +24,10 @@ import ch.vd.unireg.xml.event.taxation.ibc.v2.TypAdresse;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypNumeroIdeAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTelephoneAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTxtMax40Attr;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.NumeroIDEHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.NumeroIDEHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 @SuppressWarnings("Duplicates")
 public class V2HandlerTest extends BusinessTest {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role.before2016;
+package ch.vd.unireg.role.before2016;
 
 /**
  * Exception générique levé pour un service de la couche métier.

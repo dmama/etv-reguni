@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 /**
  * Contient les identifiants des éléments à ne pas imnporter du registe foncier pour une raison ou une autre.

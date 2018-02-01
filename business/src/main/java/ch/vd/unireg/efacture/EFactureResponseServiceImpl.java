@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.time.Duration;
 
@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.AsyncStorage;
-import ch.vd.uniregctb.common.AsyncStorageWithPeriodicCleanup;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.common.AsyncStorage;
+import ch.vd.unireg.common.AsyncStorageWithPeriodicCleanup;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 public class EFactureResponseServiceImpl implements EFactureResponseService, InitializingBean, DisposableBean {
 

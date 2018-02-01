@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.common.Annulable;
+import ch.vd.unireg.common.Annulable;
 
 public class RegimeFiscalView implements DateRange, Annulable {
 

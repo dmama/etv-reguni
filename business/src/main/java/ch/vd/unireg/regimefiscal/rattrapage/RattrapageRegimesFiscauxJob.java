@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal.rattrapage;
+package ch.vd.unireg.regimefiscal.rattrapage;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -22,26 +22,26 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalServiceException;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamBoolean;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.document.RattrapageRegimesFiscauxRapport;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalConsolide;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalServiceException;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamBoolean;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.FormeLegaleHisto;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 /**
  * Job de rattrapage des régimes fiscaux pour les entreprises qui n'en ont pas de non annulé. (SIFISC-23901)

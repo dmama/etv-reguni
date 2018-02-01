@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.retour.annonce;
+package ch.vd.unireg.evenement.organisation.interne.retour.annonce;
 
 import java.util.List;
 
@@ -15,29 +15,29 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.adresse.AdresseSupplementaire;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.rattrapage.appariement.CandidatAppariement;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.utils.RangeUtil;
+import ch.vd.unireg.adresse.AdresseSupplementaire;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
+import ch.vd.unireg.tiers.DomicileEtablissement;
+import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.FormeLegaleHisto;
+import ch.vd.unireg.tiers.RaisonSocialeHisto;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.rattrapage.appariement.CandidatAppariement;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.utils.RangeUtil;
 
 /**
  * Traitement du retour d'annonce à l'IDE. C'est-à-dire de l'annonce à l'IDE dont l'origine est notre propre annonce.

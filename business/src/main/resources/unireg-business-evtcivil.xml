@@ -4,7 +4,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Dispatcher des handlers des evenements civil -->
-	<bean id="evenementCivilProcessor" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessorImpl">
+	<bean id="evenementCivilProcessor" class="ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilProcessorImpl">
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
@@ -14,7 +14,7 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
-	<bean id="evenementCivilTranslator" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslatorImpl">
+	<bean id="evenementCivilTranslator" class="ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilTranslatorImpl">
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -29,7 +29,7 @@
 
 	<!-- Evénements civil e-CH -->
 
-	<bean id="evenementCivilEchTranslator" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslatorImpl">
+	<bean id="evenementCivilEchTranslator" class="ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchTranslatorImpl">
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -43,7 +43,7 @@
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
 
-	<bean id="evtCivilEchService" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchServiceImpl">
+	<bean id="evtCivilEchService" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchServiceImpl">
 		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO"/>
 		<property name="serviceCivil" ref="serviceCivilService" />
 		<property name="tiersDAO" ref="tiersDAO"/>

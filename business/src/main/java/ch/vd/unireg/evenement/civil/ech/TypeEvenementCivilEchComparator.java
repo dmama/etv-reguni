@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import java.util.Comparator;
 
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 /**
  * Comparateur sur la priorité entre les types d'evenement.<br/>

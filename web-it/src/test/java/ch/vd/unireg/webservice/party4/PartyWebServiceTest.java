@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.party4;
+package ch.vd.unireg.webservice.party4;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,7 +72,7 @@ import ch.vd.unireg.xml.party.v1.BankAccount;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.uniregctb.webservice.party3.AbstractPartyWebServiceTest;
+import ch.vd.unireg.webservice.party3.AbstractPartyWebServiceTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

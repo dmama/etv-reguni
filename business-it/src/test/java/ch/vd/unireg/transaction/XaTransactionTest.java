@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction;
+package ch.vd.unireg.transaction;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,10 +12,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementHelper;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementHelper;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.tiers.AutreCommunaute;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

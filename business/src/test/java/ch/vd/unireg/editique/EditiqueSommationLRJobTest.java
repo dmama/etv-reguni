@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -11,21 +11,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.JobTest;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.editique.batch.EditiqueSommationLRJob;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.JobTest;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.editique.batch.EditiqueSommationLRJob;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class EditiqueSommationLRJobTest extends JobTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditiqueSommationLRJobTest.class);
 
-	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/editique/SommationLRTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/unireg/editique/SommationLRTest.xml";
 
 	private BatchScheduler batchScheduler;
 	private TiersDAO tiersDAO;

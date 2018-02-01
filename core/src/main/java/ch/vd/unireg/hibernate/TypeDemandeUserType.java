@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class TypeDemandeUserType extends EnumUserType<TypeDemande> {

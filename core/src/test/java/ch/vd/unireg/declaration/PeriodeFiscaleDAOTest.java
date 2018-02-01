@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
+import ch.vd.unireg.common.CoreDAOTest;
 
 import static org.junit.Assert.assertEquals;
 

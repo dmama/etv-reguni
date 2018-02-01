@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.Localisation;
+import ch.vd.unireg.type.Localisation;
 
 /**
  * Classe de transtypage pour Hibernate : Localisation <--> varchar

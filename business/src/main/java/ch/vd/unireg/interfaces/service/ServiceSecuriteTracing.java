@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.List;
 
@@ -7,10 +7,10 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 
 /**
  * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.

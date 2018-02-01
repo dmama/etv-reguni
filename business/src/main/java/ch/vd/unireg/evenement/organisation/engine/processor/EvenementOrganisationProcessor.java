@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.organisation.engine.processor;
+package ch.vd.unireg.evenement.organisation.engine.processor;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
 
 /**
  * Interface du processeur asynchrone des événements organisation

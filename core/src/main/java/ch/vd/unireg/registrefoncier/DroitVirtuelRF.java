@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.ProgrammingException;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 
 /**
  * Classe abstraite qui représentent un droit de virtuel généré à la volée pour un tiers RF donné.

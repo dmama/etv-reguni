@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 
 /**
  * Classe de transtypage pour Hibernate : PeriodiciteDecompte <--> varchar

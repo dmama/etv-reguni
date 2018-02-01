@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.norentes.common;
+package ch.vd.unireg.norentes.common;
 
 import java.util.Collection;
 
-import ch.vd.uniregctb.norentes.annotation.EtapeAttribute;
+import ch.vd.unireg.norentes.annotation.EtapeAttribute;
 
 public interface NorentesRegistrar {
 

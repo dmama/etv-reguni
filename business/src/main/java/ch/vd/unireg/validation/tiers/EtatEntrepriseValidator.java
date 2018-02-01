@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 /**
  * Validateur des états d'entreprise

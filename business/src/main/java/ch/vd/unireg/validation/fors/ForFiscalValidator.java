@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.fors;
+package ch.vd.unireg.validation.fors;
 
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.validation.tiers.LocalisationDateeValidator;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.validation.tiers.LocalisationDateeValidator;
 
 /**
  * Classe de base pour les validateurs de fors fiscaux

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.avatar;
+package ch.vd.unireg.avatar;
 
 import java.io.IOException;
 import java.io.InputStream;

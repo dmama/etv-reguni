@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
 public class LoadMonitorStats {
 

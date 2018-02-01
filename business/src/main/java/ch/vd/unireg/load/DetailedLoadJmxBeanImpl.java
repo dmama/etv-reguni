@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.load;
+package ch.vd.unireg.load;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.common.TimeHelper;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.common.TimeHelper;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
+import ch.vd.unireg.stats.StatsService;
 
 @ManagedResource
 public class DetailedLoadJmxBeanImpl extends LoadJmxBeanImpl<DetailedLoadMonitorable> implements DetailedLoadJmxBean {

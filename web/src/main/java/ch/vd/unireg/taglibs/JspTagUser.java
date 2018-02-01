@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
 
 public class JspTagUser extends BodyTagSupport {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import java.util.HashMap;
 import java.util.Map;

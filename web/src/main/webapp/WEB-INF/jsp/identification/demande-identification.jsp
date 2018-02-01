@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <!-- Les données de la demande d'identification doivent être présentes sous le nom "messageData" -->
-<%--@elvariable id="messageData" type="ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView"--%>
+<%--@elvariable id="messageData" type="ch.vd.unireg.identification.contribuable.view.DemandeIdentificationView"--%>
 
 <!-- Debut Caracteristiques identification -->
 <fieldset class="information" id="info-demande">

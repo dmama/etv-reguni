@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.supergra.view;
+package ch.vd.unireg.supergra.view;
 
 import java.util.List;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.supergra.EntityKey;
-import ch.vd.uniregctb.supergra.EntityType;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.supergra.EntityKey;
+import ch.vd.unireg.supergra.EntityType;
 
 /**
- * Le form-backing object de la méthode {@link ch.vd.uniregctb.supergra.SuperGraController#listColl(ch.vd.uniregctb.supergra.EntityType, long, String, org.springframework.ui.Model, javax.servlet.http.HttpServletRequest)}.
+ * Le form-backing object de la méthode {@link ch.vd.unireg.supergra.SuperGraController#listColl(ch.vd.unireg.supergra.EntityType, long, String, org.springframework.ui.Model, javax.servlet.http.HttpServletRequest)}.
  */
 public class CollectionView {
 

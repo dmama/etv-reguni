@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.interceptor;
+package ch.vd.unireg.hibernate.interceptor;
 
 import org.hibernate.EmptyInterceptor;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.bouclement;
+package ch.vd.unireg.metier.bouclement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,9 +13,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.type.DayMonth;
 
 /**
  * TODO pour le moment, on n'a pas besoin de spring et de tout ça, mais cela pourrait changer...

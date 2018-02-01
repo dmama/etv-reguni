@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.mouvement.MouvementDossier;
-import ch.vd.uniregctb.mouvement.manager.AbstractMouvementManagerImpl;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.mouvement.MouvementDossier;
+import ch.vd.unireg.mouvement.manager.AbstractMouvementManagerImpl;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
 
 /**
  * Classe offrant les méthodes de gestion du controller MouvementVisuController

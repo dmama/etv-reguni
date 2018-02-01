@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.civil;
+package ch.vd.unireg.civil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,8 +46,8 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing;
 import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
-import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
 
 public class TableFillerWithCivilValues {

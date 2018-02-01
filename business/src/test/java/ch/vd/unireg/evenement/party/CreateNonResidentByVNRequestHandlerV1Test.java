@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.List;
 
@@ -20,15 +20,15 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TypeTiers;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.ServiceException;
 
 public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 

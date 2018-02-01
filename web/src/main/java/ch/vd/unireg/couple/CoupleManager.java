@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.EtatCivil;
 
 public interface CoupleManager {
 

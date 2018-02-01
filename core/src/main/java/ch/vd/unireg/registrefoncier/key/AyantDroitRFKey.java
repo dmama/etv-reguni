@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.key;
+package ch.vd.unireg.registrefoncier.key;
 
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
 
 /**
  * Clé d'identification au registre foncier d'un ayant-droit sur un immeuble (propriétaire, usufruitier, ...).

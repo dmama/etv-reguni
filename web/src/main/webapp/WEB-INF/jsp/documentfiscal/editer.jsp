@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <c:set var="depuisTache" value="${param.depuisTache}" />
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.documentfiscal.AutreDocumentFiscalView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.edition.document.fiscal" /></tiles:put>

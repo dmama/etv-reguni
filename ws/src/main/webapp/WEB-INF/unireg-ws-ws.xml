@@ -19,7 +19,7 @@
 		<property name="maxPoolSize" value="${extprop.webservice.threadpool.maxSize}"/> <!-- nombre maximum de threads -->
 	</bean>
 
-	<bean id="wsEventDataListenerAdapter" class="ch.vd.uniregctb.webservices.common.WebServiceEventListenerAdapter">
+	<bean id="wsEventDataListenerAdapter" class="ch.vd.unireg.webservices.common.WebServiceEventListenerAdapter">
 		<property name="dataEventService" ref="dataEventService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="listeners">
@@ -36,12 +36,12 @@
 	<!-- WS - Party Service v3 -->
 	<jaxws:endpoint implementor="#partyService3EndPoint" address="/party3" wsdlLocation="PartyService3.wsdl" />
 
-	<bean id="partyService3EndPoint" class="ch.vd.uniregctb.webservices.party3.impl.PartyWebServiceEndPoint">
+	<bean id="partyService3EndPoint" class="ch.vd.unireg.webservices.party3.impl.PartyWebServiceEndPoint">
 		<property name="service" ref="partyService3Cache" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="partyService3Impl" class="ch.vd.uniregctb.webservices.party3.impl.PartyWebServiceImpl">
+	<bean id="partyService3Impl" class="ch.vd.unireg.webservices.party3.impl.PartyWebServiceImpl">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -65,7 +65,7 @@
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
-	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">
+	<bean id="partyService3Cache" class="ch.vd.unireg.webservices.party3.cache.PartyWebServiceCache">
 		<property name="target" ref="partyService3Impl" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="webServiceParty3" />
@@ -73,11 +73,11 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="partyService3CacheManager" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCacheManager">
+	<bean id="partyService3CacheManager" class="ch.vd.unireg.webservices.party3.cache.PartyWebServiceCacheManager">
 		<property name="cache" ref="partyService3Cache" />
 	</bean>
 
-	<bean id="partyService3Tracing" class="ch.vd.uniregctb.webservices.party3.impl.PartyWebServiceTracing">
+	<bean id="partyService3Tracing" class="ch.vd.unireg.webservices.party3.impl.PartyWebServiceTracing">
 		<property name="counterRepository" ref="counterRepository" />
 		<property name="statsService" ref="statsService" />
 	</bean>
@@ -85,12 +85,12 @@
 	<!-- WS - Party Service v4 -->
 	<jaxws:endpoint implementor="#partyService4EndPoint" address="/party4" wsdlLocation="PartyService4.wsdl" />
 
-	<bean id="partyService4EndPoint" class="ch.vd.uniregctb.webservices.party4.impl.PartyWebServiceEndPoint">
+	<bean id="partyService4EndPoint" class="ch.vd.unireg.webservices.party4.impl.PartyWebServiceEndPoint">
 		<property name="service" ref="partyService4Cache" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="partyService4Impl" class="ch.vd.uniregctb.webservices.party4.impl.PartyWebServiceImpl">
+	<bean id="partyService4Impl" class="ch.vd.unireg.webservices.party4.impl.PartyWebServiceImpl">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
@@ -114,7 +114,7 @@
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
-	<bean id="partyService4Cache" class="ch.vd.uniregctb.webservices.party4.cache.PartyWebServiceCache">
+	<bean id="partyService4Cache" class="ch.vd.unireg.webservices.party4.cache.PartyWebServiceCache">
 		<property name="target" ref="partyService4Impl" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="webServiceParty4" />
@@ -122,11 +122,11 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="partyService4CacheManager" class="ch.vd.uniregctb.webservices.party4.cache.PartyWebServiceCacheManager">
+	<bean id="partyService4CacheManager" class="ch.vd.unireg.webservices.party4.cache.PartyWebServiceCacheManager">
 		<property name="cache" ref="partyService4Cache" />
 	</bean>
 
-	<bean id="partyService4Tracing" class="ch.vd.uniregctb.webservices.party4.impl.PartyWebServiceTracing">
+	<bean id="partyService4Tracing" class="ch.vd.unireg.webservices.party4.impl.PartyWebServiceTracing">
 		<property name="counterRepository" ref="counterRepository" />
 		<property name="statsService" ref="statsService" />
 	</bean>
@@ -134,7 +134,7 @@
 	<!-- WS - Securité Service -->
 	<jaxws:endpoint implementor="#securiteServiceBean" address="/securite" />
 
-	<bean id="securiteServiceBean" class="ch.vd.uniregctb.webservices.securite.impl.SecuriteWebServiceImpl">
+	<bean id="securiteServiceBean" class="ch.vd.unireg.webservices.securite.impl.SecuriteWebServiceImpl">
 		<property name="dao" ref="droitAccesDAO" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
@@ -174,21 +174,21 @@
 		</jaxrs:providers>
 	</jaxrs:server>
 
-	<bean id="wsv5EndPoint" class="ch.vd.uniregctb.webservices.v5.WebServiceEndPoint">
+	<bean id="wsv5EndPoint" class="ch.vd.unireg.webservices.v5.WebServiceEndPoint">
 		<property name="target" ref="wsv5Tracing"/>
 	</bean>
 
-	<bean id="wsv5Tracing" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceTracing">
+	<bean id="wsv5Tracing" class="ch.vd.unireg.webservices.v5.BusinessWebServiceTracing">
 		<property name="target" ref="wsv5Access"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
-	<bean id="wsv5Access" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceAccessChecker">
+	<bean id="wsv5Access" class="ch.vd.unireg.webservices.v5.BusinessWebServiceAccessChecker">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="target" ref="wsv5Cache"/>
 	</bean>
 
-	<bean id="wsv5Cache" class="ch.vd.uniregctb.webservices.v5.cache.BusinessWebServiceCache">
+	<bean id="wsv5Cache" class="ch.vd.unireg.webservices.v5.cache.BusinessWebServiceCache">
 		<property name="target" ref="wsv5Business"/>
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="webService5" />
@@ -197,11 +197,11 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="wsv5CacheEventListener" class="ch.vd.uniregctb.webservices.v5.cache.BusinessWebServiceCacheEventListener">
+	<bean id="wsv5CacheEventListener" class="ch.vd.unireg.webservices.v5.cache.BusinessWebServiceCacheEventListener">
 		<property name="cache" ref="wsv5Cache"/>
 	</bean>
 
-	<bean id="wsv5Business" class="ch.vd.uniregctb.webservices.v5.BusinessWebServiceImpl">
+	<bean id="wsv5Business" class="ch.vd.unireg.webservices.v5.BusinessWebServiceImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>
@@ -263,21 +263,21 @@
 		</jaxrs:providers>
 	</jaxrs:server>
 
-	<bean id="wsv6EndPoint" class="ch.vd.uniregctb.webservices.v6.WebServiceEndPoint">
+	<bean id="wsv6EndPoint" class="ch.vd.unireg.webservices.v6.WebServiceEndPoint">
 		<property name="target" ref="wsv6Tracing"/>
 	</bean>
 
-	<bean id="wsv6Tracing" class="ch.vd.uniregctb.webservices.v6.BusinessWebServiceTracing">
+	<bean id="wsv6Tracing" class="ch.vd.unireg.webservices.v6.BusinessWebServiceTracing">
 		<property name="target" ref="wsv6Access"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
-	<bean id="wsv6Access" class="ch.vd.uniregctb.webservices.v6.BusinessWebServiceAccessChecker">
+	<bean id="wsv6Access" class="ch.vd.unireg.webservices.v6.BusinessWebServiceAccessChecker">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="target" ref="wsv6Cache"/>
 	</bean>
 
-	<bean id="wsv6Cache" class="ch.vd.uniregctb.webservices.v6.cache.BusinessWebServiceCache">
+	<bean id="wsv6Cache" class="ch.vd.unireg.webservices.v6.cache.BusinessWebServiceCache">
 		<property name="target" ref="wsv6Business"/>
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="webService6" />
@@ -286,11 +286,11 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="wsv6CacheEventListener" class="ch.vd.uniregctb.webservices.v6.cache.BusinessWebServiceCacheEventListener">
+	<bean id="wsv6CacheEventListener" class="ch.vd.unireg.webservices.v6.cache.BusinessWebServiceCacheEventListener">
 		<property name="cache" ref="wsv6Cache"/>
 	</bean>
 
-	<bean id="wsv6Business" class="ch.vd.uniregctb.webservices.v6.BusinessWebServiceImpl">
+	<bean id="wsv6Business" class="ch.vd.unireg.webservices.v6.BusinessWebServiceImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>
@@ -354,21 +354,21 @@
 		</jaxrs:providers>
 	</jaxrs:server>
 
-	<bean id="wsv7EndPoint" class="ch.vd.uniregctb.webservices.v7.WebServiceEndPoint">
+	<bean id="wsv7EndPoint" class="ch.vd.unireg.webservices.v7.WebServiceEndPoint">
 		<property name="target" ref="wsv7Tracing"/>
 	</bean>
 
-	<bean id="wsv7Tracing" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceTracing">
+	<bean id="wsv7Tracing" class="ch.vd.unireg.webservices.v7.BusinessWebServiceTracing">
 		<property name="target" ref="wsv7Access"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
-	<bean id="wsv7Access" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceAccessChecker">
+	<bean id="wsv7Access" class="ch.vd.unireg.webservices.v7.BusinessWebServiceAccessChecker">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="target" ref="wsv7Cache"/>
 	</bean>
 
-	<bean id="wsv7Cache" class="ch.vd.uniregctb.webservices.v7.cache.BusinessWebServiceCache">
+	<bean id="wsv7Cache" class="ch.vd.unireg.webservices.v7.cache.BusinessWebServiceCache">
 		<property name="target" ref="wsv7Business"/>
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="webService7" />
@@ -377,11 +377,11 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="wsv7CacheEventListener" class="ch.vd.uniregctb.webservices.v7.cache.BusinessWebServiceCacheEventListener">
+	<bean id="wsv7CacheEventListener" class="ch.vd.unireg.webservices.v7.cache.BusinessWebServiceCacheEventListener">
 		<property name="cache" ref="wsv7Cache"/>
 	</bean>
 
-	<bean id="wsv7Business" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceImpl">
+	<bean id="wsv7Business" class="ch.vd.unireg.webservices.v7.BusinessWebServiceImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>

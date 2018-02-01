@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,11 +11,11 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.common.DelayedDownloadService;
-import ch.vd.uniregctb.common.TimeHelper;
-import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
-import ch.vd.uniregctb.editique.RetourImpressionToInboxTrigger;
-import ch.vd.uniregctb.editique.RetourImpressionTrigger;
+import ch.vd.unireg.common.DelayedDownloadService;
+import ch.vd.unireg.common.TimeHelper;
+import ch.vd.unireg.editique.EditiqueRetourImpressionStorageService;
+import ch.vd.unireg.editique.RetourImpressionToInboxTrigger;
+import ch.vd.unireg.editique.RetourImpressionTrigger;
 
 /**
  * Implémentation du bean JMX de monitoring de la gestion des retours d'impression

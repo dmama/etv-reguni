@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import org.junit.Test;
 
@@ -7,11 +7,11 @@ import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxationMethod;
-import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

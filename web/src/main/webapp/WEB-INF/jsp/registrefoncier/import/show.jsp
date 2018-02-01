@@ -31,7 +31,7 @@
 		<fieldset class="information">
 			<legend><span><fmt:message key="title.details.import.rf" /></span></legend>
 
-				<%--@elvariable id="importEvent" type="ch.vd.uniregctb.registrefoncier.importrf.EvenementRFImportView"--%>
+				<%--@elvariable id="importEvent" type="ch.vd.unireg.registrefoncier.importrf.EvenementRFImportView"--%>
 			<table border="0">
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.id.event.rf" />&nbsp;:</td>
@@ -87,10 +87,10 @@
 
 			<%--@elvariable id="pageSize" type="java.lang.Long"--%>
 			<%--@elvariable id="count" type="java.lang.Long"--%>
-			<%--@elvariable id="mutation" type="ch.vd.uniregctb.registrefoncier.importrf.EvenementRFMutationView"--%>
+			<%--@elvariable id="mutation" type="ch.vd.unireg.registrefoncier.importrf.EvenementRFMutationView"--%>
 
 			<display:table name="mutations" id="mutation" class="display_table" pagesize="${pageSize}" size="${count}" sort="external" partialList="true"
-			               requestURI="/registrefoncier/import/show.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			               requestURI="/registrefoncier/import/show.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucune.mutation.trouvee"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.une.mutation.trouvee"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.mutations.trouves"/></span></display:setProperty>

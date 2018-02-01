@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.List;
 
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
 
 /**
  * Volontairement laissée au niveau package pour un peu plus d'encapsulation

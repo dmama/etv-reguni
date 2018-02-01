@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -12,7 +12,7 @@ import java.util.Date;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.unireg.common.HibernateEntity;
 
 /**
  * Contient une demande (et éventuellement la réponse) pour l'identification d'un contribuable. L'identification d'un contribuable est une
@@ -212,7 +212,7 @@ public class IdentificationContribuable extends HibernateEntity {
 	}
 
 	@Column(name = "ETAT", length = 23, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.identification.contribuable.TypeEtatIdentCtbUserType")
+	@Type(type = "ch.vd.unireg.hibernate.identification.contribuable.TypeEtatIdentCtbUserType")
 	public Etat getEtat() {
 		return etat;
 	}

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rt.manager;
+package ch.vd.unireg.rt.manager;
 
 import java.util.List;
 
@@ -9,30 +9,30 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
-import ch.vd.uniregctb.rt.view.DebiteurListView;
-import ch.vd.uniregctb.rt.view.RapportPrestationView;
-import ch.vd.uniregctb.rt.view.SourcierListView;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
-import ch.vd.uniregctb.tiers.RapportPrestationImposable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.general.manager.TiersGeneralManager;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.rapport.SensRapportEntreTiers;
+import ch.vd.unireg.rt.view.DebiteurListView;
+import ch.vd.unireg.rt.view.RapportPrestationView;
+import ch.vd.unireg.rt.view.SourcierListView;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportEntreTiersDAO;
+import ch.vd.unireg.tiers.RapportPrestationImposable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class RapportPrestationEditManagerImpl implements RapportPrestationEditManager, MessageSourceAware{
 

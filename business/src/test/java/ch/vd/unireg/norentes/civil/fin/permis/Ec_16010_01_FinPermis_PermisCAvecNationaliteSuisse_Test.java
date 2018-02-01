@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.fin.permis;
+package ch.vd.unireg.norentes.civil.fin.permis;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Teste l'événement Fin de Permis pour le cas d'un habitant avec permis C ayant obtenu la nationalité suisse.

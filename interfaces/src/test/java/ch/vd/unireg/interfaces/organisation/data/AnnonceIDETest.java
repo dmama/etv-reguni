@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 /**
  * @author Raphaël Marmier, 2016-09-02, <raphael.marmier@vd.ch>

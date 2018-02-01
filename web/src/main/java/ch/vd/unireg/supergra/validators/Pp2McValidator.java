@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.supergra.validators;
+package ch.vd.unireg.supergra.validators;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.supergra.view.Pp2McView;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.supergra.view.Pp2McView;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class Pp2McValidator implements Validator {
 

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.identification.contribuable.validator;
+package ch.vd.unireg.identification.contribuable.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
+import ch.vd.unireg.identification.contribuable.view.IdentificationContribuableListCriteria;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
 
 public class IdentificationMessageValidator implements Validator {
 

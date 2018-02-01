@@ -6,7 +6,7 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 public class EtatDestinataire {
 

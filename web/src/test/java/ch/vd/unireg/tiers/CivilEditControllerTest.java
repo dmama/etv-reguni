@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.uniregctb.common.WebTestSpring3;
-import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.tiers.view.NonHabitantCivilView;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -408,7 +408,7 @@
 					<unireg:dateOffset/>
 
 					<%-- Message flash --%>
-					<%--@elvariable id="flash" type="ch.vd.uniregctb.common.FlashMessage"--%>
+					<%--@elvariable id="flash" type="ch.vd.unireg.common.FlashMessage"--%>
 					<c:if test="${flash != null && flash.active}">
 						<div id="flashdisplay" class="<c:out value='${flash.displayClass}'/>"><c:out value="${flash.messageForDisplay}"/></div>
 						<c:if test="${flash.timeout > 0}">
@@ -432,7 +432,7 @@
 								</c:forEach>
 							</c:if>
 						</spring:hasBindErrors>
-						<%--@elvariable id="actionErrors" type="ch.vd.uniregctb.common.ActionMessageList"--%>
+						<%--@elvariable id="actionErrors" type="ch.vd.unireg.common.ActionMessageList"--%>
 						<c:if test="${actionErrors != null && not empty actionErrors}">
 							<c:set var="globalErrorCount" value="${globalErrorCount + fn:length(actionErrors)}"/>
 						</c:if>

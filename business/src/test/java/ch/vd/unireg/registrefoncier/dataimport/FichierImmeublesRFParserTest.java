@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,9 +34,9 @@ import ch.vd.capitastra.grundstueck.Rechtsgrund;
 import ch.vd.capitastra.grundstueck.SDR;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.UniregJUnit4Runner;
+import ch.vd.unireg.common.UniregJUnit4Runner;
 
-import static ch.vd.uniregctb.common.WithoutSpringTest.assertEmpty;
+import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -56,7 +56,7 @@ public class FichierImmeublesRFParserTest {
 	@Test
 	public void testParseImmeubles() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_immeubles_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_immeubles_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier
@@ -134,7 +134,7 @@ public class FichierImmeublesRFParserTest {
 	@Test
 	public void testParseDroits() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_droits_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_droits_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier
@@ -223,7 +223,7 @@ public class FichierImmeublesRFParserTest {
 	@Test
 	public void testParseProprietaires() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_proprietaires_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_proprietaires_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier
@@ -264,7 +264,7 @@ public class FichierImmeublesRFParserTest {
 	@Test
 	public void testParseBatiments() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_batiments_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_batiments_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier
@@ -317,7 +317,7 @@ public class FichierImmeublesRFParserTest {
 	@Test
 	public void testParseSurfaces() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_surfaces_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_surfaces_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier

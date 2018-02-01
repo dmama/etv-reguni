@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne;
+package ch.vd.unireg.evenement.civil.interne;
 
 import java.util.Set;
 
@@ -7,13 +7,13 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.model.AdressesCiviles;
 
 public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilInterne {
 

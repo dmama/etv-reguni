@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.scheduler;
+package ch.vd.unireg.scheduler;
 
 /**
  * Paramètre qui permet de spécifier une commune.

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
 
 public class DeclarationImpotSourceValidator extends DeclarationValidator<DeclarationImpotSource> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,24 +32,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.Fuse;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessor;
-import ch.vd.uniregctb.evenement.reqdes.pdf.UniteTraitementPdfDocumentGenerator;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
-import ch.vd.uniregctb.reqdes.UniteTraitement;
-import ch.vd.uniregctb.reqdes.UniteTraitementCriteria;
-import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
-import ch.vd.uniregctb.servlet.ServletService;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.Fuse;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.evenement.reqdes.engine.EvenementReqDesProcessor;
+import ch.vd.unireg.evenement.reqdes.pdf.UniteTraitementPdfDocumentGenerator;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.UniteTraitement;
+import ch.vd.unireg.reqdes.UniteTraitementCriteria;
+import ch.vd.unireg.reqdes.UniteTraitementDAO;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.servlet.ServletService;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/evenement/reqdes")

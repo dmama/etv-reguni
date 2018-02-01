@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.dbutils;
+package ch.vd.unireg.dbutils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import ch.vd.uniregctb.common.HibernateQueryHelper;
+import ch.vd.unireg.common.HibernateQueryHelper;
 
 /**
  * Cette classe permet d'encapsuler un fragment (ou la totalité) d'une requête sql avec les paramètres dynamiques à utiliser.

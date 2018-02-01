@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.lucene;
+package ch.vd.unireg.indexer.lucene;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -15,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Constants;
-import ch.vd.uniregctb.common.StringParser;
-import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+import ch.vd.unireg.common.Constants;
+import ch.vd.unireg.common.StringParser;
+import ch.vd.unireg.indexer.IndexerFormatHelper;
 
 public abstract class DocumentExtractorHelper {
 

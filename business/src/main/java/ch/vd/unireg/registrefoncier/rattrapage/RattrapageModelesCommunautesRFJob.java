@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.registrefoncier.rattrapage;
+package ch.vd.unireg.registrefoncier.rattrapage;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.document.RattrapageModelesCommunautesRFProcessorRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.RattrapageModelesCommunautesRFProcessorRapport;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamInteger;
 
 /**
  * Ce batch réapplique les règles de regroupement avec les modèles de communauté sur toutes les communautés existantes.

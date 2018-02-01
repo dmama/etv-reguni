@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.unireg.xml.party.person.v5.ResidencyPeriod;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.xml.DataHelper;
 
 public class ResidencyPeriodBuilder {
 

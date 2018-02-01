@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import java.util.Collection;
 import java.util.Date;
@@ -13,10 +13,10 @@ import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.dbutils.QueryFragment;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.dbutils.QueryFragment;
 
 public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation, Long> implements EvenementRFMutationDAO {
 

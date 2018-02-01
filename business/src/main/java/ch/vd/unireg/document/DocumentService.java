@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.document;
+package ch.vd.unireg.document;
 
 import java.io.InputStream;
 import java.io.OutputStream;

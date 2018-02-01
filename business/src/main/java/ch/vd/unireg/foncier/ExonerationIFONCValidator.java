@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 public class ExonerationIFONCValidator extends AllegementFoncierValidator<ExonerationIFONC> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.changement.filiation;
+package ch.vd.unireg.evenement.civil.interne.changement.filiation;
 
 import net.sf.ehcache.CacheManager;
 import org.junit.Test;
@@ -11,12 +11,12 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.MotifFor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

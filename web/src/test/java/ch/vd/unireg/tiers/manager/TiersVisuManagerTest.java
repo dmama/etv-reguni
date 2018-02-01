@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -20,19 +20,19 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.HistoFlag;
-import ch.vd.uniregctb.tiers.HistoFlags;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.view.AdresseCivilView;
-import ch.vd.uniregctb.tiers.view.AdresseView;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.HistoFlag;
+import ch.vd.unireg.tiers.HistoFlags;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.view.AdresseCivilView;
+import ch.vd.unireg.tiers.view.AdresseView;
+import ch.vd.unireg.tiers.view.TiersVisuView;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -45,7 +45,7 @@ public class TiersVisuManagerTest extends WebTest {
 	private static final String DB_UNIT_FILE = "TiersVisuManagerTest.xml";
 
 	/**
-	 * @see ch.vd.uniregctb.common.AbstractCoreDAOTest#onSetUp()
+	 * @see ch.vd.unireg.common.AbstractCoreDAOTest#onSetUp()
 	 */
 	@Override
 	public void onSetUp() throws Exception {

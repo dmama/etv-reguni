@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.declaration;
+package ch.vd.unireg.evenement.declaration;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -32,11 +32,11 @@ import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.InformationComplementaire
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.ObjectFactory;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.Statut;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.TypeDocument;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbMessageValidator;
 
 public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMSender, InitializingBean {
 

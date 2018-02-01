@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
 
 /**
  * Classe de transtypage pour Hibernate : EtatEvenementOrganisation <--> varchar

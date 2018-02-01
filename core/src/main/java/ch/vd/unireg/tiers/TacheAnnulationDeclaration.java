@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -7,8 +7,8 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.type.TypeEtatTache;
 
 @Entity
 public abstract class TacheAnnulationDeclaration<T extends Declaration> extends Tache {

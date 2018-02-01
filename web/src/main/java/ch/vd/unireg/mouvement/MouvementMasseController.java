@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,19 +23,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.extraction.ExtractionJob;
-import ch.vd.uniregctb.mouvement.manager.MouvementMasseManager;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaConsultationView;
-import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaTraitementView;
-import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
-import ch.vd.uniregctb.mouvement.view.MouvementMasseResultatRechercheView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.extraction.ExtractionJob;
+import ch.vd.unireg.mouvement.manager.MouvementMasseManager;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.mouvement.view.MouvementMasseCriteriaConsultationView;
+import ch.vd.unireg.mouvement.view.MouvementMasseCriteriaTraitementView;
+import ch.vd.unireg.mouvement.view.MouvementMasseCriteriaView;
+import ch.vd.unireg.mouvement.view.MouvementMasseResultatRechercheView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/mouvement/masse")

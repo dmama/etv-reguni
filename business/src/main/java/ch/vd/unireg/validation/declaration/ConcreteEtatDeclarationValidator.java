@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
-import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
 
 public class ConcreteEtatDeclarationValidator extends EtatDeclarationValidator<EtatDeclaration> {
 	@Override

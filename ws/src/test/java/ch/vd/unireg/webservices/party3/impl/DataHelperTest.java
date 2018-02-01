@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.impl;
+package ch.vd.unireg.webservices.party3.impl;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -7,7 +7,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class DataHelperTest extends WithoutSpringTest {
 

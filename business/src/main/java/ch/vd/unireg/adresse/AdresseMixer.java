@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.unireg.common.ProgrammingException;
 
-import static ch.vd.uniregctb.adresse.AdresseGenerique.Source;
+import static ch.vd.unireg.adresse.AdresseGenerique.Source;
 
 /**
  * Classe utilitaire <b>purement technique</b> dédiée à la manipulation des adresses génériques. Aucune régle métier ne doit être définie

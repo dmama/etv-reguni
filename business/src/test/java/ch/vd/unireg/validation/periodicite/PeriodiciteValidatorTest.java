@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.validation.periodicite;
+package ch.vd.unireg.validation.periodicite;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.type.PeriodeDecompte;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.type.PeriodeDecompte;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
 

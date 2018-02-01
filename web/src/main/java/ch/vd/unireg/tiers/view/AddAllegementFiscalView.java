@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.math.BigDecimal;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCantonCommune;
+import ch.vd.unireg.tiers.AllegementFiscalConfederation;
 
 public class AddAllegementFiscalView implements DateRange {
 

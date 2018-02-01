@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.processor;
+package ch.vd.unireg.registrefoncier.dataimport.processor;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
 
 public interface AffaireRFListener {
 

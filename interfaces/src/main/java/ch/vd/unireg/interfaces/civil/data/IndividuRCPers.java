@@ -49,10 +49,10 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.AdresseCourrierMinimale;
 import ch.vd.unireg.interfaces.infra.data.RangeChangingAdresseWrapper;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypePermisInvalideException;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypePermisInvalideException;
 
 public class IndividuRCPers implements Individu, Serializable {
 

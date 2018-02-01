@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import javax.jms.JMSException;
 import javax.jms.Message;

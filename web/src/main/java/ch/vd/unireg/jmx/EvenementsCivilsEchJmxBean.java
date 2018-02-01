@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;

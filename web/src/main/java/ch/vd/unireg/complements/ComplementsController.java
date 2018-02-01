@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.complements;
+package ch.vd.unireg.complements;
 
 import javax.validation.Valid;
 
@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.manager.AutorisationManager;
-import ch.vd.uniregctb.tiers.manager.Autorisations;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.manager.AutorisationManager;
+import ch.vd.unireg.tiers.manager.Autorisations;
 
 @Controller
 @RequestMapping(value = "/complements")

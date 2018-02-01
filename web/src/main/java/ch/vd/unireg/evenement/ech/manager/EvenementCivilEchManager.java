@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.evenement.ech.manager;
+package ch.vd.unireg.evenement.ech.manager;
 
 import java.util.List;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchDetailView;
-import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.ech.view.EvenementCivilEchCriteriaView;
+import ch.vd.unireg.evenement.ech.view.EvenementCivilEchDetailView;
+import ch.vd.unireg.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -23,7 +23,7 @@ public interface EvenementCivilEchManager {
 	 * @param id ID d'evenement
 	 * @return la structure EvenementCivilRegPPDetailView correspondant à l'id
 	 *
-	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
+	 * @throws ch.vd.unireg.adresse.AdressesResolutionException ...
 	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException ...
 	 */
 	EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
@@ -53,7 +53,7 @@ public interface EvenementCivilEchManager {
 	 * @param bean critères de recherche tel que saisie par l'utilisateur
 	 * @param pagination information sur la pagination pour la requete sous-jacente
 	 * @return une liste d'evenement pret à afficher
-	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
+	 * @throws ch.vd.unireg.adresse.AdressesResolutionException ...
 	 */
 	List<EvenementCivilEchElementListeRechercheView> find(EvenementCivilEchCriteriaView bean, ParamPagination pagination) throws AdresseException;
 

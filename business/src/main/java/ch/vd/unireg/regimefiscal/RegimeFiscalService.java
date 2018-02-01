@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal;
+package ch.vd.unireg.regimefiscal;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 /**
  * @author Raphaël Marmier, 2017-01-25, <raphael.marmier@vd.ch>

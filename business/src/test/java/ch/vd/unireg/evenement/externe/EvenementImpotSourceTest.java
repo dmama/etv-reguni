@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -28,8 +28,8 @@ import ch.vd.unireg.xml.event.lr.quittance.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.lr.quittance.v1.Origine;
 import ch.vd.unireg.xml.event.lr.quittance.v1.Quittance;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.common.XmlUtils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

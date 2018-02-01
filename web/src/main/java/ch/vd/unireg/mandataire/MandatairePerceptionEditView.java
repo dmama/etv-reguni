@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
-import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.tiers.Mandat;
+import ch.vd.unireg.tiers.TiersService;
 
 public class MandatairePerceptionEditView extends MandatairePerceptionView {
 

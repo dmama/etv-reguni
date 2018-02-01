@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.inbox;
+package ch.vd.unireg.inbox;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class InboxContainerTest extends WithoutSpringTest {
 

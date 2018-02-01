@@ -31,7 +31,7 @@
 			<display:table
 					name="command.restrictions" id="restriction" pagesize="10" sort="list"
 					requestURI="${url}"
-					class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+					class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			
 				<display:column sortable ="true" titleKey="label.type.restriction">
 						<fmt:message key="option.type.droit.acces.${restriction.type}"  />

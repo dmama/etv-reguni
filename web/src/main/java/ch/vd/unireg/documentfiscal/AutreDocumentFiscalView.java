@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.Optional;
 
@@ -6,10 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.view.DocumentFiscalView;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.declaration.view.DocumentFiscalView;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class AutreDocumentFiscalView extends DocumentFiscalView {
 

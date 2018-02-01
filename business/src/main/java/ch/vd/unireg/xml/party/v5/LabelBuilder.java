@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.unireg.xml.party.v5.AdministrativeAuthorityLink;
 import ch.vd.unireg.xml.party.v5.PartyLabel;
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.xml.DataHelper;
 
 public class LabelBuilder {
 

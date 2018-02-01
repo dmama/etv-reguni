@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.ubr;
+package ch.vd.unireg.ubr;
 
 public class BatchRunnerClientException extends Exception {
 

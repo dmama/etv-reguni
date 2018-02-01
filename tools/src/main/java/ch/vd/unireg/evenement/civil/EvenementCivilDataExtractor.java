@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil;
+package ch.vd.unireg.evenement.civil;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -14,7 +14,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
-import ch.vd.uniregctb.civil.ServiceInfraGetPaysSimpleCache;
+import ch.vd.unireg.civil.ServiceInfraGetPaysSimpleCache;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
 
 public class EvenementCivilDataExtractor {

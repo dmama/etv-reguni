@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fourreNeutre;
+package ch.vd.unireg.fourreNeutre;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -18,18 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
-import ch.vd.uniregctb.fourreNeutre.manager.FourreNeutreManager;
-import ch.vd.uniregctb.fourreNeutre.view.FourreNeutreView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.RetourEditiqueControllerHelper;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
+import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
+import ch.vd.unireg.fourreNeutre.manager.FourreNeutreManager;
+import ch.vd.unireg.fourreNeutre.view.FourreNeutreView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.utils.WebContextUtils;
 
 @Controller
 @RequestMapping(value = "/fourre-neutre")

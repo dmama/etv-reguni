@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.infra.v1;
+package ch.vd.unireg.xml.infra.v1;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -6,9 +6,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.xml.Context;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.xml.Context;
 
 public abstract class TaxOfficesBuilder {
 

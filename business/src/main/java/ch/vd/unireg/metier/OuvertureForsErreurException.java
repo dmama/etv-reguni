@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
-import ch.vd.uniregctb.metier.OuvertureForsResults.ErreurType;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.metier.OuvertureForsResults.ErreurType;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 /**
  * Exception levée dans le traitement de l'ouverture des fors des contribuables majeurs, et qui contient les informations nécessaires pour

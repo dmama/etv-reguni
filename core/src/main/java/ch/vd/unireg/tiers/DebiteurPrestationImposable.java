@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,17 +25,17 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.PeriodeDecompte;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.PeriodeDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 
 /**
  * Tiers ayant l'obligation de retenir et de verser périodiquement l'impôt dû sur les prestations imposables à la source
@@ -80,7 +80,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 	@Column(name = "CATEGORIE_IMPOT_SOURCE", length = LengthConstants.DPI_CATEGORIEIS)
-	@Type(type = "ch.vd.uniregctb.hibernate.CategorieImpotSourceUserType")
+	@Type(type = "ch.vd.unireg.hibernate.CategorieImpotSourceUserType")
 	public CategorieImpotSource getCategorieImpotSource() {
 		return categorieImpotSource;
 	}
@@ -90,7 +90,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 	@Column(name = "PERIODICITE_DECOMPTE", length = LengthConstants.DPI_PERIODICITE)
-	@Type(type = "ch.vd.uniregctb.hibernate.PeriodiciteDecompteUserType")
+	@Type(type = "ch.vd.unireg.hibernate.PeriodiciteDecompteUserType")
 	public PeriodiciteDecompte getPeriodiciteDecompteAvantMigration() {
 		return periodiciteDecompteAvantMigration;
 	}
@@ -100,7 +100,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 	@Column(name = "PERIODE_DECOMPTE", length = LengthConstants.DPI_PERIODE_DECOMPTE)
-	@Type(type = "ch.vd.uniregctb.hibernate.PeriodeDecompteUserType")
+	@Type(type = "ch.vd.unireg.hibernate.PeriodeDecompteUserType")
 	public PeriodeDecompte getPeriodeDecompteAvantMigration() {
 		return periodeDecompteAvantMigration;
 	}
@@ -110,7 +110,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 	@Column(name = "MODE_COM", length = LengthConstants.DPI_MODECOM)
-	@Type(type = "ch.vd.uniregctb.hibernate.ModeCommunicationUserType")
+	@Type(type = "ch.vd.unireg.hibernate.ModeCommunicationUserType")
 	public ModeCommunication getModeCommunication() {
 		return modeCommunication;
 	}

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.print;
+package ch.vd.unireg.print;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.io.IOUtils;
 
-import ch.vd.uniregctb.common.MimeTypeHelper;
+import ch.vd.unireg.common.MimeTypeHelper;
 
 public class PrintPCLManagerImpl implements PrintPCLManager {
 

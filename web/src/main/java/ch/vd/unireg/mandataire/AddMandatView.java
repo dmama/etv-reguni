@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.tiers.view.AdresseView;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.tiers.view.AdresseView;
+import ch.vd.unireg.type.TypeMandat;
 
 public class AddMandatView implements DateRange {
 

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.veuvage;
+package ch.vd.unireg.norentes.civil.veuvage;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Test du scénario de veuvage initialement en erreur suivi d'une annulation de veuvage

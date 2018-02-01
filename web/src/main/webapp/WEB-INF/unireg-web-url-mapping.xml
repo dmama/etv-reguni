@@ -7,14 +7,14 @@
 
 	<!-- Scans within the base package of the application for @Components to configure as beans @Controller, @Service, @Configuration, etc. -->
 	<!-- (msi, 12.04.2011) Désactivé. On préfère instancier les beans des contrôleurs à la main, de manière à gérer finement l'injection des dépendances -->
-	<!--<context:component-scan base-package="ch.vd.uniregctb" />-->
+	<!--<context:component-scan base-package="ch.vd.unireg" />-->
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<!-- (msi, 12.04.2011) Désactivé. On préfère instancier les handlers à la main, de manière à pouvoir spécifier les intercepteurs qui vont bien (ajax, ...) -->
 	<!--<mvc:annotation-driven />-->
 
 	<!-- HandlerAdapter qui enregistre les contrôleurs spring 3.x (@Controller) dans le DispatcherServlet -->
-	<bean class="ch.vd.uniregctb.servlet.UniregRequestMappingHandlerAdapter">
+	<bean class="ch.vd.unireg.servlet.UniregRequestMappingHandlerAdapter">
 		<!-- [SIFISC-2337] ajouté le JSON message converter (+ explicité les autres) -->
 		<property name="messageConverters">
 			<array>
@@ -26,7 +26,7 @@
 				<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
 				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
 					<property name="objectMapper">
-						<bean class="ch.vd.uniregctb.json.JsonObjectMapperFactory"/>
+						<bean class="ch.vd.unireg.json.JsonObjectMapperFactory"/>
 					</property>
 				</bean>
 			</array>
@@ -93,7 +93,7 @@
 	<!-- ======== Exceptions resolvers (communs à Spring 2.x et Spring 3.x) ======== -->
 
 	<!-- Exception resolver qui ne résoud rien mais notifie par email les exceptions levées -->
-	<bean id="notifyingExceptionResolver" class="ch.vd.uniregctb.servlet.NotifyingExceptionResolver">
+	<bean id="notifyingExceptionResolver" class="ch.vd.unireg.servlet.NotifyingExceptionResolver">
 		<property name="order" value="-1"/> <!-- pour prendre la précédence sur tous les autres exceptions resolvers -->
 		<property name="notificationService" ref="emailNotificationService" />
 		<property name="applicationName" value="Unireg ${project.version}" />
@@ -114,12 +114,12 @@
 	</bean>
 
 	<!-- Exception resolver pour exposer les exceptions sous format JSON aux clients qui attendent du JSON -->
-	<bean class="ch.vd.uniregctb.servlet.JSONExceptionResolver">
+	<bean class="ch.vd.unireg.servlet.JSONExceptionResolver">
 		<property name="order" value="11"/> <!-- pour prendre la précédence sur le urlMappingExceptionResolver -->
 	</bean>
 
 	<!--Pour catcher les erreurs de validation et d'action automatiquement et les afficher sur la dernière page -->
-	<bean class="ch.vd.uniregctb.servlet.ActionExceptionResolver">
+	<bean class="ch.vd.unireg.servlet.ActionExceptionResolver">
 		<property name="order" value="19"/> <!-- pour prendre la précédence sur le urlMappingExceptionResolver -->
 	</bean>
 
@@ -137,20 +137,20 @@
 				<entry key="org.springframework.jdbc.UncategorizedSQLException" value="errors/jdbcConnection" />
 				<entry key="ch.vd.unireg.interfaces.civil.ServiceCivilException" value="errors/errorServiceCivil" />
 				<entry key="ch.vd.unireg.interfaces.organisation.ServiceOrganisationException" value="errors/errorServiceOrganisation" />
-				<entry key="ch.vd.uniregctb.type.TypePermisInvalideException" value="errors/permisInvalide" />
+				<entry key="ch.vd.unireg.type.TypePermisInvalideException" value="errors/permisInvalide" />
 				<entry key="ch.vd.unireg.interfaces.infra.ServiceInfrastructureException" value="errors/errorServiceInfrastructure" />
-				<entry key="ch.vd.uniregctb.interfaces.service.ServiceSecuriteException" value="errors/errorServiceSecurite" />
-				<entry key="ch.vd.uniregctb.interfaces.InterfaceDataException" value="errors/errorDataInterface" />
+				<entry key="ch.vd.unireg.interfaces.service.ServiceSecuriteException" value="errors/errorServiceSecurite" />
+				<entry key="ch.vd.unireg.interfaces.InterfaceDataException" value="errors/errorDataInterface" />
 				<!-- En cas d'exception inattendue, on renvoie vers la JSP error.jsp -->
 				<entry key="java.lang.Exception" value="errors/error" />
-				<entry key="ch.vd.uniregctb.security.AccessDeniedException" value="errors/accessDeniedIHM" />
+				<entry key="ch.vd.unireg.security.AccessDeniedException" value="errors/accessDeniedIHM" />
 				<entry key="ch.vd.registre.base.utils.NotImplementedException" value="errors/notImplemented" />
-				<entry key="ch.vd.uniregctb.common.EditiqueCommunicationException" value="errors/editique" />
-				<entry key="ch.vd.uniregctb.common.ObjectNotFoundException" value="errors/objectNotFound" />
-				<entry key="ch.vd.uniregctb.adresse.AdressesResolutionException" value="errors/adressesResolution" />
-				<entry key="ch.vd.uniregctb.common.DonneesCivilesException" value="errors/donneesCiviles" />
+				<entry key="ch.vd.unireg.common.EditiqueCommunicationException" value="errors/editique" />
+				<entry key="ch.vd.unireg.common.ObjectNotFoundException" value="errors/objectNotFound" />
+				<entry key="ch.vd.unireg.adresse.AdressesResolutionException" value="errors/adressesResolution" />
+				<entry key="ch.vd.unireg.common.DonneesCivilesException" value="errors/donneesCiviles" />
 				<entry key="ch.vd.uniregctb.webservice.sipf.BVRPlusClientException" value="errors/bvrplus" />
-				<entry key="ch.vd.uniregctb.editique.print.PrintPCLException" value="errors/errorPrintPCL" />
+				<entry key="ch.vd.unireg.editique.print.PrintPCLException" value="errors/errorPrintPCL" />
 				<entry key="org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureException" value="errors/optimisticLockingFailure" />
 			</map>
 		</property>

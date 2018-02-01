@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.party4;
+package ch.vd.unireg.webservice.party4;
 
 import javax.xml.ws.BindingProvider;
 import java.net.URL;
@@ -16,7 +16,7 @@ import ch.vd.unireg.webservices.party4.PartyWebServiceFactory;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.party.v2.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v2.BankAccount;
-import ch.vd.uniregctb.common.WebitTest;
+import ch.vd.unireg.common.WebitTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

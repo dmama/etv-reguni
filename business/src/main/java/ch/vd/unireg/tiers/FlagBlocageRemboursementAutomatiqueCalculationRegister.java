@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 /**
  * Interface implémentée par la mécanique que calcul différée du flag de blocage de remboursement automatique

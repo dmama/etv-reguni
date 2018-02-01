@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import java.util.Calendar;
 import java.util.EnumSet;
@@ -17,9 +17,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.tiers.TypeTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

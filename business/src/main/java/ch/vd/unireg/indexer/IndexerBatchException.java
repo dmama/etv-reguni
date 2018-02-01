@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Exception renvoyée par le moteur d'indexation lors d'un traitement batch de plusieurs tiers.

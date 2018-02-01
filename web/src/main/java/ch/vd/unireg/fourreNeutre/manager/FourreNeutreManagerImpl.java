@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fourreNeutre.manager;
+package ch.vd.unireg.fourreNeutre.manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,9 +7,9 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.fourreNeutre.FourreNeutreException;
-import ch.vd.uniregctb.fourreNeutre.FourreNeutreService;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.fourreNeutre.FourreNeutreException;
+import ch.vd.unireg.fourreNeutre.FourreNeutreService;
 
 public class FourreNeutreManagerImpl implements FourreNeutreManager {
 

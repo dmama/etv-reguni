@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.lr.view;
+package ch.vd.unireg.lr.view;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeView implements Annulable, DateRange {
 

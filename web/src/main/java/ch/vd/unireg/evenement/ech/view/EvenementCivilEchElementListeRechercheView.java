@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.evenement.ech.view;
+package ch.vd.unireg.evenement.ech.view;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.individu.IndividuView;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.adresse.AdresseEnvoi;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.individu.IndividuView;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchElementListeRechercheView implements Serializable {
 

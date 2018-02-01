@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,11 +25,11 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 @Entity
 @Table(name = "DELAI_DOCUMENT_FISCAL")
@@ -64,7 +64,7 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 	}
 
 	@Column(name = "DATE_DEMANDE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDemande() {
 		return dateDemande;
 	}
@@ -74,7 +74,7 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 	}
 
 	@Column(name = "DATE_TRAITEMENT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateTraitement() {
 		return dateTraitement;
 	}
@@ -84,7 +84,7 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 	}
 
 	@Column(name = "DELAI_ACCORDE_AU")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDelaiAccordeAu() {
 		return delaiAccordeAu;
 	}

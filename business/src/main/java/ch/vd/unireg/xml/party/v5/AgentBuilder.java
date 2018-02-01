@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,18 +12,18 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.xml.party.agent.v1.Agent;
 import ch.vd.unireg.xml.party.agent.v1.GeneralAgent;
 import ch.vd.unireg.xml.party.agent.v1.SpecialAgent;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.adresse.AdresseMandataireAdapter;
-import ch.vd.uniregctb.adresse.AdressesEnvoiHisto;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.address.AddressBuilder;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.adresse.AdresseMandataireAdapter;
+import ch.vd.unireg.adresse.AdressesEnvoiHisto;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.tiers.Mandat;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.address.AddressBuilder;
 
 public class AgentBuilder {
 

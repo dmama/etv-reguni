@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,15 +13,15 @@ import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFPrincipalInfo;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.ProgrammingException;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommunauteRFMembreInfo;
+import ch.vd.unireg.registrefoncier.CommunauteRFPrincipalInfo;
+import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 
 public abstract class CommunityOfOwnersBuilder {
 

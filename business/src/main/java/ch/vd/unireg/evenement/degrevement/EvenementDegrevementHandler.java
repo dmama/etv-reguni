@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.degrevement;
+package ch.vd.unireg.evenement.degrevement;
 
 import java.util.Map;
 
 import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
 import ch.vd.unireg.xml.event.degrevement.v1.Message;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Interface du handler métier (hors de toute considération de parsing de message XML...)

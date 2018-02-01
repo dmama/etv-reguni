@@ -15,7 +15,7 @@
 	<fieldset>
 		<legend><span><fmt:message key="label.declarations.impot" /></span></legend>
 		<c:if test="${not empty command.dis}">
-			<display:table name="command.dis" id="di" pagesize="${command.nombreElementsTable}" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
+			<display:table name="command.dis" id="di" pagesize="${command.nombreElementsTable}" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
 				<display:column sortable="true" titleKey="label.periode.fiscale">
 					${di.periodeFiscale}
 				</display:column>

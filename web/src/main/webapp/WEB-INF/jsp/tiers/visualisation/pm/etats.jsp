@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.TiersVisuView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.entreprise.TiersVisuView"--%>
 
 <unireg:setAuth var="autorisations" tiersId="${command.entreprise.id}"/>
 
@@ -20,7 +20,7 @@
 	</c:if>
 
 	<c:if test="${not empty command.entreprise.etats}">
-		<display:table name="${command.entreprise.etats}" id="etatPM" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="${command.entreprise.etats}" id="etatPM" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:column titleKey="label.date.obtention">
 				<unireg:regdate regdate="${etatPM.dateObtention}"/>
 			</display:column>

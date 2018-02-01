@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeTache;
 
 public class ProduireListeTachesEnInstanceParOIDProcessor {
 

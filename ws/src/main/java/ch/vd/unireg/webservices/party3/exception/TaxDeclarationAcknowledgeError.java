@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.exception;
+package ch.vd.unireg.webservices.party3.exception;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;

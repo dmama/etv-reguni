@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.rattrapage;
+package ch.vd.unireg.registrefoncier.rattrapage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,13 +12,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.CommunauteRFProcessor;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.unireg.registrefoncier.dataimport.processor.CommunauteRFProcessor;
 
 /**
  * Ce processeur réapplique les règles de regroupement avec les modèles de communauté sur toutes les communautés existantes.

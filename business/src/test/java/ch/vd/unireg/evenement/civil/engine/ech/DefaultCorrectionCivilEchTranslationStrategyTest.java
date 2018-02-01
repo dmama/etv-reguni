@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -13,15 +13,15 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
+import ch.vd.unireg.type.TypePermis;
 
 public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEvenementCivilEchProcessorTest {
 
@@ -1296,7 +1296,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	}
 
 	/**
-	 * [SIFISC-10801] Il y a tellement de modifications fiscales que le commentaire de traitement dépasse les 255 caractères ({@link ch.vd.uniregctb.common.LengthConstants#EVTCIVILECH_COMMENT})
+	 * [SIFISC-10801] Il y a tellement de modifications fiscales que le commentaire de traitement dépasse les 255 caractères ({@link ch.vd.unireg.common.LengthConstants#EVTCIVILECH_COMMENT})
 	 */
 	@Test
 	public void testPleinDeModificationsFiscales() throws Exception {

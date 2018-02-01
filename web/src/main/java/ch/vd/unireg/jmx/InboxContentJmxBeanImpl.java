@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,9 +7,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.common.TimeHelper;
-import ch.vd.uniregctb.inbox.InboxElement;
-import ch.vd.uniregctb.inbox.InboxService;
+import ch.vd.unireg.common.TimeHelper;
+import ch.vd.unireg.inbox.InboxElement;
+import ch.vd.unireg.inbox.InboxService;
 
 @ManagedResource
 public class InboxContentJmxBeanImpl implements InboxContentJmxBean {

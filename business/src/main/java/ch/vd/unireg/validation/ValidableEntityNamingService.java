@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
-import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.unireg.common.StringRenderer;
 
 /**
  * Interface d'un bean de service qui permet de donner une chaîne de caractères pour un objet donné

@@ -10,4 +10,4 @@ do
         fi
 done
 
-java -cp $classpath ch.vd.uniregctb.webservices.tiers2.perfs.PerfsClient $*
+java -cp $classpath ch.vd.unireg.webservices.tiers2.perfs.PerfsClient $*

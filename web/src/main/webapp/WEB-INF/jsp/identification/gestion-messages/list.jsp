@@ -45,7 +45,7 @@
             </script>
 
 			<display:table name="identifications" id="message" pagesize="25" defaultsort="1" size="tailleTableau" requestURI="/identification/gestion-messages/${myAction}"
-			class="display_table" sort="external"  excludedParams="*" partialList="true" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			class="display_table" sort="external"  excludedParams="*" partialList="true" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.message.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.message.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">

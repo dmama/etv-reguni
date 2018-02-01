@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,9 +14,9 @@ import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
 
 public class ModeleCommunauteRFDAOImpl extends BaseDAOImpl<ModeleCommunauteRF, Long> implements ModeleCommunauteRFDAO {
 	protected ModeleCommunauteRFDAOImpl() {

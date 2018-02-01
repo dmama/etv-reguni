@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil;
+package ch.vd.unireg.evenement.civil;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,8 +6,8 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
 
 /*
  * Classe générique qui convient pour les critères de recherche sur les

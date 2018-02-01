@@ -3,7 +3,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.TypeOfNotice;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 public class TypeOfNoticeConverter extends BaseEnumConverter<TypeOfNotice, TypeEvenementOrganisation> {
 

@@ -5,7 +5,7 @@
 
 	<!-- Evénements organisation -->
 
-	<bean id="evenementOrganisationTranslator" class="ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl">
+	<bean id="evenementOrganisationTranslator" class="ch.vd.unireg.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl">
 		<property name="useOrganisationsOfNotice" value="false" />
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
-import ch.vd.uniregctb.common.TimeHelper;
+import ch.vd.unireg.common.TimeHelper;
 
 /**
  * Tag JSP qui permet d'afficher une durée, exprimée techniquement en millisecondes, d'une manière humainement plus lisible

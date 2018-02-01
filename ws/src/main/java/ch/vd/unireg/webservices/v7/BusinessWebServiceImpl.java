@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -84,83 +84,83 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.avatar.AvatarService;
-import ch.vd.uniregctb.avatar.ImageData;
-import ch.vd.uniregctb.avatar.TypeAvatar;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchIterator;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.source.ListeRecapService;
-import ch.vd.uniregctb.efacture.EFactureService;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV3Factory;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.jms.BamMessageHelper;
-import ch.vd.uniregctb.jms.BamMessageSender;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.webservices.common.AccessDeniedException;
-import ch.vd.uniregctb.webservices.common.EvenementFiscalDescriptionHelper;
-import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.webservices.common.WebServiceHelper;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.infra.v1.TaxOfficesBuilder;
-import ch.vd.uniregctb.xml.party.v5.BuildingBuilder;
-import ch.vd.uniregctb.xml.party.v5.CommunityOfHeirsBuilder;
-import ch.vd.uniregctb.xml.party.v5.CommunityOfOwnersBuilder;
-import ch.vd.uniregctb.xml.party.v5.EasementRightHolderComparator;
-import ch.vd.uniregctb.xml.party.v5.ImmovablePropertyBuilder;
-import ch.vd.uniregctb.xml.party.v5.PartyBuilder;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.avatar.AvatarService;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.avatar.TypeAvatar;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.declaration.source.ListeRecapService;
+import ch.vd.unireg.efacture.EFactureService;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalV3Factory;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.indexer.EmptySearchCriteriaException;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.jms.BamMessageHelper;
+import ch.vd.unireg.jms.BamMessageSender;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.EvenementFiscalDescriptionHelper;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.common.WebServiceHelper;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.infra.v1.TaxOfficesBuilder;
+import ch.vd.unireg.xml.party.v5.BuildingBuilder;
+import ch.vd.unireg.xml.party.v5.CommunityOfHeirsBuilder;
+import ch.vd.unireg.xml.party.v5.CommunityOfOwnersBuilder;
+import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
+import ch.vd.unireg.xml.party.v5.ImmovablePropertyBuilder;
+import ch.vd.unireg.xml.party.v5.PartyBuilder;
 
 @SuppressWarnings("Duplicates")
 public class BusinessWebServiceImpl implements BusinessWebService {
@@ -352,7 +352,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
-		final RegDate dateRetour = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getDate());
+		final RegDate dateRetour = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getDate());
 		final String source = request.getSource();
 
 		final OrdinaryTaxDeclarationAckBatchResult result = new OrdinaryTaxDeclarationAckBatchResult();
@@ -540,8 +540,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, final UserLogin user, DeadlineRequest request) throws AccessDeniedException {
-		final RegDate nouveauDelai = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
-		final RegDate dateObtention = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getGrantedOn());
+		final RegDate nouveauDelai = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getNewDeadline());
+		final RegDate dateObtention = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getGrantedOn());
 		final RegDate today = RegDate.get();
 
 		try {
@@ -697,7 +697,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				criteria.setForPrincipalActif(onlyActiveMainTaxResidence);
 			}
 			criteria.setTypesTiers(EnumHelper.toCore(partyTypes));
-			criteria.setCategorieDebiteurIs(ch.vd.uniregctb.xml.EnumHelper.xmlToCore(debtorCategory));
+			criteria.setCategorieDebiteurIs(ch.vd.unireg.xml.EnumHelper.xmlToCore(debtorCategory));
 			criteria.setTiersActif(activeParty);
 			criteria.setAncienNumeroSourcier(oldWithholdingNumber);
 			criteria.setNumeroIDE(uidNumber);
@@ -713,7 +713,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			if (data != null
 					&& (data.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(data.getCategorieImpotSource()))
 					&& (data.getTypeAvatar() == null || !TA_IGNORES.contains(data.getTypeAvatar()))) {
-				final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXMLv5(data);
+				final PartyInfo info = ch.vd.unireg.xml.DataHelper.coreToXMLv5(data);
 				result.add(info);
 			}
 		}
@@ -826,7 +826,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	private static Set<TiersDAO.Parts> toCoreAvecForsFiscaux(Set<PartyPart> parts) {
-		Set<TiersDAO.Parts> set = ch.vd.uniregctb.xml.DataHelper.xmlToCoreV5(parts);
+		Set<TiersDAO.Parts> set = ch.vd.unireg.xml.DataHelper.xmlToCoreV5(parts);
 		if (set == null) {
 			set = EnumSet.noneOf(TiersDAO.Parts.class);
 		}

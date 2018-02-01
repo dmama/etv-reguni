@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Interface du handler interne de génération des rapprochements propriétaire

@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
-import ch.vd.uniregctb.tiers.HistoFlag;
-import ch.vd.uniregctb.tiers.HistoFlags;
-import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.tiers.HistoFlag;
+import ch.vd.unireg.tiers.HistoFlags;
+import ch.vd.unireg.type.GroupeFlagsEntreprise;
 
 /**
  * Structure model pour l'ecran de visualisation des Tiers

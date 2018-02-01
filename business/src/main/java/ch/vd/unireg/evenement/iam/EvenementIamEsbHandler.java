@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.iam;
+package ch.vd.unireg.evenement.iam;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import ch.vd.fiscalite.empaci.demandeUtilisateurV2.DemandeUtilisateurDocument;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHandler;
 
 public class EvenementIamEsbHandler implements EsbMessageHandler {
 

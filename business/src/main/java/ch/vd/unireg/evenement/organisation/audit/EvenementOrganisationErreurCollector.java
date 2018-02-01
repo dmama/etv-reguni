@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.audit;
+package ch.vd.unireg.evenement.organisation.audit;
 
 public interface EvenementOrganisationErreurCollector {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,9 +18,9 @@ import java.util.Set;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeDocument;
 
 @Entity
 @Table(name = "MODELE_DOCUMENT")
@@ -48,7 +48,7 @@ public class ModeleDocument extends HibernateEntity {
 	}
 
 	@Column(name = "TYPE_DOCUMENT", length = LengthConstants.MODELEDOC_TYPE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeDocumentUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeDocumentUserType")
 	public TypeDocument getTypeDocument() {
 		return typeDocument;
 	}

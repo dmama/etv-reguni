@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.general.view;
+package ch.vd.unireg.general.view;
 
 /**
  * RoleView

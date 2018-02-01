@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.Source;
+import ch.vd.unireg.tiers.Sourced;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class DomicileEtablissementView implements Sourced<Source>, DateRange, Annulable {
 

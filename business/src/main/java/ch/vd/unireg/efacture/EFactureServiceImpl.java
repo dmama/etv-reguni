@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import javax.jms.JMSException;
 import java.math.BigInteger;
@@ -19,14 +19,14 @@ import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.editique.EditiqueCompositionService;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.editique.EditiqueCompositionService;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 public class EFactureServiceImpl implements EFactureService, InitializingBean {
 

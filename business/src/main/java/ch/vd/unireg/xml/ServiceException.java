@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml;
+package ch.vd.unireg.xml;
 
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 

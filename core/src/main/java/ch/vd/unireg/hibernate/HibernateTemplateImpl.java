@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -13,7 +13,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.HibernateQueryHelper;
+import ch.vd.unireg.common.HibernateQueryHelper;
 
 public class HibernateTemplateImpl implements HibernateTemplate {
 

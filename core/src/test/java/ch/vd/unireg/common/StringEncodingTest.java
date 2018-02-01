@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.util.Set;
 
@@ -6,9 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.unireg.tiers.DonneeCivileEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 
 public class StringEncodingTest extends CoreDAOTest {
 

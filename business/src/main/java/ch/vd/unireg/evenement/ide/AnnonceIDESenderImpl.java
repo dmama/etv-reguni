@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -19,9 +19,9 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.utils.LogLevel;
 
 /**
  * @author Raphaël Marmier, 2016-08-15, <raphael.marmier@vd.ch>

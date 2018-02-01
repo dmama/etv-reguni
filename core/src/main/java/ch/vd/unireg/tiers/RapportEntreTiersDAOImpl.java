@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.DiscriminatorValue;
 import java.beans.IntrospectionException;
@@ -22,11 +22,11 @@ import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.support.DataAccessUtils;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.ReflexionUtils;
-import ch.vd.uniregctb.dbutils.QueryFragment;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.ReflexionUtils;
+import ch.vd.unireg.dbutils.QueryFragment;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Long> implements RapportEntreTiersDAO {
 

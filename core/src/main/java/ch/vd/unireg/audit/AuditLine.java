@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +14,7 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @Table(name = "AUDIT_LOG")
@@ -97,7 +97,7 @@ public class AuditLine {
 	}
 
 	@Column(name = "LOG_LEVEL", length = LengthConstants.LOG_LEVEL)
-	@Type(type = "ch.vd.uniregctb.hibernate.AuditLevelUserType")
+	@Type(type = "ch.vd.unireg.hibernate.AuditLevelUserType")
 	public AuditLevel getLevel() {
 		return level;
 	}

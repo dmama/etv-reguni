@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.common;
+package ch.vd.unireg.norentes.common;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -10,14 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.norentes.annotation.AfterCheck;
-import ch.vd.uniregctb.norentes.annotation.AfterClass;
-import ch.vd.uniregctb.norentes.annotation.AfterEtape;
-import ch.vd.uniregctb.norentes.annotation.BeforeCheck;
-import ch.vd.uniregctb.norentes.annotation.BeforeClass;
-import ch.vd.uniregctb.norentes.annotation.BeforeEtape;
-import ch.vd.uniregctb.norentes.annotation.Check;
-import ch.vd.uniregctb.norentes.annotation.Etape;
+import ch.vd.unireg.norentes.annotation.AfterCheck;
+import ch.vd.unireg.norentes.annotation.AfterClass;
+import ch.vd.unireg.norentes.annotation.AfterEtape;
+import ch.vd.unireg.norentes.annotation.BeforeCheck;
+import ch.vd.unireg.norentes.annotation.BeforeClass;
+import ch.vd.unireg.norentes.annotation.BeforeEtape;
+import ch.vd.unireg.norentes.annotation.Check;
+import ch.vd.unireg.norentes.annotation.Etape;
 
 public class NorentesContext {
 

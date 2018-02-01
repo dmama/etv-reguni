@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -35,29 +35,29 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.store.EsbStore;
-import ch.vd.uniregctb.common.DefaultThreadFactory;
-import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.SubStatusManager;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.detector.AyantDroitRFDetector;
-import ch.vd.uniregctb.registrefoncier.dataimport.detector.BatimentRFDetector;
-import ch.vd.uniregctb.registrefoncier.dataimport.detector.DroitRFDetector;
-import ch.vd.uniregctb.registrefoncier.dataimport.detector.ImmeubleRFDetector;
-import ch.vd.uniregctb.registrefoncier.dataimport.detector.ServitudeRFDetector;
-import ch.vd.uniregctb.registrefoncier.dataimport.detector.SurfaceAuSolRFDetector;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
-import ch.vd.uniregctb.xml.ExceptionHelper;
+import ch.vd.unireg.common.DefaultThreadFactory;
+import ch.vd.unireg.common.DefaultThreadNameGenerator;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.SubStatusManager;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierImportService;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
+import ch.vd.unireg.registrefoncier.dataimport.detector.AyantDroitRFDetector;
+import ch.vd.unireg.registrefoncier.dataimport.detector.BatimentRFDetector;
+import ch.vd.unireg.registrefoncier.dataimport.detector.DroitRFDetector;
+import ch.vd.unireg.registrefoncier.dataimport.detector.ImmeubleRFDetector;
+import ch.vd.unireg.registrefoncier.dataimport.detector.ServitudeRFDetector;
+import ch.vd.unireg.registrefoncier.dataimport.detector.SurfaceAuSolRFDetector;
+import ch.vd.unireg.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
+import ch.vd.unireg.xml.ExceptionHelper;
 
 /**
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.

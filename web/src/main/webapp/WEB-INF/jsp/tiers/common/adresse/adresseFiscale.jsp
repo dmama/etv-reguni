@@ -12,7 +12,7 @@
 </c:if>
 
 <c:if test="${not empty adresses}">	
-<display:table name="${adresses}" id="adresse" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
+<display:table name="${adresses}" id="adresse" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
 		<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 			<fmt:message key="option.usage.${adresse.usage}" />
 		</display:column>
@@ -90,7 +90,7 @@
 		
 	<fmt:message key="error.adresse.fiscale.source.erreur" /><br/>
 	
-	<display:table name="command.adressesEnErreur" id="adresseEnErreur" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
+	<display:table name="command.adressesEnErreur" id="adresseEnErreur" pagesize="10" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
 		<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="error">
 			<fmt:message key="option.usage.${adresseEnErreur.usage}" />
 		</display:column>

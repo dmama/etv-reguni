@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.general.manager;
+package ch.vd.unireg.general.manager;
 
 import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
-import ch.vd.uniregctb.general.view.UtilisateurView;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
+import ch.vd.unireg.general.view.UtilisateurView;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
 
 public class UtilisateurManagerImpl implements UtilisateurManager {
 

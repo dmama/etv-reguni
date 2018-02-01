@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.fourreNeutre.manager;
+package ch.vd.unireg.fourreNeutre.manager;
 
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.fourreNeutre.FourreNeutreException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.fourreNeutre.FourreNeutreException;
 
 public interface FourreNeutreManager {
 	/**

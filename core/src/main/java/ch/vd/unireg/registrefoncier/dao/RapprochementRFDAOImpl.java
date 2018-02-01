@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.List;
 
@@ -8,9 +8,9 @@ import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
 
 public class RapprochementRFDAOImpl extends BaseDAOImpl<RapprochementRF, Long> implements RapprochementRFDAO {
 

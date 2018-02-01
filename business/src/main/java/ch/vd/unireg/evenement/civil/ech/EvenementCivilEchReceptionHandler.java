@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 
 /**
  * Interface du service de traitement à la réception d'un événement civil. Ce composant à été découplé pour faciliter les tests.

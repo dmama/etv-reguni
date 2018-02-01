@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
+import ch.vd.unireg.mouvement.EtatMouvementDossier;
 
 /**
  * Vue pour la recherche de mouvements de dossiers en masse dans laquelle

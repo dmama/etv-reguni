@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.unireg.webservices.party3.data;
 
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party3.OrdinaryTaxDeclarationKey;
 import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.uniregctb.webservices.party3.exception.TaxDeclarationAcknowledgeError;
+import ch.vd.unireg.webservices.party3.exception.TaxDeclarationAcknowledgeError;
 
 public class AcknowledgeTaxDeclarationBuilder {
 

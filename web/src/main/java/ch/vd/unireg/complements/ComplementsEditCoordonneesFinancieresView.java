@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.complements;
+package ch.vd.unireg.complements;
 
-import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.tiers.Tiers;
 
 @SuppressWarnings("UnusedDeclaration")
 public class ComplementsEditCoordonneesFinancieresView {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,9 +12,9 @@ import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.pagination.ParamSorting;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamSorting;
 
 public class UniteTraitementDAOImpl extends BaseDAOImpl<UniteTraitement, Long> implements UniteTraitementDAO {
 

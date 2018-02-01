@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.Tache;
+import ch.vd.unireg.type.TypeContribuable;
 
 /**
  * Quelques méthodes utiles autour des tâches

@@ -25,7 +25,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;

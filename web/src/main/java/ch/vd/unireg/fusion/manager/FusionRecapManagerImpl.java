@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.fusion.manager;
+package ch.vd.unireg.fusion.manager;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.fusion.view.FusionRecapView;
-import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.fusion.view.FusionRecapView;
+import ch.vd.unireg.general.manager.TiersGeneralManager;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.utils.WebContextUtils;
 
 /**
  * Methodes pour gerer FusionRecapController

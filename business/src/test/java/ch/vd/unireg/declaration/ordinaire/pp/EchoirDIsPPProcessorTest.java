@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -6,23 +6,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults.Echue;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults.Erreur;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults.ErreurType;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.IdentifiantDeclaration;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.declaration.ordinaire.pp.EchoirDIsPPResults.Echue;
+import ch.vd.unireg.declaration.ordinaire.pp.EchoirDIsPPResults.Erreur;
+import ch.vd.unireg.declaration.ordinaire.pp.EchoirDIsPPResults.ErreurType;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,7 +33,7 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 	private EchoirDIsPPProcessor processor;
 	private AdresseService adresseService;
 
-	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/declaration/ordinaire/pp/echoirDiTiersInvalide.xml";
+	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/unireg/declaration/ordinaire/pp/echoirDiTiersInvalide.xml";
 
 	@Override
 	public void onSetUp() throws Exception {

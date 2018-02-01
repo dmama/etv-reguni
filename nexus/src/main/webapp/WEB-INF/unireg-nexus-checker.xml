@@ -24,15 +24,15 @@
 		</property>
 	</bean>
 
-	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
+	<bean id="serviceCivilChecker" class="ch.vd.unireg.checker.ServiceCivilChecker">
 		<property name="serviceCivilRaw" ref="serviceCivilServiceTracing" />
 	</bean>
 
-	<bean id="serviceOrganisationChecker" class="ch.vd.uniregctb.checker.ServiceOrganisationChecker">
+	<bean id="serviceOrganisationChecker" class="ch.vd.unireg.checker.ServiceOrganisationChecker">
 		<property name="serviceOrganisationRaw" ref="serviceOrganisationTracing" />
 	</bean>
 
-	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">
+	<bean id="serviceInfraChecker" class="ch.vd.unireg.checker.ServiceInfraChecker">
 		<property name="serviceInfraRaw" ref="serviceInfrastructureTracing" />
 	</bean>
 

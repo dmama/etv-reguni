@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.acces.parUtilisateur.view;
+package ch.vd.unireg.acces.parUtilisateur.view;
 
 public class SelectUtilisateurView {
 

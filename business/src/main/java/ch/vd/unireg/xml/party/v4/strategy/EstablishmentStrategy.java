@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v4.strategy;
+package ch.vd.unireg.xml.party.v4.strategy;
 
 import java.util.Set;
 
@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.xml.party.establishment.v1.Establishment;
 import ch.vd.unireg.xml.party.v4.PartyPart;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.ServiceException;
 
 public class EstablishmentStrategy extends TaxPayerStrategy<Establishment> {
 

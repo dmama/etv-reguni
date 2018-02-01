@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,12 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.inbox.InboxAttachment;
-import ch.vd.uniregctb.inbox.InboxElement;
-import ch.vd.uniregctb.inbox.InboxService;
-import ch.vd.uniregctb.inbox.MockInboxService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.inbox.InboxAttachment;
+import ch.vd.unireg.inbox.InboxElement;
+import ch.vd.unireg.inbox.InboxService;
+import ch.vd.unireg.inbox.MockInboxService;
 
 @SuppressWarnings({"unchecked"})
 public class ExtractionServiceTest extends BusinessTest {

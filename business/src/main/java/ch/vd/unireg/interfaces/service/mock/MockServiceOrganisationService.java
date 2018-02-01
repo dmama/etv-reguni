@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service.mock;
+package ch.vd.unireg.interfaces.service.mock;
 
 import java.util.Map;
 
@@ -16,8 +16,8 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 
 /**
  * Mock du service organisation qui par défaut ne fait rien et retourne toujours null.

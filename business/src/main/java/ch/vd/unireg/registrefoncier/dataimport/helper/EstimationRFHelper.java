@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.unireg.registrefoncier.EstimationRF;
 
 public abstract class EstimationRFHelper {
 

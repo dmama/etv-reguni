@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @Entity
 @DiscriminatorValue("ForFiscalPrincipalPM")
@@ -26,7 +26,7 @@ public class ForFiscalPrincipalPM extends ForFiscalPrincipal {
 	}
 
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.common.Duplicable#duplicate()
+	 * @see ch.vd.unireg.common.Duplicable#duplicate()
 	 */
 	@Override
 	public ForFiscal duplicate() {

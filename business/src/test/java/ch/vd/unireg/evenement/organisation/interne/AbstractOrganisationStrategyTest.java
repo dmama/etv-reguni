@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne;
+package ch.vd.unireg.evenement.organisation.interne;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -15,14 +15,14 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.interne.creation.CreateOrganisationStrategy;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
-import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
  * @author Raphaël Marmier, 2016-12-19, <raphael.marmier@vd.ch>

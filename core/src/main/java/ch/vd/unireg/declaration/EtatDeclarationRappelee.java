@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -9,9 +9,9 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
  * Un rappel a été émis pour la déclaration.
@@ -40,7 +40,7 @@ public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDocu
 	}
 
 	@Column(name = "DATE_ENVOI_COURRIER")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateEnvoiCourrier() {
 		return dateEnvoiCourrier;
 	}

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.etats;
+package ch.vd.unireg.tiers.etats;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -9,20 +9,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.etats.transition.ToAbsorbeeTransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.tiers.etats.transition.ToDissouteTransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.tiers.etats.transition.ToEnFailliteTransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.tiers.etats.transition.ToEnLiquidationTransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.tiers.etats.transition.ToFondeeTransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.tiers.etats.transition.ToInscriteRCTransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.tiers.etats.transition.ToRadieeRCTransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.etats.transition.ToAbsorbeeTransitionEtatEntrepriseFactory;
+import ch.vd.unireg.tiers.etats.transition.ToDissouteTransitionEtatEntrepriseFactory;
+import ch.vd.unireg.tiers.etats.transition.ToEnFailliteTransitionEtatEntrepriseFactory;
+import ch.vd.unireg.tiers.etats.transition.ToEnLiquidationTransitionEtatEntrepriseFactory;
+import ch.vd.unireg.tiers.etats.transition.ToFondeeTransitionEtatEntrepriseFactory;
+import ch.vd.unireg.tiers.etats.transition.ToInscriteRCTransitionEtatEntrepriseFactory;
+import ch.vd.unireg.tiers.etats.transition.ToRadieeRCTransitionEtatEntrepriseFactory;
+import ch.vd.unireg.tiers.etats.transition.TransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.TransitionEtatEntrepriseFactory;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 
 /**
  * Factory pour la création des transitions d'état de l'entreprise. Les transitions disponibles sont conservées dans une

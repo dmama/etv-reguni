@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 /**
  * Différents états possibles pour une unité de traitement des données ReqDes

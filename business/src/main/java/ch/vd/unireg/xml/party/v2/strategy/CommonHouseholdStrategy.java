@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v2.strategy;
+package ch.vd.unireg.xml.party.v2.strategy;
 
 import java.util.Set;
 
@@ -7,16 +7,16 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.xml.party.person.v2.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v2.CommonHouseholdStatus;
 import ch.vd.unireg.xml.party.v2.PartyPart;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v2.PartyBuilder;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v2.PartyBuilder;
 
 public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 
 	@Override
-	public CommonHousehold newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public CommonHousehold newFrom(ch.vd.unireg.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final CommonHousehold menage = new CommonHousehold();
 		initBase(menage, right, context);
 		initParts(menage, right, parts, context);
@@ -32,10 +32,10 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 	}
 
 	@Override
-	protected void initParts(CommonHousehold to, ch.vd.uniregctb.tiers.Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	protected void initParts(CommonHousehold to, ch.vd.unireg.tiers.Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
-		final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) from;
+		final ch.vd.unireg.tiers.MenageCommun menage = (ch.vd.unireg.tiers.MenageCommun) from;
 		if (parts != null && parts.contains(PartyPart.HOUSEHOLD_MEMBERS)) {
 			initMembers(to, menage, context);
 		}
@@ -52,14 +52,14 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 		}
 	}
 
-	private static void initMembers(CommonHousehold left, ch.vd.uniregctb.tiers.MenageCommun menageCommun, Context context) throws ServiceException {
+	private static void initMembers(CommonHousehold left, ch.vd.unireg.tiers.MenageCommun menageCommun, Context context) throws ServiceException {
 		EnsembleTiersCouple ensemble = context.tiersService.getEnsembleTiersCouple(menageCommun, null);
-		final ch.vd.uniregctb.tiers.PersonnePhysique principal = ensemble.getPrincipal();
+		final ch.vd.unireg.tiers.PersonnePhysique principal = ensemble.getPrincipal();
 		if (principal != null) {
 			left.setMainTaxpayer(PartyBuilder.newNaturalPerson(principal, null, context));
 		}
 
-		final ch.vd.uniregctb.tiers.PersonnePhysique conjoint = ensemble.getConjoint();
+		final ch.vd.unireg.tiers.PersonnePhysique conjoint = ensemble.getConjoint();
 		if (conjoint != null) {
 			left.setSecondaryTaxpayer(PartyBuilder.newNaturalPerson(conjoint, null, context));
 		}

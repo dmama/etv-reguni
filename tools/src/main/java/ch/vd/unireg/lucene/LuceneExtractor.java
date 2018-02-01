@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.lucene;
+package ch.vd.unireg.lucene;
 
 import java.io.FileWriter;
 import java.util.Arrays;
@@ -12,11 +12,11 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.uniregctb.indexer.GlobalIndex;
-import ch.vd.uniregctb.indexer.SearchAllCallback;
-import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
-import ch.vd.uniregctb.indexer.lucene.IndexProvider;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.indexer.GlobalIndex;
+import ch.vd.unireg.indexer.SearchAllCallback;
+import ch.vd.unireg.indexer.lucene.FSIndexProvider;
+import ch.vd.unireg.indexer.lucene.IndexProvider;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
 
 public class LuceneExtractor {
 

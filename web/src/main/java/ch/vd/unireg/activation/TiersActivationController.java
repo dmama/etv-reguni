@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.activation;
+package ch.vd.unireg.activation;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -28,27 +28,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.activation.manager.TiersAnnulationRecapManager;
-import ch.vd.uniregctb.activation.manager.TiersReactivationRecapManager;
-import ch.vd.uniregctb.activation.validator.TiersReactivationRecapValidator;
-import ch.vd.uniregctb.activation.view.TiersAnnulationRecapView;
-import ch.vd.uniregctb.activation.view.TiersReactivationRecapView;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.TypeTiers;
-import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.activation.manager.TiersAnnulationRecapManager;
+import ch.vd.unireg.activation.manager.TiersReactivationRecapManager;
+import ch.vd.unireg.activation.validator.TiersReactivationRecapValidator;
+import ch.vd.unireg.activation.view.TiersAnnulationRecapView;
+import ch.vd.unireg.activation.view.TiersReactivationRecapView;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.indexer.EmptySearchCriteriaException;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.tiers.validator.TiersCriteriaValidator;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.utils.RegDateEditor;
+import ch.vd.unireg.utils.WebContextUtils;
 
 @Controller
 @RequestMapping(value = "/activation")

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
 /**
  * Extracteur de données sous la forme d'un fichier CSV par exemple

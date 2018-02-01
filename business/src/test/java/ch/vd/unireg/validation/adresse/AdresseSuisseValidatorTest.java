@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.adresse;
+package ch.vd.unireg.validation.adresse;
 
 import java.util.List;
 
@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.type.TexteCasePostale;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -19,10 +19,10 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeEtatTache;
+import ch.vd.unireg.type.TypeTache;
 
 @Entity
 @Table(name = "TACHE")
@@ -95,7 +95,7 @@ public abstract class Tache extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_ECHEANCE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	@Index(name = "IDX_TACHE_DATE_ECH")
 	public RegDate getDateEcheance() {
 		return dateEcheance;
@@ -106,7 +106,7 @@ public abstract class Tache extends HibernateEntity {
 	}
 
 	@Column(name = "ETAT", length = LengthConstants.TACHE_ETAT, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeEtatTacheUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeEtatTacheUserType")
 	@Index(name = "IDX_TACHE_ETAT")
 	public TypeEtatTache getEtat() {
 		return etat;

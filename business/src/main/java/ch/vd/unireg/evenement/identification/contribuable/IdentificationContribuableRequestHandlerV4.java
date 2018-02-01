@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
@@ -23,18 +23,18 @@ import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedCorporation;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
 import ch.vd.unireg.xml.event.identification.response.v4.ObjectFactory;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.NumeroCtbStringRenderer;
-import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitiesException;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.NumeroCtbStringRenderer;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.identification.contribuable.TooManyIdentificationPossibilitiesException;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.xml.DataHelper;
 
 public class IdentificationContribuableRequestHandlerV4 implements IdentificationContribuableRequestHandler<IdentificationContribuableRequest, IdentificationContribuableResponse> {
 

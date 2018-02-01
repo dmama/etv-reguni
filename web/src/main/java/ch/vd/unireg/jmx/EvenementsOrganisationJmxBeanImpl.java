@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingSwitch;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationReceptionMonitor;
-import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
-import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationCappingSwitch;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationProcessingMode;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationReceptionMonitor;
+import ch.vd.unireg.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
+import ch.vd.unireg.evenement.organisation.engine.translator.NiveauCappingEtat;
 
 @ManagedResource
 public class EvenementsOrganisationJmxBeanImpl implements EvenementsOrganisationJmxBean {

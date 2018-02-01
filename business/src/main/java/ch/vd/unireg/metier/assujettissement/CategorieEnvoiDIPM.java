@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
 
 /**
  * Les différentes catégories de population dans le cadre des envois des DIs PM en masse.

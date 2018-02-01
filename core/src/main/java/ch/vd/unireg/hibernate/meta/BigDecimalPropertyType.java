@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
 import java.math.BigDecimal;
 

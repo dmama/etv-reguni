@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -7,12 +7,12 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService;
-import ch.vd.uniregctb.security.Role;
+import ch.vd.unireg.interfaces.service.mock.DefaultMockServiceSecurite;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceOrganisation;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceSecuriteService;
+import ch.vd.unireg.security.Role;
 
 /**
  * Test case abstrait permettant de tester les controlleurs Spring.

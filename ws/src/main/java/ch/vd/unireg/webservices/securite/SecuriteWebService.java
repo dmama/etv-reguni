@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.securite;
+package ch.vd.unireg.webservices.securite;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -7,7 +7,7 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import java.util.Set;
 
-import ch.vd.uniregctb.webservices.common.WebServiceException;
+import ch.vd.unireg.webservices.common.WebServiceException;
 
 /**
  * Interface du web-service <i>sécurité</i> du registre fiscal Unireg.

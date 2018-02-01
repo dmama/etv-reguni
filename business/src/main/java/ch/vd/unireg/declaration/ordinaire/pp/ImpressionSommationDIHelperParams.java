@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 
 /**
  * Classe servant à stocker les paramètres à passer à {@link ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper#remplitSommationDI(ImpressionSommationDIHelperParams)}

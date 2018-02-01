@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystemScope;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.unireg.tiers.RegimeFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

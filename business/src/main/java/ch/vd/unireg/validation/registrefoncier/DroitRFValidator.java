@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 @SuppressWarnings("Duplicates")
 public abstract class DroitRFValidator<T extends DroitRF> extends DateRangeEntityValidator<T> {

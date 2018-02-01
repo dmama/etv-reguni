@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v1.strategy;
+package ch.vd.unireg.xml.party.v1.strategy;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,24 +18,24 @@ import ch.vd.unireg.xml.party.corporation.v1.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v1.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v1.TaxSystem;
 import ch.vd.unireg.xml.party.v1.PartyPart;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.tiers.CapitalHisto;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.tiers.CapitalHisto;
+import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.FormeLegaleHisto;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ServiceException;
 
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	@Override
-	public Corporation newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public Corporation newFrom(ch.vd.unireg.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final Corporation corp = new Corporation();
 		initBase(corp, right, context);
 		initParts(corp, right, parts, context);

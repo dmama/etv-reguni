@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.contribuableAssocie.view;
+package ch.vd.unireg.contribuableAssocie.view;
 
 public class ContribuableAssocieEditView {
 

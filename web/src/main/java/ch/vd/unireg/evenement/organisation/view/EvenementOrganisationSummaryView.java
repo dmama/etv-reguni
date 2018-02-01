@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.view;
+package ch.vd.unireg.evenement.organisation.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 /**
  * Structure permettant l'affichage de la page de detail de l'evenement

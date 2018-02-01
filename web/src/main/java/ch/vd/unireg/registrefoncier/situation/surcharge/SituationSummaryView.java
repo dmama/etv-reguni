@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.situation.surcharge;
+package ch.vd.unireg.registrefoncier.situation.surcharge;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -6,10 +6,10 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.tiers.view.CommuneView;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.registrefoncier.SituationRF;
+import ch.vd.unireg.tiers.view.CommuneView;
 
 /**
  * Vue résumée d'une situation d'un immeuble RF.

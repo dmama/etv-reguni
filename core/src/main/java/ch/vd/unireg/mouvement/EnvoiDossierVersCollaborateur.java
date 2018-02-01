@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;

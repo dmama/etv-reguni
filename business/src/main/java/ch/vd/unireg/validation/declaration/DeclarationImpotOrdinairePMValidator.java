@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 
 public class DeclarationImpotOrdinairePMValidator extends DeclarationImpotOrdinaireValidator<DeclarationImpotOrdinairePM> {
 

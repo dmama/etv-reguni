@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.param;
+package ch.vd.unireg.param;
 
 import javax.validation.Valid;
 
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import ch.vd.uniregctb.param.manager.ParamApplicationManager;
-import ch.vd.uniregctb.param.view.ParamApplicationView;
-import ch.vd.uniregctb.parametrage.ParametreEnum;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.unireg.param.manager.ParamApplicationManager;
+import ch.vd.unireg.param.view.ParamApplicationView;
+import ch.vd.unireg.parametrage.ParametreEnum;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
 
 @Controller
 @RequestMapping("/param/app")

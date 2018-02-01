@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 /**
  * Classe des données utilisées lors de la présentation d'une liste d'entreprises

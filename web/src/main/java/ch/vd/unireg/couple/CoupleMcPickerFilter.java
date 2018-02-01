@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.search.SearchTiersFilterWithPostFiltering;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.search.SearchTiersFilterWithPostFiltering;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Filtre spécialisé pour l'écran de recherche d'un troisième tiers dans la constitution d'un couple.

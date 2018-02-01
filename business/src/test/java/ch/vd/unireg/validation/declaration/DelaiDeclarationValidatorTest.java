@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDeclaration> {
 

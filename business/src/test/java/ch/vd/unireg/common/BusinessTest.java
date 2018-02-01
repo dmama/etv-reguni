@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.util.Date;
 
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.evenement.ide.AnnonceIDEService;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
-import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.unireg.evenement.ide.AnnonceIDEService;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceOrganisation;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.scheduler.JobDefinition;
 
 public abstract class BusinessTest extends AbstractBusinessTest {
 

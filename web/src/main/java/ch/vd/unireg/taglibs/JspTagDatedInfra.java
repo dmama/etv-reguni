@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -12,7 +12,7 @@ import org.springframework.web.util.HtmlUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Classe de base des tags JSP qui permettent d'aller retrouver des éléments datés dans l'infrastrucure

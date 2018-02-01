@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.math.BigInteger;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeDocument;
 
 public class ImpressionDocumentEfactureParams {
 

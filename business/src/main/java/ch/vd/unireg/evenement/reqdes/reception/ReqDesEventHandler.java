@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.reception;
+package ch.vd.unireg.evenement.reqdes.reception;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -55,28 +55,28 @@ import ch.vd.unireg.xml.event.reqdes.v1.Stakeholder;
 import ch.vd.unireg.xml.event.reqdes.v1.StakeholderReferenceWithRole;
 import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.IdentityKey;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessor;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
-import ch.vd.uniregctb.reqdes.EvenementReqDes;
-import ch.vd.uniregctb.reqdes.EvenementReqDesDAO;
-import ch.vd.uniregctb.reqdes.InformationsActeur;
-import ch.vd.uniregctb.reqdes.PartiePrenante;
-import ch.vd.uniregctb.reqdes.RolePartiePrenante;
-import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
-import ch.vd.uniregctb.reqdes.UniteTraitement;
-import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.TypePermis;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.IdentityKey;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.reqdes.engine.EvenementReqDesProcessor;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.EvenementReqDes;
+import ch.vd.unireg.reqdes.EvenementReqDesDAO;
+import ch.vd.unireg.reqdes.InformationsActeur;
+import ch.vd.unireg.reqdes.PartiePrenante;
+import ch.vd.unireg.reqdes.RolePartiePrenante;
+import ch.vd.unireg.reqdes.TransactionImmobiliere;
+import ch.vd.unireg.reqdes.UniteTraitement;
+import ch.vd.unireg.tiers.OriginePersonnePhysique;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.TypePermis;
+import ch.vd.unireg.xml.DataHelper;
 
 public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 

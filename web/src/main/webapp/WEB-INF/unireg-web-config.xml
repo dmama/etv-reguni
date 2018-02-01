@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="uniregModeHelper" class="ch.vd.uniregctb.utils.UniregModeHelper">
+	<bean id="uniregModeHelper" class="ch.vd.unireg.utils.UniregModeHelper">
 		<property name="testMode" value="${extprop.testMode}" />
 		<property name="environnement" value="${extprop.environnement}"/>
 		<property name="efactureEnabled" value="${extprop.efacture.enabled}" />
@@ -17,21 +17,21 @@
 		</property>
 	</bean>
 
-	<bean id="sourcesMonoQuittancementDi" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+	<bean id="sourcesMonoQuittancementDi" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet">
 		<property name="elements" value="${extprop.sources.quittancement.di.annule.et.remplace}"/>
 	</bean>
 
-	<bean id="sourcesQuittancementAvecLiberationPossible" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+	<bean id="sourcesQuittancementAvecLiberationPossible" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet">
 		<property name="elements" value="${extprop.sources.quittancement.di.liberation.possible}"/>
 	</bean>
 
 	<!-- Identification des PM -->
 
-	<bean id="motsReservesIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+	<bean id="motsReservesIdentificationPM" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet">
 		<property name="elements" value="${extprop.identification.pm.mots.reserves}"/>
 	</bean>
 
-	<bean id="caracteresSpeciauxIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
+	<bean id="caracteresSpeciauxIdentificationPM" class="ch.vd.unireg.common.TokenSetFactoryBean$StringSet">
 		<property name="separatorRegExp" value="\s"/>
 		<property name="elements" value="${extprop.idenfification.pm.caracteres.speciaux}"/>
 	</bean>

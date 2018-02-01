@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -6,9 +6,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.taglibs.standard.tag.common.core.Util;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.tiers.manager.AutorisationCache;
-import ch.vd.uniregctb.tiers.manager.Autorisations;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.tiers.manager.AutorisationCache;
+import ch.vd.unireg.tiers.manager.Autorisations;
 
 @SuppressWarnings("UnusedDeclaration")
 public class JspTagSetAutorisations extends BodyTagSupport {

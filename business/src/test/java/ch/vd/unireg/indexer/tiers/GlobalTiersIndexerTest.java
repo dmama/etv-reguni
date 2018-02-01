@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -19,20 +19,20 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.indexer.GlobalIndex;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TypeTiers;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.worker.BatchWorker;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.indexer.GlobalIndex;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.async.MassTiersIndexer;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.worker.BatchWorker;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

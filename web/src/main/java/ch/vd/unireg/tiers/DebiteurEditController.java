@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.List;
 import java.util.Map;
@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.manager.TiersEditManager;
-import ch.vd.uniregctb.tiers.view.DebiteurEditView;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.manager.TiersEditManager;
+import ch.vd.unireg.tiers.view.DebiteurEditView;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/debiteur")

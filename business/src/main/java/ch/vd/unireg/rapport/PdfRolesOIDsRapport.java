@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -15,13 +15,13 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
-import ch.vd.uniregctb.common.AutoCloseableContainer;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.before2016.InfoContribuable;
-import ch.vd.uniregctb.role.before2016.InfoContribuablePP;
-import ch.vd.uniregctb.role.before2016.ProduireRolesOIDsResults;
+import ch.vd.unireg.common.AutoCloseableContainer;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.role.before2016.InfoContribuable;
+import ch.vd.unireg.role.before2016.InfoContribuablePP;
+import ch.vd.unireg.role.before2016.ProduireRolesOIDsResults;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les OID

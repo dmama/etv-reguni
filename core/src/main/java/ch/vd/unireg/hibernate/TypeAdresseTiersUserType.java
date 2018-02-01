@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 /**
  * Classe de transtypage pour Hibernate : TypeAdresseTiers <--> varchar

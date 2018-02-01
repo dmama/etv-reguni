@@ -32,9 +32,9 @@
 					</jsp:include>
 				</fieldset>
 
-				<%--@elvariable id="parametresApp" type="ch.vd.uniregctb.param.view.ParamApplicationView"--%>
+				<%--@elvariable id="parametresApp" type="ch.vd.unireg.param.view.ParamApplicationView"--%>
 				<display:table name="list" id="tiers" pagesize="${parametresApp.nbMaxParPage}" requestURI="/tiers/list.do" class="display_table" sort="list"
-				               decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				               decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 					<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.tiers.trouve"/></span></display:setProperty>
 					<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.tiers.trouve"/></span></display:setProperty>
 					<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves"/></span></display:setProperty>

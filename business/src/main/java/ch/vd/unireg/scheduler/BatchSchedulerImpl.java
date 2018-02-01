@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.scheduler;
+package ch.vd.unireg.scheduler;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -46,9 +46,9 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.stats.JobMonitor;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.stats.JobMonitor;
+import ch.vd.unireg.stats.StatsService;
 
 /**
  * Classe utilitaire pour gérer les batchs.

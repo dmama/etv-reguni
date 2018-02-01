@@ -76,7 +76,7 @@
 
             </script>
 
-            <display:table name="command.mvts" id="mvt" pagesize="15" requestURI="/mouvement/bordereau/detail-reception.do" class="display_table" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+            <display:table name="command.mvts" id="mvt" pagesize="15" requestURI="/mouvement/bordereau/detail-reception.do" class="display_table" sort="list" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
                 <display:column title="<input type='checkbox' id='selection_all' name='selectAll' onclick='selectAllMouvements(this);'/>">
                     <c:if test="${mvt.etatMouvement == 'RECU_BORDEREAU' && !mvt.annule}">

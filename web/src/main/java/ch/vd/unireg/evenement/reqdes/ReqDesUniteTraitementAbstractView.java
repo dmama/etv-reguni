@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
-import ch.vd.uniregctb.reqdes.EvenementReqDes;
-import ch.vd.uniregctb.reqdes.InformationsActeur;
-import ch.vd.uniregctb.reqdes.UniteTraitement;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.EvenementReqDes;
+import ch.vd.unireg.reqdes.InformationsActeur;
+import ch.vd.unireg.reqdes.UniteTraitement;
 
 public abstract class ReqDesUniteTraitementAbstractView implements Serializable {
 

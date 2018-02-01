@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.common.EvenementRegistreErreurFactory;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.evenement.common.EvenementRegistreErreurFactory;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 public class EvenementCivilEchErreurFactory extends EvenementRegistreErreurFactory<EvenementCivilEchErreur> {
 

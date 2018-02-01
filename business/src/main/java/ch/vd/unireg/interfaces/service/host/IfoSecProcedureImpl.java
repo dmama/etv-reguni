@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.interfaces.service.host;
+package ch.vd.unireg.interfaces.service.host;
 
 import java.io.Serializable;
 
 import ch.vd.securite.model.rest.Procedure;
-import ch.vd.uniregctb.security.IfoSecProcedure;
+import ch.vd.unireg.security.IfoSecProcedure;
 
 public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 

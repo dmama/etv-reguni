@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -24,9 +24,9 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
 
 @Entity
 @Table(name = "RF_DROIT", uniqueConstraints = {
@@ -129,7 +129,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 
 	@Nullable
 	@Column(name = "DATE_DEBUT_METIER")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebutMetier() {
 		return dateDebutMetier;
 	}
@@ -140,7 +140,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 
 	@Nullable
 	@Column(name = "DATE_FIN_METIER")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFinMetier() {
 		return dateFinMetier;
 	}

@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.identification.contribuable.view;
+package ch.vd.unireg.identification.contribuable.view;
 
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.type.Sexe;
 
 public class DemandeIdentificationView implements Annulable {
 

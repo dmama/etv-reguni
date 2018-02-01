@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction.entreprise.sifisc_20694;
+package ch.vd.unireg.extraction.entreprise.sifisc_20694;
 
 import java.text.ParseException;
 import java.util.regex.Matcher;

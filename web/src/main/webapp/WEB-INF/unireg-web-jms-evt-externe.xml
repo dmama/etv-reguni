@@ -4,7 +4,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	                       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="evenementExterneListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="evenementExterneListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementExterneEsbHandler"/>
 		<property name="destinationName" value="${extprop.jms.queue.evtExterne}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -12,7 +12,7 @@
 		<property name="description" value="Réception des évenements concernant les LR."/>
 	</bean>
 
-	<bean id="evenementExterneEsbHandler" class="ch.vd.uniregctb.evenement.externe.EvenementExterneEsbHandler">
+	<bean id="evenementExterneEsbHandler" class="ch.vd.unireg.evenement.externe.EvenementExterneEsbHandler">
 		<property name="handler" ref="evenementExterneService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="connectors">
@@ -25,9 +25,9 @@
 		</property>
 	</bean>
 
-	<bean id="evtExterneQuittanceListeV1Connector" class="ch.vd.uniregctb.evenement.externe.EvtQuittanceListeV1Connector"/>
-	<bean id="evtExterneListeV1Connector" class="ch.vd.uniregctb.evenement.externe.EvtListeV1Connector"/>
-	<bean id="evtExterneListeV2Connector" class="ch.vd.uniregctb.evenement.externe.EvtListeV2Connector"/>
-	<bean id="evtExterneListeV3Connector" class="ch.vd.uniregctb.evenement.externe.EvtListeV3Connector"/>
+	<bean id="evtExterneQuittanceListeV1Connector" class="ch.vd.unireg.evenement.externe.EvtQuittanceListeV1Connector"/>
+	<bean id="evtExterneListeV1Connector" class="ch.vd.unireg.evenement.externe.EvtListeV1Connector"/>
+	<bean id="evtExterneListeV2Connector" class="ch.vd.unireg.evenement.externe.EvtListeV2Connector"/>
+	<bean id="evtExterneListeV3Connector" class="ch.vd.unireg.evenement.externe.EvtListeV3Connector"/>
 
 </beans>

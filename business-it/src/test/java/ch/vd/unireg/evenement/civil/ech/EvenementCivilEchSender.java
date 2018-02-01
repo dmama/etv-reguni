@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 /**
  * Cette classe permet de simuler l'envoi d'événements civils au format e-CH

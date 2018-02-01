@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.webservices.v5;
+package ch.vd.unireg.webservices.v5;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.othercomm.v1.LegalForm;
-import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.unireg.type.FormeJuridique;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

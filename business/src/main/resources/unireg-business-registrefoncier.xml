@@ -3,7 +3,7 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<bean id="serviceRF" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl">
+	<bean id="serviceRF" class="ch.vd.unireg.registrefoncier.RegistreFoncierServiceImpl">
 		<property name="droitRFDAO" ref="droitRFDAO"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="batimentRFDAO" ref="batimentRFDAO"/>
@@ -16,24 +16,24 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-	<bean id="communauteRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.CommunauteRFValidator" parent="entityValidator" />
-	<bean id="communeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.CommuneRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="immeubleBeneficiaireRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImmeubleBeneficiaireRFValidator" parent="entityValidator" />
-	<bean id="droitRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitRFValidator" abstract="true" parent="dateRangeEntityValidator" />
-	<bean id="droitProprieteRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitProprieteRFValidator" parent="droitRFValidator" />
-	<bean id="servitudeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ServitudeRFValidator" parent="droitRFValidator" />
-	<bean id="estimationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="immeubleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImmeubleRFValidator" parent="entityValidator" />
-	<bean id="implantationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImplantationRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="modeleCommunauteRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ModeleCommunauteRFValidator" parent="entityValidator" />
-	<bean id="principalCommunauteRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.PrincipalCommunauteRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="situationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SituationRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="surfaceAuSolRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceAuSolRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="descriptionBatimentRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DescriptionBatimentRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="surfaceTotaleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceTotaleRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="quotePartRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.QuotePartRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="communauteRFValidator" class="ch.vd.unireg.validation.registrefoncier.CommunauteRFValidator" parent="entityValidator" />
+	<bean id="communeRFValidator" class="ch.vd.unireg.validation.registrefoncier.CommuneRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="immeubleBeneficiaireRFValidator" class="ch.vd.unireg.validation.registrefoncier.ImmeubleBeneficiaireRFValidator" parent="entityValidator" />
+	<bean id="droitRFValidator" class="ch.vd.unireg.validation.registrefoncier.DroitRFValidator" abstract="true" parent="dateRangeEntityValidator" />
+	<bean id="droitProprieteRFValidator" class="ch.vd.unireg.validation.registrefoncier.DroitProprieteRFValidator" parent="droitRFValidator" />
+	<bean id="servitudeRFValidator" class="ch.vd.unireg.validation.registrefoncier.ServitudeRFValidator" parent="droitRFValidator" />
+	<bean id="estimationRFValidator" class="ch.vd.unireg.validation.registrefoncier.EstimationRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="immeubleRFValidator" class="ch.vd.unireg.validation.registrefoncier.ImmeubleRFValidator" parent="entityValidator" />
+	<bean id="implantationRFValidator" class="ch.vd.unireg.validation.registrefoncier.ImplantationRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="modeleCommunauteRFValidator" class="ch.vd.unireg.validation.registrefoncier.ModeleCommunauteRFValidator" parent="entityValidator" />
+	<bean id="principalCommunauteRFValidator" class="ch.vd.unireg.validation.registrefoncier.PrincipalCommunauteRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="situationRFValidator" class="ch.vd.unireg.validation.registrefoncier.SituationRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="surfaceAuSolRFValidator" class="ch.vd.unireg.validation.registrefoncier.SurfaceAuSolRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="descriptionBatimentRFValidator" class="ch.vd.unireg.validation.registrefoncier.DescriptionBatimentRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="surfaceTotaleRFValidator" class="ch.vd.unireg.validation.registrefoncier.SurfaceTotaleRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="quotePartRFValidator" class="ch.vd.unireg.validation.registrefoncier.QuotePartRFValidator" parent="dateRangeEntityValidator" />
 
-	<bean id="rapprochementRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.RapprochementRFValidator" parent="dateRangeEntityValidator">
+	<bean id="rapprochementRFValidator" class="ch.vd.unireg.validation.registrefoncier.RapprochementRFValidator" parent="dateRangeEntityValidator">
 		<property name="rapprochementDAO" ref="rapprochementRFDAO"/>
 	</bean>
 

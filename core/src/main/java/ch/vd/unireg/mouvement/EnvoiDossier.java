@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ForeignKey;
 
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
 
 /**
  * Classe de base pour les mouvements de dossiers de type envoi

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.declaration.EtatDeclarationSommee;
 
 public class EtatDeclarationsommeeValidator extends EtatDeclarationValidator<EtatDeclarationSommee> {
 	@Override

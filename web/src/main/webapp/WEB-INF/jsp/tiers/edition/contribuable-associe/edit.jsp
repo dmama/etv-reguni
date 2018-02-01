@@ -14,7 +14,7 @@
 	</tiles:put>
 	<tiles:put name="body">
 
-		<%--@elvariable id="recap" type="ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieEditView"--%>
+		<%--@elvariable id="recap" type="ch.vd.unireg.contribuableAssocie.view.ContribuableAssocieEditView"--%>
 
 		<form:form method="post" id="formRecapContactIS" name="formRecapContactIS" commandName="recap">
 			<!-- Caractéristiques générales du débiteur -->

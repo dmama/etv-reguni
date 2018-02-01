@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v4.strategy;
+package ch.vd.unireg.xml.party.v4.strategy;
 
 import java.util.Set;
 
@@ -7,14 +7,14 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.xml.party.debtor.v4.Debtor;
 import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.BusinessHelper;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v4.DebtorPeriodicityBuilder;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.BusinessHelper;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v4.DebtorPeriodicityBuilder;
 
 public class DebtorStrategy extends PartyStrategy<Debtor> {
 
@@ -85,7 +85,7 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 	}
 
 	private static void initPeriodicities(Debtor left, DebiteurPrestationImposable right) {
-		for (ch.vd.uniregctb.declaration.Periodicite periodicite : right.getPeriodicitesNonAnnulees(true)) {
+		for (ch.vd.unireg.declaration.Periodicite periodicite : right.getPeriodicitesNonAnnulees(true)) {
 			left.getPeriodicities().add(DebtorPeriodicityBuilder.newPeriodicity(periodicite));
 		}
 	}

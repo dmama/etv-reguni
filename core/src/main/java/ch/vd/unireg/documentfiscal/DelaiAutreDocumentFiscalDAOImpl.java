@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class DelaiAutreDocumentFiscalDAOImpl extends BaseDAOImpl<DelaiAutreDocumentFiscal, Long> implements DelaiAutreDocumentFiscalDAO {
 

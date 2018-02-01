@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="editCommand" type="ch.vd.uniregctb.etiquette.EditEtiquetteTiersView"--%>
+<%--@elvariable id="editCommand" type="ch.vd.unireg.etiquette.EditEtiquetteTiersView"--%>
 <%--@elvariable id="libelles" type="Map<java.lang.String,java.lang.String>"--%>
 
 <unireg:setAuth var="autorisations" tiersId="${editCommand.tiersId}"/>

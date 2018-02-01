@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.couple;
+package ch.vd.unireg.couple;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
  * Type d'union

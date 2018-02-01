@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 /**
  * Interface utilisée pour récupérer l'information du nombre d'événements organisation

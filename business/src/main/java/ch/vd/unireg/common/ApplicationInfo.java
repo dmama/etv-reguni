@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 /**
  * Expose de manière statique des informations (version, build, ...) sur l'application.

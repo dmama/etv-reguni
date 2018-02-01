@@ -115,7 +115,7 @@
 			<%--@elvariable id="page" type="org.springframework.data.domain.Page"--%>
 			<%--@elvariable id="totalElements" type="java.lang.Integer"--%>
 			<display:table name="page.content" id="annonce" class="display_table" pagesize="${page.size}" size="${totalElements}" sort="external" partialList="true"
-			               requestURI="/annonceIDE/find.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			               requestURI="/annonceIDE/find.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.annonce.trouvee"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.une.annonce.trouvee"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.annonces.trouvees"/></span></display:setProperty>

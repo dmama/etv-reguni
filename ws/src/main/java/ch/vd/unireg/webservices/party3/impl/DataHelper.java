@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.impl;
+package ch.vd.unireg.webservices.party3.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,8 +10,8 @@ import java.util.Set;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.SearchPartyRequest;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersDAO.Parts;
 
 /**
  * Cette helper effectue la traduction des classes venant de 'core' en classes 'web'.
@@ -40,7 +40,7 @@ public class DataHelper {
 			coreCriteria.setLocaliteOuPays(criteria.getTownOrCountry());
 			coreCriteria.setNomRaison(criteria.getContactName());
 			coreCriteria.setNumeroAVS(criteria.getSocialInsuranceNumber());
-			coreCriteria.setDateNaissanceInscriptionRC(ch.vd.uniregctb.xml.DataHelper.xmlToCore(criteria.getDateOfBirth()));
+			coreCriteria.setDateNaissanceInscriptionRC(ch.vd.unireg.xml.DataHelper.xmlToCore(criteria.getDateOfBirth()));
 			if (criteria.getTaxResidenceFSOId() != null) {
 				coreCriteria.setNoOfsFor(criteria.getTaxResidenceFSOId().toString());
 			}
@@ -102,20 +102,20 @@ public class DataHelper {
 	 * @param tiers l'instance concrète du tiers
 	 * @return le type du tiers; ou <b>null</b> si le type de tiers n'est pas connu.
 	 */
-	public static PartyType getPartyType(final ch.vd.uniregctb.tiers.Tiers tiers) {
+	public static PartyType getPartyType(final ch.vd.unireg.tiers.Tiers tiers) {
 		final PartyType type;
-		if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
+		if (tiers instanceof ch.vd.unireg.tiers.PersonnePhysique) {
 			type = PartyType.NATURAL_PERSON;
 		}
-		else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
+		else if (tiers instanceof ch.vd.unireg.tiers.MenageCommun) {
 			type = PartyType.HOUSEHOLD;
 		}
-		else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
+		else if (tiers instanceof ch.vd.unireg.tiers.DebiteurPrestationImposable) {
 			type = PartyType.DEBTOR;
 		}
-		else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise
-				|| tiers instanceof ch.vd.uniregctb.tiers.AutreCommunaute
-				|| tiers instanceof ch.vd.uniregctb.tiers.CollectiviteAdministrative) {
+		else if (tiers instanceof ch.vd.unireg.tiers.Entreprise
+				|| tiers instanceof ch.vd.unireg.tiers.AutreCommunaute
+				|| tiers instanceof ch.vd.unireg.tiers.CollectiviteAdministrative) {
 			type = PartyType.CORPORATION;
 		}
 		else {

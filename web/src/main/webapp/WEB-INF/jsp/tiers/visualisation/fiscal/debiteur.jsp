@@ -30,7 +30,7 @@
 			<input class="noprint" name="periodicites_histo" <c:if test="${command.periodicitesHisto}">checked</c:if> id="isPeriodiciteHisto" type="checkbox" onClick="window.location.href = App.toggleBooleanParam(window.location, 'periodicitesHisto', true);"/>
 			<label class="noprint" for="isPeriodiciteHisto"><fmt:message key="label.historique" /></label>
 
-			<display:table name="command.periodicites" id="periodicite" pagesize="10" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="external">
+			<display:table name="command.periodicites" id="periodicite" pagesize="10" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="external">
 
 				<display:column titleKey="label.periodicite.decompte" style="width: 30%;">
 					<fmt:message key="option.periodicite.decompte.${periodicite.periodiciteDecompte}" />

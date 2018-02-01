@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.type.DayMonth;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

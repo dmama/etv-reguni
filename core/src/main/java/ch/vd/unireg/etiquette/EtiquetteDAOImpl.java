@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.etiquette;
+package ch.vd.unireg.etiquette;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.FlushMode;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class EtiquetteDAOImpl extends BaseDAOImpl<Etiquette, Long> implements EtiquetteDAO {
 

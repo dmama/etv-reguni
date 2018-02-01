@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.tiers.Contribuable;
 
 /**
  * Interface de base des calculateurs de période d'imposition par type de contribuable

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
+package ch.vd.unireg.evenement.organisation.interne.demenagement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,22 +15,22 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
-import ch.vd.uniregctb.evenement.organisation.interne.MessageWarning;
-import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.utils.RangeUtil;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneComposite;
+import ch.vd.unireg.evenement.organisation.interne.MessageWarning;
+import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.tiers.DomicileEtablissement;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.utils.RangeUtil;
 
 /**
  * @author Raphaël Marmier, 2015-09-02

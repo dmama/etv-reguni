@@ -10,17 +10,17 @@ import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
-import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.unireg.type.CategorieEntreprise;
 
 import static ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration.IBC;
 import static ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration.ICI;
 import static ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration.IFONC;
 import static ch.vd.unireg.interfaces.infra.data.ModeExoneration.DE_FAIT;
 import static ch.vd.unireg.interfaces.infra.data.ModeExoneration.TOTALE;
-import static ch.vd.uniregctb.type.CategorieEntreprise.APM;
-import static ch.vd.uniregctb.type.CategorieEntreprise.INDET;
-import static ch.vd.uniregctb.type.CategorieEntreprise.PM;
-import static ch.vd.uniregctb.type.CategorieEntreprise.SP;
+import static ch.vd.unireg.type.CategorieEntreprise.APM;
+import static ch.vd.unireg.type.CategorieEntreprise.INDET;
+import static ch.vd.unireg.type.CategorieEntreprise.PM;
+import static ch.vd.unireg.type.CategorieEntreprise.SP;
 
 public class MockTypeRegimeFiscal extends TypeRegimeFiscalFidor {
 

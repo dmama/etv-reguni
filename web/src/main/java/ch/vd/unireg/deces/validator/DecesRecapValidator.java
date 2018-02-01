@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.deces.validator;
+package ch.vd.unireg.deces.validator;
 
 import java.util.List;
 
@@ -10,11 +10,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.deces.view.DecesRecapView;
-import ch.vd.uniregctb.metier.MetierService;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.utils.ValidatorUtils;
+import ch.vd.unireg.deces.view.DecesRecapView;
+import ch.vd.unireg.metier.MetierService;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.utils.ValidatorUtils;
 
 public class DecesRecapValidator implements Validator {
 

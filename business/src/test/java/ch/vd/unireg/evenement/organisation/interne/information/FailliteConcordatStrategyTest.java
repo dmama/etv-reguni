@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.information;
+package ch.vd.unireg.evenement.organisation.interne.information;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -14,19 +14,19 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.interfaces.service.mock.MockServiceOrganisationService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.unireg.interfaces.service.mock.MockServiceOrganisationService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
-import static ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
-import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
+import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
  * @author Raphaël Marmier, 2015-10-16

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.mouvement.manager;
+package ch.vd.unireg.mouvement.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.mouvement.MouvementDossier;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.mouvement.MouvementDossier;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
 
 public interface AbstractMouvementManager {
 

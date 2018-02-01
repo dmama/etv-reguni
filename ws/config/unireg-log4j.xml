@@ -49,16 +49,12 @@
 		<level value="DEBUG" />
 	</logger>
 
-	<logger name="ch.vd.uniregctb">
-		<level value="DEBUG" />
-	</logger>
-
-	<logger name="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer">
+	<logger name="ch.vd.unireg.jms.GentilEsbMessageListenerContainer">
 		<level value="INFO" />
 	</logger>
 
 	<!-- pour ne pas logger en debug les logs du TransactionTemplate de Spring -->
-	<logger name="ch.vd.uniregctb.transaction">
+	<logger name="ch.vd.unireg.transaction">
 		<level value="INFO" />
 	</logger>
 
@@ -150,7 +146,7 @@
 	  <appender-ref ref="SERVICE_TRACING"/>
 	</category>
 	
-	<category name="ch.vd.uniregctb.transaction.TracingTransactionManager" additivity="false">
+	<category name="ch.vd.unireg.transaction.TracingTransactionManager" additivity="false">
 		<priority value="WARN"/>
 		<appender-ref ref="SERVICE_TRACING"/>
 	</category>

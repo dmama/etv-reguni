@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.annotation;
+package ch.vd.unireg.norentes.annotation;
 
 public class EtapeAttribute {
 

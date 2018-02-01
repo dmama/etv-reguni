@@ -39,7 +39,7 @@
 
 	<tiles:put name="body">
 
-		<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.timeline.ForsTimelineView"--%>
+		<%--@elvariable id="command" type="ch.vd.unireg.tiers.timeline.ForsTimelineView"--%>
 		<c:if test="${command.forPrint}">
 				<h1><c:out value="${command.title}"/></h1>
 				<h3><c:out value="${command.description}"/></h3>
@@ -187,7 +187,7 @@
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
 											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>
-											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
+											<c:if test="${fp['class'].name == 'ch.vd.unireg.tiers.ForFiscalPrincipalPP'}">
 												Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
 											</c:if>
 										</div>
@@ -202,7 +202,7 @@
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
 											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>
-											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
+											<c:if test="${fp['class'].name == 'ch.vd.unireg.tiers.ForFiscalPrincipalPP'}">
 											    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
 											</c:if>
 										</div>
@@ -217,7 +217,7 @@
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
 											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>
-											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
+											<c:if test="${fp['class'].name == 'ch.vd.unireg.tiers.ForFiscalPrincipalPP'}">
 											    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
 											</c:if>
 										</div>
@@ -309,7 +309,7 @@
 		                                         - <b><fmt:message key="option.motif.fermeture.${a.motifFractFin}"/></b>
 		                                    </c:if>
 		                                    <br/>
-		                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
+		                                    <c:if test="${a['class'].name == 'ch.vd.unireg.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.unireg.metier.assujettissement.SourcierMixte'}">
 		                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscalePrincipale}"/></b>
 		                                    </c:if>
 		                                </div>
@@ -342,7 +342,7 @@
 		                                         - <b><fmt:message key="option.motif.fermeture.${a.motifFractFin}"/></b>
 		                                    </c:if>
 		                                    <br/>
-		                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
+		                                    <c:if test="${a['class'].name == 'ch.vd.unireg.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.unireg.metier.assujettissement.SourcierMixte'}">
 		                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscalePrincipale}"/></b>
 		                                    </c:if>
 		                                </div>
@@ -376,7 +376,7 @@
 	                                         - <b><fmt:message key="option.motif.fermeture.${a.motifFractFin}"/></b>
 	                                    </c:if>
 	                                    <br/>
-	                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2'}">
+	                                    <c:if test="${a['class'].name == 'ch.vd.unireg.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.unireg.metier.assujettissement.SourcierMixteArt137Al1' || a['class'].name == 'ch.vd.unireg.metier.assujettissement.SourcierMixteArt137Al2'}">
 	                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscalePrincipale}"/></b>
 	                                    </c:if>
 	                                </div>

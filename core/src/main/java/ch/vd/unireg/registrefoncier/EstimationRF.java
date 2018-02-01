@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -25,10 +25,10 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 
 /**
  * Estimation fiscale d'un immeuble inscrit au registre foncier.
@@ -147,7 +147,7 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 	}
 
 	@Column(name = "DATE_INSCRIPTION")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateInscription() {
 		return dateInscription;
 	}
@@ -158,7 +158,7 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 
 	@Nullable
 	@Column(name = "DATE_DEBUT_METIER")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebutMetier() {
 		return dateDebutMetier;
 	}
@@ -169,7 +169,7 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 
 	@Nullable
 	@Column(name = "DATE_FIN_METIER")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFinMetier() {
 		return dateFinMetier;
 	}

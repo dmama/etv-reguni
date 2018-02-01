@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.common;
+package ch.vd.unireg.evenement.common;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 /**
  * Interface de génération découplée d'erreurs lors du traitement des événements des registres civil et organisation

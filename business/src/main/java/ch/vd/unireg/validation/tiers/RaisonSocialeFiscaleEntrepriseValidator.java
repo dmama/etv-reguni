@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 
 public class RaisonSocialeFiscaleEntrepriseValidator extends DonneeCivileEntrepriseValidator<RaisonSocialeFiscaleEntreprise> {
 

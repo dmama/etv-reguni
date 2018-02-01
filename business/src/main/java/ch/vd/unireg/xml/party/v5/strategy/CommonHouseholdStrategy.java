@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5.strategy;
+package ch.vd.unireg.xml.party.v5.strategy;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,16 +22,16 @@ import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.CommonHouseholdStatus;
 import ch.vd.unireg.xml.party.v5.PartyLabel;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v5.LabelBuilder;
-import ch.vd.uniregctb.xml.party.v5.PartyBuilder;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v5.LabelBuilder;
+import ch.vd.unireg.xml.party.v5.PartyBuilder;
 
 public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,8 +17,8 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @Table(name = "EVENEMENT_RF_MUTATION")
@@ -166,7 +166,7 @@ public class EvenementRFMutation extends HibernateEntity {
 	}
 
 	@Column(name = "XML_CONTENT")   // la colonne doit être nullable car - techniquement - Hibernate fait un insert avec le blob nul puis un update pour insérer le contenu.
-	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
+	@Type(type = "ch.vd.unireg.hibernate.StringAsClobUserType")
 	public String getXmlContent() {
 		return xmlContent;
 	}
@@ -186,7 +186,7 @@ public class EvenementRFMutation extends HibernateEntity {
 	}
 
 	@Column(name = "CALLSTACK")
-	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
+	@Type(type = "ch.vd.unireg.hibernate.StringAsClobUserType")
 	@Nullable
 	public String getCallstack() {
 		return callstack;

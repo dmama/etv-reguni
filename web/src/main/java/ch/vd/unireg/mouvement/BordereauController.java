@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,24 +14,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.mouvement.manager.MouvementMasseManager;
-import ch.vd.uniregctb.mouvement.view.BordereauEnvoiListView;
-import ch.vd.uniregctb.mouvement.view.BordereauEnvoiReceptionView;
-import ch.vd.uniregctb.mouvement.view.BordereauEnvoiView;
-import ch.vd.uniregctb.mouvement.view.BordereauListElementView;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.mouvement.view.MouvementMasseDetailBordereauView;
-import ch.vd.uniregctb.mouvement.view.MouvementMasseImpressionBordereauxView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.type.Localisation;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.RetourEditiqueControllerHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.mouvement.manager.MouvementMasseManager;
+import ch.vd.unireg.mouvement.view.BordereauEnvoiListView;
+import ch.vd.unireg.mouvement.view.BordereauEnvoiReceptionView;
+import ch.vd.unireg.mouvement.view.BordereauEnvoiView;
+import ch.vd.unireg.mouvement.view.BordereauListElementView;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.mouvement.view.MouvementMasseDetailBordereauView;
+import ch.vd.unireg.mouvement.view.MouvementMasseImpressionBordereauxView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.type.Localisation;
+import ch.vd.unireg.type.TypeMouvement;
 
 @Controller
 @RequestMapping(value = "/mouvement/bordereau")

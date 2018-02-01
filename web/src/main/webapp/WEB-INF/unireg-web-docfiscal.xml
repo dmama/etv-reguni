@@ -2,16 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="lettreBienvenueController" class="ch.vd.uniregctb.documentfiscal.LettreBienvenueController">
+	<bean id="lettreBienvenueController" class="ch.vd.unireg.documentfiscal.LettreBienvenueController">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
 	</bean>
 
-	<bean id="editionAutreDocumentFiscalValidator" class="ch.vd.uniregctb.documentfiscal.EditionAutreDocumentFiscalValidator">
+	<bean id="editionAutreDocumentFiscalValidator" class="ch.vd.unireg.documentfiscal.EditionAutreDocumentFiscalValidator">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
-	<bean id="autreDocumentFiscalController" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalController">
+	<bean id="autreDocumentFiscalController" class="ch.vd.unireg.documentfiscal.AutreDocumentFiscalController">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
@@ -24,7 +24,7 @@
 		<property name="editionValidator" ref="editionAutreDocumentFiscalValidator"/>
 	</bean>
 
-	<bean id="autreDocumentFiscalManager" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManagerImpl">
+	<bean id="autreDocumentFiscalManager" class="ch.vd.unireg.documentfiscal.AutreDocumentFiscalManagerImpl">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="messageSource" ref="messageSource"/>
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>

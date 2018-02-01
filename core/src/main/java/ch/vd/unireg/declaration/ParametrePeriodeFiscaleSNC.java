@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -32,7 +32,7 @@ public class ParametrePeriodeFiscaleSNC extends ParametrePeriodeFiscale {
 	}
 
 	@Column(name = "SNC_RAPPEL_IMPRIME")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getTermeGeneralRappelImprime() {
 		return termeGeneralRappelImprime;
 	}
@@ -42,7 +42,7 @@ public class ParametrePeriodeFiscaleSNC extends ParametrePeriodeFiscale {
 	}
 
 	@Column(name = "SNC_RAPPEL_EFFECTIF")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getTermeGeneralRappelEffectif() {
 		return termeGeneralRappelEffectif;
 	}

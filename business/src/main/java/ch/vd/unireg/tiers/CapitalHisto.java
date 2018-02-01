@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.Rerangeable;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.Rerangeable;
 
 public class CapitalHisto implements Sourced<Source>, CollatableDateRange<CapitalHisto>, Duplicable<CapitalHisto>, Annulable, Rerangeable<CapitalHisto> {
 

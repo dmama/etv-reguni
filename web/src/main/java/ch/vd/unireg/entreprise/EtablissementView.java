@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.DegreAssociationRegistreCivil;
-import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
+import ch.vd.unireg.tiers.DegreAssociationRegistreCivil;
+import ch.vd.unireg.tiers.view.DomicileEtablissementView;
 
 public class EtablissementView {
 

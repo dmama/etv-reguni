@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 /**
  * Action pouvant être entreprise pour synchroniser des données d'un contribuable par rapport à d'autres données.

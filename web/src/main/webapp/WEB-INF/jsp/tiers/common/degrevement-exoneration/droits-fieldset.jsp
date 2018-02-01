@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="droits" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.DroitView>"--%>
+<%--@elvariable id="droits" type="java.util.List<ch.vd.unireg.registrefoncier.allegement.DroitView>"--%>
 
 <fieldset class="information">
 	<legend><span><fmt:message key="label.droits.rf"/></span></legend>
 
-	<display:table name="${droits}" id="droit" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
+	<display:table name="${droits}" id="droit" class="display" decorator="ch.vd.unireg.decorator.TableAnnulableDateRangeDecorator">
 		<display:column titleKey="label.date.debut">
 			<unireg:regdate regdate="${droit.dateDebut}"/>
 		</display:column>

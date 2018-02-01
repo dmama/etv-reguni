@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import org.displaytag.decorator.TableDecorator;
 
-import ch.vd.uniregctb.admin.AuditLogBean.AuditView;
+import ch.vd.unireg.admin.AuditLogBean.AuditView;
 
 public class AuditTableDecorator extends TableDecorator {
 

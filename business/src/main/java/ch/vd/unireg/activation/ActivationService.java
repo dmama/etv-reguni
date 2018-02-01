@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.activation;
+package ch.vd.unireg.activation;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 public interface ActivationService {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.civil;
+package ch.vd.unireg.civil;
 
 import java.util.Collections;
 import java.util.HashMap;

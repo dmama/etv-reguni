@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.evenement.reqdes.reception;
+package ch.vd.unireg.evenement.reqdes.reception;
 
 import ch.vd.unireg.xml.event.reqdes.v1.StakeholderRole;
-import ch.vd.uniregctb.reqdes.TypeRole;
+import ch.vd.unireg.reqdes.TypeRole;
 
 /**
  * Rôles d'une partie prenante dans un acte notarié envoyé de ReqDes

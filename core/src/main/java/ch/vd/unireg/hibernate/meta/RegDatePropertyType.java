@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
-import ch.vd.uniregctb.hibernate.RegDateUserType;
+import ch.vd.unireg.hibernate.RegDateUserType;
 
 public class RegDatePropertyType extends UserTypePropertyType {
 	public RegDatePropertyType(RegDateUserType userType) {

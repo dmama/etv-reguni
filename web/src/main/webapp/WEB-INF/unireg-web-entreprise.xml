@@ -2,9 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="processusComplexeEntrepriseValidator" class="ch.vd.uniregctb.entreprise.complexe.ProcessusComplexeValidator"/>
+	<bean id="processusComplexeEntrepriseValidator" class="ch.vd.unireg.entreprise.complexe.ProcessusComplexeValidator"/>
 
-	<bean id="abstractProcessusComplexeEntrepriseController" abstract="true" class="ch.vd.uniregctb.entreprise.complexe.AbstractProcessusComplexeController">
+	<bean id="abstractProcessusComplexeEntrepriseController" abstract="true" class="ch.vd.unireg.entreprise.complexe.AbstractProcessusComplexeController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
@@ -14,26 +14,26 @@
 		<property name="metierService" ref="metierServicePM"/>
 	</bean>
 
-	<bean id="failliteController" class="ch.vd.uniregctb.entreprise.complexe.FailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="revocationFailliteController" class="ch.vd.uniregctb.entreprise.complexe.RevocationFailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="demenagementSiegeController" class="ch.vd.uniregctb.entreprise.complexe.DemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="finActiviteController" class="ch.vd.uniregctb.entreprise.complexe.FinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="repriseActiviteController" class="ch.vd.uniregctb.entreprise.complexe.ReprisePartielleActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="fusionEntreprisesController" class="ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="scissionEntrepriseController" class="ch.vd.uniregctb.entreprise.complexe.ScissionEntrepriseController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="transfertPatrimoineEntrepriseController" class="ch.vd.uniregctb.entreprise.complexe.TransfertPatrimoineController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="reinscriptionRCController" class="ch.vd.uniregctb.entreprise.complexe.ReinscriptionRCController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="requisitionRadiationRCController" class="ch.vd.uniregctb.entreprise.complexe.RequisitionRadiationRCController" parent="abstractProcessusComplexeEntrepriseController">
+	<bean id="failliteController" class="ch.vd.unireg.entreprise.complexe.FailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="revocationFailliteController" class="ch.vd.unireg.entreprise.complexe.RevocationFailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="demenagementSiegeController" class="ch.vd.unireg.entreprise.complexe.DemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="finActiviteController" class="ch.vd.unireg.entreprise.complexe.FinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="repriseActiviteController" class="ch.vd.unireg.entreprise.complexe.ReprisePartielleActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="fusionEntreprisesController" class="ch.vd.unireg.entreprise.complexe.FusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="scissionEntrepriseController" class="ch.vd.unireg.entreprise.complexe.ScissionEntrepriseController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="transfertPatrimoineEntrepriseController" class="ch.vd.unireg.entreprise.complexe.TransfertPatrimoineController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="reinscriptionRCController" class="ch.vd.unireg.entreprise.complexe.ReinscriptionRCController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="requisitionRadiationRCController" class="ch.vd.unireg.entreprise.complexe.RequisitionRadiationRCController" parent="abstractProcessusComplexeEntrepriseController">
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="validationService" ref="validationService"/>
 		<property name="retourEditiqueHelper" ref="retourEditiqueControllerHelper"/>
 	</bean>
 
-	<bean id="annulationFailliteController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="annulationDemenagementSiegeController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationDemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="annulationFinActiviteController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="annulationFusionController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="annulationScissionController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationScissionEntrepriseController" parent="abstractProcessusComplexeEntrepriseController"/>
-	<bean id="annulationTransfertPatrimoineController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationTransfertPatrimoineController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="annulationFailliteController" class="ch.vd.unireg.entreprise.complexe.AnnulationFailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="annulationDemenagementSiegeController" class="ch.vd.unireg.entreprise.complexe.AnnulationDemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="annulationFinActiviteController" class="ch.vd.unireg.entreprise.complexe.AnnulationFinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="annulationFusionController" class="ch.vd.unireg.entreprise.complexe.AnnulationFusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="annulationScissionController" class="ch.vd.unireg.entreprise.complexe.AnnulationScissionEntrepriseController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="annulationTransfertPatrimoineController" class="ch.vd.unireg.entreprise.complexe.AnnulationTransfertPatrimoineController" parent="abstractProcessusComplexeEntrepriseController"/>
 
 </beans>

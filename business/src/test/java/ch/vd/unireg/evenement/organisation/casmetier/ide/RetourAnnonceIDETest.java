@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.casmetier.ide;
+package ch.vd.unireg.evenement.organisation.casmetier.ide;
 
 import java.util.List;
 
@@ -28,24 +28,24 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
+import ch.vd.unireg.tiers.DomicileEtablissement;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
-import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
-import static ch.vd.uniregctb.type.EtatEvenementOrganisation.FORCE;
+import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementOrganisation.FORCE;
 
 /**
  * @author Raphaël Marmier, 2016-09-27, <raphael.marmier@vd.ch>

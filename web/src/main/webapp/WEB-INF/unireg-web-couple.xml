@@ -2,14 +2,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="coupleController" class="ch.vd.uniregctb.couple.CoupleController">
+	<bean id="coupleController" class="ch.vd.unireg.couple.CoupleController">
 		<property name="coupleManager" ref="coupleManager" />
 		<property name="coupleValidator" ref="coupleValidator" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
-	<bean id="coupleValidator" class="ch.vd.uniregctb.couple.CoupleValidator">
+	<bean id="coupleValidator" class="ch.vd.unireg.couple.CoupleValidator">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="validatorHelper" ref="validatorHelper" />
@@ -18,20 +18,20 @@
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
-	<bean id="coupleManager" class="ch.vd.uniregctb.couple.CoupleManagerImpl">
+	<bean id="coupleManager" class="ch.vd.unireg.couple.CoupleManagerImpl">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="droitAccesService" ref="droitAccesService" />
 	</bean>
 
-	<bean id="couplePpPickerFilterFactory" class="ch.vd.uniregctb.couple.CouplePpPickerFilterFactory"/>
+	<bean id="couplePpPickerFilterFactory" class="ch.vd.unireg.couple.CouplePpPickerFilterFactory"/>
 
-	<bean id="coupleMcPickerFilterFactory" class="ch.vd.uniregctb.couple.CoupleMcPickerFilterFactory">
+	<bean id="coupleMcPickerFilterFactory" class="ch.vd.unireg.couple.CoupleMcPickerFilterFactory">
 		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
-	<bean id="annulationCoupleController" class="ch.vd.uniregctb.annulation.couple.AnnulationCoupleController">
+	<bean id="annulationCoupleController" class="ch.vd.unireg.annulation.couple.AnnulationCoupleController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="messageSource" ref="messageSource"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
@@ -39,7 +39,7 @@
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 	</bean>
 
-	<bean id="annulationCoupleRecapManager" class="ch.vd.uniregctb.annulation.couple.manager.AnnulationCoupleRecapManagerImpl"  >
+	<bean id="annulationCoupleRecapManager" class="ch.vd.unireg.annulation.couple.manager.AnnulationCoupleRecapManagerImpl"  >
 		<property name="metierService" ref="metierService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />

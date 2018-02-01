@@ -2,44 +2,44 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evenementFiscalV1Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV1SenderImpl">
+	<bean id="evenementFiscalV1Sender" class="ch.vd.unireg.evenement.fiscal.EvenementFiscalV1SenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="parametres" ref="parametreAppService"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
 	</bean>
 
-	<bean id="evenementFiscalV2Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV2SenderImpl">
+	<bean id="evenementFiscalV2Sender" class="ch.vd.unireg.evenement.fiscal.EvenementFiscalV2SenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
 	</bean>
 
-	<bean id="evenementFiscalV3Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV3SenderImpl">
+	<bean id="evenementFiscalV3Sender" class="ch.vd.unireg.evenement.fiscal.EvenementFiscalV3SenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
 	</bean>
 
 	<!-- Les événements v4 n'ont jamais été activés -->
-	<!--<bean id="evenementFiscalV4Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV4SenderImpl">-->
+	<!--<bean id="evenementFiscalV4Sender" class="ch.vd.unireg.evenement.fiscal.EvenementFiscalV4SenderImpl">-->
 		<!--<property name="esbTemplate" ref="esbJmsTemplate" />-->
 		<!--<property name="esbValidator" ref="esbMessageValidator"/>-->
 		<!--<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />-->
 	<!--</bean>-->
 
-	<bean id="evenementFiscalV5Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV5SenderImpl">
+	<bean id="evenementFiscalV5Sender" class="ch.vd.unireg.evenement.fiscal.EvenementFiscalV5SenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
 		<property name="evenementFiscalV5Factory" ref="evenementFiscalV5Factory"/>
 	</bean>
 
-	<bean id="evenementFiscalV5Factory" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV5FactoryImpl">
+	<bean id="evenementFiscalV5Factory" class="ch.vd.unireg.evenement.fiscal.EvenementFiscalV5FactoryImpl">
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
-	<bean id="evenementFiscalSendingPod" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSendingPod">
+	<bean id="evenementFiscalSendingPod" class="ch.vd.unireg.evenement.fiscal.EvenementFiscalSendingPod">
 		<property name="senders">
 			<array>
 				<ref bean="evenementFiscalV1Sender"/>

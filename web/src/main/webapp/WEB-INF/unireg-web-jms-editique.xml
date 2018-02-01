@@ -3,7 +3,7 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean name="evenementEditiqueListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean name="evenementEditiqueListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementEditiqueEsbHandler"/>
 		<property name="destinationName" value="${extprop.jms.queue.editique.input}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -11,7 +11,7 @@
 		<property name="description" value="Retour des demandes d'impression faites à l'éditique"/>
 	</bean>
 
-	<bean name="evenementEditiqueEsbHandler" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler">
+	<bean name="evenementEditiqueEsbHandler" class="ch.vd.unireg.editique.impl.EvenementEditiqueEsbHandler">
 		<property name="storageService" ref="retourImpressionStorageService"/>
 	</bean>
 

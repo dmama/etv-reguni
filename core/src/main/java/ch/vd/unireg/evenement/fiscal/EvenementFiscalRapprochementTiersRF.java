@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -13,8 +13,8 @@ import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
 
 @Entity
 @DiscriminatorValue(value = "RAPPROCHEMENT_RF")

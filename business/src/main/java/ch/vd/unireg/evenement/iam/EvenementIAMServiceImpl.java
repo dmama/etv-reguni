@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.iam;
+package ch.vd.unireg.evenement.iam;
 
 import java.util.List;
 
@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.validation.ValidationService;
 
 public class EvenementIAMServiceImpl implements EvenementIAMService, EvenementIAMHandler {
 

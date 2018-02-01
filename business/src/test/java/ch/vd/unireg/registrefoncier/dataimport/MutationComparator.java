@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.util.Comparator;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
 
 /**
  * Trie par type, par idRF et par id pour avoir qqch de stable.

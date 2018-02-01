@@ -4,7 +4,7 @@
 
 	<!-- Partie réellement "DI" -->
 
-	<bean id="declarationImpotControllerValidator" class="ch.vd.uniregctb.di.DeclarationImpotControllerValidator">
+	<bean id="declarationImpotControllerValidator" class="ch.vd.unireg.di.DeclarationImpotControllerValidator">
 		<property name="manager" ref="diEditManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="diDAO" ref="diDAO"/>
@@ -12,7 +12,7 @@
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
+	<bean id="declarationImpotController" class="ch.vd.unireg.di.DeclarationImpotController">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="messageSource" ref="messageSource" />
 		<property name="diService" ref="diService" />
@@ -35,7 +35,7 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
-	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >
+	<bean id="diEditManager" class="ch.vd.unireg.di.manager.DeclarationImpotEditManagerImpl" >
 		<property name="diDAO" ref="diDAO" />
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -54,7 +54,7 @@
 
 	<!-- Excercices commerciaux -->
 
-	<bean id="exerciceCommercialController" class="ch.vd.uniregctb.tiers.ExerciceCommercialController">
+	<bean id="exerciceCommercialController" class="ch.vd.unireg.tiers.ExerciceCommercialController">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="controllerUtils" ref="controllerUtils"/>

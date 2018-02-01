@@ -23,12 +23,12 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.load.MethodCallDescriptor;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.load.MethodCallDescriptor;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
 
 public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, DetailedLoadMonitorable {
 

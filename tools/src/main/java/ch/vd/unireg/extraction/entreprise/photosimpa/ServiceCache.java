@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction.entreprise.photosimpa;
+package ch.vd.unireg.extraction.entreprise.photosimpa;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.LockHelper;
+import ch.vd.unireg.common.LockHelper;
 
 public abstract class ServiceCache {
 

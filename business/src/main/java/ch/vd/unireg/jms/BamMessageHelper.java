@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -13,9 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 
 /**
  * Quelques méthodes et constantes utiles quand on travaille autour des messages à envoyer au BAM

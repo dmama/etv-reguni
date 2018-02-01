@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;

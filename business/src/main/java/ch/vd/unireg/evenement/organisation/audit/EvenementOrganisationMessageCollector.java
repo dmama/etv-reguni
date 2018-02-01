@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.organisation.audit;
+package ch.vd.unireg.evenement.organisation.audit;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
-import ch.vd.uniregctb.evenement.common.EvenementRegistreErreurFactory;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.evenement.common.EvenementErreur;
+import ch.vd.unireg.evenement.common.EvenementRegistreErreurFactory;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 public class EvenementOrganisationMessageCollector<T extends EvenementErreur>
 		implements EvenementOrganisationErreurCollector, EvenementOrganisationWarningCollector , EvenementOrganisationSuiviCollector {

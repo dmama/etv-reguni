@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.List;
 
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.Niveau;
 
 /**
  * Interface du provider de sécurité qui regroupe la sécurité d'IFOSec (authentification) et celle d'Unireg (accès aux dossiers).

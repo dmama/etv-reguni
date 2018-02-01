@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.rapport;
+package ch.vd.unireg.validation.rapport;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.unireg.tiers.RapportPrestationImposable;
 
 public class RapportPrestationImposableValidator extends RapportEntreTiersValidator<RapportPrestationImposable> {
 

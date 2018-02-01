@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -24,17 +24,17 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EvenementEditiqueSender;
-import ch.vd.uniregctb.editique.FormatDocumentEditique;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.editique.TypeImpressionEditique;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.editique.ConstantesEditique;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EvenementEditiqueSender;
+import ch.vd.unireg.editique.FormatDocumentEditique;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.editique.TypeImpressionEditique;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.utils.LogLevel;
 
 /**
  * Bean qui permet d'envoyer des documents à l'éditique.
@@ -83,7 +83,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 	}
 
 	/**
-	 * Implémentation spécifique du {@link ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl.HeaderCustomFiller} qui traite des demandes d'impression
+	 * Implémentation spécifique du {@link ch.vd.unireg.editique.impl.EvenementEditiqueSenderImpl.HeaderCustomFiller} qui traite des demandes d'impression
 	 */
 	private static final class PrintingHeaderFiller implements HeaderCustomFiller {
 

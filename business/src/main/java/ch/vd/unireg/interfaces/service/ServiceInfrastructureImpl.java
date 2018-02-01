@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +39,9 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.tiers.TiersDAO;
 
 /**
  * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du service d'infrastructure <i>raw</i> en y ajoutant des méthodes utilitaires.
@@ -509,7 +509,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		final Integer codeDistrict = commune.getCodeDistrict();
 		final OfficeImpot oid;
 		if (codeDistrict != null) {
-			final ch.vd.uniregctb.tiers.CollectiviteAdministrative collAdm = tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict, true);
+			final ch.vd.unireg.tiers.CollectiviteAdministrative collAdm = tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict, true);
 			if (collAdm != null) {
 				oid = getOfficeImpot(collAdm.getNumeroCollectiviteAdministrative());
 			}

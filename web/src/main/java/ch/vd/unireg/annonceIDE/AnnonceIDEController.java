@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.annonceIDE;
+package ch.vd.unireg.annonceIDE;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -34,26 +34,26 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.pagination.ParamSorting;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.utils.CantonalIdEditor;
-import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.utils.TiersNumberEditor;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.pagination.ParamSorting;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.utils.CantonalIdEditor;
+import ch.vd.unireg.utils.RegDateEditor;
+import ch.vd.unireg.utils.TiersNumberEditor;
 
 /**
  * Contrôleur qui permet le suivi des annonces à l'IDE.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +8,13 @@ import org.springframework.validation.Errors;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
-import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.ForDebiteurPrestationImposable;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.tiers.validator.MotifsForHelper;
+import ch.vd.unireg.type.GenreImpot;
 
 public class EditForDebiteurValidator extends EditForAvecMotifsValidator {
 

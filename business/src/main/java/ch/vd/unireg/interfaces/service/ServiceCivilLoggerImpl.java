@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.Collection;
 
@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.interfaces.civil.ServiceCivilInterceptor;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.common.ThreadSwitch;
-import ch.vd.uniregctb.interfaces.IndividuDumper;
-import ch.vd.uniregctb.stats.ServiceTracing;
+import ch.vd.unireg.common.ThreadSwitch;
+import ch.vd.unireg.interfaces.IndividuDumper;
+import ch.vd.unireg.stats.ServiceTracing;
 
 public class ServiceCivilLoggerImpl implements ServiceCivilLogger, ServiceCivilInterceptor {
 

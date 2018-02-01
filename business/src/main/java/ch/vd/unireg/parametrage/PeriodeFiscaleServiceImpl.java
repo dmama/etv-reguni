@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,17 +16,17 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscale;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscaleEmolument;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscalePM;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscalePP;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscaleSNC;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.type.TypeContribuable;
 
 public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, InitializingBean {
 

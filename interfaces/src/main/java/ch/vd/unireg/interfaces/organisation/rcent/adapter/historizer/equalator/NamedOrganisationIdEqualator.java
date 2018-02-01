@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator;
 
 import ch.ech.ech0097.v2.NamedOrganisationId;
 
-import ch.vd.uniregctb.common.Equalator;
+import ch.vd.unireg.common.Equalator;
 
 public class NamedOrganisationIdEqualator implements Equalator<NamedOrganisationId> {
 

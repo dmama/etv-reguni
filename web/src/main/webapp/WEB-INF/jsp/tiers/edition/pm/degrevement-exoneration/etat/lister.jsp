@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="editDemandeDegrevementCommand" type="ch.vd.uniregctb.registrefoncier.allegement.EditDemandeDegrevementView"--%>
+<%--@elvariable id="editDemandeDegrevementCommand" type="ch.vd.unireg.registrefoncier.allegement.EditDemandeDegrevementView"--%>
 
 <fieldset>
 	<legend><span><fmt:message key="label.etats"/></span></legend>
@@ -15,7 +15,7 @@
 	</table>
 
 	<c:if test="${not empty editDemandeDegrevementCommand.etats}">
-		<display:table name="editDemandeDegrevementCommand.etats" id="etat" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="editDemandeDegrevementCommand.etats" id="etat" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:column titleKey="label.date.obtention">
 				<unireg:regdate regdate="${etat.dateObtention}"/>
 				<c:if test="${!etat.annule && etat.etat == 'SOMME'}">

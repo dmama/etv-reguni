@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,9 +6,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.LocalisationFiscale;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.tiers.LocalisationFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class LocalisationTest extends BusinessTest {
 

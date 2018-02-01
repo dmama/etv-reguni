@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.avs;
+package ch.vd.unireg.avs;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -19,8 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.ws.search.party.v1.SearchResult;
 import ch.vd.unireg.xml.party.v3.PartyInfo;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.utils.WebServiceV5Helper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.utils.WebServiceV5Helper;
 
 public class AvsToCtb {
 

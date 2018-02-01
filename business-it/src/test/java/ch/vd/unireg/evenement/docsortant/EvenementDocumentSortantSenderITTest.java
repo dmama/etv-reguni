@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import java.util.Collections;
 import java.util.Date;
@@ -20,9 +20,9 @@ import ch.vd.unireg.xml.event.docsortant.v1.Document;
 import ch.vd.unireg.xml.event.docsortant.v1.Documents;
 import ch.vd.unireg.xml.event.docsortant.v1.DonneesMetier;
 import ch.vd.unireg.xml.event.docsortant.v1.Population;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.EvenementTest;
 
 public class EvenementDocumentSortantSenderITTest extends EvenementTest {
 

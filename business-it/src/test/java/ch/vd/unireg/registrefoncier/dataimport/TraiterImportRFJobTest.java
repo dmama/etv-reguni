@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,16 +13,16 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.store.raft.ZipRaftEsbStore;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobDefinition;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -191,7 +191,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 	public void testImportAutreTypeDateValeurAnterieure() throws Exception {
 
 		// on va chercher un fichier d'import (vide, mais ça n'a pas d'importance)
-		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_servitudes_vide_rf.xml");
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_servitudes_vide_rf.xml");
 		assertNotNull(importFile);
 
 		// on l'upload dans Raft
@@ -227,7 +227,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 	public void testImportAutreTypeDateValeurIdentique() throws Exception {
 
 		// on va chercher un fichier d'import (vide, mais ça n'a pas d'importance)
-		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_servitudes_vide_rf.xml");
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_servitudes_vide_rf.xml");
 		assertNotNull(importFile);
 
 		// on l'upload dans Raft
@@ -263,7 +263,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 	public void testImportEnErreurAvecMutationExistantes() throws Exception {
 
 		// on va chercher le fichier d'import
-		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_ayantsdroits_rf_hebdo.xml");
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_ayantsdroits_rf_hebdo.xml");
 		assertNotNull(importFile);
 
 		// on l'upload dans Raft
@@ -480,7 +480,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		});
 
 		// on va chercher le fichier d'import
-		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_ayantsdroits_rf_hebdo.xml");
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_ayantsdroits_rf_hebdo.xml");
 		assertNotNull(importFile);
 
 		// on l'upload dans Raft

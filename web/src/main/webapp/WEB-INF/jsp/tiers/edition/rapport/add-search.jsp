@@ -8,7 +8,7 @@
 		  	<fmt:message key="title.recherche.tiers.lie" />
   	</tiles:put>
   	<tiles:put name="body">
-	    <%--@elvariable id="searchView" type="ch.vd.uniregctb.rapport.view.RapportListView"--%>
+	    <%--@elvariable id="searchView" type="ch.vd.unireg.rapport.view.RapportListView"--%>
 	    <unireg:bandeauTiers numero="${searchView.tiersId}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="false"/>
 
 		<unireg:nextRowClass reset="1"/>
@@ -25,7 +25,7 @@
 			</fieldset>
 		</form:form>
 
-		<display:table 	name="list" id="tiers" pagesize="25" requestURI="/rapport/add-search.do" class="display" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table 	name="list" id="tiers" pagesize="25" requestURI="/rapport/add-search.do" class="display" sort="list" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves" /></span></display:setProperty>

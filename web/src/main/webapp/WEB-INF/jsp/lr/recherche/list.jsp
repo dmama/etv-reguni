@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="resultsHidingCause" type="ch.vd.uniregctb.lr.view.SearchResultsHidingCause"--%>
+<%--@elvariable id="resultsHidingCause" type="ch.vd.unireg.lr.view.SearchResultsHidingCause"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
@@ -26,7 +26,7 @@
 		    </c:when>
 		    <c:otherwise>
 
-			    <display:table name="lrs" id="lr" pagesize="25" requestURI="/lr/list.do" class="display_table" sort="external" partialList="true" size="resultSize" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			    <display:table name="lrs" id="lr" pagesize="25" requestURI="/lr/list.do" class="display_table" sort="external" partialList="true" size="resultSize" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				    <display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.lr.trouvee" /></span></display:setProperty>
 				    <display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.lr.trouvee" /></span></display:setProperty>
 				    <display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.lrs.trouvees" /></span></display:setProperty>

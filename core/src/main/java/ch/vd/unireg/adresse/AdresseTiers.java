@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,13 +23,13 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 @Entity
 @Table(name = "ADRESSE_TIERS")
@@ -73,7 +73,7 @@ public abstract class AdresseTiers extends HibernateDateRangeEntity implements C
 
 	@Column(name = "USAGE_TYPE", length = LengthConstants.ADRESSE_TYPETIERS, nullable = false)
 	// note : USAGE est un mot réservé sous MySql
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeAdresseTiersUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeAdresseTiersUserType")
 	public TypeAdresseTiers getUsage() {
 		return usage;
 	}

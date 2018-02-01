@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 /**
  * Classe de Mock pour le contexte Spring de test

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.math.BigInteger;
 
@@ -13,9 +13,9 @@ import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 public class ReadOnlyEFactureServiceImpl implements EFactureService, InitializingBean {
 

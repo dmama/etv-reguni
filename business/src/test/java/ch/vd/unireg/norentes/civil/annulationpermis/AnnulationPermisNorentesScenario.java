@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.norentes.civil.annulationpermis;
+package ch.vd.unireg.norentes.civil.annulationpermis;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
-import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.norentes.common.EvenementCivilScenario;
+import ch.vd.unireg.type.TypePermis;
 
 public abstract class AnnulationPermisNorentesScenario extends EvenementCivilScenario {
 

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class TypeRapportEntreTiersWebTest extends WithoutSpringTest {
 

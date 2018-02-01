@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.simpa.mandataires.generaux;
+package ch.vd.unireg.rattrapage.simpa.mandataires.generaux;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,11 +24,11 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.rattrapage.simpa.mandataires.Helper;
-import ch.vd.uniregctb.rattrapage.simpa.mandataires.MappingMigration;
-import ch.vd.uniregctb.rattrapage.simpa.mandataires.TypeTiers;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.rattrapage.simpa.mandataires.Helper;
+import ch.vd.unireg.rattrapage.simpa.mandataires.MappingMigration;
+import ch.vd.unireg.rattrapage.simpa.mandataires.TypeTiers;
+import ch.vd.unireg.type.TypeMandat;
 
 /**
  * [SIFISC-19841] Récupération des données de mandataire modifiées dans SIMPA depuis la MeP Unireg du 13.06.2016

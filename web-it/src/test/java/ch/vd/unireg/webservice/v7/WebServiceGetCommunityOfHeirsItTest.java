@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.v7;
+package ch.vd.unireg.webservice.v7;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +14,7 @@ import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirLeader;
 import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirMember;
 import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 
-import static ch.vd.uniregctb.webservice.v7.WebServiceLandRegistryItTest.assertDate;
+import static ch.vd.unireg.webservice.v7.WebServiceLandRegistryItTest.assertDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

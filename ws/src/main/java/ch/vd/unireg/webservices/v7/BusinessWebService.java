@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import java.util.Date;
 import java.util.List;
@@ -30,11 +30,11 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.uniregctb.avatar.ImageData;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.webservices.common.AccessDeniedException;
-import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.xml.ServiceException;
 
 /**
  * Partie purement métier du traitement des appels web-service v7
@@ -102,7 +102,7 @@ public interface BusinessWebService {
 	 * @param municipalityId numéro OFS de la commune
 	 * @param date date de validité du numéro OFS (si <code>null</code>, on prendra la date du jour)
 	 * @return une description des offices d'impôt (de district et de région) liés à la commune indiquée
-	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si la commune est inconnue ou n'est pas vaudoise
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException si la commune est inconnue ou n'est pas vaudoise
 	 */
 	TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date);
 

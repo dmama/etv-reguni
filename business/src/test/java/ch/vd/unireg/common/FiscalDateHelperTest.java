@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import org.junit.Test;
 import org.slf4j.Logger;

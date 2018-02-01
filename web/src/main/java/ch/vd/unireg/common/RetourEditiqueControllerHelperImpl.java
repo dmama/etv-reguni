@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -13,12 +13,12 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatDocument;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
-import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatDocument;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
+import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
+import ch.vd.unireg.editique.EditiqueResultatTimeout;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class RetourEditiqueControllerHelperImpl implements MessageSourceAware, RetourEditiqueControllerHelper {
 

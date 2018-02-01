@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fourreNeutre;
+package ch.vd.unireg.fourreNeutre;
 
 import java.util.List;
 
@@ -9,10 +9,10 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.fourreNeutre.view.FourreNeutreView;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.fourreNeutre.view.FourreNeutreView;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

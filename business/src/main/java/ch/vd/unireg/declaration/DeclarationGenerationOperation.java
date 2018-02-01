@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 /**
- * Clé à utiliser vis-à-vis du {@link ch.vd.uniregctb.common.TicketService} quand on imprime une nouvelle déclaration (= pas un duplicata, seulement
+ * Clé à utiliser vis-à-vis du {@link ch.vd.unireg.common.TicketService} quand on imprime une nouvelle déclaration (= pas un duplicata, seulement
  * quand il s'agit d'une <b>nouvelle</b> déclaration) pour un tiers donné
  */
 public final class DeclarationGenerationOperation {

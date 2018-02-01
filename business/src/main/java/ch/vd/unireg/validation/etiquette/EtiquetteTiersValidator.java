@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.etiquette;
+package ch.vd.unireg.validation.etiquette;
 
 import java.util.Optional;
 
@@ -6,9 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 /**
  * Validateur d'une étiquette liée temporellement à un tiers

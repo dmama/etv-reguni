@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.Date;
 
@@ -9,8 +9,8 @@ import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.Contribuable;
 
 /**
  * Informations sur un principal de communauté valable pendant une période donnée.

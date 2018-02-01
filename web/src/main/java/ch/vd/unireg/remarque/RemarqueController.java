@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.remarque;
+package ch.vd.unireg.remarque;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,18 +13,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Remarque;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Remarque;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.dao.RemarqueDAO;
 
 @Controller
 @RequestMapping(value = "/remarque")

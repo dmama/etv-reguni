@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.tiers.vignette;
+package ch.vd.unireg.tiers.vignette;
 
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
+import ch.vd.unireg.adresse.AdresseEnvoi;
 
 public class AdresseEnvoiView {
 	private final String ligne1;

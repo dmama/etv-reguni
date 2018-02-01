@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.naissance;
+package ch.vd.unireg.evenement.civil.interne.naissance;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,17 +20,17 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
-import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSituationFamille;
-import ch.vd.uniregctb.tiers.Parente;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalParente;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalSituationFamille;
+import ch.vd.unireg.tiers.Parente;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

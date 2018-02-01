@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

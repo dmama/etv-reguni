@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.webservices.v6;
+package ch.vd.unireg.webservices.v6;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
-import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.unireg.type.ModeCommunication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

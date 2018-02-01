@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,10 +12,10 @@ import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.evenement.common.EvenementErreur;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 @Entity
 @Table(name = "EVENEMENT_ORGANISATION_ERREUR")
@@ -72,7 +72,7 @@ public class EvenementOrganisationErreur extends HibernateEntity implements Even
 
 	@Override
 	@Column(name = "TYPE", nullable = false, length = LengthConstants.EVTORGANISATIONERREUR_TYPE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeEvenementErreurUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeEvenementErreurUserType")
 	public TypeEvenementErreur getType() {
 		return type;
 	}

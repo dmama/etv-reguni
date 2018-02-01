@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.testing;
+package ch.vd.unireg.testing;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.common.BusinessItTestingConstants;
-import ch.vd.uniregctb.common.BusinessTestingConstants;
-import ch.vd.uniregctb.common.ClientConstants;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.BusinessItTestingConstants;
+import ch.vd.unireg.common.BusinessTestingConstants;
+import ch.vd.unireg.common.ClientConstants;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobDefinition;
 
 @ContextConfiguration(locations = {
 		ClientConstants.UNIREG_BUSINESS_JOBS4WEBIT,

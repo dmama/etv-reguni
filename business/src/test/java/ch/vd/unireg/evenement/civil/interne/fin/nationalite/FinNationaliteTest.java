@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.fin.nationalite;
+package ch.vd.unireg.evenement.civil.interne.fin.nationalite;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

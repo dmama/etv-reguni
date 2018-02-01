@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -8,13 +8,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.InstantHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatDocument;
-import ch.vd.uniregctb.editique.EditiqueResultatRecu;
-import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
-import ch.vd.uniregctb.editique.RetourImpressionTrigger;
-import ch.vd.uniregctb.stats.MockStatsService;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatDocument;
+import ch.vd.unireg.editique.EditiqueResultatRecu;
+import ch.vd.unireg.editique.EditiqueResultatTimeout;
+import ch.vd.unireg.editique.RetourImpressionTrigger;
+import ch.vd.unireg.stats.MockStatsService;
 
 public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTest {
 

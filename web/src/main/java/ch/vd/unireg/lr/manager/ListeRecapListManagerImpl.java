@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.lr.manager;
+package ch.vd.unireg.lr.manager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,13 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.ListeRecapitulativeCriteria;
-import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
-import ch.vd.uniregctb.lr.view.ListeRecapitulativeSearchResult;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.ListeRecapitulativeCriteria;
+import ch.vd.unireg.declaration.ListeRecapitulativeDAO;
+import ch.vd.unireg.lr.view.ListeRecapitulativeSearchResult;
 
 /**
  * Definition de services utiles pour la recherche de LR
@@ -38,7 +38,7 @@ public class ListeRecapListManagerImpl implements ListeRecapListManager{
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.lr.manager.ListeRecapListManager#count(ListeRecapitulativeCriteria)
+	 * @see ch.vd.unireg.lr.manager.ListeRecapListManager#count(ListeRecapitulativeCriteria)
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -47,7 +47,7 @@ public class ListeRecapListManagerImpl implements ListeRecapListManager{
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.lr.manager.ListeRecapListManager#find(ListeRecapitulativeCriteria, ParamPagination)
+	 * @see ch.vd.unireg.lr.manager.ListeRecapListManager#find(ListeRecapitulativeCriteria, ParamPagination)
 	 */
 	@Override
 	@Transactional(readOnly = true)

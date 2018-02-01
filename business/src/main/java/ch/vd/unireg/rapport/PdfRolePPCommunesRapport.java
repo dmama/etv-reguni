@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,10 +8,10 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.RolePPCommunesResults;
-import ch.vd.uniregctb.role.RolePPData;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.role.RolePPCommunesResults;
+import ch.vd.unireg.role.RolePPData;
 
 public class PdfRolePPCommunesRapport extends PdfRoleRapport<RolePPCommunesResults> {
 

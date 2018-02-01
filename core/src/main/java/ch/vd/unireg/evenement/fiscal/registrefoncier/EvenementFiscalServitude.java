@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal.registrefoncier;
+package ch.vd.unireg.evenement.fiscal.registrefoncier;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.registrefoncier.ServitudeRF;
+import ch.vd.unireg.registrefoncier.ServitudeRF;
 
 @Entity
 @DiscriminatorValue(value = "SERVITUDE_RF")

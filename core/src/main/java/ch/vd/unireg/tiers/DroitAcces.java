@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,10 +14,10 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 /**
  * Représente l'autorisation ou l'interdiction d'accès entre un opérateur (représenté par son numéro d'individu) et un dossier (représenté
@@ -91,7 +91,7 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 	}
 
 	@Column(name = "TYPE", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeDroitAccesUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeDroitAccesUserType")
 	public TypeDroitAcces getType() {
 		return type;
 	}
@@ -101,7 +101,7 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 	}
 
 	@Column(name = "NIVEAU", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.NiveauUserType")
+	@Type(type = "ch.vd.unireg.hibernate.NiveauUserType")
 	public Niveau getNiveau() {
 		return niveau;
 	}

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.ehcache;
+package ch.vd.unireg.ehcache;
 
 import java.io.InputStream;
 import java.util.List;

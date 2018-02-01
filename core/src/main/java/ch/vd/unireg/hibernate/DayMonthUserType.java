@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +9,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
-import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.unireg.type.DayMonth;
 
 /**
  * Cette classe permet de mapper des dates 'DayMonth' dans une colonne de type integer.
@@ -22,8 +22,8 @@ import ch.vd.uniregctb.type.DayMonth;
  * <li>...</li>
  * </ul>
  *
- * @see ch.vd.uniregctb.type.DayMonth#index()
- * @see ch.vd.uniregctb.type.DayMonth#fromIndex(int)
+ * @see ch.vd.unireg.type.DayMonth#index()
+ * @see ch.vd.unireg.type.DayMonth#fromIndex(int)
  */
 @SuppressWarnings("UnusedDeclaration")
 public class DayMonthUserType extends GenericUserType implements UserType {

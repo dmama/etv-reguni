@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import java.util.Map;
 
 import ch.vd.unireg.xml.event.docsortant.retour.v3.Quittance;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Interface du handler métier (hors de toute considération de parsing de message XML...)

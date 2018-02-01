@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.ubr;
+package ch.vd.unireg.ubr;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -174,7 +174,7 @@ public class BatchRunnerApp {
 	 */
 	private static void initLog4j() {
 		final Properties properties = new Properties();
-		properties.setProperty("log4j.logger.ch.vd.uniregctb", "WARN");
+		properties.setProperty("log4j.logger.ch.vd.unireg", "WARN");
 		properties.setProperty("log4j.rootLogger", "ERROR, stdout");
 		properties.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
 		properties.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");

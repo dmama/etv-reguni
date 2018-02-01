@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,26 +26,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.EditiqueCommunicationException;
-import ch.vd.uniregctb.common.EditiqueErrorHelper;
-import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tache.manager.TacheListManager;
-import ch.vd.uniregctb.tache.validator.TachesValidator;
-import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
-import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
-import ch.vd.uniregctb.tache.view.NouveauDossierListView;
-import ch.vd.uniregctb.tache.view.TacheCriteriaView;
-import ch.vd.uniregctb.tache.view.TacheListView;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.EditiqueCommunicationException;
+import ch.vd.unireg.common.EditiqueErrorHelper;
+import ch.vd.unireg.common.RetourEditiqueControllerHelper;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tache.manager.TacheListManager;
+import ch.vd.unireg.tache.validator.TachesValidator;
+import ch.vd.unireg.tache.view.ImpressionNouveauxDossiersView;
+import ch.vd.unireg.tache.view.NouveauDossierCriteriaView;
+import ch.vd.unireg.tache.view.NouveauDossierListView;
+import ch.vd.unireg.tache.view.TacheCriteriaView;
+import ch.vd.unireg.tache.view.TacheListView;
+import ch.vd.unireg.type.TypeEtatTache;
+import ch.vd.unireg.type.TypeTache;
 
 @Controller
 @RequestMapping("/tache")

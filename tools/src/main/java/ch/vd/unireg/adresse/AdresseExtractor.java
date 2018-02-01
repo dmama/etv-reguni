@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -19,7 +19,7 @@ import ch.vd.unireg.xml.party.address.v3.Address;
 import ch.vd.unireg.xml.party.address.v3.FormattedAddress;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.utils.WebServiceV7Helper;
+import ch.vd.unireg.utils.WebServiceV7Helper;
 
 /**
  * Outil pour aller chercher les adresses d'envoi (sur six lignes, donc) des tiers

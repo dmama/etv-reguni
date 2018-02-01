@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Service de prise en compte des données extraites d'une déclaration déposée par un contribuable PM

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import org.junit.Test;
 
@@ -8,12 +8,12 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.adresse.AdresseCivileAdapter;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

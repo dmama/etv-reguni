@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -8,7 +8,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * <pre>
@@ -56,7 +56,7 @@ public class RapportPrestationImposable extends RapportEntreTiers {
 	}
 
 	@Column(name = "DATE_FIN_DER_ELE_IMP")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getFinDernierElementImposable() {
 		return finDernierElementImposable;
 	}
@@ -67,7 +67,7 @@ public class RapportPrestationImposable extends RapportEntreTiers {
 
 	/*
 	 * (non-Javadoc)
-	 * @see ch.vd.uniregctb.tiers.RapportEntreTiers#getType()
+	 * @see ch.vd.unireg.tiers.RapportEntreTiers#getType()
 	 */
 	@Override
 	@Transient
@@ -76,7 +76,7 @@ public class RapportPrestationImposable extends RapportEntreTiers {
 	}
 
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.tiers.RapportEntreTiers#duplicate()
+	 * @see ch.vd.unireg.tiers.RapportEntreTiers#duplicate()
 	 */
 	@Override
 	public RapportEntreTiers duplicate() {

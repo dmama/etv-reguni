@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
-import ch.vd.uniregctb.common.DelegatingValidator;
+import ch.vd.unireg.common.DelegatingValidator;
 
 public class ProcessusComplexeValidator extends DelegatingValidator {
 

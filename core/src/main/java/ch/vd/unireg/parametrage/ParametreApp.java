@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.unireg.common.HibernateEntity;
 
 @Entity
 @Table(name = "PARAMETRE")

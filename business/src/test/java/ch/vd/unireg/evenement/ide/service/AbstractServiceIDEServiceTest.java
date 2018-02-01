@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.ide.service;
+package ch.vd.unireg.evenement.ide.service;
 
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.ide.AnnonceIDEServiceImpl;
-import ch.vd.uniregctb.evenement.ide.ServiceIDEService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.ide.AnnonceIDEServiceImpl;
+import ch.vd.unireg.evenement.ide.ServiceIDEService;
 
 /**
  * @author Raphaël Marmier, 2016-09-14, <raphael.marmier@vd.ch>

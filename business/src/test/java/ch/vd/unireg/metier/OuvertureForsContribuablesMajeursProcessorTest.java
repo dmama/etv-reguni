@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,24 +21,24 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.metier.OuvertureForsResults.Erreur;
-import ch.vd.uniregctb.metier.OuvertureForsResults.Traite;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypePermis;
-import ch.vd.uniregctb.validation.ValidationService;
-import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.metier.OuvertureForsResults.Erreur;
+import ch.vd.unireg.metier.OuvertureForsResults.Traite;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForsParType;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypePermis;
+import ch.vd.unireg.validation.ValidationService;
+import ch.vd.unireg.validation.fors.ForFiscalValidator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -417,12 +417,12 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final Erreur e1 = erreurs.get(0);
 		assertNotNull(e1);
 		assertEquals(OuvertureForsResults.ErreurType.CIVIL_EXCEPTION, e1.raison);
-		assertEquals("ch.vd.uniregctb.tiers.TiersException: Impossible de déterminer la nationalité de l'individu n°" + noIndividu1, e1.details);
+		assertEquals("ch.vd.unireg.tiers.TiersException: Impossible de déterminer la nationalité de l'individu n°" + noIndividu1, e1.details);
 
 		final Erreur e2 = erreurs.get(1);
 		assertNotNull(e2);
 		assertEquals(OuvertureForsResults.ErreurType.CIVIL_EXCEPTION, e2.raison);
-		assertEquals("ch.vd.uniregctb.tiers.TiersException: Impossible de déterminer la nationalité de l'individu n°" + noIndividu2, e2.details);
+		assertEquals("ch.vd.unireg.tiers.TiersException: Impossible de déterminer la nationalité de l'individu n°" + noIndividu2, e2.details);
 	}
 
 		/**

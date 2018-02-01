@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.scheduler;
+package ch.vd.unireg.scheduler;
 
 import java.text.ParseException;
 import java.time.Duration;

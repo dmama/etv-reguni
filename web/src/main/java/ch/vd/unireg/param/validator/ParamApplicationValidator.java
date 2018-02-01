@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.param.validator;
+package ch.vd.unireg.param.validator;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.param.view.ParamApplicationView;
-import ch.vd.uniregctb.parametrage.ParametreEnum;
-import ch.vd.uniregctb.parametrage.ParametreEnum.ValeurInvalideException;
+import ch.vd.unireg.param.view.ParamApplicationView;
+import ch.vd.unireg.parametrage.ParametreEnum;
+import ch.vd.unireg.parametrage.ParametreEnum.ValeurInvalideException;
 
 public class ParamApplicationValidator implements Validator {
 	

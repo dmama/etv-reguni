@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.scheduler;
+package ch.vd.unireg.scheduler;
 
 /**
  * Paramètre de batch qui permet de spécifier le contenu d'un fichier.

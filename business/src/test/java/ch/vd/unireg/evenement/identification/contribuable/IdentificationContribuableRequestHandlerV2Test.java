@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
 
@@ -11,11 +11,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.unireg.xml.common.v1.PartialDate;
 import ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest;
 import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribuableResponse;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

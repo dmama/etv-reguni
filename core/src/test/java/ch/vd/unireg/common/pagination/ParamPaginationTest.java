@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.common.pagination;
+package ch.vd.unireg.common.pagination;
 
 import org.junit.Test;
 
-import ch.vd.uniregctb.dbutils.QueryFragment;
+import ch.vd.unireg.dbutils.QueryFragment;
 
 import static org.junit.Assert.assertEquals;
 

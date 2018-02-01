@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.type.TexteCasePostale;
 
 /**
  * Interface de base d'une adresse purement fiscale (interface en lecture seule)

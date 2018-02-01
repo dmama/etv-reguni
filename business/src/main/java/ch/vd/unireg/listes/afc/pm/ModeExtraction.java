@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.afc.pm;
+package ch.vd.unireg.listes.afc.pm;
 
 /**
  * Modes d'extraction des données RPT PM

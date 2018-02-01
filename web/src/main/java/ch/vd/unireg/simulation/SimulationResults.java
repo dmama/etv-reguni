@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.simulation;
+package ch.vd.unireg.simulation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.tache.sync.SynchronizeAction;
+import ch.vd.unireg.tache.sync.SynchronizeAction;
 
 @SuppressWarnings("UnusedDeclaration")
 public class SimulationResults {

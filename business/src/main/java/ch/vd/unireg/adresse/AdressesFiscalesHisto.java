@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 
 /**

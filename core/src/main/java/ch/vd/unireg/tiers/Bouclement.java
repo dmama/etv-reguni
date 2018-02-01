@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,10 +18,10 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.type.DayMonth;
 
 @Entity
 @Table(name = "BOUCLEMENT")
@@ -51,7 +51,7 @@ public class Bouclement extends HibernateEntity implements LinkedEntity {
 	}
 
 	@Column(name = "DATE_DEBUT", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -61,7 +61,7 @@ public class Bouclement extends HibernateEntity implements LinkedEntity {
 	}
 
 	@Column(name = "ANCRAGE", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.DayMonthUserType")
+	@Type(type = "ch.vd.unireg.hibernate.DayMonthUserType")
 	public DayMonth getAncrage() {
 		return ancrage;
 	}

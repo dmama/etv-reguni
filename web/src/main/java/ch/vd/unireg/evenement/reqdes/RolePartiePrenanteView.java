@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import java.io.Serializable;
 
-import ch.vd.uniregctb.reqdes.ModeInscription;
-import ch.vd.uniregctb.reqdes.RolePartiePrenante;
-import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
-import ch.vd.uniregctb.reqdes.TypeInscription;
-import ch.vd.uniregctb.reqdes.TypeRole;
+import ch.vd.unireg.reqdes.ModeInscription;
+import ch.vd.unireg.reqdes.RolePartiePrenante;
+import ch.vd.unireg.reqdes.TransactionImmobiliere;
+import ch.vd.unireg.reqdes.TypeInscription;
+import ch.vd.unireg.reqdes.TypeRole;
 
 public class RolePartiePrenanteView implements Serializable {
 

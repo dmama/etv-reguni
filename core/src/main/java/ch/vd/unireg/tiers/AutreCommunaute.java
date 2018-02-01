@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -7,9 +7,9 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.FormeJuridique;
 
 /**
  * Organisation inconnue du registre des personnes morales de l'ACI.
@@ -41,7 +41,7 @@ public class AutreCommunaute extends ContribuableImpositionPersonnesMorales {
 	}
 
 	@Column(name = "AC_FORME_JURIDIQUE", length = LengthConstants.AC_FORME)
-	@Type(type = "ch.vd.uniregctb.hibernate.FormeJuridiqueUserType")
+	@Type(type = "ch.vd.unireg.hibernate.FormeJuridiqueUserType")
 	public FormeJuridique getFormeJuridique() {
 		return formeJuridique;
 	}

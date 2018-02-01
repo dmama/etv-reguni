@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.annonceIDE;
+package ch.vd.unireg.annonceIDE;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,17 +36,17 @@ import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.uniregctb.common.MockMessageSource;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCriteria;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.uniregctb.interfaces.service.mock.MockServiceOrganisationService;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.common.MockMessageSource;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationCriteria;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
+import ch.vd.unireg.interfaces.service.mock.MockServiceOrganisationService;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

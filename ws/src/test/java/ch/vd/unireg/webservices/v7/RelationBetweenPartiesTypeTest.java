@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,7 +21,7 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 	@Test
 	public void testCoherence() {
 		// Suite à l'ajout des enfants et des parents, les deux enums ne sont plus comparables sur la longueur (SIFISC-2588)
-//		assertEnumLengthEquals(RelationBetweenPartiesType.class, ch.vd.uniregctb.type.TypeRapportEntreTiers.class);
+//		assertEnumLengthEquals(RelationBetweenPartiesType.class, ch.vd.unireg.type.TypeRapportEntreTiers.class);
 
 		// vérification que toutes les valeurs sont mappées sur quelque chose
 		final Set<TypeRapportEntreTiers> notMapped = EnumSet.of(TypeRapportEntreTiers.PARENTE,

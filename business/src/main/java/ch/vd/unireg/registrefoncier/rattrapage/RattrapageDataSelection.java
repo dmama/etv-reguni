@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.rattrapage;
+package ch.vd.unireg.registrefoncier.rattrapage;
 
 public enum RattrapageDataSelection {
 	ALL,

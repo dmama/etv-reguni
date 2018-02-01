@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import java.util.Collection;
 
@@ -12,8 +12,8 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
 import ch.vd.registre.simpleindexer.LuceneData;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
 
 /**
  * Classe représentant les données brutes extraites d'un indexable. Utilisée de manière interne par l'indexeur.

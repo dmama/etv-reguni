@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 
 public abstract class DeclarationImpotOrdinaireValidator<T extends DeclarationImpotOrdinaire> extends DeclarationValidator<T> {
 

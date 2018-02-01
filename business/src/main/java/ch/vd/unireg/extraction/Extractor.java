@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 /**
  * Extracteur de données sous la forme d'un fichier CSV par exemple

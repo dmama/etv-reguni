@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.modeimposition;
+package ch.vd.unireg.metier.modeimposition;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,13 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * La spécification dit : le mode d'imposition du ou des contribuables imposés séparément est déterminé selon le tableau suivant :

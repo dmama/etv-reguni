@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
-import ch.vd.uniregctb.rapport.manager.RapportEditManager;
-import ch.vd.uniregctb.rapport.view.RapportView;
-import ch.vd.uniregctb.tiers.manager.TiersEditManager;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.rapport.SensRapportEntreTiers;
+import ch.vd.unireg.rapport.manager.RapportEditManager;
+import ch.vd.unireg.rapport.view.RapportView;
+import ch.vd.unireg.tiers.manager.TiersEditManager;
+import ch.vd.unireg.tiers.view.TiersEditView;
 
 /**
  * @author xcifde

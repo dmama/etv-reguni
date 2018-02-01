@@ -2,11 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="complementValidator" class="ch.vd.uniregctb.complements.ComplementsValidator" >
+	<bean id="complementValidator" class="ch.vd.unireg.complements.ComplementsValidator" >
 		<property name="ibanValidator" ref="ibanValidator" />
 	</bean>
 
-	<bean id="complementController" class="ch.vd.uniregctb.complements.ComplementsController">
+	<bean id="complementController" class="ch.vd.unireg.complements.ComplementsController">
 		<property name="autorisationManager" ref="autorisationManager"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>

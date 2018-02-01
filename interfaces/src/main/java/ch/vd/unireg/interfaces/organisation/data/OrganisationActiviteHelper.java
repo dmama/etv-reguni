@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.unireg.common.CollectionsUtils;
 
 /**
  * Helper spécialisé dans le calcul de l'activité des entreprises et établissements.

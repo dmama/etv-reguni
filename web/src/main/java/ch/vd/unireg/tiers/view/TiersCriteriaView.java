@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -6,14 +6,14 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 /**
  * Critères de recherche pour les tiers.

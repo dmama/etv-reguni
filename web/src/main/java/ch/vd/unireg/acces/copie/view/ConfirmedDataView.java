@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.acces.copie.view;
+package ch.vd.unireg.acces.copie.view;
 
 public class ConfirmedDataView {
 

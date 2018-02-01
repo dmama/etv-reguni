@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.common;
+package ch.vd.unireg.metier.common;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.type.MotifFor;
 
 /**
  * Contient la date et le motif d'un fractionnement. Une fraction est une coupure obligatoire des assujettissements à une date déterminée (par exemple, en cas de départ ou arrivée hors-Suiss, de

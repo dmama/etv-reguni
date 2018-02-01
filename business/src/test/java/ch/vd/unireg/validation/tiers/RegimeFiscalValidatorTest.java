@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.Collections;
 
@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class RegimeFiscalValidatorTest extends AbstractValidatorTest<RegimeFiscal> {
 

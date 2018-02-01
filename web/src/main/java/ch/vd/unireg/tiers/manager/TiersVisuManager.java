@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.tiers.HistoFlags;
-import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.tiers.HistoFlags;
+import ch.vd.unireg.tiers.view.RapportsPrestationView;
+import ch.vd.unireg.tiers.view.TiersVisuView;
 
 /**
  * Service qui fournit les methodes pour visualiser un tiers
@@ -31,7 +31,7 @@ public interface TiersVisuManager {
 	 * @return les informations de visualisation demandées.
 	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException
 	 *          en cas de problème de connexion au service d'infrastructure.
-	 * @throws ch.vd.uniregctb.adresse.AdresseException
+	 * @throws ch.vd.unireg.adresse.AdresseException
 	 *          en cas de problème de résolution des adresses
 	 */
 	@Transactional(readOnly = true)

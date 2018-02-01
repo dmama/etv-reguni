@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v4.strategy;
+package ch.vd.unireg.xml.party.v4.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,24 +30,24 @@ import ch.vd.unireg.xml.party.person.v4.ParentFullName;
 import ch.vd.unireg.xml.party.taxresidence.v3.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.unireg.xml.party.v4.UidNumberList;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
-import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ExceptionHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v4.WithholdingTaxationPeriodBuilder;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.IdentificationPersonne;
+import ch.vd.unireg.tiers.IndividuNotFoundException;
+import ch.vd.unireg.tiers.OriginePersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ExceptionHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v4.WithholdingTaxationPeriodBuilder;
 
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ch.vd.uniregctb.xml.party.v3.strategy.NaturalPersonStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ch.vd.unireg.xml.party.v3.strategy.NaturalPersonStrategy.class);
 	private static final String CH_AHV = "CH.AHV"; // voir spécification eCH-0044
 	private static final String CH_ZAR = "CH.ZAR";
 

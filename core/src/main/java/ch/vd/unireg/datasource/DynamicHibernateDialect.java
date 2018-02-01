@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.datasource;
+package ch.vd.unireg.datasource;
 
 import org.hibernate.dialect.Dialect;
 import org.springframework.beans.factory.FactoryBean;

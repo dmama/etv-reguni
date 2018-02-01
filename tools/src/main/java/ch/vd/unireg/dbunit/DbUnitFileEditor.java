@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.dbunit;
+package ch.vd.unireg.dbunit;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,24 +64,24 @@ public class DbUnitFileEditor {
 	public static void main(String[] args) throws Exception {
 
 		traiteFichier("web/src/main/resources/DBUnit4Import/tiers-basic.xml");
-		//traiteFichier("web/src/test/resources/ch/vd/uniregctb/evenement/AbstractEvenementControllerTest.xml");
-		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/party3/PartyWebServiceTAOISTest.xml");
-		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/party3/PartyWebServiceTest.xml");
-		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/party3/PartyWebServicePoursuiteTest.xml");
-		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers2/TiersServiceWebTAOISTest.xml");
-		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers2/TiersServiceWebPoursuiteTest.xml");
-		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/pages/EachWebPageTest.xml");
-		traiteFichier("core/src/test/resources/ch/vd/uniregctb/evenement/EvenementCivilDAOTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/civil/interne/arrivee/ArriveeTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsJobTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/EnvoiDIsJobTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/echoirDiTiersInvalide.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/civil/interne/depart/deparHC26012004.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/editique/ListeRecapJobTest.xml");
+		//traiteFichier("web/src/test/resources/ch/vd/unireg/evenement/AbstractEvenementControllerTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/unireg/webservice/party3/PartyWebServiceTAOISTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/unireg/webservice/party3/PartyWebServiceTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/unireg/webservice/party3/PartyWebServicePoursuiteTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/unireg/webservice/tiers2/TiersServiceWebTAOISTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/unireg/webservice/tiers2/TiersServiceWebPoursuiteTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/unireg/pages/EachWebPageTest.xml");
+		traiteFichier("core/src/test/resources/ch/vd/unireg/evenement/EvenementCivilDAOTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/unireg/evenement/civil/interne/arrivee/ArriveeTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/unireg/declaration/ordinaire/DetermineDIsJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/unireg/declaration/ordinaire/EnvoiDIsJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/unireg/declaration/ordinaire/echoirDiTiersInvalide.xml");
+		traiteFichier("business/src/test/resources/ch/vd/unireg/evenement/civil/interne/depart/deparHC26012004.xml");
+		traiteFichier("business/src/test/resources/ch/vd/unireg/editique/ListeRecapJobTest.xml");
 
 		
 //		String repBase = "C:/projets/registre/branches/UniregCTB/2.7/04-Implementation/unireg/";
-//		String endPath = "/src/test/resources/ch/vd/uniregctb/";
+//		String endPath = "/src/test/resources/ch/vd/unireg/";
 //		String repbus = repBase + "business" + endPath;
 //		String repbusit = repBase + "business-it" + endPath;
 //		String repcore = repBase + "core" + endPath;

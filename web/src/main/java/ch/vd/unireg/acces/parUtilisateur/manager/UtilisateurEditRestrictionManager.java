@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.acces.parUtilisateur.manager;
+package ch.vd.unireg.acces.parUtilisateur.manager;
 
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
-import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.extraction.ExtractionJob;
-import ch.vd.uniregctb.security.DroitAccesException;
+import ch.vd.unireg.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
+import ch.vd.unireg.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.extraction.ExtractionJob;
+import ch.vd.unireg.security.DroitAccesException;
 
 public interface UtilisateurEditRestrictionManager {
 

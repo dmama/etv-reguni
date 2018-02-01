@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.qsnc;
+package ch.vd.unireg.qsnc;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
 
 public class QuestionnaireSNCQuittancementView {
 

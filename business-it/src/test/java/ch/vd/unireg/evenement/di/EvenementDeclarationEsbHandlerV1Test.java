@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -75,7 +75,7 @@ public class EvenementDeclarationEsbHandlerV1Test extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/di/quittancementStandard.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/di/quittancementStandard.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message

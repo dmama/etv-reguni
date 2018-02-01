@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 /**
  * Contient tous les emmetteur pouvant envoyer un événement.

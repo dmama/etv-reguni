@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
-import ch.vd.uniregctb.hibernate.DayMonthUserType;
+import ch.vd.unireg.hibernate.DayMonthUserType;
 
 public class DayMonthPropertyType extends UserTypePropertyType {
 	public DayMonthPropertyType(DayMonthUserType userType) {

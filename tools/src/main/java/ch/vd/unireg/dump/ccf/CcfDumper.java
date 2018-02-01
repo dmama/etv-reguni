@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.dump.ccf;
+package ch.vd.unireg.dump.ccf;
 
 import java.io.FileWriter;
 import java.io.IOException;

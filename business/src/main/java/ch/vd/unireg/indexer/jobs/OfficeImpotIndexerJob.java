@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.indexer.jobs;
+package ch.vd.unireg.indexer.jobs;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.indexer.tiers.OfficeImpotIndexer;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamBoolean;
+import ch.vd.unireg.indexer.tiers.OfficeImpotIndexer;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamBoolean;
 
 /**
  * Job qui mets-à-jour l'information de l'office d'impôt au niveau de chaque tiers

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class SituationFamilleDAOImpl extends BaseDAOImpl<SituationFamille, Long> implements SituationFamilleDAO {
 

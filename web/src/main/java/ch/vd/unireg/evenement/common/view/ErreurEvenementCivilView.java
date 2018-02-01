@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.common.view;
+package ch.vd.unireg.evenement.common.view;
 
 import java.io.Serializable;
 

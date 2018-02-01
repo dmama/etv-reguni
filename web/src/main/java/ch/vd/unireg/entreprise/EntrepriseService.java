@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
 
 /**
  *  Re-organisation des informations de l'entreprise pour l'affichage Web

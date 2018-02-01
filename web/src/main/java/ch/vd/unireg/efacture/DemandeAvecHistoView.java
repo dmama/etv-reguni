@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
 
 /**
  * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)

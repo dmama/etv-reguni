@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.unireg.webservices.party3.data;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
-import ch.vd.uniregctb.webservices.party3.EnumTest;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
+import ch.vd.unireg.webservices.party3.EnumTest;
+import ch.vd.unireg.webservices.party3.impl.EnumHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -14,14 +14,14 @@ public class CommunicationModeTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(CommunicationMode.class, ch.vd.uniregctb.type.ModeCommunication.class);
+		assertEnumLengthEquals(CommunicationMode.class, ch.vd.unireg.type.ModeCommunication.class);
 	}
 
 	@Test
 	public void testFromValue() {
-		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.ModeCommunication) null));
-		assertEquals(CommunicationMode.WEB_SITE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.ModeCommunication.SITE_WEB));
-		assertEquals(CommunicationMode.UPLOAD, EnumHelper.coreToWeb(ch.vd.uniregctb.type.ModeCommunication.ELECTRONIQUE));
-		assertEquals(CommunicationMode.PAPER, EnumHelper.coreToWeb(ch.vd.uniregctb.type.ModeCommunication.PAPIER));
+		assertNull(EnumHelper.coreToWeb((ch.vd.unireg.type.ModeCommunication) null));
+		assertEquals(CommunicationMode.WEB_SITE, EnumHelper.coreToWeb(ch.vd.unireg.type.ModeCommunication.SITE_WEB));
+		assertEquals(CommunicationMode.UPLOAD, EnumHelper.coreToWeb(ch.vd.unireg.type.ModeCommunication.ELECTRONIQUE));
+		assertEquals(CommunicationMode.PAPER, EnumHelper.coreToWeb(ch.vd.unireg.type.ModeCommunication.PAPIER));
 	}
 }

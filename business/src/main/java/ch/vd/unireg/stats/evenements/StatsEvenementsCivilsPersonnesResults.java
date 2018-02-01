@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats.evenements;
+package ch.vd.unireg.stats.evenements;
 
 import java.util.Date;
 import java.util.List;
@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class StatsEvenementsCivilsPersonnesResults {
 	

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Tag jsp qui permet de récupérer divers éléments du service infrastructure par id.

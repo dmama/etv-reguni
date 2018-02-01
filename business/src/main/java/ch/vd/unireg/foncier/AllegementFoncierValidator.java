@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 import java.util.Optional;
 
@@ -7,9 +7,9 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 public abstract class AllegementFoncierValidator<T extends AllegementFoncier> extends DateRangeEntityValidator<T> {
 

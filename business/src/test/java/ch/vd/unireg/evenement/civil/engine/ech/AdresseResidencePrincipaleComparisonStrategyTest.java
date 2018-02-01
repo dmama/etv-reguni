@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseResidencePrincipaleComparisonStrategyTest extends AbstractAdresseResidenceComparisonStrategyTest {
 

@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 
-import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
-import ch.vd.uniregctb.metier.common.Fraction;
-import ch.vd.uniregctb.metier.common.FractionSimple;
-import ch.vd.uniregctb.metier.common.Fractionnements;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
+import ch.vd.unireg.metier.common.Fraction;
+import ch.vd.unireg.metier.common.FractionSimple;
+import ch.vd.unireg.metier.common.Fractionnements;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Les fractionnements de l'assujettissement des PM

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.rcent.migration;
+package ch.vd.unireg.rattrapage.rcent.migration;
 
 import java.text.ParseException;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.DayMonthHelper;
+import ch.vd.unireg.type.DayMonthHelper;
 
 /**
  * INFO;73391;Active;CHE468929885;101595912;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2016 : tous les 12 mois, à partir du premier 31.12.

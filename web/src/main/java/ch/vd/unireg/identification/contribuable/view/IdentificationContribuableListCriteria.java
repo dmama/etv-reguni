@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.identification.contribuable.view;
+package ch.vd.unireg.identification.contribuable.view;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
 
 public class IdentificationContribuableListCriteria extends IdentificationContribuableCriteria{
 

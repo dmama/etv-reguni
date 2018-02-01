@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.manager.AutorisationManager;
-import ch.vd.uniregctb.tiers.manager.AutorisationManagerImpl;
-import ch.vd.uniregctb.tiers.manager.RetourModeImpositionAllowed;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.manager.AutorisationManager;
+import ch.vd.unireg.tiers.manager.AutorisationManagerImpl;
+import ch.vd.unireg.tiers.manager.RetourModeImpositionAllowed;
 
 public class EditModeImpositionValidator implements Validator {
 

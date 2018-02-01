@@ -1,21 +1,21 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import noNamespace.InfoArchivageDocument;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeInfoArchivage;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
-import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
-import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
-import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.unireg.documentfiscal.AutorisationRadiationRC;
+import ch.vd.unireg.documentfiscal.DemandeBilanFinal;
+import ch.vd.unireg.documentfiscal.LettreBienvenue;
+import ch.vd.unireg.documentfiscal.LettreTypeInformationLiquidation;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeDocument;
 
 /**
  * Service de constitution de message de signalement de document sortant (au DPerm)

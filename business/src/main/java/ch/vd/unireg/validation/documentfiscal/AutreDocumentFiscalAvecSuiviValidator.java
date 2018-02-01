@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.validation.documentfiscal;
+package ch.vd.unireg.validation.documentfiscal;
 
 import java.util.List;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
-import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalAvecSuivi;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
 
 /**
  * Validateur des "autres documents fiscaux" qui sont suivis (= pour lesquels on attend un retour)

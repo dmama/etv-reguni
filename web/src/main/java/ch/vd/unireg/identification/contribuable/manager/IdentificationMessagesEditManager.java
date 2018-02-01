@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.identification.contribuable.manager;
+package ch.vd.unireg.identification.contribuable.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
-import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.unireg.identification.contribuable.view.DemandeIdentificationView;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesEditView;
 
 public interface IdentificationMessagesEditManager {
 

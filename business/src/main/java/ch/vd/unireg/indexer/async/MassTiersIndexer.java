@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.async;
+package ch.vd.unireg.indexer.async;
 
 import java.time.Duration;
 
@@ -9,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
-import ch.vd.uniregctb.worker.BatchWorker;
-import ch.vd.uniregctb.worker.DeadThreadException;
-import ch.vd.uniregctb.worker.WorkingQueue;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexerImpl;
+import ch.vd.unireg.worker.BatchWorker;
+import ch.vd.unireg.worker.DeadThreadException;
+import ch.vd.unireg.worker.WorkingQueue;
 
 /**
  * Tiers indexer utilisé lors de l'indexation ou la re-indexation en masse des tiers de la base de données.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.scheduler;
+package ch.vd.unireg.scheduler;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.common.JobTest;
+import ch.vd.unireg.common.JobTest;
 
-import static ch.vd.uniregctb.scheduler.JobDefinition.JobStatut;
+import static ch.vd.unireg.scheduler.JobDefinition.JobStatut;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;

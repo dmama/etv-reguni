@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import org.springframework.context.MessageSource;
 
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuiviView;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalAvecSuiviView;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 public class DemandeDegrevementICIView extends AutreDocumentFiscalAvecSuiviView {
 

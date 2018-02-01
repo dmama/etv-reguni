@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.context.MessageSource;
 
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.registrefoncier.allegement.DemandeDegrevementICIView;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.registrefoncier.allegement.DemandeDegrevementICIView;
 
 /**
  * Factory des vues d'autres documents fiscaux

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersVisuView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersVisuView"--%>
 
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
 
@@ -35,7 +35,7 @@
 
 		<c:if test="${not empty command.mandatairesCourrier}">
 
-			<display:table name="${command.mandatairesCourrier}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="${command.mandatairesCourrier}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column titleKey="label.type" style="width: 30ex;">
 					<fmt:message key="option.mandat.type.${courrier.typeMandat}"/>
 					<c:if test="${courrier.libelleGenreImpot != null}">
@@ -103,7 +103,7 @@
 
 		<c:if test="${not empty command.mandatairesPerception}">
 
-			<display:table name="${command.mandatairesPerception}" id="mandatperc" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="${command.mandatairesPerception}" id="mandatperc" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column titleKey="label.date.debut" style="width: 12ex;">
 					<unireg:regdate regdate="${mandatperc.dateDebut}"/>
 				</display:column>

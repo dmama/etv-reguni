@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.view;
+package ch.vd.unireg.declaration.view;
 
 import java.util.Date;
 import java.util.Optional;
@@ -8,16 +8,16 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
-import ch.vd.uniregctb.documentfiscal.SourceQuittancement;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.declaration.EtatDeclarationRappelee;
+import ch.vd.unireg.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.documentfiscal.DocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
+import ch.vd.unireg.documentfiscal.SourceQuittancement;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView>, Annulable {
 

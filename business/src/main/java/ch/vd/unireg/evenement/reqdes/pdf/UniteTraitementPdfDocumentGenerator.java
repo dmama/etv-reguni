@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.pdf;
+package ch.vd.unireg.evenement.reqdes.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,15 +24,15 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.common.ApplicationInfo;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.reqdes.EvenementReqDes;
-import ch.vd.uniregctb.reqdes.InformationsActeur;
-import ch.vd.uniregctb.reqdes.PartiePrenante;
-import ch.vd.uniregctb.reqdes.RolePartiePrenante;
-import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
-import ch.vd.uniregctb.reqdes.UniteTraitement;
+import ch.vd.unireg.common.ApplicationInfo;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.reqdes.EvenementReqDes;
+import ch.vd.unireg.reqdes.InformationsActeur;
+import ch.vd.unireg.reqdes.PartiePrenante;
+import ch.vd.unireg.reqdes.RolePartiePrenante;
+import ch.vd.unireg.reqdes.TransactionImmobiliere;
+import ch.vd.unireg.reqdes.UniteTraitement;
 
 /**
  * Générateur de PDF pour les unités de traitement ReqDes

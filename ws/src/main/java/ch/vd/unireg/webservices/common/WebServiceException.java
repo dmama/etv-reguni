@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.unireg.webservices.common;
 
 /**
  * Exception générique levée par le web-service en cas d'impossibilité de satisfaire une requête.

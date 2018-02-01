@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.load;
+package ch.vd.unireg.load;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.stats.LoadMonitorable;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.stats.LoadMonitorable;
 
 public class LoadAveragerTest extends WithoutSpringTest {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rt;
+package ch.vd.unireg.rt;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,15 +13,15 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.rt.manager.RapportPrestationEditManager;
-import ch.vd.uniregctb.rt.view.DebiteurListView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.rt.manager.RapportPrestationEditManager;
+import ch.vd.unireg.rt.view.DebiteurListView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.tiers.AbstractTiersListController;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class DebiteurListController  extends  AbstractTiersListController implements MessageSourceAware {
 

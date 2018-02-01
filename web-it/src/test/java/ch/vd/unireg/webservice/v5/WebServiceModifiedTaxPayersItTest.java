@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.v5;
+package ch.vd.unireg.webservice.v5;
 
 import java.util.ArrayList;
 import java.util.Date;

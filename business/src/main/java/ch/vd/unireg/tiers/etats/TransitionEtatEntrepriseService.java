@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.tiers.etats;
+package ch.vd.unireg.tiers.etats;
 
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.etats.transition.TransitionEtatEntreprise;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 
 /**
  * Factory pour la création des transitions d'état de l'entreprise.

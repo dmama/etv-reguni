@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,10 +15,10 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -77,7 +77,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/old_quittance_lr.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/externe/old_quittance_lr.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -111,7 +111,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/new_quittance_lr_v1.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/externe/new_quittance_lr_v1.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -145,7 +145,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/new_quittance_lr_v2.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/externe/new_quittance_lr_v2.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -179,7 +179,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/new_quittance_lr_v3.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/externe/new_quittance_lr_v3.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message

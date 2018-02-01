@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra.delta;
+package ch.vd.unireg.supergra.delta;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -9,14 +9,14 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.ReflexionUtils;
-import ch.vd.uniregctb.supergra.EntityKey;
-import ch.vd.uniregctb.supergra.EntityType;
-import ch.vd.uniregctb.supergra.SuperGraContext;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.ReflexionUtils;
+import ch.vd.unireg.supergra.EntityKey;
+import ch.vd.unireg.supergra.EntityType;
+import ch.vd.unireg.supergra.SuperGraContext;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Met-à-jour la valeur d'un attribut sur une entité dans le mode SuperGra.

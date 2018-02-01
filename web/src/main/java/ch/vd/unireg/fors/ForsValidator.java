@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.DelegatingValidator;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.manager.AutorisationManager;
+import ch.vd.unireg.common.DelegatingValidator;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.manager.AutorisationManager;
 
 public class ForsValidator extends DelegatingValidator implements InitializingBean {
 

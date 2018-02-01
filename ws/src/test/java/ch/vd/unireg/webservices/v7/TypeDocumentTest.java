@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import org.junit.Test;
 
@@ -18,17 +18,17 @@ public class TypeDocumentTest extends EnumTest {
 	 */
 	@Test
 	public void testCoherence() {
-		// assertEnumLengthEquals(TypeDocument.class, ch.vd.uniregctb.type.TypeDocument.class);
-		// assertEnumConstantsEqual(TypeDocument.class, ch.vd.uniregctb.type.TypeDocument.class);
+		// assertEnumLengthEquals(TypeDocument.class, ch.vd.unireg.type.TypeDocument.class);
+		// assertEnumConstantsEqual(TypeDocument.class, ch.vd.unireg.type.TypeDocument.class);
 	}
 
 	@Test
 	public void testFromValue() {
-		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.TypeDocument) null));
-		assertEquals(OrdinaryTaxDeclarationType.FULL_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH));
-		assertEquals(OrdinaryTaxDeclarationType.VAUDTAX_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX));
-		assertEquals(OrdinaryTaxDeclarationType.IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE));
-		assertEquals(OrdinaryTaxDeclarationType.EXPENDITURE_BASED_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_DEPENSE));
+		assertNull(EnumHelper.coreToWeb((ch.vd.unireg.type.TypeDocument) null));
+		assertEquals(OrdinaryTaxDeclarationType.FULL_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH));
+		assertEquals(OrdinaryTaxDeclarationType.VAUDTAX_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX));
+		assertEquals(OrdinaryTaxDeclarationType.IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE));
+		assertEquals(OrdinaryTaxDeclarationType.EXPENDITURE_BASED_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_DEPENSE));
 	}
 
 }

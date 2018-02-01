@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,19 +26,19 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
-import ch.vd.uniregctb.mouvement.MouvementDossier;
-import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
-import ch.vd.uniregctb.foncier.AllegementFoncier;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
+import ch.vd.unireg.mouvement.MouvementDossier;
+import ch.vd.unireg.documentfiscal.DocumentFiscal;
+import ch.vd.unireg.foncier.AllegementFoncier;
+import ch.vd.unireg.registrefoncier.RapprochementRF;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @Entity
 public abstract class Contribuable extends Tiers {
@@ -74,7 +74,7 @@ public abstract class Contribuable extends Tiers {
 	 *         <i>null</i> si les tâches peuvent être traitées sans restriction.
 	 */
 	@Column(name = "DATE_LIMITE_EXCLUSION", nullable = true)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateLimiteExclusionEnvoiDeclarationImpot() {
 		return dateLimiteExclusionEnvoiDeclarationImpot;
 	}

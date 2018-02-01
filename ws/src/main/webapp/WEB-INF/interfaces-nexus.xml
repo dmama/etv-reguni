@@ -13,7 +13,7 @@
 
 	<!-- Service civil -->
 
-	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.civil.ServiceCivilRemoteLogger">
+	<bean id="serviceCivilLogger" class="ch.vd.unireg.interfaces.civil.ServiceCivilRemoteLogger">
 		<property name="executor" ref="nexusHttpRequestExecutor"/>
 	</bean>
 

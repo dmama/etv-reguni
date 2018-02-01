@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -22,21 +22,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.DelegatingValidator;
-import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.param.manager.ParamApplicationManager;
-import ch.vd.uniregctb.param.validator.ParamApplicationValidator;
-import ch.vd.uniregctb.param.view.ParamApplicationView;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.DelegatingValidator;
+import ch.vd.unireg.indexer.EmptySearchCriteriaException;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.param.manager.ParamApplicationManager;
+import ch.vd.unireg.param.validator.ParamApplicationValidator;
+import ch.vd.unireg.param.view.ParamApplicationView;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.validator.TiersCriteriaValidator;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.utils.RegDateEditor;
+import ch.vd.unireg.utils.WebContextUtils;
 
 @Controller
 public class TiersListController implements MessageSourceAware {

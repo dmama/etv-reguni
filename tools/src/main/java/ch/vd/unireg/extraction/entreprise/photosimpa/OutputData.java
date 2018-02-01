@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction.entreprise.photosimpa;
+package ch.vd.unireg.extraction.entreprise.photosimpa;
 
 import org.apache.commons.lang3.tuple.Pair;
 

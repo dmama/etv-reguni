@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.tache;
+package ch.vd.unireg.validation.tache;
 
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpotPM;
 
 public class TacheEnvoiDeclarationImpotPMValidator extends TacheEnvoiDeclarationImpotValidator<TacheEnvoiDeclarationImpotPM> {
 

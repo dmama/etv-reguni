@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import java.util.Collection;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 public interface EvenementFiscalDAO extends GenericDAO<EvenementFiscal, Long> {
 

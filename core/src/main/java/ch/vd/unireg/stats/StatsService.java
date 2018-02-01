@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
-import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheInterface;
 
 /**
  * Ce service centralise les informations statistiques des services de l'application.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.lucene;
+package ch.vd.unireg.indexer.lucene;
 
 import java.io.File;
 
@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.simpleindexer.LuceneIndex;
 import ch.vd.registre.simpleindexer.LuceneIndexImpl;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.OurOwnFrenchAnalyzer;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.OurOwnFrenchAnalyzer;
 
 public class FSIndexProvider implements IndexProvider {
 

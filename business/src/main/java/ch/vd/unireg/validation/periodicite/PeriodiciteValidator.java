@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.periodicite;
+package ch.vd.unireg.validation.periodicite;
 
 import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public class PeriodiciteValidator extends EntityValidatorImpl<Periodicite> {
 

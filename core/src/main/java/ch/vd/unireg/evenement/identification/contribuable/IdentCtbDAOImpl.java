@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -21,11 +21,11 @@ import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.dbutils.QueryFragment;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.dbutils.QueryFragment;
+import ch.vd.unireg.evenement.identification.contribuable.Demande.PrioriteEmetteur;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.Etat;
 
 public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Long> implements IdentCtbDAO {
 

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.utils;
+package ch.vd.unireg.utils;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.springframework.validation.Errors;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
 
 public class ValidatorUtils {
 

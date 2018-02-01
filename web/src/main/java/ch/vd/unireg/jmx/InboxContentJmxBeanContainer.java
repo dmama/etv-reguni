@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.MBeanExportOperations;
 
-import ch.vd.uniregctb.inbox.InboxManagementListener;
-import ch.vd.uniregctb.inbox.InboxService;
+import ch.vd.unireg.inbox.InboxManagementListener;
+import ch.vd.unireg.inbox.InboxService;
 
 /**
  * Classe qui va exporter en JMX les inboxes existantes et leur contenu

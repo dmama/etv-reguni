@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.transaction.impl;
+package ch.vd.unireg.transaction.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.transaction.SimpleService1;
+import ch.vd.unireg.transaction.SimpleService1;
 
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 public class SimpleService1Impl extends SimpleServiceImpl implements SimpleService1 {

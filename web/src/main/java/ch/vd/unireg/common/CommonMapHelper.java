@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 
-import ch.vd.uniregctb.type.RestrictedAccess;
+import ch.vd.unireg.type.RestrictedAccess;
 
 public class CommonMapHelper {
 
@@ -33,7 +33,7 @@ public class CommonMapHelper {
 	 *
 	 * @param keyPrefix le préfixe de la ressource utilisée pour récupérer les descriptions des enums
 	 * @param clazz la classe de l'énumération
-	 * @param ignored une liste optionnelle des enums à ignorer (si l'enum implémente {@link RestrictedAccess}, les éléments qui répondent <code>false</code> à {@link ch.vd.uniregctb.type.RestrictedAccess#isAllowed()} sont de toute façon ignorés)
+	 * @param ignored une liste optionnelle des enums à ignorer (si l'enum implémente {@link RestrictedAccess}, les éléments qui répondent <code>false</code> à {@link ch.vd.unireg.type.RestrictedAccess#isAllowed()} sont de toute façon ignorés)
 	 * @return une map non-modifiable
 	 */
 	@SafeVarargs

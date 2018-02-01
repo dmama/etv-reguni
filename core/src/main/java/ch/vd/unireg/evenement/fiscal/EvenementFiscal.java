@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -16,8 +16,8 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @Table(name = "EVENEMENT_FISCAL")
@@ -55,7 +55,7 @@ public abstract class EvenementFiscal extends HibernateEntity {
 
 	@Nullable
 	@Column(name = "DATE_VALEUR")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateValeur() {
 		return dateValeur;
 	}

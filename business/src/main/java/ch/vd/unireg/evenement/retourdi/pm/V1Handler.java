@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import javax.xml.bind.JAXBElement;
 import java.math.BigInteger;
@@ -31,14 +31,14 @@ import ch.vd.unireg.xml.event.taxation.ibc.v1.TypNumeroIdeAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.TypSiegeEtAdministrationEffective;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.TypTelephoneAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.TypTxtMax40Attr;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.evenement.retourdi.RetourDiHandler;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.type.FormulePolitesse;
-import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.retourdi.RetourDiHandler;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.type.FormulePolitesse;
+import ch.vd.unireg.type.TexteCasePostale;
 
 @SuppressWarnings("Duplicates")
 public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandler<DeclarationIBC> {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.timeline;
+package ch.vd.unireg.tiers.timeline;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,19 +18,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseCouche;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseSandwich;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdressesFiscalesSandwich;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.timeline.AdresseTimelineView.Table;
+import ch.vd.unireg.adresse.AdresseCouche;
+import ch.vd.unireg.adresse.AdresseEnvoi;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseSandwich;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdressesFiscalesSandwich;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.timeline.AdresseTimelineView.Table;
 
 /**
  * Contrôleur pour l'affichage de l'historique des adresses d'un contribuable

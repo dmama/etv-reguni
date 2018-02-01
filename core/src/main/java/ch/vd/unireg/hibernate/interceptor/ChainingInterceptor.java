@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.interceptor;
+package ch.vd.unireg.hibernate.interceptor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.common.ThreadSwitch;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.common.ThreadSwitch;
 
 public class ChainingInterceptor extends EmptyInterceptor implements Switchable {
 

@@ -1,10 +1,10 @@
 /**
  *
  */
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * @author xsikce

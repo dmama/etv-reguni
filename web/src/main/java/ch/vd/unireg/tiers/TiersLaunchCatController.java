@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;

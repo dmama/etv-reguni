@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.timeline;
+package ch.vd.unireg.tiers.timeline;
 
 import ch.vd.registre.base.date.DateRange;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.cache;
+package ch.vd.unireg.webservices.party3.cache;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,25 +39,25 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.uniregctb.common.WebserviceTest;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.WebserviceTest;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.SituationFamilleMenageCommun;
+import ch.vd.unireg.tiers.SituationFamillePersonnePhysique;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -138,7 +138,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 
 				final PeriodeFiscale periode = addPeriodeFiscale(2003);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				ch.vd.unireg.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(di, date(2003, 1, 10));
 
 				ids.eric = eric.getNumero();
@@ -166,7 +166,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 				PersonnePhysique monsieur = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
 				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
-				ch.vd.uniregctb.tiers.MenageCommun mc = ensemble.getMenage();
+				ch.vd.unireg.tiers.MenageCommun mc = ensemble.getMenage();
 				mc.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 
 				SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
@@ -340,7 +340,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final ch.vd.uniregctb.tiers.MenageCommun mc = hibernateTemplate.get(ch.vd.uniregctb.tiers.MenageCommun.class, ids.menage);
+				final ch.vd.unireg.tiers.MenageCommun mc = hibernateTemplate.get(ch.vd.unireg.tiers.MenageCommun.class, ids.menage);
 				assertNotNull(mc);
 
 				final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();

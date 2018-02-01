@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party4.cache;
+package ch.vd.unireg.webservices.party4.cache;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -42,16 +42,16 @@ import ch.vd.unireg.webservices.party4.WebServiceException;
 import ch.vd.unireg.xml.party.debtor.v2.DebtorInfo;
 import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyType;
-import ch.vd.uniregctb.cache.CacheHelper;
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
-import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.KeyDumpableCache;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.utils.LogLevel;
-import ch.vd.uniregctb.webservices.party4.impl.ExceptionHelper;
+import ch.vd.unireg.cache.CacheHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.CompletePartsCallbackWithException;
+import ch.vd.unireg.cache.EhCacheStats;
+import ch.vd.unireg.cache.KeyDumpableCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.utils.LogLevel;
+import ch.vd.unireg.webservices.party4.impl.ExceptionHelper;
 
 public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCache, PartyWebService, InitializingBean, DisposableBean {
 

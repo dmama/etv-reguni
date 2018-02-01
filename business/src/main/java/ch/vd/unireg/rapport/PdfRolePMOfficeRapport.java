@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.RolePMOfficeResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.role.RolePMOfficeResults;
 
 public class PdfRolePMOfficeRapport extends PdfRoleRapport<RolePMOfficeResults> {
 

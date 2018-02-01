@@ -2,26 +2,26 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="evtCivilEchMasseListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="entrepriseEventListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evenementEditiqueListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evenementExterneListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evenementRetourDiListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evenementIamListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="partyRequestListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evenementDeclarationListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evenementEfactureListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="reqdesEventListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evtOrganisationListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evenementRapportAnnonceIDEJmsListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evtRFImportEventListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="retourDocumentSortantListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
-	<bean id="evenementIntegrationMetierListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evtCivilEchMasseListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evtCivilEchIndividuelListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="entrepriseEventListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evenementEditiqueListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evenementExterneListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evenementRetourDiListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="identCtbMessageListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="identCtbMessageListenerOnline" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evenementIamListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="partyRequestListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="rapportTravailRequestListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evenementDeclarationListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evenementEfactureListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="eFactureResponseListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="reqdesEventListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evtOrganisationListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evenementRapportAnnonceIDEJmsListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evtRFImportEventListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="retourDocumentSortantListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evenementIntegrationMetierListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
 
 </beans>

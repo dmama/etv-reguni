@@ -22,7 +22,7 @@
 	<c:set var="flags" value="${command.getFlags(param.group)}"/>
 	<c:if test="${not empty flags}">
 
-		<display:table name="${flags}" id="flag" htmlId="flag-${param.group}" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="${flags}" id="flag" htmlId="flag-${param.group}" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:column titleKey="label.date.debut" style="width: 20%;" sortable="true" sortProperty="dateDebut">
 				<unireg:regdate regdate="${flag.dateDebut}"/>
 			</display:column>

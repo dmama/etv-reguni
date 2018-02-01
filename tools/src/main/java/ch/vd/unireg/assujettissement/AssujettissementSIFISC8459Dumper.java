@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.assujettissement;
+package ch.vd.unireg.assujettissement;
 
 import javax.xml.ws.BindingProvider;
 import java.io.BufferedReader;

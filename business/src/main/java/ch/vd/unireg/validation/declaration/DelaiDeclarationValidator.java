@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public class DelaiDeclarationValidator extends EntityValidatorImpl<DelaiDeclaration> {
 

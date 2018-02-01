@@ -5,23 +5,23 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 						   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="abstractTiersController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersController">
+	<bean id="abstractTiersController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.unireg.tiers.AbstractTiersController">
 		<property name="tiersService" ref="tiersService" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="abstractTiersListController" parent="abstractTiersController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersListController">
+	<bean id="abstractTiersListController" parent="abstractTiersController" abstract="true" class="ch.vd.unireg.tiers.AbstractTiersListController">
 		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="tiersMapHelper" class="ch.vd.uniregctb.tiers.TiersMapHelper" >
+	<bean id="tiersMapHelper" class="ch.vd.unireg.tiers.TiersMapHelper" >
 		<property name="messageSource" ref="messageSource"/>
 		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="autorisationManager" class="ch.vd.uniregctb.tiers.manager.AutorisationManagerImpl">
+	<bean id="autorisationManager" class="ch.vd.unireg.tiers.manager.AutorisationManagerImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
 		<property name="securityProvider" ref="securityProviderInterface" />
@@ -29,7 +29,7 @@
 		<property name="infrastructureService" ref="serviceInfrastructureService"/>
 	</bean>
 
-	<bean id="autorisationCache" class="ch.vd.uniregctb.tiers.manager.AutorisationCacheImpl">
+	<bean id="autorisationCache" class="ch.vd.unireg.tiers.manager.AutorisationCacheImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="autorisationManager" ref="autorisationManager" />
@@ -40,11 +40,11 @@
 		<property name="cacheName" value="autorisationsCache" />
 	</bean>
 
-	<bean id="tiersCriteriaValidator" class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator" />
+	<bean id="tiersCriteriaValidator" class="ch.vd.unireg.tiers.validator.TiersCriteriaValidator" />
 
-	<bean id="tiersLaunchCatController" class="ch.vd.uniregctb.tiers.TiersLaunchCatController" />
+	<bean id="tiersLaunchCatController" class="ch.vd.unireg.tiers.TiersLaunchCatController" />
 
-	<bean id="tiersVignetteController" class="ch.vd.uniregctb.tiers.vignette.VignetteController" >
+	<bean id="tiersVignetteController" class="ch.vd.unireg.tiers.vignette.VignetteController" >
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
@@ -54,28 +54,28 @@
 		<property name="avatarService" ref="avatarService"/>
 	</bean>
 
-	<bean id="validationController" class="ch.vd.uniregctb.validation.ValidationController">
+	<bean id="validationController" class="ch.vd.unireg.validation.ValidationController">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="adresseService" ref="adresseService"/>
 		<property name="serviceCivil" ref="serviceCivilService"/>
 		<property name="validationService" ref="validationService"/>
 	</bean>
 
-	<bean id="tiersSearchHelper" class="ch.vd.uniregctb.tiers.TiersSearchHelper">
+	<bean id="tiersSearchHelper" class="ch.vd.unireg.tiers.TiersSearchHelper">
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="tiersService" ref="tiersService"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 	</bean>
 
-	<bean id="tiersListController" class="ch.vd.uniregctb.tiers.TiersListController">
+	<bean id="tiersListController" class="ch.vd.unireg.tiers.TiersListController">
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="helper" ref="tiersSearchHelper"/>
 		<property name="paramApplicationManager" ref="paramApplicationManager"/>
 	</bean>
 
-	<bean id="tiersVisuController" class="ch.vd.uniregctb.tiers.TiersVisuController" parent="abstractTiersController">
+	<bean id="tiersVisuController" class="ch.vd.unireg.tiers.TiersVisuController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersVisuView" />
+		<property name="commandClass" value="ch.vd.unireg.tiers.view.TiersVisuView" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="tiersVisuManager" ref="tiersVisuManager" />
 		<property name="tacheListManager" ref="tacheListManager" />
@@ -83,13 +83,13 @@
 		<property name="successView" value="redirect:/tiers/list.do" />
 	</bean>
 
-	<bean id="rapportsPrestationListController" class="ch.vd.uniregctb.tiers.RapportsPrestationListController">
+	<bean id="rapportsPrestationListController" class="ch.vd.unireg.tiers.RapportsPrestationListController">
 		<property name="manager" ref="tiersVisuManager" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.timeline.ForsTimelineController">
+	<bean id="tiersTimelineController" class="ch.vd.unireg.tiers.timeline.ForsTimelineController">
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="assujettissementService" ref="assujettissementService" />
@@ -99,13 +99,13 @@
 		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 
-	<bean id="adresseTimelineController" class="ch.vd.uniregctb.tiers.timeline.AdresseTimelineController">
+	<bean id="adresseTimelineController" class="ch.vd.unireg.tiers.timeline.AdresseTimelineController">
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	<bean id="tersCreateController" class="ch.vd.uniregctb.tiers.TiersCreateController">
+	<bean id="tersCreateController" class="ch.vd.unireg.tiers.TiersCreateController">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
@@ -116,7 +116,7 @@
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
-	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">
+	<bean id="tiersManager" class="ch.vd.unireg.tiers.manager.TiersManager">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
 		<property name="webCivilService" ref="webCivilService" />
@@ -139,24 +139,24 @@
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
-	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">
+	<bean id="tiersEditManager" class="ch.vd.unireg.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">
 		<property name="remarqueDAO" ref="remarqueDAO"/>
 	</bean>
 
-	<bean id="tiersVisuManager" class="ch.vd.uniregctb.tiers.manager.TiersVisuManagerImpl" parent="tiersManager">
+	<bean id="tiersVisuManager" class="ch.vd.unireg.tiers.manager.TiersVisuManagerImpl" parent="tiersManager">
 		<property name="mouvementVisuManager" ref="mouvementVisuManager"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 	
-	<bean id="consultLogController" class="ch.vd.uniregctb.common.ConsultLogController">
+	<bean id="consultLogController" class="ch.vd.unireg.common.ConsultLogController">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
-	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController">
+	<bean id="mouvementVisuController" class="ch.vd.unireg.tiers.MouvementVisuController">
 		<property name="mouvementVisuManager" ref="mouvementVisuManager" />
 	</bean>
 
-	<bean id="abstractMouvementManager" abstract="true" class="ch.vd.uniregctb.mouvement.manager.AbstractMouvementManagerImpl">
+	<bean id="abstractMouvementManager" abstract="true" class="ch.vd.unireg.mouvement.manager.AbstractMouvementManagerImpl">
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
@@ -166,36 +166,36 @@
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer"/>
 	</bean>
 
-	<bean id="mouvementVisuManager" class="ch.vd.uniregctb.tiers.manager.MouvementVisuManagerImpl" parent="abstractMouvementManager"/>
+	<bean id="mouvementVisuManager" class="ch.vd.unireg.tiers.manager.MouvementVisuManagerImpl" parent="abstractMouvementManager"/>
 
-	<bean id="tiersGeneralManager" class="ch.vd.uniregctb.general.manager.TiersGeneralManagerImpl">
+	<bean id="tiersGeneralManager" class="ch.vd.unireg.general.manager.TiersGeneralManagerImpl">
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="utilisateurManager" class="ch.vd.uniregctb.general.manager.UtilisateurManagerImpl">
+	<bean id="utilisateurManager" class="ch.vd.unireg.general.manager.UtilisateurManagerImpl">
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 	</bean>
 
-	<bean id="debiteurEditController" class="ch.vd.uniregctb.tiers.DebiteurEditController">
+	<bean id="debiteurEditController" class="ch.vd.unireg.tiers.DebiteurEditController">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="tiersEditManager" ref="tiersEditManager"/>
 	</bean>
 
-	<bean id="tiersPickerController" class="ch.vd.uniregctb.tiers.picker.TiersPickerController">
+	<bean id="tiersPickerController" class="ch.vd.unireg.tiers.picker.TiersPickerController">
 	</bean>
 
-	<bean id="tiersPickerFilterFactory" class="ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactory"/>
+	<bean id="tiersPickerFilterFactory" class="ch.vd.unireg.tiers.picker.TiersPickerFilterFactory"/>
 
-	<bean id="remarqueController" class="ch.vd.uniregctb.remarque.RemarqueController">
+	<bean id="remarqueController" class="ch.vd.unireg.remarque.RemarqueController">
 		<property name="tiersService" ref="tiersService" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
-	<bean id="simulationController" class="ch.vd.uniregctb.simulation.SimulationController">
+	<bean id="simulationController" class="ch.vd.unireg.simulation.SimulationController">
 		<property name="forFiscalDAO" ref="forFiscalDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="tacheService" ref="tacheService" />
@@ -203,18 +203,18 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
-	<bean id="forsValidator" class="ch.vd.uniregctb.fors.ForsValidator">
+	<bean id="forsValidator" class="ch.vd.unireg.fors.ForsValidator">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
-	<bean id="decisionAciValidator" class="ch.vd.uniregctb.decision.aci.DecisionValidator">
+	<bean id="decisionAciValidator" class="ch.vd.unireg.decision.aci.DecisionValidator">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
-	<bean id="forsController" class="ch.vd.uniregctb.fors.ForsController">
+	<bean id="forsController" class="ch.vd.unireg.fors.ForsController">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="controllerUtils" ref="controllerUtils"/>
@@ -228,7 +228,7 @@
 		<property name="infrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="decisionAciController" class="ch.vd.uniregctb.decision.aci.DecisionAciController">
+	<bean id="decisionAciController" class="ch.vd.unireg.decision.aci.DecisionAciController">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="decisionAciDAO" ref="decisionAciDAO"/>
 		<property name="tiersService" ref="tiersService" />
@@ -240,21 +240,21 @@
 		<property name="infrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="searchTiersController" class="ch.vd.uniregctb.search.SearchTiersController">
+	<bean id="searchTiersController" class="ch.vd.unireg.search.SearchTiersController">
 		<property name="searcher" ref="globalTiersSearcher" />
 		<property name="applicationContext" ref="applicationContext" />
 	</bean>
 
-	<bean id="redirectController" class="ch.vd.uniregctb.redirect.RedirectController">
+	<bean id="redirectController" class="ch.vd.unireg.redirect.RedirectController">
 		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="avatarController" class="ch.vd.uniregctb.tiers.AvatarController">
+	<bean id="avatarController" class="ch.vd.unireg.tiers.AvatarController">
 		<property name="avatarService" ref="avatarService"/>
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
-	<bean id="specificitesFiscalesController" class="ch.vd.uniregctb.tiers.SpecificiteFiscaleController">
+	<bean id="specificitesFiscalesController" class="ch.vd.unireg.tiers.SpecificiteFiscaleController">
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
@@ -274,17 +274,17 @@
 		</property>
 	</bean>
 
-	<bean id="abstractRegimeFiscalViewValidator" abstract="true" class="ch.vd.uniregctb.tiers.validator.AbstractRegimeFiscalViewValidator">
+	<bean id="abstractRegimeFiscalViewValidator" abstract="true" class="ch.vd.unireg.tiers.validator.AbstractRegimeFiscalViewValidator">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
-	<bean id="addRegimeFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.AddRegimeFiscalViewValidator" parent="abstractRegimeFiscalViewValidator"/>
-	<bean id="editRegimeFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.EditRegimeFiscalViewValidator" parent="abstractRegimeFiscalViewValidator"/>
-	<bean id="addAllegementFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.AddAllegementFiscalViewValidator"/>
-	<bean id="editAllegementFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.EditAllegementFiscalViewValidator"/>
-	<bean id="addFlagEntrepriseViewValidator" class="ch.vd.uniregctb.tiers.validator.AddFlagEntrepriseViewValidator"/>
-	<bean id="editFlagEntrepriseViewValidator" class="ch.vd.uniregctb.tiers.validator.EditFlagEntrepriseViewValidator"/>
+	<bean id="addRegimeFiscalViewValidator" class="ch.vd.unireg.tiers.validator.AddRegimeFiscalViewValidator" parent="abstractRegimeFiscalViewValidator"/>
+	<bean id="editRegimeFiscalViewValidator" class="ch.vd.unireg.tiers.validator.EditRegimeFiscalViewValidator" parent="abstractRegimeFiscalViewValidator"/>
+	<bean id="addAllegementFiscalViewValidator" class="ch.vd.unireg.tiers.validator.AddAllegementFiscalViewValidator"/>
+	<bean id="editAllegementFiscalViewValidator" class="ch.vd.unireg.tiers.validator.EditAllegementFiscalViewValidator"/>
+	<bean id="addFlagEntrepriseViewValidator" class="ch.vd.unireg.tiers.validator.AddFlagEntrepriseViewValidator"/>
+	<bean id="editFlagEntrepriseViewValidator" class="ch.vd.unireg.tiers.validator.EditFlagEntrepriseViewValidator"/>
 
-	<bean id="mandataireController" class="ch.vd.uniregctb.mandataire.MandataireController">
+	<bean id="mandataireController" class="ch.vd.unireg.mandataire.MandataireController">
 		<property name="adresseService" ref="adresseService"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
@@ -297,20 +297,20 @@
 		<property name="configurationMandataire" ref="configurationMandataire"/>
 	</bean>
 
-	<bean id="configurationMandataire" class="ch.vd.uniregctb.mandataire.ConfigurationMandataireImpl">
+	<bean id="configurationMandataire" class="ch.vd.unireg.mandataire.ConfigurationMandataireImpl">
 		<property name="properties" ref="uniregExternalProperties"/>
 		<property name="propertyNamePrefix" value="extprop.onglet.mandataires"/>
 		<property name="creationRapportEntreTiersAutoriseePourMandatsCourrier" value="${extprop.onglet.mandataires.courrier.nouveau.lien.autorise}"/>
 	</bean>
 
-	<bean id="etiquetteTiersController" class="ch.vd.uniregctb.etiquette.EtiquetteTiersController">
+	<bean id="etiquetteTiersController" class="ch.vd.unireg.etiquette.EtiquetteTiersController">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="etiquetteService" ref="etiquetteService"/>
 	</bean>
 
-	<bean id="degrevementExonerationController" class="ch.vd.uniregctb.registrefoncier.allegement.DegrevementExonerationController">
+	<bean id="degrevementExonerationController" class="ch.vd.unireg.registrefoncier.allegement.DegrevementExonerationController">
 		<property name="registreFoncierService" ref="serviceRF"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>

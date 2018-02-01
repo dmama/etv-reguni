@@ -10,4 +10,4 @@ do
         fi
 done
 
-java -cp $classpath ch.vd.uniregctb.dbunit.DbUnitFileEditor $*
+java -cp $classpath ch.vd.unireg.dbunit.DbUnitFileEditor $*

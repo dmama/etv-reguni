@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 /**
  * Interface de callback pour traiter les demandes d'identification de contribuable.

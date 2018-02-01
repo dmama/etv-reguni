@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest;
-import ch.vd.uniregctb.evenement.party.control.ControlRuleException;
-import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlResult;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.evenement.party.control.ControlRuleException;
+import ch.vd.unireg.evenement.party.control.TaxLiabilityControlResult;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.xml.DataHelper;
 
 public class AperiodicTaxLiabilityRequestHandlerV2 extends TaxLiabilityRequestHandlerV2<AperiodicTaxLiabilityRequest> {
 

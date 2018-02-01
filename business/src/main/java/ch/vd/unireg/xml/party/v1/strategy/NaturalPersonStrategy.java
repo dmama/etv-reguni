@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v1.strategy;
+package ch.vd.unireg.xml.party.v1.strategy;
 
 import java.util.Set;
 
@@ -19,12 +19,12 @@ import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategoryPeriod;
 import ch.vd.unireg.xml.party.v1.PartyPart;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ExceptionHelper;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.tiers.IdentificationPersonne;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ExceptionHelper;
+import ch.vd.unireg.xml.ServiceException;
 
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
@@ -34,7 +34,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	private static final String VD_UNIREG = "VD.UNIREG";
 
 	@Override
-	public NaturalPerson newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public NaturalPerson newFrom(ch.vd.unireg.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final NaturalPerson pp = new NaturalPerson();
 		initBase(pp, right, context);
 		initParts(pp, right, parts, context);
@@ -50,10 +50,10 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	}
 
 	@Override
-	protected void initBase(NaturalPerson to, ch.vd.uniregctb.tiers.Tiers from, Context context) throws ServiceException {
+	protected void initBase(NaturalPerson to, ch.vd.unireg.tiers.Tiers from, Context context) throws ServiceException {
 		super.initBase(to, from, context);
 
-		final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) from;
+		final ch.vd.unireg.tiers.PersonnePhysique personne = (ch.vd.unireg.tiers.PersonnePhysique) from;
 		if (!personne.isHabitantVD()) {
 			to.setIdentification(newPersonIdentification(personne));
 			to.setDateOfBirth(DataHelper.coreToXMLv1(personne.getDateNaissance()));
@@ -120,14 +120,14 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		copyColl(to.getCategories(), from.getCategories());
 	}
 
-	private static PersonIdentification newPersonIdentification(ch.vd.uniregctb.tiers.PersonnePhysique personne) {
+	private static PersonIdentification newPersonIdentification(ch.vd.unireg.tiers.PersonnePhysique personne) {
 		final PersonIdentification identification = new PersonIdentification();
 		identification.setLocalPersonId(new NamedPersonId(VD_UNIREG, String.valueOf(personne.getNumero())));
 		identification.setOfficialName(personne.getNom());
 		identification.setFirstName(personne.getPrenomUsuel());
 		identification.setSex(EchHelper.sexeToEch44(personne.getSexe()));
 		identification.setVn(EchHelper.avs13ToEch(personne.getNumeroAssureSocial()));
-		for (ch.vd.uniregctb.tiers.IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
+		for (ch.vd.unireg.tiers.IdentificationPersonne ident : personne.getIdentificationsPersonnes()) {
 			identification.getOtherPersonId().add(newNamedPersonId(ident));
 		}
 		identification.setDateOfBirth(EchHelper.partialDateToEch44(personne.getDateNaissance()));

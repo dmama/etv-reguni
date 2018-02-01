@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.FlagEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class FlagEntrepriseValidatorTest extends AbstractValidatorTest<FlagEntreprise> {
 

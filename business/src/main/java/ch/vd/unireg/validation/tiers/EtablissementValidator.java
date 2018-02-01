@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +8,13 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.adresse.AdresseCivile;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.tiers.DomicileEtablissement;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class EtablissementValidator extends ContribuableValidator<Etablissement> {
 

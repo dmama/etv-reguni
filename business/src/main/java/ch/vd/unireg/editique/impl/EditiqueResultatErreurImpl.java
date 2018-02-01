@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.technical.esb.ErrorType;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
 
 public final class EditiqueResultatErreurImpl extends BaseEditiqueResultatImpl implements EditiqueResultatErreur {
 

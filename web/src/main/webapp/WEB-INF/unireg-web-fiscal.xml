@@ -2,17 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="fiscalEditController" class="ch.vd.uniregctb.tiers.FiscalEditController">
+	<bean id="fiscalEditController" class="ch.vd.unireg.tiers.FiscalEditController">
 		<property name="controllerUtils" ref="controllerUtils" />
 		<property name="forFiscalManager" ref="forFiscalManager" />
 	</bean>
 
-	<bean id="forFiscalManager" class="ch.vd.uniregctb.tiers.manager.ForFiscalManagerImpl"  parent="tiersManager">
+	<bean id="forFiscalManager" class="ch.vd.unireg.tiers.manager.ForFiscalManagerImpl"  parent="tiersManager">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="situationFamilleController" class="ch.vd.uniregctb.situationfamille.SituationFamilleController">
+	<bean id="situationFamilleController" class="ch.vd.unireg.situationfamille.SituationFamilleController">
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="situationFamilleManager" ref="situationFamilleManager"/>
@@ -20,7 +20,7 @@
 		<property name="validator" ref="situationFamilleViewValidator"/>
 	</bean>
 
-	<bean id="situationFamilleManager" class="ch.vd.uniregctb.tiers.manager.SituationFamilleManagerImpl" parent="tiersManager">
+	<bean id="situationFamilleManager" class="ch.vd.unireg.tiers.manager.SituationFamilleManagerImpl" parent="tiersManager">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
@@ -29,7 +29,7 @@
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 
-	<bean id="situationFamilleViewValidator" class="ch.vd.uniregctb.tiers.validator.SituationFamilleViewValidator" >
+	<bean id="situationFamilleViewValidator" class="ch.vd.unireg.tiers.validator.SituationFamilleViewValidator" >
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 

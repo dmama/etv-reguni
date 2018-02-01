@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.interfaces.service.mock;
+package ch.vd.unireg.interfaces.service.mock;
 
-import ch.vd.uniregctb.security.Role;
+import ch.vd.unireg.security.Role;
 
 public class DefaultMockServiceSecurite extends MockServiceSecuriteService {
 

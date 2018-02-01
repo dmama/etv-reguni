@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.transaction.impl;
+package ch.vd.unireg.transaction.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.transaction.SimpleService1;
-import ch.vd.uniregctb.transaction.SimpleService2;
+import ch.vd.unireg.transaction.SimpleService1;
+import ch.vd.unireg.transaction.SimpleService2;
 
 public class SimpleService2Impl extends SimpleServiceImpl implements SimpleService2 {
 

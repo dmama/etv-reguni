@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.simpa.mandataires.perception;
+package ch.vd.unireg.rattrapage.simpa.mandataires.perception;
 
 import java.text.ParseException;
 import java.util.regex.Matcher;
@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.rattrapage.simpa.mandataires.TypeTiers;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.rattrapage.simpa.mandataires.TypeTiers;
+import ch.vd.unireg.type.TypeMandat;
 
 public class ExtractionSimpa {
 

@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import ch.vd.uniregctb.common.LockHelper;
+import ch.vd.unireg.common.LockHelper;
 
 /**
  * Partie "civile" du service de notification des modifications de données

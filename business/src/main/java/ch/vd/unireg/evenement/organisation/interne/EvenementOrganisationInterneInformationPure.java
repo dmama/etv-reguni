@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.organisation.interne;
+package ch.vd.unireg.evenement.organisation.interne;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.unireg.tiers.Entreprise;
 
 /**
  * <p>

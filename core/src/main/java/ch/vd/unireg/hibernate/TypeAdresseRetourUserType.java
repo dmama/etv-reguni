@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.unireg.type.TypeAdresseRetour;
 
 /**
  * Classe de transtypage pour Hibernate : TypeAdresseRetour <--> varchar

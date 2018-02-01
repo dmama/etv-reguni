@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,34 +15,34 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
-import ch.vd.uniregctb.di.view.DeclarationImpotView;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView;
-import ch.vd.uniregctb.entreprise.EntrepriseView;
-import ch.vd.uniregctb.entreprise.EtablissementView;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.individu.IndividuView;
-import ch.vd.uniregctb.lr.view.ListeRecapitulativeView;
-import ch.vd.uniregctb.mandataire.AccesMandatairesView;
-import ch.vd.uniregctb.mandataire.MandataireCourrierView;
-import ch.vd.uniregctb.mandataire.MandatairePerceptionView;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.rapport.view.RapportView;
-import ch.vd.uniregctb.rt.view.RapportPrestationView;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.DecisionAciView;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.unireg.declaration.view.QuestionnaireSNCView;
+import ch.vd.unireg.di.view.DeclarationImpotView;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalView;
+import ch.vd.unireg.entreprise.EntrepriseView;
+import ch.vd.unireg.entreprise.EtablissementView;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.individu.IndividuView;
+import ch.vd.unireg.lr.view.ListeRecapitulativeView;
+import ch.vd.unireg.mandataire.AccesMandatairesView;
+import ch.vd.unireg.mandataire.MandataireCourrierView;
+import ch.vd.unireg.mandataire.MandatairePerceptionView;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.rapport.view.RapportView;
+import ch.vd.unireg.rt.view.RapportPrestationView;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.DecisionAciView;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeFlagEntreprise;
 
 /**
  * Structure model commun a l'ecran de visualisation et

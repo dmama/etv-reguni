@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.math.BigDecimal;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.foncier.ExonerationIFONC;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.foncier.ExonerationIFONC;
 
 public class ExonerationIFONCView implements Annulable, DateRange {
 

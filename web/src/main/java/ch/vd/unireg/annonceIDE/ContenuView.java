@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.annonceIDE;
+package ch.vd.unireg.annonceIDE;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

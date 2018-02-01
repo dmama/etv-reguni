@@ -140,7 +140,7 @@
 			<display:table
 					name="command.restrictions" id="restriction" pagesize="25"
 					requestURI="${url}" defaultsort="1" defaultorder="ascending" partialList="true" sort="external" size="command.size"
-					class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+					class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column sortable ="false" title="<input type='checkbox'  class='master' onclick='javascript:onClickMaster(this);' />">
 				<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
 					<c:if test="${!restriction.annule}">

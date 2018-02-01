@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal;
+package ch.vd.unireg.regimefiscal;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,10 +13,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 /**
  * @author Raphaël Marmier, 2017-01-25, <raphael.marmier@vd.ch>

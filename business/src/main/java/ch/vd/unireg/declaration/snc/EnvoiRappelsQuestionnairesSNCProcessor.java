@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.snc;
+package ch.vd.unireg.declaration.snc;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,19 +20,19 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.DeclarationException;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.IdentifiantDeclaration;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class EnvoiRappelsQuestionnairesSNCProcessor {
 

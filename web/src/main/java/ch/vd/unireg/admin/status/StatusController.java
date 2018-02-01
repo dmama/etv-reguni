@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.status;
+package ch.vd.unireg.admin.status;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.uniregctb.common.HtmlHelper;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcher;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.common.HtmlHelper;
+import ch.vd.unireg.evenement.identification.contribuable.IdentCtbDAO;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationSearcher;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 /**
  * Ce contrôleur affiche des informations sur le status de l'application. Il est donc en read-only.

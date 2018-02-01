@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v3;
+package ch.vd.unireg.xml.party.v3;
 
 import java.util.List;
 
@@ -6,14 +6,14 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.xml.party.v3.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v3.BankAccount;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
 
 public class BankAccountBuilder {
 
-	public static BankAccount newBankAccount(ch.vd.uniregctb.tiers.Tiers tiers, Context context) {
+	public static BankAccount newBankAccount(ch.vd.unireg.tiers.Tiers tiers, Context context) {
 		final BankAccount c = new BankAccount();
 		c.setOwnerPartyNumber(tiers.getNumero().intValue());
 		c.setOwnerName(tiers.getTitulaireCompteBancaire());
@@ -21,7 +21,7 @@ public class BankAccountBuilder {
 		return c;
 	}
 
-	public static BankAccount newBankAccount(ch.vd.uniregctb.tiers.Mandat mandat, Context context) {
+	public static BankAccount newBankAccount(ch.vd.unireg.tiers.Mandat mandat, Context context) {
 		final BankAccount c = new BankAccount();
 
 		final Tiers mandataire = context.tiersService.getTiers(mandat.getObjetId());

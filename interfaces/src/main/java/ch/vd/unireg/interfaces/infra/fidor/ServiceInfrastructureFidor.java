@@ -55,10 +55,10 @@ import ch.vd.unireg.interfaces.infra.data.RueImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.SimpleCacheStats;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.SimpleCacheStats;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClientException;
 

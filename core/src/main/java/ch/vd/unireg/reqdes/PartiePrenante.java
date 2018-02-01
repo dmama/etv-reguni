@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -24,12 +24,12 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.tiers.OriginePersonnePhysique;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.Sexe;
 
 @Entity
 @Table(name = "REQDES_PARTIE_PRENANTE")
@@ -124,7 +124,7 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_NAISSANCE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType", parameters = { @Parameter(name = "allowPartial", value = "true") })
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType", parameters = { @Parameter(name = "allowPartial", value = "true") })
 	public RegDate getDateNaissance() {
 		return dateNaissance;
 	}
@@ -144,7 +144,7 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_DECES")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDeces() {
 		return dateDeces;
 	}
@@ -239,7 +239,7 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_ETAT_CIVIL")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateEtatCivil() {
 		return dateEtatCivil;
 	}
@@ -249,7 +249,7 @@ public class PartiePrenante extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_SEPARATION")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateSeparation() {
 		return dateSeparation;
 	}

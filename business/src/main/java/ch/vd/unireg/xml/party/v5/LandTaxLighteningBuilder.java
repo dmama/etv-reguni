@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,12 +8,12 @@ import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.UseData;
-import ch.vd.uniregctb.foncier.DegrevementICI;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.foncier.DonneesLoiLogement;
-import ch.vd.uniregctb.foncier.DonneesUtilisation;
-import ch.vd.uniregctb.foncier.ExonerationIFONC;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.foncier.DegrevementICI;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.foncier.DonneesLoiLogement;
+import ch.vd.unireg.foncier.DonneesUtilisation;
+import ch.vd.unireg.foncier.ExonerationIFONC;
+import ch.vd.unireg.xml.DataHelper;
 
 public class LandTaxLighteningBuilder {
 

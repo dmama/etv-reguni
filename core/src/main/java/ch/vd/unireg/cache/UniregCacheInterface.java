@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.cache;
+package ch.vd.unireg.cache;
 
 /**
  * Interface que doivent implémenter tous les caches d'Unireg.

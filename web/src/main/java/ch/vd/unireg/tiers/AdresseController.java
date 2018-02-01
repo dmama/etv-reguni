@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.validation.Valid;
 
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.tiers.manager.AdresseManager;
-import ch.vd.uniregctb.tiers.view.AdresseView;
-import ch.vd.uniregctb.tiers.view.CloseAdresseView;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.tiers.manager.AdresseManager;
+import ch.vd.unireg.tiers.view.AdresseView;
+import ch.vd.unireg.tiers.view.CloseAdresseView;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/adresses")

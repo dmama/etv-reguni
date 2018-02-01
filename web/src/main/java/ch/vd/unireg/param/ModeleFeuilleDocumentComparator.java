@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.param;
+package ch.vd.unireg.param;
 
 import java.util.Comparator;
 
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 
 public class ModeleFeuilleDocumentComparator implements Comparator<ModeleFeuilleDocument> {
 	@Override

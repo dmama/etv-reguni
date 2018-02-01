@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +16,12 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.dbutils.QueryFragment;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.dbutils.QueryFragment;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationImpotSource> implements  ListeRecapitulativeDAO {
 
@@ -67,7 +67,7 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.declaration.ListeRecapitulativeDAO#count(ListeRecapitulativeCriteria)
+	 * @see ch.vd.unireg.declaration.ListeRecapitulativeDAO#count(ListeRecapitulativeCriteria)
 	 */
 	@Override
 	public int count(ListeRecapitulativeCriteria criterion) {

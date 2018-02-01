@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.scheduler;
+package ch.vd.unireg.scheduler;
 
 /**
  * Paramètre de batch qui supporte une sélection de 0 ou n valeurs d'une énumération.

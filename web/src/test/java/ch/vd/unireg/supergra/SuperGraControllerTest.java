@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.unireg.supergra;
 
 import java.util.List;
 import java.util.Set;
@@ -7,16 +7,16 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.common.WebTestSpring3;
-import ch.vd.uniregctb.supergra.delta.AddSubEntity;
-import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
-import ch.vd.uniregctb.supergra.delta.Delta;
-import ch.vd.uniregctb.supergra.view.CollectionView;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.supergra.delta.AddSubEntity;
+import ch.vd.unireg.supergra.delta.AttributeUpdate;
+import ch.vd.unireg.supergra.delta.Delta;
+import ch.vd.unireg.supergra.view.CollectionView;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

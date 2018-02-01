@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.tiers.manager;
+package ch.vd.unireg.tiers.manager;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.adresse.AdresseEtrangere;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.adresse.AdresseTiersDAO;
-import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.view.AdresseView;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.adresse.AdresseEtrangere;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.adresse.AdresseTiersDAO;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.view.AdresseView;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,7 +28,7 @@ public class TiersAdresseManagerTest extends WebTest {
 	private static final String DB_UNIT_FILE = "TiersVisuManagerTest.xml";
 
 	/**
-	 * @see ch.vd.uniregctb.common.AbstractCoreDAOTest#onSetUp()
+	 * @see ch.vd.unireg.common.AbstractCoreDAOTest#onSetUp()
 	 */
 	@Override
 	public void onSetUp() throws Exception {

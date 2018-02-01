@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable.manager;
+package ch.vd.unireg.identification.contribuable.manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,11 +13,11 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
-import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsResultView;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesStatsResultView;
 
 
 public class IdentificationMessagesStatsManagerImpl implements IdentificationMessagesStatsManager, ApplicationContextAware {

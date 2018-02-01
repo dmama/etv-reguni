@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
 
 public class AuditManager implements InitializingBean, DisposableBean {
 

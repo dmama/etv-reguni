@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.engine;
+package ch.vd.unireg.evenement.organisation.engine;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationProcessingMode;
 
 /**
  * Interface du bean de gestion de la queue de notification de l'arrivée d'événements organisation

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.demenagement;
+package ch.vd.unireg.evenement.civil.interne.demenagement;
 
 import java.util.List;
 
@@ -7,18 +7,18 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
+import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.arrivee.ArriveePrincipale;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.model.AdressesCiviles;
 
 /**
  * Règles métiers permettant de traiter les événements de déménagement intra communal.

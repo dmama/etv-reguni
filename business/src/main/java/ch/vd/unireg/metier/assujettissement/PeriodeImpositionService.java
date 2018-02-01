@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 
 public interface PeriodeImpositionService {
 
@@ -26,7 +26,7 @@ public interface PeriodeImpositionService {
 	 * @param contribuable le contribuable dont on veut déterminer l'assujettissement
 	 * @param range        la période considérée
 	 * @return une liste de périodes d'imposition contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
-	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException s'il n'est pas possible de détermine l'assujettissement.
+	 * @throws ch.vd.unireg.metier.assujettissement.AssujettissementException s'il n'est pas possible de détermine l'assujettissement.
 	 */
 	List<PeriodeImposition> determine(ContribuableImpositionPersonnesPhysiques contribuable, @Nullable DateRange range) throws AssujettissementException;
 

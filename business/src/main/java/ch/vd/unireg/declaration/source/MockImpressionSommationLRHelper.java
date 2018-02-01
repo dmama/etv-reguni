@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.declaration.source;
+package ch.vd.unireg.declaration.source;
 
 import noNamespace.FichierImpressionDocument;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 public class MockImpressionSommationLRHelper implements ImpressionSommationLRHelper {
 

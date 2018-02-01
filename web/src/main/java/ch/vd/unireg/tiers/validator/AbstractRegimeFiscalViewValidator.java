@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +11,9 @@ import org.springframework.validation.Errors;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.view.DateRangeViewValidator;
-import ch.vd.uniregctb.tiers.view.ValidableRegimeFiscalView;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.view.DateRangeViewValidator;
+import ch.vd.unireg.tiers.view.ValidableRegimeFiscalView;
 
 public abstract class AbstractRegimeFiscalViewValidator {
 

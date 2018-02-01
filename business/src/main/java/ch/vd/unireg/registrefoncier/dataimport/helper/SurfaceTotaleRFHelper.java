@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.GrundstueckFlaeche;
-import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
 
 public abstract class SurfaceTotaleRFHelper {
 

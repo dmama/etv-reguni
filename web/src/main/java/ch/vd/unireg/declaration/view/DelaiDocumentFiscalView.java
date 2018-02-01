@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.view;
+package ch.vd.unireg.declaration.view;
 
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -9,12 +9,12 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.unireg.documentfiscal.DocumentFiscal;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalView>, Annulable {
 

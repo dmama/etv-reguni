@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.listes.afc.pm;
+package ch.vd.unireg.listes.afc.pm;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -7,10 +7,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.shared.batchtemplate.Interruptible;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.ListesThread;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.ListesThread;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class ExtractionDonneesRptPMThread extends ListesThread<ExtractionDonneesRptPMResults> {
 

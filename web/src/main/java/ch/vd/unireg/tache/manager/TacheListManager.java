@@ -1,21 +1,21 @@
-package ch.vd.uniregctb.tache.manager;
+package ch.vd.unireg.tache.manager;
 
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
-import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
-import ch.vd.uniregctb.tache.view.NouveauDossierListView;
-import ch.vd.uniregctb.tache.view.TacheCriteriaView;
-import ch.vd.uniregctb.tache.view.TacheListView;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.tache.view.ImpressionNouveauxDossiersView;
+import ch.vd.unireg.tache.view.NouveauDossierCriteriaView;
+import ch.vd.unireg.tache.view.NouveauDossierListView;
+import ch.vd.unireg.tache.view.TacheCriteriaView;
+import ch.vd.unireg.tache.view.TacheListView;
+import ch.vd.unireg.type.TypeTache;
 
 /**
  * Manager de recherche de taches

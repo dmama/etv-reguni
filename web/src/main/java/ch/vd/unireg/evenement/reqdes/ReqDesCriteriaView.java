@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.EtatTraitement;
 
 /**
  * Critères de recherche des unités de traitement

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 /**
  * Les différents types de mutations détectées sur les imports du registre foncier.

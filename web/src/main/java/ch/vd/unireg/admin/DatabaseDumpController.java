@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
@@ -19,23 +19,23 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.database.DatabaseService;
-import ch.vd.uniregctb.database.DumpDatabaseJob;
-import ch.vd.uniregctb.database.DumpTiersListJob;
-import ch.vd.uniregctb.database.LoadDatabaseJob;
-import ch.vd.uniregctb.dbutils.TooManyTiersException;
-import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.database.DatabaseService;
+import ch.vd.unireg.database.DumpDatabaseJob;
+import ch.vd.unireg.database.DumpTiersListJob;
+import ch.vd.unireg.database.LoadDatabaseJob;
+import ch.vd.unireg.dbutils.TooManyTiersException;
+import ch.vd.unireg.document.Document;
+import ch.vd.unireg.document.DocumentService;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Controller spring qui permet de dumper la base de données dans un fichier XML

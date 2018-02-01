@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.xml.party.v4;
+package ch.vd.unireg.xml.party.v4;
 
 import ch.vd.unireg.xml.party.corporation.v4.BusinessYear;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.xml.DataHelper;
 
 public class BusinessYearBuilder {
 

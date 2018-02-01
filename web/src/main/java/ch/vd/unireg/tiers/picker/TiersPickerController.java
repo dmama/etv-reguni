@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.picker;
+package ch.vd.unireg.tiers.picker;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

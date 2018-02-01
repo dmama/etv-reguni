@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.UrlEncodedQueryString;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.UrlEncodedQueryString;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 
 /**
  * Ce contrôleur gère l'écran de sélection de l'office d'impôt de district (OID). Ce contrôleur est automatiquement appelé par le filtre {@link ChooseOIDProcessingFilter} lorsqu'un utilisateur doit

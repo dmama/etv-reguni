@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -12,14 +12,14 @@ import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.common.ThreadSwitch;
-import ch.vd.uniregctb.hibernate.interceptor.AbstractLinkedInterceptor;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.common.ThreadSwitch;
+import ch.vd.unireg.hibernate.interceptor.AbstractLinkedInterceptor;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.TacheDAO;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Cet intercepteur se charge de tenir à-jour l'id de l'office d'impôt caché au niveau de chaque tiers.

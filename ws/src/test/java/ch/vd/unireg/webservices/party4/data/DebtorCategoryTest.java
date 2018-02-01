@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.webservices.party4.data;
+package ch.vd.unireg.webservices.party4.data;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.debtor.v2.DebtorCategory;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.webservices.party4.EnumTest;
-import ch.vd.uniregctb.webservices.party4.impl.EnumHelper;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.webservices.party4.EnumTest;
+import ch.vd.unireg.webservices.party4.impl.EnumHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

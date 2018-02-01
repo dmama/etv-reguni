@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v3.strategy;
+package ch.vd.unireg.xml.party.v3.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,17 +9,17 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.xml.party.othercomm.v1.OtherCommunity;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.v3.UidNumberList;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ServiceException;
 
 public class OtherCommunityStrategy extends TaxPayerStrategy<OtherCommunity> {
 
 	@Override
-	public OtherCommunity newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public OtherCommunity newFrom(ch.vd.unireg.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final OtherCommunity communaute = new OtherCommunity();
 		initBase(communaute, right, context);
 		initParts(communaute, right, parts, context);

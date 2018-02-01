@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
+import ch.vd.unireg.registrefoncier.key.SurfaceAuSolRFKey;
 
 public class SurfaceAuSolRFDAOImpl extends BaseDAOImpl<SurfaceAuSolRF, Long> implements SurfaceAuSolRFDAO {
 	protected SurfaceAuSolRFDAOImpl() {

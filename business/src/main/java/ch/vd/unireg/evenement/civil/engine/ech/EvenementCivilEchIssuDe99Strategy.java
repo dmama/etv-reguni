@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
-import ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNom;
-import ch.vd.uniregctb.evenement.civil.interne.changement.origine.CorrectionOrigine;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterneComposite;
+import ch.vd.unireg.evenement.civil.interne.changement.nom.ChangementNom;
+import ch.vd.unireg.evenement.civil.interne.changement.origine.CorrectionOrigine;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
 
 public class EvenementCivilEchIssuDe99Strategy implements EvenementCivilEchTranslationStrategy {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.etatcivilcomp;
+package ch.vd.unireg.etatcivilcomp;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,8 +25,8 @@ import ch.vd.unireg.xml.party.taxpayer.v1.FamilyStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.perfs.PerfsAccessFileIterator;
 
 /**
  * Thread qui exécute un certain nombre de requêtes au web-service, puis s'arrête.

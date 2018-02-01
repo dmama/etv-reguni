@@ -21,8 +21,8 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseRCPers implements Adresse, Serializable {
 

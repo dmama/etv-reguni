@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache.view;
+package ch.vd.unireg.tache.view;
 
 
 public class NouveauDossierCriteriaView extends TacheCriteriaViewBase {

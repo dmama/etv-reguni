@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="annonceIDEController" class="ch.vd.uniregctb.annonceIDE.AnnonceIDEController">
+	<bean id="annonceIDEController" class="ch.vd.unireg.annonceIDE.AnnonceIDEController">
 		<property name="organisationService" ref="serviceOrganisationService"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="tiersService" ref="tiersService"/>

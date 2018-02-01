@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.stats.evenements;
+package ch.vd.unireg.stats.evenements;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
+import ch.vd.unireg.evenement.externe.EtatEvenementExterne;
 
 public class StatsEvenementsExternesResults {
 

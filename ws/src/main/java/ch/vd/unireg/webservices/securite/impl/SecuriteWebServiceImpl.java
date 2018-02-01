@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.securite.impl;
+package ch.vd.unireg.webservices.securite.impl;
 
 import javax.annotation.Resource;
 import javax.jws.WebMethod;
@@ -21,19 +21,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.security.DroitAccesDAO;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.webservices.common.WebServiceException;
-import ch.vd.uniregctb.webservices.securite.GetAutorisationSurDossier;
-import ch.vd.uniregctb.webservices.securite.GetDossiersControles;
-import ch.vd.uniregctb.webservices.securite.NiveauAutorisation;
-import ch.vd.uniregctb.webservices.securite.SecuriteWebService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.security.DroitAccesDAO;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.common.WebServiceException;
+import ch.vd.unireg.webservices.securite.GetAutorisationSurDossier;
+import ch.vd.unireg.webservices.securite.GetDossiersControles;
+import ch.vd.unireg.webservices.securite.NiveauAutorisation;
+import ch.vd.unireg.webservices.securite.SecuriteWebService;
 
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 @WebService(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security", name = "SecuritePort", serviceName = "SecuriteService")

@@ -7,7 +7,7 @@
 
 	<!-- Configuration du bus CXF -->
 	<!-- équivalent à l'import du fichier classpath:META-INF/cxf/cxf.xml (mais qui référence des namespaces Spring 4 et Unireg est encore en Spring 3 -->
-	<bean id="cxf" class="ch.vd.uniregctb.xml.UniregCxfBusFactory">
+	<bean id="cxf" class="ch.vd.unireg.xml.UniregCxfBusFactory">
 		<property name="resourceResolver" ref="catalogResolver"/>
 	</bean>
 	<bean id="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor" class="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor"/>

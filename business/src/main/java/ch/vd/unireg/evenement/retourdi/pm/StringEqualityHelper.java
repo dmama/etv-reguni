@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.common.StringComparator;
+import ch.vd.unireg.common.StringComparator;
 
 /**
  * Classe utilitaire pour comparer des chaînes de caractères d'une manière uniforme

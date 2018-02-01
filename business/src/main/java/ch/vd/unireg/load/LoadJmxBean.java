@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.load;
+package ch.vd.unireg.load;
 
 /**
  * Interface d'un bean JMX qui expose une charge instantanée et moyenne

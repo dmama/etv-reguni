@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.iban;
+package ch.vd.unireg.iban;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
 
 public class IbanHelper {
 

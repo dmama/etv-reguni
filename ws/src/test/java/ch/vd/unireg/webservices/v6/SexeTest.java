@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.webservices.v6;
+package ch.vd.unireg.webservices.v6;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.person.v4.Sex;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

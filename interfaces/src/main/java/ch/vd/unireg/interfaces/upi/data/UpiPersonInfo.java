@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.type.Sexe;
 
 public class UpiPersonInfo implements Serializable {
 

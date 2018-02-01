@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.fusion.manager;
+package ch.vd.unireg.fusion.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.fusion.view.FusionListView;
+import ch.vd.unireg.fusion.view.FusionListView;
 
 /**
  * Service mettant a disposition des methodes pour le controller FusionListController

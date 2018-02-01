@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.unireg.tiers.DomicileEtablissement;
 
 public class DomicileEtablissementValidator extends LocalisationDateeValidator<DomicileEtablissement> {
 

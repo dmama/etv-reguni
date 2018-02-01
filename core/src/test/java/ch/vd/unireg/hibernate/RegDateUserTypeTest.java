@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +20,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.PartialDateException;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CoreDAOTest;
+import ch.vd.unireg.common.CoreDAOTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -59,7 +59,7 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 			this.id = id;
 		}
 
-		@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType", parameters = {
+		@Type(type = "ch.vd.unireg.hibernate.RegDateUserType", parameters = {
 			@Parameter(name = "allowPartial", value = "true")
 		})
 		public RegDate getPartialDate() {
@@ -70,7 +70,7 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 			this.partialDate = date;
 		}
 
-		@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+		@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 		public RegDate getFullDate() {
 			return fullDate;
 		}

@@ -6,7 +6,7 @@
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<!-- Indexer flusher -->
-	<bean id="periodicIndexFlusher" class="ch.vd.uniregctb.indexer.PeriodicIndexFlusher">
+	<bean id="periodicIndexFlusher" class="ch.vd.unireg.indexer.PeriodicIndexFlusher">
 		<property name="indexers">
 			<util:map>
 				<entry key="Tiers" value-ref="globalTiersIndexRaw"/>

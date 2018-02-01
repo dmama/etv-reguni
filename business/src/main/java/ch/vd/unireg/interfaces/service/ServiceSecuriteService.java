@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.List;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.security.IfoSecProfil;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.IfoSecProfil;
 
 public interface ServiceSecuriteService {
 

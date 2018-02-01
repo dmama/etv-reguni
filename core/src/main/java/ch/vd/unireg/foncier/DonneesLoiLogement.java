@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier;
+package ch.vd.unireg.foncier;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -31,7 +31,7 @@ public class DonneesLoiLogement {
 	}
 
 	@Column(name = "DATE_OCTROI")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateOctroi() {
 		return dateOctroi;
 	}
@@ -41,7 +41,7 @@ public class DonneesLoiLogement {
 	}
 
 	@Column(name = "DATE_ECHEANCE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateEcheance() {
 		return dateEcheance;
 	}

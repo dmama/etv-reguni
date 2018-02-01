@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.tiers.dao;
+package ch.vd.unireg.tiers.dao;
 
 import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.tiers.DecisionAci;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.tiers.DecisionAci;
 
 public class DecisionAciDAOImpl extends BaseDAOImpl<DecisionAci, Long> implements DecisionAciDAO {
 

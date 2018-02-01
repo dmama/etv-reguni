@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction.dao;
+package ch.vd.unireg.transaction.dao;
 
 import javax.sql.DataSource;
 

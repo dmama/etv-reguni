@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureExcep
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.common.CoreDAOTest;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

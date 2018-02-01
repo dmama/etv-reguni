@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.type.MotifFor;
 
 public class MotifAssujettissementTest extends WithoutSpringTest {
 

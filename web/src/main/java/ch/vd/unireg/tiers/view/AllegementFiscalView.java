@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -8,12 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
-import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCantonCommune;
+import ch.vd.unireg.tiers.AllegementFiscalCommune;
+import ch.vd.unireg.tiers.AllegementFiscalConfederation;
 
 public class AllegementFiscalView implements DateRange, Annulable {
 

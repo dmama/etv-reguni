@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import java.util.Date;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.type.EtatCivil;
 
 /**
  * Vue de la situation de famille d'un contribuable telle que composée par le service corespondant.

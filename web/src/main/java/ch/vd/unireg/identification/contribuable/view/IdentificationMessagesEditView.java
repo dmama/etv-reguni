@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.identification.contribuable.view;
+package ch.vd.unireg.identification.contribuable.view;
 
 public class IdentificationMessagesEditView {
 

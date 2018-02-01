@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.engine;
+package ch.vd.unireg.evenement.reqdes.engine;
 
 import java.sql.SQLException;
 import java.util.EnumSet;
@@ -16,12 +16,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.Fuse;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
+import ch.vd.unireg.common.Fuse;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.reqdes.EtatTraitement;
 
 public class EvenementReqDesRetryProcessorImpl implements EvenementReqDesRetryProcessor {
 

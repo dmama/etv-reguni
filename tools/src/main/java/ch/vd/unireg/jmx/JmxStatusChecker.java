@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -373,7 +373,7 @@ public class JmxStatusChecker {
 
 			// application name, version and uptime
 			{
-				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=Application,type=Monitoring"), null);
+				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.unireg*:name=Application,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
 					fetchers.put(name, Arrays.asList(new ApplicationNameFetcher(name),
 					                                 new ApplicationVersionFetcher(name),
@@ -384,7 +384,7 @@ public class JmxStatusChecker {
 
 			// jms listeners
 			{
-				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:*,type=JmsListeners"), null);
+				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.unireg*:*,type=JmsListeners"), null);
 				for (ObjectName name : beanSet) {
 					fetchers.put(name, Arrays.asList(new DestinationNameFetcher(name),
 					                                 new RunningFlagFetcher(name),
@@ -394,7 +394,7 @@ public class JmxStatusChecker {
 
 			// oracle connections
 			{
-				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=Oracle,type=Connections"), null);
+				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.unireg*:name=Oracle,type=Connections"), null);
 				for (ObjectName name : beanSet) {
 					fetchers.put(name, Arrays.asList(new MaxActiveFetcher(name),
 					                                 new NbActiveFetcher(name),
@@ -404,7 +404,7 @@ public class JmxStatusChecker {
 
 			// application load
 			{
-				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=*Load,type=Monitoring"), null);
+				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.unireg*:name=*Load,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
 					fetchers.put(name, Arrays.asList(new LoadFetcher(name),
 					                                 new AverageLoadFetcher(name)));
@@ -413,7 +413,7 @@ public class JmxStatusChecker {
 
 			// web-services load
 			{
-				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=*,resourceName=WebserviceLoad,type=Monitoring"), null);
+				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.unireg*:name=*,resourceName=WebserviceLoad,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
 					fetchers.put(name, Arrays.asList(new LoadFetcher(name),
 					                                 new AverageLoadFetcher(name)));
@@ -422,7 +422,7 @@ public class JmxStatusChecker {
 
 			// événement civils ech
 			{
-				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=EvenementsCivils,type=Monitoring"), null);
+				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.unireg*:name=EvenementsCivils,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
 					fetchers.put(name, Arrays.asList(new NbMeaningfullEventsReceivedFetcher(name),
 					                                 new NbIndividualsAwaitingTreatmentFetcher(name),

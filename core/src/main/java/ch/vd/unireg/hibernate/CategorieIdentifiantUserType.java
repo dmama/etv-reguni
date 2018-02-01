@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.CategorieIdentifiant;
+import ch.vd.unireg.type.CategorieIdentifiant;
 
 /**
  * Classe de transtypage pour Hibernate : CategorieIdentifiant <--> varchar

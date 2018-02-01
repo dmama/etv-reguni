@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -13,9 +13,9 @@ import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.type.StandardBasicTypes;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 
 public class Sequence {
 

@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.interfaces.service.host;
+package ch.vd.unireg.interfaces.service.host;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.securite.model.rest.ProfilOperateur;
-import ch.vd.uniregctb.security.IfoSecProcedure;
-import ch.vd.uniregctb.security.IfoSecProfil;
+import ch.vd.unireg.security.IfoSecProcedure;
+import ch.vd.unireg.security.IfoSecProfil;
 
 public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 

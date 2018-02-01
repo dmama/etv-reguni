@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.validation.adresse;
+package ch.vd.unireg.validation.adresse;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 public abstract class AdresseTiersValidator<T extends AdresseTiers> extends DateRangeEntityValidator<T> {
 

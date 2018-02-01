@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.common;
+package ch.vd.unireg.metier.common;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.common.MovingWindow;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
 
 /**
  * Les fractionnements déterminés pour un contribuable donné.

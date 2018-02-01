@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.address;
+package ch.vd.unireg.xml.address;
 
 import java.util.List;
 
@@ -7,13 +7,13 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.common.NpaEtLocalite;
-import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.common.NpaEtLocalite;
+import ch.vd.unireg.common.RueEtNumero;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.xml.DataHelper;
 
 public class AddressBuilder {
 

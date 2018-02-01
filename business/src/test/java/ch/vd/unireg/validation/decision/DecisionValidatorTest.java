@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.decision;
+package ch.vd.unireg.validation.decision;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,9 +8,9 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.tiers.DecisionAci;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.tiers.DecisionAci;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 

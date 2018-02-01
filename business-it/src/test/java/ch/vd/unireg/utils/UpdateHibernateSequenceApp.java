@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.utils;
+package ch.vd.unireg.utils;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import ch.vd.uniregctb.common.CoreTestingConstants;
-import ch.vd.uniregctb.database.DatabaseService;
+import ch.vd.unireg.common.CoreTestingConstants;
+import ch.vd.unireg.database.DatabaseService;
 
 /**
  * Programme qui met-à-jour la séquence hibernate d'une base de donnée suite à l'import de données.
@@ -20,7 +20,7 @@ public class UpdateHibernateSequenceApp {
 
 		String[] files = {
 				CoreTestingConstants.UNIREG_CORE_SF,
-				"ch/vd/uniregctb/utils/UpdateHibernateSequenceApp.xml",
+				"ch/vd/unireg/utils/UpdateHibernateSequenceApp.xml",
 		};
 
 		System.out.println("=> initialisation d'Hibernate...");

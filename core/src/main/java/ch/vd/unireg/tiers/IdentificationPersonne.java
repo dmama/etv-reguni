@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,11 +17,11 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.type.CategorieIdentifiant;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.type.CategorieIdentifiant;
 
 /**
  * Identification d'une personne physique dans un registre fédéral (RCE, InfoStar...), cantonal, communal ou autre, à l'exclusion du nouveau numéro d'assuré social.
@@ -71,7 +71,7 @@ public class IdentificationPersonne extends HibernateEntity implements LinkedEnt
 	private CategorieIdentifiant categorieIdentifiant;
 
 	@Column(name = "CATEGORIE", length = LengthConstants.IDENTPERSONNE_CATEGORIE)
-	@Type(type = "ch.vd.uniregctb.hibernate.CategorieIdentifiantUserType")
+	@Type(type = "ch.vd.unireg.hibernate.CategorieIdentifiantUserType")
 	public CategorieIdentifiant getCategorieIdentifiant() {
 		return categorieIdentifiant;
 	}

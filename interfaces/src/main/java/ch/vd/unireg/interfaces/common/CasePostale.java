@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.unireg.type.TexteCasePostale;
 
 /**
  * Contient les informations (texte + numéro) pour l'adressage d'une boîte postale.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.avs;
+package ch.vd.unireg.avs;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -19,7 +19,7 @@ import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.v3.Party;
-import ch.vd.uniregctb.utils.WebServiceV5Helper;
+import ch.vd.unireg.utils.WebServiceV5Helper;
 
 public class CtbToAvs {
 

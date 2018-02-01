@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,8 +15,8 @@ import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.EvenementTest;
 
 /**
  * @author Raphaël Marmier, 2016-08-17, <raphael.marmier@vd.ch>

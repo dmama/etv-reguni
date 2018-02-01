@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -15,10 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.MandatOuAssimile;
-import ch.vd.uniregctb.type.TypeMandat;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.MandatOuAssimile;
+import ch.vd.unireg.type.TypeMandat;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * <pre>

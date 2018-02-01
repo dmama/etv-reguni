@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -8,11 +8,11 @@ import java.util.Map;
 import org.springframework.context.support.MessageSourceAccessor;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.common.TimeHelper;
-import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.unireg.common.TimeHelper;
+import ch.vd.unireg.document.Document;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
 
 /**
  * Classe d'affichage pour la gestion des jobs quartz

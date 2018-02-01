@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.dbunit;
+package ch.vd.unireg.dbunit;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,25 +13,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.hibernate.meta.MetaEntity;
-import ch.vd.uniregctb.hibernate.meta.Property;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.hibernate.meta.MetaEntity;
+import ch.vd.unireg.hibernate.meta.Property;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.IdentificationPersonne;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.Tache;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Faux-test mais vrai utilitaire qui permet de lire un fichier DBUnit et de générer le code qui charge les mêmes données mais en pure Java.
@@ -96,7 +96,7 @@ public class DbUnit2Java extends BusinessTest {
 	}
 
 	/**
-	 * Cette méthode charge les données du fichier DBUnit pointé par {@link ch.vd.uniregctb.dbunit.DbUnit2Java#DB_UNIT_FILE} dans la base de données, puis imprime dans <i>stdout</i> le code qui charge
+	 * Cette méthode charge les données du fichier DBUnit pointé par {@link ch.vd.unireg.dbunit.DbUnit2Java#DB_UNIT_FILE} dans la base de données, puis imprime dans <i>stdout</i> le code qui charge
 	 * les mêmes données dans la base mais en pure Java.
 	 */
 	@Ignore(value = "à lancer à la main lorsque nécessaire")

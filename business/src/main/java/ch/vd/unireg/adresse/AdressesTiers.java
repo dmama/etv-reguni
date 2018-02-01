@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 /**
  * Contient les adresses surchargées (= spécifiées différemment du registre civil) à un instant donné.

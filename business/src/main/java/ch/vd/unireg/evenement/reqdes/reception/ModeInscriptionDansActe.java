@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.evenement.reqdes.reception;
+package ch.vd.unireg.evenement.reqdes.reception;
 
 import ch.vd.unireg.xml.event.reqdes.v1.InscriptionMode;
-import ch.vd.uniregctb.reqdes.ModeInscription;
+import ch.vd.unireg.reqdes.ModeInscription;
 
 public enum ModeInscriptionDansActe {
 

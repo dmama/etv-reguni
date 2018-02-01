@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.infrastructure.model.rest.CommuneSimple;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 

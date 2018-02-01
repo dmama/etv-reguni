@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
-import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
+import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
 
 /**
  * Interface (marquage seulement) d'un résultat qui indique

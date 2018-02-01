@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.Set;
 
@@ -6,10 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdressePM;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.unireg.adresse.AdresseCivile;
+import ch.vd.unireg.adresse.AdressePM;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.tiers.AutreCommunaute;
 
 public class AutreCommunauteValidator extends ContribuableImpositionPersonnesMoralesValidator<AutreCommunaute> {
 

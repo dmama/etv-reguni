@@ -5,7 +5,7 @@
 
 	<!-- Evénements organisation -->
 
-	<bean id="evtOrganisationService" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationServiceImpl">
+	<bean id="evtOrganisationService" class="ch.vd.unireg.evenement.organisation.EvenementOrganisationServiceImpl">
 		<property name="evenementOrganisationDAO" ref="evenementOrganisationDAO"/>
 	</bean>
 

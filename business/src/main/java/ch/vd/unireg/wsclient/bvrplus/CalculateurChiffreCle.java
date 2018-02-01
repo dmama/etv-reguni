@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.wsclient.bvrplus;
+package ch.vd.unireg.wsclient.bvrplus;
 
 import org.apache.commons.lang3.StringUtils;
 

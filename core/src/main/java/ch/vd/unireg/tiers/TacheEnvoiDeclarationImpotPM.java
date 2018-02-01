@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -12,12 +12,12 @@ import java.util.Set;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatTache;
+import ch.vd.unireg.type.TypeTache;
 
 @Entity
 @DiscriminatorValue("ENVOI_DI_PM")
@@ -89,7 +89,7 @@ public class TacheEnvoiDeclarationImpotPM extends TacheEnvoiDeclarationImpot {
 	}
 
 	@Column(name = "DECL_DATE_DEBUT_EXERCICE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebutExercice() {
 		return dateDebutExercice;
 	}
@@ -99,7 +99,7 @@ public class TacheEnvoiDeclarationImpotPM extends TacheEnvoiDeclarationImpot {
 	}
 
 	@Column(name = "DECL_DATE_FIN_EXERCICE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFinExercice() {
 		return dateFinExercice;
 	}

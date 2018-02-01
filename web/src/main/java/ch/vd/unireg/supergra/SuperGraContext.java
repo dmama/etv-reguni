@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.unireg.supergra;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,10 +9,10 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.validation.ValidationInterceptor;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.validation.ValidationInterceptor;
 
 /**
  * Context d'exécution Hibernate du mode SuperGra. Ce context contient toutes les entités nouvelles créées (en plus des entités déjà cachées dans la session Hibernate).

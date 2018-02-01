@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement.manager;
+package ch.vd.unireg.mouvement.manager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,31 +23,31 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.mouvement.EnvoiDossier;
-import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
-import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
-import ch.vd.uniregctb.mouvement.MouvementDossier;
-import ch.vd.uniregctb.mouvement.MouvementDossierDAO;
-import ch.vd.uniregctb.mouvement.ReceptionDossier;
-import ch.vd.uniregctb.mouvement.ReceptionDossierArchives;
-import ch.vd.uniregctb.mouvement.ReceptionDossierPersonnel;
-import ch.vd.uniregctb.mouvement.view.ContribuableView;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.tiers.ForGestion;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeMouvement;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.general.manager.TiersGeneralManager;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.mouvement.EnvoiDossier;
+import ch.vd.unireg.mouvement.EnvoiDossierVersCollaborateur;
+import ch.vd.unireg.mouvement.EnvoiDossierVersCollectiviteAdministrative;
+import ch.vd.unireg.mouvement.MouvementDossier;
+import ch.vd.unireg.mouvement.MouvementDossierDAO;
+import ch.vd.unireg.mouvement.ReceptionDossier;
+import ch.vd.unireg.mouvement.ReceptionDossierArchives;
+import ch.vd.unireg.mouvement.ReceptionDossierPersonnel;
+import ch.vd.unireg.mouvement.view.ContribuableView;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.tiers.ForGestion;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.TypeMouvement;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class AbstractMouvementManagerImpl implements AbstractMouvementManager, MessageSourceAware {
 
@@ -248,7 +248,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			if (mvt instanceof EnvoiDossier) {
 				final int oid = AuthenticationHelper.getCurrentOID();
 				final EnvoiDossier envoi = (EnvoiDossier) mvt;
-				final ch.vd.uniregctb.tiers.CollectiviteAdministrative ca = envoi.getCollectiviteAdministrativeEmettrice();
+				final ch.vd.unireg.tiers.CollectiviteAdministrative ca = envoi.getCollectiviteAdministrativeEmettrice();
 				if (ca != null && oid == ca.getNumeroCollectiviteAdministrative()) {
 					isAnnulable = true;
 				}
@@ -385,7 +385,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setLocalisation(reception.getLocalisation());
 	}
 
-	private String getNomCollectiviteAdministrative(ch.vd.uniregctb.tiers.CollectiviteAdministrative ca) throws ServiceInfrastructureException {
+	private String getNomCollectiviteAdministrative(ch.vd.unireg.tiers.CollectiviteAdministrative ca) throws ServiceInfrastructureException {
 		final String nom;
 		if (ca != null) {
 			final int iNumCol = ca.getNumeroCollectiviteAdministrative();

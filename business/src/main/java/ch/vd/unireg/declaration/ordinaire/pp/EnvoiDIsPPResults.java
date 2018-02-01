@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
+import ch.vd.unireg.tiers.TiersService;
 
 public class EnvoiDIsPPResults extends AbstractEnvoiDIsPPResults<EnvoiDIsPPResults> {
 

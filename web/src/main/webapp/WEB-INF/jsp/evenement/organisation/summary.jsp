@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationSummaryView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.evenement.organisation.view.EvenementOrganisationSummaryView"--%>
 
 <c:if test="${not empty command.evtErreurs}">
 	<h3><fmt:message key="label.detail.traitement"/></h3>

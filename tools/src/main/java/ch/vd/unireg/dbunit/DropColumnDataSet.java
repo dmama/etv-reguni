@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.dbunit;
+package ch.vd.unireg.dbunit;
 
 import java.util.HashMap;
 

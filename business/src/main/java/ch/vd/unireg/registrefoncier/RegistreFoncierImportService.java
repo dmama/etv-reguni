@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.scheduler.JobAlreadyStartedException;
 
 /**
  * Service qui expose des actions métier sur les données importée hebdomadairement du registre foncier (Capistastra).

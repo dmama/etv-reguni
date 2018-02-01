@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.arrivee;
+package ch.vd.unireg.norentes.civil.arrivee;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Test extends NorentesTest {
 

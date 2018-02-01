@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.cache;
+package ch.vd.unireg.cache;
 
 /**
  * Expose les statistiques de fonctionnement d'un cache.

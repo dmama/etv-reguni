@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

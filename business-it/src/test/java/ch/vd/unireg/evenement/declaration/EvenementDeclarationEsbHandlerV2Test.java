@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.declaration;
+package ch.vd.unireg.evenement.declaration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,12 +19,12 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
 import ch.vd.unireg.xml.event.declaration.v2.DeclarationEvent;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -96,7 +96,7 @@ public class EvenementDeclarationEsbHandlerV2Test extends EvenementTest {
 		handler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/declaration/quittancement.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/declaration/quittancement.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message

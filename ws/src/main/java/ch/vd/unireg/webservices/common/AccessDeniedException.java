@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.unireg.webservices.common;
 
 public class AccessDeniedException extends Exception {
 

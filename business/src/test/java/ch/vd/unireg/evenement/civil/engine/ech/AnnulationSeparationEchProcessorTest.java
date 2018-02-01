@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.Set;
 
@@ -17,19 +17,19 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class AnnulationSeparationEchProcessorTest extends AnnulationOuCessationSeparationEchProcessorTest {
 	
@@ -498,25 +498,25 @@ public class AnnulationSeparationEchProcessorTest extends AnnulationOuCessationS
 
 	@Test(timeout = 10000L)
 	public void testHeteroSIFISC5323() throws Exception {
-		testSituationFamille(ch.vd.uniregctb.type.EtatCivil.MARIE, ch.vd.uniregctb.type.EtatCivil.DIVORCE,
+		testSituationFamille(ch.vd.unireg.type.EtatCivil.MARIE, ch.vd.unireg.type.EtatCivil.DIVORCE,
 				ActionEvenementCivilEch.ANNULATION, TypeEvenementCivilEch.SEPARATION);
 	}
 
 	@Test(timeout = 10000L)
 	public void testHomoSIFISC5323() throws Exception {
-		testSituationFamille(ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE,
+		testSituationFamille(ch.vd.unireg.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.unireg.type.EtatCivil.PARTENARIAT_SEPARE,
 				ActionEvenementCivilEch.ANNULATION, TypeEvenementCivilEch.SEPARATION);
 	}
 
 	@Test(timeout = 10000L)
 	public void testHeteroSeulSIFISC5323() throws Exception {
-		testSituationFamilleMarieSeul(ch.vd.uniregctb.type.EtatCivil.MARIE, ch.vd.uniregctb.type.EtatCivil.DIVORCE,
+		testSituationFamilleMarieSeul(ch.vd.unireg.type.EtatCivil.MARIE, ch.vd.unireg.type.EtatCivil.DIVORCE,
 				ActionEvenementCivilEch.ANNULATION, TypeEvenementCivilEch.SEPARATION);
 	}
 
 	@Test(timeout = 10000L)
 	public void testHomoSeulSIFISC5323() throws Exception {
-		testSituationFamilleMarieSeul(ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE,
+		testSituationFamilleMarieSeul(ch.vd.unireg.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.unireg.type.EtatCivil.PARTENARIAT_SEPARE,
 				ActionEvenementCivilEch.ANNULATION, TypeEvenementCivilEch.SEPARATION);
 	}
 }

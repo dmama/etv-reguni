@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 /**
  * Type d'adresse disponible au niveau fiscal.

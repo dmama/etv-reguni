@@ -22,7 +22,7 @@
   		</span> 
   	
 		<display:table name="${command.list}" id="logs" pagesize="50" partialList="true" size="${command.totalSize}" requestURI="/admin/audit.do" 
-			class="list" decorator="ch.vd.uniregctb.admin.AuditTableDecorator" cellspacing="2" > 
+			class="list" decorator="ch.vd.unireg.admin.AuditTableDecorator" cellspacing="2" >
 			<display:column titleKey="label.admin.audit.date" style="width:120px;">
 				<unireg:sdate sdate="${logs.date}"></unireg:sdate>	
 			</display:column>

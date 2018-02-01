@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.engine.processor;
+package ch.vd.unireg.evenement.organisation.engine.processor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,30 +17,30 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.EvenementCivilHelper;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationAbortException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationConservationMessagesException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreurFactory;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationMessageCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingMiseEnAttenteStrategy;
-import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingStrategy;
-import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.EvenementCivilHelper;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationAbortException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationConservationMessagesException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationErreur;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationErreurFactory;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationMessageCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.evenement.organisation.engine.ErrorPostProcessingMiseEnAttenteStrategy;
+import ch.vd.unireg.evenement.organisation.engine.ErrorPostProcessingStrategy;
+import ch.vd.unireg.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
 
 /**
  * @author Raphaël Marmier, 2015-07-27

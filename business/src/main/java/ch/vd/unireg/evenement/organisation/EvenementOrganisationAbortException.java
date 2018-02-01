@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
 /**
  * Exception lancée dans le cadre du traitement des événements, et qui correspond à un arrêt "volontaire" du traitement

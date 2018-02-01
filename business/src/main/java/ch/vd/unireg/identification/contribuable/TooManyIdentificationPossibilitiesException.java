@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.identification.contribuable;
+package ch.vd.unireg.identification.contribuable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 
 /**
  * Exception lancée quand une demande d'identifcation fournit plus de résultats que le seuil autorisé

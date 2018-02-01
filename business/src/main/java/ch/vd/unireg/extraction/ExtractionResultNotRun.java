@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
 public class ExtractionResultNotRun extends ExtractionResult {
 

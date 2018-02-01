@@ -19,7 +19,7 @@
 			</fieldset>
 		</form:form>
 
-		<display:table name="taches" id="tache" pagesize="25" requestURI="/tache/list.do" class="display_table"  sort="external" partialList="true" size="resultSize" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="taches" id="tache" pagesize="25" requestURI="/tache/list.do" class="display_table"  sort="external" partialList="true" size="resultSize" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.tache.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.tache.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.taches.trouvees" /></span></display:setProperty>

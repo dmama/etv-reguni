@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.unireg.webservices.common;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
@@ -18,10 +18,10 @@ import org.slf4j.LoggerFactory;
 import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.type.Niveau;
 
 public abstract class WebServiceHelper {
 
@@ -131,7 +131,7 @@ public abstract class WebServiceHelper {
 	 * @param userLogin les données d'authentification
 	 * @param partyNo le numéro du dossier concerné
 	 * @throws AccessDeniedException si le droit de visualisation n'est pas attribué à l'utilisateur authentifié
-	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si le dossier n'existe pas
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException si le dossier n'existe pas
 	 */
 	public static void checkPartyReadAccess(SecurityProviderInterface securityProvider, UserLogin userLogin, int partyNo) throws AccessDeniedException {
 		if (securityProvider.getDroitAcces(userLogin.userId, partyNo) == null) {
@@ -145,7 +145,7 @@ public abstract class WebServiceHelper {
 	 * @param userLogin les données d'authentification
 	 * @param partyNo le numéro du dossier concerné
 	 * @throws AccessDeniedException si le droit de modification n'est pas attribué à l'utilisateur authentifié
-	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si le dossier n'existe pas
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException si le dossier n'existe pas
 	 */
 	public static void checkPartyReadWriteAccess(SecurityProviderInterface securityProvider, UserLogin userLogin, int partyNo) throws AccessDeniedException {
 		if (securityProvider.getDroitAcces(userLogin.userId, partyNo) != Niveau.ECRITURE) {

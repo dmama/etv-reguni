@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
-import ch.vd.uniregctb.complements.ComplementsEditCommunicationsView;
-import ch.vd.uniregctb.complements.ComplementsEditCoordonneesFinancieresView;
+import ch.vd.unireg.complements.ComplementsEditCommunicationsView;
+import ch.vd.unireg.complements.ComplementsEditCoordonneesFinancieresView;
 
 public class CreateAutreCommunauteView {
 

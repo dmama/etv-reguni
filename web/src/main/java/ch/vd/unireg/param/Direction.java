@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.param;
+package ch.vd.unireg.param;
 
 public enum Direction {
 	UP,

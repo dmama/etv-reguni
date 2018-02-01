@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -18,10 +18,10 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.xml.event.docsortant.v1.Documents;
 import ch.vd.unireg.xml.event.docsortant.v1.ObjectFactory;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.utils.LogLevel;
 
 public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSortantSender, InitializingBean {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.param;
+package ch.vd.unireg.param;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -24,19 +24,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.DynamicDelegatingValidator;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
-import ch.vd.uniregctb.param.view.ModeleDocumentView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePMEditView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePPEditView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleSNCEditView;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.DynamicDelegatingValidator;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.param.manager.ParamPeriodeManager;
+import ch.vd.unireg.param.view.ModeleDocumentView;
+import ch.vd.unireg.param.view.ParametrePeriodeFiscalePMEditView;
+import ch.vd.unireg.param.view.ParametrePeriodeFiscalePPEditView;
+import ch.vd.unireg.param.view.ParametrePeriodeFiscaleSNCEditView;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping("/param/periode")

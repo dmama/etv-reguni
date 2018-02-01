@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.norentes.civil.mariage;
+package ch.vd.unireg.norentes.civil.mariage;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.norentes.common.EvenementCivilScenario;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.type.MotifFor;
 
 public abstract class MariageApresArriveeScenarios extends EvenementCivilScenario {
 

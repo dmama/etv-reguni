@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.annulation.couple.manager;
+package ch.vd.unireg.annulation.couple.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.unireg.metier.MetierServiceException;
 
 public interface AnnulationCoupleRecapManager {
 

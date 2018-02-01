@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.type.MotifFor;
 
 public class MotifForUserType extends EnumUserType<MotifFor> {
 

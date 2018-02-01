@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.tiers.Contribuable;
 
 /**
  * Décomposition des fors d'un contribuable par type sur une période donnée.

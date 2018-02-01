@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,14 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.tache.sync.SynchronizeAction;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.tache.sync.SynchronizeAction;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.TypeTache;
 
 /**
  * Service permettant la génération de tâches à la suite d'événements fiscaux
@@ -104,7 +104,7 @@ public interface TacheService {
 	 *
 	 * @param contribuable un contribuable
 	 * @return une liste d'actions à entreprendre (peut être vide, mais pas nulle)
-	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'incohérence des données sur les fors fiscaux qui empêche de calculer l'assujettissement.
+	 * @throws ch.vd.unireg.metier.assujettissement.AssujettissementException en cas d'incohérence des données sur les fors fiscaux qui empêche de calculer l'assujettissement.
 	 */
 	@NotNull
 	List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException;

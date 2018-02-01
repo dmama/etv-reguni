@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.evenement.reqdes.engine;
+package ch.vd.unireg.evenement.reqdes.engine;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 public class MockEvenementReqDesRetryProcessor implements EvenementReqDesRetryProcessor {
 

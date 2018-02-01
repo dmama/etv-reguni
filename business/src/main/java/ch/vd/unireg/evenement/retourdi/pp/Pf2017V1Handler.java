@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.retourdi.pp;
+package ch.vd.unireg.evenement.retourdi.pp;
 
 import java.util.Map;
 
@@ -9,8 +9,8 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.xml.event.taxation.pf2017.v1.DeclarationImpot;
 import ch.vd.unireg.xml.event.taxation.pf2017.v1.DossierElectronique;
-import ch.vd.uniregctb.evenement.retourdi.RetourDiHandler;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.evenement.retourdi.RetourDiHandler;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 public class Pf2017V1Handler extends AbstractDossierElectroniqueHandler implements RetourDiHandler<DossierElectronique> {
 

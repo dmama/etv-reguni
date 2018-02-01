@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 /**
  * Exception dénotant un problème de cohérence des données détectés lors de la détermination de l'assujettissement d'un contribuable.

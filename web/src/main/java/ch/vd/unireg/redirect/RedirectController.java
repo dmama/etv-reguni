@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.redirect;
+package ch.vd.unireg.redirect;
 
 import java.io.UnsupportedEncodingException;
 
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 @Controller
 @RequestMapping(value = "/redirect")

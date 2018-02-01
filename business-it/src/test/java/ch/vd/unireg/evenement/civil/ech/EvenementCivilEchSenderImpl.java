@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -16,9 +16,9 @@ import ch.vd.evd0001.v5.ObjectFactory;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.jms.EsbMessageValidator;
 
 /**
  * Implémentation de la fonctionalité de test d'envoi d'un événement civil

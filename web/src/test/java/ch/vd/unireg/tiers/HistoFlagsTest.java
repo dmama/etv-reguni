@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -9,7 +9,7 @@ import java.util.function.Function;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class HistoFlagsTest extends WithoutSpringTest {
 

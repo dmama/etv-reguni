@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,18 +19,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.admin.indexer.GestionIndexation;
-import ch.vd.uniregctb.admin.indexer.IndexDocument;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexableData;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.unireg.admin.indexer.GestionIndexation;
+import ch.vd.unireg.admin.indexer.IndexDocument;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.indexer.tiers.TiersIndexableData;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
 
 /**
  * Controller d'administration de l'indexer Lucene

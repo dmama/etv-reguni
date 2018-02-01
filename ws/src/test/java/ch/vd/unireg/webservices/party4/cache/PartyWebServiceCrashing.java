@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party4.cache;
+package ch.vd.unireg.webservices.party4.cache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.party.debtor.v2.DebtorInfo;
 import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyType;
-import ch.vd.uniregctb.webservices.party4.impl.ExceptionHelper;
+import ch.vd.unireg.webservices.party4.impl.ExceptionHelper;
 
 /**
  * Implémentation du web-service qui délègue les appels à une autre implémentation, mais qui permet de simuler le crash (= exception) des appels sur certains numéros de contribuables.

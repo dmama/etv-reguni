@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.parametrage;
+package ch.vd.unireg.parametrage;
 
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 
 public interface PeriodeFiscaleService {
 

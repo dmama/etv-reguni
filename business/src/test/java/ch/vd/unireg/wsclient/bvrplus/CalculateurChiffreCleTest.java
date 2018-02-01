@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.wsclient.bvrplus;
+package ch.vd.unireg.wsclient.bvrplus;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class CalculateurChiffreCleTest extends WithoutSpringTest {
 

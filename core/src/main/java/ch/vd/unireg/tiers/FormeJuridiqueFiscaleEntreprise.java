@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -7,9 +7,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 @Entity
 @DiscriminatorValue(value = "FormeJuridique")

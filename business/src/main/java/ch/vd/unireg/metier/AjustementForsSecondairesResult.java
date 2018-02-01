@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
 
 /**
  * @author Raphaël Marmier, 2016-03-04, <raphael.marmier@vd.ch>

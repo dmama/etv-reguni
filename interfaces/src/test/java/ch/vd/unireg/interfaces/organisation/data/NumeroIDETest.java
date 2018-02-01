@@ -3,7 +3,7 @@ package ch.vd.unireg.interfaces.organisation.data;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 /**
  * @author Raphaël Marmier, 2016-08-24, <raphael.marmier@vd.ch>

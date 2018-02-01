@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.vd.uniregctb.common.LockHelper;
-import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.unireg.common.LockHelper;
+import ch.vd.unireg.common.StringRenderer;
 
 public class ValidableEntityNamingServiceImpl implements ValidableEntityNamingService {
 

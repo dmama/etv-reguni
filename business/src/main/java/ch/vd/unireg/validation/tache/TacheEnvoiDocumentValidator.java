@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.tache;
+package ch.vd.unireg.validation.tache;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.TacheEnvoiDocument;
+import ch.vd.unireg.tiers.TacheEnvoiDocument;
 
 public abstract class TacheEnvoiDocumentValidator<T extends TacheEnvoiDocument> extends TacheValidator<T> {
 

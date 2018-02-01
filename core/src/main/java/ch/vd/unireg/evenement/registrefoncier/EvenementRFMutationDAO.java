@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamPagination;
 
 public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, Long> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation;
+package ch.vd.unireg.validation;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.unireg.common.BusinessTest;
 
 public abstract class AbstractValidatorTest<T> extends BusinessTest {
 

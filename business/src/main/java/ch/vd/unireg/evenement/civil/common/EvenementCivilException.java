@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.common;
+package ch.vd.unireg.evenement.civil.common;
 
 import org.apache.commons.lang3.StringUtils;
 

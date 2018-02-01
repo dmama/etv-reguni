@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -29,25 +29,25 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.BouclementHelper;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.validator.ChangeDateExerciceCommercialViewValidator;
-import ch.vd.uniregctb.tiers.view.ChangeDateExerciceCommercialView;
-import ch.vd.uniregctb.tiers.view.ExerciceCommercialView;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.BouclementHelper;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.metier.bouclement.BouclementService;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
+import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.validator.ChangeDateExerciceCommercialViewValidator;
+import ch.vd.unireg.tiers.view.ChangeDateExerciceCommercialView;
+import ch.vd.unireg.tiers.view.ExerciceCommercialView;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/exercices")

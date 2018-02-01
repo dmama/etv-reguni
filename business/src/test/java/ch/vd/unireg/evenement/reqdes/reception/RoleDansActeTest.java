@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.reqdes.reception;
+package ch.vd.unireg.evenement.reqdes.reception;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.event.reqdes.v1.StakeholderRole;
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class RoleDansActeTest extends WithoutSpringTest {
 

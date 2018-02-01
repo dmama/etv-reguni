@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.interfaces.InterfaceDataException;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.interfaces.InterfaceDataException;
+import ch.vd.unireg.type.EtatCivil;
 
 /**
  * Permet d'adapter une situation de famille de personne physique en provenance du civil.

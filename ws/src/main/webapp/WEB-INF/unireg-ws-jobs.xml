@@ -4,12 +4,12 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="schedulerJob" class="ch.vd.uniregctb.scheduler.JobDefinition" abstract="true">
+	<bean id="schedulerJob" class="ch.vd.unireg.scheduler.JobDefinition" abstract="true">
 		<property name="batchScheduler" ref="batchScheduler"/>
 		<property name="uniregModeHelper" ref="uniregModeHelper"/>
 	</bean>
 
-    <bean id="wsCacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.webservices.common.WebServiceCachesResetJob">
+    <bean id="wsCacheResetJob" parent="schedulerJob" class="ch.vd.unireg.webservices.common.WebServiceCachesResetJob">
         <constructor-arg value="1"/>
         <constructor-arg value="Resetter les caches des web-services d'Unireg"/>
         <property name="caches">

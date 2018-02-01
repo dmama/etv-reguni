@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.inbox;
+package ch.vd.unireg.admin.inbox;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.extraction.ExtractionJob;
-import ch.vd.uniregctb.extraction.ExtractionService;
-import ch.vd.uniregctb.inbox.InboxAttachment;
-import ch.vd.uniregctb.inbox.InboxElement;
-import ch.vd.uniregctb.inbox.InboxService;
-import ch.vd.uniregctb.print.PrintPCLManager;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.MimeTypeHelper;
+import ch.vd.unireg.extraction.ExtractionJob;
+import ch.vd.unireg.extraction.ExtractionService;
+import ch.vd.unireg.inbox.InboxAttachment;
+import ch.vd.unireg.inbox.InboxElement;
+import ch.vd.unireg.inbox.InboxService;
+import ch.vd.unireg.print.PrintPCLManager;
 
 /**
  * Contrôleur de la visualisation de l'inbox

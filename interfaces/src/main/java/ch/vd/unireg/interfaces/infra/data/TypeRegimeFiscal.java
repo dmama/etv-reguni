@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.unireg.type.CategorieEntreprise;
 
 public interface TypeRegimeFiscal {
 

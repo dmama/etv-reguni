@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.common.linkedentity;
+package ch.vd.unireg.common.linkedentity;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 
 /**
  * Les informations du context dans lequel on demande la liste des entités liées.

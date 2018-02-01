@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
-import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
+import ch.vd.unireg.tiers.AllegementFiscalCanton;
 
 public class AllegementFiscalCantonValidator extends AllegementFiscalCantonCommuneValidator<AllegementFiscalCanton> {
 

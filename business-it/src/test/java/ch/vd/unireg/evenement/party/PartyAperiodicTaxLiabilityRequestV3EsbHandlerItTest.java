@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,13 +14,13 @@ import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.taxliab.aperiodic.v3.AperiodicTaxLiabilityRequest;
 import ch.vd.unireg.xml.event.party.taxliab.v3.TaxLiabilityResponse;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.security.MockSecurityProvider;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.security.MockSecurityProvider;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

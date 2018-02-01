@@ -25,8 +25,8 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.type.Sexe;
 
 public class MockIndividu implements Individu {
 

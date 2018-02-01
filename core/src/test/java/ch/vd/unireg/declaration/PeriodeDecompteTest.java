@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.type.PeriodeDecompte;
 
 import static org.junit.Assert.assertEquals;
 

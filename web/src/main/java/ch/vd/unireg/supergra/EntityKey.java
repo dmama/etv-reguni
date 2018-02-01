@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.unireg.supergra;
 
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.unireg.common.HibernateEntity;
 
 /**
  * La clé d'une entité Hibernate (classe + id).

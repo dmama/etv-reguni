@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.vignette;
+package ch.vd.unireg.tiers.vignette;
 
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.avatar.AvatarService;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.avatar.AvatarService;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.Niveau;
 
 @Controller
 public class VignetteController {
@@ -64,7 +64,7 @@ public class VignetteController {
 	 *
 	 * @param numero le numéro du tiers
 	 * @return les informations spécifiques à la vignette pour ce tiers
-	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 * @throws ch.vd.unireg.security.AccessDeniedException
 	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@RequestMapping(value = "/tiers/vignette-info.do", method = RequestMethod.GET)

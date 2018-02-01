@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.batch;
+package ch.vd.unireg.webservices.batch;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -16,8 +16,8 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.model.wadl.Description;
 import org.apache.cxf.jaxrs.model.wadl.DocTarget;
 
-import ch.vd.uniregctb.ubr.JobConstants;
-import ch.vd.uniregctb.ubr.JobStatus;
+import ch.vd.unireg.ubr.JobConstants;
+import ch.vd.unireg.ubr.JobStatus;
 
 public interface WebService {
 

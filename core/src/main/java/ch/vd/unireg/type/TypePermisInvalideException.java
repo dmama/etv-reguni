@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
-import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.unireg.common.ObjectNotFoundException;
 
 /**
  * Exception spécialisée pour signaler proprement les cas où l'information du permis d el'individu n'a pu être interpretée.

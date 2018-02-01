@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.rcent.migration;
+package ch.vd.unireg.rattrapage.rcent.migration;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
  * INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2012 à partir des dates [01.01.2012 -> 31.12.2012] de l'exercice commercial 17 et du dossier fiscal correspondant.

@@ -31,7 +31,7 @@
 			</c:if>
 
 			<c:if test="${not empty command.dis}">
-				<display:table name="command.dis" id="di" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/di/list.do" sort="list">
+				<display:table name="command.dis" id="di" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" requestURI="/di/list.do" sort="list">
 					<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.di.trouvee" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.di.trouvee" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.dis.trouvees" /></span></display:setProperty>

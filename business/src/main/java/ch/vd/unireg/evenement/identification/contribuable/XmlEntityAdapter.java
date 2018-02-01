@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import java.math.BigInteger;
 import java.util.Calendar;
@@ -30,11 +30,11 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
-import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
-import ch.vd.uniregctb.tiers.TypeTiers;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
+import ch.vd.unireg.evenement.identification.contribuable.Demande.PrioriteEmetteur;
+import ch.vd.unireg.evenement.identification.contribuable.Erreur.TypeErreur;
+import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.type.Sexe;
 
 /**
  * Classe qui permet de traduire un {@link IdentificationContribuable} en un {@link IdentificationCTB}, et vice-versa.
@@ -84,7 +84,7 @@ public abstract class XmlEntityAdapter {
 		return document;
 	}
 
-	private static void entity2xml(ch.vd.uniregctb.evenement.identification.contribuable.Reponse entity, Reponse xml) {
+	private static void entity2xml(ch.vd.unireg.evenement.identification.contribuable.Reponse entity, Reponse xml) {
 		if (entity.getNoContribuable() != null) {
 			entity2xml(entity, xml.addNewContribuable());
 		}
@@ -97,7 +97,7 @@ public abstract class XmlEntityAdapter {
 		}
 	}
 
-	private static void entity2xml(ch.vd.uniregctb.evenement.identification.contribuable.Erreur entity, Erreur xml) {
+	private static void entity2xml(ch.vd.unireg.evenement.identification.contribuable.Erreur entity, Erreur xml) {
 		xml.setType(entity2xml(entity.getType()));
 		xml.setCode(entity.getCode());
 		xml.setMessage(entity.getMessage());
@@ -127,7 +127,7 @@ public abstract class XmlEntityAdapter {
 		return cal;
 	}
 
-	private static void entity2xml(ch.vd.uniregctb.evenement.identification.contribuable.Reponse entity, Contribuable xml) {
+	private static void entity2xml(ch.vd.unireg.evenement.identification.contribuable.Reponse entity, Contribuable xml) {
 		xml.setNumeroContribuableIndividuel(entity.getNoContribuable().intValue());
 		if (entity.getNoMenageCommun() != null) {
 			xml.setNumeroContribuableCouple(entity.getNoMenageCommun().intValue()); // [UNIREG-1911]
@@ -271,12 +271,12 @@ public abstract class XmlEntityAdapter {
 		return entity;
 	}
 
-	private static ch.vd.uniregctb.evenement.identification.contribuable.Reponse xml2entity(Reponse xml) {
+	private static ch.vd.unireg.evenement.identification.contribuable.Reponse xml2entity(Reponse xml) {
 		if (xml == null) {
 			return null;
 		}
 
-		final ch.vd.uniregctb.evenement.identification.contribuable.Reponse reponse = new ch.vd.uniregctb.evenement.identification.contribuable.Reponse();
+		final ch.vd.unireg.evenement.identification.contribuable.Reponse reponse = new ch.vd.unireg.evenement.identification.contribuable.Reponse();
 		reponse.setDate(xml.getDate().getTime());
 		reponse.setEnAttenteIdentifManuel(xml.isSetEnAttenteIdentifManuel() && xml.getEnAttenteIdentifManuel() == EnAttenteIdentifManuelType.Enum.forString("true"));
 		reponse.setErreur(xml.isSetErreur() ? xml2entity(xml.getErreur()) : null);
@@ -285,12 +285,12 @@ public abstract class XmlEntityAdapter {
 		return reponse;
 	}
 
-	private static ch.vd.uniregctb.evenement.identification.contribuable.Erreur xml2entity(Erreur xml) {
+	private static ch.vd.unireg.evenement.identification.contribuable.Erreur xml2entity(Erreur xml) {
 		if (xml == null) {
 			return null;
 		}
 
-		final ch.vd.uniregctb.evenement.identification.contribuable.Erreur erreur = new ch.vd.uniregctb.evenement.identification.contribuable.Erreur();
+		final ch.vd.unireg.evenement.identification.contribuable.Erreur erreur = new ch.vd.unireg.evenement.identification.contribuable.Erreur();
 		erreur.setType(xml2TypeErreur(xml.getType()));
 		erreur.setMessage(xml.getMessage());
 		erreur.setCode(xml.getCode());

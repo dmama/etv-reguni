@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.unireg.tiers.RegimeFiscal;
 
 public class AddRegimeFiscalView implements ValidableRegimeFiscalView {
 

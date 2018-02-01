@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.springframework.util.Assert;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.type.TypeDocument;
 
 public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> implements ModeleDocumentDAO {
 

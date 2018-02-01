@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.param;
+package ch.vd.unireg.param;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -22,15 +22,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocumentDAO;
-import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
-import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
-import ch.vd.uniregctb.type.ModeleFeuille;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.ModeleFeuilleDocumentDAO;
+import ch.vd.unireg.param.manager.ParamPeriodeManager;
+import ch.vd.unireg.param.view.ModeleFeuilleDocumentView;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.type.ModeleFeuille;
 
 /**
  * Ce contrôleur est responsable de l'ajout, de l'édition et de la suppression des feuilles sur les modèles de documents.

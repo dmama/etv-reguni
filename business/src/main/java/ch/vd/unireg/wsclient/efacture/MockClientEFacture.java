@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.wsclient.efacture;
+package ch.vd.unireg.wsclient.efacture;
 
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;

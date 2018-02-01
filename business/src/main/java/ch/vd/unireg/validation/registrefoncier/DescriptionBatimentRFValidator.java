@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
-import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
+import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
+import ch.vd.unireg.validation.tiers.DateRangeEntityValidator;
 
 public class DescriptionBatimentRFValidator extends DateRangeEntityValidator<DescriptionBatimentRF> {
 	@Override

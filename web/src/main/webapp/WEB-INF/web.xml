@@ -54,7 +54,7 @@
 	<!--  Les servlets de notre application -->
 	<servlet>
 		<servlet-name>uniregServlet</servlet-name>
-		<servlet-class>ch.vd.uniregctb.servlet.UniregDispatcherServlet</servlet-class>
+		<servlet-class>ch.vd.unireg.servlet.UniregDispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>
@@ -148,7 +148,7 @@
 	</listener>
 	<listener>
 		<!-- permet d'arrêter proprement les jobs qui tournent au moment de l'arrêt propre de la webapp -->
- 		<listener-class>ch.vd.uniregctb.servlet.JobMonitoringServletListener</listener-class>
+ 		<listener-class>ch.vd.unireg.servlet.JobMonitoringServletListener</listener-class>
 	</listener>
 
 	<!-- Les filters de notre application -->
@@ -181,7 +181,7 @@
 	<!-- Filtre qui renseigne la date d'expiration sur les éléments statiques de l'application (= permet le caching au niveau browser) -->
 	<filter>
 		<filter-name>CachingFilter</filter-name>
-		<filter-class>ch.vd.uniregctb.servlet.AddResponseHeadersFilter</filter-class>
+		<filter-class>ch.vd.unireg.servlet.AddResponseHeadersFilter</filter-class>
 		<init-param>
 			<param-name>Cache-Control</param-name>
 			<param-value>max-age=86400</param-value><!-- a day, in seconds -->
@@ -212,7 +212,7 @@
 	<!-- Filtre qui empêche tout caching des ressources concernées -->
 	<filter>
 		<filter-name>NoCacheFilter</filter-name>
-		<filter-class>ch.vd.uniregctb.servlet.AddResponseHeadersFilter</filter-class>
+		<filter-class>ch.vd.unireg.servlet.AddResponseHeadersFilter</filter-class>
 		<init-param>
 			<param-name>Cache-Control</param-name>
 			<param-value>no-cache, no-store, must-revalidate</param-value>
@@ -235,7 +235,7 @@
 	<!-- Filtre de logging des requêtes http -->
 	<filter>
 		<filter-name>servletRequestLoggingFilter</filter-name>
-		<filter-class>ch.vd.uniregctb.log.ServletRequestLoggingFilter</filter-class>
+		<filter-class>ch.vd.unireg.log.ServletRequestLoggingFilter</filter-class>
 	</filter>
 
 	<filter-mapping>

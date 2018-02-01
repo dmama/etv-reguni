@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -12,8 +12,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalSender;
 
 public class DataEventJmsHandlerTest extends BusinessTest {
 

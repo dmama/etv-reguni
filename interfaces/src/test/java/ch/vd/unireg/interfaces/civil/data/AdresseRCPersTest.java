@@ -17,9 +17,9 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.type.TexteCasePostale;
 
 public class AdresseRCPersTest extends WithoutSpringTest {
 

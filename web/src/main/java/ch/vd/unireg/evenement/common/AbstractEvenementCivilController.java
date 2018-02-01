@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.evenement.common;
+package ch.vd.unireg.evenement.common;
 
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.pagination.ParamPagination;
 
 abstract public class AbstractEvenementCivilController {
 

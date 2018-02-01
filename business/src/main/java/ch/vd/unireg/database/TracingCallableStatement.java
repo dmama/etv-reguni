@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
-import ch.vd.uniregctb.stats.ServiceTracing;
+import ch.vd.unireg.stats.ServiceTracing;
 
 public class TracingCallableStatement extends TracingPreparedStatement implements CallableStatement {
 

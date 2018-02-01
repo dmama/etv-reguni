@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.checker;
+package ch.vd.unireg.checker;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
 import ch.vd.shared.statusmanager.StatusManager;
-import ch.vd.uniregctb.common.TimeHelper;
+import ch.vd.unireg.common.TimeHelper;
 
 public class ApplicationChecker {
 

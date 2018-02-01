@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

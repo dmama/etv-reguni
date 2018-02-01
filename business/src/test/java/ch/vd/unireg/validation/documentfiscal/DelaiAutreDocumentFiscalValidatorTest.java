@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.validation.documentfiscal;
+package ch.vd.unireg.validation.documentfiscal;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.documentfiscal.DelaiAutreDocumentFiscal;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.documentfiscal.DelaiAutreDocumentFiscal;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class DelaiAutreDocumentFiscalValidatorTest extends AbstractValidatorTest<DelaiAutreDocumentFiscal> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.type.TypePermis;
 
 /**
  * Comparateur d'individu basé sur les permis de l'individu

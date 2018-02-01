@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -24,16 +24,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchIterator;
-import ch.vd.uniregctb.common.DefaultThreadFactory;
-import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.DefaultThreadFactory;
+import ch.vd.unireg.common.DefaultThreadNameGenerator;
+import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.type.TypeEtatTache;
 
 public class RecalculTachesProcessor {
 

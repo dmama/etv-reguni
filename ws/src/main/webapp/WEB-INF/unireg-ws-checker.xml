@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="applicationChecker" class="ch.vd.uniregctb.checker.ApplicationChecker">
+	<bean id="applicationChecker" class="ch.vd.unireg.checker.ApplicationChecker">
 		<property name="version" value="${project.version}" />
 		<property name="statusManager" ref="statusManager" />
 	</bean>
@@ -31,27 +31,27 @@
 		</property>
 	</bean>
 
-	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
+	<bean id="serviceCivilChecker" class="ch.vd.unireg.checker.ServiceCivilChecker">
 		<property name="serviceCivilRaw" ref="serviceCivilServiceTracing" />
 	</bean>
 
-	<bean id="serviceOrganisationChecker" class="ch.vd.uniregctb.checker.ServiceOrganisationChecker">
+	<bean id="serviceOrganisationChecker" class="ch.vd.unireg.checker.ServiceOrganisationChecker">
 		<property name="serviceOrganisationRaw" ref="serviceOrganisationTracing" />
 	</bean>
 
-	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">
+	<bean id="serviceInfraChecker" class="ch.vd.unireg.checker.ServiceInfraChecker">
 		<property name="serviceInfraRaw" ref="serviceInfrastructureTracing" />
 	</bean>
 
-	<bean id="serviceSecuriteChecker" class="ch.vd.uniregctb.checker.ServiceSecuriteChecker">
+	<bean id="serviceSecuriteChecker" class="ch.vd.unireg.checker.ServiceSecuriteChecker">
 		<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceTracing" />
 	</bean>
 
-	<bean id="tiersSearcherChecker" class="ch.vd.uniregctb.checker.TiersSearcherChecker">
+	<bean id="tiersSearcherChecker" class="ch.vd.unireg.checker.TiersSearcherChecker">
 		<property name="searcher" ref="globalTiersSearcher" />
 	</bean>
 
-	<bean id="serviceEFactureChecker" class="ch.vd.uniregctb.checker.ServiceEFactureChecker">
+	<bean id="serviceEFactureChecker" class="ch.vd.unireg.checker.ServiceEFactureChecker">
 		<property name="efactureClient" ref="eFactureClient" />
 	</bean>
 

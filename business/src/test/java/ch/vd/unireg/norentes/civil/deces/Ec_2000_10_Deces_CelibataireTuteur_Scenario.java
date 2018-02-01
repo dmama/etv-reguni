@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.civil.deces;
+package ch.vd.unireg.norentes.civil.deces;
 
 import java.util.List;
 import java.util.Set;
@@ -8,18 +8,18 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.norentes.annotation.Check;
-import ch.vd.uniregctb.norentes.annotation.Etape;
-import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.norentes.annotation.Check;
+import ch.vd.unireg.norentes.annotation.Etape;
+import ch.vd.unireg.norentes.common.EvenementCivilScenario;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilScenario {
 
@@ -81,7 +81,7 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		noHabNora = nora.getNumero();
 		addForFiscalPrincipal(nora, MockCommune.Lausanne, dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
 
-		RapportEntreTiers rapportTutelle = new ch.vd.uniregctb.tiers.Tutelle(dateTutelle, null, nora, charles, null);
+		RapportEntreTiers rapportTutelle = new ch.vd.unireg.tiers.Tutelle(dateTutelle, null, nora, charles, null);
 		tiersDAO.save(rapportTutelle);
 
 		charles.setBlocageRemboursementAutomatique(false);

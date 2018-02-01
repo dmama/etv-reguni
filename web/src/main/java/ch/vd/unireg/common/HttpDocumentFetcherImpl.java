@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;

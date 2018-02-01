@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.unireg.type.TypeEvenementErreur;
 
 /**
  * Classe de transtypage pour Hibernate : TypeEvenementErreurUserType <--> varchar

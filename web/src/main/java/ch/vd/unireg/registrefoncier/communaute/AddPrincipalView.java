@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.communaute;
+package ch.vd.unireg.registrefoncier.communaute;
 
 public class AddPrincipalView {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.dperm;
+package ch.vd.unireg.evenement.dperm;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -25,13 +25,13 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.StringSource;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
 
 public class EvenementIntegrationMetierEsbHandlerV5 implements EsbMessageHandler, InitializingBean {
 

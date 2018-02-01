@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.io.Serializable;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 /**
  * Information remontée depuis la couche business vers les couches supérieures en cas de conflit

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement.view;
+package ch.vd.unireg.mouvement.view;
 
 public class BordereauEnvoiView {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.utils.HttpSessionConstants;
-import ch.vd.uniregctb.utils.HttpSessionUtils;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.tiers.manager.ForFiscalManager;
+import ch.vd.unireg.tiers.view.TiersEditView;
+import ch.vd.unireg.utils.HttpSessionConstants;
+import ch.vd.unireg.utils.HttpSessionUtils;
 
 @Controller
 @RequestMapping("/fiscal")

@@ -1,18 +1,18 @@
-package ch.vd.uniregctb.identification.contribuable.manager;
+package ch.vd.unireg.identification.contribuable.manager;
 
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
-import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
+import ch.vd.unireg.evenement.identification.contribuable.TypeDemande;
+import ch.vd.unireg.identification.contribuable.view.IdentificationContribuableListCriteria;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesResultView;
 
 public interface IdentificationMessagesListManager {
 

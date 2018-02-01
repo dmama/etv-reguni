@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.metier;
+package ch.vd.unireg.metier;
 
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.tiers.Contribuable;
 
 public class PassageNouveauxRentiersSourciersEnMixteException extends Exception {
 	private final Contribuable ctb;

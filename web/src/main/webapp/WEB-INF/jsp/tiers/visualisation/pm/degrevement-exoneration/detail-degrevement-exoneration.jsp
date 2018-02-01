@@ -2,14 +2,14 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <%--@elvariable id="idContribuable" type="java.lang.Long"--%>
-<%--@elvariable id="demandesDegrevement" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.DemandeDegrevementICIView>"--%>
-<%--@elvariable id="degrevements" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.DegrevementICIView>"--%>
-<%--@elvariable id="exonerations" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.ExonerationIFONCView>"--%>
-<%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.allegement.ResumeImmeubleView"--%>
-<%--@elvariable id="droits" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.DroitView>"--%>
+<%--@elvariable id="demandesDegrevement" type="java.util.List<ch.vd.unireg.registrefoncier.allegement.DemandeDegrevementICIView>"--%>
+<%--@elvariable id="degrevements" type="java.util.List<ch.vd.unireg.registrefoncier.allegement.DegrevementICIView>"--%>
+<%--@elvariable id="exonerations" type="java.util.List<ch.vd.unireg.registrefoncier.allegement.ExonerationIFONCView>"--%>
+<%--@elvariable id="immeuble" type="ch.vd.unireg.registrefoncier.allegement.ResumeImmeubleView"--%>
+<%--@elvariable id="droits" type="java.util.List<ch.vd.unireg.registrefoncier.allegement.DroitView>"--%>
 
 <unireg:setAuth var="autorisations" tiersId="${idContribuable}"/>
-<%--@elvariable id="autorisations" type="ch.vd.uniregctb.tiers.manager.Autorisations"--%>
+<%--@elvariable id="autorisations" type="ch.vd.unireg.tiers.manager.Autorisations"--%>
 
 <jsp:include page="../../../common/degrevement-exoneration/resume-immeuble-fieldset.jsp"/>
 

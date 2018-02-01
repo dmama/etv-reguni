@@ -1,17 +1,17 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import java.util.List;
 
 import noNamespace.TypFichierImpression;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeDocument;
 
 public class MockImpressionDeclarationImpotPersonnesPhysiquesHelper implements ImpressionDeclarationImpotPersonnesPhysiquesHelper {
 	@Override

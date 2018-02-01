@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.decision.aci;
+package ch.vd.unireg.decision.aci;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.DecisionAci;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.DecisionAci;
 
 public class EditDecisionAciValidator implements Validator {
 

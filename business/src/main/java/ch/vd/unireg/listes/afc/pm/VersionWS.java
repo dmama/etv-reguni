@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.listes.afc.pm;
+package ch.vd.unireg.listes.afc.pm;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.party.v4.CorporationFlagBuilder;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.party.v4.CorporationFlagBuilder;
 
 /**
  * Type énuméré des versions du WS (utilisée pour la traduction des valeurs énumérées exposées dans l'extraction RPT PM)

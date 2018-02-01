@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.webservices.party4.cache;
+package ch.vd.unireg.webservices.party4.cache;
 
 import java.io.Serializable;
 import java.util.Set;
 
 import ch.vd.unireg.webservices.party4.PartyPart;
 import ch.vd.unireg.xml.party.v2.Party;
-import ch.vd.uniregctb.cache.CacheValueWithParts;
-import ch.vd.uniregctb.webservices.party4.impl.DataHelper;
-import ch.vd.uniregctb.xml.party.v2.PartyBuilder;
+import ch.vd.unireg.cache.CacheValueWithParts;
+import ch.vd.unireg.webservices.party4.impl.DataHelper;
+import ch.vd.unireg.xml.party.v2.PartyBuilder;
 
 class GetPartyValue extends CacheValueWithParts<Party, PartyPart> implements Serializable {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ide;
+package ch.vd.unireg.evenement.ide;
 
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 

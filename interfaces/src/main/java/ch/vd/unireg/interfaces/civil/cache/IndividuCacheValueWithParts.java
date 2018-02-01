@@ -5,7 +5,7 @@ import java.util.Set;
 
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.cache.CacheValueWithParts;
+import ch.vd.unireg.cache.CacheValueWithParts;
 
 /**
  * Donnée cachée par le cache du service civile. Il s'agit de l'individu et des informations nécessaires pour gérer de manière intelligente les différentes parties qui peuvent être renseignées.

@@ -5,7 +5,7 @@ import java.util.BitSet;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ITable;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 /**
  * Operation DBUnit d'insert qui prend un status manager.

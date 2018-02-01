@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,10 +19,10 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
 
 /**
  * Servitude sur un immeuble. L'ayant-droit d'un droit habitation est soit une personne morale, soit une personne physique.
@@ -105,7 +105,7 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 	}
 
 	@Column(name = "IDENTIFIANT_DROIT", length = LengthConstants.RF_IDENTIFIANT_DROIT)
-	@Type(type = "ch.vd.uniregctb.hibernate.IdentifiantDroitRFUserType")
+	@Type(type = "ch.vd.unireg.hibernate.IdentifiantDroitRFUserType")
 	public IdentifiantDroitRF getIdentifiantDroit() {
 		return identifiantDroit;
 	}
@@ -116,7 +116,7 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 
 	@Nullable
 	@Column(name = "NO_AFFAIRE", length = LengthConstants.RF_NO_AFFAIRE)
-	@Type(type = "ch.vd.uniregctb.hibernate.IdentifiantAffaireRFUserType")
+	@Type(type = "ch.vd.unireg.hibernate.IdentifiantAffaireRFUserType")
 	public IdentifiantAffaireRF getNumeroAffaire() {
 		return numeroAffaire;
 	}

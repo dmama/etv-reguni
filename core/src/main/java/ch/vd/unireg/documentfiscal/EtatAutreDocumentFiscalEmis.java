@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -6,8 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
  * @author Raphaël Marmier, 2017-09-20, <raphael.marmier@vd.ch>

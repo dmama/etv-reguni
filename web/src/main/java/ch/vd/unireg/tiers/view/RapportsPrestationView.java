@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.general.view.TiersGeneralView;
 
 public class RapportsPrestationView {
 

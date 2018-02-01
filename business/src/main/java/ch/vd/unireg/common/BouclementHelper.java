@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,9 +9,9 @@ import java.util.TreeSet;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.DayMonth;
 
 /**
  * @author Raphaël Marmier, 2015-09-23

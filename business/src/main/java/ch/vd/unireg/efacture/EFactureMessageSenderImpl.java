@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -27,8 +27,8 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
 
 public class EFactureMessageSenderImpl implements EFactureMessageSender, InitializingBean {
 

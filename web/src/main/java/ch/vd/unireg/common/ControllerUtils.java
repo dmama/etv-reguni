@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.security.AccessDeniedException;
 
 /**
  * Collection de méthodes utilitaires <b>générales</b> en relation avec les contrôleurs Spring MVC 3.
@@ -15,12 +15,12 @@ public interface ControllerUtils {
 	/**
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture sur le <b>dossier</b> du tiers spécifié.
 	 * <p/>
-	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode {@link ch.vd.uniregctb.security.SecurityHelper#isGranted(ch.vd.uniregctb.security.Role)}
+	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode {@link ch.vd.unireg.security.SecurityHelper#isGranted(ch.vd.unireg.security.Role)}
 	 * sont nécessaires en complément.
 	 *
 	 * @param tiersId le tiers dont on veut vérifier les droits d'accès au dossier.
-	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si le tiers spécifié n'existe pas
-	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException si le tiers spécifié n'existe pas
+	 * @throws ch.vd.unireg.security.AccessDeniedException
 	 *                                 si l'opérateur ne possède pas les droits d'accès suffisants.
 	 */
 	void checkAccesDossierEnLecture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException;
@@ -28,12 +28,12 @@ public interface ControllerUtils {
 	/**
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.
 	 * <p/>
-	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode {@link ch.vd.uniregctb.security.SecurityHelper#isGranted(ch.vd.uniregctb.security.Role)} sont nécessaires en
+	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode {@link ch.vd.unireg.security.SecurityHelper#isGranted(ch.vd.unireg.security.Role)} sont nécessaires en
 	 * complément.
 	 *
 	 * @param tiersId le tiers dont on veut vérifier les droits d'accès au dossier.
-	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si le tiers spécifié n'existe pas
-	 * @throws ch.vd.uniregctb.security.AccessDeniedException   si l'opérateur ne possède pas les droits d'accès suffisants.
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException si le tiers spécifié n'existe pas
+	 * @throws ch.vd.unireg.security.AccessDeniedException   si l'opérateur ne possède pas les droits d'accès suffisants.
 	 */
 	void checkAccesDossierEnEcriture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException;
 

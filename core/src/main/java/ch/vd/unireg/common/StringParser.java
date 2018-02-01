@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 /**
  * Interface qui permet de customiser la conversion d'une chaîne de caractères en objet typé

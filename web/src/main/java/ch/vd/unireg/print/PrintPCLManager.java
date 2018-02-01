@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.print;
+package ch.vd.unireg.print;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

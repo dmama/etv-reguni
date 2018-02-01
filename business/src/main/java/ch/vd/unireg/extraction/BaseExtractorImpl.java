@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 /**
  * Classe de base des implémentations des extracteur comprenant la gestion du StatusManager

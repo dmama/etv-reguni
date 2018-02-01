@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,13 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StringParser;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
-import ch.vd.uniregctb.etiquette.CorrectionSurDate;
-import ch.vd.uniregctb.etiquette.Decalage;
-import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
-import ch.vd.uniregctb.etiquette.UniteDecalageDate;
+import ch.vd.unireg.common.StringParser;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.etiquette.ActionAutoEtiquette;
+import ch.vd.unireg.etiquette.CorrectionSurDate;
+import ch.vd.unireg.etiquette.Decalage;
+import ch.vd.unireg.etiquette.DecalageAvecCorrection;
+import ch.vd.unireg.etiquette.UniteDecalageDate;
 
 public class ActionAutoEtiquetteUserType extends GenericUserType implements UserType {
 

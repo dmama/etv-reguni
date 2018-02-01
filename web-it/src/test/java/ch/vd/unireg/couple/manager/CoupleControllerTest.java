@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.couple.manager;
+package ch.vd.unireg.couple.manager;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
@@ -6,7 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WebitTest;
+import ch.vd.unireg.common.WebitTest;
 
 import static org.junit.Assert.assertNotNull;
 

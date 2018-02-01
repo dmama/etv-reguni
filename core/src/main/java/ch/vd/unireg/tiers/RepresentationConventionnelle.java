@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * <pre>
@@ -58,7 +58,7 @@ public class RepresentationConventionnelle extends RapportEntreTiers {
 	}
 
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.tiers.RapportEntreTiers#duplicate()
+	 * @see ch.vd.unireg.tiers.RapportEntreTiers#duplicate()
 	 */
 	@Override
 	public RapportEntreTiers duplicate() {

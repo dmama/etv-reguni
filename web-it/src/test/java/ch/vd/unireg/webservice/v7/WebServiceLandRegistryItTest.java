@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.v7;
+package ch.vd.unireg.webservice.v7;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -52,9 +52,9 @@ import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.common.DataHelper;
+import ch.vd.unireg.common.DataHelper;
 
-import static ch.vd.uniregctb.webservice.v7.WebServiceGetPartyItTest.buildUriAndParams;
+import static ch.vd.unireg.webservice.v7.WebServiceGetPartyItTest.buildUriAndParams;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

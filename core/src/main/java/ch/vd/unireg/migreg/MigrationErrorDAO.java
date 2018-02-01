@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.migreg;
+package ch.vd.unireg.migreg;
 
 import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.type.TypeMigRegError;
+import ch.vd.unireg.type.TypeMigRegError;
 
 public interface MigrationErrorDAO extends GenericDAO<MigrationError, Long> {
 

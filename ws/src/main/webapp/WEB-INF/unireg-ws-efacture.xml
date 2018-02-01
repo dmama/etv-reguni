@@ -9,12 +9,12 @@
 		<property name="historyPath" value="${extprop.webservice.efacture.historyPath}" />
 	</bean>
 
-	<bean id="eFactureClientTracing" class="ch.vd.uniregctb.wsclient.efacture.EFactureClientTracing">
+	<bean id="eFactureClientTracing" class="ch.vd.unireg.wsclient.efacture.EFactureClientTracing">
 		<property name="target" ref="eFactureClientRaw"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
-	<bean id="eFactureClientLoadLimitator" class="ch.vd.uniregctb.common.ServiceLoadLimitatorFactoryBean">
+	<bean id="eFactureClientLoadLimitator" class="ch.vd.unireg.common.ServiceLoadLimitatorFactoryBean">
 		<property name="poolSize" value="${extprop.webservice.efacture.pool.size}"/>
 		<property name="keepAliveTime" value="0"/>
 		<property name="serviceInterfaceClass" value="ch.vd.unireg.wsclient.efacture.EFactureClient"/>
@@ -25,7 +25,7 @@
 
 	<alias alias="eFactureClient" name="eFactureClientLoadLimitator"/>
 
-	<bean id="efactureService" class="ch.vd.uniregctb.efacture.ReadOnlyEFactureServiceImpl" depends-on="uniregModeHelper">
+	<bean id="efactureService" class="ch.vd.unireg.efacture.ReadOnlyEFactureServiceImpl" depends-on="uniregModeHelper">
 		<property name="eFactureClient" ref="eFactureClient"/>
 	</bean>
 

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.AddAndSaveHelper;
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.unireg.common.AddAndSaveHelper;
+import ch.vd.unireg.common.HibernateEntity;
 
 /**
  * @param <D> type de document fiscal

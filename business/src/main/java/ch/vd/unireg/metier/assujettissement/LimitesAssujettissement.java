@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.common.Fraction;
-import ch.vd.uniregctb.metier.common.Fractionnements;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.metier.common.Fraction;
+import ch.vd.unireg.metier.common.Fractionnements;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
 
 /**
  * Limites de fractionnement à gauche et à droite d'une range déterminé.

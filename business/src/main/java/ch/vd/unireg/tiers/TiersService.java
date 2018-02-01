@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -21,36 +21,36 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.PeriodeDecompte;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.StatutMenageCommun;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.PeriodeDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.StatutMenageCommun;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Fournit les differents services d'accès aux données du Tiers.
@@ -736,8 +736,8 @@ public interface TiersService {
 
     /**
      * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques
-     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
-     * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.ModeImposition)}
+     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate, ch.vd.unireg.type.MotifFor,
+     * ch.vd.registre.base.date.RegDate, ch.vd.unireg.type.MotifFor, ch.vd.unireg.type.MotifRattachement, int, ch.vd.unireg.type.TypeAutoriteFiscale, ch.vd.unireg.type.ModeImposition)}
      *
      *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
@@ -754,8 +754,8 @@ public interface TiersService {
 
     /**
      * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques // FIXME: Réparer le commentaire copié-collé
-     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
-     * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.ModeImposition)}
+     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate, ch.vd.unireg.type.MotifFor,
+     * ch.vd.registre.base.date.RegDate, ch.vd.unireg.type.MotifFor, ch.vd.unireg.type.MotifRattachement, int, ch.vd.unireg.type.TypeAutoriteFiscale, ch.vd.unireg.type.ModeImposition)}
      *
      *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
@@ -773,7 +773,7 @@ public interface TiersService {
     /**
      * Ouvre un nouveau for fiscal secondaire sur un contribuable.
      * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForSecondaire(Contribuable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate,
-     * ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifFor)}
+     * ch.vd.unireg.type.MotifRattachement, int, ch.vd.unireg.type.TypeAutoriteFiscale, ch.vd.unireg.type.MotifFor, ch.vd.unireg.type.MotifFor)}
      *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
@@ -832,7 +832,7 @@ public interface TiersService {
     /**
      * Ouvre un nouveau for fiscal debiteur sur un contribuable.
      * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForDebiteur(DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate,
-     * ch.vd.uniregctb.type.TypeAutoriteFiscale, int)}
+     * ch.vd.unireg.type.TypeAutoriteFiscale, int)}
      *
      * @param debiteur                 le debiteur sur lequel le nouveau for est ouvert
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert

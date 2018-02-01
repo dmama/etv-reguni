@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,15 +17,15 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
-import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessErrorHandler;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.evenement.identification.contribuable.Demande.PrioriteEmetteur;
+import ch.vd.unireg.evenement.identification.contribuable.Erreur.TypeErreur;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessErrorHandler;
+import ch.vd.unireg.jms.EsbMessageHelper;
+import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -295,7 +295,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -365,7 +365,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -402,7 +402,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_date_farfelue.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_date_farfelue.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -433,7 +433,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_NCS_erreur_montant.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_NCS_erreur_montant.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -464,7 +464,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_NCS_alfred_hitchcock.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_NCS_alfred_hitchcock.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -496,7 +496,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_IMPOT_SOURCE_LISTE_IS_alfred_hitchcock.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_IMPOT_SOURCE_LISTE_IS_alfred_hitchcock.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -528,7 +528,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_E_FACTURE_alfred_hitchcock.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_E_FACTURE_alfred_hitchcock.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -565,7 +565,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			});
 
 			// Lit le message sous format texte
-			final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
+			final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
 			final String texte = FileUtils.readFileToString(file);
 
 			// Envoie le message

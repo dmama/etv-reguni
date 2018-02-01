@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.unireg.evenement;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.ls.LSResourceResolver;
 
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.jms.EsbMessageValidatorImpl;
-import ch.vd.uniregctb.jms.EsbMessageValidatorTracing;
-import ch.vd.uniregctb.stats.ServiceTracing;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.jms.EsbMessageValidatorImpl;
+import ch.vd.unireg.jms.EsbMessageValidatorTracing;
+import ch.vd.unireg.stats.ServiceTracing;
 
 public abstract class EsbMessageValidationHelper {
 

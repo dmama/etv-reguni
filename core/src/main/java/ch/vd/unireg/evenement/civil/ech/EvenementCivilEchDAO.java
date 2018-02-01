@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import java.util.Collection;
 import java.util.List;
@@ -7,9 +7,9 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 /**
  * DAO des événements civils à la sauce e-CH
@@ -32,15 +32,15 @@ public interface EvenementCivilEchDAO extends GenericDAO<EvenementCivilEch, Long
 	List<EvenementCivilEch> getEvenementsCivilsPourIndividu(long noIndividu, boolean followLinks);
 
 	/**
-	 * Renvoie l'ensemble des événements civils à relancer, i.e. qui sont dans l'état {@link ch.vd.uniregctb.type.EtatEvenementCivil#A_TRAITER A_TRAITER}
+	 * Renvoie l'ensemble des événements civils à relancer, i.e. qui sont dans l'état {@link ch.vd.unireg.type.EtatEvenementCivil#A_TRAITER A_TRAITER}
 	 * ou pour lesquels le numéro d'individu n'a pas encore été assigné
 	 * @return la liste des événements civils à relancer
 	 */
 	List<EvenementCivilEch> getEvenementsCivilsARelancer();
 
 	/**
-	 * @return l'ensemble des identifiants des individus pour lesquels il existe au moins un événement civil dans l'état {@link ch.vd.uniregctb.type.EtatEvenementCivil#EN_ATTENTE EN_ATTENTE}
-	 * ou {@link ch.vd.uniregctb.type.EtatEvenementCivil#EN_ERREUR EN_ERREUR}
+	 * @return l'ensemble des identifiants des individus pour lesquels il existe au moins un événement civil dans l'état {@link ch.vd.unireg.type.EtatEvenementCivil#EN_ATTENTE EN_ATTENTE}
+	 * ou {@link ch.vd.unireg.type.EtatEvenementCivil#EN_ERREUR EN_ERREUR}
 	 */
 	Set<Long> getIndividusConcernesParEvenementsPourRetry();
 

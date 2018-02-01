@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.unireg.evenement.registrefoncier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamPagination;
 
 public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	private final List<EvenementRFMutation> db = new ArrayList<>();

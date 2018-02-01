@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal.registrefoncier;
+package ch.vd.unireg.evenement.fiscal.registrefoncier;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.registrefoncier.BatimentRF;
 
 @Entity
 @DiscriminatorValue(value = "BATIMENT_RF")

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.etatcivilcomp;
+package ch.vd.unireg.etatcivilcomp;
 
 import javax.xml.ws.BindingProvider;
 import java.io.File;
@@ -25,11 +25,11 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.PartyWebServiceFactory;
-import ch.vd.uniregctb.perfs.PerfsAccessFile;
-import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
+import ch.vd.unireg.perfs.PerfsAccessFile;
+import ch.vd.unireg.perfs.PerfsAccessFileIterator;
 
-import static ch.vd.uniregctb.etatcivilcomp.EtatCivilCompThread.CompareQuery;
-import static ch.vd.uniregctb.etatcivilcomp.EtatCivilCompThread.Query;
+import static ch.vd.unireg.etatcivilcomp.EtatCivilCompThread.CompareQuery;
+import static ch.vd.unireg.etatcivilcomp.EtatCivilCompThread.Query;
 
 /**
  * Application de comparaison des états-civils / pseudo états-civils des appartenances ménage des tiers d'Unireg.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +9,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
-import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
+import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
 
 /**
  * Cette classe permet de mapper des IdentifiantDroitRF dans une colonne de type string.

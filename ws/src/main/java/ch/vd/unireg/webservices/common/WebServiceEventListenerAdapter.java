@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.unireg.webservices.common;
 
 import java.util.List;
 import java.util.Set;
@@ -8,12 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.data.DataEventListener;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.data.DataEventListener;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class WebServiceEventListenerAdapter implements DataEventListener, InitializingBean, DisposableBean {
 

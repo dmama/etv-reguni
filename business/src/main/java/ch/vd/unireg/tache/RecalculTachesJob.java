@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.RecalculTachesRapport;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamBoolean;
-import ch.vd.uniregctb.scheduler.JobParamEnum;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.document.RecalculTachesRapport;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamBoolean;
+import ch.vd.unireg.scheduler.JobParamEnum;
+import ch.vd.unireg.scheduler.JobParamInteger;
 
 public class RecalculTachesJob extends JobDefinition {
 

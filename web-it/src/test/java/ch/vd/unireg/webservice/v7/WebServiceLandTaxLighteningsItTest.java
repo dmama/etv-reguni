@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.v7;
+package ch.vd.unireg.webservice.v7;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
@@ -22,8 +22,8 @@ import ch.vd.unireg.xml.party.landtaxlightening.v1.UseData;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 
-import static ch.vd.uniregctb.webservice.v7.WebServiceGetPartyItTest.buildUriAndParams;
-import static ch.vd.uniregctb.webservice.v7.WebServiceLandRegistryItTest.assertDate;
+import static ch.vd.unireg.webservice.v7.WebServiceGetPartyItTest.buildUriAndParams;
+import static ch.vd.unireg.webservice.v7.WebServiceLandRegistryItTest.assertDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

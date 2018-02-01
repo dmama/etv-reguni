@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jmx;
+package ch.vd.unireg.jmx;
 
 import javax.management.ObjectName;
 import java.util.Collections;
@@ -10,12 +10,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.MBeanExportOperations;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.load.DetailedLoadJmxBeanImpl;
-import ch.vd.uniregctb.load.LoadJmxBean;
-import ch.vd.uniregctb.load.LoadJmxBeanImpl;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadMonitorable;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.load.DetailedLoadJmxBeanImpl;
+import ch.vd.unireg.load.LoadJmxBean;
+import ch.vd.unireg.load.LoadJmxBeanImpl;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadMonitorable;
+import ch.vd.unireg.stats.StatsService;
 
 /**
  * Bean JMX de monitoring de la charge de services (web-services, accès jms...)

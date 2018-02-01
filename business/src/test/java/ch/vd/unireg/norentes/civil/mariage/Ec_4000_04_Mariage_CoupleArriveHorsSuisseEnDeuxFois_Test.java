@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.mariage;
+package ch.vd.unireg.norentes.civil.mariage;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Un homme arrive HS célibataire ; il se marie avec une étrangère non-établie en Suisse qui le rejoint

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.wsclient.fidor;
+package ch.vd.unireg.wsclient.fidor;
 
 import java.util.List;
 import java.util.Map;
@@ -20,8 +20,8 @@ import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 
 public class FidorClientTracing implements FidorClient, InitializingBean, DisposableBean {

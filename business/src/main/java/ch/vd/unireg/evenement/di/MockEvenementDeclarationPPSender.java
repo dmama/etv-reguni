@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.unireg.evenement.di;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 
 public class MockEvenementDeclarationPPSender implements EvenementDeclarationPPSender {
 	@Override

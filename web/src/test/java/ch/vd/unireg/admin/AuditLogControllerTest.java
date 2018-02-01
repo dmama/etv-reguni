@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +10,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.audit.AuditLine;
-import ch.vd.uniregctb.audit.AuditLineDAO;
-import ch.vd.uniregctb.common.WebTest;
+import ch.vd.unireg.audit.AuditLine;
+import ch.vd.unireg.audit.AuditLineDAO;
+import ch.vd.unireg.common.WebTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

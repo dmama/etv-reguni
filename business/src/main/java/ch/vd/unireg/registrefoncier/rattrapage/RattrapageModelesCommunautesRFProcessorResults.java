@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.rattrapage;
+package ch.vd.unireg.registrefoncier.rattrapage;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,14 +7,14 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.tiers.Contribuable;
 
 public class RattrapageModelesCommunautesRFProcessorResults extends JobResults<Long, RattrapageModelesCommunautesRFProcessorResults> {
 

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.tiers.TiersService;
 
 public abstract class RolePPResults<R extends RolePPResults<R>> extends RoleResults<R> {
 

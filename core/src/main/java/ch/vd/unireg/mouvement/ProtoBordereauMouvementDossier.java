@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.type.TypeMouvement;
 
 /**
  * Classe renvoyée par la méthode {@link MouvementDossierDAO#getAllProtoBordereaux(Integer)}

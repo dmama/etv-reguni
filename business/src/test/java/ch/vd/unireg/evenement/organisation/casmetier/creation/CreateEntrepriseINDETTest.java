@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.casmetier.creation;
+package ch.vd.unireg.evenement.organisation.casmetier.creation;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,24 +18,24 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
-import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
+import ch.vd.unireg.tiers.Bouclement;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeEvenementOrganisation;
 
-import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
  * @author Raphaël Marmier, 2017-03-27

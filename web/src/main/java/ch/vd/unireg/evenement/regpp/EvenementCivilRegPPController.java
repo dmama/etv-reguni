@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.regpp;
+package ch.vd.unireg.evenement.regpp;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -29,18 +29,18 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
-import ch.vd.uniregctb.evenement.regpp.manager.EvenementCivilRegPPManager;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.evenement.common.AbstractEvenementCivilController;
+import ch.vd.unireg.evenement.regpp.manager.EvenementCivilRegPPManager;
+import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
+import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPElementListeView;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.type.EtatEvenementCivil;
 
 
 @Controller

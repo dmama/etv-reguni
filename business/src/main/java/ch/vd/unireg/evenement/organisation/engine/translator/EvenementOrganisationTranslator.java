@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.evenement.organisation.engine.translator;
+package ch.vd.unireg.evenement.organisation.engine.translator;
 
 
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 
 /**
  * Cette interface expose les méthodes qui permette de traduire des événements organisation externes en un événement organisation interne.

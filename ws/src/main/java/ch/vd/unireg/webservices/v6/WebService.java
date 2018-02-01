@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v6;
+package ch.vd.unireg.webservices.v6;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -18,7 +18,7 @@ import ch.vd.unireg.ws.ack.v6.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.deadline.v6.DeadlineRequest;
 import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
-import ch.vd.uniregctb.webservices.common.WebServiceHelper;
+import ch.vd.unireg.webservices.common.WebServiceHelper;
 
 public interface WebService {
 

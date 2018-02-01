@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migreg;
+package ch.vd.unireg.migreg;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.type.TypeMigRegError;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.type.TypeMigRegError;
 
 public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> implements MigrationErrorDAO {
 

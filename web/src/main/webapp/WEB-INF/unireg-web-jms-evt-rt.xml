@@ -2,12 +2,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="rapportTravailRequestHandler" class="ch.vd.uniregctb.evenement.rapport.travail.MiseAJourRapportTravailRequestHandler">
+	<bean id="rapportTravailRequestHandler" class="ch.vd.unireg.evenement.rapport.travail.MiseAJourRapportTravailRequestHandler">
 		<property name="tiersService" ref="tiersService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
-	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="rapportTravailRequestListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="rapportTravailRequestEsbHandler"/>
 		<property name="destinationName" value="${extprop.jms.queue.rapportTravail.service}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -15,7 +15,7 @@
 		<property name="description" value="Réception des demandes de modification de rapport de travail"/>
 	</bean>
 
-	<bean id="rapportTravailRequestEsbHandler" class="ch.vd.uniregctb.evenement.rapport.travail.RapportTravailRequestEsbHandler">
+	<bean id="rapportTravailRequestEsbHandler" class="ch.vd.unireg.evenement.rapport.travail.RapportTravailRequestEsbHandler">
 		<property name="rapportTravailRequestHandler" ref="rapportTravailRequestHandler" />
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>

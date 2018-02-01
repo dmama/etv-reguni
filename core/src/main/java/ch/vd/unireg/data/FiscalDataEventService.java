@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Interface du service de notification de changements sur les données Unireg, quand la source du changement

@@ -27,7 +27,7 @@
 		</property>
 	</bean>
 
-	<bean id="rcEntClientTracing" class="ch.vd.uniregctb.wsclient.rcent.RcEntClientTracing">
+	<bean id="rcEntClientTracing" class="ch.vd.unireg.wsclient.rcent.RcEntClientTracing">
 		<property name="statsService" ref="statsService"/>
 		<property name="target" ref="rcEntClientRaw"/>
 	</bean>

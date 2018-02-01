@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.decision.aci;
+package ch.vd.unireg.decision.aci;
 
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.DelegatingValidator;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.common.DelegatingValidator;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 public class DecisionValidator extends DelegatingValidator implements InitializingBean {
 

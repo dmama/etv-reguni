@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.validation.Errors;

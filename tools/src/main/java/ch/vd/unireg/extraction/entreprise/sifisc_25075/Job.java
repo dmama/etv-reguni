@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction.entreprise.sifisc_25075;
+package ch.vd.unireg.extraction.entreprise.sifisc_25075;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -37,10 +37,10 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.xml.party.corporation.v5.BusinessYear;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.uniregctb.common.BatchIterator;
-import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.utils.WebServiceV7Helper;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.utils.WebServiceV7Helper;
+import ch.vd.unireg.xml.DataHelper;
 
 public class Job {
 

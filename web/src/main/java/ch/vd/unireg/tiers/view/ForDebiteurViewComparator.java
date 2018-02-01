@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
-import ch.vd.uniregctb.common.BaseComparator;
+import ch.vd.unireg.common.BaseComparator;
 
 public class ForDebiteurViewComparator  extends BaseComparator<ForFiscalView> {
 

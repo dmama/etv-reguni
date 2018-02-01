@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import javax.xml.transform.Source;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.OperationType;
 import ch.vd.technical.esb.util.EsbDataHandler;
-import ch.vd.uniregctb.stats.ServiceTracingRecorder;
+import ch.vd.unireg.stats.ServiceTracingRecorder;
 
 /**
  * Façade qui trace certains appels (<i>a priori</i> consomateurs) sur l'EsbMessage

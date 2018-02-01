@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.fors;
+package ch.vd.unireg.fors;
 
-import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.unireg.type.MotifRattachement;
 
 public interface EditForRevenuFortuneView extends EditForAvecMotifsView {
 

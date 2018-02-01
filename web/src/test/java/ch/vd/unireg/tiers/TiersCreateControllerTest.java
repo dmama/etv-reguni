@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -15,8 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.uniregctb.common.WebTestSpring3;
-import ch.vd.uniregctb.tiers.view.CreateNonHabitantView;
+import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.tiers.view.CreateNonHabitantView;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

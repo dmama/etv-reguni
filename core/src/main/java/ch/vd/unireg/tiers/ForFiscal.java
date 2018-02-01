@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -26,14 +26,14 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessComparable;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.BusinessComparable;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Rattachement d'un contribuable à une commune ou fraction de commune vaudoise.
@@ -120,7 +120,7 @@ public abstract class ForFiscal extends LocalisationDatee implements Comparable<
 	}
 
 	@Column(name = "GENRE_IMPOT", nullable = false, length = LengthConstants.FOR_GENRE)
-	@Type(type = "ch.vd.uniregctb.hibernate.GenreImpotUserType")
+	@Type(type = "ch.vd.unireg.hibernate.GenreImpotUserType")
 	public GenreImpot getGenreImpot() {
 		return genreImpot;
 	}

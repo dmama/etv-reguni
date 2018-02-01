@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.timeline;
+package ch.vd.unireg.tiers.timeline;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.tiers.NatureTiers;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.tiers.NatureTiers;
 
 /**
  * Données pour la page de visualisation de l'historique des fors fiscaux et assujettissements d'un contribuable

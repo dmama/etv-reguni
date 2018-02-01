@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rcent.annonce;
+package ch.vd.unireg.rcent.annonce;
 
 public class UnreckognizedLineException extends Exception {
 

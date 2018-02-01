@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -44,14 +44,14 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.ReflexionUtils;
-import ch.vd.uniregctb.hibernate.DayMonthUserType;
-import ch.vd.uniregctb.hibernate.EnumUserType;
-import ch.vd.uniregctb.hibernate.IdentifiantAffaireRFUserType;
-import ch.vd.uniregctb.hibernate.IdentifiantDroitRFUserType;
-import ch.vd.uniregctb.hibernate.RegDateUserType;
-import ch.vd.uniregctb.hibernate.TypeAdresseCivilLegacyUserType;
-import ch.vd.uniregctb.hibernate.URLUserType;
+import ch.vd.unireg.common.ReflexionUtils;
+import ch.vd.unireg.hibernate.DayMonthUserType;
+import ch.vd.unireg.hibernate.EnumUserType;
+import ch.vd.unireg.hibernate.IdentifiantAffaireRFUserType;
+import ch.vd.unireg.hibernate.IdentifiantDroitRFUserType;
+import ch.vd.unireg.hibernate.RegDateUserType;
+import ch.vd.unireg.hibernate.TypeAdresseCivilLegacyUserType;
+import ch.vd.unireg.hibernate.URLUserType;
 
 /**
  * Classe qui expose de manière pratique les méta-informations (colonnes, nom de table, discriminant, ...) d'une entité Hibernate.

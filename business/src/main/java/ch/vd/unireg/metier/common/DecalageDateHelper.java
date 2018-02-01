@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.common;
+package ch.vd.unireg.metier.common;
 
 import ch.vd.registre.base.date.RegDate;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.annonceIDE;
+package ch.vd.unireg.annonceIDE;
 
 import java.util.Date;
 

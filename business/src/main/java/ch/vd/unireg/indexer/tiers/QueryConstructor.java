@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.io.Serializable;
 import java.util.EnumSet;
@@ -13,18 +13,18 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.Constants;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
-import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
-import ch.vd.uniregctb.tiers.TiersFilter;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.unireg.common.Constants;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersCriteria.TypeTiers;
+import ch.vd.unireg.tiers.TiersCriteria.TypeVisualisation;
+import ch.vd.unireg.tiers.TiersFilter;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEtatEntreprise;
 
 public class QueryConstructor {
 

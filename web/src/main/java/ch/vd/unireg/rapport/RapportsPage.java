@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.util.List;
 import java.util.Map;
@@ -6,18 +6,18 @@ import java.util.Map;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.tiers.ActiviteEconomique;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
-import ch.vd.uniregctb.tiers.RepresentationLegale;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.TiersWebHelper;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.tiers.ActiviteEconomique;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RepresentationConventionnelle;
+import ch.vd.unireg.tiers.RepresentationLegale;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.TiersWebHelper;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.utils.WebContextUtils;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RapportsPage {
@@ -50,7 +50,7 @@ public class RapportsPage {
 			this.annule = rapport.isAnnule();
 			this.type = initType(rapport, sens, messageSource);
 			this.numeroAutreTiers = (sens == SensRapportEntreTiers.SUJET ? rapport.getObjetId() : rapport.getSujetId());
-			this.nomCourrier = ch.vd.uniregctb.rapport.view.RapportView.buildNomCourrier(getTiers(this.numeroAutreTiers, tiersService), adresseService);
+			this.nomCourrier = ch.vd.unireg.rapport.view.RapportView.buildNomCourrier(getTiers(this.numeroAutreTiers, tiersService), adresseService);
 
 			if (rapport instanceof RepresentationConventionnelle) {
 				final RepresentationConventionnelle rc = (RepresentationConventionnelle) rapport;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import java.util.List;
 
@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.LoggingStatusManager;
 
 public class ImportCodesSegmentJobTest extends BusinessTest {
 

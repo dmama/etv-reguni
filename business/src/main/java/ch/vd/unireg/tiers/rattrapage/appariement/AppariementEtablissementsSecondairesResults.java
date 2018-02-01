@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.rattrapage.appariement;
+package ch.vd.unireg.tiers.rattrapage.appariement;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class AppariementEtablissementsSecondairesResults extends AbstractJobResults<Long, AppariementEtablissementsSecondairesResults> {
 

@@ -15,7 +15,7 @@
 		<%--@elvariable id="pageSize" type="java.lang.Long"--%>
 		<%--@elvariable id="count" type="java.lang.Long"--%>
 		<display:table name="situations" id="situation" class="display_table" pagesize="${pageSize}" size="${count}" sort="external" partialList="true"
-		               requestURI="/registrefoncier/situation/surcharge/list.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		               requestURI="/registrefoncier/situation/surcharge/list.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucune.situation.trouve"/></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.une.situation.trouve"/></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.situations.trouvees"/></span></display:setProperty>

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
-import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.unireg.tiers.Etablissement;
 
 /**
  * @author Raphaël Marmier, 2017-01-16, <raphael.marmier@vd.ch>

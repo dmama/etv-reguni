@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.load;
+package ch.vd.unireg.load;
 
-import ch.vd.uniregctb.stats.LoadMonitor;
-import ch.vd.uniregctb.stats.LoadMonitorable;
+import ch.vd.unireg.stats.LoadMonitor;
+import ch.vd.unireg.stats.LoadMonitorable;
 
 public class BasicLoadMonitor implements LoadMonitor {
 

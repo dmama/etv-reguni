@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 /**
  * Contient les adresses fiscales (= spécifiées dans le registre civil, ou surchargées dans le registre fiscal) à un instant donné.

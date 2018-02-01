@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.efacture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
+import ch.vd.unireg.jms.EsbMessageHandler;
 
 public class EFactureResponseHandler implements EsbMessageHandler {
 

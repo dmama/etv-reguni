@@ -3,7 +3,7 @@ package ch.vd.unireg.interfaces.efacture.data;
 import java.util.Date;
 
 import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 /**
  * Representation interne UNIREG de la classe {@link RegistrationRequestHistoryEntry} de l' eVD-25

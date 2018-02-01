@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.param.view;
+package ch.vd.unireg.param.view;
 
 import ch.vd.registre.base.date.RegDate;
 

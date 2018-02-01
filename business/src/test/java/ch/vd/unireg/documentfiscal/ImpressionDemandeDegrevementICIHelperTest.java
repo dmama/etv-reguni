@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
-import ch.vd.uniregctb.registrefoncier.MineRF;
-import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
-import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.unireg.registrefoncier.MineRF;
+import ch.vd.unireg.registrefoncier.PartCoproprieteRF;
+import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
 
 public class ImpressionDemandeDegrevementICIHelperTest extends WithoutSpringTest {
 

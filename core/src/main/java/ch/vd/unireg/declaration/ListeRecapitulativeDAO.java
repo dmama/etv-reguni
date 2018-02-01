@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamPagination;
 
 
 /*

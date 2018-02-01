@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 /**
  * Les différents codes des types de documents sortants dont il faut publier l'envoi

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.batch;
+package ch.vd.unireg.admin.batch;
 
 import javax.validation.Valid;
 import java.time.Duration;
@@ -27,16 +27,16 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.uniregctb.admin.BatchList;
-import ch.vd.uniregctb.common.EncodingFixHelper;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamType;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.unireg.admin.BatchList;
+import ch.vd.unireg.common.EncodingFixHelper;
+import ch.vd.unireg.scheduler.BatchScheduler;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamType;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
 
 @Controller
 @RequestMapping(value = "/admin/")

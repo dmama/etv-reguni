@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats.evenements;
+package ch.vd.unireg.stats.evenements;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -20,19 +20,19 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.reqdes.ErreurTraitement;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.evenement.externe.EtatEvenementExterne;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.reqdes.ErreurTraitement;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenementsService {
 

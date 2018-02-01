@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
 public class AuditLineCriteria {
 

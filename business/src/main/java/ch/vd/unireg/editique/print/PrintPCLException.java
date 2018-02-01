@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.print;
+package ch.vd.unireg.editique.print;
 
 public class PrintPCLException extends Exception {
 

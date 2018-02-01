@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
+import ch.vd.unireg.evenement.externe.EtatEvenementExterne;
 
 /**
  * Classe de transtypage pour Hibernate : EtatEvenementExterne <--> varchar

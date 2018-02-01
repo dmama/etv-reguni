@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.Arrays;
 import java.util.List;
 
-import ch.vd.uniregctb.declaration.ForsList;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.declaration.ForsList;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
 
 /**
  * Structure qui contient les fors fiscaux d'un contribuables à une date donnée.

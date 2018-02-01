@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
 import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.foncier.DegrevementICI;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

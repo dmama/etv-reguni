@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.unireg.type.PeriodeDecompte;
 
 /**
  * Classe de transtypage pour Hibernate : Mois <--> varchar

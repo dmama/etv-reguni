@@ -23,7 +23,7 @@
 		<property name="upiGetInfoPersonPath" value="${extprop.webservice.rcpers.upiGetInfoPersonPath}" />
 	</bean>
 
-	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">
+	<bean id="rcPersClientTracing" class="ch.vd.unireg.wsclient.rcpers.RcPersClientTracing">
 		<property name="target" ref="rcPersClientRaw"/>
 		<property name="statsService" ref="statsService"/>
 	</bean>
@@ -32,7 +32,7 @@
 
 	<!-- Service civil -->
 
-	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
+	<bean id="serviceCivilLogger" class="ch.vd.unireg.interfaces.service.ServiceCivilLoggerImpl"/>
 	<alias alias="serviceCivilInterceptor" name="serviceCivilLogger"/>
 
 	<bean id="serviceCivilRcPers" class="ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers">
@@ -105,7 +105,7 @@
 		<property name="wcPool" ref="fidorWebClientPool"/>
 	</bean>
 
-	<bean id="fidorClientTracing" class="ch.vd.uniregctb.wsclient.fidor.FidorClientTracing">
+	<bean id="fidorClientTracing" class="ch.vd.unireg.wsclient.fidor.FidorClientTracing">
 		<property name="statsService" ref="statsService"/>
 		<property name="target" ref="fidorClientRaw"/>
 	</bean>
@@ -144,7 +144,7 @@
 		<property name="wcPool" ref="hostIntWebClientPool" />
 	</bean>
 
-	<bean id="serviceInfrastructureClientTracing" class="ch.vd.uniregctb.wsclient.host.ServiceInfrastructureClientTracing">
+	<bean id="serviceInfrastructureClientTracing" class="ch.vd.unireg.wsclient.host.ServiceInfrastructureClientTracing">
 		<property name="statsService" ref="statsService"/>
 		<property name="target" ref="serviceInfrastructureClientRaw"/>
 	</bean>

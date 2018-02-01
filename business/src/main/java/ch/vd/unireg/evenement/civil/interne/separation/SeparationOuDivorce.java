@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.separation;
+package ch.vd.unireg.evenement.civil.interne.separation;
 
 import java.util.List;
 
@@ -13,25 +13,25 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.HandleStatus;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
+import ch.vd.unireg.tiers.ForsParType;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 /**
  * Adapter pour la séparation.
@@ -181,7 +181,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	 * @param habitant l'habitant
 	 * @param conjoint son conjoint
 	 * @return <b>true</b> si les tiers appartenant au ménage sont séparés fiscalement; <b>false</b> autrement.
-	 * @throws ch.vd.uniregctb.evenement.civil.common.EvenementCivilException
+	 * @throws ch.vd.unireg.evenement.civil.common.EvenementCivilException
 	 *          en cas de données incohérentes
 	 */
 	protected boolean isSeparesFiscalement(RegDate date, PersonnePhysique habitant, @Nullable PersonnePhysique conjoint) throws EvenementCivilException {
@@ -276,7 +276,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		}
 
 		final EtatCivil etatCivil = context.getServiceCivil().getEtatCivilActif(numeroIndividu, dateEvt);
-		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
+		final ch.vd.unireg.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
 		// traitement de la séparation
 		try {
 			context.getMetierService().separe(menageCommun, dateEvt, null, etatCivilUnireg, getNumeroEvenement());

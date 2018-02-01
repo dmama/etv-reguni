@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.type.EtatCivil;
 
 /**
  * Classe de base permettant d'adapter une situation de famille en provenance du fiscal.

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.common.NumeroIDEHelper;
-import ch.vd.uniregctb.tiers.view.ContribuableInfosEntrepriseView;
+import ch.vd.unireg.common.NumeroIDEHelper;
+import ch.vd.unireg.tiers.view.ContribuableInfosEntrepriseView;
 
 public class ContribuableInfosEntrepriseViewValidator implements Validator {
 

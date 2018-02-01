@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.unireg.di.view;
 
 import java.util.List;
 
-import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
+import ch.vd.unireg.type.TypeDocument;
 
 public class ModeleDocumentView {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.interceptor;
+package ch.vd.unireg.hibernate.interceptor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,13 +17,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LockHelper;
-import ch.vd.uniregctb.common.StackedThreadLocal;
-import ch.vd.uniregctb.common.ThreadSwitch;
-import ch.vd.uniregctb.transaction.TransactionSynchronizationManagerInterface;
-import ch.vd.uniregctb.transaction.TransactionSynchronizationRegistrar;
-import ch.vd.uniregctb.transaction.TransactionSynchronizationSupplier;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LockHelper;
+import ch.vd.unireg.common.StackedThreadLocal;
+import ch.vd.unireg.common.ThreadSwitch;
+import ch.vd.unireg.transaction.TransactionSynchronizationManagerInterface;
+import ch.vd.unireg.transaction.TransactionSynchronizationRegistrar;
+import ch.vd.unireg.transaction.TransactionSynchronizationSupplier;
 
 /**
  * Intercepteur hibernate qui détecte lorsqu'une entité hibernate (HibernateEntity) est ajoutée ou modifiée dans la base de données, et

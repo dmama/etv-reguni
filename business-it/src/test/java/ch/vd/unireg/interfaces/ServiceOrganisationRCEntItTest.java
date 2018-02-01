@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces;
+package ch.vd.unireg.interfaces;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -55,10 +55,10 @@ import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
 import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 import static ch.vd.unireg.interfaces.civil.data.IndividuRCPersTest.assertAdresse;
 import static org.junit.Assert.assertEquals;
@@ -92,7 +92,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	// Organisation de l'échantillon fichier
 	private static final long ID_BOMACO = 101636326L;
 	private static final String BOMACO_SÀRL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
-	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/uniregctb/interfaces/organisation-bomaco-history.xml";
+	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/unireg/interfaces/organisation-bomaco-history.xml";
 
 	// annonce à l'IDE sur RCEnt
 	private static final String USER_ID = "unireg";

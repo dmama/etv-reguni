@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.model;
+package ch.vd.unireg.interfaces.model;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import java.util.List;
 
@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.iban.IbanHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
-import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.Mandat;
+import ch.vd.unireg.type.TypeMandat;
 
 public class MandatView {
 

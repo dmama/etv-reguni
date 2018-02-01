@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces;
+package ch.vd.unireg.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +19,8 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 
 import static org.junit.Assert.assertEquals;

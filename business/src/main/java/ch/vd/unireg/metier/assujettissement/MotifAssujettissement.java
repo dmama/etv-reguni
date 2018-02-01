@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.type.MotifFor;
 
 public enum MotifAssujettissement {
 

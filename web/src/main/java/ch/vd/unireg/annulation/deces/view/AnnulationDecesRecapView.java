@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.annulation.deces.view;
+package ch.vd.unireg.annulation.deces.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.unireg.general.view.TiersGeneralView;
 
 public class AnnulationDecesRecapView {
 

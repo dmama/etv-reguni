@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.v6;
+package ch.vd.unireg.webservices.v6;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.type.MotifFor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,8 +14,8 @@ import static org.junit.Assert.assertNull;
 
 public class MotifForTest extends EnumTest {
 
-	private static ch.vd.uniregctb.type.MotifFor[] buildAllowedCoreMotifsFor() {
-		return ch.vd.uniregctb.type.MotifFor.values();
+	private static ch.vd.unireg.type.MotifFor[] buildAllowedCoreMotifsFor() {
+		return ch.vd.unireg.type.MotifFor.values();
 	}
 
 	private static LiabilityChangeReason[] buildAllowedReasons() {

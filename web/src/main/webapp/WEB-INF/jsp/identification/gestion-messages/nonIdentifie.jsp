@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="messageData" type="ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView"--%>
-<%--@elvariable id="source" type="ch.vd.uniregctb.identification.contribuable.IdentificationController.Source"--%>
+<%--@elvariable id="messageData" type="ch.vd.unireg.identification.contribuable.view.DemandeIdentificationView"--%>
+<%--@elvariable id="source" type="ch.vd.unireg.identification.contribuable.IdentificationController.Source"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 

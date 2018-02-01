@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.util.HtmlUtils;
 
-import ch.vd.uniregctb.annonceIDE.AdresseAnnonceIDEView;
+import ch.vd.unireg.annonceIDE.AdresseAnnonceIDEView;
 
 /**
  * Tag JSP qui permet d'afficher une adresse de demande d'annonce à l'IDE sur plusieurs lignes

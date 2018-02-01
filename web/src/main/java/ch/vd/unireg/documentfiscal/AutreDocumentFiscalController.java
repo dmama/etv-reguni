@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -28,28 +28,28 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.EditiqueErrorHelper;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.EditiqueErrorHelper;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.RetourEditiqueControllerHelper;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
+import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.parametrage.DelaisService;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.utils.RegDateEditor;
+import ch.vd.unireg.utils.WebContextUtils;
 
 @Controller
 @RequestMapping("/autresdocs")

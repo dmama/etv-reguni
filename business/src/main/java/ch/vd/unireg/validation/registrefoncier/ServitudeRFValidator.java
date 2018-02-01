@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
-import ch.vd.uniregctb.registrefoncier.ServitudeRF;
+import ch.vd.unireg.registrefoncier.ServitudeRF;
 
 @SuppressWarnings("Duplicates")
 public class ServitudeRFValidator extends DroitRFValidator<ServitudeRF> {

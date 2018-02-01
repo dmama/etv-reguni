@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -9,8 +9,8 @@ import java.util.Date;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.tiers.TypeTiers;
 
 /**
  * Contient les données d'une requête d'identification d'un contribuable.
@@ -150,13 +150,13 @@ public class Demande {
 	}
 
 	@Column(name = "PRIO_EMETTEUR", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypePrioriteEmetteurUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypePrioriteEmetteurUserType")
 	public PrioriteEmetteur getPrioriteEmetteur() {
 		return prioriteEmetteur;
 	}
 
 	@Column(name = "DEMANDE_TYPE", length = LengthConstants.IDENT_DEMANDE_TYPE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeDemandeUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeDemandeUserType")
 	public TypeDemande getTypeDemande() {
 		return typeDemande;
 	}
@@ -166,7 +166,7 @@ public class Demande {
 	}
 
 	@Column(name = "MODE_IDENTIFICATION", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.ModeIdentificationTypeUserType")
+	@Type(type = "ch.vd.unireg.hibernate.ModeIdentificationTypeUserType")
 	public ModeIdentificationType getModeIdentification() {
 		return modeIdentification;
 	}

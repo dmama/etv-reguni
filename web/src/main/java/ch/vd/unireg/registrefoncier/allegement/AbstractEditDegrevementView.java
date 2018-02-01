@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.util.Optional;
 
-import ch.vd.uniregctb.foncier.DegrevementICI;
-import ch.vd.uniregctb.foncier.DonneesLoiLogement;
-import ch.vd.uniregctb.foncier.DonneesUtilisation;
+import ch.vd.unireg.foncier.DegrevementICI;
+import ch.vd.unireg.foncier.DonneesLoiLogement;
+import ch.vd.unireg.foncier.DonneesUtilisation;
 
 public abstract class AbstractEditDegrevementView extends AbstractYearRangeView {
 

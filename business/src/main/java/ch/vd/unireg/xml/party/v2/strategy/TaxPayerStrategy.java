@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v2.strategy;
+package ch.vd.unireg.xml.party.v2.strategy;
 
 import java.util.List;
 import java.util.Set;
@@ -14,20 +14,20 @@ import ch.vd.unireg.xml.party.taxpayer.v2.Taxpayer;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationPeriod;
 import ch.vd.unireg.xml.party.v2.PartyPart;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.situationfamille.VueSituationFamille;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.ExceptionHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v2.FamilyStatusBuilder;
-import ch.vd.uniregctb.xml.party.v2.SimplifiedTaxLiabilityBuilder;
-import ch.vd.uniregctb.xml.party.v2.TaxLiabilityBuilder;
-import ch.vd.uniregctb.xml.party.v2.TaxationPeriodBuilder;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.situationfamille.VueSituationFamille;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.ExceptionHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v2.FamilyStatusBuilder;
+import ch.vd.unireg.xml.party.v2.SimplifiedTaxLiabilityBuilder;
+import ch.vd.unireg.xml.party.v2.TaxLiabilityBuilder;
+import ch.vd.unireg.xml.party.v2.TaxationPeriodBuilder;
 
 public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy<T> {
 
@@ -92,7 +92,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		 * Note: il est nécessaire de calculer l'assujettissement sur TOUTE la période de validité du contribuable pour obtenir un résultat
 		 * correct avec le collate.
 		 */
-		final List<ch.vd.uniregctb.metier.assujettissement.Assujettissement> list;
+		final List<ch.vd.unireg.metier.assujettissement.Assujettissement> list;
 		try {
 			list = context.assujettissementService.determine(right, (DateRange) null);
 		}
@@ -106,7 +106,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			final boolean wantAssujettissements = parts.contains(PartyPart.TAX_LIABILITIES);
 			final boolean wantPeriodes = parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES);
 
-			for (ch.vd.uniregctb.metier.assujettissement.Assujettissement a : list) {
+			for (ch.vd.unireg.metier.assujettissement.Assujettissement a : list) {
 				if (wantAssujettissements) {
 					left.getTaxLiabilities().add(TaxLiabilityBuilder.newTaxLiability(a));
 				}

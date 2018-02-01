@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,8 +15,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
 
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @Table(name = "REQDES_TRANSACTION_IMMOBILIERE")

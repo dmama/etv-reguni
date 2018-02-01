@@ -3,93 +3,93 @@
 	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="cronTab" class="ch.vd.uniregctb.scheduler.CronTab">
+	<bean id="cronTab" class="ch.vd.unireg.scheduler.CronTab">
 		<property name="scheduler" ref="batchScheduler"/>
 		<property name="definitions" >
 			<list>
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="updateTacheStatsJob"/>
 					<!-- met-à-jour les stats des tâches toutes les 5 minutes, de 6h à 20h tous les jours -->
 					<property name="cronExpression" value="${extprop.crontab.update.tache.stats}"/>
 				</bean>
 
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="databaseIndexingJob"/>
 					<!-- schedule l'indexation des dirties tous les jours, à 2 heures du matin -->
 					<property name="cronExpression" value="${extprop.crontab.reindexation.tiers.dirty}"/>
 					<property name="params">
 						<map>
 							<entry>
-								<key><util:constant static-field="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob.I_NB_THREADS"/></key>
+								<key><util:constant static-field="ch.vd.unireg.indexer.jobs.DatabaseIndexerJob.I_NB_THREADS"/></key>
 								<value type="java.lang.Integer">4</value>
 							</entry>
 							<entry>
-								<key><util:constant static-field="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob.MODE"/></key>
-								<value type="ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer$Mode">DIRTY_ONLY</value>
+								<key><util:constant static-field="ch.vd.unireg.indexer.jobs.DatabaseIndexerJob.MODE"/></key>
+								<value type="ch.vd.unireg.indexer.tiers.GlobalTiersIndexer$Mode">DIRTY_ONLY</value>
 							</entry>
 						</map>
 					</property>
 				</bean>
 				
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="optimizeIndexJob"/>
 					<!-- l'optimisation de l'index lucene tous les jours, à 4 heures du matin -->
 					<property name="cronExpression" value="${extprop.crontab.optimisation.index.lucene}"/>
 				</bean>
 
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="updateCriteresIdentificationJob"/>
 					<!-- met-à-jour les critères d'identification ctb dans la page de recherche toutes les 5 minutes, de 6h à 20h tous les jours -->
 					<property name="cronExpression" value="${extprop.crontab.update.criteres.identification}"/>
 				</bean>
 
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="auditPurgeJob"/>
 					<!-- purge les logs d'audit des données plus vieilles que 185 jours, tous les jours à minuit dix -->
 					<property name="cronExpression" value="${extprop.crontab.purge.audit.logs}"/>
 					<property name="params">
 						<map>
 							<entry>
-								<key><util:constant static-field="ch.vd.uniregctb.database.AuditLogPurgeJob.DAYS"/></key>
+								<key><util:constant static-field="ch.vd.unireg.database.AuditLogPurgeJob.DAYS"/></key>
 								<value type="java.lang.Integer">185</value>
 							</entry>
 						</map>
 					</property>
 				</bean>
 
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="calculParentesJob"/>
 					<!-- rafraîchissement des relations de parenté des personnes physiques obsolètes à ce niveau -->
 					<property name="cronExpression" value="${extprop.crontab.refresh.parentes}"/>
 					<property name="params">
 						<map>
 							<entry>
-								<key><util:constant static-field="ch.vd.uniregctb.parentes.CalculParentesJob.NB_THREADS"/></key>
+								<key><util:constant static-field="ch.vd.unireg.parentes.CalculParentesJob.NB_THREADS"/></key>
 								<value type="java.lang.Integer">4</value>
 							</entry>
 							<entry>
-								<key><util:constant static-field="ch.vd.uniregctb.parentes.CalculParentesJob.MODE"/></key>
-								<value type="ch.vd.uniregctb.parentes.CalculParentesMode">REFRESH_DIRTY</value>
+								<key><util:constant static-field="ch.vd.unireg.parentes.CalculParentesJob.MODE"/></key>
+								<value type="ch.vd.unireg.parentes.CalculParentesMode">REFRESH_DIRTY</value>
 							</entry>
 						</map>
 					</property>
 				</bean>
 
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="annonceIDEJob"/>
 					<!-- détermination et émission des annonces à l'IDE pour les entreprises sous contrôle d'Unireg. -->
 					<property name="cronExpression" value="${extprop.crontab.annonce.entreprises.ide}"/>
 					<property name="params">
 						<map>
 							<entry>
-								<key><util:constant static-field="ch.vd.uniregctb.evenement.ide.AnnonceIDEJob.SIMULATION"/></key>
+								<key><util:constant static-field="ch.vd.unireg.evenement.ide.AnnonceIDEJob.SIMULATION"/></key>
 								<value type="java.lang.Boolean">false</value>
 							</entry>
 						</map>
 					</property>
 				</bean>
 
-				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+				<bean class="ch.vd.unireg.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="cleanupImportRFJob"/>
 					<!-- cleanup des vieux imports du RF -->
 					<property name="cronExpression" value="${extprop.crontab.cleanup.rf.import}"/>

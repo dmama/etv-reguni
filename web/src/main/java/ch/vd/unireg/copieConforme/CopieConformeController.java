@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.copieConforme;
+package ch.vd.unireg.copieConforme;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.HttpHelper;
-import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.HttpHelper;
+import ch.vd.unireg.common.RetourEditiqueControllerHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 @Controller
 public class CopieConformeController {

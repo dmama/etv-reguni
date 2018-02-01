@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.reception;
+package ch.vd.unireg.evenement.reqdes.reception;
 
 import ch.vd.unireg.common.NomPrenom;
 

@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeLettreBienvenue;
+import ch.vd.unireg.type.TypeLettreBienvenue;
 
 public class ImprimerAutreDocumentFiscalView {
 

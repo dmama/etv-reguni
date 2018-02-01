@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.scheduler.JobAlreadyStartedException;
 
 public class MockRegistreFoncierImportService implements RegistreFoncierImportService {
 

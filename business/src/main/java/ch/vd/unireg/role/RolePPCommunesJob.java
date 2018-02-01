@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.RolePPCommunesRapport;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamCommune;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.document.RolePPCommunesRapport;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamCommune;
 
 public class RolePPCommunesJob extends RoleJob {
 

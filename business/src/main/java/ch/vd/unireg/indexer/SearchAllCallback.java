@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 import ch.vd.registre.simpleindexer.DocGetter;
 

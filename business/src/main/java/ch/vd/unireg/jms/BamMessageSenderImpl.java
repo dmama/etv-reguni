@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.technical.esb.BamMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.unireg.common.AuthenticationHelper;
 
 public class BamMessageSenderImpl implements BamMessageSender {
 

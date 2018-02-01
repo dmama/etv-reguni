@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -13,10 +13,10 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
  * <!-- begin-user-doc -->
@@ -61,7 +61,7 @@ public class DeclarationImpotSource extends Declaration {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_JTNrAAVnEd2-GsFUBw6pEA?GETTER"
 	 */
 	@Column(name = "PERIODICITE", length = LengthConstants.DPI_PERIODICITE)
-	@Type(type = "ch.vd.uniregctb.hibernate.PeriodiciteDecompteUserType")
+	@Type(type = "ch.vd.unireg.hibernate.PeriodiciteDecompteUserType")
 	public PeriodiciteDecompte getPeriodicite() {
 		// begin-user-code
 		return periodicite;
@@ -87,7 +87,7 @@ public class DeclarationImpotSource extends Declaration {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_G4oe8AVnEd2-GsFUBw6pEA?GETTER"
 	 */
 	@Column(name = "MODE_COM", length = LengthConstants.DPI_MODECOM)
-	@Type(type = "ch.vd.uniregctb.hibernate.ModeCommunicationUserType")
+	@Type(type = "ch.vd.unireg.hibernate.ModeCommunicationUserType")
 	public ModeCommunication getModeCommunication() {
 		// begin-user-code
 		return modeCommunication;

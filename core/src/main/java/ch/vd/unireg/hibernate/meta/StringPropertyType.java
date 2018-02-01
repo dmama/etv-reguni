@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
 public class StringPropertyType extends PropertyType {
 	public StringPropertyType() {

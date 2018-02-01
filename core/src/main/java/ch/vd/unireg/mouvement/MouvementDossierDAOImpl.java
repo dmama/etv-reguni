@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,11 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.HibernateQueryHelper;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.pagination.ParamSorting;
-import ch.vd.uniregctb.type.TypeMouvement;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.HibernateQueryHelper;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamSorting;
+import ch.vd.unireg.type.TypeMouvement;
 
 public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long> implements MouvementDossierDAO {
 

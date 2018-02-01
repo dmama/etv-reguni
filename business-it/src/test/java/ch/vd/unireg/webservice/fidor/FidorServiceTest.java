@@ -13,8 +13,8 @@ import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.WebClientPool;
-import ch.vd.uniregctb.utils.UniregProperties;
-import ch.vd.uniregctb.utils.UniregPropertiesImpl;
+import ch.vd.unireg.utils.UniregProperties;
+import ch.vd.unireg.utils.UniregPropertiesImpl;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
 

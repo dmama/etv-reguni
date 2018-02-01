@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -6,8 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeLettreBienvenue;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.TypeLettreBienvenue;
 
 @Entity
 @DiscriminatorValue(value = "LettreBienvenue")

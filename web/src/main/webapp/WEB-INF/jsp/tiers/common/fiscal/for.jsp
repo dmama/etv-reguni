@@ -56,7 +56,7 @@
 		<c:if test="${not empty command.forsFiscauxPrincipaux}">
 			<display:table name="command.forsFiscauxPrincipaux" id="ffp" pagesize="${(command.nombreElementsTable == 0 || !command.forsPrincipauxPagines) ? 0 : command.nombreElementsTable}"
 			               requestURI="${url}" sort="list"
-			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			               class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 				<display:column style="width:16px;">
 					<div id="ffid-${ffp.id}" class="forPrincipalIconSmall" title="For fiscal principal"></div>
@@ -176,7 +176,7 @@
 		<c:if test="${not empty command.forsFiscauxSecondaires}">
 			<display:table name="command.forsFiscauxSecondaires" id="ffs" pagesize="${(command.nombreElementsTable == 0 || !command.forsSecondairesPagines) ? 0 : command.nombreElementsTable}"
 			               requestURI="${url}" sort="list"
-			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			               class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 				<display:column style="width:16px;">
 					<div id="ffid-${ffs.id}" class="forSecondaireIconSmall" title="For fiscal secondaire"></div>
@@ -290,7 +290,7 @@
 		<c:if test="${not empty command.autresForsFiscaux}">
 			<display:table name="command.autresForsFiscaux" id="ffa" pagesize="${(command.nombreElementsTable == 0 || !command.autresForsPagines) ? 0 : command.nombreElementsTable}"
 			               requestURI="${url}" sort="list"
-			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			               class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 				<display:column style="width:16px;">
 					<c:if test="${ffa.natureForFiscal == 'ForFiscalAutreElementImposable'}">

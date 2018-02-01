@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.evenement.ech.view;
+package ch.vd.unireg.evenement.ech.view;
 
 import java.io.Serializable;
 import java.util.List;
 
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
-import ch.vd.uniregctb.evenement.common.view.EvenementCivilDetailView;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.common.view.EvenementCivilDetailView;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 /**
  * Structure permettant l'affichage de la page de detail de l'evenement

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.ech.view;
+package ch.vd.unireg.evenement.ech.view;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -7,7 +7,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
 
 public class EvenementCivilEchGrappeView implements Serializable, Iterable<EvenementCivilEchBasicInfo> {
 

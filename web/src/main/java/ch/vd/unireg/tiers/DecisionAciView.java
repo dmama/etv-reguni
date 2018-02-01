@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public class DecisionAciView implements Annulable{
 	private Long id;

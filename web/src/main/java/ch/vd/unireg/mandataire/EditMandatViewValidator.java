@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.tiers.view.DateRangeViewValidator;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.tiers.view.DateRangeViewValidator;
+import ch.vd.unireg.type.TypeMandat;
 
 public class EditMandatViewValidator implements Validator {
 

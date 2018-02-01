@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.depart;
+package ch.vd.unireg.evenement.civil.interne.depart;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
@@ -10,9 +10,9 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class DepartDecaleHelperTest extends WithoutSpringTest {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.dialect;
+package ch.vd.unireg.hibernate.dialect;
 
 import java.sql.Types;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.reception;
+package ch.vd.unireg.evenement.reqdes.reception;
 
 import ch.ech.ech0010.v4.AddressInformation;
 import ch.ech.ech0010.v4.SwissAddressInformation;
@@ -11,8 +11,8 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.xml.event.reqdes.v1.SwissResidence;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Adresse de résidence telle que renvoyée par les messages ReqDes

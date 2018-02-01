@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.lr.view;
+package ch.vd.unireg.lr.view;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 
 public class ListesRecapitulativesView {
 

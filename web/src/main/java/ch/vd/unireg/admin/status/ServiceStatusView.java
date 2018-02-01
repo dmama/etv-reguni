@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.admin.status;
+package ch.vd.unireg.admin.status;
 
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.uniregctb.common.HtmlHelper;
+import ch.vd.unireg.common.HtmlHelper;
 
 public class ServiceStatusView {
 

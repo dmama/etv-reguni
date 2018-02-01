@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tache.view;
+package ch.vd.unireg.tache.view;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.TacheCriteria;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.tiers.TacheCriteria;
+import ch.vd.unireg.type.TypeEtatTache;
+import ch.vd.unireg.type.TypeTache;
 
 public class TacheCriteriaViewBase implements Serializable {
 

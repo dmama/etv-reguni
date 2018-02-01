@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.identification.contribuable.view;
+package ch.vd.unireg.identification.contribuable.view;
 
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.Etat;
 
 public class IdentificationMessagesResultView implements Annulable {
 

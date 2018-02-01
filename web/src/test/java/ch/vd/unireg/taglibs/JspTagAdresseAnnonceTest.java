@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import org.junit.Test;
 
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
-import ch.vd.uniregctb.annonceIDE.AdresseAnnonceIDEView;
+import ch.vd.unireg.annonceIDE.AdresseAnnonceIDEView;
 
 import static org.junit.Assert.assertEquals;
 

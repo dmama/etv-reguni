@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.interfaces.civil;
+package ch.vd.unireg.interfaces.civil;
 
 import ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorWithCustomHeaders;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilLogger;
+import ch.vd.unireg.interfaces.service.ServiceCivilLogger;
 
 /**
  * @see ServiceCivilRemoteLogger la même classe dans le projet /web

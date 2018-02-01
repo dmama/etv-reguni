@@ -10,7 +10,7 @@
 		<display:table
 				name="command.forsFiscaux" id="forFiscal" pagesize="10"
 				requestURI="visu.do"
-				class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 			<display:column sortable ="true" titleKey="label.commune">
 				<c:choose>

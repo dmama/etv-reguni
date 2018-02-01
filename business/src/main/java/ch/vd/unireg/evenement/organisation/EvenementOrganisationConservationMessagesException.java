@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationMessageCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationMessageCollector;
 
 /**
  * Exception lancée par le processing des événements organisation quand on aimerait

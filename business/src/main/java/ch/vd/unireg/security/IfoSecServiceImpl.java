@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 
 public class IfoSecServiceImpl implements IfoSecService {
 

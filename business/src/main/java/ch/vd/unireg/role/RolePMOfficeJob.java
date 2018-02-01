@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.RolePMOfficeRapport;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.document.RolePMOfficeRapport;
 
 public class RolePMOfficeJob extends RoleJob {
 

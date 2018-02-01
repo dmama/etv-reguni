@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.picker;
+package ch.vd.unireg.tiers.picker;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.uniregctb.search.SearchTiersFilter;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.unireg.search.SearchTiersFilter;
+import ch.vd.unireg.tiers.TiersCriteria;
 
 /**
  * Filtre de base qui permet de filtrer sur des éléments connus de l'indexeur (sans post-filtrage).

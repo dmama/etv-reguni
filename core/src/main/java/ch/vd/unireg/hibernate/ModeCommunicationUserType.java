@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.unireg.type.ModeCommunication;
 
 /**
  * Classe de transtypage pour Hibernate : ModeCommunication <--> varchar

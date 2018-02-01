@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.infra;
+package ch.vd.unireg.evenement.infra;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -20,7 +20,7 @@ import ch.vd.unireg.xml.event.infra.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.infra.v1.Request;
 import ch.vd.unireg.xml.event.infra.v1.Response;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.evenement.party.PartyRequestEsbHandlerItTest;
+import ch.vd.unireg.evenement.party.PartyRequestEsbHandlerItTest;
 
 abstract class InfraRequestEsbHandlerItTest extends PartyRequestEsbHandlerItTest {
 

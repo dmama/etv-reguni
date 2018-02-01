@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.audit;
+package ch.vd.unireg.audit;
 
 import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamPagination;
 
 public interface AuditLineDAO extends GenericDAO<AuditLine, Long> {
 

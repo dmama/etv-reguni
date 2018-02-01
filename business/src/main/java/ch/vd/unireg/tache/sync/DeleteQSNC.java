@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.tiers.TacheAnnulationQuestionnaireSNC;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatTache;
 
 /**
  * Action de synchronisation qui consiste à annuler un questionnaire SNC

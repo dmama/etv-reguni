@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.tiers.validator;
+package ch.vd.unireg.tiers.validator;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.view.SituationFamilleView;
-import ch.vd.uniregctb.utils.ValidatorUtils;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.SituationFamille;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.view.SituationFamilleView;
+import ch.vd.unireg.utils.ValidatorUtils;
 
 public class SituationFamilleViewValidator implements Validator {
 

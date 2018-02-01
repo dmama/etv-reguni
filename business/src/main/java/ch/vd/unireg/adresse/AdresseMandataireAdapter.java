@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
-import ch.vd.uniregctb.type.FormulePolitesse;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.DonneeCivileEntreprise;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.unireg.type.FormulePolitesse;
 
 /*
  * Cette classe permet d'adapter une adresse supplémentaire (= spécialité UniregCTB) à l'interface d'adresse générique.

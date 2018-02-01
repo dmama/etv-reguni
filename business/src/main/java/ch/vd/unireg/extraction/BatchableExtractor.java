@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
 import java.io.IOException;
 import java.util.List;
 
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.uniregctb.common.TemporaryFile;
+import ch.vd.unireg.common.TemporaryFile;
 
 /**
  * Interface implémentée par les extracteurs qui supportent le traitement par lot
@@ -38,7 +38,7 @@ public interface BatchableExtractor<E, R extends BatchResults<E, R>> extends Ext
 	int getBatchSize();
 
 	/**
-	 * Méthode appelée dans le cadre d'une transaction par le {@link ch.vd.uniregctb.common.BatchTransactionTemplateWithResults}
+	 * Méthode appelée dans le cadre d'une transaction par le {@link ch.vd.unireg.common.BatchTransactionTemplateWithResults}
 	 * @param batch le lot à traiter
 	 * @param rapport le rapport à remplir à partir des informations du lot
 	 * @return <code>true</code> s'il faut continuer avec le lot suivant, <code>false</code> si le traitement doit s'arrêter là

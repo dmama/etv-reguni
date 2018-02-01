@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.common.AsyncStorageWithPeriodicCleanup;
-import ch.vd.uniregctb.common.TimeHelper;
-import ch.vd.uniregctb.editique.EditiqueResultatRecu;
-import ch.vd.uniregctb.editique.RetourImpressionTrigger;
+import ch.vd.unireg.common.AsyncStorageWithPeriodicCleanup;
+import ch.vd.unireg.common.TimeHelper;
+import ch.vd.unireg.editique.EditiqueResultatRecu;
+import ch.vd.unireg.editique.RetourImpressionTrigger;
 
 public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCleanup<String, EditiqueResultatRecu> {
 

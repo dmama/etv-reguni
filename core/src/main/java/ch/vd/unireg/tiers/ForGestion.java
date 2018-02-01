@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
  * Représente un for de gestion, c'est-à-dire la commune vaudoise désignée responsable de la gestion d'un contribuable. De fait, l'entité

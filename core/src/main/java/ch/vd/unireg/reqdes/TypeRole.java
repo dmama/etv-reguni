@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.reqdes;
+package ch.vd.unireg.reqdes;
 
 /**
  * Type énuméré des différent rôles que peut prendre une partie prenante dans un acte authentique

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.unireg.type.MotifRattachement;
 
 /**
  * Classe de transtypage pour Hibernate : MotifRattachement <--> varchar

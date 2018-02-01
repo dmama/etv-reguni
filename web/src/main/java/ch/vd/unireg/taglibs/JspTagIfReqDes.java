@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.Tag;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Ce tag permet d'inclure conditionnellement un fragment de code JSP en fonction de si le mode reqdes est activé ou pas

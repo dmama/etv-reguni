@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement.manager;
+package ch.vd.unireg.mouvement.manager;
 
 import java.util.List;
 
@@ -6,18 +6,18 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.pagination.ParamSorting;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.extraction.ExtractionJob;
-import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
-import ch.vd.uniregctb.mouvement.MouvementDossierCriteria;
-import ch.vd.uniregctb.mouvement.view.BordereauEnvoiReceptionView;
-import ch.vd.uniregctb.mouvement.view.BordereauEnvoiView;
-import ch.vd.uniregctb.mouvement.view.BordereauListElementView;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamSorting;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.extraction.ExtractionJob;
+import ch.vd.unireg.mouvement.EtatMouvementDossier;
+import ch.vd.unireg.mouvement.MouvementDossierCriteria;
+import ch.vd.unireg.mouvement.view.BordereauEnvoiReceptionView;
+import ch.vd.unireg.mouvement.view.BordereauEnvoiView;
+import ch.vd.unireg.mouvement.view.BordereauListElementView;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.mouvement.view.MouvementMasseCriteriaView;
 
 /**
  * Interface du manager qui met à disposition du controlleur quelques

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common.pagination;
+package ch.vd.unireg.common.pagination;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.dbutils.QueryFragment;
+import ch.vd.unireg.dbutils.QueryFragment;
 
 /**
  * Classe pour definir les paramètres de la pagination

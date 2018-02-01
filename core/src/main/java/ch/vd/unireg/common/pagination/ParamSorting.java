@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common.pagination;
+package ch.vd.unireg.common.pagination;
 
 import java.io.Serializable;
 

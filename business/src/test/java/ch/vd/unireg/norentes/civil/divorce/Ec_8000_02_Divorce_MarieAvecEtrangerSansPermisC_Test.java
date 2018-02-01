@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.divorce;
+package ch.vd.unireg.norentes.civil.divorce;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Cette classe teste l'événement divorce pour le cas d'un habitant marié avec un etranger sans permic C.

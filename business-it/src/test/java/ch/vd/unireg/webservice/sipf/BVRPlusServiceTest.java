@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
-import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.unireg.type.CategorieImpotSource;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

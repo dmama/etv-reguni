@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.checker;
+package ch.vd.unireg.checker;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 public class ContribuableNonAssujettiException extends CalculRoleException {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import java.util.List;
 import java.util.Map;
@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.type.TypeTache;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.type.TypeTache;
 
 public interface TacheDAO extends GenericDAO<Tache, Long> {
 

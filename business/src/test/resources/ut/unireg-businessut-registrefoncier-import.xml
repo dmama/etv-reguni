@@ -5,7 +5,7 @@
 
 	<!-- Import des données du RF -->
 
-	<bean id="blacklistRFHelper" class="ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelperImpl">
+	<bean id="blacklistRFHelper" class="ch.vd.unireg.registrefoncier.dataimport.helper.BlacklistRFHelperImpl">
 		<property name="blacklistedImmeubles" value="_1f1091523810108101381012b3d64cb4,_1f1091523810190f0138101cd5c83f8a,_1f1091523810190f0138101cd5c83f8e,_1f1091523810190f0138101cd6404147,_1f1091523810190f0138101cd6404148,_1f1091523810190f0138101cd640414c,_1f1091523810190f0138101cd640414d,_1f1091523810190f0138101cd640414e,_1f1091523810190f0138101cd640414f,_1f1091523810190f0138101cd641415b"/>
 	</bean>
 
@@ -27,7 +27,7 @@
 
 	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
 
-	<bean id="rapprochementManuelTiersRFService" class="ch.vd.uniregctb.registrefoncier.MockRapprochementManuelTiersRFService"/>
+	<bean id="rapprochementManuelTiersRFService" class="ch.vd.unireg.registrefoncier.MockRapprochementManuelTiersRFService"/>
 
 	<!-- Cleanup des données RF -->
 	<bean id="cleanupImportRFRetainSize" class="java.lang.Integer">

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers.picker;
+package ch.vd.unireg.tiers.picker;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.search.SearchTiersFilter;
-import ch.vd.uniregctb.search.SearchTiersFilterFactory;
+import ch.vd.unireg.search.SearchTiersFilter;
+import ch.vd.unireg.search.SearchTiersFilterFactory;
 
 public class TiersPickerFilterFactory implements SearchTiersFilterFactory {
 

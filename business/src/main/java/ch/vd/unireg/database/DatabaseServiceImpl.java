@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.database;
+package ch.vd.unireg.database;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
@@ -51,13 +51,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.dbutils.SqlFileExecutor;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.dbutils.SqlFileExecutor;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
 
 public class DatabaseServiceImpl implements DatabaseService {
 

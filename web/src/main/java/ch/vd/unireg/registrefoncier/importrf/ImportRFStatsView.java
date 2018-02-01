@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.importrf;
+package ch.vd.unireg.registrefoncier.importrf;
 
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 
 /**
  * Statistiques sur l'import des données du registre foncier.

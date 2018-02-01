@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.unireg.supergra;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,18 +15,18 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.common.WebTestSpring3;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.type.CategorieEtranger;
-import ch.vd.uniregctb.type.CategorieIdentifiant;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.hibernate.HibernateCallback;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.OriginePersonnePhysique;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.CategorieIdentifiant;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TarifImpotSource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

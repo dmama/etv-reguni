@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 public abstract class FormeJuridiqueView implements DateRange {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -6,7 +6,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Tag qui va chercher dans les propriétés de l'application

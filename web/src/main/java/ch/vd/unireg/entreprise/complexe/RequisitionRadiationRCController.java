@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -14,23 +14,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.EditiqueErrorHelper;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueResultatErreur;
-import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.transaction.TransactionHelper;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.common.EditiqueErrorHelper;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.RetourEditiqueControllerHelper;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalException;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalService;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.EditiqueResultatErreur;
+import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.transaction.TransactionHelper;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.validation.ValidationService;
 
 @Controller
 @RequestMapping("/processuscomplexe/requisitionradiationrc")

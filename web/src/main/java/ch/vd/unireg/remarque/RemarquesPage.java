@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.remarque;
+package ch.vd.unireg.remarque;
 
 import java.util.List;
 

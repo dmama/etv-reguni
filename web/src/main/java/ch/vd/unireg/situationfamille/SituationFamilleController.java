@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
 import javax.validation.Valid;
 
@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.manager.SituationFamilleManager;
-import ch.vd.uniregctb.tiers.view.SituationFamilleView;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.manager.SituationFamilleManager;
+import ch.vd.unireg.tiers.view.SituationFamilleView;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/situationfamille")

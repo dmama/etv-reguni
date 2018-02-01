@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes;
+package ch.vd.unireg.evenement.reqdes;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -52,23 +52,23 @@ import ch.vd.unireg.xml.event.reqdes.v1.StakeholderRole;
 import ch.vd.unireg.xml.event.reqdes.v1.SwissResidence;
 import ch.vd.unireg.xml.event.reqdes.v1.Swissness;
 import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.evenement.EvenementHelper;
-import ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.reqdes.EtatTraitement;
-import ch.vd.uniregctb.reqdes.EvenementReqDes;
-import ch.vd.uniregctb.reqdes.InformationsActeur;
-import ch.vd.uniregctb.reqdes.ModeInscription;
-import ch.vd.uniregctb.reqdes.PartiePrenante;
-import ch.vd.uniregctb.reqdes.RolePartiePrenante;
-import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
-import ch.vd.uniregctb.reqdes.TypeInscription;
-import ch.vd.uniregctb.reqdes.TypeRole;
-import ch.vd.uniregctb.reqdes.UniteTraitement;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.EvenementHelper;
+import ch.vd.unireg.evenement.reqdes.engine.MockEvenementReqDesProcessor;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.EvenementReqDes;
+import ch.vd.unireg.reqdes.InformationsActeur;
+import ch.vd.unireg.reqdes.ModeInscription;
+import ch.vd.unireg.reqdes.PartiePrenante;
+import ch.vd.unireg.reqdes.RolePartiePrenante;
+import ch.vd.unireg.reqdes.TransactionImmobiliere;
+import ch.vd.unireg.reqdes.TypeInscription;
+import ch.vd.unireg.reqdes.TypeRole;
+import ch.vd.unireg.reqdes.UniteTraitement;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.Sexe;
 
 @SuppressWarnings({"JavaDoc"})
 public class ReqDesEventHandlerITTest extends BusinessItTest {

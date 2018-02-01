@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;

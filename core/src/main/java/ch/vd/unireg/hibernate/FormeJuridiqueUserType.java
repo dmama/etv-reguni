@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate;
+package ch.vd.unireg.hibernate;
 
-import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.unireg.type.FormeJuridique;
 
 /**
  * Classe de transtypage pour Hibernate : FormeJuridique <--> varchar

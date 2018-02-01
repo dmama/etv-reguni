@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.load;
+package ch.vd.unireg.load;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.stats.LoadMonitorable;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.unireg.stats.LoadMonitorable;
+import ch.vd.unireg.stats.StatsService;
 
 @ManagedResource
 public class LoadJmxBeanImpl<T extends LoadMonitorable> implements LoadJmxBean, DisposableBean {

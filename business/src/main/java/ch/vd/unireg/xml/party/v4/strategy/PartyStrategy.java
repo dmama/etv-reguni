@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v4.strategy;
+package ch.vd.unireg.xml.party.v4.strategy;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -24,23 +24,23 @@ import ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxresidence.v3.TaxResidence;
 import ch.vd.unireg.xml.party.v4.Party;
 import ch.vd.unireg.xml.party.v4.PartyPart;
-import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.tiers.Parente;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeMandat;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.xml.Context;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.ExceptionHelper;
-import ch.vd.uniregctb.xml.ServiceException;
-import ch.vd.uniregctb.xml.party.v4.BankAccountBuilder;
-import ch.vd.uniregctb.xml.party.v4.ForFiscalComparator;
-import ch.vd.uniregctb.xml.party.v4.ManagingTaxResidenceBuilder;
-import ch.vd.uniregctb.xml.party.v4.RelationBetweenPartiesBuilder;
-import ch.vd.uniregctb.xml.party.v4.TaxDeclarationBuilder;
-import ch.vd.uniregctb.xml.party.v4.TaxResidenceBuilder;
+import ch.vd.unireg.tiers.Mandat;
+import ch.vd.unireg.tiers.Parente;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeMandat;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.xml.Context;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.ExceptionHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.v4.BankAccountBuilder;
+import ch.vd.unireg.xml.party.v4.ForFiscalComparator;
+import ch.vd.unireg.xml.party.v4.ManagingTaxResidenceBuilder;
+import ch.vd.unireg.xml.party.v4.RelationBetweenPartiesBuilder;
+import ch.vd.unireg.xml.party.v4.TaxDeclarationBuilder;
+import ch.vd.unireg.xml.party.v4.TaxResidenceBuilder;
 
 public abstract class PartyStrategy<T extends Party> {
 
@@ -200,11 +200,11 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void initAddresses(Party tiers, Tiers right, final Context context) throws ServiceException {
-		ch.vd.uniregctb.adresse.AdressesEnvoiHisto adresses;
+		ch.vd.unireg.adresse.AdressesEnvoiHisto adresses;
 		try {
 			adresses = context.adresseService.getAdressesEnvoiHisto(right, false);
 		}
-		catch (ch.vd.uniregctb.adresse.AdresseException e) {
+		catch (ch.vd.unireg.adresse.AdresseException e) {
 			LOGGER.error(e.getMessage(), e);
 			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ADDRESSES);
 		}
@@ -259,14 +259,14 @@ public abstract class PartyStrategy<T extends Party> {
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
 			// Ajoute les rapports dont le tiers est le sujet
-			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : right.getRapportsSujet()) {
+			for (ch.vd.unireg.tiers.RapportEntreTiers rapport : right.getRapportsSujet()) {
 				if (EXPOSED_RELATIONS_BETWEEN_PARTIES.contains(rapport.getType())) {
 					tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getObjetId()));
 				}
 			}
 
 			// Ajoute les rapports dont le tiers est l'objet
-			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : right.getRapportsObjet()) {
+			for (ch.vd.unireg.tiers.RapportEntreTiers rapport : right.getRapportsObjet()) {
 				if (EXPOSED_RELATIONS_BETWEEN_PARTIES.contains(rapport.getType())) {
 					tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getSujetId()));
 				}
@@ -366,9 +366,9 @@ public abstract class PartyStrategy<T extends Party> {
 		party.setActivityStartDate(DataHelper.coreToXMLv2(right.getDateDebutActivite()));
 		party.setActivityEndDate(DataHelper.coreToXMLv2(right.getDateFinActivite()));
 
-		for (ch.vd.uniregctb.tiers.ForFiscal forFiscal : right.getForsFiscauxSorted()) {
-			if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal
-					|| forFiscal instanceof ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable) {
+		for (ch.vd.unireg.tiers.ForFiscal forFiscal : right.getForsFiscauxSorted()) {
+			if (forFiscal instanceof ch.vd.unireg.tiers.ForFiscalPrincipal
+					|| forFiscal instanceof ch.vd.unireg.tiers.ForDebiteurPrestationImposable) {
 				party.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, false));
 			}
 			else {
@@ -378,8 +378,8 @@ public abstract class PartyStrategy<T extends Party> {
 
 		// [UNIREG-1291] ajout des fors fiscaux virtuels
 		if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES)) {
-			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(right, false, context.hibernateTemplate);
-			for (ch.vd.uniregctb.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
+			final List<ch.vd.unireg.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(right, false, context.hibernateTemplate);
+			for (ch.vd.unireg.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
 				party.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, true));
 			}
 			party.getMainTaxResidences().sort(new ForFiscalComparator());
@@ -427,7 +427,7 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void initManagingTaxResidences(Party tiers, final Tiers right, Context context) {
-		for (ch.vd.uniregctb.tiers.ForGestion forGestion : context.tiersService.getForsGestionHisto(right)) {
+		for (ch.vd.unireg.tiers.ForGestion forGestion : context.tiersService.getForsGestionHisto(right)) {
 			tiers.getManagingTaxResidences().add(ManagingTaxResidenceBuilder.newManagingTaxResidence(forGestion));
 		}
 	}
@@ -437,18 +437,18 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void initTaxDeclarations(Party tiers, final Tiers right, Set<PartyPart> parts) {
-		for (ch.vd.uniregctb.declaration.Declaration declaration : right.getDeclarationsTriees()) {
-			if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotSource) {
-				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newWithholdingTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotSource) declaration, parts));
+		for (ch.vd.unireg.declaration.Declaration declaration : right.getDeclarationsTriees()) {
+			if (declaration instanceof ch.vd.unireg.declaration.DeclarationImpotSource) {
+				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newWithholdingTaxDeclaration((ch.vd.unireg.declaration.DeclarationImpotSource) declaration, parts));
 			}
-			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) {
-				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) declaration, parts));
+			else if (declaration instanceof ch.vd.unireg.declaration.DeclarationImpotOrdinairePP) {
+				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.unireg.declaration.DeclarationImpotOrdinairePP) declaration, parts));
 			}
-			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) {
-				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) declaration, parts));
+			else if (declaration instanceof ch.vd.unireg.declaration.DeclarationImpotOrdinairePM) {
+				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.unireg.declaration.DeclarationImpotOrdinairePM) declaration, parts));
 			}
-			else if (declaration instanceof ch.vd.uniregctb.declaration.QuestionnaireSNC) {
-				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newPartnershipForm((ch.vd.uniregctb.declaration.QuestionnaireSNC) declaration, parts));
+			else if (declaration instanceof ch.vd.unireg.declaration.QuestionnaireSNC) {
+				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newPartnershipForm((ch.vd.unireg.declaration.QuestionnaireSNC) declaration, parts));
 			}
 		}
 	}

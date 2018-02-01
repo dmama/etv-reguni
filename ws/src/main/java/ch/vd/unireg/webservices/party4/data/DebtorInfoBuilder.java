@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party4.data;
+package ch.vd.unireg.webservices.party4.data;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.party3;
+package ch.vd.unireg.webservice.party3;
 
 import java.util.ArrayList;
 import java.util.Collections;

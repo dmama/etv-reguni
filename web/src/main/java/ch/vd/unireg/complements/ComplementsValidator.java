@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.complements;
+package ch.vd.unireg.complements;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.iban.IbanValidator;
+import ch.vd.unireg.iban.IbanValidator;
 
 public class ComplementsValidator implements Validator, InitializingBean {
 

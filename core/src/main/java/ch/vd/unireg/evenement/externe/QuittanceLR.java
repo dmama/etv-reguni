@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -9,7 +9,7 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.LengthConstants;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -28,7 +28,7 @@ public class QuittanceLR extends EvenementExterne {
 	private TypeQuittance type;
 
 	@Column(name = "QLR_DATE_DEBUT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -38,7 +38,7 @@ public class QuittanceLR extends EvenementExterne {
 	}
 
 	@Column(name = "QLR_DATE_FIN")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -48,7 +48,7 @@ public class QuittanceLR extends EvenementExterne {
 	}
 
 	@Column(name = "QLR_TYPE", length = LengthConstants.EVTEXTERNE_QLR_TYPE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeQuittanceUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeQuittanceUserType")
 	public TypeQuittance getType() {
 		return type;
 	}

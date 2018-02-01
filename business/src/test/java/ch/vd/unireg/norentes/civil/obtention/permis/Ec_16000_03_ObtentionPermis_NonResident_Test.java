@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.obtention.permis;
+package ch.vd.unireg.norentes.civil.obtention.permis;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Obtention d'un permis C sur un sourcier non-résident sur le canton

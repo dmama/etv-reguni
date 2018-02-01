@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -14,8 +14,8 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.xml.event.fiscal.v3.ObjectFactory;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.utils.LogLevel;
 
 /**
  * Bean qui permet d'envoyer des événements externes (en version 3).

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.unireg.common.AnnulableHelper;
 
 /**
  * Méthodes utilitaires autour des immeubles

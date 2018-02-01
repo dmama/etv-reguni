@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.mock;
+package ch.vd.unireg.editique.mock;
 
 import javax.jms.JMSException;
 import java.math.BigInteger;
@@ -11,29 +11,29 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
-import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
-import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
-import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
-import ch.vd.uniregctb.editique.EditiqueCompositionService;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.editique.impl.EditiqueResultatDocumentImpl;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
-import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.unireg.common.MimeTypeHelper;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.ModeleFeuilleDocument;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.unireg.documentfiscal.AutorisationRadiationRC;
+import ch.vd.unireg.documentfiscal.DemandeBilanFinal;
+import ch.vd.unireg.documentfiscal.LettreBienvenue;
+import ch.vd.unireg.documentfiscal.LettreTypeInformationLiquidation;
+import ch.vd.unireg.editique.EditiqueCompositionService;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
+import ch.vd.unireg.editique.impl.EditiqueResultatDocumentImpl;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.fourreNeutre.FourreNeutre;
+import ch.vd.unireg.mouvement.BordereauMouvementDossier;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeDocument;
 
 public class MockEditiqueCompositionService implements EditiqueCompositionService {
 

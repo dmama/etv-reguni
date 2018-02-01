@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -12,8 +12,8 @@ import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /*
  * Cette classe permet d'adapter une adresse civile à l'interface d'adresse générique, optionnellement en surchargeant ses dates de début/fin de validité.
@@ -35,7 +35,7 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 	 * @param source                  la source de l'adresse à publier
 	 * @param isDefault               vrai si l'adresse représente une adresse par défaut
 	 * @param service                 le service infrastructure
-	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
+	 * @throws ch.vd.unireg.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données du service civil
 	 */
 	public AdresseTiersCivileAdapter(Adresse adresse, AdresseCivile adresseCivileSurchargee, Source source, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {

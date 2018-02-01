@@ -10,4 +10,4 @@ do
         fi
 done
 
-java -cp $classpath ch.vd.uniregctb.etatcivilcomp.EtatCivilCompClient $*
+java -cp $classpath ch.vd.unireg.etatcivilcomp.EtatCivilCompClient $*

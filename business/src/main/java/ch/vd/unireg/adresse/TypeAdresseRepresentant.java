@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
-import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
-import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RepresentationConventionnelle;
+import ch.vd.unireg.tiers.Tutelle;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Ensemble restreint des types de rapports-entre-tiers permettant une redirection de l'adresse courrier d'un tiers.

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats;
+package ch.vd.unireg.stats;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheInterface;
 
 /**
  * Version spéciale du service des statistiques qui permet de regrouper plusieurs sous-interfaces dans un groupe.

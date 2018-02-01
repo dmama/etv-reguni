@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 /**
  * Interface qui permet de comparer des objets en ne tenant compte que des informations métier.

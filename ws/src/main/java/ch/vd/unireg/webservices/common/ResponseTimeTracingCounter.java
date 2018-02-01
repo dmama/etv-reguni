@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.webservices.common;
+package ch.vd.unireg.webservices.common;
 
 import java.util.Map;
 
 import org.apache.cxf.management.counters.ResponseTimeCounter;
 
-import ch.vd.uniregctb.stats.ServiceTracingInterface;
+import ch.vd.unireg.stats.ServiceTracingInterface;
 
 /**
  * Permet d'adapter un ResponseTimeCounter à l'interface ServiceTracingInterface.
@@ -35,7 +35,7 @@ public class ResponseTimeTracingCounter implements ServiceTracingInterface {
 		private int indexHighWaterMark = 0;
 
 		/**
-		 * Appelé régulièrement dans le temps (= toutes les minutes, voir {@link ch.vd.uniregctb.stats.StatsServiceImpl#UNE_MINUTE}),
+		 * Appelé régulièrement dans le temps (= toutes les minutes, voir {@link ch.vd.unireg.stats.StatsServiceImpl#UNE_MINUTE}),
 		 * <b>après</b> que les statistiques aient été logguées
 		 */
 		public synchronized void onTick() {

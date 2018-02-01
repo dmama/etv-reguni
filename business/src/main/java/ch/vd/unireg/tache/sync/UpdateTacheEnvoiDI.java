@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.tache.sync;
+package ch.vd.unireg.tache.sync;
 
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
+import ch.vd.unireg.tiers.TacheEnvoiDeclarationImpot;
 
 /**
  * Action permettant de mettre à jour une tâche d'envoi de déclaration d'impôt existante à partir des données nouvellement

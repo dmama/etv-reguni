@@ -1,11 +1,11 @@
-package ch.vd.uniregctb;
+package ch.vd.unireg;
 
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import ch.vd.uniregctb.utils.MockUniregProperties;
+import ch.vd.unireg.utils.MockUniregProperties;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

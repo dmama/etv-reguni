@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import javax.validation.Valid;
 import java.util.EnumSet;
@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.transaction.TransactionHelper;
-import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.DomicileHisto;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.transaction.TransactionHelper;
+import ch.vd.unireg.type.MotifFor;
 
 @Controller
 @RequestMapping("/processuscomplexe/annulation/demenagement")

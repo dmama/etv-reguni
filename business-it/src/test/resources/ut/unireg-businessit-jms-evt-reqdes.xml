@@ -3,14 +3,14 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="reqdesEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="reqdesEventListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="reqdesEventHandler"/>
 		<property name="destinationName" value="${testprop.jms.queue.reqdes}"/>
 		<property name="concurrentConsumers" value="1"/>
 		<property name="autoStartup" value="true" />
 	</bean>
 
-	<bean id="reqdesEventHandler" class="ch.vd.uniregctb.evenement.reqdes.reception.ReqDesEventHandler">
+	<bean id="reqdesEventHandler" class="ch.vd.unireg.evenement.reqdes.reception.ReqDesEventHandler">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="evenementDAO" ref="reqdesEvenementDAO"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
@@ -18,6 +18,6 @@
 		<property name="processor" ref="reqdesEventProcessor"/>
 	</bean>
 
-	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor"/>
+	<bean id="reqdesEventProcessor" class="ch.vd.unireg.evenement.reqdes.engine.MockEvenementReqDesProcessor"/>
 
 </beans>

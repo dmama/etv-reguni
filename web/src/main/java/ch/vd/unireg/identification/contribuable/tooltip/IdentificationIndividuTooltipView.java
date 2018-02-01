@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.identification.contribuable.tooltip;
+package ch.vd.unireg.identification.contribuable.tooltip;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.NationaliteHelper;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.EtatCivilHelper;
+import ch.vd.unireg.common.NationaliteHelper;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.Sexe;
 
 public class IdentificationIndividuTooltipView {
 

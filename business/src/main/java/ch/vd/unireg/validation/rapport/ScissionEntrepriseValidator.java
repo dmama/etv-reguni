@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.validation.rapport;
+package ch.vd.unireg.validation.rapport;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ScissionEntreprise;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ScissionEntreprise;
+import ch.vd.unireg.tiers.Tiers;
 
 public class ScissionEntrepriseValidator extends RapportEntreTiersValidator<ScissionEntreprise> {
 

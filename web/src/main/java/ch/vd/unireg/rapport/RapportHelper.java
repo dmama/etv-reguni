@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.tiers.RapportEntreTiersKey;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public abstract class RapportHelper {
 

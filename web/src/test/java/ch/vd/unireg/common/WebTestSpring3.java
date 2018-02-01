@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,11 +18,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService;
-import ch.vd.uniregctb.security.Role;
+import ch.vd.unireg.interfaces.service.mock.DefaultMockServiceSecurite;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceSecuriteService;
+import ch.vd.unireg.security.Role;
 
 import static org.junit.Assert.assertNotNull;
 

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.tache;
+package ch.vd.unireg.validation.tache;
 
-import ch.vd.uniregctb.tiers.Tache;
+import ch.vd.unireg.tiers.Tache;
 
 public final class DefaultTacheValidator extends TacheValidator<Tache> {
 

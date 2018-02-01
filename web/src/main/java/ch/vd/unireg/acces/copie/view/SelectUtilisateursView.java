@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.acces.copie.view;
+package ch.vd.unireg.acces.copie.view;
 
-import ch.vd.uniregctb.type.TypeOperation;
+import ch.vd.unireg.type.TypeOperation;
 
 public class SelectUtilisateursView {
 

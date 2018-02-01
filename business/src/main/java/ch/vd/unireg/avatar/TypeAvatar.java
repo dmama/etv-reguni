@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.avatar;
+package ch.vd.unireg.avatar;
 
 /**
  * Type de tiers (utilisé pour afficher une image)

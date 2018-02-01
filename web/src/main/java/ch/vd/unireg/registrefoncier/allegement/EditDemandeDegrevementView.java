@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,12 +8,12 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.view.DelaiDocumentFiscalView;
-import ch.vd.uniregctb.declaration.view.EtatDocumentFiscalView;
-import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
+import ch.vd.unireg.declaration.view.EtatDocumentFiscalView;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 public class EditDemandeDegrevementView extends AbstractEditDemandeDegrevementView {
 

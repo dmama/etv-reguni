@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tache.view;
+package ch.vd.unireg.tache.view;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.type.TypeEtatTache;
 
 public class TacheCriteriaView extends TacheCriteriaViewBase {
 

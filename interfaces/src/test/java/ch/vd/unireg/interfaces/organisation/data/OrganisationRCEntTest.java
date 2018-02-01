@@ -15,7 +15,7 @@ import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.OrganisationBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.SiteOrganisationBuilder;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static ch.vd.unireg.interfaces.infra.mock.MockLocalite.Lausanne;
 import static ch.vd.unireg.interfaces.infra.mock.MockLocalite.Leysin;

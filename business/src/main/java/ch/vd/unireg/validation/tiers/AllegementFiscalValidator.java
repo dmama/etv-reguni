@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.math.BigDecimal;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscal;
 
 public abstract class AllegementFiscalValidator<T extends AllegementFiscal> extends DateRangeEntityValidator<T> {
 

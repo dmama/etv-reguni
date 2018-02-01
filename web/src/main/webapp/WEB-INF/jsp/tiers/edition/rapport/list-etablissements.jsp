@@ -15,7 +15,7 @@
 	</table>
 
 	<c:if test="${not empty command.rapportsEtablissements}">
-		<display:table name="command.rapportsEtablissements" id="rapportEtablissement" pagesize="10" requestURI="list.do" sort="list" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="command.rapportsEtablissements" id="rapportEtablissement" pagesize="10" requestURI="list.do" sort="list" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:column sortable ="true" titleKey="label.rapport.tiers">
 				<c:if test="${rapportEtablissement.activiteEconomiquePrincipale}">
 					<fmt:message key="option.rapport.entre.tiers.${rapportEtablissement.sensRapportEntreTiers}.${rapportEtablissement.typeRapportEntreTiers}.principal" />

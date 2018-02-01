@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.registrefoncier.allegement;
+package ch.vd.unireg.registrefoncier.allegement;
 
 import java.util.Optional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.foncier.DegrevementICI;
-import ch.vd.uniregctb.foncier.DonneesLoiLogement;
-import ch.vd.uniregctb.foncier.DonneesUtilisation;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.foncier.DegrevementICI;
+import ch.vd.unireg.foncier.DonneesLoiLogement;
+import ch.vd.unireg.foncier.DonneesUtilisation;
 
 public class DegrevementICIView implements Annulable, DateRange {
 

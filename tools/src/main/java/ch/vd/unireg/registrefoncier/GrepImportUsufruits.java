@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -16,9 +16,9 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.Personstamm;
-import ch.vd.uniregctb.registrefoncier.dataimport.FichierServitudeRFParser;
-import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl;
+import ch.vd.unireg.registrefoncier.dataimport.FichierServitudeRFParser;
+import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
+import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRFImpl;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 

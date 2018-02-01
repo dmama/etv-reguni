@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
@@ -10,13 +10,13 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.AutoCloseableContainer;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.before2016.InfoContribuable;
-import ch.vd.uniregctb.role.before2016.InfoContribuablePM;
-import ch.vd.uniregctb.role.before2016.ProduireRolesOIPMResults;
+import ch.vd.unireg.common.AutoCloseableContainer;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.role.before2016.InfoContribuable;
+import ch.vd.unireg.role.before2016.InfoContribuablePM;
+import ch.vd.unireg.role.before2016.ProduireRolesOIPMResults;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour l'OIPM

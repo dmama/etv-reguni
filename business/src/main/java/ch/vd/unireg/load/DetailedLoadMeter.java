@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.load;
+package ch.vd.unireg.load;
 
 import java.time.Instant;
 import java.util.LinkedList;
@@ -10,10 +10,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import ch.vd.registre.base.date.InstantHelper;
-import ch.vd.uniregctb.common.LockHelper;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
+import ch.vd.unireg.common.LockHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
 
 public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 

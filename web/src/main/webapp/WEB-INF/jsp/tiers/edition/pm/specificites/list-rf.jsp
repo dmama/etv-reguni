@@ -21,7 +21,7 @@
 			</table>
 
 			<c:if test="${not empty regimes}">
-				<display:table name="regimes" id="rf" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/regimefiscal/edit-list.do" sort="list">
+				<display:table name="regimes" id="rf" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" requestURI="/regimefiscal/edit-list.do" sort="list">
 					<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 20%;">
 						<unireg:regdate regdate="${rf.dateDebut}"/>
 					</display:column>

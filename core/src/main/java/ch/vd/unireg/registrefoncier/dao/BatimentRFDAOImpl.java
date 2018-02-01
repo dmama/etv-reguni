@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,9 +9,9 @@ import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.key.BatimentRFKey;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.key.BatimentRFKey;
 
 public class BatimentRFDAOImpl extends BaseDAOImpl<BatimentRF, Long> implements BatimentRFDAO {
 	protected BatimentRFDAOImpl() {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier.migration.mandataire;
+package ch.vd.unireg.foncier.migration.mandataire;
 
 import java.text.ParseException;
 import java.util.regex.Matcher;

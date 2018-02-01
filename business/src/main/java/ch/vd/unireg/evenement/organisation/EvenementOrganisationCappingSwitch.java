@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.unireg.evenement.organisation;
 
-import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
+import ch.vd.unireg.evenement.organisation.engine.translator.NiveauCappingEtat;
 
 public class EvenementOrganisationCappingSwitch implements EvenementOrganisationCappingLevelProvider {
 

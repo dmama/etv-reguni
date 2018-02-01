@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.individu;
+package ch.vd.unireg.individu;
 
 
 public interface WebCivilService {

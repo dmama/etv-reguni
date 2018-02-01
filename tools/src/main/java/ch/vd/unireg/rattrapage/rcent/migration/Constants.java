@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rattrapage.rcent.migration;
+package ch.vd.unireg.rattrapage.rcent.migration;
 
 public abstract class Constants {
 

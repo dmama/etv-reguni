@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import ch.vd.evd0001.v5.MaritalData;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.common.XmlUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

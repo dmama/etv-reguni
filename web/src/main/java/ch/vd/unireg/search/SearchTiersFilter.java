@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.search;
+package ch.vd.unireg.search;
 
 import java.util.Set;
 
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersFilter;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersFilter;
 
 public interface SearchTiersFilter extends TiersFilter {
 

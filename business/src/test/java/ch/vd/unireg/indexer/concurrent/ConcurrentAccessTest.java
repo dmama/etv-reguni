@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.indexer.concurrent;
+package ch.vd.unireg.indexer.concurrent;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.indexer.GlobalIndexInterface;
 
 import static org.junit.Assert.assertFalse;
 

@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.regpp.view;
+package ch.vd.unireg.evenement.regpp.view;
 
 import java.io.Serializable;
 
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.evenement.common.view.EvenementCivilDetailView;
-import ch.vd.uniregctb.individu.IndividuView;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.adresse.AdresseEnvoi;
+import ch.vd.unireg.evenement.common.view.EvenementCivilDetailView;
+import ch.vd.unireg.individu.IndividuView;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
  * Structure permettant l'affichage de la page de detail de l'evenement

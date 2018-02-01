@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.testing;
+package ch.vd.unireg.testing;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

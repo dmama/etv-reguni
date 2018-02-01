@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import java.io.OutputStream;
 import java.util.Collection;
@@ -22,17 +22,17 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.common.CsvHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.RoleData;
-import ch.vd.uniregctb.role.RolePMData;
-import ch.vd.uniregctb.role.RolePPData;
-import ch.vd.uniregctb.role.RoleResults;
-import ch.vd.uniregctb.tiers.LocalisationFiscale;
+import ch.vd.unireg.common.CsvHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.role.RoleData;
+import ch.vd.unireg.role.RolePMData;
+import ch.vd.unireg.role.RolePPData;
+import ch.vd.unireg.role.RoleResults;
+import ch.vd.unireg.tiers.LocalisationFiscale;
 
 public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRapport {
 

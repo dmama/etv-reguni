@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.interfaces.model;
+package ch.vd.unireg.interfaces.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.type.TypeAdresseCivil;
 
 /**
  * Contient les adresses civiles à un instant donné d'individu ou d'une entreprise regroupées par type

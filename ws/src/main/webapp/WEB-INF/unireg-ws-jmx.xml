@@ -24,15 +24,15 @@
 		<property name="namingStrategy" ref="jmxNamingStrategy" />
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
-				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
-				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Connections,name=IfoSec" value-ref="ifoSecConnectionJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Connections,name=NexusRemoting" value-ref="nexusRemoteConnectionJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Connections,name=WebRemoting" value-ref="webRemoteConnectionJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
-				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
+				<entry key="ch.vd.unireg-ws:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
+				<entry key="ch.vd.unireg-ws:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
+				<entry key="ch.vd.unireg-ws:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
+				<entry key="ch.vd.unireg-ws:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
+				<entry key="ch.vd.unireg-ws:type=Connections,name=IfoSec" value-ref="ifoSecConnectionJmxBean" />
+				<entry key="ch.vd.unireg-ws:type=Connections,name=NexusRemoting" value-ref="nexusRemoteConnectionJmxBean" />
+				<entry key="ch.vd.unireg-ws:type=Connections,name=WebRemoting" value-ref="webRemoteConnectionJmxBean" />
+				<entry key="ch.vd.unireg-ws:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
+				<entry key="ch.vd.unireg-ws:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
 			</map>
 		</property>
 	</bean>
@@ -43,7 +43,7 @@
 		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-ws:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsListener"/>
+				<entry key="ch.vd.unireg-ws:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsListener"/>
 			</map>
 		</property>
 	</bean>
@@ -52,19 +52,19 @@
 		<property name="managedInterfaces">
 			<list>
 				<value>org.springframework.context.Lifecycle</value>
-				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
+				<value>ch.vd.unireg.jms.MessageListenerContainerJmxInterface</value>
 			</list>
 		</property>
 	</bean>
 
-	<bean name="applicationMonitoringJmxBean" class="ch.vd.uniregctb.jmx.ApplicationMonitoringJMXBeanImpl">
+	<bean name="applicationMonitoringJmxBean" class="ch.vd.unireg.jmx.ApplicationMonitoringJMXBeanImpl">
 		<property name="checker" ref="applicationChecker" />
 	</bean>
 
-	<bean name="webserviceLoadJmxBean" class="ch.vd.uniregctb.jmx.ServiceLoadJmxBeanContainer">
+	<bean name="webserviceLoadJmxBean" class="ch.vd.unireg.jmx.ServiceLoadJmxBeanContainer">
 		<property name="statsService" ref="statsService"/>
 		<property name="exporter" ref="jmxExporter"/>
-		<property name="objectNamePrefix" value="ch.vd.uniregctb-ws:type=Monitoring,resourceName=WebserviceLoad,name="/>
+		<property name="objectNamePrefix" value="ch.vd.unireg-ws:type=Monitoring,resourceName=WebserviceLoad,name="/>
 		<property name="services">
 			<map>
 				<entry key="PartyWebService3" value-ref="partyService3EndPoint"/>
@@ -77,10 +77,10 @@
 		</property>
 	</bean>
 
-	<bean name="jmsAccessLoadJmxBean" class="ch.vd.uniregctb.jmx.ServiceLoadJmxBeanContainer">
+	<bean name="jmsAccessLoadJmxBean" class="ch.vd.unireg.jmx.ServiceLoadJmxBeanContainer">
 		<property name="statsService" ref="statsService"/>
 		<property name="exporter" ref="jmxExporter" />
-		<property name="objectNamePrefix" value="ch.vd.uniregctb-ws:type=Monitoring,resourceName=JmsLoad,name=" />
+		<property name="objectNamePrefix" value="ch.vd.unireg-ws:type=Monitoring,resourceName=JmsLoad,name=" />
 		<property name="services">
 			<map>
 				<entry key="DataEvents" value-ref="dataEventJmsListener"/>
@@ -88,10 +88,10 @@
 		</property>
 	</bean>
 
-	<bean id="statsJmxBeanContainer" class="ch.vd.uniregctb.stats.JmxStatContainer">
+	<bean id="statsJmxBeanContainer" class="ch.vd.unireg.stats.JmxStatContainer">
 		<property name="exporter" ref="jmxExporter"/>
 		<property name="statsService" ref="statsService"/>
-		<property name="objectName" value="ch.vd.uniregctb-ws:type=Monitoring,name=Performances"/>
+		<property name="objectName" value="ch.vd.unireg-ws:type=Monitoring,name=Performances"/>
 	</bean>
 
 	<bean name="oracleConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
@@ -124,7 +124,7 @@
 
 	<bean name="preferencesPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
 		<constructor-arg ref="uniregExternalProperties" />
-		<constructor-arg><bean class="ch.vd.uniregctb.utils.UniregProperties$UniregPropertiesAdapterFactoryBean"/></constructor-arg>
+		<constructor-arg><bean class="ch.vd.unireg.utils.UniregProperties$UniregPropertiesAdapterFactoryBean"/></constructor-arg>
 	</bean>
 
 	<bean name="othersPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">

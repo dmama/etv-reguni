@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fusion;
+package ch.vd.unireg.fusion;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,9 +11,9 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import ch.vd.uniregctb.fusion.manager.FusionListManager;
-import ch.vd.uniregctb.fusion.view.FusionListView;
-import ch.vd.uniregctb.tiers.AbstractTiersListController;
+import ch.vd.unireg.fusion.manager.FusionListManager;
+import ch.vd.unireg.fusion.view.FusionListView;
+import ch.vd.unireg.tiers.AbstractTiersListController;
 
 public class HabitantListController  extends  AbstractTiersListController {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.identification.contribuable;
+package ch.vd.unireg.evenement.identification.contribuable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -8,8 +8,8 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.Sexe;
 
 /**
  * Contient les critères de recherche sur le contribuable lui-même dans le traitement d'une requête d'identification d'un contribuable.
@@ -91,7 +91,7 @@ public class CriteresPersonne {
 	}
 
 	@Column(name = "SEXE", length = LengthConstants.TIERS_SEXE)
-	@Type(type = "ch.vd.uniregctb.hibernate.SexeUserType")
+	@Type(type = "ch.vd.unireg.hibernate.SexeUserType")
 	public Sexe getSexe() {
 		return sexe;
 	}
@@ -101,7 +101,7 @@ public class CriteresPersonne {
 	}
 
 	@Column(name = "DATE_NAISSANCE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType", parameters = {
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType", parameters = {
 		@Parameter(name = "allowPartial", value = "true")
 	})
 	public RegDate getDateNaissance() {

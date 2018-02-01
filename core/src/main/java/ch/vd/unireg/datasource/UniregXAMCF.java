@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.datasource;
+package ch.vd.unireg.datasource;
 
 import java.sql.SQLException;
 import java.util.Properties;

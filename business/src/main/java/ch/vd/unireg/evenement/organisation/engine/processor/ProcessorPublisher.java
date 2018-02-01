@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.engine.processor;
+package ch.vd.unireg.evenement.organisation.engine.processor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

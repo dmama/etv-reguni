@@ -20,7 +20,7 @@
 		</layout>
 	</appender>
 
-	<logger name="ch.vd.uniregctb">
+	<logger name="ch.vd.unireg">
 		<level value="DEBUG" />
 	</logger>
 
@@ -37,7 +37,7 @@
 	</logger>
 
 	<!-- Affichage des démarcation de transactions -->
-	<logger name="ch.vd.uniregctb.transaction">
+	<logger name="ch.vd.unireg.transaction">
 		<level value="WARN" />
 	</logger>
 

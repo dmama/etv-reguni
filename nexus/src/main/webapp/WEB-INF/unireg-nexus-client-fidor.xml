@@ -14,7 +14,7 @@
 		<property name="wcPool" ref="fidorWebClientPool"/>
 	</bean>
 
-	<bean id="fidorClientTracing" class="ch.vd.uniregctb.wsclient.fidor.FidorClientTracing">
+	<bean id="fidorClientTracing" class="ch.vd.unireg.wsclient.fidor.FidorClientTracing">
 		<property name="statsService" ref="statsService"/>
 		<property name="target" ref="fidorClientRaw"/>
 	</bean>

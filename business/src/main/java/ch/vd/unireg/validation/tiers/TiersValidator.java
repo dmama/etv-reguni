@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,23 +21,23 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.tiers.ActiviteEconomique;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportPrestationImposable;
-import ch.vd.uniregctb.tiers.Remarque;
-import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
-import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.tiers.ActiviteEconomique;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportPrestationImposable;
+import ch.vd.unireg.tiers.Remarque;
+import ch.vd.unireg.tiers.RepresentationConventionnelle;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.validation.EntityValidatorImpl;
+import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Classe de base des validateurs de tiers

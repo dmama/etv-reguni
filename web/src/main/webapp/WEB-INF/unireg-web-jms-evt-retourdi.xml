@@ -4,7 +4,7 @@
 
 	<!-- Point d'entrée JMS -->
 
-	<bean id="evenementRetourDiListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+	<bean id="evenementRetourDiListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementRetourDiHandler" />
 		<property name="destinationName" value="${extprop.jms.queue.evtCedi}"/>
 		<property name="concurrentConsumers" value="1"/>
@@ -14,7 +14,7 @@
 
 	<!-- Dispatching des différents formats supportés -->
 
-	<bean id="evenementRetourDiHandler" class="ch.vd.uniregctb.evenement.retourdi.EvenementRetourDiEsbMessageHandler">
+	<bean id="evenementRetourDiHandler" class="ch.vd.unireg.evenement.retourdi.EvenementRetourDiEsbMessageHandler">
 		<property name="handlers">
 			<list>
 				<!-- PP -->
@@ -38,31 +38,31 @@
 
 	<!-- DI des contribuables "personnes physiques" -->
 
-	<bean id="evenementCediAbstractHandler" abstract="true" class="ch.vd.uniregctb.evenement.retourdi.pp.AbstractDossierElectroniqueHandler">
+	<bean id="evenementCediAbstractHandler" abstract="true" class="ch.vd.unireg.evenement.retourdi.pp.AbstractDossierElectroniqueHandler">
 		<property name="evenementCediService" ref="evenementCediService"/>
 	</bean>
 
-	<bean id="evenementCediHandlerV1" class="ch.vd.uniregctb.evenement.retourdi.pp.V1Handler" parent="evenementCediAbstractHandler"/>
-	<bean id="evenementCediHandlerV2" class="ch.vd.uniregctb.evenement.retourdi.pp.V2Handler" parent="evenementCediAbstractHandler"/>
-	<bean id="evenementCediHandlerV3" class="ch.vd.uniregctb.evenement.retourdi.pp.V3Handler" parent="evenementCediAbstractHandler"/>
-	<bean id="evenementCediHandler2015V2" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2015V2Handler" parent="evenementCediAbstractHandler"/>
-	<bean id="evenementCediHandler2016V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V1Handler" parent="evenementCediAbstractHandler"/>
-	<bean id="evenementCediHandler2016V2" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V2Handler" parent="evenementCediAbstractHandler"/>
-	<bean id="evenementCediHandler2017V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V1Handler" parent="evenementCediAbstractHandler"/>
-	<bean id="evenementCediHandler2017V2" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V2Handler" parent="evenementCediAbstractHandler"/>
-	<bean id="evenementCediHandler2018V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2018V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandlerV1" class="ch.vd.unireg.evenement.retourdi.pp.V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandlerV2" class="ch.vd.unireg.evenement.retourdi.pp.V2Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandlerV3" class="ch.vd.unireg.evenement.retourdi.pp.V3Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2015V2" class="ch.vd.unireg.evenement.retourdi.pp.Pf2015V2Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2016V1" class="ch.vd.unireg.evenement.retourdi.pp.Pf2016V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2016V2" class="ch.vd.unireg.evenement.retourdi.pp.Pf2016V2Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2017V1" class="ch.vd.unireg.evenement.retourdi.pp.Pf2017V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2017V2" class="ch.vd.unireg.evenement.retourdi.pp.Pf2017V2Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2018V1" class="ch.vd.unireg.evenement.retourdi.pp.Pf2018V1Handler" parent="evenementCediAbstractHandler"/>
 
 	<!-- DI des contribuables "personnes morales" -->
 
-	<bean id="abstractRetourDIIBCHandler" abstract="true" class="ch.vd.uniregctb.evenement.retourdi.pm.AbstractRetourDIHandler">
+	<bean id="abstractRetourDIIBCHandler" abstract="true" class="ch.vd.unireg.evenement.retourdi.pm.AbstractRetourDIHandler">
 		<property name="retourService" ref="retourDIPMService"/>
 	</bean>
 
-	<bean id="retourDiIbcHandlerV1" class="ch.vd.uniregctb.evenement.retourdi.pm.V1Handler" parent="abstractRetourDIIBCHandler">
+	<bean id="retourDiIbcHandlerV1" class="ch.vd.unireg.evenement.retourdi.pm.V1Handler" parent="abstractRetourDIIBCHandler">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
-	<bean id="retourDiIbcHandlerV2" class="ch.vd.uniregctb.evenement.retourdi.pm.V2Handler" parent="abstractRetourDIIBCHandler">
+	<bean id="retourDiIbcHandlerV2" class="ch.vd.unireg.evenement.retourdi.pm.V2Handler" parent="abstractRetourDIIBCHandler">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 

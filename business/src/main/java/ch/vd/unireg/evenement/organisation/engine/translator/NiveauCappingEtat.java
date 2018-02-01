@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.evenement.organisation.engine.translator;
+package ch.vd.unireg.evenement.organisation.engine.translator;
 
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
 
 /**
  * Niveaux disponibles pour le capping de l'état final des événements de RCEnt

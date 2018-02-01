@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.annulation.deces;
+package ch.vd.unireg.norentes.civil.annulation.deces;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Test norentes de l'événement d'annulation de décès d'un marié seul.

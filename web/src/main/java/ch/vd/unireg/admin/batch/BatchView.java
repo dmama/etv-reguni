@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.admin.batch;
+package ch.vd.unireg.admin.batch;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
 
 @SuppressWarnings("UnusedDeclaration")
 public class BatchView {

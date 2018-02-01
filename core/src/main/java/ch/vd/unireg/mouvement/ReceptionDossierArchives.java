@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -9,7 +9,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
-import ch.vd.uniregctb.type.Localisation;
+import ch.vd.unireg.type.Localisation;
 
 @Entity
 @DiscriminatorValue(value = "ReceptionArchives")

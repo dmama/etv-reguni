@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -14,12 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.common.URLHelper;
-import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.common.URLHelper;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
 
 /**
  * Ce filtre permet de récupérer de logger les accès aux page web de l'application (voir SIFISC-3085).

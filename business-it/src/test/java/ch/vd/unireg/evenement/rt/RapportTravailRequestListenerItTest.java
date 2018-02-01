@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.rt;
+package ch.vd.unireg.evenement.rt;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -21,9 +21,9 @@ import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.request.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementHelper;
-import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementHelper;
+import ch.vd.unireg.jms.EsbMessageValidator;
 
 import static org.junit.Assert.assertNotNull;
 

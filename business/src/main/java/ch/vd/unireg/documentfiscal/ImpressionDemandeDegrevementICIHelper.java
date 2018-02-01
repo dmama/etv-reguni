@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeImmeuble;
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.editique.EditiqueAbstractHelper;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.tiers.Entreprise;
 
 public interface ImpressionDemandeDegrevementICIHelper extends EditiqueAbstractHelper {
 

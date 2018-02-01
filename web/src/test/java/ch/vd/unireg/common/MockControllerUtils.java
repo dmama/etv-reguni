@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.servlet.http.HttpServletRequest;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.security.AccessDeniedException;
 
 /**
  * Mock du contrôleur qui ne fait aucun test par défaut.

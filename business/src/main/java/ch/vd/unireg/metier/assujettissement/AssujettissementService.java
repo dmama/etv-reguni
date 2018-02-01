@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.metier.assujettissement;
+package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 import java.util.Set;
@@ -6,8 +6,8 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 
 public interface AssujettissementService {
 
@@ -65,7 +65,7 @@ public interface AssujettissementService {
 	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement durant la période spécifiée.
 	 * <p/>
 	 * Cette méthode fonctionne en calculant l'assujettissement année après année et en collant les résultats l'un après l'autre. Elle n'est donc pas terriblement efficace, et dans la mesure du possible
-	 * préférer la méthode {@link #determine(ch.vd.uniregctb.tiers.Contribuable, int)}.
+	 * préférer la méthode {@link #determine(ch.vd.unireg.tiers.Contribuable, int)}.
 	 *
 	 * @param contribuable le contribuable dont on veut déterminer l'assujettissement
 	 * @param range        la période considérée

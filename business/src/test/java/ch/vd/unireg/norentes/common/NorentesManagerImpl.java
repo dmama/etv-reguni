@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.common;
+package ch.vd.unireg.norentes.common;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -21,11 +21,11 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.norentes.annotation.Check;
-import ch.vd.uniregctb.norentes.annotation.Etape;
-import ch.vd.uniregctb.norentes.annotation.EtapeAttribute;
-import ch.vd.uniregctb.norentes.common.NorentesContext.EtapeContext;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.norentes.annotation.Check;
+import ch.vd.unireg.norentes.annotation.Etape;
+import ch.vd.unireg.norentes.annotation.EtapeAttribute;
+import ch.vd.unireg.norentes.common.NorentesContext.EtapeContext;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, DisposableBean, ApplicationContextAware {
 

@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.remarque;
+package ch.vd.unireg.remarque;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.unireg.common.WithoutSpringTest;
 
 public class RemarqueViewTest extends WithoutSpringTest{
 

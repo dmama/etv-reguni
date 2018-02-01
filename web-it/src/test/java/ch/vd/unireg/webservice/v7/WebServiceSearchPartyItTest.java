@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.v7;
+package ch.vd.unireg.webservice.v7;
 
 import java.util.EnumSet;
 import java.util.HashMap;

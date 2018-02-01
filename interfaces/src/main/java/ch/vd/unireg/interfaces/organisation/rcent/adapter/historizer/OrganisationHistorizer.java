@@ -61,7 +61,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.extractor.U
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationData;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.service.RCEntAdapterException;
-import ch.vd.uniregctb.common.Equalator;
+import ch.vd.unireg.common.Equalator;
 
 public class OrganisationHistorizer {
 

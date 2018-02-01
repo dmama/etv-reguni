@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.perfs;
+package ch.vd.unireg.perfs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import ch.vd.uniregctb.perfs.PerfsAccessFile.Call;
+import ch.vd.unireg.perfs.PerfsAccessFile.Call;
 
 /**
  * Itérateur qui permet de récupérer les ids des contribuables à processer en respectant les temps d'accès défini dans le fichier.

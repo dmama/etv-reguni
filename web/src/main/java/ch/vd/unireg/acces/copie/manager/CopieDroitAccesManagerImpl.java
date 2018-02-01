@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.acces.copie.manager;
+package ch.vd.unireg.acces.copie.manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,25 +11,25 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
-import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
-import ch.vd.uniregctb.acces.copie.view.ConfirmedDataView;
-import ch.vd.uniregctb.acces.parUtilisateur.view.BaseDroitAccesDossierView;
-import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.general.manager.UtilisateurManager;
-import ch.vd.uniregctb.general.view.UtilisateurView;
-import ch.vd.uniregctb.security.DroitAccesConflit;
-import ch.vd.uniregctb.security.DroitAccesConflitAvecDonneesContribuable;
-import ch.vd.uniregctb.security.DroitAccesDAO;
-import ch.vd.uniregctb.security.DroitAccesService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.acces.copie.view.ConfirmCopieView;
+import ch.vd.unireg.acces.copie.view.ConfirmedDataView;
+import ch.vd.unireg.acces.parUtilisateur.view.BaseDroitAccesDossierView;
+import ch.vd.unireg.acces.parUtilisateur.view.DroitAccesUtilisateurView;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.general.manager.UtilisateurManager;
+import ch.vd.unireg.general.view.UtilisateurView;
+import ch.vd.unireg.security.DroitAccesConflit;
+import ch.vd.unireg.security.DroitAccesConflitAvecDonneesContribuable;
+import ch.vd.unireg.security.DroitAccesDAO;
+import ch.vd.unireg.security.DroitAccesService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 

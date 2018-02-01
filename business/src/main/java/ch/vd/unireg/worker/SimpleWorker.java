@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.worker;
+package ch.vd.unireg.worker;
 
 public interface SimpleWorker<T> extends Worker {
 

@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.entreprise;
+package ch.vd.unireg.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
+import ch.vd.unireg.tiers.CapitalFiscalEntreprise;
 
 public abstract class CapitalView implements DateRange {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.pages;
+package ch.vd.unireg.pages;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WebitTest;
+import ch.vd.unireg.common.WebitTest;
 
 import static org.junit.Assert.assertEquals;
 

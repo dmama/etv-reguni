@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,9 +11,9 @@ import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.tiers.DroitAcces;
 
 public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements DroitAccesDAO {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction;
+package ch.vd.unireg.transaction;
 
 /**
  * Interface implémentée par l'entité dans laquelle les composants qui ont des synchronisations à enregistrer

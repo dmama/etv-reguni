@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.util.List;
 
@@ -6,23 +6,23 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
-import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.BatimentRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.MutationRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.ServitudeRFProcessor;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.dataimport.processor.AyantDroitRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.BatimentRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.DroitRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.MutationRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.ServitudeRFProcessor;
+import ch.vd.unireg.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

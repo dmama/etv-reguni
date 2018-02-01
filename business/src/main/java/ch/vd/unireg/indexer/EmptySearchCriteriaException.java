@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer;
+package ch.vd.unireg.indexer;
 
 /**
  * Exception lancée lorsque les critères de recherche sont vides

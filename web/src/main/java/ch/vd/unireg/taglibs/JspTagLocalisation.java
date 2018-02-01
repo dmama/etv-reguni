@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -14,9 +14,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.view.AdresseCivilView;
-import ch.vd.uniregctb.tiers.view.LocalisationView;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.view.AdresseCivilView;
+import ch.vd.unireg.tiers.view.LocalisationView;
 
 /**
  * Tag jsp qui permet d'afficher une localisation (provenance ou destination) avec le détails de l'adresse dans un tooltip.

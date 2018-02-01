@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.rapport.manager;
+package ch.vd.unireg.rapport.manager;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
-import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
-import ch.vd.uniregctb.rapport.view.RapportView;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.rapport.SensRapportEntreTiers;
+import ch.vd.unireg.rapport.view.RapportView;
+import ch.vd.unireg.tiers.view.TiersEditView;
 
 /**
  * Claase offrant les services au controller RapportController

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique.impl;
+package ch.vd.unireg.editique.impl;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueResultatRecu;
-import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
-import ch.vd.uniregctb.editique.FormatDocumentEditique;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.jms.EsbMessageHandler;
+import ch.vd.unireg.common.MimeTypeHelper;
+import ch.vd.unireg.editique.ConstantesEditique;
+import ch.vd.unireg.editique.EditiqueResultatRecu;
+import ch.vd.unireg.editique.EditiqueRetourImpressionStorageService;
+import ch.vd.unireg.editique.FormatDocumentEditique;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.jms.EsbMessageHandler;
 
 /**
  * Listener des retours d'impression éditique

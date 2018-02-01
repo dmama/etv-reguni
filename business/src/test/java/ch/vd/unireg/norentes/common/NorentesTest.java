@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.norentes.common;
+package ch.vd.unireg.norentes.common;
 
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.common.AbstractBusinessTest;
+import ch.vd.unireg.common.AbstractBusinessTest;
 
 import static org.junit.Assert.assertNotNull;
 

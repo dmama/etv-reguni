@@ -1,24 +1,24 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
-import ch.vd.uniregctb.tiers.ActiviteEconomique;
-import ch.vd.uniregctb.tiers.AdministrationEntreprise;
-import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
-import ch.vd.uniregctb.tiers.ConseilLegal;
-import ch.vd.uniregctb.tiers.ContactImpotSource;
-import ch.vd.uniregctb.tiers.Curatelle;
-import ch.vd.uniregctb.tiers.FusionEntreprises;
-import ch.vd.uniregctb.tiers.Heritage;
-import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.tiers.Parente;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportPrestationImposable;
-import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
-import ch.vd.uniregctb.tiers.ScissionEntreprise;
-import ch.vd.uniregctb.tiers.SocieteDirection;
-import ch.vd.uniregctb.tiers.TransfertPatrimoine;
-import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.unireg.tiers.ActiviteEconomique;
+import ch.vd.unireg.tiers.AdministrationEntreprise;
+import ch.vd.unireg.tiers.AnnuleEtRemplace;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.AssujettissementParSubstitution;
+import ch.vd.unireg.tiers.ConseilLegal;
+import ch.vd.unireg.tiers.ContactImpotSource;
+import ch.vd.unireg.tiers.Curatelle;
+import ch.vd.unireg.tiers.FusionEntreprises;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.Mandat;
+import ch.vd.unireg.tiers.Parente;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportPrestationImposable;
+import ch.vd.unireg.tiers.RepresentationConventionnelle;
+import ch.vd.unireg.tiers.ScissionEntreprise;
+import ch.vd.unireg.tiers.SocieteDirection;
+import ch.vd.unireg.tiers.TransfertPatrimoine;
+import ch.vd.unireg.tiers.Tutelle;
 
 /**
  * Longueur de colonne : 20

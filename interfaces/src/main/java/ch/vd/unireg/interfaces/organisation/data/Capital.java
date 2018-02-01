@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ComparisonHelper;
+import ch.vd.unireg.common.ComparisonHelper;
 
 public class Capital implements Serializable, DateRange, DateRangeLimitable<Capital> {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.data;
+package ch.vd.unireg.data;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -30,16 +30,16 @@ import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.Relationship;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StackedThreadLocal;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalException;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSender;
-import ch.vd.uniregctb.transaction.TransactionSynchronizationManagerInterface;
-import ch.vd.uniregctb.transaction.TransactionSynchronizationRegistrar;
-import ch.vd.uniregctb.transaction.TransactionSynchronizationSupplier;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StackedThreadLocal;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalException;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalSender;
+import ch.vd.unireg.transaction.TransactionSynchronizationManagerInterface;
+import ch.vd.unireg.transaction.TransactionSynchronizationRegistrar;
+import ch.vd.unireg.transaction.TransactionSynchronizationSupplier;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class ConcentratingDataEventJmsSender implements InitializingBean, DisposableBean, EvenementFiscalSender, DataEventListener, TransactionSynchronizationSupplier {
 

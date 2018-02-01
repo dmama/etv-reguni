@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.stats.evenements;
+package ch.vd.unireg.stats.evenements;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.type.EtatEvenementOrganisation;
 
 public class StatsEvenementsCivilsOrganisationsResults {
 

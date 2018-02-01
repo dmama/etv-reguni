@@ -4,7 +4,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
-	<%--@elvariable id="principalView" type="ch.vd.uniregctb.rapport.view.SetPrincipalView"--%>
+	<%--@elvariable id="principalView" type="ch.vd.unireg.rapport.view.SetPrincipalView"--%>
 	<tiles:put name="title">
 		<fmt:message key="title.set.principal">
 			<fmt:param><unireg:numCTB numero="${principalView.heritierId}"/></fmt:param>
@@ -39,7 +39,7 @@
 		</table>
 
 		<fieldset><legend><span><fmt:message key="label.histo.heritiers.principaux" /></span></legend>
-			<display:table name="principaux" id="principal" pagesize="25" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:table name="principaux" id="principal" pagesize="25" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column titleKey="label.date.debut">
 					<unireg:regdate regdate="${principal.dateDebut}" />
 				</display:column>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -17,24 +17,24 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.xml.event.docsortant.retour.v3.DocumentQuittance;
 import ch.vd.unireg.xml.event.docsortant.retour.v3.Quittance;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
-import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
-import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
-import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
-import ch.vd.uniregctb.efacture.DocumentEFacture;
-import ch.vd.uniregctb.efacture.DocumentEFactureDAO;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.EsbBusinessCode;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationEmise;
+import ch.vd.unireg.declaration.EtatDeclarationRappelee;
+import ch.vd.unireg.declaration.EtatDeclarationSommee;
+import ch.vd.unireg.documentfiscal.AutorisationRadiationRC;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalAvecSuivi;
+import ch.vd.unireg.documentfiscal.DemandeBilanFinal;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
+import ch.vd.unireg.documentfiscal.LettreBienvenue;
+import ch.vd.unireg.documentfiscal.LettreTypeInformationLiquidation;
+import ch.vd.unireg.efacture.DocumentEFacture;
+import ch.vd.unireg.efacture.DocumentEFactureDAO;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHandler, InitializingBean {
 

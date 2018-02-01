@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.xml.party.v5;
+package ch.vd.unireg.xml.party.v5;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,16 +13,16 @@ import org.junit.Test;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
-import static ch.vd.uniregctb.registrefoncier.CommunauteRFMembreComparatorTest.assertAfter;
-import static ch.vd.uniregctb.registrefoncier.CommunauteRFMembreComparatorTest.assertBefore;
+import static ch.vd.unireg.registrefoncier.CommunauteRFMembreComparatorTest.assertAfter;
+import static ch.vd.unireg.registrefoncier.CommunauteRFMembreComparatorTest.assertBefore;
 
 @SuppressWarnings("Duplicates")
 public class EasementRightHolderComparatorTest {

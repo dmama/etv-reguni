@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fusion;
+package ch.vd.unireg.fusion;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,9 +9,9 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.fusion.manager.FusionRecapManager;
-import ch.vd.uniregctb.fusion.view.FusionRecapView;
+import ch.vd.unireg.common.AbstractSimpleFormController;
+import ch.vd.unireg.fusion.manager.FusionRecapManager;
+import ch.vd.unireg.fusion.view.FusionRecapView;
 
 public class FusionRecapController  extends AbstractSimpleFormController {
 

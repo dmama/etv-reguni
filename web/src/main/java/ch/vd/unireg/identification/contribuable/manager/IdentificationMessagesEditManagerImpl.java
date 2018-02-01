@@ -1,27 +1,27 @@
-package ch.vd.uniregctb.identification.contribuable.manager;
+package ch.vd.unireg.identification.contribuable.manager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
-import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
-import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
-import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
-import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
-import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
+import ch.vd.unireg.evenement.identification.contribuable.CriteresPersonne;
+import ch.vd.unireg.evenement.identification.contribuable.Demande;
+import ch.vd.unireg.evenement.identification.contribuable.Erreur;
+import ch.vd.unireg.evenement.identification.contribuable.Erreur.TypeErreur;
+import ch.vd.unireg.evenement.identification.contribuable.IdentCtbDAO;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.identification.contribuable.view.DemandeIdentificationView;
+import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesEditView;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersCriteria.TypeTiers;
+import ch.vd.unireg.tiers.TiersDAO;
 
 public class IdentificationMessagesEditManagerImpl implements IdentificationMessagesEditManager {
 

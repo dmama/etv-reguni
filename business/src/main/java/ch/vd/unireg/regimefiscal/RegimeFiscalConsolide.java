@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.regimefiscal;
+package ch.vd.unireg.regimefiscal;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.type.CategorieEntreprise;
 
 /**
  * Classe d'encapsulation du régime fiscal consolidé avec son type de régime.

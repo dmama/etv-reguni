@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parentes;
+package ch.vd.unireg.parentes;
 
 import java.util.Map;
 
@@ -8,20 +8,20 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.MultipleSwitch;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.document.CalculParentesRapport;
-import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamEnum;
-import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.MultipleSwitch;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.document.CalculParentesRapport;
+import ch.vd.unireg.rapport.RapportService;
+import ch.vd.unireg.scheduler.JobCategory;
+import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamEnum;
+import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.tiers.RapportEntreTiersDAO;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.tiers.TiersService;
 
 public class CalculParentesJob extends JobDefinition {
 

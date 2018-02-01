@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.fors;
+package ch.vd.unireg.validation.fors;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
+import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
 
 public abstract class ForFiscalAvecMotifsValidator<T extends ForFiscalAvecMotifs> extends ForFiscalValidator<T> {
 

@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.registrefoncier.PrincipalCommunauteRF;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
 
 public class PrincipalCommunauteRFDAOImpl extends BaseDAOImpl<PrincipalCommunauteRF, Long> implements PrincipalCommunauteRFDAO {
 	protected PrincipalCommunauteRFDAOImpl() {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,12 +6,12 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ComparisonHelper;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.unireg.common.ComparisonHelper;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 @Entity
 public abstract class ForFiscalRevenuFortune extends ForFiscalAvecMotifs {
@@ -34,7 +34,7 @@ public abstract class ForFiscalRevenuFortune extends ForFiscalAvecMotifs {
 	}
 
 	@Column(name = "MOTIF_RATTACHEMENT", length = LengthConstants.FOR_RATTACHEMENT)
-	@Type(type = "ch.vd.uniregctb.hibernate.MotifRattachementUserType")
+	@Type(type = "ch.vd.unireg.hibernate.MotifRattachementUserType")
 	public MotifRattachement getMotifRattachement() {
 		return motifRattachement;
 	}
@@ -51,7 +51,7 @@ public abstract class ForFiscalRevenuFortune extends ForFiscalAvecMotifs {
 	}
 
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.tiers.ForFiscal#equalsTo(java.lang.Object)
+	 * @see ch.vd.unireg.tiers.ForFiscal#equalsTo(java.lang.Object)
 	 */
 	@Override
 	public boolean equalsTo(ForFiscal obj) {

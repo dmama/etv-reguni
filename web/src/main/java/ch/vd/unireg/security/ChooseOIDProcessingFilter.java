@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,10 +18,10 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.URLHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.URLHelper;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 
 /**
  * Ce filtre permet de renseigner l'office d'impôt d'un utilisateur. Si l'utilisateur ne possède qu'un seul office d'impôt, ce dernier est sélectionné d'office et le processus est transparent. Si

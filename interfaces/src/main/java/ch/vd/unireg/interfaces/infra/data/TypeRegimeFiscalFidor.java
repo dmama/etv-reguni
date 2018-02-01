@@ -17,9 +17,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.fidor.xml.regimefiscal.v2.Exoneration;
 import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.type.CategorieEntreprise;
 
 public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 

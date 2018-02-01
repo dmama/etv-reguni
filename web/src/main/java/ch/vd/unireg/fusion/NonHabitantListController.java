@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fusion;
+package ch.vd.unireg.fusion;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,9 +11,9 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.tiers.AbstractTiersListController;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public class NonHabitantListController  extends  AbstractTiersListController {
 

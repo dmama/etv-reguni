@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.etiquette;
+package ch.vd.unireg.etiquette;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class EtiquetteTiersDAOImpl extends BaseDAOImpl<EtiquetteTiers, Long> implements EtiquetteTiersDAO {
 

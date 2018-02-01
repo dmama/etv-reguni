@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.unireg.evenement;
 
 import javax.jms.ConnectionFactory;
 import java.io.FileNotFoundException;
@@ -16,8 +16,8 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.utils.UniregProperties;
-import ch.vd.uniregctb.utils.UniregPropertiesImpl;
+import ch.vd.unireg.utils.UniregProperties;
+import ch.vd.unireg.utils.UniregPropertiesImpl;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>

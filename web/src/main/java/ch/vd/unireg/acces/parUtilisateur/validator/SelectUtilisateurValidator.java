@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.acces.parUtilisateur.validator;
+package ch.vd.unireg.acces.parUtilisateur.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.acces.parUtilisateur.view.SelectUtilisateurView;
+import ch.vd.unireg.acces.parUtilisateur.view.SelectUtilisateurView;
 
 public class SelectUtilisateurValidator implements Validator {
 

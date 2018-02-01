@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.utils;
+package ch.vd.unireg.utils;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.unireg.common.CollectionsUtils;
 
 /**
  * @author Raphaël Marmier, 2016-04-19, <raphael.marmier@vd.ch>

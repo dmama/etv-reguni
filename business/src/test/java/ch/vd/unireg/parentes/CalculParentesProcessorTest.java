@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.parentes;
+package ch.vd.unireg.parentes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,13 +16,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.MultipleSwitch;
-import ch.vd.uniregctb.tiers.Parente;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
-import ch.vd.uniregctb.type.Sexe;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.MultipleSwitch;
+import ch.vd.unireg.tiers.Parente;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportEntreTiersDAO;
+import ch.vd.unireg.type.Sexe;
 
 public class CalculParentesProcessorTest extends BusinessTest {
 

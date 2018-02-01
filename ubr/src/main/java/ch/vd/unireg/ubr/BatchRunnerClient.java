@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.ubr;
+package ch.vd.unireg.ubr;
 
 import javax.activation.DataHandler;
 import javax.ws.rs.WebApplicationException;

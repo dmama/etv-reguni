@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.lr.view;
+package ch.vd.unireg.lr.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
 
 public class DelaiAddView {
 

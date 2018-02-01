@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
 /**
  * Classe qui expose de manière pratique les méta-informations d'un type de propriété d'une entité Hibernate.

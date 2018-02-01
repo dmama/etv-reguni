@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.situationfamille;
+package ch.vd.unireg.situationfamille;
 
-import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.unireg.type.TarifImpotSource;
 
 /**
  * Vue de la situation de famille spécifique aux ménages communs.

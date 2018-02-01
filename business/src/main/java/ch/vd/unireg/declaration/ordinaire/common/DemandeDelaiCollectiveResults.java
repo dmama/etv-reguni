@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.declaration.ordinaire.common;
+package ch.vd.unireg.declaration.ordinaire.common;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.TiersService;
 
 /**
  * Contient les données brutes permettant de générer le document de rapport de l'exécution du processeur.

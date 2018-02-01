@@ -8,7 +8,7 @@
 	<c:set var="url" value="edit.do" />
 </c:if>
 <c:if test="${not empty command.situationsFamille}">
-	<display:table name="command.situationsFamille" id="situationFamille" pagesize="10"	requestURI="${url}"	class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<display:table name="command.situationsFamille" id="situationFamille" pagesize="10"	requestURI="${url}"	class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 		<display:column sortable ="true" titleKey="label.etat.civil">
 		 <c:if test="${situationFamille.etatCivil != null}">

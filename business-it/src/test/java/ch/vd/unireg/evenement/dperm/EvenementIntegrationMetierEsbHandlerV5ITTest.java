@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.dperm;
+package ch.vd.unireg.evenement.dperm;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -39,12 +39,12 @@ import ch.vd.unireg.xml.event.degrevement.v1.Message;
 import ch.vd.unireg.xml.event.degrevement.v1.SousTypeDocument;
 import ch.vd.unireg.xml.event.degrevement.v1.Supervision;
 import ch.vd.unireg.xml.event.degrevement.v1.TypeDocument;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.evenement.degrevement.EvenementIntegrationMetierDegrevementHandler;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.evenement.degrevement.EvenementIntegrationMetierDegrevementHandler;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.jms.EsbMessageHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -139,7 +139,7 @@ public class EvenementIntegrationMetierEsbHandlerV5ITTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/dperm/evenementIntegrationMetierDegrevement.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/dperm/evenementIntegrationMetierDegrevement.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// quelques attributs "custom"

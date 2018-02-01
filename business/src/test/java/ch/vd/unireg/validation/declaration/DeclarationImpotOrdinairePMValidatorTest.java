@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.validation.declaration;
+package ch.vd.unireg.validation.declaration;
 
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 
 public class DeclarationImpotOrdinairePMValidatorTest extends DeclarationImpotOrdinaireValidatorTest<DeclarationImpotOrdinairePM> {
 

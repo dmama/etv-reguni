@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.Set;
 
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.type.FormeJuridique;
 
 public class AutreCommunauteCivilView {
 

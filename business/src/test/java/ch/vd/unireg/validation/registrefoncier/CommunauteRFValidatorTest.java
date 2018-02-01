@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.registrefoncier;
+package ch.vd.unireg.validation.registrefoncier;
 
 import java.util.Collections;
 
@@ -6,13 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
-import ch.vd.uniregctb.validation.ValidationServiceImpl;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.RegroupementCommunauteRF;
+import ch.vd.unireg.validation.ValidationServiceImpl;
 
-import static ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidatorTest.assertErrors;
-import static ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidatorTest.assertValide;
+import static ch.vd.unireg.validation.registrefoncier.EstimationRFValidatorTest.assertErrors;
+import static ch.vd.unireg.validation.registrefoncier.EstimationRFValidatorTest.assertValide;
 
 public class CommunauteRFValidatorTest {
 

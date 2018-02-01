@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.validation.tiers;
+package ch.vd.unireg.validation.tiers;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
+import ch.vd.unireg.tiers.FlagEntreprise;
 
 public class FlagEntrepriseValidator extends DateRangeEntityValidator<FlagEntreprise> {
 

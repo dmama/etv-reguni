@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
+import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -12,10 +12,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TexteCasePostale;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypePermis;
 
 public class DefaultMockServiceCivil extends MockServiceCivil {
 
@@ -112,7 +112,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see ch.vd.uniregctb.interfaces.service.HostCivilService#getAdressesActives(java.lang.Long,
+	 * @see ch.vd.unireg.interfaces.service.HostCivilService#getAdressesActives(java.lang.Long,
 	 *      java.util.Date)
 	 */
 	@Override

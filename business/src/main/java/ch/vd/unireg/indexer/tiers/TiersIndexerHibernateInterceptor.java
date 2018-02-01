@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -23,18 +23,18 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.common.BatchIterator;
-import ch.vd.uniregctb.common.EntityKey;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.StackedThreadLocal;
-import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
-import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.EntityKey;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.StackedThreadLocal;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.common.linkedentity.LinkedEntity;
+import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.unireg.tiers.Tiers;
 
 public class TiersIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean {
 

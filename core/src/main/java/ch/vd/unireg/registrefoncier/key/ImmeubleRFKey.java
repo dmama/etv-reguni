@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.key;
+package ch.vd.unireg.registrefoncier.key;
 
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
 
 /**
  * Clé d'identification au registre foncier d'un immeuble.

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.hibernate.meta;
+package ch.vd.unireg.hibernate.meta;
 
-import ch.vd.uniregctb.hibernate.IdentifiantDroitRFUserType;
+import ch.vd.unireg.hibernate.IdentifiantDroitRFUserType;
 
 public class IdentifiantDroitRFPropertyType extends UserTypePropertyType {
 	public IdentifiantDroitRFPropertyType(IdentifiantDroitRFUserType userType) {

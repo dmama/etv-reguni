@@ -1,7 +1,7 @@
 /**
  *
  */
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -21,9 +21,9 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.tiers.Contribuable;
 
 /**
  * Classe de base des mouvements de dossiers
@@ -84,7 +84,7 @@ public abstract class MouvementDossier extends HibernateEntity {
 	}
 
 	@Column(name = "ETAT", length = LengthConstants.MVTDOSSIER_ETAT, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.EtatMouvementDossierUserType")
+	@Type(type = "ch.vd.unireg.hibernate.EtatMouvementDossierUserType")
 	public EtatMouvementDossier getEtat() {
 		return etat;
 	}
@@ -94,7 +94,7 @@ public abstract class MouvementDossier extends HibernateEntity {
 	}
 
 	@Column(name = "DATE_MOUVEMENT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateMouvement() {
 		return dateMouvement;
 	}

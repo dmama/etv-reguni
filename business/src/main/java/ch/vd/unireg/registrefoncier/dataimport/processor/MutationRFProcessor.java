@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.processor;
+package ch.vd.unireg.registrefoncier.dataimport.processor;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
+import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.unireg.registrefoncier.dataimport.MutationsRFProcessorResults;
 
 /**
  * Interface commune aux processeurs de traitement des mutations du registre foncier.

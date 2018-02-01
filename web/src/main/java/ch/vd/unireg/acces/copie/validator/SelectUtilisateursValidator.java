@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.acces.copie.validator;
+package ch.vd.unireg.acces.copie.validator;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.acces.copie.view.SelectUtilisateursView;
+import ch.vd.unireg.acces.copie.view.SelectUtilisateursView;
 
 public class SelectUtilisateursValidator implements Validator {
 

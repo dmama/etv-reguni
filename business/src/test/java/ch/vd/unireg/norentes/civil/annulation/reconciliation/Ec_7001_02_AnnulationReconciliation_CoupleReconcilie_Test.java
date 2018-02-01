@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.annulation.reconciliation;
+package ch.vd.unireg.norentes.civil.annulation.reconciliation;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Teste l'événement annulation de réconciliation avec un couple de mariés.

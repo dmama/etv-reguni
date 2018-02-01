@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.mouvement;
+package ch.vd.unireg.mouvement;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.type.Localisation;
+import ch.vd.unireg.type.Localisation;
 
 @Entity
 @DiscriminatorValue(value = "ReceptionClassementIndepdt")

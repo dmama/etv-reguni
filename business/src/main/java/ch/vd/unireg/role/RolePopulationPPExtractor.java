@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.EnumSet;
 import java.util.function.BiPredicate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
 
 public class RolePopulationPPExtractor extends RolePopulationExtractorImpl<ContribuableImpositionPersonnesPhysiques> {
 

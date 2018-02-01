@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.utils;
+package ch.vd.unireg.utils;
 
 /**
  * Quelques constantes (à terme, peut-être toutes... on peut se prendre à rêver...) pour les noms

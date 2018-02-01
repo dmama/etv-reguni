@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -7,7 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.xml.event.lr.quittance.v1.EvtQuittanceListe;
 import ch.vd.unireg.xml.event.lr.quittance.v1.Liste;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 public class EvtQuittanceListeV1Connector implements EvenementExterneConnector<EvtQuittanceListe> {
 

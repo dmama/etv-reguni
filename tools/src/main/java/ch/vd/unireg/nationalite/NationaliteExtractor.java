@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.nationalite;
+package ch.vd.unireg.nationalite;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -21,10 +21,10 @@ import ch.vd.unireg.xml.party.person.v3.Nationality;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.utils.WebServiceV5Helper;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.utils.WebServiceV5Helper;
 
 /**
  * Outil pour aller chercher les nationalités des tiers dont les numéros sont passés dans un fichier donné

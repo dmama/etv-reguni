@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.ech;
+package ch.vd.unireg.evenement.civil.ech;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,12 +19,12 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.EtatEvenementCivil;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 @Entity
 @Table(name = "EVENEMENT_CIVIL_ECH")
@@ -87,7 +87,7 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 	}
 
 	@Column(name = "TYPE", length = LengthConstants.EVTCIVILECH_TYPE, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeEvenementCivilEchUserType")
+	@Type(type = "ch.vd.unireg.hibernate.TypeEvenementCivilEchUserType")
 	public TypeEvenementCivilEch getType() {
 		return type;
 	}
@@ -97,7 +97,7 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 	}
 
 	@Column(name = "ACTION_EVT", length = LengthConstants.EVTCIVILECH_ACTION, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.ActionEvenementCivilEchUserType")
+	@Type(type = "ch.vd.unireg.hibernate.ActionEvenementCivilEchUserType")
 	public ActionEvenementCivilEch getAction() {
 		return action;
 	}
@@ -107,7 +107,7 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 	}
 
 	@Column(name = "ETAT", length = LengthConstants.EVTCIVILECH_ETAT, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.EtatEvenementCivilUserType")
+	@Type(type = "ch.vd.unireg.hibernate.EtatEvenementCivilUserType")
 	@Index(name = "IDX_EV_CIV_ECH_ETAT")
 	public EtatEvenementCivil getEtat() {
 		return etat;
@@ -127,7 +127,7 @@ public class EvenementCivilEch extends HibernateEntity implements EvenementCivil
 	}
 
 	@Column(name = "DATE_EVENEMENT", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateEvenement() {
 		return dateEvenement;
 	}

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.unireg.extraction;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,17 +28,17 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
-import ch.vd.uniregctb.common.MonitorableExecutorService;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.common.ThreadNameGenerator;
-import ch.vd.uniregctb.inbox.InboxAttachment;
-import ch.vd.uniregctb.inbox.InboxService;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.DefaultThreadNameGenerator;
+import ch.vd.unireg.common.MonitorableExecutorService;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.common.ThreadNameGenerator;
+import ch.vd.unireg.inbox.InboxAttachment;
+import ch.vd.unireg.inbox.InboxService;
 
 /**
  * Implémentation du service d'extractions asynchrones

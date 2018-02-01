@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport.helper;
+package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.CapiCode;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
+import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
+import ch.vd.unireg.registrefoncier.key.SurfaceAuSolRFKey;
 
 public abstract class SurfaceAuSolRFHelper {
 

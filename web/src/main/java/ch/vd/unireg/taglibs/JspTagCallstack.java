@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -7,7 +7,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.common.HtmlHelper;
+import ch.vd.unireg.common.HtmlHelper;
 
 /**
  * Ce tag permet d'afficher une call-stack résultant d'une exception de manière minimale : la call-stack est cachée par défaut et

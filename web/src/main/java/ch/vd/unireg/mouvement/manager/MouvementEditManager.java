@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.mouvement.manager;
+package ch.vd.unireg.mouvement.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
-import ch.vd.uniregctb.mouvement.view.MouvementListView;
+import ch.vd.unireg.mouvement.view.MouvementDetailView;
+import ch.vd.unireg.mouvement.view.MouvementListView;
 
 /**
  * Classe mettant à disposition les methodes pour le controller

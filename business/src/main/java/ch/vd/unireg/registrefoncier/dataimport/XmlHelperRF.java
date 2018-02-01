@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.unireg.registrefoncier.dataimport;
 
 import javax.xml.bind.JAXBContext;
 
@@ -13,8 +13,8 @@ import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.DienstbarkeitExtended;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GrundstueckNummerElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
+import ch.vd.unireg.registrefoncier.dataimport.elements.principal.GrundstueckNummerElement;
 
 /**
  * Classe de manipulation XML des entités propres à l'import du registre foncier.

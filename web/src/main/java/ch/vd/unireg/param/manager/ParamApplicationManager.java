@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.param.manager;
+package ch.vd.unireg.param.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.param.view.ParamApplicationView;
-import ch.vd.uniregctb.parametrage.ParametreEnum;
+import ch.vd.unireg.param.view.ParamApplicationView;
+import ch.vd.unireg.parametrage.ParametreEnum;
 
 public interface ParamApplicationManager {
 	

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.impl;
+package ch.vd.unireg.webservices.party3.impl;
 
 import javax.annotation.Resource;
 import javax.jws.WebParam;
@@ -50,20 +50,20 @@ import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
-import ch.vd.uniregctb.stats.LoadDetail;
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
+import ch.vd.unireg.type.Niveau;
 
 /**
  * Cette classe réceptionne tous les appels au web-service, authentifie l'utilisateur, vérifie ses droits d'accès et finalement redirige les appels vers l'implémentation concrète du service.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@InInterceptors(interceptors = {"ch.vd.uniregctb.webservices.common.SoapActionRemovalInterceptor"})
+@InInterceptors(interceptors = {"ch.vd.unireg.webservices.common.SoapActionRemovalInterceptor"})
 @WebService(targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3", serviceName = "PartyWebServiceFactory", portName = "Service",
 		endpointInterface = "ch.vd.unireg.webservices.party3.PartyWebService")
 public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMonitorable {

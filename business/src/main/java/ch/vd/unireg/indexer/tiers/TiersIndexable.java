@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
@@ -8,19 +8,19 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdressesFiscales;
-import ch.vd.uniregctb.avatar.AvatarService;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.indexer.Indexable;
-import ch.vd.uniregctb.indexer.IndexableData;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.IndexerFormatHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.LocalizedDateRange;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdressesFiscales;
+import ch.vd.unireg.avatar.AvatarService;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.RueEtNumero;
+import ch.vd.unireg.indexer.Indexable;
+import ch.vd.unireg.indexer.IndexableData;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.LocalizedDateRange;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersService;
 
 public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 

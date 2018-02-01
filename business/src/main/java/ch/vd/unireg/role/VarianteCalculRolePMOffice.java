@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.role;
+package ch.vd.unireg.role;
 
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.unireg.tiers.Entreprise;
 
 public class VarianteCalculRolePMOffice extends VarianteCalculRolePM<RolePMOfficeResults> {
 

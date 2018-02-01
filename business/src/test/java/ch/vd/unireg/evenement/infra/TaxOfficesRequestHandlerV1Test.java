@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.infra;
+package ch.vd.unireg.evenement.infra;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,15 +13,15 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.xml.DataHelper;
 
 public class TaxOfficesRequestHandlerV1Test extends BusinessTest {
 

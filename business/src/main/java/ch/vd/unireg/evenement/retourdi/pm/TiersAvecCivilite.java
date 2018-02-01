@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.retourdi.pm;
+package ch.vd.unireg.evenement.retourdi.pm;
 
 import java.util.Collections;
 
-import ch.vd.uniregctb.adresse.CiviliteSupplier;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
-import ch.vd.uniregctb.type.FormulePolitesse;
+import ch.vd.unireg.adresse.CiviliteSupplier;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.unireg.type.FormulePolitesse;
 
 final class TiersAvecCivilite extends Entreprise implements CiviliteSupplier {
 

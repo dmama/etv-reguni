@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -31,7 +31,7 @@ public abstract class HibernateDateRangeEntity extends HibernateEntity implement
 
 	@Override
 	@Column(name = "DATE_DEBUT", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -42,7 +42,7 @@ public abstract class HibernateDateRangeEntity extends HibernateEntity implement
 
 	@Override
 	@Column(name = "DATE_FIN")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
 		return dateFin;
 	}

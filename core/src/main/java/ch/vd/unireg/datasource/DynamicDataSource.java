@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.datasource;
+package ch.vd.unireg.datasource;
 
 import javax.sql.XADataSource;
 import java.lang.reflect.InvocationTargetException;

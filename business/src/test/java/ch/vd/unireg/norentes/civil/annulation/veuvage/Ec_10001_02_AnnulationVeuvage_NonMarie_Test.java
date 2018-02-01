@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.annulation.veuvage;
+package ch.vd.unireg.norentes.civil.annulation.veuvage;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Test norentes de l'événement annulation de veuvage d'une personne non veuve.

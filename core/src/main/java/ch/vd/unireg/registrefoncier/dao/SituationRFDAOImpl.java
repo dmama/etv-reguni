@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier.dao;
+package ch.vd.unireg.registrefoncier.dao;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,11 +6,11 @@ import java.util.List;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.common.pagination.ParamSorting;
-import ch.vd.uniregctb.dbutils.QueryFragment;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.unireg.common.BaseDAOImpl;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.common.pagination.ParamSorting;
+import ch.vd.unireg.dbutils.QueryFragment;
+import ch.vd.unireg.registrefoncier.SituationRF;
 
 public class SituationRFDAOImpl extends BaseDAOImpl<SituationRF, Long> implements SituationRFDAO {
 	protected SituationRFDAOImpl() {

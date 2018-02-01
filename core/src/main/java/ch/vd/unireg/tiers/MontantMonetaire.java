@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.Duplicable;
+import ch.vd.unireg.common.LengthConstants;
 
 @Embeddable
 public class MontantMonetaire implements Duplicable<MontantMonetaire> {

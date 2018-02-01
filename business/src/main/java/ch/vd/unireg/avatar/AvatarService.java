@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.avatar;
+package ch.vd.unireg.avatar;
 
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.unireg.tiers.Tiers;
 
 public interface AvatarService {
 

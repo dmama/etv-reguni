@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.unireg.evenement.party;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,17 +10,17 @@ import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
 import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.evenement.RequestHandlerResult;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.CategorieIdentifiant;
-import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
-import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.IdentificationPersonne;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.CategorieIdentifiant;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.ServiceException;
 
 public class CreateNonresidentRequestHandlerV1 implements RequestHandlerV1<CreateNonresidentRequest> {
 

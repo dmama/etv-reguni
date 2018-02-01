@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.declaration;
+package ch.vd.unireg.evenement.declaration;
 
 import java.util.Map;
 
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.declaration.v2.DeclarationEvent;
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Interface de base des handlers d'événements de déclaration entrant

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,7 +10,7 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public abstract class DeclarationDAOImpl<T extends Declaration> extends BaseDAOImpl<T, Long> implements DeclarationDAO<T> {
 

@@ -1,19 +1,19 @@
-package ch.vd.uniregctb.tiers.etats;
+package ch.vd.unireg.tiers.etats;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.ToEnLiquidationTransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntrepriseFactory;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.ToEnLiquidationTransitionEtatEntrepriseFactory;
+import ch.vd.unireg.tiers.etats.transition.TransitionEtatEntreprise;
+import ch.vd.unireg.tiers.etats.transition.TransitionEtatEntrepriseFactory;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 
 /**
  * @author Raphaël Marmier, 2016-01-21, <raphael.marmier@vd.ch>

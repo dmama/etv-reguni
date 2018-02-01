@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.evenement.regpp.manager;
+package ch.vd.unireg.evenement.regpp.manager;
 
 import java.util.List;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPDetailView;
-import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdressesResolutionException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.civil.EvenementCivilCriteria;
+import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
+import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPDetailView;
+import ch.vd.unireg.evenement.regpp.view.EvenementCivilRegPPElementListeView;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage

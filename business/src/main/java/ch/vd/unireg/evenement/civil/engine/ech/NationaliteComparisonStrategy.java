@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.uniregctb.common.NationaliteHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.common.NationaliteHelper;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Comparateur d'individu basé sur les nationalités de l'individu

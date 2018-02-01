@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.checker;
+package ch.vd.unireg.checker;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
 
 public class ServiceSecuriteChecker implements StatusChecker {
 

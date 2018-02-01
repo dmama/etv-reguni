@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.service;
+package ch.vd.unireg.interfaces.service;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,18 +15,18 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
-import ch.vd.uniregctb.cache.CacheHelper;
-import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.EhCacheStats;
-import ch.vd.uniregctb.cache.KeyDumpableCache;
-import ch.vd.uniregctb.cache.KeyValueDumpableCache;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.security.IfoSecProcedure;
-import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.cache.CacheHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.EhCacheStats;
+import ch.vd.unireg.cache.KeyDumpableCache;
+import ch.vd.unireg.cache.KeyValueDumpableCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.IfoSecProcedure;
+import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.utils.LogLevel;
 
 public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, ServiceSecuriteService, InitializingBean, DisposableBean {
 

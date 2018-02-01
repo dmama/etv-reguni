@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.mandataire;
+package ch.vd.unireg.mandataire;
 
 import java.util.Set;
 
@@ -7,10 +7,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.tiers.view.DateRangeViewValidator;
-import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.tiers.view.DateRangeViewValidator;
+import ch.vd.unireg.type.TypeMandat;
 
 public class AddMandatViewValidator implements Validator {
 

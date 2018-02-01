@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.interne.depart;
+package ch.vd.unireg.evenement.civil.interne.depart;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 
 public abstract class DepartDecaleHelper {
 

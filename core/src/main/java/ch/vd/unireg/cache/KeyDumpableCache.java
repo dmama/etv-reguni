@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.cache;
+package ch.vd.unireg.cache;
 
 import org.slf4j.Logger;
 
-import ch.vd.uniregctb.utils.LogLevel;
+import ch.vd.unireg.utils.LogLevel;
 
 public interface KeyDumpableCache {
 

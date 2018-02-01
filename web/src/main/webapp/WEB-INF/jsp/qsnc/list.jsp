@@ -19,7 +19,7 @@
 			</authz:authorize>
 
 			<c:if test="${not empty command.questionnaires}">
-				<display:table name="command.questionnaires" id="qsnc" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/qsnc/list.do" sort="list">
+				<display:table name="command.questionnaires" id="qsnc" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" requestURI="/qsnc/list.do" sort="list">
 					<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.di.trouvee" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.di.trouvee" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.dis.trouvees" /></span></display:setProperty>

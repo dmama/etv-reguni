@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.tache;
+package ch.vd.unireg.tache;
 
 import java.util.List;
 
 import noNamespace.FichierImpressionDocument;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.tiers.Contribuable;
 
 public interface ImpressionNouveauxDossiersHelper {
 

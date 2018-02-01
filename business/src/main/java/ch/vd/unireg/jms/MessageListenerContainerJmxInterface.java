@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.jms;
+package ch.vd.unireg.jms;
 
 /**
  * Interface qui définit les attributs qui doivent être exposés par JMX

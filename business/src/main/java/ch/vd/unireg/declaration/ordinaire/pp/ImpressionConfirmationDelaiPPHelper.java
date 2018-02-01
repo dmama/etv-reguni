@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.unireg.declaration.ordinaire.pp;
 
 import noNamespace.FichierImpressionDocument;
 
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.editique.EditiqueException;
+import ch.vd.unireg.editique.TypeDocumentEditique;
 
 public interface ImpressionConfirmationDelaiPPHelper {
 

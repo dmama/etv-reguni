@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.editique;
+package ch.vd.unireg.editique;
 
 /**
  * Interface implémentée par un résultat qui contient un document de retour d'éditique

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -11,9 +11,9 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.PersonnePhysique;
 
 @Entity
 @DiscriminatorValue(value = "PARENTE")

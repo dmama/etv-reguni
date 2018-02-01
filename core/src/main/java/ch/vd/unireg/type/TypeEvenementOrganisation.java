@@ -1,13 +1,13 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static ch.vd.uniregctb.type.TypeEvenementOrganisation.Source.FOSC;
-import static ch.vd.uniregctb.type.TypeEvenementOrganisation.Source.IDE;
-import static ch.vd.uniregctb.type.TypeEvenementOrganisation.Source.RCENT;
-import static ch.vd.uniregctb.type.TypeEvenementOrganisation.Source.RCPERS;
-import static ch.vd.uniregctb.type.TypeEvenementOrganisation.Source.REE;
+import static ch.vd.unireg.type.TypeEvenementOrganisation.Source.FOSC;
+import static ch.vd.unireg.type.TypeEvenementOrganisation.Source.IDE;
+import static ch.vd.unireg.type.TypeEvenementOrganisation.Source.RCENT;
+import static ch.vd.unireg.type.TypeEvenementOrganisation.Source.RCPERS;
+import static ch.vd.unireg.type.TypeEvenementOrganisation.Source.REE;
 
 /**
  * Basée sur la spécification evd0022.v3 RCEnt

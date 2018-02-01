@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.security;
+package ch.vd.unireg.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,8 +11,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.type.Niveau;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.type.Niveau;
 
 /**
  * Mock du service de SecurityProvider (qui ne s'occupe pour le moment que des droits ifosec)

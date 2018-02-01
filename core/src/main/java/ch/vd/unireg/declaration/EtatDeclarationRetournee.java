@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.unireg.declaration;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -6,8 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.documentfiscal.SourceQuittancement;
-import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.documentfiscal.SourceQuittancement;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 @Entity
 @DiscriminatorValue("DI_RETOURNEE")

@@ -1,6 +1,6 @@
 package org.dbunit.dataset;
 
-import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.unireg.common.StatusManager;
 
 /**
  * Dataset iterator qui prend un status manager.

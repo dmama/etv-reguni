@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -10,21 +10,21 @@ import org.springframework.web.bind.annotation.InitBinder;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.metier.MetierServicePM;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
-import ch.vd.uniregctb.transaction.TransactionHelper;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.metier.MetierServicePM;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.validator.TiersCriteriaValidator;
+import ch.vd.unireg.transaction.TransactionHelper;
+import ch.vd.unireg.utils.RegDateEditor;
 
 public abstract class AbstractProcessusComplexeController implements MessageSourceAware {
 

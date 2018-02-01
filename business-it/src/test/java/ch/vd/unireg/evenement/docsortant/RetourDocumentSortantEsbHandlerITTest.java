@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.docsortant;
+package ch.vd.unireg.evenement.docsortant;
 
 import java.io.File;
 import java.util.HashMap;
@@ -19,10 +19,10 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.unireg.xml.event.docsortant.retour.v3.Quittance;
-import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.hibernate.HibernateTemplateImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -81,7 +81,7 @@ public class RetourDocumentSortantEsbHandlerITTest extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/docsortant/retourDocumentSortant.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/docsortant/retourDocumentSortant.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// quelques attributs "custom"

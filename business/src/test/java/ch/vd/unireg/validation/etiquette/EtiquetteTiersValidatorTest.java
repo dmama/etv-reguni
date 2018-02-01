@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.validation.etiquette;
+package ch.vd.unireg.validation.etiquette;
 
 import java.util.Collections;
 
@@ -6,10 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.etiquette.Etiquette;
-import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.type.TypeTiersEtiquette;
-import ch.vd.uniregctb.validation.AbstractValidatorTest;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.etiquette.EtiquetteTiers;
+import ch.vd.unireg.type.TypeTiersEtiquette;
+import ch.vd.unireg.validation.AbstractValidatorTest;
 
 public class EtiquetteTiersValidatorTest extends AbstractValidatorTest<EtiquetteTiers> {
 

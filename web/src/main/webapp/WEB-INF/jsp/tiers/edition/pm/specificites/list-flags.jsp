@@ -19,7 +19,7 @@
 			</table>
 
 			<c:if test="${not empty flags}">
-				<display:table name="flags" id="flag" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/flag-entreprise/edit-list.do" sort="list">
+				<display:table name="flags" id="flag" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" requestURI="/flag-entreprise/edit-list.do" sort="list">
 					<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 20%;">
 						<unireg:regdate regdate="${flag.dateDebut}"/>
 					</display:column>

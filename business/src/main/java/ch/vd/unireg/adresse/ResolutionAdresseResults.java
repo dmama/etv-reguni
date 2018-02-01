@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.unireg.adresse;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.unireg.common.JobResults;
+import ch.vd.unireg.tiers.TiersService;
 
 public class ResolutionAdresseResults extends JobResults<Long, ResolutionAdresseResults> {
 	public RegDate getDateTraitement() {

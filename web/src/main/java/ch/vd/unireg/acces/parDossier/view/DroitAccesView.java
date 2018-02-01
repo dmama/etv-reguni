@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.acces.parDossier.view;
+package ch.vd.unireg.acces.parDossier.view;
 
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 public class DroitAccesView implements Serializable, Annulable {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.type;
 
 /**
  * Interface qui permet d'afficher de manière très visible le fait que certaines valeurs

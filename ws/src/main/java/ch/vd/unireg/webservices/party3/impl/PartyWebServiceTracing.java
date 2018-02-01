@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.impl;
+package ch.vd.unireg.webservices.party3.impl;
 
 import javax.management.ObjectName;
 import java.util.HashMap;
@@ -12,9 +12,9 @@ import org.apache.cxf.management.counters.ResponseTimeCounter;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.stats.ServiceTracingInterface;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.webservices.common.ResponseTimeTracingCounter;
+import ch.vd.unireg.stats.ServiceTracingInterface;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.webservices.common.ResponseTimeTracingCounter;
 
 /**
  * Bean qui expose les informations de performances du web-service party3 (relevées par les intercepteur CXF) de manière compréhensible par

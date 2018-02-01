@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.unireg.documentfiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -26,7 +26,7 @@ public class DemandeBilanFinal extends AutreDocumentFiscal {
 	}
 
 	@Column(name = "DBF_DATE_REQ_RADIATION")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateRequisitionRadiation() {
 		return dateRequisitionRadiation;
 	}

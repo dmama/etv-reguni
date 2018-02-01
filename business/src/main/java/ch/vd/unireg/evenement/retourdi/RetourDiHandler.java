@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.evenement.retourdi;
+package ch.vd.unireg.evenement.retourdi;
 
 import java.util.Map;
 
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.unireg.jms.EsbBusinessException;
 
 /**
  * Interface de base des handlers chargés de prendre en compte les données en retour d'une déclaration d'impôt

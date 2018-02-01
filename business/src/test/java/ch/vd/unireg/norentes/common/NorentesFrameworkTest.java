@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.norentes.common;
+package ch.vd.unireg.norentes.common;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;

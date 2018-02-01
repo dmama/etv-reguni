@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.acces.parDossier.manager;
+package ch.vd.unireg.acces.parDossier.manager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,22 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
-import ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView;
-import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
-import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.interfaces.service.host.Operateur;
-import ch.vd.uniregctb.security.DroitAccesException;
-import ch.vd.uniregctb.security.DroitAccesService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.unireg.acces.parDossier.view.DossierEditRestrictionView;
+import ch.vd.unireg.acces.parDossier.view.DroitAccesView;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.general.manager.TiersGeneralManager;
+import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
+import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
+import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.security.DroitAccesException;
+import ch.vd.unireg.security.DroitAccesService;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeDroitAcces;
 
 /**
  * Classe qui gère le controller DossierEditRestrictionController

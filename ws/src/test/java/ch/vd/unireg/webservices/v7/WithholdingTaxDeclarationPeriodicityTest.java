@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.webservices.v7;
+package ch.vd.unireg.webservices.v7;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.PeriodiciteDecompte;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

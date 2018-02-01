@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.type.ActionEvenementCivilEch;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 public class PdfStatistiquesEvenementsRapportTest extends WithoutSpringTest {
 

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.civil.engine.ech;
+package ch.vd.unireg.evenement.civil.engine.ech;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchProcessingMode;
+import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 /**
  * Interface du bean de gestion de la queue de notification de l'arrivée d'événements civils

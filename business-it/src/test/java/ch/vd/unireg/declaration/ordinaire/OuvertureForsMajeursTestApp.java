@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.declaration.ordinaire;
+package ch.vd.unireg.declaration.ordinaire;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BusinessItTestApplication;
-import ch.vd.uniregctb.document.MajoriteRapport;
-import ch.vd.uniregctb.metier.MetierService;
-import ch.vd.uniregctb.metier.OuvertureForsResults;
-import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BusinessItTestApplication;
+import ch.vd.unireg.document.MajoriteRapport;
+import ch.vd.unireg.metier.MetierService;
+import ch.vd.unireg.metier.OuvertureForsResults;
+import ch.vd.unireg.rapport.RapportService;
 
 /**
  * Programme de test des performances de l'ouverture des fors principaux des habitants majeurs. Il s'agit d'un programme stand-alone car le

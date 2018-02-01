@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 /**
  * Exception lancée par le {@link TicketService} dans le cas où un ticket ne peut pas être obtenu dans le temps imparti

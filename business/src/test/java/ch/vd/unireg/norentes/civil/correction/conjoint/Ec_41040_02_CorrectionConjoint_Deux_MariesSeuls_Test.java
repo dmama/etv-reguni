@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.norentes.civil.correction.conjoint;
+package ch.vd.unireg.norentes.civil.correction.conjoint;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 /**
  * Test du scénario correction de conjoint d'un individu marié seul avec un autre marié seul.

@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.tiers.dao;
+package ch.vd.unireg.tiers.dao;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.unireg.tiers.DomicileEtablissement;
 
 public interface DomicileEtablissementDAO extends GenericDAO<DomicileEtablissement, Long> {
 }

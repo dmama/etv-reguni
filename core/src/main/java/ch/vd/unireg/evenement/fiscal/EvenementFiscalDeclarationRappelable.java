@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.fiscal;
+package ch.vd.unireg.evenement.fiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -7,8 +7,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
 
 @Entity
 @DiscriminatorValue("DECLARATION_RAPPELABLE")

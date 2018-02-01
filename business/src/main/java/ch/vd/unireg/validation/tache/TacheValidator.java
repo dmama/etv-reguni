@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.validation.tache;
+package ch.vd.unireg.validation.tache;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.Tache;
+import ch.vd.unireg.type.TypeEtatTache;
+import ch.vd.unireg.validation.EntityValidatorImpl;
 
 public abstract class TacheValidator<T extends Tache> extends EntityValidatorImpl<T> {
 

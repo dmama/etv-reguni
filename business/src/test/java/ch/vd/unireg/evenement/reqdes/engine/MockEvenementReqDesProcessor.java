@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.reqdes.engine;
+package ch.vd.unireg.evenement.reqdes.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;

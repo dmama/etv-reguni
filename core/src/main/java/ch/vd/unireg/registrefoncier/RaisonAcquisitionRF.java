@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.unireg.registrefoncier;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.LengthConstants;
 
 @Entity
 @Table(name = "RF_RAISON_ACQUISITION")
@@ -89,7 +89,7 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 	}
 
 	@Column(name = "DATE_DEBUT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -100,7 +100,7 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 
 	@Nullable
 	@Column(name = "DATE_ACQUISITION")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateAcquisition() {
 		return dateAcquisition;
 	}
@@ -121,7 +121,7 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 
 	@Nullable
 	@Column(name = "NO_AFFAIRE", length = LengthConstants.RF_NO_AFFAIRE)
-	@Type(type = "ch.vd.uniregctb.hibernate.IdentifiantAffaireRFUserType")
+	@Type(type = "ch.vd.unireg.hibernate.IdentifiantAffaireRFUserType")
 	public IdentifiantAffaireRF getNumeroAffaire() {
 		return numeroAffaire;
 	}

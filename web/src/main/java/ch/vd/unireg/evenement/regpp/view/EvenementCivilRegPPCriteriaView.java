@@ -1,7 +1,7 @@
-package ch.vd.uniregctb.evenement.regpp.view;
+package ch.vd.unireg.evenement.regpp.view;
 
-import ch.vd.uniregctb.evenement.common.view.EvenementCivilCriteriaView;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.unireg.evenement.common.view.EvenementCivilCriteriaView;
+import ch.vd.unireg.type.TypeEvenementCivil;
 
 public class EvenementCivilRegPPCriteriaView extends EvenementCivilCriteriaView<TypeEvenementCivil> {
 

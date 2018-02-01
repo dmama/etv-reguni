@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.common;
+package ch.vd.unireg.common;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.situationfamille.SituationFamilleService;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.utils.WebContextUtils;
 
 public class ValidatorHelperImpl implements ValidatorHelper, MessageSourceAware {
 

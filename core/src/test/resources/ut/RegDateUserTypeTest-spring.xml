@@ -9,7 +9,7 @@
 		<property name="description" value="Unireg-UT"/>
 		<property name="annotatedClasses">
 			<list>
-				<value>ch.vd.uniregctb.hibernate.RegDateUserTypeTest$TestData</value>
+				<value>ch.vd.unireg.hibernate.RegDateUserTypeTest$TestData</value>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource" />

@@ -24,7 +24,7 @@
 		<div id="desynchro" style="display:none;">
 			<span style="color: red;">Attention la recherche est désynchronisée après l'impression</span>
 		</div>
-		<display:table 	name="nouveauxDossiers" id="nouveauDossier" pagesize="25" requestURI="/tache/list-nouveau-dossier.do" sort="external" class="display_table" partialList="true" size="resultSize" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table 	name="nouveauxDossiers" id="nouveauDossier" pagesize="25" requestURI="/tache/list-nouveau-dossier.do" sort="external" class="display_table" partialList="true" size="resultSize" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.nouveau.dossier.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.nouveau.dossier.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.nouveaux.dossiers.trouves" /></span></display:setProperty>

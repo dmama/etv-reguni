@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.activation;
+package ch.vd.unireg.activation;
 
 public class ActivationServiceException extends Exception {
 

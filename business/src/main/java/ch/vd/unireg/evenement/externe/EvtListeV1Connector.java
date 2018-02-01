@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.unireg.evenement.externe;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.xml.event.lr.event.v1.Evenement;
 import ch.vd.unireg.xml.event.lr.event.v1.EvtListe;
 import ch.vd.unireg.xml.event.lr.event.v1.Liste;
-import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.unireg.common.XmlUtils;
 
 public class EvtListeV1Connector implements EvenementExterneConnector<EvtListe> {
 

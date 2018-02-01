@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party4.cache;
+package ch.vd.unireg.webservices.party4.cache;
 
 import ch.vd.unireg.xml.common.v1.Date;
 

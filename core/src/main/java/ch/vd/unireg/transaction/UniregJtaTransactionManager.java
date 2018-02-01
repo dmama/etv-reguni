@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.transaction;
+package ch.vd.unireg.transaction;
 
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -12,8 +12,8 @@ import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import ch.vd.uniregctb.common.IdentityKey;
-import ch.vd.uniregctb.common.LockHelper;
+import ch.vd.unireg.common.IdentityKey;
+import ch.vd.unireg.common.LockHelper;
 
 /**
  * Spécificité Unireg du JtaTransactionManager proposé par Spring, afin de faire en sorte qu'un flush soit

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.entreprise.complexe;
+package ch.vd.unireg.entreprise.complexe;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -25,22 +25,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.transaction.TransactionHelper;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.utils.WebContextUtils;
+import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.Flash;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.security.AccessDeniedException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EtatEntreprise;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.transaction.TransactionHelper;
+import ch.vd.unireg.type.TypeEtatEntreprise;
+import ch.vd.unireg.utils.WebContextUtils;
 
 @Controller
 @RequestMapping("/processuscomplexe/fusion")

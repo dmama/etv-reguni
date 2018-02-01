@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.admin;
+package ch.vd.unireg.admin;
 
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.NatureTiers;
+import ch.vd.unireg.tiers.NatureTiers;
 
 /**
  * Information de base sur un tiers

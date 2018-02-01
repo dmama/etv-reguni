@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.indexer.tiers;
+package ch.vd.unireg.indexer.tiers;
 
 import java.util.Collection;
 import java.util.Set;
@@ -6,10 +6,10 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.Switchable;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.tiers.TypeTiers;
 
 /**
  * Service spécialisé pour la mise-à-jour de l'indexe Lucene par rapport aux Tiers.
@@ -68,7 +68,7 @@ public interface GlobalTiersIndexer {
 	/**
 	 * Réindexe toute la base de données (1 thread, mode FULL avec préfetch des individus).
 	 *
-	 * @throws ch.vd.uniregctb.indexer.IndexerException
+	 * @throws ch.vd.unireg.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 * @return le nombre de tiers indexés
 	 */
@@ -81,7 +81,7 @@ public interface GlobalTiersIndexer {
 	 * @param nbThreads     le nombre de threads simultanés utilisés pour indexer la base
 	 * @param statusManager un status manager pour suivre l'évolution de l'indexation (peut être nul)
 	 * @return le nombre de tiers indexés
-	 * @throws ch.vd.uniregctb.indexer.IndexerException si l'indexation n'a pas pu être faite.
+	 * @throws ch.vd.unireg.indexer.IndexerException si l'indexation n'a pas pu être faite.
 	 */
 	int indexAllDatabase(@NotNull Mode mode, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException;
 
@@ -93,7 +93,7 @@ public interface GlobalTiersIndexer {
 	 * @param nbThreads     le nombre de threads simultanés utilisés pour indexer la base
 	 * @param statusManager un status manager pour suivre l'évolution de l'indexation (peut être nul)
 	 * @return le nombre de tiers indexés
-	 * @throws ch.vd.uniregctb.indexer.IndexerException si l'indexation n'a pas pu être faite.
+	 * @throws ch.vd.unireg.indexer.IndexerException si l'indexation n'a pas pu être faite.
 	 */
 	int indexAllDatabase(@NotNull Mode mode, @NotNull Set<TypeTiers> typesTiers, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException;
 

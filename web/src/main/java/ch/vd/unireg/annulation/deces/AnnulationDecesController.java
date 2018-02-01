@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.annulation.deces;
+package ch.vd.unireg.annulation.deces;
 
 import javax.validation.Valid;
 import java.beans.PropertyEditorSupport;
@@ -21,26 +21,26 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.annulation.deces.manager.AnnulationDecesRecapManager;
-import ch.vd.uniregctb.annulation.deces.view.AnnulationDecesRecapView;
-import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
-import ch.vd.uniregctb.tiers.AbstractTiersController;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
-import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.unireg.annulation.deces.manager.AnnulationDecesRecapManager;
+import ch.vd.unireg.annulation.deces.view.AnnulationDecesRecapView;
+import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.tiers.AbstractTiersController;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.validator.TiersCriteriaValidator;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
 @RequestMapping("/annulation/deces")

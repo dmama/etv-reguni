@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.unireg.common.BaseDAOImpl;
 
 public class ForFiscalDAOImpl extends BaseDAOImpl<ForFiscal, Long> implements ForFiscalDAO {
 

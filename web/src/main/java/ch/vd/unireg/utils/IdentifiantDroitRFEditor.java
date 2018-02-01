@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.utils;
+package ch.vd.unireg.utils;
 
 import java.beans.PropertyEditorSupport;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
+import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
 
 public class IdentifiantDroitRFEditor extends PropertyEditorSupport {
 

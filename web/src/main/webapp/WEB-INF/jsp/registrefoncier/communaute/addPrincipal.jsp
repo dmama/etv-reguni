@@ -14,7 +14,7 @@
   	</tiles:put>
   	<tiles:put name="body">
 
-	    <%--@elvariable id="modele" type="ch.vd.uniregctb.registrefoncier.communaute.ModeleCommunauteView"--%>
+	    <%--@elvariable id="modele" type="ch.vd.unireg.registrefoncier.communaute.ModeleCommunauteView"--%>
 	    <fieldset class="information">
 		    <legend><span><fmt:message key="label.caracteristiques.modele.communaute" /></span></legend>
 		    <table cellspacing="0" cellpadding="5" border="0" class="display_table">
@@ -28,7 +28,7 @@
 
 	    <fieldset>
 		    <legend><span><fmt:message key="label.histo.principaux.communaute" /></span></legend>
-		    <display:table name="modele.principaux" id="principal" pagesize="25" class="display" requestURI="/registrefoncier/communaute/addPrincipal.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		    <display:table name="modele.principaux" id="principal" pagesize="25" class="display" requestURI="/registrefoncier/communaute/addPrincipal.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			    <display:column titleKey="label.par.defaut">
 				    <input type="checkbox" disabled="disabled" <c:if test="${principal.parDefaut}">checked</c:if>/>
 			    </display:column>
@@ -53,7 +53,7 @@
 		    </display:table>
 	    </fieldset>
 
-	    <%--@elvariable id="addPrincipalView" type="ch.vd.uniregctb.registrefoncier.communaute.AddPrincipalView"--%>
+	    <%--@elvariable id="addPrincipalView" type="ch.vd.unireg.registrefoncier.communaute.AddPrincipalView"--%>
 	    <form:form commandName="addPrincipalView" method="post" action="addPrincipal.do" id="addPrincipalForm">
 
 		    <form:hidden path="modeleId"/>

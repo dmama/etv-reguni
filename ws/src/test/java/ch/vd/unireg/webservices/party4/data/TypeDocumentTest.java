@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.webservices.party4.data;
+package ch.vd.unireg.webservices.party4.data;
 
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxdeclaration.v2.DocumentType;
-import ch.vd.uniregctb.webservices.party4.EnumTest;
-import ch.vd.uniregctb.webservices.party4.impl.EnumHelper;
+import ch.vd.unireg.webservices.party4.EnumTest;
+import ch.vd.unireg.webservices.party4.impl.EnumHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -20,17 +20,17 @@ public class TypeDocumentTest extends EnumTest {
 	 */
 	@Test
 	public void testCoherence() {
-		// assertEnumLengthEquals(TypeDocument.class, ch.vd.uniregctb.type.TypeDocument.class);
-		// assertEnumConstantsEqual(TypeDocument.class, ch.vd.uniregctb.type.TypeDocument.class);
+		// assertEnumLengthEquals(TypeDocument.class, ch.vd.unireg.type.TypeDocument.class);
+		// assertEnumConstantsEqual(TypeDocument.class, ch.vd.unireg.type.TypeDocument.class);
 	}
 
 	@Test
 	public void testFromValue() {
-		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.TypeDocument) null));
-		assertEquals(DocumentType.FULL_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH));
-		assertEquals(DocumentType.VAUDTAX_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX));
-		assertEquals(DocumentType.IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE));
-		assertEquals(DocumentType.EXPENDITURE_BASED_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_DEPENSE));
+		assertNull(EnumHelper.coreToWeb((ch.vd.unireg.type.TypeDocument) null));
+		assertEquals(DocumentType.FULL_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH));
+		assertEquals(DocumentType.VAUDTAX_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX));
+		assertEquals(DocumentType.IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE));
+		assertEquals(DocumentType.EXPENDITURE_BASED_TAX_DECLARATION, EnumHelper.coreToWeb(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_DEPENSE));
 	}
 
 }

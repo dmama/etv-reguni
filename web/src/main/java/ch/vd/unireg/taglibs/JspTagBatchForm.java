@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.taglibs;
+package ch.vd.unireg.taglibs;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -14,19 +14,19 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
-import ch.vd.uniregctb.admin.GestionJob;
-import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamBoolean;
-import ch.vd.uniregctb.scheduler.JobParamCommune;
-import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
-import ch.vd.uniregctb.scheduler.JobParamEnum;
-import ch.vd.uniregctb.scheduler.JobParamFile;
-import ch.vd.uniregctb.scheduler.JobParamMultiSelectEnum;
-import ch.vd.uniregctb.scheduler.JobParamOfficeImpot;
-import ch.vd.uniregctb.scheduler.JobParamRegDate;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.unireg.admin.GestionJob;
+import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamBoolean;
+import ch.vd.unireg.scheduler.JobParamCommune;
+import ch.vd.unireg.scheduler.JobParamDynamicEnum;
+import ch.vd.unireg.scheduler.JobParamEnum;
+import ch.vd.unireg.scheduler.JobParamFile;
+import ch.vd.unireg.scheduler.JobParamMultiSelectEnum;
+import ch.vd.unireg.scheduler.JobParamOfficeImpot;
+import ch.vd.unireg.scheduler.JobParamRegDate;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityHelper;
+import ch.vd.unireg.security.SecurityProviderInterface;
 
 /**
  * Tag jsp permettant d'afficher le nom d'un batch et le formulaire permettant de saisir les paramètres et de démarrer le batch.

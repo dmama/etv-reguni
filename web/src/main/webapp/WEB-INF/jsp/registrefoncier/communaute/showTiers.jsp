@@ -25,7 +25,7 @@
 
 	    <c:set var="titre"><fmt:message key="label.caracteristiques.proprietaire"/></c:set>
 
-	    <%--@elvariable id="tiers" type="ch.vd.uniregctb.registrefoncier.communaute.TiersWithCommunauteView"--%>
+	    <%--@elvariable id="tiers" type="ch.vd.unireg.registrefoncier.communaute.TiersWithCommunauteView"--%>
 	    <unireg:bandeauTiers numero="${tiers.ctbId}" titre="${titre}"
 	                         showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
@@ -37,7 +37,7 @@
 		        title="Recalcule les regroupements entre les communautés RF et les modèles de communauté Unireg à partir des droits de propriété du tiers. Tous les regroupements sur toutes les communautés de tous les immeubles du tiers sont recalculés."/>
 		    </div>
 		    </authz:authorize>
-		    <display:table name="tiers.modeles" id="modele" pagesize="25" class="display" requestURI="/registrefoncier/communaute/showTiers.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		    <display:table name="tiers.modeles" id="modele" pagesize="25" class="display" requestURI="/registrefoncier/communaute/showTiers.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 			    <display:column titleKey="label.numero.modele.communaute" style="width:100px" href="showModele.do" paramId="id" paramProperty="id" >
 				    <c:out value="${modele.id}"/>
 			    </display:column>

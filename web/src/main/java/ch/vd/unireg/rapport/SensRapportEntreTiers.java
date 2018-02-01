@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rapport;
+package ch.vd.unireg.rapport;
 
 /**
  * Détermine soit le tiers <i>sujet</i>, soit le tiers <i>objet</i> dans un rapport entre deux tiers. La sémantique du sens dépend du contexte d'utilisation.

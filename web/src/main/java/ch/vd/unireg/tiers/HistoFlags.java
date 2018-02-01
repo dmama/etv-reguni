@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.tiers;
+package ch.vd.unireg.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.unireg.common.CollectionsUtils;
 
 public class HistoFlags {
 

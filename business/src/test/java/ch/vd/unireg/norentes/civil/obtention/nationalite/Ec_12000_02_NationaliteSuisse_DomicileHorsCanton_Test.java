@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.norentes.civil.obtention.nationalite;
+package ch.vd.unireg.norentes.civil.obtention.nationalite;
 
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.norentes.common.NorentesTest;
+import ch.vd.unireg.norentes.common.NorentesTest;
 
 @ContextConfiguration(locations = {
 		"classpath:ut/unireg-businessut-taches.xml"

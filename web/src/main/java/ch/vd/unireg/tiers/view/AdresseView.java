@@ -1,15 +1,15 @@
-package ch.vd.uniregctb.tiers.view;
+package ch.vd.unireg.tiers.view;
 
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.NatureTiers;
-import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.tiers.NatureTiers;
+import ch.vd.unireg.type.TexteCasePostale;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
 
 public class AdresseView implements Comparable<AdresseView>, Annulable, DateRange {
 

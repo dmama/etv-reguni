@@ -1,20 +1,20 @@
-package ch.vd.uniregctb.acces;
+package ch.vd.unireg.acces;
 
-import ch.vd.uniregctb.acces.copie.validator.SelectUtilisateursValidator;
-import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
-import ch.vd.uniregctb.acces.copie.view.ConfirmedDataView;
-import ch.vd.uniregctb.acces.copie.view.SelectUtilisateursView;
-import ch.vd.uniregctb.acces.parDossier.validator.DroitAccesEditValidator;
-import ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView;
-import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
-import ch.vd.uniregctb.acces.parUtilisateur.validator.SelectUtilisateurValidator;
-import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
-import ch.vd.uniregctb.acces.parUtilisateur.view.SelectUtilisateurView;
-import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
-import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurListPersonneView;
-import ch.vd.uniregctb.common.DelegatingValidator;
-import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.acces.copie.validator.SelectUtilisateursValidator;
+import ch.vd.unireg.acces.copie.view.ConfirmCopieView;
+import ch.vd.unireg.acces.copie.view.ConfirmedDataView;
+import ch.vd.unireg.acces.copie.view.SelectUtilisateursView;
+import ch.vd.unireg.acces.parDossier.validator.DroitAccesEditValidator;
+import ch.vd.unireg.acces.parDossier.view.DossierEditRestrictionView;
+import ch.vd.unireg.acces.parDossier.view.DroitAccesView;
+import ch.vd.unireg.acces.parUtilisateur.validator.SelectUtilisateurValidator;
+import ch.vd.unireg.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
+import ch.vd.unireg.acces.parUtilisateur.view.SelectUtilisateurView;
+import ch.vd.unireg.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
+import ch.vd.unireg.acces.parUtilisateur.view.UtilisateurListPersonneView;
+import ch.vd.unireg.common.DelegatingValidator;
+import ch.vd.unireg.tiers.validator.TiersCriteriaValidator;
+import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public class DroitAccesValidator extends DelegatingValidator {
 
