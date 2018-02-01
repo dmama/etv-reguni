@@ -19,7 +19,7 @@
     </parent>
 
     <name>Unireg - Business IT</name>
-    <description>UniregCTB, Le registre unifie de l'Etat de Vaud - Business Integration Tests</description>
+    <description>Unireg, Le registre unifie de l'Etat de Vaud - Business Integration Tests</description>
 
     <dependencies>
         <dependency>

@@ -19,7 +19,7 @@
 	</parent>
 
 	<name>Unireg - Avatars</name>
-	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Avatars</description>
+	<description>Unireg, Le registre unifie de l'Etat de Vaud - Avatars</description>
 
 	<!-- Build plugins and sources -->
 	<build>

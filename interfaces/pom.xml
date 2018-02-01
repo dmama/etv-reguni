@@ -17,7 +17,7 @@
 	</parent>
 
 	<name>Unireg - Interfaces</name>
-	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Interfaces</description>
+	<description>Unireg, Le registre unifie de l'Etat de Vaud - Interfaces</description>
 
 	<dependencies>
 		<dependency>

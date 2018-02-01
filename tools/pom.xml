@@ -18,7 +18,7 @@
 	</parent>
 
 	<name>Unireg - Tools</name>
-	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Tools</description>
+	<description>Unireg, Le registre unifie de l'Etat de Vaud - Tools</description>
 
 	<dependencies>
 		<dependency>

@@ -47,8 +47,8 @@ public class UniregTomcatRunner {
 		System.setProperty("project.version", "18R2.A.0-SNAPSHOT");
 		// END_LVERSION
 
-		System.setProperty("project.name", "UniregCTB - Web");
-		System.setProperty("project.description", "UniregCTB, Le registre unifie de l'Etat de Vaud - Web");
+		System.setProperty("project.name", "Unireg - Web");
+		System.setProperty("project.description", "Unireg, Le registre unifie de l'Etat de Vaud - Web");
 
 		System.setProperty("unireg-web.appname", "unireg-web");
 		System.setProperty("interfaces-mode", "direct");

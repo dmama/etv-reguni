@@ -19,7 +19,7 @@
 	</parent>
 
 	<name>Unireg - Core</name>
-	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Core</description>
+	<description>Unireg, Le registre unifie de l'Etat de Vaud - Core</description>
 
 	<dependencies>
 		<dependency>

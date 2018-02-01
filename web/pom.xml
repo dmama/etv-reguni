@@ -18,7 +18,7 @@
 	</parent>
 
 	<name>Unireg - Web</name>
-	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Web</description>
+	<description>Unireg, Le registre unifie de l'Etat de Vaud - Web</description>
 
 	<repositories>
 		<repository>

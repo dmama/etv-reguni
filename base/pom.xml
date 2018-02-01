@@ -14,7 +14,7 @@
 	<packaging>pom</packaging>
 
 	<name>Unireg - Base</name>
-	<description>UniregCTB - Le registre unifie de l'Etat de Vaud</description>
+	<description>Unireg - Le registre unifie de l'Etat de Vaud</description>
 
 	<modules>
 		<module>../core</module>

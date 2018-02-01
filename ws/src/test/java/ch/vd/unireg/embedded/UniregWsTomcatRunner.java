@@ -47,8 +47,8 @@ public class UniregWsTomcatRunner {
 		System.setProperty("project.version", "18R2.A.0-SNAPSHOT");
 		// END_LVERSION
 
-		System.setProperty("project.name", "UniregCTB - Webservices");
-		System.setProperty("project.description", "UniregCTB, Le registre unifie de l'Etat de Vaud - Web-services");
+		System.setProperty("project.name", "Unireg - Webservices");
+		System.setProperty("project.description", "Unireg, Le registre unifie de l'Etat de Vaud - Web-services");
 
 		System.setProperty("unireg-ws.appname", "unireg-ws");
 		System.setProperty("interfaces-mode", "direct");

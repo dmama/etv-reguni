@@ -19,7 +19,7 @@
 	</parent>
 
 	<name>Unireg - Unireg Batch Runner (Data)</name>
-	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - UBR-Data</description>
+	<description>Unireg, Le registre unifie de l'Etat de Vaud - UBR-Data</description>
 
 	<!-- Build plugins and sources -->
 	<build>

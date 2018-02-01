@@ -12,7 +12,7 @@ import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.unireg.type.FormulePolitesse;
 
 /*
- * Cette classe permet d'adapter une adresse supplémentaire (= spécialité UniregCTB) à l'interface d'adresse générique.
+ * Cette classe permet d'adapter une adresse supplémentaire (= spécialité Unireg) à l'interface d'adresse générique.
  */
 public class AdresseMandataireAdapter extends AdresseFiscaleAdapter<AdresseMandataire> {
 

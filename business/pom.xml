@@ -19,7 +19,7 @@
 	</parent>
 
 	<name>Unireg - Business</name>
-	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Business</description>
+	<description>Unireg, Le registre unifie de l'Etat de Vaud - Business</description>
 
 	<dependencies>
 		<dependency>

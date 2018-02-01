@@ -4,7 +4,7 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Tiers;
 
 /*
- * Cette classe permet d'adapter une adresse supplémentaire (= spécialité UniregCTB) à l'interface d'adresse générique.
+ * Cette classe permet d'adapter une adresse supplémentaire (= spécialité Unireg) à l'interface d'adresse générique.
  */
 public class AdresseSupplementaireAdapter extends AdresseFiscaleAdapter<AdresseSupplementaire> {
 

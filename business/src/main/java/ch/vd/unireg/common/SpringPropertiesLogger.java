@@ -57,7 +57,7 @@ public class SpringPropertiesLogger implements InitializingBean {
 		str += "\n Hibernate dialect       : " + hibernateDialect.getClass().getName();
 		str += "\n JDBC driver             : " + jdbcDriverClassName;
 		str += "\n JDBC url                : " + jdbcUrl;
-		str += "\n UniregCTB DB user       : " + jdbcUsername;
+		str += "\n Unireg DB user          : " + jdbcUsername;
 		str += properties;
 		str += "\n=== End Dump of Spring properties ===";
 		str += "\n";

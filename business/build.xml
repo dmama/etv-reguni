@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="UniregCTB-core" default="all" basedir=".">
+<project name="Unireg-core" default="all" basedir=".">
     
     <!--property file="${regch.web}/src/config/regch.properties.val" / -->
 	<!--property environment="env" / -->

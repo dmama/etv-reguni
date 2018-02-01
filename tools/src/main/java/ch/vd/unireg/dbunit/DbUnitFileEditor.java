@@ -80,7 +80,7 @@ public class DbUnitFileEditor {
 		traiteFichier("business/src/test/resources/ch/vd/unireg/editique/ListeRecapJobTest.xml");
 
 		
-//		String repBase = "C:/projets/registre/branches/UniregCTB/2.7/04-Implementation/unireg/";
+//		String repBase = "C:/projets/registre/branches/Unireg/2.7/04-Implementation/unireg/";
 //		String endPath = "/src/test/resources/ch/vd/unireg/";
 //		String repbus = repBase + "business" + endPath;
 //		String repbusit = repBase + "business-it" + endPath;
