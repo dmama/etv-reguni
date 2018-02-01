@@ -41,15 +41,23 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.CommuneImpl;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.PaysImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
+import ch.vd.unireg.utils.WebServiceV7Helper;
+import ch.vd.unireg.webservice.fidor.v5.FidorClient;
+import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.wsclient.WebClientPool;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
 import ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason;
@@ -58,14 +66,6 @@ import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.common.BatchIterator;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.common.StandardBatchIterator;
-import ch.vd.unireg.utils.WebServiceV7Helper;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
-import ch.vd.unireg.xml.DataHelper;
 
 public class Job {
 

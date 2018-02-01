@@ -33,24 +33,24 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.utils.WebServiceV7Helper;
+import ch.vd.unireg.webservice.fidor.v5.FidorClient;
+import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.wsclient.WebClientPool;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.common.v2.DateRange;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
 import ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.common.BatchIterator;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.StandardBatchIterator;
-import ch.vd.unireg.type.CategorieEntreprise;
-import ch.vd.unireg.utils.WebServiceV7Helper;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
-import ch.vd.unireg.xml.DataHelper;
 
 public class Job {
 

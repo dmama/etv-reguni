@@ -4,8 +4,8 @@ import java.util.Random;
 
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
-import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
-import ch.vd.uniregctb.webservice.sipf.BVRPlusClientException;
+import ch.vd.unireg.webservice.sipf.BVRPlusClient;
+import ch.vd.unireg.webservice.sipf.BVRPlusClientException;
 
 public class MockBVRPlusClient implements BVRPlusClient {
 

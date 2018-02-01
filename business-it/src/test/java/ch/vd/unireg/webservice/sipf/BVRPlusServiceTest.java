@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.sipf;
+package ch.vd.unireg.webservice.sipf;
 
 import java.math.BigInteger;
 

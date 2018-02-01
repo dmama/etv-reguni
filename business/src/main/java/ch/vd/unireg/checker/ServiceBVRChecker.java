@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
+import ch.vd.unireg.webservice.sipf.BVRPlusClient;
 
 public class ServiceBVRChecker implements StatusChecker {
 

@@ -28,6 +28,10 @@ import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.SimpleCacheStats;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -55,12 +59,8 @@ import ch.vd.unireg.interfaces.infra.data.RueImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
-import ch.vd.unireg.cache.CacheStats;
-import ch.vd.unireg.cache.SimpleCacheStats;
-import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClientException;
+import ch.vd.unireg.webservice.fidor.v5.FidorClient;
+import ch.vd.unireg.webservice.fidor.v5.FidorClientException;
 
 /**
  * Implémentation Fidor du service d'infrastructure [UNIREG-2187].

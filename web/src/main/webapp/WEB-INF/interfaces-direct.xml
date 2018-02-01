@@ -116,7 +116,7 @@
 		<property name="password" value="${extprop.webservice.fidor.password}" />
 	</bean>
 
-	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
+	<bean id="fidorClientRaw" class="ch.vd.unireg.webservice.fidor.v5.FidorClientImpl">
 		<property name="wcPool" ref="fidorWebClientPool"/>
 	</bean>
 

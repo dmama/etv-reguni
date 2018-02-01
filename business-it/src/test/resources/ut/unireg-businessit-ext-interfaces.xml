@@ -35,7 +35,7 @@
 
 	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
 
-	<bean id="fidorClient" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
+	<bean id="fidorClient" class="ch.vd.unireg.webservice.fidor.v5.FidorClientImpl">
 		<property name="wcPool">
 			<bean class="ch.vd.unireg.wsclient.WebClientPool">
 				<constructor-arg value="false" />

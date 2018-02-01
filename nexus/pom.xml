@@ -61,14 +61,14 @@
 			<version>${project.parent.version}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>ch.vd.uniregctb</groupId>
-					<artifactId>uniregctb-bvrplus</artifactId>
+					<groupId>ch.vd.unireg</groupId>
+					<artifactId>unireg-bvrplus</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>uniregctb-servlet-common</artifactId>
+			<groupId>ch.vd.unireg</groupId>
+			<artifactId>unireg-servlet-common</artifactId>
 			<version>${servlet.common.version}</version>
 		</dependency>
 		<dependency>

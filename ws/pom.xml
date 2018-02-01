@@ -67,42 +67,42 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>uniregctb-ws-tools</artifactId>
-			<version>1.5</version>
+			<groupId>ch.vd.unireg</groupId>
+			<artifactId>unireg-ws-tools</artifactId>
+			<version>1.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-party4</artifactId>
 			<version>${wsparty4.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v5</artifactId>
 			<version>${ws.v5.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v6</artifactId>
 			<version>${ws.v6.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v7</artifactId>
 			<version>${ws.v7.version}</version>
 		</dependency>
 		<dependency>
 			<!-- dépendance vers unireg-jaxb2-ech 2.5+ nécessaire pour le mode "direct" à cause du service UPI -->
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-ech</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
 		</dependency>
 		<dependency>
@@ -150,8 +150,8 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>uniregctb-servlet-common</artifactId>
+			<groupId>ch.vd.unireg</groupId>
+			<artifactId>unireg-servlet-common</artifactId>
 			<version>${servlet.common.version}</version>
 		</dependency>
 		<dependency>

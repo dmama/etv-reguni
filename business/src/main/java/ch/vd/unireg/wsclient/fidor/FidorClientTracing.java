@@ -22,7 +22,7 @@ import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
+import ch.vd.unireg.webservice.fidor.v5.FidorClient;
 
 public class FidorClientTracing implements FidorClient, InitializingBean, DisposableBean {
 

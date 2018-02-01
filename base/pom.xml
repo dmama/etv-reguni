@@ -117,57 +117,57 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-capitastra</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-cyber</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-ech</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-editique</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-events</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-fidor</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-host-interfaces</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-infra</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-party</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-rcpers</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.vd.uniregctb</groupId>
+				<groupId>ch.vd.unireg</groupId>
 				<artifactId>unireg-jaxb2-rcent</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
@@ -726,12 +726,12 @@
 		<activemq.version>5.11.0.redhat-620133</activemq.version>
 		<jencks.version>2.2-dsi.0</jencks.version>
 		<jackson.version>1.9.13</jackson.version>
-		<wsparty3.version>3.9</wsparty3.version>
-		<wsparty4.version>4.2</wsparty4.version>
-		<ws.v5.version>5.5.2</ws.v5.version>
-		<ws.v6.version>6.5.2</ws.v6.version>
-		<ws.v7.version>7.11</ws.v7.version>
-		<unireg.jaxb2.version>6.9</unireg.jaxb2.version>
+		<wsparty3.version>3.10-SNAPSHOT</wsparty3.version>
+		<wsparty4.version>4.3-SNAPSHOT</wsparty4.version>
+		<ws.v5.version>5.5.3-SNAPSHOT</ws.v5.version>
+		<ws.v6.version>6.5.3-SNAPSHOT</ws.v6.version>
+		<ws.v7.version>7.12-SNAPSHOT</ws.v7.version>
+		<unireg.jaxb2.version>6.10-SNAPSHOT</unireg.jaxb2.version>
 		<servlet.common.version>2.0-SNAPSHOT</servlet.common.version>
 
 		<!-- Testing dependency versions -->

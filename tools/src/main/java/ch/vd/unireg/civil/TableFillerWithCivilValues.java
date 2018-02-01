@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.ServiceCivilTracing;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -44,11 +45,10 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing;
 import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
-import ch.vd.unireg.common.StandardBatchIterator;
-import ch.vd.unireg.type.TypeAdresseCivil;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
 
 public class TableFillerWithCivilValues {
 

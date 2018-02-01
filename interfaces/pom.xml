@@ -33,31 +33,31 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-fidor</artifactId>
-			<version>5.15</version>
+			<version>5.16-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-rcpers</artifactId>
-			<version>5.5</version>
+			<version>5.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-rcent</artifactId>
-			<version>3.3.3</version>
+			<version>3.3.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-wsclient-host-interfaces</artifactId>
-			<version>1.5</version>
+			<version>1.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-ech</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-cyber</artifactId>
 		</dependency>
 		<dependency>
@@ -117,9 +117,9 @@
 			<version>2.7.1</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>jaxb2-catalog-resolver</artifactId>
-			<version>1.0.6</version>
+			<version>1.0.7</version>
 		</dependency>
 		<dependency>
 			<artifactId>shared-cxf</artifactId>

@@ -149,7 +149,7 @@
 				<entry key="ch.vd.unireg.common.ObjectNotFoundException" value="errors/objectNotFound" />
 				<entry key="ch.vd.unireg.adresse.AdressesResolutionException" value="errors/adressesResolution" />
 				<entry key="ch.vd.unireg.common.DonneesCivilesException" value="errors/donneesCiviles" />
-				<entry key="ch.vd.uniregctb.webservice.sipf.BVRPlusClientException" value="errors/bvrplus" />
+				<entry key="ch.vd.unireg.webservice.sipf.BVRPlusClientException" value="errors/bvrplus" />
 				<entry key="ch.vd.unireg.editique.print.PrintPCLException" value="errors/errorPrintPCL" />
 				<entry key="org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureException" value="errors/optimisticLockingFailure" />
 			</map>

@@ -7,8 +7,8 @@ import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
-import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
-import ch.vd.uniregctb.webservice.sipf.BVRPlusClientException;
+import ch.vd.unireg.webservice.sipf.BVRPlusClient;
+import ch.vd.unireg.webservice.sipf.BVRPlusClientException;
 
 public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, DisposableBean {
 

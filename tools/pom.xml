@@ -27,32 +27,32 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-party4</artifactId>
 			<version>${wsparty4.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v5</artifactId>
 			<version>${ws.v5.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v6</artifactId>
 			<version>${ws.v6.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v7</artifactId>
 			<version>${ws.v7.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
 		</dependency>
 		<dependency>

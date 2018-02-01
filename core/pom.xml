@@ -23,16 +23,16 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>uniregctb-xmlbeans</artifactId>
-			<version>1.56</version>
+			<groupId>ch.vd.unireg</groupId>
+			<artifactId>unireg-xmlbeans</artifactId>
+			<version>1.57-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-rcpers</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-host-interfaces</artifactId>
 		</dependency>
 		<dependency>

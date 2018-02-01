@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.civil.ServiceInfraGetPaysSimpleCache;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
-import ch.vd.unireg.civil.ServiceInfraGetPaysSimpleCache;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
 
 public class EvenementCivilDataExtractor {
 

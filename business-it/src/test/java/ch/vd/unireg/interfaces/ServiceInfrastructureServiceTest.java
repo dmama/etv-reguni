@@ -13,15 +13,15 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.evd0007.v1.Country;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
+import ch.vd.unireg.webservice.fidor.v5.FidorClient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

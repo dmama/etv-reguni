@@ -30,41 +30,41 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>uniregctb-wsclient-securite</artifactId>
-			<version>1.0.6</version>
+			<groupId>ch.vd.unireg</groupId>
+			<artifactId>unireg-wsclient-securite</artifactId>
+			<version>1.0.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-party4</artifactId>
 			<version>${wsparty4.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v5</artifactId>
 			<version>${ws.v5.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v6</artifactId>
 			<version>${ws.v6.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v7</artifactId>
 			<version>${ws.v7.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-jaxb2-events</artifactId>
 		</dependency>
 		<dependency>
@@ -120,9 +120,9 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>ch.vd.unireg</groupId>
 			<artifactId>jaxb2-catalog-resolver</artifactId>
-			<version>1.0.6</version>
+			<version>1.0.7</version>
 		</dependency>
 		<dependency>
 			<artifactId>shared-cxf</artifactId>
