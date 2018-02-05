@@ -9,6 +9,7 @@
 
 <c:set var="lengthadrnom" value="<%=LengthConstants.ADRESSE_NOM%>" scope="request" />
 <c:set var="lengthadrnum" value="<%=LengthConstants.ADRESSE_NUM%>" scope="request" />
+<c:set var="lengthadrnummaison" value="<%=LengthConstants.ADRESSE_NUM_MAISON%>" scope="request" />
 
 <input type="hidden" name="idMandant" value="${idMandant}"/>
 <c:if test="${idMandataire != null}">
@@ -167,7 +168,7 @@
 				</td>
 				<td style="width: 15%;"><fmt:message key="label.numero.maison" />:</td>
 				<td style="width: 10%;">
-					<form:input path="adresse.numeroMaison" id="numeroMaison" cssErrorClass="input-with-errors" size ="5" maxlength="${lengthadrnum}" />
+					<form:input path="adresse.numeroMaison" id="numeroMaison" cssErrorClass="input-with-errors" size="${lengthadrnummaison}" maxlength="${lengthadrnummaison}" />
 					<form:errors path="adresse.numeroMaison" cssClass="error"/>
 				</td>
 				<td colspan="2">&nbsp;</td>

@@ -6,9 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.tiers.view.DateRangeViewValidator;
 import ch.vd.unireg.type.TypeMandat;
 
@@ -96,6 +97,11 @@ public class AddMandatViewValidator implements Validator {
 				errors.rejectValue("adresse.localiteSuisse", "error.format.localite_suisse");
 			}
 
+			// [SIFISC-27264] Vérification de la longueur du numéro de maison
+			final String numeroMaison = view.getAdresse().getNumeroMaison();
+			if (StringUtils.isNotBlank(numeroMaison) && numeroMaison.length() > LengthConstants.ADRESSE_NUM_MAISON) {
+				errors.rejectValue("adresse.numeroMaison", "error.numero.maison.trop.long", new Object[]{LengthConstants.ADRESSE_NUM_MAISON}, null);
+			}
 		}
 	}
 }

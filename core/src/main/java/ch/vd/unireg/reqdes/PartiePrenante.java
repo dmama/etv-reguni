@@ -349,7 +349,7 @@ public class PartiePrenante extends HibernateEntity {
 		this.rue = rue;
 	}
 
-	@Column(name = "NUMERO_MAISON", length = LengthConstants.ADRESSE_NUM)
+	@Column(name = "NUMERO_MAISON", length = LengthConstants.ADRESSE_NUM_MAISON)
 	public String getNumeroMaison() {
 		return numeroMaison;
 	}

@@ -17,6 +17,18 @@ public class AdresseEtrangere extends AdresseSupplementaire implements AdresseFi
 	private String complementLocalite;
 
 	/**
+	 * Lieu de l'adresse.
+	 * Longueur selon eCH-0010 : 40
+	 */
+	private String numeroPostalLocalite;
+
+	/**
+	 * Abréviation ISO 3166-1 du pays dans lequel se trouve le lieu faisant partie de l'adresse postale.
+	 * Longueur selon eCH-0010 : 2
+	 */
+	private Integer numeroOfsPays;
+
+	/**
 	 * @return the complementLocalite
 	 */
 	@Override
@@ -33,12 +45,6 @@ public class AdresseEtrangere extends AdresseSupplementaire implements AdresseFi
 	}
 
 	/**
-	 * Lieu de l'adresse.
-	 * Longueur selon eCH-0010 : 40
-	 */
-	private String numeroPostalLocalite;
-
-	/**
 	 * @return the numeroPostalLocalite
 	 */
 	@Override
@@ -53,12 +59,6 @@ public class AdresseEtrangere extends AdresseSupplementaire implements AdresseFi
 	public void setNumeroPostalLocalite(String theNumeroPostalLocalite) {
 		numeroPostalLocalite = theNumeroPostalLocalite;
 	}
-
-	/**
-	 * Abréviation ISO 3166-1 du pays dans lequel se trouve le lieu faisant partie de l'adresse postale.
-	 * Longueur selon eCH-0010 : 2
-	 */
-	private Integer numeroOfsPays;
 
 	/**
 	 * @return the numeroOfsPays

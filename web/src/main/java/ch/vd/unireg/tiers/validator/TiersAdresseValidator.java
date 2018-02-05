@@ -12,12 +12,13 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdressesFiscales;
 import ch.vd.unireg.common.ActionException;
+import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -73,9 +74,6 @@ public class TiersAdresseValidator implements Validator {
 		this.securityProvider = securityProvider;
 	}
 
-	/**
-	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
@@ -83,9 +81,6 @@ public class TiersAdresseValidator implements Validator {
 				|| AdresseView.class.equals(clazz);
 	}
 
-	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
-	 */
 	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
@@ -135,6 +130,11 @@ public class TiersAdresseValidator implements Validator {
 				}
 			}
 
+			// [SIFISC-27264] Vérification de la longueur du numéro de maison
+			final String numeroMaison = adresseView.getNumeroMaison();
+			if (StringUtils.isNotBlank(numeroMaison) && numeroMaison.length() > LengthConstants.ADRESSE_NUM_MAISON) {
+				errors.rejectValue("numeroMaison", "error.numero.maison.trop.long", new Object[]{LengthConstants.ADRESSE_NUM_MAISON}, null);
+			}
 		}
 
 

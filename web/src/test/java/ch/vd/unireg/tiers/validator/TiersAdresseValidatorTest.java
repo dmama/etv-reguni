@@ -13,13 +13,13 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
@@ -28,6 +28,7 @@ import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.view.AdresseView;
 import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAdresseTiers;
 
@@ -213,6 +214,50 @@ public class TiersAdresseValidatorTest extends WebTest {
 				validator.validate(view, errors);
 				Assert.assertNotNull(errors);
 				Assert.assertEquals(0, errors.getErrorCount());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-27264] Ce test vérifie que la longueur du numéro de maison est bien vérifiée.
+	 */
+	@Test
+	public void testValidateLongueurNumeroMaison() throws Exception {
+
+		final Role[] roles = {Role.VISU_ALL, Role.MODIF_NONHAB_DEBPUR, Role.ADR_PP_C};
+		validator.setSecurityProvider(new MockSecurityProvider(roles));
+
+		final Long id = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Marc", "Fantastique", null, Sexe.MASCULIN);
+			return pp.getNumero();
+		});
+
+		final AdresseView view = new AdresseView();
+		view.setDateDebut(date(2010, 1, 1));
+		view.setLocaliteSuisse(MockLocalite.Echallens.getNom());
+		view.setNumeroOrdrePoste(Integer.toString(MockLocalite.Echallens.getNoOrdre()));
+		view.setTypeLocalite("suisse");
+		view.setNumCTB(id);
+		view.setUsage(TypeAdresseTiers.COURRIER);
+		view.setNumeroMaison("0123456789012345");   // <--- numéro trop long
+
+		// on vérifie que l'erreur est bien détectée
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Errors errors = new BeanPropertyBindingResult(view, "view");
+				validator.validate(view, errors);
+				Assert.assertNotNull(errors);
+				Assert.assertEquals(1, errors.getErrorCount());
+
+				final List<?> errorList = errors.getAllErrors();
+				Assert.assertEquals(1, errorList.size());
+
+				final FieldError error = (FieldError) errorList.get(0);
+				Assert.assertNotNull(error);
+				Assert.assertEquals("numeroMaison", error.getField());
+				Assert.assertEquals("error.numero.maison.trop.long", error.getCode());
 				return null;
 			}
 		});

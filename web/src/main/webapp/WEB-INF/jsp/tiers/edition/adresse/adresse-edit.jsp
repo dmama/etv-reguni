@@ -82,6 +82,7 @@
 
 	<c:set var="lengthadrnom" value="<%=LengthConstants.ADRESSE_NOM%>" scope="request" />
 	<c:set var="lengthadrnum" value="<%=LengthConstants.ADRESSE_NUM%>" scope="request" />
+	<c:set var="lengthadrnummaison" value="<%=LengthConstants.ADRESSE_NUM_MAISON%>" scope="request" />
 
 	<fieldset><legend><span><fmt:message key="label.nouvelleAdresse" /></span></legend>
 		<div id="adresse_saisie" >
@@ -221,8 +222,7 @@
 					</td>
 					<td><fmt:message key="label.numero.maison" />:</td>
 					<td>
-						<form:input path="numeroMaison" id="numeroMaison" cssErrorClass="input-with-errors"
-						            size ="5" maxlength="${lengthadrnum}" />
+						<form:input path="numeroMaison" id="numeroMaison" cssErrorClass="input-with-errors" size="${lengthadrnummaison}" maxlength="${lengthadrnummaison}" />
 						<form:errors path="numeroMaison" cssClass="error"/>
 					</td>
 				</tr>

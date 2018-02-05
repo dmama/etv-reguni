@@ -104,6 +104,7 @@ public abstract class LengthConstants {
 	public static final int ADRESSE_TYPEPM = 11;
 	public static final int ADRESSE_TYPESUPPLEM = 15;
 	public static final int ADRESSE_NUM = 35;
+	public static final int ADRESSE_NUM_MAISON = 12;    // longueur maximale selon eCH-0010
 	public static final int ADRESSE_NOM = 100;
 	public static final int ADRESSE_NOM_DESTINATAIRE = 182;
 	public static final int ADRESSE_CIVILITE = 30;

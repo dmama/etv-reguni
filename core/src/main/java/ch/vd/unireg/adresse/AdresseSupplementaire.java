@@ -23,6 +23,41 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	 */
 	private String complement;
 
+	/**
+	 * Désignation de la rue en texte libre.
+	 */
+	private String rue;
+
+	/**
+	 * Numéro de la maison dans l'adresse postale, y compris des indications additionnelles.
+	 * Longueur maximum selon eCH-0010 : 12
+	 */
+	private String numeroMaison;
+
+	/**
+	 * Numéro de l'appartement. Ce numéro est éventuellement nécessaire dans le cadre de grands ensembles.
+	 * Longueur maximum selon eCH-0011 : 10
+	 */
+	private String numeroAppartement;
+
+	/**
+	 * Texte de la case postale dans la langue voulue.
+	 * Dans la plupart des cas, le texte "Case postale" ou "Boîte postale" suffit.
+	 * Longueur maximum selon eCH-0010 : 15
+	 */
+	private TexteCasePostale texteCasePostale;
+
+	/**
+	 * Numéro de la case postale
+	 * Valeurs admises selon eCH-0010 : 0-9999
+	 */
+	private Integer numeroCasePostale;
+
+	/**
+	 * Adresse permanente
+	 */
+	private boolean permanente = false;
+
 	@Override
 	@Column(name = "COMPLEMENT", length = LengthConstants.ADRESSE_NOM)
 	public String getComplement() {
@@ -32,11 +67,6 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	public void setComplement(String theComplement) {
 		complement = theComplement;
 	}
-
-	/**
-	 * Désignation de la rue en texte libre.
-	 */
-	private String rue;
 
 	@Override
 	@Column(name = "RUE", length = LengthConstants.ADRESSE_NOM)
@@ -48,14 +78,8 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 		rue = theRue;
 	}
 
-	/**
-	 * Numéro de la maison dans l'adresse postale, y compris des indications additionnelles.
-	 * Longueur maximum selon eCH-0010 : 12
-	 */
-	private String numeroMaison;
-
 	@Override
-	@Column(name = "NUMERO_MAISON", length = LengthConstants.ADRESSE_NUM)
+	@Column(name = "NUMERO_MAISON", length = LengthConstants.ADRESSE_NUM_MAISON)
 	public String getNumeroMaison() {
 		return numeroMaison;
 	}
@@ -63,12 +87,6 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	public void setNumeroMaison(String theNumeroMaison) {
 		numeroMaison = theNumeroMaison;
 	}
-
-	/**
-	 * Numéro de l'appartement. Ce numéro est éventuellement nécessaire dans le cadre de grands ensembles.
-	 * Longueur maximum selon eCH-0011 : 10
-	 */
-	private String numeroAppartement;
 
 	@Column(name = "NUMERO_APPARTEMENT", length = LengthConstants.ADRESSE_NUM)
 	public String getNumeroAppartement() {
@@ -78,13 +96,6 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	public void setNumeroAppartement(String theNumeroAppartement) {
 		numeroAppartement = theNumeroAppartement;
 	}
-
-	/**
-	 * Texte de la case postale dans la langue voulue.
-	 * Dans la plupart des cas, le texte "Case postale" ou "Boîte postale" suffit.
-	 * Longueur maximum selon eCH-0010 : 15
-	 */
-	private TexteCasePostale texteCasePostale;
 
 	@Override
 	@Column(name = "TEXTE_CASE_POSTALE", length = LengthConstants.ADRESSE_TYPESUPPLEM)
@@ -97,12 +108,6 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 		texteCasePostale = theTexteCasePostale;
 	}
 
-	/**
-	 * Numéro de la case postale
-	 * Valeurs admises selon eCH-0010 : 0-9999
-	 */
-	private Integer numeroCasePostale;
-
 	@Override
 	@Column(name = "NUMERO_CASE_POSTALE")
 	public Integer getNumeroCasePostale() {
@@ -112,11 +117,6 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	public void setNumeroCasePostale(Integer theNumeroCasePostale) {
 		numeroCasePostale = theNumeroCasePostale;
 	}
-
-	/**
-	 * Adresse permanente
-	 */
-	private boolean permanente = false;
 
 	@Override
 	@Column(name = "PERMANENTE")
