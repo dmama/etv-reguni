@@ -51,10 +51,20 @@
 			<fmt:message key="label.emetteur" />&nbsp;:
 		</td>
 		<td width="25%">
-			<form:select path="emetteurId">
-				<form:option value=""><fmt:message key="option.TOUS" /></form:option>
-				<form:options items="${emetteurs}" />
-			</form:select>
+			<form:input path="emetteur" id="emetteur" cssStyle="width: 95%" />
+			<form:hidden path="emetteurId" id="emetteurId"  />
+			<script>
+				$(function() {
+					Autocomplete.generic('/identification/gestion-messages/autocompleteEmetteurs.do?filter=${emetteursFilter}', '#emetteur', true, function(item) {
+						if (item) {
+							$('#emetteurId').val(item.id1); // le code technique
+						}
+						else {
+							$('#emetteurId').val(null);
+						}
+					});
+				});
+			</script>
 		</td>
 		<td width="25%">
 			<fmt:message key="label.navs13" />&nbsp;:

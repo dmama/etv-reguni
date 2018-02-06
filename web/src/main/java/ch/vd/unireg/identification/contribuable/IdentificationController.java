@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -71,6 +72,7 @@ import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.json.AutoCompleteItem;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityCheck;
@@ -813,9 +815,27 @@ public class IdentificationController {
 		}
 	}
 
+	/**
+	 * Retourne les émetteurs qui correspondent aux critères spécifiés sous forme JSON (voir http://blog.springsource.com/2010/01/25/ajax-simplifications-in-spring-3-0/)
+	 *
+	 * @param term   un critère de recherche texte
+	 * @param filter un filtre sur les types d'émetteur
+	 * @return les émetteurs trouvés
+	 */
+	@RequestMapping(value = "/gestion-messages/autocompleteEmetteurs.do", method = RequestMethod.GET)
+	@ResponseBody
+	public List<AutoCompleteItem> security(@RequestParam("term") String term, @RequestParam("filter") IdentificationContribuableEtatFilter filter) throws Exception {
+
+		final Map<String, String> emetteursMap = identificationMapHelper.initMapEmetteurId(filter);
+		return emetteursMap.entrySet().stream()
+				.filter(e -> e.getValue().toLowerCase().contains(term.toLowerCase()))
+				.map(e -> new AutoCompleteItem(e.getValue(), e.getValue(), e.getKey()))
+				.collect(Collectors.toList());
+	}
+
 	private void setUpModelForListMessageEnCoursNormal(ModelMap model) {
 		model.put("typesMessage", initMapTypeMessageEncours());
-		model.put("emetteurs", identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
+		model.put("emetteursFilter", IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("periodesFiscales",identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageEnCours());
@@ -826,7 +846,7 @@ public class IdentificationController {
 
 	private void setUpModelForListMessageEnCoursAvecException(ModelMap model) {
 		model.put("typesMessage", initMapTypeMessageEncoursEtException());
-		model.put("emetteurs", identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION));
+		model.put("emetteursFilter", IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("periodesFiscales",identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION));
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageEnCoursEtException());
@@ -837,7 +857,7 @@ public class IdentificationController {
 
 	private void setUpModelForListMessageSuspendu(ModelMap model) {
 		model.put("typesMessage",initMapTypeMessageSuspendu());
-		model.put("emetteurs", identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS));
+		model.put("emetteursFilter", IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("periodesFiscales", identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS));
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageSuspendu());
@@ -849,7 +869,7 @@ public class IdentificationController {
 	private void setUpModelForListMessageTraites(ModelMap model) {
 		model.put("typesMessage", initMapTypeMessageTraite());
 		model.put("periodesFiscales", identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
-		model.put("emetteurs",identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES));
+		model.put("emetteursFilter", IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageArchive());
 		model.put("traitementUsers", identificationMapHelper.initMapUser());
@@ -895,10 +915,6 @@ public class IdentificationController {
 		}
 	}
 
-	protected Map<String, String> initMapEmetteurIdMessageEncours() {
-		return identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
-	}
-
 	protected Map<String, String> initMapTypeMessageEncours() {
 		final TypeDemande[] types = getAllowedTypes();
 		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES, types);
@@ -920,10 +936,6 @@ public class IdentificationController {
 
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteurMessageEncours() {
 		return identificationMapHelper.initMapPrioriteEmetteur();
-	}
-
-	protected Map<String, String> initMapEmetteurIdTraite() {
-		return identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 	}
 
 	protected Map<String, String> initMapTypeMessageTraite() {

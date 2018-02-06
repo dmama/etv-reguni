@@ -12,6 +12,8 @@ public class IdentificationContribuableCriteria {
 
 	private Integer periodeFiscale;
 
+	private String emetteur;
+
 	private String emetteurId;
 
 	private Demande.PrioriteEmetteur prioriteEmetteur;
@@ -54,6 +56,20 @@ public class IdentificationContribuableCriteria {
 		this.periodeFiscale = periodeFiscale;
 	}
 
+	/**
+	 * @return le nom de l'émetteur (uniquement utilisé pour l'affichage)
+	 */
+	public String getEmetteur() {
+		return emetteur;
+	}
+
+	public void setEmetteur(String emetteur) {
+		this.emetteur = emetteur;
+	}
+
+	/**
+	 * @return l'id de l'émetteur (utilisé pour la recherche)
+	 */
 	public String getEmetteurId() {
 		return emetteurId;
 	}

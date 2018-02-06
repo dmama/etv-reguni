@@ -31,11 +31,6 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	public static final String TYPE_MESSAGE_MAP_NAME = "typesMessage";
 
 	/**
-	 * Le nom de l'attribut utilise pour la liste des émetteurs
-	 */
-	public static final String EMETTEUR_MAP_NAME = "emetteurs";
-
-	/**
 	 * Le nom de l'attribut utilise pour la liste des etats du message
 	 */
 	public static final String ETAT_MESSAGE_MAP_NAME = "etatsMessage";
@@ -245,18 +240,6 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		}
 
 		return allPeriodeFiscale;
-	}
-
-	public Map<String, Object> getMaps(IdentificationContribuableEtatFilter filter) {
-		final Map<String, Object> data = new HashMap<>(7);
-		data.put(PERIODE_FISCALE_MAP_NAME, initMapPeriodeFiscale(filter));
-		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId(filter));
-		data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
-		data.put(TYPE_MESSAGE_MAP_NAME, initMapTypeMessage(IdentificationContribuableEtatFilter.TOUS));
-		data.put(PRIORITE_EMETTEUR_MAP_NAME, initMapPrioriteEmetteur());
-		data.put(ERREUR_MESSAGE_MAP_NAME, initErreurMessage());
-		data.put(TRAITEMENT_USER_MAP_NAME, initMapUser());
-		return data;
 	}
 
 	/**
