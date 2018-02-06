@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.common.StringComparator;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 
@@ -33,49 +33,6 @@ public class AutoCompleteSecurityController {
 		USER
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	private static class Item {
-		/**
-		 * Chaîne de caractères utilisée dans le champ d'autocompletion
-		 */
-		private final String label;
-		/**
-		 * Chaîne de caractères utilisée dans la liste (dropdown) des valeurs disponibles
-		 */
-		private final String desc;
-		/**
-		 * Identifiant optionnel pouvant être affecté à un autre champ (généralement caché).
-		 */
-		private String id1;
-		/**
-		 * Second identifiant optionnel pouvant être affecté à un autre champ (généralement caché).
-		 */
-		private String id2;
-
-		private Item(String label, String desc, String id1, String id2) {
-			this.label = label;
-			this.desc = desc;
-			this.id1 = id1;
-			this.id2 = id2;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-		public String getDesc() {
-			return desc;
-		}
-
-		public String getId1() {
-			return id1;
-		}
-
-		public String getId2() {
-			return id2;
-		}
-	}
-
 	/**
 	 * Retourne des données du service de sécurité sous forme JSON (voir http://blog.springsource.com/2010/01/25/ajax-simplifications-in-spring-3-0/)
 	 *
@@ -86,7 +43,7 @@ public class AutoCompleteSecurityController {
 	 */
 	@RequestMapping(value = "/autocomplete/security.do", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Item> security(@RequestParam("category") String category, @RequestParam("term") String term) throws Exception {
+	public List<AutoCompleteItem> security(@RequestParam("category") String category, @RequestParam("term") String term) throws Exception {
 
 		final Set<Category> categories = parseCategories(category);
 
@@ -97,7 +54,7 @@ public class AutoCompleteSecurityController {
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);
 
-		final List<Item> list = new ArrayList<>();
+		final List<AutoCompleteItem> list = new ArrayList<>();
 
 		if (categories.contains(Category.USER)) {
 			final List<TypeCollectivite> colls = Arrays.asList(TypeCollectivite.SIGLE_ACI, TypeCollectivite.SIGLE_ACIA, TypeCollectivite.SIGLE_ACIFD,
@@ -108,7 +65,7 @@ public class AutoCompleteSecurityController {
 					if (operateur.getCode().toLowerCase().startsWith(term) || StringComparator.toLowerCaseWithoutAccent(operateur.getNom()).startsWith(term) ||
 							StringComparator.toLowerCaseWithoutAccent(operateur.getPrenom()).startsWith(term)) {
 						final String label = operateur.getNom() + ' ' + operateur.getPrenom();
-						list.add(new Item(label, label + " (" + operateur.getCode() + ')', operateur.getCode(), String.valueOf(operateur.getIndividuNoTechnique())));
+						list.add(new AutoCompleteItem(label, label + " (" + operateur.getCode() + ')', operateur.getCode(), String.valueOf(operateur.getIndividuNoTechnique())));
 					}
 					if (list.size() >= 50) { // [SIFISC-482] on limite à 50 le nombre de résultats retournés
 						break;

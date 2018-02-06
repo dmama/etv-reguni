@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.StringComparator;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
@@ -25,7 +26,6 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
-import ch.vd.unireg.common.StringComparator;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -38,60 +38,6 @@ public class AutoCompleteInfraController {
 
 	private ServiceInfrastructureService serviceInfrastructureService;
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	private static class Item {
-		/**
-		 * Chaîne de caractères utilisée dans le champ d'autocompletion
-		 */
-		private final String label;
-		/**
-		 * Chaîne de caractères utilisée dans la liste (dropdown) des valeurs disponibles
-		 */
-		private final String desc;
-		/**
-		 * Identifiant optionnel pouvant être affecté à un autre champ (généralement caché).
-		 */
-		private String id1;
-		/**
-		 * Second identifiant optionnel pouvant être affecté à un autre champ (généralement caché).
-		 */
-		private String id2;
-
-		private Item(String label, String desc) {
-			this.label = label;
-			this.desc = desc;
-		}
-
-		private Item(String label, String desc, String id1) {
-			this.label = label;
-			this.desc = desc;
-			this.id1 = id1;
-		}
-
-		private Item(String label, String desc, String id1, String id2) {
-			this.label = label;
-			this.desc = desc;
-			this.id1 = id1;
-			this.id2 = id2;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-		public String getDesc() {
-			return desc;
-		}
-
-		public String getId1() {
-			return id1;
-		}
-
-		public String getId2() {
-			return id2;
-		}
-	}
-
 	/**
 	 * Retourne des données du service d'infrastructure sous forme JSON (voir http://blog.springsource.com/2010/01/25/ajax-simplifications-in-spring-3-0/)
 	 *
@@ -103,7 +49,7 @@ public class AutoCompleteInfraController {
 	 */
 	@RequestMapping(value = "/autocomplete/infra.do", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Item> infra(@RequestParam("category") String category, @RequestParam("term") String term, @RequestParam(value = "numCommune", required = false) Integer numCommune) throws Exception {
+	public List<AutoCompleteItem> infra(@RequestParam("category") String category, @RequestParam("term") String term, @RequestParam(value = "numCommune", required = false) Integer numCommune) throws Exception {
 
 		final Set<InfraCategory> categories = parseCategories(category);
 
@@ -114,11 +60,11 @@ public class AutoCompleteInfraController {
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);
 
-		final List<Item> list = new ArrayList<>();
+		final List<AutoCompleteItem> list = new ArrayList<>();
 
 		if (categories.contains(InfraCategory.RUE)) {
 			if (numCommune == null) {
-				list.add(new Item("#error: pas de localité renseignée", "#error: pas de localité renseignée"));
+				list.add(new AutoCompleteItem("#error: pas de localité renseignée", "#error: pas de localité renseignée"));
 			}
 			else {
 				final List<Localite> localites = serviceInfrastructureService.getLocaliteByCommune(numCommune);
@@ -136,7 +82,7 @@ public class AutoCompleteInfraController {
 								// [UNIREG-3293] on renseigne la localité entre parenthèses pour permettre de distinguer deux rues avec le même nom
 								description = rue.getDesignationCourrier() + " (" + localite.getNPA() + ' ' + localite.getNom() + ')';
 							}
-							list.add(new Item(rue.getDesignationCourrier(), description, String.valueOf(rue.getNoRue()), String.valueOf(rue.getNoLocalite())));
+							list.add(new AutoCompleteItem(rue.getDesignationCourrier(), description, String.valueOf(rue.getNoRue()), String.valueOf(rue.getNoLocalite())));
 						}
 					}
 				}
@@ -150,7 +96,7 @@ public class AutoCompleteInfraController {
 					if (StringComparator.toLowerCaseWithoutAccent(localite.getNom()).startsWith(term) ||
 							String.valueOf(localite.getNPA()).startsWith(term)) { // [UNIREG-3390] recherche par numéro de NPA
 						final String description = localite.getNom() + " (" + localite.getNPA() + ')';
-						list.add(new Item(localite.getNom(), description, String.valueOf(localite.getNoOrdre()), String.valueOf(localite.getNoCommune())));
+						list.add(new AutoCompleteItem(localite.getNom(), description, String.valueOf(localite.getNoOrdre()), String.valueOf(localite.getNoCommune())));
 					}
 				}
 			}
@@ -162,7 +108,7 @@ public class AutoCompleteInfraController {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomOfficiel()).startsWith(term)) {
 						final String description = commune.getNomOfficiel() + " (" + commune.getNoOFS() + ')';
-						list.add(new Item(commune.getNomOfficiel(), description, String.valueOf(commune.getNoOFS())));
+						list.add(new AutoCompleteItem(commune.getNomOfficiel(), description, String.valueOf(commune.getNoOFS())));
 					}
 				}
 			}
@@ -174,7 +120,7 @@ public class AutoCompleteInfraController {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomOfficiel()).startsWith(term)) {
 						final String description = commune.getNomOfficiel() + " (" + commune.getNoOFS() + ')';
-						list.add(new Item(commune.getNomOfficiel(), description, String.valueOf(commune.getNoOFS())));
+						list.add(new AutoCompleteItem(commune.getNomOfficiel(), description, String.valueOf(commune.getNoOFS())));
 					}
 				}
 			}
@@ -186,7 +132,7 @@ public class AutoCompleteInfraController {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomOfficiel()).startsWith(term)) {
 						final String description = commune.getNomOfficiel() + " (" + commune.getNoOFS() + ')';
-						list.add(new Item(commune.getNomOfficiel(), description, String.valueOf(commune.getNoOFS())));
+						list.add(new AutoCompleteItem(commune.getNomOfficiel(), description, String.valueOf(commune.getNoOFS())));
 					}
 				}
 			}
@@ -202,7 +148,7 @@ public class AutoCompleteInfraController {
 					if (p.isValidAt(RegDate.get()) && (!etatsOnly || p.isEtatSouverain())) {
 						if (StringComparator.toLowerCaseWithoutAccent(p.getNomCourt()).startsWith(term)) {
 							final String description = p.getNomCourt() + " (" + p.getNoOFS() + ')';
-							list.add(new Item(p.getNomCourt(), description, String.valueOf(p.getNoOFS())));
+							list.add(new AutoCompleteItem(p.getNomCourt(), description, String.valueOf(p.getNoOFS())));
 						}
 					}
 				}
@@ -216,7 +162,7 @@ public class AutoCompleteInfraController {
 			if (colls != null) {
 				for (CollectiviteAdministrative c : colls) {
 					if (StringComparator.toLowerCaseWithoutAccent(c.getNomCourt()).startsWith(term)) {
-						list.add(new Item(c.getNomCourt(), c.getNomCourt(), String.valueOf(c.getNoColAdm())));
+						list.add(new AutoCompleteItem(c.getNomCourt(), c.getNomCourt(), String.valueOf(c.getNoColAdm())));
 					}
 				}
 			}
@@ -228,7 +174,7 @@ public class AutoCompleteInfraController {
 				for (CollectiviteAdministrative c : colls) {
 					final String nomComplet = String.format("%s %s", c.getNomComplet1(), c.getNomComplet2());
 					if (StringComparator.toLowerCaseWithoutAccent(nomComplet).startsWith(term)) {
-						list.add(new Item(nomComplet, nomComplet, String.valueOf(c.getNoColAdm())));
+						list.add(new AutoCompleteItem(nomComplet, nomComplet, String.valueOf(c.getNoColAdm())));
 					}
 				}
 			}
@@ -239,7 +185,7 @@ public class AutoCompleteInfraController {
 			if (offices != null) {
 				for (OfficeImpot oi : offices) {
 					if (StringComparator.toLowerCaseWithoutAccent(oi.getNomCourt()).startsWith(term)) {
-						list.add(new Item(oi.getNomCourt(), oi.getNomCourt(), String.valueOf(oi.getNoColAdm())));
+						list.add(new AutoCompleteItem(oi.getNomCourt(), oi.getNomCourt(), String.valueOf(oi.getNoColAdm())));
 					}
 				}
 			}
