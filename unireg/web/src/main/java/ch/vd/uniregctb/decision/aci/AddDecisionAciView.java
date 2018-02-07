@@ -13,7 +13,7 @@ public class AddDecisionAciView implements Annulable{
 	private String remarque;
 	private boolean annule;
 	private Integer numeroAutoriteFiscale;
-	private String autoriteFiscaleNom;
+	private String nomAutoriteFiscale;
 
 	public Long getId() {
 		return id;
@@ -39,12 +39,12 @@ public class AddDecisionAciView implements Annulable{
 		this.dateFin = dateFin;
 	}
 
-	public String getAutoriteFiscaleNom() {
-		return autoriteFiscaleNom;
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
 	}
 
-	public void setAutoriteFiscaleNom(String autoriteFiscaleNom) {
-		this.autoriteFiscaleNom = autoriteFiscaleNom;
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {

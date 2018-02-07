@@ -145,12 +145,12 @@ public class DecisionAciController {
 				if(TypeAutoriteFiscale.PAYS_HS.equals(view.getTypeAutoriteFiscale())) {
 					Pays pays = infrastructureService.getPays(view.getNumeroAutoriteFiscale(), null);
 					if(pays != null){
-						view.setAutoriteFiscaleNom(pays.getNomCourt());
+						view.setNomAutoriteFiscale(pays.getNomCourt());
 					}
 				} else {
 					Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNumeroAutoriteFiscale(), null);
 					if(commune != null) {
-						view.setAutoriteFiscaleNom(commune.getNomOfficiel());
+						view.setNomAutoriteFiscale(commune.getNomOfficiel());
 					}
 				}
 			}
