@@ -35,7 +35,7 @@ import ch.vd.unireg.registrefoncier.dataimport.helper.RaisonAcquisitionRFHelper;
 import static ch.vd.unireg.registrefoncier.dataimport.helper.DroitRFHelper.masterIdAndVersionIdEquals;
 
 /**
- * Représente les changements sur les droits pour <i>pour un immeuble particulier</i> à une date particulière.
+ * Représente les changements sur les droits pour un <i>immeuble</i> particulier et une <i>date</i> particulière.
  */
 public class AffaireRF {
 
@@ -43,52 +43,43 @@ public class AffaireRF {
 	private final RegDate dateValeur;
 	private final ImmeubleRF immeuble;
 	private final List<DroitProprieteRF> ouverts;
-	private final List<Pair<DroitProprieteRF, DroitProprieteRF>> miseajour;
+	private final List<Pair<DroitProprieteRF, DroitProprieteRF>> misesajour;
 	private final List<DroitProprieteRF> fermes;
 
 	/**
-	 * Crée une affaire qui n'a pas encore été traitée et dont les changements doivent être appliquée sur les données de la DB.
-	 *
-	 * @param dateValeur la date d'import en DB de l'affaire
-	 * @param immeuble   l'immeuble concerné
-	 * @param ouverts    les droits ouverts et à persister
-	 * @param miseajour  les droits dont les raisons d'acquisition doivent être mises-à-jour (paire : nouveau droit -> droit déjà persisté)
-	 * @param fermes     les droits déjà persistés à fermer
-	 */
-	public AffaireRF(@Nullable RegDate dateValeur,
-	                 @NotNull ImmeubleRF immeuble,
-	                 @NotNull List<DroitProprieteRF> ouverts,
-	                 @NotNull List<Pair<DroitProprieteRF, DroitProprieteRF>> miseajour,
-	                 @NotNull List<DroitProprieteRF> fermes) {
-		this.dateValeur = dateValeur;
-		this.immeuble = immeuble;
-		this.ouverts = ouverts;
-		this.fermes = fermes;
-		this.miseajour = miseajour;
-	}
-
-	/**
-	 * Crée une affaire dont les données ont déjà été sauvées en DB.
+	 * Initialise une affaire à partir des droits déjà présents sur un immeuble et d'une date d'import.
 	 *
 	 * @param dateValeur la date d'import en DB de l'affaire
 	 * @param immeuble   l'immeuble concerné
 	 * @param droits     les droits de l'immeuble (sans les droits annulés)
 	 */
-	public AffaireRF(@NotNull RegDate dateValeur, @NotNull ImmeubleRF immeuble, @NotNull Collection<DroitProprieteRF> droits) {
-		final RegDate veilleImport = dateValeur.getOneDayBefore();
+	public AffaireRF(@Nullable RegDate dateValeur, @NotNull ImmeubleRF immeuble) {
+
 		this.dateValeur = dateValeur;
 		this.immeuble = immeuble;
-		this.ouverts = droits.stream()
+		this.ouverts = immeuble.getDroitsPropriete().stream()
+				.filter(AnnulableHelper::nonAnnule)
 				.filter(d -> d.getDateDebut() == dateValeur)
 				.collect(Collectors.toList());
-		this.miseajour = droits.stream()
-				.filter(d -> d.getDateDebut() != dateValeur && d.getDateFin() != veilleImport)
-				.filter(d -> hasDebutRaisonAcquisitionEquals(d, dateValeur))
-				.map(d -> new Pair<>(d, d))
-				.collect(Collectors.toList());
-		this.fermes = droits.stream()
-				.filter(d -> d.getDateFin() == veilleImport)
-				.collect(Collectors.toList());
+
+		if (dateValeur == null) {
+			// import initial : par définition il n'y a pas de mise-à-jour ni fermeture
+			this.misesajour = Collections.emptyList();
+			this.fermes = Collections.emptyList();
+		}
+		else {
+			final RegDate veilleImport = dateValeur.getOneDayBefore();
+			this.misesajour = immeuble.getDroitsPropriete().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(d -> d.getDateDebut() != dateValeur && d.getDateFin() != veilleImport)
+					.filter(d -> hasDebutRaisonAcquisitionEquals(d, dateValeur))
+					.map(d -> new Pair<>(d, d))
+					.collect(Collectors.toList());
+			this.fermes = immeuble.getDroitsPropriete().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(d -> d.getDateFin() == veilleImport)
+					.collect(Collectors.toList());
+		}
 	}
 
 	/**
@@ -118,37 +109,47 @@ public class AffaireRF {
 	}
 
 	/**
-	 * Applique le mutations en DB : sauve les nouveaux droits, met-à-jour les droits existants et ferme les droits à fermer.
+	 * Applique les mutations spécifiées sur l'immeuble et en DB : sauve les nouveaux droits, met-à-jour les droits existants et ferme les droits à fermer.
 	 *
-	 * @param listener un callback pour écouter les changements
+	 * @param aOuvrir      la liste des droits à ouvrir
+	 * @param aMettreAJour la liste des droits à mettre-à-jour
+	 * @param aFermer      la liste des droits à fermer
+	 * @param listener     un callback pour écouter les changements
 	 */
-	public void apply(@NotNull DroitRFDAO droitRFDAO, @Nullable AffaireRFListener listener) {
+	public void apply(@NotNull DroitRFDAO droitRFDAO,
+	                  @NotNull List<DroitProprieteRF> aOuvrir,
+	                  @NotNull List<Pair<DroitProprieteRF, DroitProprieteRF>> aMettreAJour,
+	                  @NotNull List<DroitProprieteRF> aFermer,
+	                  @Nullable AffaireRFListener listener) {
 
 		// on ajoute toutes les nouveaux droits
-		final List<DroitProprieteRF> persisted = ouverts.stream()
+		final List<DroitProprieteRF> nouvellementOuverts = aOuvrir.stream()
 				.map(d -> processOuverture(d, droitRFDAO))
 				.collect(Collectors.toList());
-		ouverts.clear();
-		ouverts.addAll(persisted);
+		ouverts.addAll(nouvellementOuverts);
 
 		// on met-à-jour tous les droits qui changent (c'est-à-dire les changements dans les raisons d'acquisition)
-		miseajour.forEach(p -> processMiseAJour(p.getFirst(), p.getSecond()));
+		aMettreAJour.forEach(p -> {
+			processMiseAJour(p.getFirst(), p.getSecond());
+			misesajour.add(p);
+		});
 
 		// on ferme toutes les droits à fermer
-		fermes.forEach(this::processFermeture);
+		aFermer.forEach(d -> {
+			processFermeture(d);
+			fermes.add(d);
+		});
 
 		// on calcule tous les dates de début métier
-		final List<Mutation> mutations = new ArrayList<>(fermes.size() + ouverts.size() + miseajour.size());
-		fermes.stream()
-				.map(d -> new Mutation(d, MutationType.CLOSING))
-				.forEach(mutations::add);
-		ouverts.stream()
-				.map(d -> new Mutation(d, MutationType.CREATION))
-				.forEach(mutations::add);
-		miseajour.stream()
-				.map(d -> new Mutation(d.getSecond(), MutationType.UPDATE))
-				.forEach(mutations::add);
-		calculateDatesMetier(mutations, Context.APPLY, listener);
+		final List<Mutation> mutations = buildMutations(ouverts, misesajour, fermes);
+		calculateDatesMetier(mutations);
+
+		// on notifie le listener des changements si demandé
+		if (listener != null) {
+			// on ne notifie que les changements réellements appliquées
+			final List<Mutation> applied = buildMutations(nouvellementOuverts, aMettreAJour, aFermer);
+			applied.forEach(m -> m.notifyAudit(Context.APPLY, listener));
+		}
 	}
 
 	/**
@@ -159,6 +160,17 @@ public class AffaireRF {
 	public void refreshDatesMetier(@Nullable AffaireRFListener listener) {
 
 		// on recalcule tous les dates de début métier
+		final List<Mutation> mutations = buildMutations(ouverts, misesajour, fermes);
+		calculateDatesMetier(mutations);
+
+		// on notifie le listener des changements si demandé
+		if (listener != null) {
+			mutations.forEach(m -> m.notifyAudit(Context.REFRESH, listener));
+		}
+	}
+
+	@NotNull
+	private static List<Mutation> buildMutations(@NotNull List<DroitProprieteRF> ouverts, @NotNull List<Pair<DroitProprieteRF, DroitProprieteRF>> miseajour, @NotNull List<DroitProprieteRF> fermes) {
 		final List<Mutation> mutations = new ArrayList<>(fermes.size() + ouverts.size() + miseajour.size());
 		fermes.stream()
 				.map(d -> new Mutation(d, MutationType.CLOSING))
@@ -169,25 +181,17 @@ public class AffaireRF {
 		miseajour.stream()
 				.map(d -> new Mutation(d.getSecond(), MutationType.UPDATE))
 				.forEach(mutations::add);
-		calculateDatesMetier(mutations, Context.REFRESH, listener);
+		return mutations;
 	}
 
 	/**
 	 * Calcule ou recalcule les dates de début/fin métier des droits spécifiés.
 	 *
-	 * @param mutations les droits et le context dans lequel ils sont traités
-	 * @param context   le context du calcul/recalcul des dates métier
-	 * @param listener  un callback pour écouter les changements
+	 * @param mutations les mutations des droits pour l'affaire courante.
 	 */
-	private void calculateDatesMetier(@NotNull List<Mutation> mutations, @NotNull Context context, @Nullable AffaireRFListener listener) {
-
+	private void calculateDatesMetier(@NotNull List<Mutation> mutations) {
 		calculateDatesDebutMetier(mutations);
 		calculateDatesFinMetier(mutations);
-
-		// on notifie le listener des changements si nécessaire
-		if (listener != null) {
-			mutations.forEach(m -> m.notifyAudit(context, listener));
-		}
 	}
 
 	/**

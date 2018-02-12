@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EigentumAnteilList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<PersonEigentumAnteil VersionID="8af8064d58e34c5a0159cf79c9b71922" MasterID="8af8064d58e34c5a0159cf79c9b71925" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+		<Quote>
+			<AnteilZaehler>1</AnteilZaehler>
+			<AnteilNenner>1</AnteilNenner>
+			<QuoteUnbekannt>false</QuoteUnbekannt>
+		</Quote>
+		<BelastetesGrundstueckIDREF>_1f109152381059670138105e159419b0</BelastetesGrundstueckIDREF>
+		<Gemeinschaft VersionID="8af8064d58e34c5a0159cf79c9b71924" MasterID="8af8064d58e34c5a0159cf79c9b71928">
+			<Status>provisorisch</Status>
+			<GemeinschatID>_8af8064d58e34c5a0159cf79c9b71925</GemeinschatID>
+			<Art>EinfacheGesellschaft</Art>
+		</Gemeinschaft>
+		<PersonEigentumsForm>gesamteigentum</PersonEigentumsForm>
+	</PersonEigentumAnteil>
+	<PersonEigentumAnteil VersionID="8af8064d58e34c5a0159cf79c9b71922" MasterID="8af8064d58e34c5a0159cf79c9b71927" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+		<Quote>
+			<AnteilZaehler>1</AnteilZaehler>
+			<AnteilNenner>1</AnteilNenner>
+			<QuoteUnbekannt>false</QuoteUnbekannt>
+		</Quote>
+		<BelastetesGrundstueckIDREF>_1f109152381059670138105e159419b0</BelastetesGrundstueckIDREF>
+		<NatuerlichePersonGb VersionID="8af8064d58e34c5a0159cf79c9b71926" MasterID="8af8064d58e34c5a0159cf79c9b7192a">
+			<GemeinschatIDREF>_8af8064d58e34c5a0159cf79c9b71925</GemeinschatIDREF>
+			<Name>Sprüngli</Name>
+			<Status>definitiv</Status>
+			<Rechtsgruende>
+				<AmtNummer>12</AmtNummer>
+				<RechtsgrundCode>
+					<TextDe>*Achat</TextDe>
+					<TextFr>Achat</TextFr>
+				</RechtsgrundCode>
+				<BelegDatum>2016-11-22</BelegDatum>
+				<BelegJahr>2016</BelegJahr>
+				<BelegNummer>6604</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Rechtsgruende>
+			<Vorname>Carlos</Vorname>
+			<Geburtsdatum>
+				<Tag>31</Tag>
+				<Monat>1</Monat>
+				<Jahr>1972</Jahr>
+			</Geburtsdatum>
+			<Zivilstand>unbekannt</Zivilstand>
+			<NameEltern>Adrian Caspar</NameEltern>
+			<WeitereVornamen>Andrés</WeitereVornamen>
+			<PersonstammIDREF>_8af80e62583eaf7b0158af42818778a6</PersonstammIDREF>
+		</NatuerlichePersonGb>
+		<PersonEigentumsForm>gesamteigentum</PersonEigentumsForm>
+	</PersonEigentumAnteil>
+	<PersonEigentumAnteil VersionID="8af8064d58e34c5a0159cf79c9b71922" MasterID="8af8064d58e34c5a0159cf79eaf2192d" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+		<Quote>
+			<AnteilZaehler>1</AnteilZaehler>
+			<AnteilNenner>1</AnteilNenner>
+			<QuoteUnbekannt>false</QuoteUnbekannt>
+		</Quote>
+		<BelastetesGrundstueckIDREF>_1f109152381059670138105e159419b0</BelastetesGrundstueckIDREF>
+		<NatuerlichePersonGb VersionID="8af8064d58e34c5a0159cf79eaf2192c" MasterID="8af8064d58e34c5a0159cf79eaf2192f">
+			<GemeinschatIDREF>_8af8064d58e34c5a0159cf79c9b71925</GemeinschatIDREF>
+			<Name>Sprüngli</Name>
+			<Status>definitiv</Status>
+			<Rechtsgruende>
+				<AmtNummer>12</AmtNummer>
+				<RechtsgrundCode>
+					<TextDe>*Achat</TextDe>
+					<TextFr>Achat</TextFr>
+				</RechtsgrundCode>
+				<BelegDatum>2016-11-22</BelegDatum>
+				<BelegJahr>2016</BelegJahr>
+				<BelegNummer>6604</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Rechtsgruende>
+			<Vorname>Odette</Vorname>
+			<Ledigname>Dub</Ledigname>
+			<Geburtsdatum>
+				<Tag>2</Tag>
+				<Monat>11</Monat>
+				<Jahr>1945</Jahr>
+			</Geburtsdatum>
+			<Zivilstand>unbekannt</Zivilstand>
+			<NameEltern>William Wolf</NameEltern>
+			<WeitereVornamen>Luisa</WeitereVornamen>
+			<PersonstammIDREF>_8af806fc40347c3701412c138f785658</PersonstammIDREF>
+		</NatuerlichePersonGb>
+		<PersonEigentumsForm>gesamteigentum</PersonEigentumsForm>
+	</PersonEigentumAnteil>
+</EigentumAnteilList>

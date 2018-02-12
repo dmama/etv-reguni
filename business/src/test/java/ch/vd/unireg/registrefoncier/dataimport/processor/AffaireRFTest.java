@@ -1,8 +1,7 @@
 package ch.vd.unireg.registrefoncier.dataimport.processor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -37,7 +35,9 @@ public class AffaireRFTest {
 		final DroitProprieteRF d = new DroitProprietePersonnePhysiqueRF();
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		immeuble.addDroitPropriete(d);
+
+		final AffaireRF affaire = new AffaireRF(null, immeuble);
 		affaire.refreshDatesMetier(null);
 		assertNull(d.getDateDebutMetier());
 		assertNull(d.getMotifDebut());
@@ -51,7 +51,9 @@ public class AffaireRFTest {
 		d.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2000, 3, 23), "Achat", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		immeuble.addDroitPropriete(d);
+
+		final AffaireRF affaire = new AffaireRF(null, immeuble);
 		affaire.refreshDatesMetier(null);
 		assertEquals(RegDate.get(2000, 3, 23), d.getDateDebutMetier());
 		assertEquals("Achat", d.getMotifDebut());
@@ -65,7 +67,9 @@ public class AffaireRFTest {
 		d.addRaisonAcquisition(newRaisonAcquisitionRF(null, null, "Achat", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		immeuble.addDroitPropriete(d);
+
+		final AffaireRF affaire = new AffaireRF(null, immeuble);
 		affaire.refreshDatesMetier(null);
 		assertNull(d.getDateDebutMetier());
 		assertEquals("Achat", d.getMotifDebut());
@@ -80,7 +84,9 @@ public class AffaireRFTest {
 		d.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(1996, 10, 1), "Achat", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		immeuble.addDroitPropriete(d);
+
+		final AffaireRF affaire = new AffaireRF(null, immeuble);
 		affaire.refreshDatesMetier(null);
 		assertEquals(RegDate.get(1996, 10, 1), d.getDateDebutMetier());
 		assertEquals("Achat", d.getMotifDebut());
@@ -95,7 +101,9 @@ public class AffaireRFTest {
 		d.addRaisonAcquisition(newRaisonAcquisitionRF(null, null, "Achat", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		immeuble.addDroitPropriete(d);
+
+		final AffaireRF affaire = new AffaireRF(null, immeuble);
 		affaire.refreshDatesMetier(null);
 		assertNull(d.getDateDebutMetier());
 		assertEquals("Achat", d.getMotifDebut());
@@ -107,19 +115,30 @@ public class AffaireRFTest {
 	@Test
 	public void testRefreshDatesMetierAvecDroitPrecedentMemeMasterId() throws Exception {
 
+		final RegDate dateDebut = RegDate.get(2005, 6, 13);
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setId(1L);
+
 		final DroitProprieteRF precedent = new DroitProprietePersonnePhysiqueRF();
 		precedent.setMasterIdRF("28288228");
 		precedent.setVersionIdRF("1");
+		precedent.setDateFin(dateDebut.getOneDayBefore());
+		precedent.setAyantDroit(pp);
 		precedent.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2000, 3, 23), "Achat", null));
 
 		final DroitProprieteRF nouveau = new DroitProprietePersonnePhysiqueRF();
 		nouveau.setMasterIdRF("28288228");
 		nouveau.setVersionIdRF("2");
+		nouveau.setDateDebut(dateDebut);
+		nouveau.setAyantDroit(pp);
 		nouveau.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2000, 3, 23), "Achat", null));
 		nouveau.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2005, 8, 2), "Remaniement PPE", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(null, immeuble, Collections.singletonList(nouveau), Collections.emptyList(), Collections.singletonList(precedent));
+		immeuble.addDroitPropriete(precedent);
+		immeuble.addDroitPropriete(nouveau);
+
+		final AffaireRF affaire = new AffaireRF(dateDebut, immeuble);
 		affaire.refreshDatesMetier(null);
 		assertEquals(RegDate.get(2005, 8, 2), nouveau.getDateDebutMetier());
 		assertEquals("Remaniement PPE", nouveau.getMotifDebut());
@@ -131,24 +150,30 @@ public class AffaireRFTest {
 	@Test
 	public void testRefreshDatesMetierAvecDroitPrecedentMemeProprietaire() throws Exception {
 
+		final RegDate dateDebut = RegDate.get(2005, 6, 13);
 		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 		pp.setId(1L);
 
 		final DroitProprieteRF precedent = new DroitProprietePersonnePhysiqueRF();
 		precedent.setMasterIdRF("28288228");
 		precedent.setVersionIdRF("1");
+		precedent.setDateFin(dateDebut.getOneDayBefore());
 		precedent.setAyantDroit(pp);
 		precedent.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2000, 3, 23), "Achat", null));
 
 		final DroitProprieteRF nouveau = new DroitProprietePersonnePhysiqueRF();
 		nouveau.setMasterIdRF("3838384444");
 		nouveau.setVersionIdRF("1");
+		nouveau.setDateDebut(dateDebut);
 		nouveau.setAyantDroit(pp);
 		nouveau.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2000, 3, 23), "Achat", null));
 		nouveau.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2005, 8, 2), "Remaniement PPE", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(null, immeuble, Collections.singletonList(nouveau), Collections.emptyList(), Collections.singletonList(precedent));
+		immeuble.addDroitPropriete(precedent);
+		immeuble.addDroitPropriete(nouveau);
+
+		final AffaireRF affaire = new AffaireRF(dateDebut, immeuble);
 		affaire.refreshDatesMetier(null);
 		assertEquals(RegDate.get(2005, 8, 2), nouveau.getDateDebutMetier());
 		assertEquals("Remaniement PPE", nouveau.getMotifDebut());
@@ -237,7 +262,13 @@ public class AffaireRFTest {
 		nouveau4.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSuccession, dateSuccession, "Succession", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(dateImportSuccession, immeuble, Arrays.asList(nouveau2, nouveau3, nouveau4), Collections.emptyList(), Arrays.asList(precedent1, precedent2));
+		immeuble.addDroitPropriete(precedent1);
+		immeuble.addDroitPropriete(precedent2);
+		immeuble.addDroitPropriete(nouveau2);
+		immeuble.addDroitPropriete(nouveau3);
+		immeuble.addDroitPropriete(nouveau4);
+
+		final AffaireRF affaire = new AffaireRF(dateImportSuccession, immeuble);
 		affaire.refreshDatesMetier(listener);
 		assertNull(precedent1.getDateDebutMetier());                    // <-- les droits précédents possèdent maintenant des dates de fin métier
 		assertEquals(dateSuccession, precedent1.getDateFinMetier());
@@ -254,10 +285,12 @@ public class AffaireRFTest {
 		assertEquals(0, listener.getCreated().size());
 		final List<Listener.FinUpdate> finUpdates = listener.getFinUpdates();
 		assertEquals(2, finUpdates.size());
+		finUpdates.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
 		assertFinUpdate(precedent1, null, null, finUpdates.get(0));
 		assertFinUpdate(precedent2, null, null, finUpdates.get(1));
 		final List<Listener.DebutUpdate> debutUpdates = listener.getDebutUpdates();
 		assertEquals(3, debutUpdates.size());
+		debutUpdates.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
 		assertDebutUpdate(nouveau2, null, null, debutUpdates.get(0));
 		assertDebutUpdate(nouveau3, null, null, debutUpdates.get(1));
 		assertDebutUpdate(nouveau4, null, null, debutUpdates.get(2));
@@ -336,7 +369,11 @@ public class AffaireRFTest {
 		droitJoelle.addRaisonAcquisition(newRaisonAcquisitionRF(dateSecondImport, dateDonation, "Donation", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(dateSecondImport, immeuble, Collections.emptyList(), Arrays.asList(new Pair<>(droitBlaise, droitBlaise), new Pair<>(droitJoelle, droitJoelle)), Collections.singletonList(droitMichelle));
+		immeuble.addDroitPropriete(droitMichelle);
+		immeuble.addDroitPropriete(droitBlaise);
+		immeuble.addDroitPropriete(droitJoelle);
+
+		final AffaireRF affaire = new AffaireRF(dateSecondImport, immeuble);
 		affaire.refreshDatesMetier(listener);
 		assertEquals(dateSuccession, droitMichelle.getDateDebutMetier());
 		assertEquals(dateDonation, droitMichelle.getDateFinMetier());
@@ -443,7 +480,12 @@ public class AffaireRFTest {
 		droitAlexander.addRaisonAcquisition(newRaisonAcquisitionRF(dateSecondImport, dateCession, "Cession", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(dateSecondImport, immeuble, Arrays.asList(droitPatriciaCession, droitAlexander), Collections.emptyList(), Arrays.asList(droitPatriciaTransfer, droitEva));
+		immeuble.addDroitPropriete(droitAlexander);
+		immeuble.addDroitPropriete(droitPatriciaCession);
+		immeuble.addDroitPropriete(droitPatriciaTransfer);
+		immeuble.addDroitPropriete(droitEva);
+
+		final AffaireRF affaire = new AffaireRF(dateSecondImport, immeuble);
 		affaire.refreshDatesMetier(listener);
 		// droits de la communauté 'Transfer'
 		assertEquals(dateTransfert, droitPatriciaTransfer.getDateDebutMetier());
@@ -460,13 +502,15 @@ public class AffaireRFTest {
 		assertEquals(0, listener.getCreated().size());
 		final List<Listener.FinUpdate> finUpdates = listener.getFinUpdates();
 		assertEquals(2, finUpdates.size());
+		finUpdates.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
 		assertFinUpdate(patricia, dateCession, "Cession", null, null, finUpdates.get(0));
 		assertFinUpdate(eva, dateCession, "Cession", null, null, finUpdates.get(1));
 		// les droits de Patricia et Alexander sur la communauté 'Cession' doivent être ouverts
 		final List<Listener.DebutUpdate> debutUpdates = listener.getDebutUpdates();
 		assertEquals(2, debutUpdates.size());
-		assertDebutUpdate(patricia, dateCession, "Cession", null, null, debutUpdates.get(0));
-		assertDebutUpdate(alexander, dateTransfert, "Transfert", null, null, debutUpdates.get(1));
+		debutUpdates.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
+		assertDebutUpdate(alexander, dateTransfert, "Transfert", null, null, debutUpdates.get(0));
+		assertDebutUpdate(patricia, dateCession, "Cession", null, null, debutUpdates.get(1));
 		assertEquals(0, listener.getClosed().size());
 	}
 
@@ -496,6 +540,7 @@ public class AffaireRFTest {
 		precedent1.setVersionIdRF("1");
 		precedent1.setPart(new Fraction(1, 1));
 		precedent1.setDateDebut(dateImportInitial);
+		precedent1.setDateFin(dateImportSuccession.getOneDayBefore());
 		precedent1.setAyantDroit(andre);
 		precedent1.setCommunaute(communaute1);
 		precedent1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateAchat, "Achat", null));
@@ -506,6 +551,7 @@ public class AffaireRFTest {
 		precedent2.setVersionIdRF("1");
 		precedent2.setPart(new Fraction(1, 1));
 		precedent2.setDateDebut(dateImportInitial);
+		precedent2.setDateFin(dateImportSuccession.getOneDayBefore());
 		precedent2.setAyantDroit(lucette);
 		precedent2.setCommunaute(communaute1);
 		precedent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateAchat, "Achat", null));
@@ -548,7 +594,13 @@ public class AffaireRFTest {
 		nouveau4.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSuccession, dateSuccession1, "Succession", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(dateSuccession1, immeuble, Arrays.asList(nouveau2, nouveau3, nouveau4), Collections.emptyList(), Arrays.asList(precedent1, precedent2));
+		immeuble.addDroitPropriete(precedent1);
+		immeuble.addDroitPropriete(precedent2);
+		immeuble.addDroitPropriete(nouveau2);
+		immeuble.addDroitPropriete(nouveau3);
+		immeuble.addDroitPropriete(nouveau4);
+
+		final AffaireRF affaire = new AffaireRF(dateImportSuccession, immeuble);
 		affaire.refreshDatesMetier(null);
 		assertNull(precedent1.getDateDebutMetier());    // pas de changement sur les droits précédents
 		assertNull(precedent2.getDateDebutMetier());
@@ -676,10 +728,13 @@ public class AffaireRFTest {
 		nouveauDroitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSession, dateSession, "Session", null));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
-		final AffaireRF affaire = new AffaireRF(dateImportSession, immeuble,
-		                                        Collections.singletonList(nouveauDroitHelene),
-		                                        Collections.emptyList(),
-		                                        Arrays.asList(droitHelene, droitHeleneComm, droitBrigitteComm, droitCommunaute));
+		immeuble.addDroitPropriete(droitHelene);
+		immeuble.addDroitPropriete(droitHeleneComm);
+		immeuble.addDroitPropriete(droitBrigitteComm);
+		immeuble.addDroitPropriete(droitCommunaute);
+		immeuble.addDroitPropriete(nouveauDroitHelene);
+
+		final AffaireRF affaire = new AffaireRF(dateImportSession, immeuble);
 		affaire.refreshDatesMetier(listener);
 
 		// l'ancien droit d'hélène doit être fermé à la date de session
@@ -711,10 +766,11 @@ public class AffaireRFTest {
 		assertEquals(0, listener.getCreated().size());
 		final List<Listener.FinUpdate> finUpdates = listener.getFinUpdates();
 		assertEquals(4, finUpdates.size());
-		assertFinUpdate(droitHelene, null, null, finUpdates.get(0));
-		assertFinUpdate(droitHeleneComm, null, null, finUpdates.get(1));
-		assertFinUpdate(droitBrigitteComm, null, null, finUpdates.get(2));
-		assertFinUpdate(droitCommunaute, null, null, finUpdates.get(3));
+		finUpdates.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
+		assertFinUpdate(droitBrigitteComm, null, null, finUpdates.get(0));
+		assertFinUpdate(droitHelene, null, null, finUpdates.get(1));
+		assertFinUpdate(droitCommunaute, null, null, finUpdates.get(2));
+		assertFinUpdate(droitHeleneComm, null, null, finUpdates.get(3));
 		final List<Listener.DebutUpdate> debutUpdates = listener.getDebutUpdates();
 		assertEquals(1, debutUpdates.size());
 		assertDebutUpdate(nouveauDroitHelene, null, null, debutUpdates.get(0));
@@ -849,15 +905,18 @@ public class AffaireRFTest {
 
 
 		final ImmeubleRF immeuble = new BienFondsRF();
+		immeuble.addDroitPropriete(droitCharles1);
+		immeuble.addDroitPropriete(droitCharles2);
+		immeuble.addDroitPropriete(droitChristian);
+		immeuble.addDroitPropriete(droitCommunaute);
+		immeuble.addDroitPropriete(droitWilfred1);
+		immeuble.addDroitPropriete(droitWilfred2);
 
 		//
 		// Calcul des dates métier de l'import initial
 		//
 
-		final AffaireRF importInitial = new AffaireRF(dateImportInitial, immeuble,
-		                                              Arrays.asList(droitCharles1, droitWilfred1, droitCommunaute),
-		                                              Collections.emptyList(),
-		                                              Collections.emptyList());
+		final AffaireRF importInitial = new AffaireRF(dateImportInitial, immeuble);
 		final Listener listenerImportInitial = new Listener();
 		importInitial.refreshDatesMetier(listenerImportInitial);
 
@@ -880,19 +939,17 @@ public class AffaireRFTest {
 		assertEmpty(listenerImportInitial.getFinUpdates());
 		final List<Listener.DebutUpdate> debutUpdatesII = listenerImportInitial.getDebutUpdates();
 		assertEquals(3, debutUpdatesII.size());
+		debutUpdatesII.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
 		assertDebutUpdate(droitCharles1, null, null, debutUpdatesII.get(0));
-		assertDebutUpdate(droitWilfred1, null, null, debutUpdatesII.get(1));
-		assertDebutUpdate(droitCommunaute, null, null, debutUpdatesII.get(2));
+		assertDebutUpdate(droitCommunaute, null, null, debutUpdatesII.get(1));
+		assertDebutUpdate(droitWilfred1, null, null, debutUpdatesII.get(2));
 		assertEmpty(listenerImportInitial.getClosed());
 
 		//
 		// Calcul des dates métier du changement de régime
 		//
 
-		final AffaireRF changementRegime = new AffaireRF(dateImportChangementRegime, immeuble,
-		                                                 Arrays.asList(droitCharles2, droitWilfred2),
-		                                                 Collections.emptyList(),
-		                                                 Arrays.asList(droitCharles1, droitWilfred1, droitCommunaute));
+		final AffaireRF changementRegime = new AffaireRF(dateImportChangementRegime, immeuble);
 		final Listener listenerChangementRegime = new Listener();
 		changementRegime.refreshDatesMetier(listenerChangementRegime);
 
@@ -925,11 +982,13 @@ public class AffaireRFTest {
 		assertEmpty(listenerImportInitial.getCreated());
 		final List<Listener.FinUpdate> finUpdatesCR = listenerChangementRegime.getFinUpdates();
 		assertEquals(3, finUpdatesCR.size());
+		finUpdatesCR.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
 		assertFinUpdate(droitCharles1, null, null, finUpdatesCR.get(0));
-		assertFinUpdate(droitWilfred1, null, null, finUpdatesCR.get(1));
-		assertFinUpdate(droitCommunaute, null, null, finUpdatesCR.get(2));
+		assertFinUpdate(droitCommunaute, null, null, finUpdatesCR.get(1));
+		assertFinUpdate(droitWilfred1, null, null, finUpdatesCR.get(2));
 		final List<Listener.DebutUpdate> debutUpdatesCR = listenerChangementRegime.getDebutUpdates();
 		assertEquals(2, debutUpdatesCR.size());
+		debutUpdatesCR.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
 		assertDebutUpdate(droitCharles2, null, null, debutUpdatesCR.get(0));
 		assertDebutUpdate(droitWilfred2, null, null, debutUpdatesCR.get(1));
 		assertEmpty(listenerImportInitial.getClosed());
@@ -938,10 +997,7 @@ public class AffaireRFTest {
 		// Calcul des dates métier de la donation à Christian
 		//
 
-		final AffaireRF donationChristian = new AffaireRF(dateImportDonation2, immeuble,
-		                                                  Collections.singletonList(droitChristian),
-		                                                  Collections.emptyList(),
-		                                                  Collections.singletonList(droitCharles2));
+		final AffaireRF donationChristian = new AffaireRF(dateImportDonation2, immeuble);
 		final Listener listenerDonationChristian = new Listener();
 		donationChristian.refreshDatesMetier(listenerDonationChristian);
 
@@ -982,6 +1038,158 @@ public class AffaireRFTest {
 		assertEmpty(listenerImportInitial.getClosed());
 	}
 
+
+	/**
+	 * [SIFISC-28213] Ce test vérifie que la date de début métier d'un droit est calculée correctement dans le cas où :
+	 * <ul>
+	 *     <li>une communauté de deux membres est remplacée par une autre communauté de deux membres</li>
+	 *     <li>un membre de la première communauté et remplacé par un autre membre dans la nouvelle communauté</li>
+	 *     <li>un membre apparaît donc dans les deux communautés</li>
+	 *     <li>le droit de ce membre dans la première communauté et recopié tel-quel dans la seconde communauté (= même raisons d'acquisition dans les deux cas)</li>
+	 * </ul>
+	 * <p>
+	 * <b>Cas métier:</b> CH509045438381 (achat au 22.11.2016)
+	 */
+	@Test
+	public void testRefreshDatesMetierNouvelleCommunauteAvecRepriseUnMembreSansNouvelleRaisonAcquisition() throws Exception {
+
+		final Listener listener = new Listener();
+
+		final RegDate dateSuccession = RegDate.get(2013, 9, 13);
+		final RegDate dateAchat = RegDate.get(2016, 11, 22);
+		final RegDate dateImportInitial = RegDate.get(2016, 12, 31);
+		final RegDate dateImportAchat = RegDate.get(2017, 1, 28);
+
+		// communauté Dub Addor Andres - Sprüngli Odette
+		final CommunauteRF communaute1 = new CommunauteRF();
+		communaute1.setId(1L);
+		final PersonnePhysiqueRF andres = new PersonnePhysiqueRF();
+		andres.setId(1L);
+		final PersonnePhysiqueRF odette = new PersonnePhysiqueRF();
+		odette.setId(2L);
+
+		// droit initial de Dub Addor Andres
+		final DroitProprietePersonnePhysiqueRF precedent1 = new DroitProprietePersonnePhysiqueRF();
+		precedent1.setMasterIdRF("28288228");
+		precedent1.setVersionIdRF("1");
+		precedent1.setPart(new Fraction(1, 1));
+		precedent1.setDateDebut(dateImportInitial);
+		precedent1.setDateFin(dateImportAchat.getOneDayBefore());
+		precedent1.setAyantDroit(andres);
+		precedent1.setCommunaute(communaute1);
+		precedent1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
+
+		// droit initial de Sprüngli Odette
+		final DroitProprietePersonnePhysiqueRF precedent2 = new DroitProprietePersonnePhysiqueRF();
+		precedent2.setMasterIdRF("382818811");
+		precedent2.setVersionIdRF("1");
+		precedent2.setPart(new Fraction(1, 1));
+		precedent2.setDateDebut(dateImportInitial);
+		precedent2.setDateFin(dateImportAchat.getOneDayBefore());
+		precedent2.setAyantDroit(odette);
+		precedent2.setCommunaute(communaute1);
+		precedent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
+
+		// le droit de la première communauté elle-même
+		final DroitProprieteCommunauteRF precedent3 = new DroitProprieteCommunauteRF();
+		precedent3.setMasterIdRF("27827827");
+		precedent3.setVersionIdRF("1");
+		precedent3.setPart(new Fraction(1, 1));
+		precedent3.setDateDebut(dateImportInitial);
+		precedent3.setDateFin(dateImportAchat.getOneDayBefore());
+		precedent3.setAyantDroit(communaute1);
+
+		// communauté Sprüngli Carlos - Sprüngli Odette
+		final CommunauteRF communaute2 = new CommunauteRF();
+		communaute2.setId(2L);
+		final PersonnePhysiqueRF carlos = new PersonnePhysiqueRF();
+		carlos.setId(3L);
+
+		// droit de Sprüngli Carlos (nouveau)
+		final DroitProprietePersonnePhysiqueRF nouveau1 = new DroitProprietePersonnePhysiqueRF();
+		nouveau1.setMasterIdRF("372828");
+		nouveau1.setVersionIdRF("1");
+		nouveau1.setPart(new Fraction(1, 1));
+		nouveau1.setDateDebut(dateImportAchat);
+		nouveau1.setAyantDroit(carlos);
+		nouveau1.setCommunaute(communaute2);
+		nouveau1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportAchat, dateAchat, "Achat", null));
+
+		// droit de Sprüngli Odette (copie de l'ancien)
+		final DroitProprietePersonnePhysiqueRF nouveau2 = new DroitProprietePersonnePhysiqueRF();
+		nouveau2.setMasterIdRF("382818811");
+		nouveau2.setVersionIdRF("1");
+		nouveau2.setPart(new Fraction(1, 1));
+		nouveau2.setDateDebut(dateImportAchat);
+		nouveau2.setAyantDroit(odette);
+		nouveau2.setCommunaute(communaute1);
+		nouveau2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
+
+		// le droit de la seconde communauté elle-même
+		final DroitProprieteCommunauteRF nouveau3 = new DroitProprieteCommunauteRF();
+		nouveau3.setMasterIdRF("8010102");
+		nouveau3.setVersionIdRF("1");
+		nouveau3.setPart(new Fraction(1, 1));
+		nouveau3.setDateDebut(dateImportAchat);
+		nouveau3.setDateFin(null);
+		nouveau3.setAyantDroit(communaute2);
+
+		// on recalcule les dates métiers des droits
+		final ImmeubleRF immeuble = new BienFondsRF();
+		immeuble.addDroitPropriete(precedent1);
+		immeuble.addDroitPropriete(precedent2);
+		immeuble.addDroitPropriete(precedent3);
+		immeuble.addDroitPropriete(nouveau1);
+		immeuble.addDroitPropriete(nouveau2);
+		immeuble.addDroitPropriete(nouveau3);
+
+		final AffaireRF affaire = new AffaireRF(dateImportAchat, immeuble);
+		affaire.refreshDatesMetier(listener);
+
+		// droits de la première communauté
+		assertNull(precedent1.getDateDebutMetier());
+		assertNull(precedent2.getDateDebutMetier());
+		assertNull(precedent3.getDateDebutMetier());
+		assertNull(precedent1.getMotifDebut());
+		assertNull(precedent2.getMotifDebut());
+		assertNull(precedent3.getMotifDebut());
+		assertEquals(dateAchat, precedent1.getDateFinMetier()); // <-- les date de fin métier sont renseignées
+		assertEquals(dateAchat, precedent2.getDateFinMetier());
+		assertEquals(dateAchat, precedent3.getDateFinMetier());
+		assertEquals("Vente", precedent1.getMotifFin());
+		assertEquals("Vente", precedent2.getMotifFin());
+		assertEquals("Vente", precedent3.getMotifFin());
+
+		// droits de la seconde communauté
+		assertEquals(dateAchat, nouveau1.getDateDebutMetier());
+		assertEquals(dateAchat, nouveau2.getDateDebutMetier()); // <-- malgré l'absence de nouvelle raison d'acquisition, la raison d'acquisition "Achat" est utilisée (recopiée du droit nouveau1)
+		assertEquals(dateAchat, nouveau3.getDateDebutMetier());
+		assertEquals("Achat", nouveau1.getMotifDebut());
+		assertEquals("Achat", nouveau2.getMotifDebut());
+		assertEquals("Achat", nouveau3.getMotifDebut());
+		assertNull(nouveau1.getDateFinMetier());
+		assertNull(nouveau2.getDateFinMetier());
+		assertNull(nouveau3.getDateFinMetier());
+		assertNull(nouveau1.getMotifFin());
+		assertNull(nouveau2.getMotifFin());
+		assertNull(nouveau3.getMotifFin());
+
+		// les 6 droits sont mis-à-jour
+		assertEquals(0, listener.getCreated().size());
+		final List<Listener.FinUpdate> finUpdates = listener.getFinUpdates();
+		assertEquals(3, finUpdates.size());
+		finUpdates.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
+		assertFinUpdate(precedent3, null, null, finUpdates.get(0));
+		assertFinUpdate(precedent1, null, null, finUpdates.get(1));
+		assertFinUpdate(precedent2, null, null, finUpdates.get(2));
+		final List<Listener.DebutUpdate> debutUpdates = listener.getDebutUpdates();
+		assertEquals(3, debutUpdates.size());
+		debutUpdates.sort(Comparator.comparing(r -> r.getDroit().getMasterIdRF()));
+		assertDebutUpdate(nouveau1, null, null, debutUpdates.get(0));
+		assertDebutUpdate(nouveau2, null, null, debutUpdates.get(1));
+		assertDebutUpdate(nouveau3, null, null, debutUpdates.get(2));
+		assertEquals(0, listener.getClosed().size());
+	}
 
 	private static class Listener implements AffaireRFListener {
 
