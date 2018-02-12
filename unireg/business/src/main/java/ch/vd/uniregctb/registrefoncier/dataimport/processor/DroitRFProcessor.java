@@ -197,8 +197,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		}
 
 		// on sauve les nouveaux droits
-		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, droits, Collections.emptyList(), Collections.emptyList());
-		affaire.apply(droitRFDAO, evenementFiscalSender);
+		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble);
+		affaire.apply(droitRFDAO, droits, Collections.emptyList(), Collections.emptyList(), evenementFiscalSender);
 
 		// on recalcule ce qu'il faut sur les communautés de l'immeuble
 		communauteRFProcessor.processAll(immeuble);
@@ -233,8 +233,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		final List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdateList = CollectionsUtils.extractCommonElements(toAddList, toCloseList, DroitRFHelper::masterIdAndVersionIdEquals);
 
 		// on applique les changements détectés
-		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, toAddList, toUpdateList, toCloseList);
-		affaire.apply(droitRFDAO, evenementFiscalSender);
+		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble);
+		affaire.apply(droitRFDAO, toAddList, toUpdateList, toCloseList, evenementFiscalSender);
 
 		// on recalcule ce qu'il faut sur les communautés de l'immeuble
 		communauteRFProcessor.processAll(immeuble);
@@ -249,8 +249,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 				.filter(d -> d.getDateFin() == null)
 				.collect(Collectors.toList());
 
-		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, Collections.emptyList(), Collections.emptyList(), toCloseList);
-		affaire.apply(droitRFDAO, evenementFiscalSender);
+		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble);
+		affaire.apply(droitRFDAO, Collections.emptyList(), Collections.emptyList(), toCloseList, evenementFiscalSender);
 
 		// on recalcule ce qu'il faut sur les communautés de l'immeuble
 		communauteRFProcessor.processAll(immeuble);

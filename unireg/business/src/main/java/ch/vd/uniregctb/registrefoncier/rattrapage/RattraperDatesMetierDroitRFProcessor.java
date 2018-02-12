@@ -3,7 +3,6 @@ package ch.vd.uniregctb.registrefoncier.rattrapage;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -148,9 +147,8 @@ public class RattraperDatesMetierDroitRFProcessor {
 
 		// on analyse les droits et construit la liste des affaires pour chaque date d'import
 		final List<AffaireRF> affaires = datesImport.stream()
-				.map(d -> new AffaireRF(d, immeuble, droits))
+				.map(d -> new AffaireRF(d, immeuble))
 				.collect(Collectors.toList());
-		affaires.sort(Comparator.comparing(AffaireRF::getDateValeur));
 
 		// on recalcule et rattrape si nécessaire les dates de début sur les droits ouverts
 		final MutableBoolean somethingChanged = new MutableBoolean(false);
