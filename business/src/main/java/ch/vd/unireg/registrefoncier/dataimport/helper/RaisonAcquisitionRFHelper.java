@@ -2,14 +2,17 @@ package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Rechtsgrund;
+import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
 
 import static ch.vd.unireg.registrefoncier.dataimport.helper.DroitRFHelper.getAffaire;
@@ -57,24 +60,27 @@ public abstract class RaisonAcquisitionRFHelper {
 		return true;
 	}
 
-	public static boolean dataEquals(Collection<RaisonAcquisitionRF> left, Collection<RaisonAcquisitionRF> right) {
+	/**
+	 * @param left une collection de raisons d'acquisition
+	 * @param right une autre collection de raisons d'acquisition
+	 * @return vrai si les deux collections sont égales (les raisons d'acquisition annulées sont ignorées)
+	 */
+	public static boolean dataEquals(@Nullable Collection<RaisonAcquisitionRF> left, @Nullable Collection<RaisonAcquisitionRF> right) {
 
-		//noinspection Duplicates
-		if ((left == null || left.isEmpty()) && (right == null || right.isEmpty())) {
-			// les deux collections sont vides ou nulles
-			return true;
-		}
-		else if (left == null || right == null) {
-			// une seule collection est vide ou nulle
+		final List<RaisonAcquisitionRF> leftList = (left == null ? Collections.emptyList() : left.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.collect(Collectors.toList()));
+		final List<RaisonAcquisitionRF> rightList = (right == null ? Collections.emptyList() : right.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.collect(Collectors.toList()));
+
+		if (leftList.size() != rightList.size()) {
+			// les collections filtrées ne sont pas de tailles identiques
 			return false;
 		}
-		else if (left.size() != right.size()) {
-			// les collections ne sont pas de tailles identiques
-			return false;
-		}
 
-		List<RaisonAcquisitionRF> remaining = new ArrayList<>(left);
-		for (RaisonAcquisitionRF r : right) {
+		List<RaisonAcquisitionRF> remaining = new ArrayList<>(leftList);
+		for (RaisonAcquisitionRF r : rightList) {
 			boolean found = false;
 			for (int i = 0; i < remaining.size(); i++) {
 				RaisonAcquisitionRF raison = remaining.get(i);
