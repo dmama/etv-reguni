@@ -862,6 +862,76 @@ public class DroitRFDetectorTest {
 	}
 
 	/**
+	 * [SIFISC-28213 Ce test vérifie qu'aucune mutation n'est créée si les données des immeubles dans l'import sont identiques avec l'état courant des immeubles stockés dans la DB,
+	 * malgré la présence d'une raison d'acquisition annulée..
+	 */
+	@Test
+	public void testDroitsIdentiquesAvecRaisonAcquisitionAnnulee() throws Exception {
+
+
+		final RegDate dateImportInitial = RegDate.get(2010, 6, 1);
+
+		// les données déjà existantes dans le DB
+		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+		pp2.setIdRF("029191d4fec44");
+
+		final BienFondsRF immeuble2 = new BienFondsRF();
+		immeuble2.setIdRF("202930c0e0f3");
+
+		immeubleRFDAO.save(immeuble2);
+
+		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
+		droitPP3.setMasterIdRF("38458fa0ac3");
+		droitPP3.setVersionIdRF("1");
+		droitPP3.setAyantDroit(pp2);
+		droitPP3.setImmeuble(immeuble2);
+		droitPP3.setCommunaute(null);
+		droitPP3.setDateDebut(dateImportInitial);
+		droitPP3.setDateFin(null);
+		droitPP3.setDateDebutMetier(RegDate.get(2010, 3, 28));
+		droitPP3.setMotifDebut("Achat");
+		droitPP3.setMotifFin(null);
+		droitPP3.setPart(new Fraction(1, 1));
+		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
+		// on enregistre dans la base de données une raison d'acquisition annulée qui doit être ignorée par le détecteur
+		final RaisonAcquisitionRF raisonAnnulee = new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Génération spontanée", new IdentifiantAffaireRF(6, 2000, 1, 1));
+		raisonAnnulee.setAnnule(true);
+		droitPP3.addRaisonAcquisition(raisonAnnulee);
+		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
+		pp2.addDroitPropriete(droitPP3);
+		immeuble2.addDroitPropriete(droitPP3);
+
+		// un mock avec les deux ayants-droits.
+		ayantDroitRFDAO.save(pp2);
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+
+		// on envoie les trois mêmes droits sur les mêmes propriétaires et immeubles
+		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
+
+		final List<EigentumAnteil> droits = Collections.singletonList(droit3);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), null);
+
+		// on ne devrait pas avoir de mutation
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(0, mutations.size());
+	}
+
+	/**
 	 * Ce test vérifie que des mutations de suppression sont créées si des propriétaires avec des droits dans la DB n'en ont plus dans le fichier d'import.
 	 */
 	@Test
