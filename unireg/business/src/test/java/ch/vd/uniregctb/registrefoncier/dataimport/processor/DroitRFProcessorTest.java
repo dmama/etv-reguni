@@ -2068,7 +2068,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 	 * <b>Cas métier:</b> CH509045438381 (achat au 22.11.2016)
 	 */
 	@Test
-	public void testProcessMutationModificationAnnulationRaisonAcquisitionEtPlusDeNouvelleRaisonAcquisitionDeterminate() throws Exception {
+	public void testProcessMutationModificationAnnulationRaisonAcquisitionEtPlusDeNouvelleRaisonAcquisitionDeterminante() throws Exception {
 
 		final String idRFAndres = "_8af806fc40347c3701412bead24754e2";
 		final String idRFOdette = "_8af806fc40347c3701412c138f785658";
@@ -2078,6 +2078,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final String idImmeubleRF = "_1f109152381059670138105e159419b0";
 		final RegDate dateImportInitial = null;
 		final RegDate dateSecondImport = RegDate.get(2017, 1, 28);
+		final RegDate dateAnnulationRaisonImport = RegDate.get(2017, 4, 10);
 		final RegDate dateSuccession = RegDate.get(2013, 9, 13);
 		final RegDate dateAchat = RegDate.get(2016, 11, 22);
 
@@ -2217,9 +2218,10 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		});
 
 		// fichier de mutation où la raison d'acquisition "Achat" sur le droit d'Odette dans la deuxième communauté est annulé
+		// note : il s'agit bien d'un troisième import avec une date de valeur postérieure !
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_droit_arzier_le_muid_363_20171205.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.DROIT, TypeMutationRF.MODIFICATION, idImmeubleRF, null);
+		final Long mutationId = insertMutation(xml, dateAnnulationRaisonImport, TypeEntiteRF.DROIT, TypeMutationRF.MODIFICATION, idImmeubleRF, null);
 
 		// on process la mutation
 		doInNewTransaction(status -> {
