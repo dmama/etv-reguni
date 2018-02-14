@@ -64,8 +64,8 @@ public class AffaireRF {
 
 		if (dateValeur == null) {
 			// import initial : par définition il n'y a pas de mise-à-jour ni fermeture
-			this.misesajour = Collections.emptyList();
-			this.fermes = Collections.emptyList();
+			this.misesajour = new ArrayList<>();
+			this.fermes = new ArrayList<>();
 		}
 		else {
 			final RegDate veilleImport = dateValeur.getOneDayBefore();

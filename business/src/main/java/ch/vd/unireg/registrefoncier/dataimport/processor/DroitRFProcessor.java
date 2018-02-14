@@ -5,15 +5,19 @@ import javax.xml.bind.Unmarshaller;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
@@ -232,12 +236,90 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// (tous les autres droits doivent être fermés / ouverts normalement)
 		final List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdateList = CollectionsUtils.extractCommonElements(toAddList, toCloseList, DroitRFHelper::masterIdAndVersionIdEquals);
 
-		// on applique les changements détectés
-		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble);
-		affaire.apply(droitRFDAO, toAddList, toUpdateList, toCloseList, evenementFiscalSender);
+		// [SIFISC-28213] l'ouverture et la fermeture de droits se fait toujours avec la date valeur de l'import courant, mais
+		//                la modification des raisons d'acquisition doit se prendre en compte avec la date valeur de l'import qui
+		//                a créé le droit (autrement, la classe AffairRF ne retrouve pas ces petits) : on doit donc gérer
+		//                potentiellement plusieurs successives à des dates différentes
+		final Map<RegDate, AffaireData> affaires = new TreeMap<>(); // tree map pour traiter les affaires dans l'ordre chronologique croissant
+		if (!toAddList.isEmpty() || !toCloseList.isEmpty()) {
+			// les droits ouverts et fermés dans l'import courant
+			affaires.put(dateValeur, new AffaireData(dateValeur, toAddList, toCloseList));
+		}
+		if (!toUpdateList.isEmpty()) {
+			// les droits modifiés dans l'import courant et qui impactent des droits créés dans des imports précédents
+			toUpdateList.forEach(pair -> {
+				final RegDate dateImportDroit = pair.getSecond().getDateDebut();
+				final RegDate key = (dateImportDroit == null ? RegDateHelper.getEarlyDate() : dateImportDroit);
+				affaires.merge(key, new AffaireData(dateImportDroit, Collections.singletonList(pair)), AffaireData::merge);
+			});
+		}
+
+		// on applique les changements sur chacune des affaires détectées
+		affaires.values().forEach(data -> {
+			final AffaireRF affaire = new AffaireRF(data.getDateValeur(), immeuble);
+			affaire.apply(droitRFDAO, data.getToAdd(), data.getToUpdate(), data.getToClose(), evenementFiscalSender);
+		});
 
 		// on recalcule ce qu'il faut sur les communautés de l'immeuble
 		communauteRFProcessor.processAll(immeuble);
+	}
+
+	/**
+	 * Ouvertures, modifications et fermetures de droits pour une date valeur spécifique.
+	 */
+	private static class AffaireData {
+
+		final RegDate dateValeur;
+		final List<DroitProprieteRF> toAdd;
+		final List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdate;
+		final List<DroitProprieteRF> toClose;
+
+		public AffaireData(RegDate dateValeur, List<DroitProprieteRF> toAdd, List<DroitProprieteRF> toClose) {
+			this.dateValeur = dateValeur;
+			this.toAdd = toAdd;
+			this.toUpdate = Collections.emptyList();
+			this.toClose = toClose;
+		}
+
+		public AffaireData(RegDate dateValeur, List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdate) {
+			this.dateValeur = dateValeur;
+			this.toAdd = Collections.emptyList();
+			this.toUpdate = toUpdate;
+			this.toClose = Collections.emptyList();
+		}
+
+		public AffaireData(RegDate dateValeur, List<DroitProprieteRF> toAdd, List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdate, List<DroitProprieteRF> toClose) {
+			this.dateValeur = dateValeur;
+			this.toAdd = toAdd;
+			this.toUpdate = toUpdate;
+			this.toClose = toClose;
+		}
+
+		public static AffaireData merge(@NotNull DroitRFProcessor.AffaireData left, @NotNull DroitRFProcessor.AffaireData right) {
+			if (left.getDateValeur() != right.getDateValeur()) {
+				throw new IllegalArgumentException("Date valeur gauche = " + left.getDateValeur() + ", date valeur droite = " + right.getDateValeur());
+			}
+			return new AffaireData(left.getDateValeur(),
+			                       ListUtils.union(left.getToAdd(), right.getToAdd()),
+			                       ListUtils.union(left.getToUpdate(), right.getToUpdate()),
+			                       ListUtils.union(left.getToClose(), right.getToClose()));
+		}
+
+		public RegDate getDateValeur() {
+			return dateValeur;
+		}
+
+		public List<DroitProprieteRF> getToAdd() {
+			return toAdd;
+		}
+
+		public List<Pair<DroitProprieteRF, DroitProprieteRF>> getToUpdate() {
+			return toUpdate;
+		}
+
+		public List<DroitProprieteRF> getToClose() {
+			return toClose;
+		}
 	}
 
 	/**
