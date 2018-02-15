@@ -25,4 +25,11 @@
 		</constructor-arg>
 	</bean>
 
+	<!-- Job qui enregistre ses exécutions, attend un petit moment et ne fait rien d'autre. -->
+	<bean id="recordingJob" parent="schedulerJob" class="ch.vd.unireg.scheduler.RecordingJob">
+		<constructor-arg>
+			<value>44</value>
+		</constructor-arg>
+	</bean>
+
 </beans>

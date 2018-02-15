@@ -1,5 +1,8 @@
 package ch.vd.unireg.scheduler;
 
+import java.util.function.Consumer;
+
+import org.jetbrains.annotations.Nullable;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
@@ -8,10 +11,15 @@ import org.slf4j.LoggerFactory;
 
 public class UniregJobListener implements JobListener {
 
-	public static final UniregJobListener INSTANCE = new UniregJobListener();
-
-	private static final String NAME = "JobListener";
+	public static final String NAME = "UniregJobListener";
 	private static final Logger LOGGER = LoggerFactory.getLogger(UniregJobListener.class);
+
+	@Nullable
+	private final Consumer<JobDefinition> onJobExecutionEndListener;
+
+	public UniregJobListener(@Nullable Consumer<JobDefinition> onJobExecutionEndListener) {
+		this.onJobExecutionEndListener = onJobExecutionEndListener;
+	}
 
 	@Override
 	public String getName() {
@@ -22,7 +30,7 @@ public class UniregJobListener implements JobListener {
 	public void jobExecutionVetoed(JobExecutionContext context) {
 		final JobDefinition job = getJobDefinition(context);
 		if (!job.isLogDisabled()) {
-			LOGGER.info("Job <" + getName() + "> execution is VETOED");
+			LOGGER.info("Job <" + job.getName() + "> execution is VETOED");
 		}
 		job.interrupt();
 	}
@@ -31,7 +39,7 @@ public class UniregJobListener implements JobListener {
 	public void jobToBeExecuted(JobExecutionContext context) {
 		final JobDefinition job = getJobDefinition(context);
 		if (!job.isLogDisabled()) {
-			LOGGER.info("Job <" + getName() + "> is to be executed");
+			LOGGER.info("Job <" + job.getName() + "> is to be executed");
 		}
 		job.toBeExecuted();
 	}
@@ -41,7 +49,11 @@ public class UniregJobListener implements JobListener {
 		final JobDefinition job = getJobDefinition(context);
 		job.wasExecuted();
 		if (!job.isLogDisabled()) {
-			LOGGER.info("Job <" + getName() + "> is now stopped with status " + job.getStatut());
+			LOGGER.info("Job <" + job.getName() + "> is now stopped with status " + job.getStatut());
+		}
+
+		if (onJobExecutionEndListener != null) {
+			onJobExecutionEndListener.accept(job);
 		}
 	}
 

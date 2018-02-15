@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -78,7 +79,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		if (timeoutOnStopAll <= 0) {
 			throw new IllegalArgumentException("La valeur du timeout (minutes) doit être strictement positive");
 		}
-		scheduler.getListenerManager().addJobListener(UniregJobListener.INSTANCE);
+		scheduler.getListenerManager().addJobListener(new UniregJobListener(this::onJobExecutionEnd));
 	}
 
 	public void setStatsService(StatsService statsService) {
@@ -178,7 +179,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 			statsService.unregisterJobMonitor(jobName);
 		}
 		jobs.clear();
-		scheduler.getListenerManager().removeJobListener(UniregJobListener.INSTANCE.getName());
+		scheduler.getListenerManager().removeJobListener(UniregJobListener.NAME);
 	}
 
 	/**
@@ -198,6 +199,34 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		JobDefinition job = jobs.get(jobName);
 		Assert.notNull(job, "Le job <" + jobName + "> n'existe pas");
 		return startJob(job, params);
+	}
+
+	@Override
+	public JobDefinition queueJob(@NotNull String jobName, @Nullable Map<String, Object> params) throws SchedulerException {
+
+		final JobDefinition job = jobs.get(jobName);
+		if (job == null) {
+			throw new IllegalArgumentException("Le job <" + jobName + "> n'existe pas");
+		}
+
+		if (job.isRunning()) {
+			// le job tourne déjà : on ajoute les paramètres du job à la queue des jobs qui seront exécutés aussitôt que possible
+			LOGGER.info("Mise en attente du job <" + jobName + '>');
+			job.addQueuedExecution(AuthenticationHelper.getCurrentPrincipal(), params == null ? Collections.emptyMap() : params);
+		}
+		else {
+			// le job ne tourne pas : on le démarre immédiatement
+			try {
+				startJob(job, params);
+			}
+			catch (JobAlreadyStartedException e) {
+				// on s'est fait brûler la politesse par un autre job, on le met en attente
+				LOGGER.info("Mise en attente du job <" + jobName + '>');
+				job.addQueuedExecution(AuthenticationHelper.getCurrentPrincipal(), params == null ? Collections.emptyMap() : params);
+			}
+		}
+
+		return job;
 	}
 
 	private void scheduleJob(JobDefinition job, @Nullable Map<String, Object> params, Trigger trigger) throws SchedulerException {
@@ -234,8 +263,9 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 
 	private JobDefinition startJob(JobDefinition job, @Nullable Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 
-		Assert.notNull(scheduler, "Le scheduler est NULL");
-		Assert.isTrue(!scheduler.isShutdown(), "Le scheduler a été stoppé");
+		if (scheduler.isShutdown()) {
+			throw new IllegalArgumentException("Le scheduler a été stoppé");
+		}
 
 		if (job.isRunning()) {
 			LOGGER.error("The job <" + job.getName() + "> is already started!");
@@ -263,6 +293,36 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		}
 
 		return job;
+	}
+
+	/**
+	 * Cette méthode est appelée lorsque l'exécution d'un job vient de se terminer.
+	 *
+	 * @param job la définition du job qui vient de s'arrêter
+	 */
+	private void onJobExecutionEnd(@NotNull JobDefinition job) {
+
+		// on démarre l'exécution planifiée suivante du job s'il y a en une
+		final QueuedExecutionInfo nextExecution = job.getNextQueuedExecution();
+		if (nextExecution != null) {
+			AuthenticationHelper.pushPrincipal(nextExecution.getUser());
+			try {
+				try {
+					startJob(job.getName(), nextExecution.getParams());
+				}
+				catch (JobAlreadyStartedException e) {
+					// on s'est fait brûler la politesse par un autre job... retour à la case départ
+					LOGGER.warn("The job <" + job.getName() + "> is already started. Will queue it again...");
+					queueJob(job.getName(), nextExecution.getParams());
+				}
+			}
+			catch (SchedulerException e) {
+				LOGGER.error(e.getMessage(), e);
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
+		}
 	}
 
 	private void sleep(long millisecondes) {

@@ -16,6 +16,7 @@ import static ch.vd.unireg.scheduler.JobDefinition.JobStatut;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -267,5 +268,40 @@ public class BatchSchedulerTest extends JobTest {
 		// Le job doit être dans l'état interrompu
 		assertNotRunning(job);
 		assertEquals(JobStatut.JOB_INTERRUPTED, job.getStatut());
+	}
+
+	/**
+	 * Ce test vérifie que la méthode 'queueJob' permet bien de planifier plusieurs démarrages successifs d'un même job.
+	 */
+	@Test
+	public void testQueueJob() throws Exception {
+
+		final Map<String, Object> params1 = new HashMap<>();
+		params1.put("Execution", 1L);
+		params1.put(RecordingJob.DELAY, 1000);
+
+		final Map<String, Object> params2 = new HashMap<>();
+		params2.put("Execution", 2L);
+
+		final Map<String, Object> params3 = new HashMap<>();
+		params3.put("Execution", 3L);
+
+		// on démarre les trois jobs en (presque) même temps
+		batchScheduler.queueJob(RecordingJob.NAME, params1);
+		batchScheduler.queueJob(RecordingJob.NAME, params2);
+		batchScheduler.queueJob(RecordingJob.NAME, params3);
+
+		// seul le premier job doit démarrer et les deux autres doivent être mis en attente
+		assertEquals(1, RecordingJob.executions.size());
+		assertSame(params1, RecordingJob.executions.get(0));
+
+		// on attend assez longtemps pour que tous les jobs aient le temps de s'exécuter
+		Thread.sleep(1500);
+
+		// les trois jobs doivent être exécutés
+		assertEquals(3, RecordingJob.executions.size());
+		assertSame(params1, RecordingJob.executions.get(0));
+		assertSame(params2, RecordingJob.executions.get(1));
+		assertSame(params3, RecordingJob.executions.get(2));
 	}
 }

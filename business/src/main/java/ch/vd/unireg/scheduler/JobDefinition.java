@@ -16,7 +16,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -80,6 +82,11 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	private boolean logDisabled = false;
 
 	protected BatchScheduler batchScheduler;
+
+	/**
+	 * La queue des exécutions du job en attente d'être exécutées.
+	 */
+	private final Queue<QueuedExecutionInfo> queuedExecutions = new LinkedBlockingQueue<>();
 
 	private Map<String, Object> currentParameters = null;
 
@@ -187,6 +194,22 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 				Audit.info(String.format("Arrêt du job %s", name));
 			}
 		}
+	}
+
+	/**
+	 * Ajoute les paramètres d'une exécution à effectuer dès que possible
+	 * @param params les paramères en question
+	 */
+	public void addQueuedExecution(@NotNull String user, @NotNull Map<String, Object> params) {
+		queuedExecutions.add(new QueuedExecutionInfo(user, params));
+	}
+
+	/**
+	 * @return les prochains paramètres à exécuter ; ou <b>null</b> si aucune exécution n'a été mise-en-attente.
+	 */
+	@Nullable
+	public QueuedExecutionInfo getNextQueuedExecution() {
+		return queuedExecutions.poll();
 	}
 
 	/**

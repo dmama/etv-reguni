@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
@@ -58,6 +59,11 @@ public class MockBatchScheduler implements BatchScheduler {
 	public JobDefinition startJob(String jobName, @Nullable Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 		startedJobs.add(new JobData(jobName, params));
 		return null;
+	}
+
+	@Override
+	public JobDefinition queueJob(@NotNull String jobName, @Nullable Map<String, Object> params) throws SchedulerException {
+		throw new NotImplementedException();
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
@@ -57,6 +58,16 @@ public interface BatchScheduler {
 	 * @throws JobAlreadyStartedException si le job est déjà démarré
 	 */
 	JobDefinition startJob(String jobName, @Nullable Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException;
+
+	/**
+	 * Enregistre le job spécifié pour exécution dès que possible (= immédiatement si le job ne tourne pas déjà ou dès la fin de l'exécution du job en cours).
+	 *
+	 * @param jobName le nom du job à démarrer
+	 * @param params  les paramètres du job
+	 * @return la définition du job
+	 * @throws SchedulerException         en cas d'erreur de scheduling Quartz
+	 */
+	JobDefinition queueJob(@NotNull String jobName, @Nullable Map<String, Object> params) throws SchedulerException;
 
 	/**
 	 * @return la map des jobs enregistrés
