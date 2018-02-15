@@ -83,6 +83,7 @@
 		<constructor-arg value="Traiter les mutations des immeubles du registre foncier"/>
 		<property name="processor" ref="mutationsRFProcessor"/>
 		<property name="rapportService" ref="rapportService"/>
+		<property name="serviceImportRF" ref="serviceImportRF"/>
 	</bean>
 
 	<bean id="rapprocherTiersRFJob" parent="schedulerJob" class="ch.vd.unireg.registrefoncier.RapprocherTiersRFJob">

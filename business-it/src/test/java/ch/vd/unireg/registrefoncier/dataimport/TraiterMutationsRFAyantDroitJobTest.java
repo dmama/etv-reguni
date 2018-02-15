@@ -127,6 +127,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.FALSE);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IMPORT_SERVITUDES_JOB, Boolean.FALSE);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
 		assertNotNull(job);
@@ -219,6 +220,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.FALSE);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IMPORT_SERVITUDES_JOB, Boolean.FALSE);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
 		assertNotNull(job);
@@ -343,6 +345,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.FALSE);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IMPORT_SERVITUDES_JOB, Boolean.FALSE);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
 		assertNotNull(job);

@@ -70,4 +70,15 @@ public interface RegistreFoncierImportService {
 	 */
 	@Nullable
 	HibernateEntity findEntityForMutation(@NotNull TypeEntiteRF type, @NotNull String idRF, @Nullable String versionIdRF);
+
+	/**
+	 * Détermine s'il y a un import de servitudes à traiter qui correspond à l'import spécifié.
+	 * <p/>
+	 * Note: cette méthode peut être appelée en dehors d'un context transactionnel.
+	 *
+	 * @param importId un id d'un import principal ou de servitudes
+	 * @return l'id de l'import des servitudes à traiter qui correspond à l'import principal spécifié; <i>null</i> autrement.
+	 */
+	@Nullable
+	Long findMatchingImportServitudesToProcess(long importId);
 }

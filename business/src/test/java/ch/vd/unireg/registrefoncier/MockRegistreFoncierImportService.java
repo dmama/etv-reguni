@@ -56,6 +56,11 @@ public class MockRegistreFoncierImportService implements RegistreFoncierImportSe
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public Long findMatchingImportServitudesToProcess(long importId) {
+		throw new NotImplementedException();
+	}
+
 	public List<Long> getStartedImports() {
 		return startedImports;
 	}

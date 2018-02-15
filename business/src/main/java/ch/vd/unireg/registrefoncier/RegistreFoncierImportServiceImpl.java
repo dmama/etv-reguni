@@ -25,6 +25,7 @@ import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
 import ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.unireg.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.unireg.registrefoncier.dao.CommuneRFDAO;
@@ -153,6 +154,7 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 8);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, true);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IMPORT_SERVITUDES_JOB, true);
 		batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
 	}
 
@@ -193,6 +195,31 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 		default:
 			throw new IllegalArgumentException("Type d'entité RF inconnu = [" + type + "]");
 		}
+	}
+
+	@Override
+	@Nullable
+	public Long findMatchingImportServitudesToProcess(long importId) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(status -> {
+			final EvenementRFImport imp = evenementRFImportDAO.get(importId);
+			if (imp == null) {
+				throw new IllegalArgumentException("L'import avec l'id = [" + importId + "] n'existe pas.");
+			}
+			if (imp.getType() != TypeImportRF.PRINCIPAL) {
+				// l'import spécifié n'est pas un import principal, rien à faire
+				return null;
+			}
+			final EvenementRFImport impServitudes = evenementRFImportDAO.find(TypeImportRF.SERVITUDES, imp.getDateEvenement());
+			if (impServitudes != null && (impServitudes.getEtat() == EtatEvenementRF.A_TRAITER || impServitudes.getEtat() == EtatEvenementRF.EN_ERREUR)) {
+				// il y a bien un import des servitudes à traiter à la même date
+				return impServitudes.getId();
+			}
+			else {
+				return null;
+			}
+		});
 	}
 
 	@Override

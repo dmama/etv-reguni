@@ -11,6 +11,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.MutationsRFProcessorRapport;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.registrefoncier.RapprocherTiersRFJob;
+import ch.vd.unireg.registrefoncier.RegistreFoncierImportService;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
@@ -29,9 +30,11 @@ public class TraiterMutationsRFJob extends JobDefinition {
 	public static final String ID = "eventId";
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String CONTINUE_WITH_IDENTIFICATION_JOB = "CONTINUE_WITH_IDENTIFICATION_JOB";
+	public static final String CONTINUE_WITH_IMPORT_SERVITUDES_JOB = "CONTINUE_WITH_IMPORT_SERVITUDES_JOB";
 
 	private MutationsRFProcessor processor;
 	private RapportService rapportService;
+	private RegistreFoncierImportService serviceImportRF;
 
 	public void setProcessor(MutationsRFProcessor processor) {
 		this.processor = processor;
@@ -39,6 +42,10 @@ public class TraiterMutationsRFJob extends JobDefinition {
 
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
+	}
+
+	public void setServiceImportRF(RegistreFoncierImportService serviceImportRF) {
+		this.serviceImportRF = serviceImportRF;
 	}
 
 	public TraiterMutationsRFJob(int sortOrder, String description) {
@@ -64,6 +71,13 @@ public class TraiterMutationsRFJob extends JobDefinition {
 		param3.setMandatory(true);
 		param3.setType(new JobParamBoolean());
 		addParameterDefinition(param3, true);
+
+		final JobParam param4 = new JobParam();
+		param4.setDescription("Continuer avec le job d'import des servitudes");
+		param4.setName(CONTINUE_WITH_IMPORT_SERVITUDES_JOB);
+		param4.setMandatory(true);
+		param4.setType(new JobParamBoolean());
+		addParameterDefinition(param4, true);
 	}
 
 	@Override
@@ -72,6 +86,7 @@ public class TraiterMutationsRFJob extends JobDefinition {
 		final long importId = getLongValue(params, ID);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final boolean startRapprochementJob = getBooleanValue(params, CONTINUE_WITH_IDENTIFICATION_JOB);
+		final boolean startImportServitudeJob = getBooleanValue(params, CONTINUE_WITH_IMPORT_SERVITUDES_JOB);
 
 		final StatusManager statusManager = getStatusManager();
 
@@ -87,6 +102,14 @@ public class TraiterMutationsRFJob extends JobDefinition {
 			final Map<String, Object> rapprochementParams = new HashMap<>();
 			rapprochementParams.put(RapprocherTiersRFJob.NB_THREADS, nbThreads);
 			batchScheduler.startJob(RapprocherTiersRFJob.NAME, rapprochementParams);
+		}
+
+		// si demandé et si possible, on démarre le job d'import des servitudes
+		if (startImportServitudeJob && !statusManager.isInterrupted()) {
+			final Long importServitudesId = serviceImportRF.findMatchingImportServitudesToProcess(importId);
+			if (importServitudesId != null) {
+				serviceImportRF.startImport(importServitudesId);
+			}
 		}
 
 		statusManager.setMessage("Traitement terminé.");

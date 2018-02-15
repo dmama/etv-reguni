@@ -298,6 +298,7 @@ public class ImportRFDroitsEntreImmeublesJobTest extends ImportRFTestClass {
 		params2.put(TraiterMutationsRFJob.ID, importId);
 		params2.put(TraiterMutationsRFJob.NB_THREADS, 2);
 		params2.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.FALSE);
+		params2.put(TraiterMutationsRFJob.CONTINUE_WITH_IMPORT_SERVITUDES_JOB, Boolean.FALSE);
 
 		final JobDefinition job2 = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params2);
 		assertNotNull(job2);

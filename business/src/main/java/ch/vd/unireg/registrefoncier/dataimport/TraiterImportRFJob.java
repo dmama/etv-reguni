@@ -80,6 +80,7 @@ public class TraiterImportRFJob extends JobDefinition {
 			mutParams.put(TraiterMutationsRFJob.ID, importId);
 			mutParams.put(TraiterMutationsRFJob.NB_THREADS, nbThreads);
 			mutParams.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.TRUE);
+			mutParams.put(TraiterMutationsRFJob.CONTINUE_WITH_IMPORT_SERVITUDES_JOB, Boolean.TRUE);
 			batchScheduler.startJob(TraiterMutationsRFJob.NAME, mutParams);
 		}
 	}
