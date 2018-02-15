@@ -72,14 +72,18 @@ public class RapportsPage {
 		}
 
 		static String getNomAutoriteTutelaire(Long autoriteTutelaireId, TiersService tiersService) {
-			String nom = null;
+			String nom = "";
 			if (autoriteTutelaireId != null) {
 				final Tiers autoriteTutelaire = tiersService.getTiers(autoriteTutelaireId);
 				if (autoriteTutelaire instanceof CollectiviteAdministrative) {
 					nom = tiersService.getNomCollectiviteAdministrative(((CollectiviteAdministrative) autoriteTutelaire).getNumeroCollectiviteAdministrative());
 				}
 			}
-			return nom;
+			if(nom == null) {
+				return "";
+			} else {
+				return nom;
+			}
 		}
 
 		private static Tiers getTiers(Long numeroTiers, TiersService tiersService) {
