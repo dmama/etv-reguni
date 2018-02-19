@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
@@ -132,6 +133,7 @@ import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertySearchResult;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -149,12 +151,14 @@ import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovablePropertyInfo;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v5.BuildingBuilder;
 import ch.vd.unireg.xml.party.v5.CommunityOfHeirsBuilder;
 import ch.vd.unireg.xml.party.v5.CommunityOfOwnersBuilder;
 import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.unireg.xml.party.v5.ImmovablePropertyBuilder;
+import ch.vd.unireg.xml.party.v5.ImmovablePropertyInfoBuilder;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyBuilder;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
@@ -1105,6 +1109,17 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 						                                                                 context.registreFoncierService::getContribuableIdFor,
 						                                                                 new EasementRightHolderComparator(context.tiersService)))
 						.orElse(null));
+	}
+
+	@NotNull
+	@Override
+	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		return doInTransaction(true, status -> {
+			final List<ImmovablePropertyInfo> entries = context.registreFoncierService.findImmeublesParSituation(municipalityFsoId, parcelNumber, index1, index2, index3).stream()
+					.map(ImmovablePropertyInfoBuilder::newInfo)
+					.collect(Collectors.toList());
+			return new ImmovablePropertySearchResult(entries, 0, null);
+		});
 	}
 
 	@NotNull

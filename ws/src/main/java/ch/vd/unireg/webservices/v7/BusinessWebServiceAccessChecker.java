@@ -23,6 +23,7 @@ import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertySearchResult;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
@@ -163,6 +164,13 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
 		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_IMMEUBLES, Role.VISU_ALL);
 		return target.getImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
+	}
+
+	@NotNull
+	@Override
+	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_IMMEUBLES, Role.VISU_ALL);
+		return target.findImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
 	}
 
 	@NotNull

@@ -5,6 +5,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.time.Duration;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -52,6 +54,7 @@ import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertySearchResult;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -600,6 +603,51 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
+	}
+
+	@Override
+	public Response findImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, String user, UriInfo uriInfo) {
+
+		final Integer index1 = parseOptionalIndex(uriInfo, "index1");
+		final Integer index2 = parseOptionalIndex(uriInfo, "index2");
+		final Integer index3 = parseOptionalIndex(uriInfo, "index3");
+
+		final Supplier<String> params = () -> String.format("findImmovablePropertyByLocation{municipalityFsoId=%d, parcelNumber=%d, index1=%d, index2=%d, index3=%d, user=%s}",
+		                                                    municipalityFsoId, parcelNumber, index1, index2, index3, WebServiceHelper.enquote(user));
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			try {
+				final ImmovablePropertySearchResult searchResult = target.findImmovablePropertyByLocation(userLogin, municipalityFsoId, parcelNumber, index1, index2, index3);
+				final int nbItems = Optional.ofNullable(searchResult.getEntries())
+						.map(List::size)
+						.orElse(0);
+
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovablePropertySearchResult(searchResult), preferred).build(), nbItems);
+				}
+
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+			catch (RuntimeException e) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+			}
+		});
+	}
+
+	@Nullable
+	private static Integer parseOptionalIndex(@NotNull UriInfo uriInfo, String name) {
+		final List<String> indexes = uriInfo.getQueryParameters().get(name);
+		if (indexes == null || indexes.isEmpty()) {
+			return null;
+		}
+		if (indexes.size() > 1) {
+			throw new IllegalArgumentException("Multiple parameter [" + name + "] found.");
+		}
+		final String indexAsString = indexes.get(0);
+		if (StringUtils.isBlank(indexAsString)) {
+			return null;
+		}
+		return Integer.valueOf(indexAsString);
 	}
 
 	@Override

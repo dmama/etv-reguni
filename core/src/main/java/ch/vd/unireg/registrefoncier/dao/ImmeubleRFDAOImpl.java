@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.TypeDroit;
 import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
 
@@ -65,6 +66,45 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 
 		//noinspection unchecked
 		return (ImmeubleRF) query.uniqueResult();
+	}
+
+	@NotNull
+	@Override
+	public List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
+
+		final Query query;
+		final String common = "from SituationRF s where s.annulationDate is null and s.commune.annulationDate is null and s.commune.noOfs = :noOfsCommune and s.noParcelle = :noParcelle";
+
+		if (index1 == null) {
+			// aucun index renseigné
+			query = getCurrentSession().createQuery(common);
+		}
+		else if (index2 == null) {
+			// index1 renseigné
+			final String queryString = common + " and s.index1 = :index1";
+			query = getCurrentSession().createQuery(queryString);
+			query.setParameter("index1", index1);
+		}
+		else if (index3 == null) {
+			// index1 et index2 renseignés
+			final String queryString = common + " and s.index1 = :index1 and s.index2 = :index2";
+			query = getCurrentSession().createQuery(queryString);
+			query.setParameter("index1", index1);
+			query.setParameter("index2", index2);
+		}
+		else {
+			// index1, index2 et index3 renseignés
+			final String queryString = common + " and s.index1 = :index1 and s.index2 = :index2 and s.index3 = :index3";
+			query = getCurrentSession().createQuery(queryString);
+			query.setParameter("index1", index1);
+			query.setParameter("index2", index2);
+			query.setParameter("index3", index3);
+		}
+		query.setParameter("noOfsCommune", noOfsCommune);
+		query.setParameter("noParcelle", noParcelle);
+
+		//noinspection unchecked
+		return query.list();
 	}
 
 	@NotNull

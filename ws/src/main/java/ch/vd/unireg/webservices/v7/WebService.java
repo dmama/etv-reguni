@@ -9,8 +9,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.Set;
 
@@ -147,6 +149,26 @@ public interface WebService {
 	                                        @QueryParam("index2") Integer index2,
 	                                        @QueryParam("index3") Integer index3,
 	                                        @QueryParam("user") String user);
+
+	/**
+	 * Recherche un ou plusieurs immeubles en fonction de plusieurs critères. Cette méthode diffère de la méthode {@link #getImmovablePropertyByLocation(int, int, Integer, Integer, Integer, String)}
+	 * dans le sens où elle accepte des critères partiels et peut retourne plusieurs immeubles correspondants.
+	 *
+	 * @param municipalityFsoId le numéro OFS de la commune de l'immeuble (obligatoire)
+	 * @param parcelNumber      le numéro de parcelle de l'immeuble (obligatoire)
+	 * @param index1            l'index n°1 (optionnel)
+	 * @param index2            l'index n°2 (optionnel)
+	 * @param index3            l'index n°3 (optionnel)
+	 * @param user              l'utilisateur physique ayant fait la demande.
+	 * @return une liste d'immeubles correspondant à la demande
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/findImmovablePropertyByLocation")
+	Response findImmovablePropertyByLocation(@QueryParam("municipalityFsoId") int municipalityFsoId,
+	                                         @QueryParam("parcelNumber") int parcelNumber,
+	                                         @QueryParam("user") String user,
+	                                         @Context UriInfo uriInfo);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)

@@ -53,11 +53,23 @@ public interface RegistreFoncierService {
 	 * @param index1       l'index n°1 (optionnel, si pas renseigné retourne l'immeuble avec un index1 nul)
 	 * @param index2       l'index n°2 (optionnel, si pas renseigné retourne l'immeuble avec un index2 nul)
 	 * @param index3       l'index n°3 (optionnel, si pas renseigné retourne l'immeuble avec un index3 nul)
-	 * @param user         l'utilisateur physique ayant fait la demande.
 	 * @return l'immeuble correspondant ou null si aucun immeuble ne correspond.
 	 */
 	@Nullable
 	ImmeubleRF getImmeuble(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3);
+
+	/**
+	 * Recherche les immeubles qui correspondent aux critères fournis.
+	 *
+	 * @param noOfsCommune le numéro OFS de la commune de l'immeuble (optionnel)
+	 * @param noParcelle      le numéro de parcelle de l'immeuble (optionnel)
+	 * @param index1            l'index n°1 (optionnel)
+	 * @param index2            l'index n°2 (optionnel)
+	 * @param index3            l'index n°3 (optionnel)
+	 * @return la liste des situations trouvées (et les immeubles associés).
+	 */
+	@NotNull
+	List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, Integer index1, Integer index2, Integer index3);
 
 	/**
 	 * @param batimentId l'id technique d'un bâtiment

@@ -21,6 +21,7 @@ import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertySearchResult;
 import ch.vd.unireg.xml.common.v2.Date;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
@@ -37,6 +38,8 @@ import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
 import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovablePropertyInfo;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovablePropertyType;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.Location;
@@ -427,6 +430,7 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 	/**
 	 * [SIFISC-27897] Ce test vérifie que la méthode <i>immovablePropertyByLocation</i> fonctionne bien dans le cas passant.
 	 */
+	@Test
 	public void testGetImmovablePropertyByLocation() throws Exception {
 
 		final int noImmo = 264310664;
@@ -505,6 +509,44 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEquals(2, reasons.size());
 		assertAcquisitionReason(RegDate.get(1981, 3, 6), "Succession", 12, null, reasons.get(0));
 		assertAcquisitionReason(RegDate.get(2014, 9, 13), "Voyage spatio-temporel", 24, "2014/12/1", reasons.get(1));
+	}
+
+	/**
+	 * [SIFISC-27897] Ce test vérifie que la méthode <i>findImmovablePropertyByLocation</i> fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testFindImmovablePropertyByLocation() throws Exception {
+
+		final int noImmo = 264310664;
+		final int municipalityFsoId = 5706;
+		final int parcelNumber = 59;
+
+		final Map<String, Integer> params = new HashMap<>();
+		params.put("municipalityFsoId", municipalityFsoId);
+		params.put("parcelNumber", parcelNumber);
+		params.put("index1", null);
+		params.put("index2", null);
+		params.put("index3", null);
+
+		final ResponseEntity<ImmovablePropertySearchResult> resp = get(ImmovablePropertySearchResult.class, MediaType.APPLICATION_XML, "/landRegistry/findImmovablePropertyByLocation?" +
+				"municipalityFsoId={municipalityFsoId}&parcelNumber={parcelNumber}&index1={index1}&index2={index2}&index3={index3}&user=zaizzt/22", params);
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final ImmovablePropertySearchResult result = resp.getBody();
+		assertNotNull(result);
+
+		final List<ImmovablePropertyInfo> entries = result.getEntries();
+		assertNotNull(entries);
+		assertEquals(1, entries.size());
+
+		final ImmovablePropertyInfo info0 = entries.get(0);
+		assertNotNull(info0);
+		assertEquals(noImmo, info0.getId());
+		assertEquals(ImmovablePropertyType.REAL_ESTATE, info0.getImmovablePropertyType());
+		assertEquals("CH785283458046", info0.getEgrid());
+		assertLocation(info0.getLocation(), RegDate.get(2016, 9, 13), null, parcelNumber, null, null, null, municipalityFsoId);
+		assertNull(info0.getCancellationDate());
 	}
 
 	@Test

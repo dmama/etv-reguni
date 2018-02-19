@@ -9,18 +9,6 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
-import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
-import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
-import ch.vd.unireg.xml.party.landregistry.v1.DistinctAndPermanentRight;
-import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
-import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
-import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.Location;
-import ch.vd.unireg.xml.party.landregistry.v1.Mine;
-import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
-import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
-import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CapitastraURLProvider;
@@ -38,6 +26,18 @@ import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
 import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
+import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
+import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
+import ch.vd.unireg.xml.party.landregistry.v1.DistinctAndPermanentRight;
+import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.Location;
+import ch.vd.unireg.xml.party.landregistry.v1.Mine;
+import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
+import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
+import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 
 public abstract class ImmovablePropertyBuilder {
 
@@ -188,7 +188,7 @@ public abstract class ImmovablePropertyBuilder {
 	}
 
 	@NotNull
-	private static Location newLocation(@NotNull SituationRF situation) {
+	public static Location newLocation(@NotNull SituationRF situation) {
 		final Location loc = new Location();
 		loc.setDateFrom(DataHelper.coreToXMLv2(situation.getDateDebut()));
 		loc.setDateTo(DataHelper.coreToXMLv2(situation.getDateFin()));

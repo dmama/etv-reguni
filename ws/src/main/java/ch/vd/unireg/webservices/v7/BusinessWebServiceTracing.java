@@ -24,6 +24,7 @@ import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertySearchResult;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -363,6 +364,23 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 		finally {
 			tracing.end(time, t, "getImmovablePropertyByLocation", null);
+		}
+	}
+
+	@NotNull
+	@Override
+	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.findImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "findImmovablePropertyByLocation", null);
 		}
 	}
 

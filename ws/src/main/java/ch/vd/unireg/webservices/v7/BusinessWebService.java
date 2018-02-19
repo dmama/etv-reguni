@@ -20,6 +20,7 @@ import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertySearchResult;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
@@ -220,6 +221,20 @@ public interface BusinessWebService {
 	 */
 	@Nullable
 	ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException;
+
+	/**
+	 * Recherche un ou plusieurs immeubles en fonction de plusieurs critères.
+	 *
+	 * @param user              l'utilisateur physique ayant fait la demande.
+	 * @param municipalityFsoId le numéro OFS de la commune de l'immeuble (obligatoire)
+	 * @param parcelNumber      le numéro de parcelle de l'immeuble (obligatoire)
+	 * @param index1            l'index n°1 (optionnel)
+	 * @param index2            l'index n°2 (optionnel)
+	 * @param index3            l'index n°3 (optionnel)
+	 * @return une liste d'immeubles correspondant à la demande
+	 */
+	@NotNull
+	ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException;
 
 	/**
 	 * @param user    désignation de l'opérateur pour le compte duquel les informations sont glânées

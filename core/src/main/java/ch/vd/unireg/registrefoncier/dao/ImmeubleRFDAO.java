@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.TypeDroit;
 import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
 
@@ -28,11 +29,23 @@ public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 	 * @param index1       l'index n°1 (optionnel, si pas renseigné retourne l'immeuble avec un index1 nul)
 	 * @param index2       l'index n°2 (optionnel, si pas renseigné retourne l'immeuble avec un index2 nul)
 	 * @param index3       l'index n°3 (optionnel, si pas renseigné retourne l'immeuble avec un index3 nul)
-	 * @param user         l'utilisateur physique ayant fait la demande.
 	 * @return l'immeuble correspondant ou null si aucun immeuble ne correspond.
 	 */
 	@Nullable
 	ImmeubleRF getBySituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3);
+
+	/**
+	 * Recherche des immeubles par leurs situations
+	 *
+	 * @param noOfsCommune le numéro Ofs de la commune de l'immeuble
+	 * @param noParcelle   le numéro de parcelle de l'immeuble
+	 * @param index1       l'index n°1 (optionnel)
+	 * @param index2       l'index n°2 (optionnel)
+	 * @param index3       l'index n°3 (optionnel)
+	 * @return la liste des situations trouvées (et les immeubles associés).
+	 */
+	@NotNull
+	List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3);
 
 	/**
 	 * @return les ids RF des immeubles qui possèdent des surfaces au sol actives.

@@ -437,6 +437,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		return immeubleRFDAO.getBySituation(noOfsCommune, noParcelle, index1, index2, index3);
 	}
 
+	@NotNull
+	@Override
+	public List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, Integer index1, Integer index2, Integer index3) {
+		return immeubleRFDAO.findImmeublesParSituation(noOfsCommune, noParcelle, index1, index2, index3);
+	}
+
 	@Nullable
 	@Override
 	public BatimentRF getBatiment(long batimentId) {
