@@ -36,6 +36,37 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 		return (ImmeubleRF) query.uniqueResult();
 	}
 
+	@Override
+	public @Nullable ImmeubleRF getBySituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
+
+		final Query query;
+		final String common = "select s.immeuble from SituationRF s where s.annulationDate is null and s.commune.annulationDate is null and s.commune.noOfs = :noOfsCommune and s.noParcelle = :noParcelle";
+
+		if (index1 == null) {
+			query = getCurrentSession().createQuery(common + " and s.index1 is null and s.index2 is null and s.index3 is null");
+		}
+		else if (index2 == null) {
+			query = getCurrentSession().createQuery(common + " and s.index1 = :index1 and s.index2 is null and s.index3 is null");
+			query.setParameter("index1", index1);
+		}
+		else if (index3 == null) {
+			query = getCurrentSession().createQuery(common + " and s.index1 = :index1 and s.index2 = :index2 and s.index3 is null");
+			query.setParameter("index1", index1);
+			query.setParameter("index2", index2);
+		}
+		else {
+			query = getCurrentSession().createQuery(common + " and s.index1 = :index1 and s.index2 = :index2 and s.index3 = :index3");
+			query.setParameter("index1", index1);
+			query.setParameter("index2", index2);
+			query.setParameter("index3", index3);
+		}
+		query.setParameter("noOfsCommune", noOfsCommune);
+		query.setParameter("noParcelle", noParcelle);
+
+		//noinspection unchecked
+		return (ImmeubleRF) query.uniqueResult();
+	}
+
 	@NotNull
 	@Override
 	public Set<String> findWithActiveSurfacesAuSol() {

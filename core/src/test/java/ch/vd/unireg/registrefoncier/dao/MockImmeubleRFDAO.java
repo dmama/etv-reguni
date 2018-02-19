@@ -42,6 +42,11 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public @Nullable ImmeubleRF getBySituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
+		throw new NotImplementedException();
+	}
+
 	@NotNull
 	@Override
 	public Set<String> findWithActiveSurfacesAuSol() {

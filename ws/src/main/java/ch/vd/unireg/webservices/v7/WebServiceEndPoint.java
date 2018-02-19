@@ -32,6 +32,15 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.common.WebServiceHelper;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
@@ -49,6 +58,7 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.search.party.v7.SearchResult;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
@@ -63,16 +73,6 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.unireg.avatar.ImageData;
-import ch.vd.unireg.common.ObjectNotFoundException;
-import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.load.DetailedLoadMeter;
-import ch.vd.unireg.stats.DetailedLoadMonitorable;
-import ch.vd.unireg.stats.LoadDetail;
-import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
-import ch.vd.unireg.webservices.common.WebServiceHelper;
-import ch.vd.unireg.xml.ServiceException;
 
 @SuppressWarnings("Duplicates")
 public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
@@ -574,6 +574,23 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Supplier<String> params = () -> String.format("getImmovableProperty{immoId=%d, user=%s}", immoId, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			final ImmovableProperty immovable = target.getImmovableProperty(userLogin, immoId);
+			if (immovable == null) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "L'immeuble n'existe pas."));
+			}
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovableProperty(immovable), preferred).build(), 1);
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		});
+	}
+
+	@Override
+	public Response getImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, Integer index1, Integer index2, Integer index3, String user) {
+		final Supplier<String> params = () -> String.format("getImmovablePropertyByLocation{municipalityFsoId=%d, parcelNumber=%d, index1=%d, index2=%d, index3=%d, user=%s}",
+		                                                    municipalityFsoId, parcelNumber, index1, index2, index3, WebServiceHelper.enquote(user));
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			final ImmovableProperty immovable = target.getImmovablePropertyByLocation(userLogin, municipalityFsoId, parcelNumber, index1, index2, index3);
 			if (immovable == null) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "L'immeuble n'existe pas."));
 			}

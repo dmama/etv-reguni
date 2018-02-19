@@ -21,6 +21,20 @@ public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 	ImmeubleRF findByEgrid(@NotNull String egrid);
 
 	/**
+	 * Retourne un immeuble à partir de sa situation précise.
+	 *
+	 * @param noOfsCommune le numéro OFS de la commune de l'immeuble (obligatoire)
+	 * @param noParcelle   le numéro de parcelle de l'immeuble (obligatoire)
+	 * @param index1       l'index n°1 (optionnel, si pas renseigné retourne l'immeuble avec un index1 nul)
+	 * @param index2       l'index n°2 (optionnel, si pas renseigné retourne l'immeuble avec un index2 nul)
+	 * @param index3       l'index n°3 (optionnel, si pas renseigné retourne l'immeuble avec un index3 nul)
+	 * @param user         l'utilisateur physique ayant fait la demande.
+	 * @return l'immeuble correspondant ou null si aucun immeuble ne correspond.
+	 */
+	@Nullable
+	ImmeubleRF getBySituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3);
+
+	/**
 	 * @return les ids RF des immeubles qui possèdent des surfaces au sol actives.
 	 */
 	@NotNull

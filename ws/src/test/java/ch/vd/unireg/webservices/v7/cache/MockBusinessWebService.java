@@ -8,6 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
+import ch.vd.unireg.webservices.v7.BusinessWebService;
+import ch.vd.unireg.webservices.v7.PartySearchType;
+import ch.vd.unireg.webservices.v7.SearchMode;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
@@ -20,6 +27,7 @@ import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -30,14 +38,6 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.unireg.avatar.ImageData;
-import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
-import ch.vd.unireg.webservices.v7.BusinessWebService;
-import ch.vd.unireg.webservices.v7.PartySearchType;
-import ch.vd.unireg.webservices.v7.SearchMode;
-import ch.vd.unireg.xml.ServiceException;
 
 public class MockBusinessWebService implements BusinessWebService {
 
@@ -132,6 +132,12 @@ public class MockBusinessWebService implements BusinessWebService {
 	@Nullable
 	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
 		return target.getImmovableProperty(user, immoId);
+	}
+
+	@Nullable
+	@Override
+	public ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		return target.getImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
 	}
 
 	@Override

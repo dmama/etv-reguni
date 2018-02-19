@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.DataHelper;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
@@ -52,7 +53,6 @@ import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.common.DataHelper;
 
 import static ch.vd.unireg.webservice.v7.WebServiceGetPartyItTest.buildUriAndParams;
 import static org.junit.Assert.assertEquals;
@@ -376,6 +376,89 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		final List<Location> locations = realEstate.getLocations();
 		assertEquals(1, locations.size());
 		assertLocation(locations.get(0), RegDate.get(2016, 9, 13), null, 59, null, null, null, 5706);
+
+		final List<TotalArea> totalAreas = realEstate.getTotalAreas();
+		assertEquals(1, totalAreas.size());
+		assertTotalArea(RegDate.get(2016, 9, 13), null, 1200, totalAreas.get(0));
+
+		final List<GroundArea> groundAreas = realEstate.getGroundAreas();
+		assertEquals(1, groundAreas.size());
+		assertGroundArea(RegDate.get(2016, 9, 13), null, 1050, "Place-jardin", groundAreas.get(0));
+
+		final List<TaxEstimate> taxEstimates = realEstate.getTaxEstimates();
+		assertEquals(1, taxEstimates.size());
+		assertTaxEstimation(RegDate.get(1994, 1, 1), null, 570_000L, "RG94", false, taxEstimates.get(0));
+
+		final List<BuildingSetting> settings = realEstate.getBuildingSettings();
+		assertEquals(1, settings.size());
+
+		final BuildingSetting setting = settings.get(0);
+		assertSetting(RegDate.get(2016, 9, 13), null, 150, noImmo, 266023444, setting);
+
+		final List<LandRight> landRights = realEstate.getLandRights();
+		assertEquals(8, landRights.size());
+		assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 21550, 264822986L, noImmo, (LandOwnershipRight) landRights.get(0));
+		final LandOwnershipRight landRight1 = (LandOwnershipRight) landRights.get(1);
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), RegDate.get(2017, 10, 17), "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, "Raymonde", "Grandjean", null, 264822986L, landRight1);
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, null, null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 264822986L, (LandOwnershipRight) landRights.get(2));
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 10035633, 264822986L, noImmo, (LandOwnershipRight) landRights.get(3));
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, null, "Berard Renée", null, 264822986L, (LandOwnershipRight) landRights.get(4));
+
+		assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, landRights.get(5));
+		final List<RightHolder> usufructHolders = ((UsufructRight) landRights.get(5)).getRightHolders();
+		assertEquals(2, usufructHolders.size());
+		assertRightHolderNaturalPerson("Charles", "de Noblebois", null, usufructHolders.get(0));
+		assertRightHolderNaturalPerson("Roland", "Proutch", null, usufructHolders.get(1));
+
+		assertLandOwnershipRightImmovableProp(RegDate.get(1996, 4, 16), null, "Constitution de PPE", null, OwnershipType.CONDOMINIUM_OWNERSHIP, 10, 1000, 357426402, noImmo, (LandOwnershipRight) landRights.get(6));
+
+		assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, landRights.get(7));
+		final List<RightHolder> housingRightHolders = ((HousingRight) landRights.get(7)).getRightHolders();
+		assertEquals(1, housingRightHolders.size());
+		assertRightHolderNaturalPerson("Charles", "de Noblebois", null, housingRightHolders.get(0));
+
+		// [SIFISC-23894] ce droit possède plusieurs raisons d'acquisition
+		final List<AcquisitionReason> reasons = landRight1.getAcquisitionReasons();
+		assertEquals(2, reasons.size());
+		assertAcquisitionReason(RegDate.get(1981, 3, 6), "Succession", 12, null, reasons.get(0));
+		assertAcquisitionReason(RegDate.get(2014, 9, 13), "Voyage spatio-temporel", 24, "2014/12/1", reasons.get(1));
+	}
+
+	/**
+	 * [SIFISC-27897] Ce test vérifie que la méthode <i>immovablePropertyByLocation</i> fonctionne bien dans le cas passant.
+	 */
+	public void testGetImmovablePropertyByLocation() throws Exception {
+
+		final int noImmo = 264310664;
+		final int municipalityFsoId = 5706;
+		final int parcelNumber = 59;
+
+		final Map<String, Integer> params = new HashMap<>();
+		params.put("municipalityFsoId", municipalityFsoId);
+		params.put("parcelNumber", parcelNumber);
+		params.put("index1", null);
+		params.put("index2", null);
+		params.put("index3", null);
+
+		final ResponseEntity<ImmovableProperty> resp = get(ImmovableProperty.class, MediaType.APPLICATION_XML, "/landRegistry/immovablePropertyByLocation/" +
+				"{municipalityFsoId}/{parcelNumber}?index1={index1}&index2={index2}&index3={index3}&user=zaizzt/22", params);
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final ImmovableProperty immo = resp.getBody();
+		assertNotNull(immo);
+		assertEquals(RealEstate.class, immo.getClass());
+
+		final RealEstate realEstate = (RealEstate) immo;
+		assertEquals(noImmo, realEstate.getId());
+		assertEquals("CH785283458046", realEstate.getEgrid());
+		assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=227&kr=0&n1=59&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug&sec=WUcNIuAaAn07zT5ky-Pi-g1sLdOQx2ccPgnp0PmINA0SComhxznkhXe6oY5P5pW2-q5y5NRgFZ7s4crPzqU-Yg%3D%3D",
+		             realEstate.getUrlIntercapi());
+		assertFalse(realEstate.isCfa());
+
+		final List<Location> locations = realEstate.getLocations();
+		assertEquals(1, locations.size());
+		assertLocation(locations.get(0), RegDate.get(2016, 9, 13), null, parcelNumber, null, null, null, municipalityFsoId);
 
 		final List<TotalArea> totalAreas = realEstate.getTotalAreas();
 		assertEquals(1, totalAreas.size());

@@ -8,6 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
@@ -20,6 +24,7 @@ import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -30,11 +35,6 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.unireg.avatar.ImageData;
-import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
-import ch.vd.unireg.xml.ServiceException;
 
 /**
  * Partie purement métier du traitement des appels web-service v7
@@ -208,6 +208,18 @@ public interface BusinessWebService {
 	 */
 	@Nullable
 	ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException;
+
+	/**
+	 * @param user              désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param municipalityFsoId le numéro OFS de la commune de l'immeuble (obligatoire)
+	 * @param parcelNumber      le numéro de parcelle de l'immeuble (obligatoire)
+	 * @param index1            l'index n°1 (optionnel, si pas renseigné retourne l'immeuble avec un index1 nul)
+	 * @param index2            l'index n°2 (optionnel, si pas renseigné retourne l'immeuble avec un index2 nul)
+	 * @param index3            l'index n°3 (optionnel, si pas renseigné retourne l'immeuble avec un index3 nul)
+	 * @return l'immeuble correspondant ou null si aucun immeuble ne correspond.
+	 */
+	@Nullable
+	ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException;
 
 	/**
 	 * @param user    désignation de l'opérateur pour le compte duquel les informations sont glânées

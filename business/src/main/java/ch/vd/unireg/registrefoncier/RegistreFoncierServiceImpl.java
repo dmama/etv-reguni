@@ -28,15 +28,15 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.unireg.common.NomPrenomDates;
-import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.unireg.registrefoncier.dao.BatimentRFDAO;
@@ -430,6 +430,11 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	public ImmeubleRF getImmeuble(long immeubleId) {
 		return immeubleRFDAO.get(immeubleId);
+	}
+
+	@Override
+	public @Nullable ImmeubleRF getImmeuble(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
+		return immeubleRFDAO.getBySituation(noOfsCommune, noParcelle, index1, index2, index3);
 	}
 
 	@Nullable

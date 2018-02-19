@@ -14,11 +14,11 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.unireg.webservices.common.WebServiceHelper;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
-import ch.vd.unireg.webservices.common.WebServiceHelper;
 
 public interface WebService {
 
@@ -126,6 +126,27 @@ public interface WebService {
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/landRegistry/immovableProperty/{immoId}")
 	Response getImmovableProperty(@PathParam("immoId") long immoId, @QueryParam("user") String user);
+
+	/**
+	 * Retourne un immeuble à partir de sa situation précise.
+	 *
+	 * @param municipalityFsoId le numéro OFS de la commune de l'immeuble (obligatoire)
+	 * @param parcelNumber      le numéro de parcelle de l'immeuble (obligatoire)
+	 * @param index1            l'index n°1 (optionnel, si pas renseigné retourne l'immeuble avec un index1 nul)
+	 * @param index2            l'index n°2 (optionnel, si pas renseigné retourne l'immeuble avec un index2 nul)
+	 * @param index3            l'index n°3 (optionnel, si pas renseigné retourne l'immeuble avec un index3 nul)
+	 * @param user              l'utilisateur physique ayant fait la demande.
+	 * @return l'immeuble correspondant ou null si aucun immeuble ne correspond.
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/immovablePropertyByLocation/{municipalityFsoId}/{parcelNumber}")
+	Response getImmovablePropertyByLocation(@PathParam("municipalityFsoId") int municipalityFsoId,
+	                                        @PathParam("parcelNumber") int parcelNumber,
+	                                        @QueryParam("index1") Integer index1,
+	                                        @QueryParam("index2") Integer index2,
+	                                        @QueryParam("index3") Integer index3,
+	                                        @QueryParam("user") String user);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)

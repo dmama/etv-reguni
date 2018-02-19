@@ -21,34 +21,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
-import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
-import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
-import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
-import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
-import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
-import ch.vd.unireg.ws.landregistry.v7.BuildingList;
-import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
-import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
-import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
-import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
-import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
-import ch.vd.unireg.ws.parties.v7.Entry;
-import ch.vd.unireg.ws.parties.v7.Parties;
-import ch.vd.unireg.ws.security.v7.SecurityListResponse;
-import ch.vd.unireg.ws.security.v7.SecurityResponse;
-import ch.vd.unireg.xml.error.v1.Error;
-import ch.vd.unireg.xml.error.v1.ErrorType;
-import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
-import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
-import ch.vd.unireg.xml.party.landregistry.v1.Building;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
-import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
-import ch.vd.unireg.xml.party.v5.Party;
-import ch.vd.unireg.xml.party.v5.PartyInfo;
-import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.unireg.avatar.ImageData;
 import ch.vd.unireg.cache.CacheHelper;
 import ch.vd.unireg.cache.CacheStats;
@@ -66,7 +38,35 @@ import ch.vd.unireg.webservices.common.WebServiceHelper;
 import ch.vd.unireg.webservices.v7.BusinessWebService;
 import ch.vd.unireg.webservices.v7.PartySearchType;
 import ch.vd.unireg.webservices.v7.SearchMode;
+import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
+import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
+import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
+import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
+import ch.vd.unireg.ws.parties.v7.Entry;
+import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
+import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.error.v1.Error;
+import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
+import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.v5.Party;
+import ch.vd.unireg.xml.party.v5.PartyInfo;
+import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 @SuppressWarnings("Duplicates")
 public class BusinessWebServiceCache implements BusinessWebService, UniregCacheInterface, KeyDumpableCache, InitializingBean, DisposableBean {
@@ -414,6 +414,21 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		return immovable;
 	}
 
+	@Override
+	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		final ImmovableProperty immovable;
+		final GetImmovablePropertyByLocationKey key = new GetImmovablePropertyByLocationKey(municipalityFsoId, parcelNumber, index1, index2, index3);
+		final Element element = cache.get(key);
+		if (element == null) {
+			immovable = target.getImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
+			cache.put(new Element(key, immovable));
+		}
+		else {
+			immovable = (ImmovableProperty) element.getObjectValue();
+		}
+		return immovable;
+	}
+
 	@NotNull
 	@Override
 	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
@@ -599,6 +614,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	 */
 	public void evictImmovableProperty(long immoId) {
 		evictFromCache(GetImmovablePropertyKey.class, k -> k.getImmoId() == immoId);
+		evictFromCache(GetImmovablePropertyByLocationKey.class, k -> true); // on efface tous les immeubles identifiés par leurs situations parce qu'on a pas de critère utilisable
 	}
 
 	/**

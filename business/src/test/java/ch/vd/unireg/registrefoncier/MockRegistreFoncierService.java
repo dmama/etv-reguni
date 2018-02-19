@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.NomPrenomDates;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.tiers.Contribuable;
 
 public class MockRegistreFoncierService implements RegistreFoncierService {
@@ -26,6 +26,11 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 
 	@Override
 	public @Nullable ImmeubleRF getImmeuble(long immeubleId) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public @Nullable ImmeubleRF getImmeuble(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 		throw new NotImplementedException();
 	}
 

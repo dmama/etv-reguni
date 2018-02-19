@@ -49,41 +49,6 @@ import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.ws.ack.v7.AckStatus;
-import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
-import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
-import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResult;
-import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
-import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
-import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
-import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
-import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
-import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
-import ch.vd.unireg.ws.landregistry.v7.BuildingList;
-import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
-import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
-import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
-import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
-import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
-import ch.vd.unireg.ws.parties.v7.Entry;
-import ch.vd.unireg.ws.parties.v7.Parties;
-import ch.vd.unireg.ws.security.v7.PartyAccess;
-import ch.vd.unireg.ws.security.v7.SecurityListResponse;
-import ch.vd.unireg.ws.security.v7.SecurityResponse;
-import ch.vd.unireg.xml.error.v1.ErrorType;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
-import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
-import ch.vd.unireg.xml.party.landregistry.v1.Building;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
-import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationKey;
-import ch.vd.unireg.xml.party.v5.Party;
-import ch.vd.unireg.xml.party.v5.PartyInfo;
-import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.avatar.ImageData;
@@ -152,15 +117,50 @@ import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.EvenementFiscalDescriptionHelper;
 import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.common.WebServiceHelper;
+import ch.vd.unireg.ws.ack.v7.AckStatus;
+import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
+import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
+import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResult;
+import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
+import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
+import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
+import ch.vd.unireg.ws.parties.v7.Entry;
+import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.ws.security.v7.PartyAccess;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
+import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.infra.v1.TaxOfficesBuilder;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
+import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v5.BuildingBuilder;
 import ch.vd.unireg.xml.party.v5.CommunityOfHeirsBuilder;
 import ch.vd.unireg.xml.party.v5.CommunityOfOwnersBuilder;
 import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.unireg.xml.party.v5.ImmovablePropertyBuilder;
+import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyBuilder;
+import ch.vd.unireg.xml.party.v5.PartyInfo;
+import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 @SuppressWarnings("Duplicates")
 public class BusinessWebServiceImpl implements BusinessWebService {
@@ -1089,6 +1089,17 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getImmeuble(immoId))
+						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
+						                                                                 context.registreFoncierService::getCapitastraURL,
+						                                                                 context.registreFoncierService::getContribuableIdFor,
+						                                                                 new EasementRightHolderComparator(context.tiersService)))
+						.orElse(null));
+	}
+
+	@Override
+	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		return doInTransaction(true, status ->
+				Optional.ofNullable(context.registreFoncierService.getImmeuble(municipalityFsoId, parcelNumber, index1, index2, index3))
 						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
 						                                                                 context.registreFoncierService::getCapitastraURL,
 						                                                                 context.registreFoncierService::getContribuableIdFor,

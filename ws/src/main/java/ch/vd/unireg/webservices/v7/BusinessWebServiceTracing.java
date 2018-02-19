@@ -10,6 +10,12 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.avatar.ImageData;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.stats.ServiceTracing;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.webservices.common.AccessDeniedException;
+import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
@@ -23,6 +29,7 @@ import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -33,13 +40,6 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.unireg.avatar.ImageData;
-import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.stats.ServiceTracing;
-import ch.vd.unireg.stats.StatsService;
-import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
-import ch.vd.unireg.xml.ServiceException;
 
 public class BusinessWebServiceTracing implements BusinessWebService, InitializingBean, DisposableBean {
 
@@ -347,6 +347,22 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 		finally {
 			tracing.end(time, t, "getImmovableProperty", null);
+		}
+	}
+
+	@Override
+	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getImmovablePropertyByLocation", null);
 		}
 	}
 

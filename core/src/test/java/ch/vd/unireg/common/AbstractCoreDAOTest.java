@@ -86,6 +86,7 @@ import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.DroitHabitationRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteImmeubleRF;
@@ -103,6 +104,7 @@ import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.unireg.registrefoncier.RapprochementRF;
 import ch.vd.unireg.registrefoncier.RegroupementCommunauteRF;
+import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.TiersRF;
 import ch.vd.unireg.registrefoncier.TypeCommunaute;
 import ch.vd.unireg.registrefoncier.UsufruitRF;
@@ -1607,10 +1609,30 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return saved;
 	}
 
+	protected CommuneRF addCommuneRF(String nom, int noRF, int noOfs) {
+		final CommuneRF commune = new CommuneRF();
+		commune.setNomRf(nom);
+		commune.setNoRf(noRF);
+		commune.setNoOfs(noOfs);
+		return merge(commune);
+	}
+
 	protected BienFondsRF addImmeubleRF(String idRF) {
 		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF(idRF);
 		return merge(immeuble);
+	}
+
+	protected BienFondsRF addImmeubleRF(String idRF, CommuneRF commune, int noParcelle, Integer index1, Integer index2, Integer index3) {
+		final BienFondsRF imm = addImmeubleRF(idRF);
+		final SituationRF situation = new SituationRF();
+		situation.setCommune(commune);
+		situation.setNoParcelle(noParcelle);
+		situation.setIndex1(index1);
+		situation.setIndex2(index2);
+		situation.setIndex3(index3);
+		imm.addSituation(situation);
+		return imm;
 	}
 
 	protected ModeleCommunauteRF addModeleCommunauteRF(AyantDroitRF... membres) {
