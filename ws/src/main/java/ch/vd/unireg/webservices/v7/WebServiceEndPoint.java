@@ -589,7 +589,12 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, Integer index1, Integer index2, Integer index3, String user) {
+	public Response getImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, String user, UriInfo uriInfo) {
+
+		final Integer index1 = parseOptionalIndex(uriInfo, "index1");
+		final Integer index2 = parseOptionalIndex(uriInfo, "index2");
+		final Integer index3 = parseOptionalIndex(uriInfo, "index3");
+
 		final Supplier<String> params = () -> String.format("getImmovablePropertyByLocation{municipalityFsoId=%d, parcelNumber=%d, index1=%d, index2=%d, index3=%d, user=%s}",
 		                                                    municipalityFsoId, parcelNumber, index1, index2, index3, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {

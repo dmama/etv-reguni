@@ -140,18 +140,17 @@ public interface WebService {
 	 * @param user              l'utilisateur physique ayant fait la demande.
 	 * @return l'immeuble correspondant ou null si aucun immeuble ne correspond.
 	 */
+	@SuppressWarnings("JavadocReference")
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/landRegistry/immovablePropertyByLocation/{municipalityFsoId}/{parcelNumber}")
 	Response getImmovablePropertyByLocation(@PathParam("municipalityFsoId") int municipalityFsoId,
 	                                        @PathParam("parcelNumber") int parcelNumber,
-	                                        @QueryParam("index1") Integer index1,
-	                                        @QueryParam("index2") Integer index2,
-	                                        @QueryParam("index3") Integer index3,
-	                                        @QueryParam("user") String user);
+	                                        @QueryParam("user") String user,
+	                                        @Context UriInfo uriInfo);
 
 	/**
-	 * Recherche un ou plusieurs immeubles en fonction de plusieurs critères. Cette méthode diffère de la méthode {@link #getImmovablePropertyByLocation(int, int, Integer, Integer, Integer, String)}
+	 * Recherche un ou plusieurs immeubles en fonction de plusieurs critères. Cette méthode diffère de la méthode {@link #getImmovablePropertyByLocation(int, int, String, UriInfo)}
 	 * dans le sens où elle accepte des critères partiels et peut retourne plusieurs immeubles correspondants.
 	 *
 	 * @param municipalityFsoId le numéro OFS de la commune de l'immeuble (obligatoire)
@@ -162,6 +161,7 @@ public interface WebService {
 	 * @param user              l'utilisateur physique ayant fait la demande.
 	 * @return une liste d'immeubles correspondant à la demande
 	 */
+	@SuppressWarnings("JavadocReference")
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/landRegistry/findImmovablePropertyByLocation")
