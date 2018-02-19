@@ -99,6 +99,37 @@ public class ImmeubleRFDAOTest extends CoreDAOTest {
 		});
 	}
 
+	/**
+	 * [SIFISC-27897] Ce test s'assure que la méthode 'getBySituation' gère correctement les fractions de communes.
+	 */
+	@Test
+	public void testGetBySituationFractionCommune() throws Exception {
+
+		// on crée un immeuble sur une fraction de commune (Les Bioux, commune faîtière = L'Abbaye)
+		final Long id = doInNewTransaction(status -> {
+
+			final CommuneRF labbaye = addCommuneRF("L'Abbaye", 1, 5871);
+
+			final BienFondsRF imm = addImmeubleRF("1", labbaye, 123, null, null, null);  // L'Abbaye
+			final SituationRF situation = imm.getSituations().iterator().next();
+			situation.setNoOfsCommuneSurchargee(8012);  // Les Bioux
+
+			return imm.getId();
+		});
+
+		doInNewTransaction(status -> {
+
+			// on ne doit pas trouver l'immeuble sur la commune faîtière
+			assertNull(dao.getBySituation(5871, 123, null, null, null));
+
+			// ... mais bien sur la fraction de commune
+			final ImmeubleRF immeuble = dao.getBySituation(8012, 123, null, null, null);
+			assertNotNull(immeuble);
+			assertEquals(id, immeuble.getId());
+			return null;
+		});
+	}
+
 	@Test
 	public void testFindImmeuble() throws Exception {
 
@@ -186,4 +217,37 @@ public class ImmeubleRFDAOTest extends CoreDAOTest {
 			return null;
 		});
 	}
+
+	/**
+	 * [SIFISC-27897] Ce test s'assure que la méthode 'getBySituation' gère correctement les fractions de communes.
+	 */
+	@Test
+	public void testFindImmeubleFractionCommune() throws Exception {
+
+		// on crée un immeuble sur une fraction de commune (Les Bioux, commune faîtière = L'Abbaye)
+		final Long id = doInNewTransaction(status -> {
+
+			final CommuneRF labbaye = addCommuneRF("L'Abbaye", 1, 5871);
+
+			final BienFondsRF imm = addImmeubleRF("1", labbaye, 123, null, null, null);  // L'Abbaye
+			final SituationRF situation = imm.getSituations().iterator().next();
+			situation.setNoOfsCommuneSurchargee(8012);  // Les Bioux
+
+			return imm.getId();
+		});
+
+		doInNewTransaction(status -> {
+
+			// on ne doit pas trouver l'immeuble sur la commune faîtière
+			assertEmpty(dao.findImmeublesParSituation(5871, 123, null, null, null));
+
+			// ... mais bien sur la fraction de commune
+			final List<SituationRF> list = dao.findImmeublesParSituation(8012, 123, null, null, null);
+			assertEquals(1, list.size());
+			assertEquals(id, list.get(0).getImmeuble().getId());
+
+			return null;
+		});
+	}
+
 }

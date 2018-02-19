@@ -19,6 +19,9 @@ import ch.vd.unireg.registrefoncier.TypeDroit;
 import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
 
 public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements ImmeubleRFDAO {
+
+	protected static final int MIN_NO_OFS_FRACTION_COMMUNE = 8000;
+
 	protected ImmeubleRFDAOImpl() {
 		super(ImmeubleRF.class);
 	}
@@ -40,9 +43,17 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 	@Override
 	public @Nullable ImmeubleRF getBySituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 
-		final Query query;
-		final String common = "select s.immeuble from SituationRF s where s.annulationDate is null and s.commune.annulationDate is null and s.commune.noOfs = :noOfsCommune and s.noParcelle = :noParcelle";
+		final String common;
+		if (noOfsCommune >= MIN_NO_OFS_FRACTION_COMMUNE) {
+			// cas spécial des fractions de commune, on va chercher le numéro Ofs surchargé au niveau de la situation
+			common = "select s.immeuble from SituationRF s where s.annulationDate is null and s.noOfsCommuneSurchargee = :noOfsCommune and s.noParcelle = :noParcelle";
+		}
+		else {
+			// cas général : on va chercher le numéro Ofs de la commune
+			common = "select s.immeuble from SituationRF s where s.annulationDate is null and s.noOfsCommuneSurchargee is null and s.commune.annulationDate is null and s.commune.noOfs = :noOfsCommune and s.noParcelle = :noParcelle";
+		}
 
+		final Query query;
 		if (index1 == null) {
 			query = getCurrentSession().createQuery(common + " and s.index1 is null and s.index2 is null and s.index3 is null");
 		}
@@ -72,9 +83,17 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 	@Override
 	public List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 
-		final Query query;
-		final String common = "from SituationRF s where s.annulationDate is null and s.commune.annulationDate is null and s.commune.noOfs = :noOfsCommune and s.noParcelle = :noParcelle";
+		final String common;
+		if (noOfsCommune >= MIN_NO_OFS_FRACTION_COMMUNE) {
+			// cas spécial des fractions de commune, on va chercher le numéro Ofs surchargé au niveau de la situation
+			common = "from SituationRF s where s.annulationDate is null and s.noOfsCommuneSurchargee = :noOfsCommune and s.noParcelle = :noParcelle";
+		}
+		else {
+			// cas général : on va chercher le numéro Ofs de la commune
+			common = "from SituationRF s where s.annulationDate is null and s.noOfsCommuneSurchargee is null and s.commune.annulationDate is null and s.commune.noOfs = :noOfsCommune and s.noParcelle = :noParcelle";
+		}
 
+		final Query query;
 		if (index1 == null) {
 			// aucun index renseigné
 			query = getCurrentSession().createQuery(common);
