@@ -255,7 +255,9 @@
 		<value>ch.vd.unireg.registrefoncier.RapprochementRF</value>
 		<value>ch.vd.unireg.registrefoncier.AyantDroitRF</value>
 		<value>ch.vd.unireg.registrefoncier.BatimentRF</value>
+		<value>ch.vd.unireg.registrefoncier.BeneficeServitudeRF</value>
 		<value>ch.vd.unireg.registrefoncier.BienFondsRF</value>
+		<value>ch.vd.unireg.registrefoncier.ChargeServitudeRF</value>
 		<value>ch.vd.unireg.registrefoncier.CollectivitePubliqueRF</value>
 		<value>ch.vd.unireg.registrefoncier.CommuneRF</value>
 		<value>ch.vd.unireg.registrefoncier.CommunauteRF</value>

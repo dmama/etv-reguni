@@ -19,6 +19,7 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteRF;
@@ -570,10 +571,13 @@ public class RattraperDatesMetierDroitRFProcessorTest extends BusinessTest {
 			assertEmpty(immeuble.getDroitsPropriete());
 
 			// la servitude est intouchée
-			final Set<ServitudeRF> servitudes = immeuble.getServitudes();
-			assertNotNull(servitudes);
-			assertEquals(1, servitudes.size());
-			final ServitudeRF servitude0 = servitudes.iterator().next();
+			final Set<ChargeServitudeRF> lienImmeubles = immeuble.getChargesServitudes();
+			assertNotNull(lienImmeubles);
+			assertEquals(1, lienImmeubles.size());
+			final ChargeServitudeRF lien0 = lienImmeubles.iterator().next();
+			assertEquals(RegDate.get(1990, 3, 1), lien0.getDateDebut());
+			assertNull(lien0.getDateFin());
+			final ServitudeRF servitude0 = lien0.getServitude();
 			assertNull(servitude0.getDateDebut());
 			assertEquals(RegDate.get(2017, 1, 13), servitude0.getDateFin());
 			assertEquals(RegDate.get(1990, 3, 1), servitude0.getDateDebutMetier());

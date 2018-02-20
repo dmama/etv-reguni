@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CapitastraURLProvider;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.DroitRFRangeMetierComparator;
@@ -168,7 +169,8 @@ public abstract class ImmovablePropertyBuilder {
 				                                      .sorted()
 				                                      .map(BuildingBuilder::newBuildSetting)
 				                                      .collect(Collectors.toList()));
-		property.getLandRights().addAll(buildLandRights(Stream.concat(immeuble.getDroitsPropriete().stream(), immeuble.getServitudes().stream()), contribuableIdProvider, rightHolderComparator));
+		// TODO (msi) gérer les dates de début/fin des servitudes
+		property.getLandRights().addAll(buildLandRights(Stream.concat(immeuble.getDroitsPropriete().stream(), immeuble.getChargesServitudes().stream().map(ChargeServitudeRF::getServitude)), contribuableIdProvider, rightHolderComparator));
 
 		final ImmeubleBeneficiaireRF beneficiaire = immeuble.getEquivalentBeneficiaire();
 		if (beneficiaire != null) {

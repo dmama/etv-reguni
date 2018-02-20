@@ -12,23 +12,6 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
-import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
-import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
-import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
-import ch.vd.unireg.xml.party.landregistry.v1.DistinctAndPermanentRight;
-import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
-import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.Location;
-import ch.vd.unireg.xml.party.landregistry.v1.Mine;
-import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
-import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
-import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
-import ch.vd.unireg.xml.party.landregistry.v1.Share;
-import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
-import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
@@ -52,6 +35,23 @@ import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
 import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
 import ch.vd.unireg.registrefoncier.TiersRF;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
+import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
+import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
+import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
+import ch.vd.unireg.xml.party.landregistry.v1.DistinctAndPermanentRight;
+import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.Location;
+import ch.vd.unireg.xml.party.landregistry.v1.Mine;
+import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
+import ch.vd.unireg.xml.party.landregistry.v1.Share;
+import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
+import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -124,9 +124,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		ppe.setDroitsPropriete(Collections.singleton(droit));
-		ppe.setServitudes(Collections.emptySet());
+		ppe.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -204,9 +204,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, pcp);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		pcp.setDroitsPropriete(Collections.singleton(droit));
-		pcp.setServitudes(Collections.emptySet());
+		pcp.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -279,9 +279,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ddp);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		ddp.setDroitsPropriete(Collections.singleton(droit));
-		ddp.setServitudes(Collections.emptySet());
+		ddp.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -347,9 +347,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, m);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		m.setDroitsPropriete(Collections.singleton(droit));
-		m.setServitudes(Collections.emptySet());
+		m.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(m, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -419,9 +419,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, bienFonds);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		bienFonds.setDroitsPropriete(Collections.singleton(droit));
-		bienFonds.setServitudes(Collections.emptySet());
+		bienFonds.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFonds, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -496,16 +496,16 @@ public class ImmovablePropertyBuilderTest {
 		// la PPE possède une part du bien-fonds
 		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm(4343L, "0293929", new Fraction(1, 30), GenrePropriete.PPE, RegDate.get(1993, 5, 13), "Consitution de PPE", beneficiaire, bienFonds);
 		beneficiaire.setDroitsPropriete(Collections.singleton(droit0));
-		beneficiaire.setServitudes(Collections.emptySet());
+		beneficiaire.setBeneficesServitudes(Collections.emptySet());
 		bienFonds.setDroitsPropriete(Collections.singleton(droit0));
-		bienFonds.setServitudes(Collections.emptySet());
+		bienFonds.setChargesServitudes(Collections.emptySet());
 
 		// la personne physique possède la PPE
 		final DroitProprietePersonnePhysiqueRF droit1 = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 		pp.setDroitsPropriete(Collections.singleton(droit1));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		ppe.setDroitsPropriete(Collections.singleton(droit1));
-		ppe.setServitudes(Collections.emptySet());
+		ppe.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);

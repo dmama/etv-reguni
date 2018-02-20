@@ -9,7 +9,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
@@ -20,9 +19,12 @@ import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalDroitProprie
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImplantationBatiment;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;
@@ -357,12 +359,14 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			assertTrue(event0.getServitude() instanceof UsufruitRF);
 			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
 
-			final List<Long> immeublesIds = event0.getServitude().getImmeubles().stream()
+			final List<Long> immeublesIds = event0.getServitude().getCharges().stream()
+					.map(ChargeServitudeRF::getImmeuble)
 					.map(ImmeubleRF::getId)
 					.collect(Collectors.toList());
 			assertEquals(Collections.singletonList(ids.immeuble), immeublesIds);
 
-			final List<Long> ayantDroitIds = event0.getServitude().getAyantDroits().stream()
+			final List<Long> ayantDroitIds = event0.getServitude().getBenefices().stream()
+					.map(BeneficeServitudeRF::getAyantDroit)
 					.map(AyantDroitRF::getId)
 					.collect(Collectors.toList());
 			assertEquals(Collections.singletonList(ids.pp), ayantDroitIds);

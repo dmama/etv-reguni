@@ -10,7 +10,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.DroitHabitationRF;
@@ -1174,6 +1176,164 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				assertEquals("236gzbfahécf", info.idRFAyantDroit);
 				assertEquals((Long) noRfUsufruitier, info.noRFAyantDroit);
 				assertNull(info.idImmeubleBeneficiaire);
+			}
+		}
+	}
+
+	/**
+	 * [IMM-795] Ce test vérifie que les lignes extraites sont correctes dans le cas où une servitude évolue dans le temps.
+	 */
+	@Test
+	public void testServitudesQuiEvoluentDansLeTemps() throws Exception {
+
+		final long noRfFrancis = 5753865L;
+		final long noRfAlbertine = 432784237L;
+		final long noRfGerard = 32432L;
+
+		final class Ids {
+			Long francis;
+			Long albertine;
+			Long gerard;
+			Long immeuble1;
+			Long immeuble2;
+			Long immeuble3;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
+			final BienFondsRF immeuble1 = addBienFondsRF("0r385hgjbahkl", "CHEGRID1", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble2 = addBienFondsRF("4823892j2", "CHEGRID2", commune, 919, null, null, null);
+			final BienFondsRF immeuble3 = addBienFondsRF("3893h3n", "CHEGRID3", commune, 920, null, null, null);
+
+			// deux propriétaires sur l'immeuble 1
+			final PersonnePhysique francis = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysiqueRF francisRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
+			francisRF.setNoRF(noRfFrancis);
+			addRapprochementRF(francis, francisRF, null, null, TypeRapprochementRF.AUTO);
+
+			final PersonnePhysique albertine = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
+			final PersonnePhysiqueRF albertineRF = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
+			albertineRF.setNoRF(noRfAlbertine);
+			addRapprochementRF(albertine, albertineRF, null, null, TypeRapprochementRF.AUTO);
+
+			// un usufruit sur les immeubles 1 et 2
+			final PersonnePhysique gerard = addNonHabitant("Gérard", "Menfais", date(2000, 3, 1), Sexe.MASCULIN);
+			final PersonnePhysiqueRF gerardRF = addPersonnePhysiqueRF("236gzbfahécf", "Gérard", "Menfais", date(2000, 3, 1));
+			gerardRF.setNoRF(noRfGerard);
+			addRapprochementRF(gerard, gerardRF, null, null, TypeRapprochementRF.AUTO);
+
+			final RegDate dateDebutUsufruit = date(2015, 6, 1);
+			final RegDate dateRadiationImmeuble = RegDate.get(2016, 7, 22);
+			final RegDate dateDeces = RegDate.get(2016, 4, 22);
+
+			final UsufruitRF usufruit = addUsufruitRF(null, dateDebutUsufruit, null, null, "Succession", null, "58gfhfba", "58gfhfbb", null, null, Collections.emptyList(), Collections.emptyList());
+			usufruit.addCharge(new ChargeServitudeRF(dateDebutUsufruit, null, usufruit, immeuble1));
+			usufruit.addCharge(new ChargeServitudeRF(dateDebutUsufruit, dateRadiationImmeuble, usufruit, immeuble2));
+			usufruit.addCharge(new ChargeServitudeRF(dateRadiationImmeuble.getOneDayAfter(), null, usufruit, immeuble3));
+			usufruit.addBenefice(new BeneficeServitudeRF(dateDebutUsufruit, null, usufruit, francisRF));
+			usufruit.addBenefice(new BeneficeServitudeRF(dateDebutUsufruit, dateDeces, usufruit, albertineRF));
+			usufruit.addBenefice(new BeneficeServitudeRF(dateDeces.getOneDayAfter(), null, usufruit, gerardRF));
+
+			final Ids res = new Ids();
+			res.francis = francis.getNumero();
+			res.albertine = albertine.getNumero();
+			res.gerard = gerard.getNumero();
+			res.immeuble1 = immeuble1.getId();
+			res.immeuble2 = immeuble2.getId();
+			res.immeuble3 = immeuble3.getId();
+			return res;
+		});
+
+		// extraction au 01.01.2016 (Francis et Albertine + immeuble1 et immeuble2)
+		{
+			final InitialisationIFoncResults results = processor.run(date(2016, 1, 1), 1, null, null);
+			assertNotNull(results);
+			assertEquals(3, results.getNbImmeublesInspectes());
+			assertEquals(4, results.getLignesExtraites().size());
+			assertEquals(1, results.getImmeublesIgnores().size());
+			assertEquals(0, results.getErreurs().size());
+
+			// la servitude de Francis sur l'immeuble 1
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(0);
+				assertNotNull(info);
+				assertEquals(ids.francis, info.idContribuable);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals(ids.immeuble1, info.infoImmeuble.idImmeuble);
+			}
+
+			// la servitude de Francis sur l'immeuble 2
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(1);
+				assertNotNull(info);
+				assertEquals(ids.francis, info.idContribuable);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals(ids.immeuble2, info.infoImmeuble.idImmeuble);
+			}
+
+			// la servitude d'Albertine sur l'immeuble 1
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(2);
+				assertNotNull(info);
+				assertEquals(ids.albertine, info.idContribuable);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals(ids.immeuble1, info.infoImmeuble.idImmeuble);
+			}
+
+			// la servitude d'Albertine sur l'immeuble 2
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(3);
+				assertNotNull(info);
+				assertEquals(ids.albertine, info.idContribuable);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals(ids.immeuble2, info.infoImmeuble.idImmeuble);
+			}
+		}
+
+		// extraction au 01.01.2017 (Francis et Gerard + immeuble1 et immeuble3)
+		{
+			final InitialisationIFoncResults results = processor.run(date(2017, 1, 1), 1, null, null);
+			assertNotNull(results);
+			assertEquals(3, results.getNbImmeublesInspectes());
+			assertEquals(4, results.getLignesExtraites().size());
+			assertEquals(1, results.getImmeublesIgnores().size());
+			assertEquals(0, results.getErreurs().size());
+
+			// la servitude de Francis sur l'immeuble 1
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(0);
+				assertNotNull(info);
+				assertEquals(ids.francis, info.idContribuable);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals(ids.immeuble1, info.infoImmeuble.idImmeuble);
+			}
+
+			// la servitude de Francis sur l'immeuble 3
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(1);
+				assertNotNull(info);
+				assertEquals(ids.francis, info.idContribuable);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals(ids.immeuble3, info.infoImmeuble.idImmeuble);
+			}
+
+			// la servitude de Gérard sur l'immeuble 1
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(2);
+				assertNotNull(info);
+				assertEquals(ids.gerard, info.idContribuable);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals(ids.immeuble1, info.infoImmeuble.idImmeuble);
+			}
+
+			// la servitude de Gérard sur l'immeuble 3
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(3);
+				assertNotNull(info);
+				assertEquals(ids.gerard, info.idContribuable);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals(ids.immeuble3, info.infoImmeuble.idImmeuble);
 			}
 		}
 	}

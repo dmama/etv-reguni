@@ -34,9 +34,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
-import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
-import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
@@ -45,6 +42,9 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
+import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
+import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.regimefiscal.ModeExonerationHisto;
 import ch.vd.unireg.regimefiscal.RegimeFiscalConsolide;
@@ -411,17 +411,19 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 				+ " ORDER BY DT.immeuble.id, RAPP.contribuable.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
 
 		// les servitudes pointent vers plusieurs immeubles
-		final String hqlServ = "SELECT DISTINCT RAPP.contribuable.id, DT.id, IMM.id"
+		final String hqlServ = "SELECT DISTINCT RAPP.contribuable.id, SERV.id, IMM.id"
 				+ " FROM RapprochementRF AS RAPP"
-				+ " JOIN RAPP.tiersRF.servitudes AS DT"
-				+ " JOIN DT.immeubles AS IMM"
+				+ " JOIN RAPP.tiersRF.beneficesServitudes AS BENE"
+				+ " JOIN BENE.servitude AS SERV"
+				+ " JOIN SERV.charges AS CHARG"
+				+ " JOIN CHARG.immeuble AS IMM"
 				+ " WHERE RAPP.contribuable.class = 'Entreprise'"
 				+ " AND (RAPP.dateDebut IS NULL OR RAPP.dateDebut <= :dateTraitement)"
 				+ " AND (RAPP.dateFin IS NULL OR RAPP.dateFin >= :dateTraitement)"
 				+ " AND RAPP.annulationDate IS NULL"
-				+ " AND DT.annulationDate IS NULL"
-				+ " AND DT.dateDebutMetier <= :debutAnnee"
-				+ " AND (DT.dateFin IS NULL OR DT.dateFin >= :debutAnnee)"
+				+ " AND SERV.annulationDate IS NULL"
+				+ " AND SERV.dateDebutMetier <= :debutAnnee"
+				+ " AND (SERV.dateFinMetier IS NULL OR SERV.dateFinMetier >= :debutAnnee)"
 				+ " ORDER BY IMM.id, RAPP.contribuable.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
 
 		final SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> mapProps = executeFindInfoDroitsHql(dateTraitement, hqlProps);

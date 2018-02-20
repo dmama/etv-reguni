@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -51,9 +52,9 @@ public abstract class AyantDroitRF extends HibernateEntity {
 	private Set<DroitProprieteRF> droitsPropriete;
 
 	/**
-	 * Les servitudes sur des immeubles dont jouit l'ayant-droit.
+	 * Les servitudes dont bénéfice l'ayant-droit.
 	 */
-	private Set<ServitudeRF> servitudes;
+	private Set<BeneficeServitudeRF> beneficesServitudes;
 
 	@Transient
 	@Override
@@ -98,32 +99,37 @@ public abstract class AyantDroitRF extends HibernateEntity {
 		this.droitsPropriete.add(droit);
 	}
 
-	// configuration hibernate : l'ayant-droit ne possède pas les servitudes
-	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "ayantDroits")
-	public Set<ServitudeRF> getServitudes() {
-		return servitudes;
+	// configuration hibernate : l'ayant-droit ne possède pas les bénéfices de servitudes
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "ayantDroit")
+	public Set<BeneficeServitudeRF> getBeneficesServitudes() {
+		return beneficesServitudes;
 	}
 
-	public void setServitudes(Set<ServitudeRF> servitudes) {
-		this.servitudes = servitudes;
+	public void setBeneficesServitudes(Set<BeneficeServitudeRF> beneficesServitudes) {
+		this.beneficesServitudes = beneficesServitudes;
 	}
 
-	public void addServitude(ServitudeRF servitude) {
-		if (this.servitudes == null) {
-			this.servitudes = new HashSet<>();
+	public void addBeneficeServitude(BeneficeServitudeRF benefice) {
+		if (this.beneficesServitudes == null) {
+			this.beneficesServitudes = new HashSet<>();
 		}
-		servitude.addAyantDroit(this);
-		this.servitudes.add(servitude);
+		benefice.setAyantDroit(this);
+		this.beneficesServitudes.add(benefice);
 	}
 
+	/**
+	 * @return la liste des droits (quelque soient leurs périodes de validité)
+	 */
 	@Transient
 	public Set<DroitRF> getDroitList() {
 		final Set<DroitRF> set = new HashSet<>();
 		if (droitsPropriete != null) {
 			set.addAll(droitsPropriete);
 		}
-		if (servitudes != null) {
-			set.addAll(servitudes);
+		if (beneficesServitudes != null) {
+			set.addAll(beneficesServitudes.stream()
+					           .map(BeneficeServitudeRF::getServitude)
+					           .collect(Collectors.toList()));
 		}
 		return set;
 	}

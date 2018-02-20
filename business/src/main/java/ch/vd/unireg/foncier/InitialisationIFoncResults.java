@@ -17,6 +17,8 @@ import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.common.AbstractJobResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
@@ -247,12 +249,12 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull ServitudeRF servitude, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
 
 			// préconditions
-			final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
-			if (ayantDroits.size() != 1) {
+			final Set<BeneficeServitudeRF> benefices = servitude.getBenefices();
+			if (benefices.size() != 1) {
 				throw new IllegalArgumentException("La servitude ne doit contenir qu'un seul bénéficiaire");
 			}
-			final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
-			if (immeubles.size() != 1) {
+			final Set<ChargeServitudeRF> charges = servitude.getCharges();
+			if (charges.size() != 1) {
 				throw new IllegalArgumentException("La servitude ne doit contenir qu'un seul immeuble");
 			}
 
@@ -264,7 +266,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 				idContribuable = null;
 			}
 
-			final AyantDroitRF ayantDroit = ayantDroits.iterator().next();
+			final AyantDroitRF ayantDroit = benefices.iterator().next().getAyantDroit();
 
 			// information d'identification en provenance du RF
 			identificationRF = buildNomPrenomRaisonSociale(ayantDroit);
@@ -286,7 +288,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			idImmeubleBeneficiaire = getIdImmeubleBeneficiaire(servitude);
 
 			// les données de l'immeuble et de sa situation
-			infoImmeuble = new InfoImmeuble(immeubles.iterator().next(), situation, estimationFiscale);
+			infoImmeuble = new InfoImmeuble(charges.iterator().next().getImmeuble(), situation, estimationFiscale);
 		}
 
 		public InfoExtraction(ImmeubleRF immeuble, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {

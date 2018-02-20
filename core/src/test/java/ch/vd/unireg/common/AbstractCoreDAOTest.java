@@ -83,7 +83,9 @@ import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
@@ -1790,8 +1792,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	                                   IdentifiantDroitRF identifiantDroitRF,
 	                                   TiersRF tiersRF, ImmeubleRF immeuble) {
 		final UsufruitRF usufruit = new UsufruitRF();
-		usufruit.addImmeuble(immeuble);
-		usufruit.addAyantDroit(tiersRF);
+		usufruit.addCharge(new ChargeServitudeRF(dateDebutMetier, dateFinMetier, usufruit, immeuble));
+		usufruit.addBenefice(new BeneficeServitudeRF(dateDebutMetier, dateFinMetier, usufruit, tiersRF));
 		usufruit.setDateDebut(dateDebut);
 		usufruit.setDateDebutMetier(dateDebutMetier);
 		usufruit.setDateFin(dateFin);
@@ -1805,8 +1807,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		final UsufruitRF persisted = merge(usufruit);
 
 		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
-		persisted.getImmeubles().forEach(i -> i.addServitude(persisted));
-		persisted.getAyantDroits().forEach(a -> a.addServitude(persisted));
+		persisted.getCharges().forEach(lien -> lien.getImmeuble().addChargeServitude(lien));
+		persisted.getBenefices().forEach(lien -> lien.getAyantDroit().addBeneficeServitude(lien));
 
 		return persisted;
 	}
@@ -1814,8 +1816,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF,
 	                                   String versionIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF, List<? extends TiersRF> tiersRF, List<? extends ImmeubleRF> immeubles) {
 		final UsufruitRF usufruit = new UsufruitRF();
-		immeubles.forEach(usufruit::addImmeuble);
-		tiersRF.forEach(usufruit::addAyantDroit);
+		usufruit.setCharges(new HashSet<>());
+		usufruit.setBenefices(new HashSet<>());
+		immeubles.forEach(immeuble -> usufruit.addCharge(new ChargeServitudeRF(dateDebutMetier, dateFinMetier, usufruit, immeuble)));
+		tiersRF.forEach(tiers -> usufruit.addBenefice(new BeneficeServitudeRF(dateDebutMetier, dateFinMetier, usufruit, tiers)));
 		usufruit.setDateDebut(dateDebut);
 		usufruit.setDateDebutMetier(dateDebutMetier);
 		usufruit.setDateFin(dateFin);
@@ -1829,8 +1833,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		final UsufruitRF persisted = merge(usufruit);
 
 		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
-		persisted.getImmeubles().forEach(i -> i.addServitude(persisted));
-		persisted.getAyantDroits().forEach(a -> a.addServitude(persisted));
+		persisted.getCharges().forEach(lien -> lien.getImmeuble().addChargeServitude(lien));
+		persisted.getBenefices().forEach(lien -> lien.getAyantDroit().addBeneficeServitude(lien));
 
 		return persisted;
 	}
@@ -1839,8 +1843,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	                                                 IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
 	                                                 TiersRF tiersRF, BienFondsRF immeuble) {
 		final DroitHabitationRF droitHabitation = new DroitHabitationRF();
-		droitHabitation.addImmeuble(immeuble);
-		droitHabitation.addAyantDroit(tiersRF);
+		droitHabitation.addCharge(new ChargeServitudeRF(dateDebutMetier, dateFinMetier, droitHabitation, immeuble));
+		droitHabitation.addBenefice(new BeneficeServitudeRF(dateDebutMetier, dateFinMetier, droitHabitation, tiersRF));
 		droitHabitation.setDateDebut(dateDebut);
 		droitHabitation.setDateDebutMetier(dateDebutMetier);
 		droitHabitation.setDateFin(dateFin);
@@ -1855,8 +1859,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		final DroitHabitationRF persisted = merge(droitHabitation);
 
 		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
-		persisted.getImmeubles().forEach(i -> i.addServitude(persisted));
-		persisted.getAyantDroits().forEach(a -> a.addServitude(persisted));
+		persisted.getCharges().forEach(lien -> lien.getImmeuble().addChargeServitude(lien));
+		persisted.getBenefices().forEach(lien -> lien.getAyantDroit().addBeneficeServitude(lien));
 
 		return persisted;
 	}

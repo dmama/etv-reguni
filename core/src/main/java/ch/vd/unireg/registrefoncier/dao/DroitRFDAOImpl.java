@@ -57,13 +57,8 @@ public class DroitRFDAOImpl extends BaseDAOImpl<DroitRF, Long> implements DroitR
 
 		// les servitudes
 		final StringBuilder sqlServ = new StringBuilder();
-		sqlServ.append("SELECT DISTINCT serv FROM ServitudeRF serv");
-		sqlServ.append(" INNER JOIN serv.ayantDroits ayantDroit");
-		if (fetchSituationsImmeuble) {
-			sqlServ.append(" INNER JOIN FETCH serv.immeubles AS imm");
-			sqlServ.append(" LEFT OUTER JOIN FETCH imm.situations");
-		}
-		sqlServ.append(" WHERE ayantDroit.id = :ayantDroitId");
+		sqlServ.append("SELECT DISTINCT bene.servitude FROM BeneficeServitudeRF bene");
+		sqlServ.append(" WHERE bene.ayantDroit.id = :ayantDroitId");
 
 		final Query queryServ = getCurrentSession().createQuery(sqlServ.toString());
 		queryServ.setParameter("ayantDroitId", ayantDroitId);

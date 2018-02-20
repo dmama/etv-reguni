@@ -34,11 +34,13 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 
 		final Query query;
 		if (typeDroit == TypeDroit.DROIT_PROPRIETE) {
-			final String queryString = "select a.idRF from AyantDroitRF a left join a.droitsPropriete d where d.dateFin is null and a.droitsPropriete is not empty";
+			final String queryString = "select a.idRF from AyantDroitRF a left join a.droitsPropriete d where d.dateFinMetier is null and a.droitsPropriete is not empty";
 			query = getCurrentSession().createQuery(queryString);
 		}
 		else if (typeDroit == TypeDroit.SERVITUDE) {
-			final String queryString = "select a.idRF from AyantDroitRF a left join a.servitudes d where (d.dateFin is null or :today < d.dateFin) and a.servitudes is not empty";
+			final String queryString = "select a.idRF from AyantDroitRF a left join a.beneficesServitudes b left join b.servitude s " +
+					"where b.annulationDate is null and (b.dateFin is null or :today < b.dateFin) " +
+					"and s.annulationDate is null and (s.dateFinMetier is null or :today < s.dateFinMetier) and a.beneficesServitudes is not empty";
 			query = getCurrentSession().createQuery(queryString);
 			query.setParameter("today", RegDate.get());
 		}

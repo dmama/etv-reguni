@@ -92,6 +92,7 @@
 	<bean id="communeRFDAO" class="ch.vd.unireg.registrefoncier.dao.CommuneRFDAOImpl" parent="hibernateDao" />
 	<bean id="immeubleRFDAO" class="ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAOImpl" parent="hibernateDao" />
 	<bean id="droitRFDAO" class="ch.vd.unireg.registrefoncier.dao.DroitRFDAOImpl" parent="hibernateDao" />
+	<bean id="servitudeRFDAO" class="ch.vd.unireg.registrefoncier.dao.ServitudeRFDAOImpl" parent="hibernateDao" />
 	<bean id="ayantDroitRFDAO" class="ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAOImpl" parent="hibernateDao" />
 	<bean id="surfaceAuSolRFDAO" class="ch.vd.unireg.registrefoncier.dao.SurfaceAuSolRFDAOImpl" parent="hibernateDao" />
 	<bean id="batimentRFDAO" class="ch.vd.unireg.registrefoncier.dao.BatimentRFDAOImpl" parent="hibernateDao" />

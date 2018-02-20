@@ -23,6 +23,7 @@ import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;
@@ -365,7 +366,9 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.forEach(d -> fermerDroit(d, dateRadiation, "Radiation"));
 
 		// [SIFISC-26635] on assigne la date de fin métier sur les servitudes si tous les immeubles sont radiés (une servitude peut pointer vers plusieurs immeubles)
-		persisted.getServitudes().stream()
+		persisted.getChargesServitudes().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(ChargeServitudeRF::getServitude)
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(s -> s.getDateFinMetier() == null)
 				.filter(ImmeubleRFProcessor::isAllImmeublesRadies)
@@ -389,7 +392,9 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 	 * @return <i>vrai</i> si tous les immeubles de la servitude sont radiés; <i>faux</i> autrement.
 	 */
 	private static boolean isAllImmeublesRadies(ServitudeRF s) {
-		return s.getImmeubles().stream()
+		return s.getCharges().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(ChargeServitudeRF::getImmeuble)
 				.filter(AnnulableHelper::nonAnnule)
 				.allMatch(i -> i.getDateRadiation() != null);
 	}
@@ -400,5 +405,16 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		}
 		d.setDateFinMetier(dateFinMetier);
 		d.setMotifFin(motifFin);
+
+		if (d instanceof ServitudeRF) {
+			// IMM-795, on ferme aussi les liens de charges/bénéfices de la servitude
+			final ServitudeRF s = (ServitudeRF) d;
+			s.getCharges().stream()
+					.filter(c -> c.getDateFin() == null || c.getDateFin().isAfter(dateFinMetier))
+					.forEach(c -> c.setDateFin(dateFinMetier));
+			s.getBenefices().stream()
+					.filter(b -> b.getDateFin() == null || b.getDateFin().isAfter(dateFinMetier))
+					.forEach(b -> b.setDateFin(dateFinMetier));
+		}
 	}
 }

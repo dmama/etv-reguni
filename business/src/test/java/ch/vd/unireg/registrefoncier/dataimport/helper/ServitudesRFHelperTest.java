@@ -18,8 +18,9 @@ import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.NatuerlichePersonGb;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.DroitHabitationRF;
 import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
@@ -132,8 +133,8 @@ public class ServitudesRFHelperTest {
 
 		final UsufruitRF usufruit = newUsufruit(immeuble1, pp, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
 		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
-		usufruit.addImmeuble(immeuble2);
-		usufruit.addImmeuble(immeuble3);
+		usufruit.addCharge(new ChargeServitudeRF(null, null, usufruit, immeuble2));
+		usufruit.addCharge(new ChargeServitudeRF(null, null, usufruit, immeuble3));
 
 		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final BelastetesGrundstueck grundstueck2 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729d", null, null);
@@ -162,8 +163,8 @@ public class ServitudesRFHelperTest {
 
 		final UsufruitRF usufruit = newUsufruit(immeuble1, pp, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
 		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
-		usufruit.addImmeuble(immeuble2);
-		usufruit.addImmeuble(immeuble3);
+		usufruit.addCharge(new ChargeServitudeRF(null, null, usufruit, immeuble2));
+		usufruit.addCharge(new ChargeServitudeRF(null, null, usufruit, immeuble3));
 
 		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final BelastetesGrundstueck grundstueck2 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729d", null, null);
@@ -193,8 +194,8 @@ public class ServitudesRFHelperTest {
 
 		final UsufruitRF usufruit = newUsufruit(immeuble, pp1, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
 		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
-		usufruit.addAyantDroit(pp2);
-		usufruit.addAyantDroit(pp3);
+		usufruit.addBenefice(new BeneficeServitudeRF(null, null, usufruit, pp2));
+		usufruit.addBenefice(new BeneficeServitudeRF(null, null, usufruit, pp3));
 
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
@@ -223,8 +224,8 @@ public class ServitudesRFHelperTest {
 
 		final UsufruitRF usufruit = newUsufruit(immeuble, pp1, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
 		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
-		usufruit.addAyantDroit(pp2);
-		usufruit.addAyantDroit(pp3);
+		usufruit.addBenefice(new BeneficeServitudeRF(null, null, usufruit, pp2));
+		usufruit.addBenefice(new BeneficeServitudeRF(null, null, usufruit, pp3));
 
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
@@ -282,13 +283,19 @@ public class ServitudesRFHelperTest {
 		assertIdentifiantDroit(2005, 699, 8, servitude.getIdentifiantDroit());
 		assertNumeroAffaire(8, "2002/392", servitude.getNumeroAffaire());
 
-		final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
-		assertEquals(1, ayantDroits.size());
-		assertSame(pp1, ayantDroits.iterator().next());
+		final Set<BeneficeServitudeRF> benefices = servitude.getBenefices();
+		assertEquals(1, benefices.size());
+		final BeneficeServitudeRF benefice0 = benefices.iterator().next();
+		assertEquals(RegDate.get(2002, 9, 2), benefice0.getDateDebut());
+		assertNull(benefice0.getDateFin());
+		assertSame(pp1, benefice0.getAyantDroit());
 
-		final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
-		assertEquals(1, immeubles.size());
-		assertSame(immeuble, immeubles.iterator().next());
+		final Set<ChargeServitudeRF> charges = servitude.getCharges();
+		assertEquals(1, charges.size());
+		final ChargeServitudeRF lienImmeuble0 = charges.iterator().next();
+		assertEquals(RegDate.get(2002, 9, 2), lienImmeuble0.getDateDebut());
+		assertNull(lienImmeuble0.getDateFin());
+		assertSame(immeuble, lienImmeuble0.getImmeuble());
 	}
 
 	@Test
@@ -316,13 +323,19 @@ public class ServitudesRFHelperTest {
 		assertIdentifiantDroit(2005, 699, 8, servitude.getIdentifiantDroit());
 		assertNumeroAffaire(8, "2002/392", servitude.getNumeroAffaire());
 
-		final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
-		assertEquals(1, ayantDroits.size());
-		assertSame(pp1, ayantDroits.iterator().next());
+		final Set<BeneficeServitudeRF> benefices = servitude.getBenefices();
+		assertEquals(1, benefices.size());
+		final BeneficeServitudeRF benefice0 = benefices.iterator().next();
+		assertEquals(RegDate.get(2002, 9, 2), benefice0.getDateDebut());
+		assertNull(benefice0.getDateFin());
+		assertSame(pp1, benefice0.getAyantDroit());
 
-		final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
-		assertEquals(1, immeubles.size());
-		assertSame(immeuble, immeubles.iterator().next());
+		final Set<ChargeServitudeRF> charges = servitude.getCharges();
+		assertEquals(1, charges.size());
+		final ChargeServitudeRF lienImmeuble0 = charges.iterator().next();
+		assertEquals(RegDate.get(2002, 9, 2), lienImmeuble0.getDateDebut());
+		assertNull(lienImmeuble0.getDateFin());
+		assertSame(immeuble, lienImmeuble0.getImmeuble());
 	}
 
 	@Test
@@ -354,13 +367,19 @@ public class ServitudesRFHelperTest {
 		assertIdentifiantDroit(2005, 699, 8, servitude.getIdentifiantDroit());
 		assertNumeroAffaire(8, "2002/392", servitude.getNumeroAffaire());
 
-		final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
-		assertEquals(1, ayantDroits.size());
-		assertSame(pp1, ayantDroits.iterator().next());
+		final Set<BeneficeServitudeRF> benefices = servitude.getBenefices();
+		assertEquals(1, benefices.size());
+		final BeneficeServitudeRF benefice0 = benefices.iterator().next();
+		assertEquals(RegDate.get(2002, 9, 2), benefice0.getDateDebut());
+		assertNull(benefice0.getDateFin());
+		assertSame(pp1, benefice0.getAyantDroit());
 
-		final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
-		assertEquals(1, immeubles.size());
-		assertSame(immeuble, immeubles.iterator().next());
+		final Set<ChargeServitudeRF> charges = servitude.getCharges();
+		assertEquals(1, charges.size());
+		final ChargeServitudeRF lienImmeuble0 = charges.iterator().next();
+		assertEquals(RegDate.get(2002, 9, 2), lienImmeuble0.getDateDebut());
+		assertNull(lienImmeuble0.getDateFin());
+		assertSame(immeuble, lienImmeuble0.getImmeuble());
 	}
 
 	private static void assertNumeroAffaire(int numeroOffice, @Nullable String annee, IdentifiantAffaireRF numeroAffaire) {
@@ -436,11 +455,11 @@ public class ServitudesRFHelperTest {
 		servitude1.setDateFinMetier(dateFinOfficielle);
 		servitude1.setMotifDebut(null);
 		servitude1.setMotifFin(null);
-		servitude1.addImmeuble(immeuble1);
+		servitude1.addCharge(new ChargeServitudeRF(dateDebutOfficielle, dateFinOfficielle, servitude1, immeuble1));
 		servitude1.setMasterIdRF(masterIdRF);
 		servitude1.setVersionIdRF(versionIdRF);
 		servitude1.setNumeroAffaire(numeroAffaire);
-		servitude1.addAyantDroit(pp1);
+		servitude1.addBenefice(new BeneficeServitudeRF(dateDebutOfficielle, dateFinOfficielle, servitude1, pp1));
 		return servitude1;
 	}
 
@@ -452,11 +471,11 @@ public class ServitudesRFHelperTest {
 		servitude1.setDateFinMetier(dateFinOfficielle);
 		servitude1.setMotifDebut(null);
 		servitude1.setMotifFin(null);
-		servitude1.addImmeuble(immeuble1);
+		servitude1.addCharge(new ChargeServitudeRF(dateDebutOfficielle, dateFinOfficielle, servitude1, immeuble1));
 		servitude1.setMasterIdRF(masterIdRF);
 		servitude1.setVersionIdRF(versionIdRF);
 		servitude1.setNumeroAffaire(numeroAffaire);
-		servitude1.addAyantDroit(pp1);
+		servitude1.addBenefice(new BeneficeServitudeRF(dateDebutOfficielle, dateFinOfficielle, servitude1, pp1));
 		return servitude1;
 	}
 }

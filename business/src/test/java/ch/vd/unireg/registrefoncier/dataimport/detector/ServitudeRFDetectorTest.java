@@ -24,7 +24,9 @@ import ch.vd.unireg.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.unireg.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
 import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
@@ -268,54 +270,64 @@ public class ServitudeRFDetectorTest {
 		immeuble2.setIdRF("_1f109152380ffd8901380ffe090827e1");
 
 		final UsufruitRF usufruit1 = new UsufruitRF();
-		usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
-		usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
-		usufruit1.addAyantDroit(pp1);
-		usufruit1.addAyantDroit(pp2);
-		usufruit1.addImmeuble(immeuble1);
-		usufruit1.setDateDebut(dateImportInitial);
-		usufruit1.setDateFin(null);
-		usufruit1.setMotifDebut(null);
-		usufruit1.setMotifFin(null);
-		usufruit1.setDateDebutMetier(RegDate.get(2002, 9, 2));
-		usufruit1.setDateFinMetier(null);
-		usufruit1.setIdentifiantDroit(new IdentifiantDroitRF(8, 2005, 699));
-		usufruit1.setNumeroAffaire(new IdentifiantAffaireRF(8, 2002, 392, null));
-		droitRFDAO.save(usufruit1);
-		pp1.addServitude(usufruit1);
-		pp2.addServitude(usufruit1);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit1, pp1);
+			final BeneficeServitudeRF benefice2 = new BeneficeServitudeRF(null, null, usufruit1, pp2);
+			usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
+			usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
+			usufruit1.addBenefice(benefice1);
+			usufruit1.addBenefice(benefice2);
+			usufruit1.addCharge(new ChargeServitudeRF(null, null, usufruit1, immeuble1));
+			usufruit1.setDateDebut(dateImportInitial);
+			usufruit1.setDateFin(null);
+			usufruit1.setMotifDebut(null);
+			usufruit1.setMotifFin(null);
+			usufruit1.setDateDebutMetier(RegDate.get(2002, 9, 2));
+			usufruit1.setDateFinMetier(null);
+			usufruit1.setIdentifiantDroit(new IdentifiantDroitRF(8, 2005, 699));
+			usufruit1.setNumeroAffaire(new IdentifiantAffaireRF(8, 2002, 392, null));
+			droitRFDAO.save(usufruit1);
+			pp1.addBeneficeServitude(benefice1);
+			pp2.addBeneficeServitude(benefice2);
+		}
 
 		final UsufruitRF usufruit2 = new UsufruitRF();
-		usufruit2.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
-		usufruit2.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
-		usufruit2.addAyantDroit(pp2);
-		usufruit2.addImmeuble(immeuble2);
-		usufruit2.setDateDebut(dateImportInitial);
-		usufruit2.setDateFin(null);
-		usufruit2.setMotifDebut(null);
-		usufruit2.setMotifFin(null);
-		usufruit2.setDateDebutMetier(RegDate.get(2007, 6, 25));
-		usufruit2.setDateFinMetier(null);
-		usufruit2.setIdentifiantDroit(new IdentifiantDroitRF(8,2007, 375));
-		usufruit2.setNumeroAffaire(new IdentifiantAffaireRF(8, 2007, 266, 0));
-		droitRFDAO.save(usufruit2);
-		pp2.addServitude(usufruit2);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit2, pp2);
+			usufruit2.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
+			usufruit2.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
+			usufruit2.addBenefice(benefice1);
+			usufruit2.addCharge(new ChargeServitudeRF(null, null, usufruit2, immeuble2));
+			usufruit2.setDateDebut(dateImportInitial);
+			usufruit2.setDateFin(null);
+			usufruit2.setMotifDebut(null);
+			usufruit2.setMotifFin(null);
+			usufruit2.setDateDebutMetier(RegDate.get(2007, 6, 25));
+			usufruit2.setDateFinMetier(null);
+			usufruit2.setIdentifiantDroit(new IdentifiantDroitRF(8, 2007, 375));
+			usufruit2.setNumeroAffaire(new IdentifiantAffaireRF(8, 2007, 266, 0));
+			droitRFDAO.save(usufruit2);
+			pp2.addBeneficeServitude(benefice1);
+		}
 
 		final UsufruitRF usufruit3 = new UsufruitRF();
-		usufruit3.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
-		usufruit3.setVersionIdRF("1f109152380ffd8901380ffed6694002");
-		usufruit3.addAyantDroit(pp1);
-		usufruit3.addImmeuble(immeuble2);
-		usufruit3.setDateDebut(dateImportInitial);
-		usufruit3.setDateFin(null);
-		usufruit3.setMotifDebut(null);
-		usufruit3.setMotifFin(null);
-		usufruit3.setDateDebutMetier(RegDate.get(2010, 6, 25));
-		usufruit3.setDateFinMetier(null);
-		usufruit3.setIdentifiantDroit(new IdentifiantDroitRF(8,2010, 375));
-		usufruit3.setNumeroAffaire(new IdentifiantAffaireRF(8, 2010, 266, 0));
-		droitRFDAO.save(usufruit3);
-		pp1.addServitude(usufruit3);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit3, pp1);
+			usufruit3.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
+			usufruit3.setVersionIdRF("1f109152380ffd8901380ffed6694002");
+			usufruit3.addBenefice(benefice1);
+			usufruit3.addCharge(new ChargeServitudeRF(null, null, usufruit3, immeuble2));
+			usufruit3.setDateDebut(dateImportInitial);
+			usufruit3.setDateFin(null);
+			usufruit3.setMotifDebut(null);
+			usufruit3.setMotifFin(null);
+			usufruit3.setDateDebutMetier(RegDate.get(2010, 6, 25));
+			usufruit3.setDateFinMetier(null);
+			usufruit3.setIdentifiantDroit(new IdentifiantDroitRF(8, 2010, 375));
+			usufruit3.setNumeroAffaire(new IdentifiantAffaireRF(8, 2010, 266, 0));
+			droitRFDAO.save(usufruit3);
+			pp1.addBeneficeServitude(benefice1);
+		}
 
 		// un mock avec les deux ayants-droits.
 		ayantDroitRFDAO.save(pp1);
@@ -486,54 +498,64 @@ public class ServitudeRFDetectorTest {
 		immeuble2.setIdRF("_1f109152380ffd8901380ffe090827e1");
 
 		final UsufruitRF usufruit1 = new UsufruitRF();
-		usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
-		usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
-		usufruit1.addAyantDroit(pp1);
-		usufruit1.addAyantDroit(pp2);
-		usufruit1.addImmeuble(immeuble1);
-		usufruit1.setDateDebut(dateImportInitial);
-		usufruit1.setDateFin(null);
-		usufruit1.setMotifDebut(null);
-		usufruit1.setMotifFin(null);
-		usufruit1.setDateDebutMetier(RegDate.get(2002, 9, 2));
-		usufruit1.setDateFinMetier(null);
-		usufruit1.setIdentifiantDroit(new IdentifiantDroitRF(8, 2005, 699));
-		usufruit1.setNumeroAffaire(new IdentifiantAffaireRF(8, 2002, 392, null));
-		droitRFDAO.save(usufruit1);
-		pp1.addServitude(usufruit1);
-		pp2.addServitude(usufruit1);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit1, pp1);
+			final BeneficeServitudeRF benefice2 = new BeneficeServitudeRF(null, null, usufruit1, pp2);
+			usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
+			usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
+			usufruit1.addBenefice(benefice1);
+			usufruit1.addBenefice(benefice2);
+			usufruit1.addCharge(new ChargeServitudeRF(null, null, usufruit1, immeuble1));
+			usufruit1.setDateDebut(dateImportInitial);
+			usufruit1.setDateFin(null);
+			usufruit1.setMotifDebut(null);
+			usufruit1.setMotifFin(null);
+			usufruit1.setDateDebutMetier(RegDate.get(2002, 9, 2));
+			usufruit1.setDateFinMetier(null);
+			usufruit1.setIdentifiantDroit(new IdentifiantDroitRF(8, 2005, 699));
+			usufruit1.setNumeroAffaire(new IdentifiantAffaireRF(8, 2002, 392, null));
+			droitRFDAO.save(usufruit1);
+			pp1.addBeneficeServitude(benefice1);
+			pp2.addBeneficeServitude(benefice2);
+		}
 
 		final UsufruitRF usufruit2 = new UsufruitRF();
-		usufruit2.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
-		usufruit2.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
-		usufruit2.addAyantDroit(pp2);
-		usufruit2.addImmeuble(immeuble2);
-		usufruit2.setDateDebut(dateImportInitial);
-		usufruit2.setDateFin(null);
-		usufruit2.setMotifDebut(null);
-		usufruit2.setMotifFin(null);
-		usufruit2.setDateDebutMetier(RegDate.get(2007, 6, 25));
-		usufruit2.setDateFinMetier(null);
-		usufruit2.setIdentifiantDroit(new IdentifiantDroitRF(8,2007, 375));
-		usufruit2.setNumeroAffaire(new IdentifiantAffaireRF(8, 2007, 266, 0));
-		droitRFDAO.save(usufruit2);
-		pp2.addServitude(usufruit2);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit2, pp2);
+			usufruit2.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
+			usufruit2.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
+			usufruit2.addBenefice(benefice1);
+			usufruit2.addCharge(new ChargeServitudeRF(null, null, usufruit2, immeuble2));
+			usufruit2.setDateDebut(dateImportInitial);
+			usufruit2.setDateFin(null);
+			usufruit2.setMotifDebut(null);
+			usufruit2.setMotifFin(null);
+			usufruit2.setDateDebutMetier(RegDate.get(2007, 6, 25));
+			usufruit2.setDateFinMetier(null);
+			usufruit2.setIdentifiantDroit(new IdentifiantDroitRF(8, 2007, 375));
+			usufruit2.setNumeroAffaire(new IdentifiantAffaireRF(8, 2007, 266, 0));
+			droitRFDAO.save(usufruit2);
+			pp2.addBeneficeServitude(benefice1);
+		}
 
 		final UsufruitRF usufruit3 = new UsufruitRF();
-		usufruit3.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
-		usufruit3.setVersionIdRF("1f109152380ffd8901380ffed6694002");
-		usufruit3.addAyantDroit(pp1);
-		usufruit3.addImmeuble(immeuble2);
-		usufruit3.setDateDebut(dateImportInitial);
-		usufruit3.setDateFin(null);
-		usufruit3.setMotifDebut(null);
-		usufruit3.setMotifFin(null);
-		usufruit3.setDateDebutMetier(RegDate.get(2010, 6, 25));
-		usufruit3.setDateFinMetier(null);
-		usufruit3.setIdentifiantDroit(new IdentifiantDroitRF(8,2010, 375));
-		usufruit3.setNumeroAffaire(new IdentifiantAffaireRF(8, 2010, 266, 0));
-		droitRFDAO.save(usufruit3);
-		pp1.addServitude(usufruit3);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit3, pp1);
+			usufruit3.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
+			usufruit3.setVersionIdRF("1f109152380ffd8901380ffed6694002");
+			usufruit3.addBenefice(benefice1);
+			usufruit3.addCharge(new ChargeServitudeRF(null, null, usufruit3, immeuble2));
+			usufruit3.setDateDebut(dateImportInitial);
+			usufruit3.setDateFin(null);
+			usufruit3.setMotifDebut(null);
+			usufruit3.setMotifFin(null);
+			usufruit3.setDateDebutMetier(RegDate.get(2010, 6, 25));
+			usufruit3.setDateFinMetier(null);
+			usufruit3.setIdentifiantDroit(new IdentifiantDroitRF(8, 2010, 375));
+			usufruit3.setNumeroAffaire(new IdentifiantAffaireRF(8, 2010, 266, 0));
+			droitRFDAO.save(usufruit3);
+			pp1.addBeneficeServitude(benefice1);
+		}
 
 		// un mock avec les deux ayants-droits.
 		ayantDroitRFDAO.save(pp1);
@@ -621,52 +643,61 @@ public class ServitudeRFDetectorTest {
 		immeuble2.setIdRF("_1f109152380ffd8901380ffe090827e1");
 
 		final UsufruitRF usufruit1 = new UsufruitRF();
-		usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
-		usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
-		usufruit1.addAyantDroit(pp1);
-		usufruit1.addImmeuble(immeuble1);
-		usufruit1.setDateDebut(dateImportInitial);
-		usufruit1.setDateFin(null);
-		usufruit1.setMotifDebut(null);
-		usufruit1.setMotifFin(null);
-		usufruit1.setDateDebutMetier(RegDate.get(2002, 9, 2));
-		usufruit1.setDateFinMetier(null);
-		usufruit1.setIdentifiantDroit(new IdentifiantDroitRF(8,2005, 699));
-		usufruit1.setNumeroAffaire(new IdentifiantAffaireRF(8, 2002, 392, null));
-		pp1.addServitude(usufruit1);
-		droitRFDAO.save(usufruit1);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit1, pp1);
+			usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
+			usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
+			usufruit1.addBenefice(benefice1);
+			usufruit1.addCharge(new ChargeServitudeRF(null, null, usufruit1, immeuble1));
+			usufruit1.setDateDebut(dateImportInitial);
+			usufruit1.setDateFin(null);
+			usufruit1.setMotifDebut(null);
+			usufruit1.setMotifFin(null);
+			usufruit1.setDateDebutMetier(RegDate.get(2002, 9, 2));
+			usufruit1.setDateFinMetier(null);
+			usufruit1.setIdentifiantDroit(new IdentifiantDroitRF(8, 2005, 699));
+			usufruit1.setNumeroAffaire(new IdentifiantAffaireRF(8, 2002, 392, null));
+			droitRFDAO.save(usufruit1);
+			pp1.addBeneficeServitude(benefice1);
+		}
 
 		final UsufruitRF usufruit2 = new UsufruitRF();
-		usufruit2.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
-		usufruit2.setVersionIdRF("1f109152380ffd8901380ffed6694002");
-		usufruit2.addAyantDroit(pp2);
-		usufruit2.addImmeuble(immeuble1);
-		usufruit2.setDateDebut(dateImportInitial);
-		usufruit2.setDateFin(null);
-		usufruit2.setMotifDebut(null);
-		usufruit2.setMotifFin(null);
-		usufruit2.setDateDebutMetier(RegDate.get(2002, 9, 2));
-		usufruit2.setDateFinMetier(null);
-		usufruit2.setIdentifiantDroit(new IdentifiantDroitRF(8,2005, 699));
-		usufruit2.setNumeroAffaire(new IdentifiantAffaireRF(8, 2002, 392, null));
-		pp2.addServitude(usufruit2);
-		droitRFDAO.save(usufruit2);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit2, pp2);
+			usufruit2.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
+			usufruit2.setVersionIdRF("1f109152380ffd8901380ffed6694002");
+			usufruit2.addBenefice(benefice1);
+			usufruit2.addCharge(new ChargeServitudeRF(null, null, usufruit2, immeuble2));
+			usufruit2.setDateDebut(dateImportInitial);
+			usufruit2.setDateFin(null);
+			usufruit2.setMotifDebut(null);
+			usufruit2.setMotifFin(null);
+			usufruit2.setDateDebutMetier(RegDate.get(2002, 9, 2));
+			usufruit2.setDateFinMetier(null);
+			usufruit2.setIdentifiantDroit(new IdentifiantDroitRF(8, 2005, 699));
+			usufruit2.setNumeroAffaire(new IdentifiantAffaireRF(8, 2002, 392, null));
+			droitRFDAO.save(usufruit2);
+			pp2.addBeneficeServitude(benefice1);
+		}
 
 		final UsufruitRF usufruit3 = new UsufruitRF();
-		usufruit3.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
-		usufruit3.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
-		usufruit3.addAyantDroit(pp2);
-		usufruit3.addImmeuble(immeuble2);
-		usufruit3.setDateDebut(dateImportInitial);
-		usufruit3.setDateFin(null);
-		usufruit3.setMotifDebut(null);
-		usufruit3.setMotifFin(null);
-		usufruit3.setDateDebutMetier(RegDate.get(2007, 6, 25));
-		usufruit3.setDateFinMetier(null);
-		usufruit3.setIdentifiantDroit(new IdentifiantDroitRF(8,2007, 375));
-		usufruit3.setNumeroAffaire(new IdentifiantAffaireRF(8, 2007, 266, 0));
-		pp2.addServitude(usufruit3);
-		droitRFDAO.save(usufruit3);
+		{
+			final BeneficeServitudeRF benefice1 = new BeneficeServitudeRF(null, null, usufruit3, pp1);
+			usufruit3.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
+			usufruit3.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
+			usufruit3.addBenefice(benefice1);
+			usufruit3.addCharge(new ChargeServitudeRF(null, null, usufruit3, immeuble2));
+			usufruit3.setDateDebut(dateImportInitial);
+			usufruit3.setDateFin(null);
+			usufruit3.setMotifDebut(null);
+			usufruit3.setMotifFin(null);
+			usufruit3.setDateDebutMetier(RegDate.get(2007, 6, 25));
+			usufruit3.setDateFinMetier(null);
+			usufruit3.setIdentifiantDroit(new IdentifiantDroitRF(8, 2007, 375));
+			usufruit3.setNumeroAffaire(new IdentifiantAffaireRF(8, 2007, 266, 0));
+			droitRFDAO.save(usufruit3);
+			pp1.addBeneficeServitude(benefice1);
+		}
 
 		// un mock avec les deux ayants-droits.
 		ayantDroitRFDAO.save(pp1);

@@ -10,6 +10,37 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalBatiment;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImplantationBatiment;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
+import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonneRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.registrefoncier.ServitudeRF;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCommune;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.event.fiscal.v5.AdditionalOrgInfoEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.AdditionalOrgInfoEventType;
 import ch.vd.unireg.xml.event.fiscal.v5.BirthEvent;
@@ -75,34 +106,6 @@ import ch.vd.unireg.xml.event.fiscal.v5.TaxSystemEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.TaxSystemStartEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.WelcomeLetterSendingEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.WithholdingTaxDeclarationEvent;
-import ch.vd.unireg.declaration.Declaration;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
-import ch.vd.unireg.declaration.DeclarationImpotSource;
-import ch.vd.unireg.declaration.QuestionnaireSNC;
-import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalBatiment;
-import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
-import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
-import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
-import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImplantationBatiment;
-import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
-import ch.vd.unireg.registrefoncier.AyantDroitRF;
-import ch.vd.unireg.registrefoncier.DroitProprietePersonneRF;
-import ch.vd.unireg.registrefoncier.DroitProprieteRF;
-import ch.vd.unireg.registrefoncier.ImmeubleRF;
-import ch.vd.unireg.registrefoncier.RegistreFoncierService;
-import ch.vd.unireg.registrefoncier.ServitudeRF;
-import ch.vd.unireg.registrefoncier.UsufruitRF;
-import ch.vd.unireg.tiers.AllegementFiscal;
-import ch.vd.unireg.tiers.AllegementFiscalCommune;
-import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.unireg.tiers.DebiteurPrestationImposable;
-import ch.vd.unireg.tiers.ForFiscal;
-import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
-import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
-import ch.vd.unireg.tiers.Tiers;
-import ch.vd.unireg.xml.DataHelper;
-import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.party.v5.RightHolderBuilder;
 
 public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, InitializingBean {
@@ -621,10 +624,14 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			final ServitudeRF servitude = evenementFiscal.getServitude();
 			event.setEasementType(servitude instanceof UsufruitRF ? EasementType.USUFRUCT : EasementType.HOUSING);
 			event.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
-			event.getImmovablePropertyIds().addAll(servitude.getImmeubles().stream()
+			event.getImmovablePropertyIds().addAll(servitude.getCharges().stream()
+					                                       .filter(AnnulableHelper::nonAnnule)
+					                                       .map(ChargeServitudeRF::getImmeuble)
 					                                       .map(ImmeubleRF::getId)
 					                                       .collect(Collectors.toList()));
-			event.getRightHolders().addAll(servitude.getAyantDroits().stream()
+			event.getRightHolders().addAll(servitude.getBenefices().stream()
+					                               .filter(AnnulableHelper::nonAnnule)
+					                               .map(BeneficeServitudeRF::getAyantDroit)
 					                               .map(r -> RightHolderBuilder.getRightHolder(r, registreFoncierService::getContribuableIdFor))
 					                               .collect(Collectors.toList()));
 			return event;

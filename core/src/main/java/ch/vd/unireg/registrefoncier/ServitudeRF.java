@@ -3,18 +3,19 @@ package ch.vd.unireg.registrefoncier;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,14 +32,14 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityPhase;
 public abstract class ServitudeRF extends DroitRF implements Duplicable<ServitudeRF> {
 
 	/**
-	 * Les ayant-droits concernés par la servitude.
+	 * Les ayant-droits bénéficiaires de la servitude.
 	 */
-	private Set<AyantDroitRF> ayantDroits;
+	private Set<BeneficeServitudeRF> benefices;
 
 	/**
-	 * Les immeubles concernés par la servitude.
+	 * Les immeubles chargé par la servitude.
 	 */
-	private Set<ImmeubleRF> immeubles;
+	private Set<ChargeServitudeRF> charges;
 
 	/**
 	 * L'identifiant métier public du droit.
@@ -56,52 +57,61 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 
 	public ServitudeRF(ServitudeRF right) {
 		super(right);
-		this.ayantDroits = (right.ayantDroits == null ? null : new HashSet<>(right.ayantDroits));
-		this.immeubles = (right.immeubles == null ? null : new HashSet<>(right.immeubles));
+
+		// fait une copie profonde des liens vers les bénéficiaires
+		this.benefices = (right.benefices == null ? new HashSet<>() : right.benefices.stream()
+				.map(BeneficeServitudeRF::duplicate)
+				.collect(Collectors.toSet()));
+		this.benefices.forEach(lien -> lien.setServitude(this));
+
+		// fait une copie profonde des liens vers les immeubles
+		this.charges = (right.charges == null ? new HashSet<>() : right.charges.stream()
+				.map(ChargeServitudeRF::duplicate)
+				.collect(Collectors.toSet()));
+		this.charges.forEach(lien -> lien.setServitude(this));
+
 		this.identifiantDroit = (right.identifiantDroit == null ? null : new IdentifiantDroitRF(right.identifiantDroit));
 		this.numeroAffaire = (right.numeroAffaire == null ? null : new IdentifiantAffaireRF(right.numeroAffaire));
 	}
 
-	// configuration hibernate : la servitude possède les ayants-droit
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "RF_SERVITUDE_AYANT_DROIT",
-			joinColumns = @JoinColumn(name = "DROIT_ID"),
-			inverseJoinColumns = @JoinColumn(name = "AYANT_DROIT_ID"),
-			uniqueConstraints = @UniqueConstraint(name = "IDX_SERVITUDE_AYANT_DROIT_ID", columnNames = {"DROIT_ID", "AYANT_DROIT_ID"}))
-	public Set<AyantDroitRF> getAyantDroits() {
-		return ayantDroits;
+	// configuration hibernate : la servitude possède les liens vers les bénéficiaires
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "DROIT_ID", nullable = false)
+	@ForeignKey(name = "FK_SERV_AD_RF_DROIT_ID")
+	public Set<BeneficeServitudeRF> getBenefices() {
+		return benefices;
 	}
 
-	public void setAyantDroits(Set<AyantDroitRF> ayantDroits) {
-		this.ayantDroits = ayantDroits;
+	public void setBenefices(Set<BeneficeServitudeRF> implantations) {
+		this.benefices = implantations;
 	}
 
-	public void addAyantDroit(AyantDroitRF ayantDroit) {
-		if (this.ayantDroits == null) {
-			this.ayantDroits = new HashSet<>();
+	public void addBenefice(BeneficeServitudeRF benefice) {
+		if (this.benefices == null) {
+			this.benefices = new HashSet<>();
 		}
-		this.ayantDroits.add(ayantDroit);
+		benefice.setServitude(this);
+		this.benefices.add(benefice);
 	}
 
-	// configuration hibernate : la servitude possède les immeubles
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "RF_SERVITUDE_IMMEUBLE",
-			joinColumns = @JoinColumn(name = "DROIT_ID"),
-			inverseJoinColumns = @JoinColumn(name = "IMMEUBLE_ID"),
-			uniqueConstraints = @UniqueConstraint(name = "IDX_SERVITUDE_IMMEUBLE_ID", columnNames = {"DROIT_ID", "IMMEUBLE_ID"}))
-	public Set<ImmeubleRF> getImmeubles() {
-		return immeubles;
+	// configuration hibernate : la servitude possède les liens vers les bénéficiaires
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "DROIT_ID", nullable = false)
+	@ForeignKey(name = "FK_SERV_IMM_RF_DROIT_ID")
+	public Set<ChargeServitudeRF> getCharges() {
+		return charges;
 	}
 
-	public void setImmeubles(Set<ImmeubleRF> immeubles) {
-		this.immeubles = immeubles;
+	public void setCharges(Set<ChargeServitudeRF> charges) {
+		this.charges = charges;
 	}
 
-	public void addImmeuble(ImmeubleRF immeuble) {
-		if (this.immeubles == null) {
-			this.immeubles = new HashSet<>();
+	public void addCharge(ChargeServitudeRF charge) {
+		if (this.charges == null) {
+			this.charges = new HashSet<>();
 		}
-		this.immeubles.add(immeuble);
+		charge.setServitude(this);
+		this.charges.add(charge);
 	}
 
 	@Column(name = "IDENTIFIANT_DROIT", length = LengthConstants.RF_IDENTIFIANT_DROIT)
@@ -135,13 +145,17 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 	@Transient
 	@Override
 	public @NotNull List<AyantDroitRF> getAyantDroitList() {
-		return new ArrayList<>(ayantDroits);
+		return benefices.stream()
+				.map(BeneficeServitudeRF::getAyantDroit)
+				.collect(Collectors.toList());
 	}
 
 	@Transient
 	@Override
 	public @NotNull List<ImmeubleRF> getImmeubleList() {
-		return new ArrayList<>(immeubles);
+		return charges.stream()
+				.map(ChargeServitudeRF::getImmeuble)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -164,11 +178,11 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 		if (right instanceof ServitudeRF) {
 			final ServitudeRF rightProp =(ServitudeRF) right;
 			// TODO (msi) peut-être faire un comparaison plus fine...
-			c = ObjectUtils.compare(ayantDroits.size(), rightProp.ayantDroits.size(), false);
+			c = ObjectUtils.compare(benefices.size(), rightProp.benefices.size(), false);
 			if (c != 0) {
 				return c;
 			}
-			c = ObjectUtils.compare(immeubles.size(), rightProp.immeubles.size(), false);
+			c = ObjectUtils.compare(charges.size(), rightProp.charges.size(), false);
 		}
 		else {
 			c = 1;
@@ -179,22 +193,28 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 	@Override
 	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
-		if ((context.getPhase() == LinkedEntityPhase.TACHES || context.getPhase() == LinkedEntityPhase.DATA_EVENT) && ayantDroits != null) {
+		if ((context.getPhase() == LinkedEntityPhase.TACHES || context.getPhase() == LinkedEntityPhase.DATA_EVENT) && benefices != null) {
 			final List<Object> list = new ArrayList<>();
-			for (AyantDroitRF ayantDroit : ayantDroits) {
-				if (ayantDroit instanceof TiersRF) {
-					// on cherche tous les contribuables concernés ou ayant été concernés par ce tiers
-					list.addAll(DroitProprieteRF.findLinkedContribuables((TiersRF) ayantDroit));
-				}
-			}
+			benefices.stream()
+					.map(BeneficeServitudeRF::getAyantDroit)
+					.filter(TiersRF.class::isInstance)
+					.map(TiersRF.class::cast)
+					.forEach(tiers -> {
+						// on cherche tous les contribuables concernés ou ayant été concernés par ce tiers
+						list.addAll(DroitProprieteRF.findLinkedContribuables(tiers));
+					});
 			// on ajoute les immeubles, évidemment
-			if (immeubles != null) {
-				list.addAll(immeubles);
+			if (charges != null) {
+				list.addAll(charges.stream()
+						            .map(ChargeServitudeRF::getImmeuble)
+						            .collect(Collectors.toList()));
 			}
 			return list;
 		}
 		else {
-			return immeubles == null ? Collections.emptyList() : new ArrayList<>(immeubles);
+			return charges == null ? Collections.emptyList() : charges.stream()
+					.map(ChargeServitudeRF::getImmeuble)
+					.collect(Collectors.toList());
 		}
 	}
 }
