@@ -765,12 +765,12 @@ public class RapportController {
 					nomAutoriteTutelaire2 = RapportsPage.RapportView.getNomAutoriteTutelaire(rl.getAutoriteTutelaireId(), tiersService);
 				}
 
-				if (nomAutoriteTutelaire1.isEmpty() || nomAutoriteTutelaire2.isEmpty()) {
-					if (nomAutoriteTutelaire1.isEmpty() && nomAutoriteTutelaire2.isEmpty()) {
+				if (StringUtils.isBlank(nomAutoriteTutelaire1) || StringUtils.isBlank(nomAutoriteTutelaire2)) {
+					if (StringUtils.isBlank(nomAutoriteTutelaire1) && StringUtils.isBlank(nomAutoriteTutelaire2)) {
 						return 0;
 					}
 
-					return nomAutoriteTutelaire1.isEmpty() ? -1 : 1;
+					return StringUtils.isBlank(nomAutoriteTutelaire1) ? -1 : 1;
 				}
 
 				return nomAutoriteTutelaire1.compareTo(nomAutoriteTutelaire2);
