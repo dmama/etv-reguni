@@ -21,23 +21,23 @@ public class CommunauteRFPrincipalInfo implements CollatableDateRange<Communaute
 	 * Id technique du principal
 	 */
 	@Nullable
-	private Long id;
+	private final Long id;
 
 	/**
 	 * Id technique de l'ayant-droit
 	 */
 	@Nullable
-	private Long ayantDroitId;
+	private final Long ayantDroitId;
 
 	/**
 	 * Vrai si le principal est par défaut, c'est-à-dire qu'il n'a pas été explicitement élu.
 	 */
-	private boolean parDefaut;
-	private RegDate dateDebut;
-	private RegDate dateFin;
+	private final boolean parDefaut;
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
 	@Nullable
-	private Date annulationDate;
-	private long ctbId;
+	private final Date annulationDate;
+	private final long ctbId;
 
 	public CommunauteRFPrincipalInfo(@Nullable Long id, @Nullable Long ayantDroitId, RegDate dateDebut, RegDate dateFin, @Nullable Date annulationDate, long ctbId, boolean parDefaut) {
 		this.id = id;

@@ -8,17 +8,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.xml.party.landregistry.v1.AdministrativeAuthorityIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
-import ch.vd.unireg.xml.party.landregistry.v1.CorporationIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
-import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommunauteRFAppartenanceInfo;
 import ch.vd.unireg.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.unireg.registrefoncier.CommunauteRFPrincipalInfo;
 import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
@@ -31,6 +23,16 @@ import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.unireg.registrefoncier.TypeCommunaute;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.party.landregistry.v1.AdministrativeAuthorityIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnerMembership;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
+import ch.vd.unireg.xml.party.landregistry.v1.CorporationIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 
 import static ch.vd.unireg.xml.party.v5.LandRightBuilderTest.assertCaseIdentifier;
 import static ch.vd.unireg.xml.party.v5.LandRightBuilderTest.assertShare;
@@ -79,7 +81,12 @@ public class CommunityOfOwnersBuilderTest {
 		droit.setImmeuble(immeuble);
 		communaute.addDroitPropriete(droit);
 
-		final CommunauteRFMembreInfo membreInfo = new CommunauteRFMembreInfo(4, Collections.singletonList(2727272L), Arrays.asList(ppRF, pmRF, collRF));
+		CommunauteRFAppartenanceInfo appartenance1 = new CommunauteRFAppartenanceInfo(RegDate.get(2016, 9, 22), RegDate.get(2017, 4, 14), null, null, 2727272L);
+		CommunauteRFAppartenanceInfo appartenance2 = new CommunauteRFAppartenanceInfo(RegDate.get(2016, 9, 22), RegDate.get(2004, 8, 29), null, ppRF, null);
+
+		final CommunauteRFMembreInfo membreInfo = new CommunauteRFMembreInfo(Collections.singletonList(2727272L),
+		                                                                     Arrays.asList(ppRF, pmRF, collRF),
+		                                                                     Arrays.asList(appartenance1, appartenance2));
 		membreInfo.setPrincipaux(Collections.singletonList(new CommunauteRFPrincipalInfo(null,
 		                                                                                 null, RegDate.get(2016, 9, 22), RegDate.get(2017, 4, 14), null, 2727272L, false)));
 
@@ -117,6 +124,24 @@ public class CommunityOfOwnersBuilderTest {
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(leader0.getDateFrom()));
 		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(leader0.getDateTo()));
 		assertEquals(2727272, leader0.getTaxPayerNumber());
+
+		final List<CommunityOfOwnerMembership> memberships = community.getMemberships();
+		assertNotNull(memberships);
+		assertEquals(2, memberships.size());
+
+		final CommunityOfOwnerMembership membership0 = memberships.get(0);
+		assertNotNull(membership0);
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(membership0.getDateFrom()));
+		assertEquals(RegDate.get(2004, 8, 29), DataHelper.xmlToCore(membership0.getDateTo()));
+		assertNull(membership0.getCancellationDate());
+		assertRightHolderNaturalPerson("Arnold", "Whitenegger", RegDate.get(1922,3,23), membership0.getRightHolder());
+
+		final CommunityOfOwnerMembership membership1 = memberships.get(1);
+		assertNotNull(membership1);
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(membership1.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(membership1.getDateTo()));
+		assertNull(membership1.getCancellationDate());
+		assertRightHolderParty(2727272, membership1.getRightHolder());
 	}
 
 	private static void assertRightHolderNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder rightHolder) {

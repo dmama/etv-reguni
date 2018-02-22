@@ -31,6 +31,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.BuildingDescription;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnerMembership;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
@@ -721,6 +722,17 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertRightHolderNaturalPerson("Raymonde", "Grandjean", null, members.get(3));
 		assertRightHolderNaturalPerson(null, "Berard Renée", null, members.get(4));
 
+		final List<CommunityOfOwnerMembership> memberships = community.getMemberships();
+		assertNotNull(memberships);
+		assertEquals(6, memberships.size());
+
+		assertMembershipCtb(null, null, 21550, memberships.get(0));
+		assertMembershipCtb(RegDate.get(1981, 3, 6), RegDate.get(2016, 12, 31), 10035633, memberships.get(1));  // <--- le défunt (dont l'appartenance s'arrête la veille du décès)
+		assertMembershipTiersRF(RegDate.get(1981, 3, 6), RegDate.get(2017, 10, 17), "Raymonde", "Grandjean", memberships.get(2));
+		assertMembershipTiersRF(RegDate.get(1981, 3, 6), null, null, "Berard Renée", memberships.get(3));
+		assertMembershipCtb(RegDate.get(2017, 1, 1), null, 10092818L, memberships.get(4));      // <--- les héritiers (dont l'appartenance commence le jour du décès)
+		assertMembershipCtb(RegDate.get(2017, 1, 1), null, 10093333, memberships.get(5));
+
 		final List<CommunityLeader> leaders = community.getLeaders();
 		assertNotNull(leaders);
 		assertEquals(3, leaders.size());
@@ -734,6 +746,24 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		final LandOwnershipRight landRight = community.getLandRight();
 		assertNotNull(landRight);
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, null, null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 264822986L, landRight);
+	}
+
+	private static void assertMembershipCtb(RegDate dateDebut, RegDate dateFin, long ctbId, CommunityOfOwnerMembership membership) {
+		assertNotNull(membership);
+		assertDate(dateDebut, membership.getDateFrom());
+		assertDate(dateFin, membership.getDateTo());
+		assertNull(membership.getCancellationDate());
+		assertEquals(Integer.valueOf((int) ctbId), membership.getRightHolder().getTaxPayerNumber());
+	}
+
+	private static void assertMembershipTiersRF(RegDate dateDebut, RegDate dateFin, String prenom, String nom, CommunityOfOwnerMembership membership) {
+		assertNotNull(membership);
+		assertDate(dateDebut, membership.getDateFrom());
+		assertDate(dateFin, membership.getDateTo());
+		assertNull(membership.getCancellationDate());
+		final NaturalPersonIdentity identity = (NaturalPersonIdentity) membership.getRightHolder().getIdentity();
+		assertEquals(prenom, identity.getFirstName());
+		assertEquals(nom, identity.getLastName());
 	}
 
 	@Test

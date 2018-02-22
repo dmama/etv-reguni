@@ -9,19 +9,21 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
-import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommunauteRFAppartenanceInfo;
 import ch.vd.unireg.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.unireg.registrefoncier.CommunauteRFPrincipalInfo;
 import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteRF;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnerMembership;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 
 public abstract class CommunityOfOwnersBuilder {
 
@@ -45,6 +47,8 @@ public abstract class CommunityOfOwnersBuilder {
 		// [SIFISC-24457] on expose le droit de propriété de la communauté
 		community.setLandRight(buildLandRight(droitCommunaute, ctbIdProvider));
 		community.getLeaders().addAll(buildLeaders(membreInfo.getPrincipaux()));
+		// [SIFISC-28067] on expose l'historique de l'appartenance des membres de la communauté
+		community.getMemberships().addAll(buildMemberships(membreInfo.getMembresHisto()));
 		return community;
 	}
 
@@ -78,7 +82,7 @@ public abstract class CommunityOfOwnersBuilder {
 
 	@NotNull
 	private static Collection<? extends RightHolder> buildMembers(@NotNull CommunauteRFMembreInfo membreInfo) {
-		final List<RightHolder> membres = new ArrayList<>(membreInfo.getCount());
+		final List<RightHolder> membres = new ArrayList<>();
 		// SIFISC-23747 : on retourne les membres rapprochés en premier, puis les membres non-rapprochés.
 		membreInfo.getCtbIds().forEach(i -> membres.add(new RightHolder(i.intValue(), null, null, null, 0, null)));
 		membreInfo.getTiersRF().forEach(t -> membres.add(new RightHolder(null, null, null, RightHolderBuilder.buildRightHolderIdentity(t), 0, null)));
@@ -95,4 +99,16 @@ public abstract class CommunityOfOwnersBuilder {
 				                              null))
 				.collect(Collectors.toList());
 	}
+
+	@NotNull
+	private static List<CommunityOfOwnerMembership> buildMemberships(@NotNull List<CommunauteRFAppartenanceInfo> membresHisto) {
+		return membresHisto.stream()
+				.map(m -> new CommunityOfOwnerMembership(DataHelper.coreToXMLv2(m.getDateDebut()),
+				                                         DataHelper.coreToXMLv2(m.getDateFin()),
+				                                         DataHelper.coreToXMLv2(m.getAnnulationDate()),
+				                                         RightHolderBuilder.getRightHolder(m),
+				                                         null))
+				.collect(Collectors.toList());
+	}
+
 }

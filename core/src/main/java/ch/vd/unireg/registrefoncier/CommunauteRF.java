@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.tiers.Contribuable;
@@ -123,7 +125,14 @@ public class CommunauteRF extends AyantDroitRF {
 			}
 		}
 
-		return new CommunauteRFMembreInfo(membres.size(), ctbIds, tiersRF);
+		// [SIFISC-28067] on crée l'historique d'appartenance des membres
+		final Collection<CommunauteRFAppartenanceInfo> membresHisto = membres.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(CommunauteRFAppartenanceInfo::new)
+				.sorted(new DateRangeComparator<>())
+				.collect(Collectors.toList());
+
+		return new CommunauteRFMembreInfo(ctbIds, tiersRF, membresHisto);
 	}
 
 	/**

@@ -465,7 +465,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		// [SIFISC-24999] on remplace les défunts par leurs héritiers dans la liste des membres
 		final Map<Long, CommunauteHeritiers> communautesHeritiers = tiersService.getCommunautesHeritiers(info.getCtbIds());
 		if (!communautesHeritiers.isEmpty()) {
-			info = info.apply(communautesHeritiers);
+			info = info.applyHeritages(communautesHeritiers);
 		}
 
 		// [SIFISC-24595] on détermine l'historique des principaux

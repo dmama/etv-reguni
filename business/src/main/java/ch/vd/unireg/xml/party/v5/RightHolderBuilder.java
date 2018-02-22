@@ -5,19 +5,20 @@ import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.xml.party.landregistry.v1.AdministrativeAuthorityIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.CorporationIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
-import ch.vd.unireg.xml.party.landregistry.v1.RightHolderIdentity;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommunauteRFAppartenanceInfo;
 import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
 import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.TiersRF;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.party.landregistry.v1.AdministrativeAuthorityIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.CorporationIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolderIdentity;
 
 public abstract class RightHolderBuilder {
 	private RightHolderBuilder() {
@@ -64,6 +65,22 @@ public abstract class RightHolderBuilder {
 	@NotNull
 	public static RightHolder getRightHolder(@NotNull Long ctbId) {
 		return new RightHolder(ctbId.intValue(), null, null, null, 0, null);
+	}
+
+	@NotNull
+	public static RightHolder getRightHolder(@NotNull CommunauteRFAppartenanceInfo appartenance) {
+		final Long ctbId = appartenance.getCtbId();
+		final TiersRF ayantDroit = appartenance.getAyantDroit();
+		if (ctbId == null) {
+			if (ayantDroit == null) {
+				throw new IllegalArgumentException("L'id de CTB et l'ayant-droit sont tous les deux nuls.");
+			}
+			// le tiers n'est pas rapproché
+			return new RightHolder(null, null, null, buildRightHolderIdentity(ayantDroit), 0, null);
+		}
+		else {
+			return new RightHolder(ctbId.intValue(), null, null, null, 0, null);
+		}
 	}
 
 	@NotNull

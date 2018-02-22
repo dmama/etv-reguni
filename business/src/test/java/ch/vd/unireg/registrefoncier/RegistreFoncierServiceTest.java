@@ -22,6 +22,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -29,12 +35,6 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.unireg.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.unireg.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.unireg.tiers.Entreprise;
@@ -1824,7 +1824,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// la communauté avec Philip comme membre principal (parce que Linconnu arrive avant Loongle)
 				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
 				assertNotNull(info);
-				assertEquals(2, info.getCount());
 				assertEquals(Arrays.asList(ids.ppId1, ids.ppId2), info.getCtbIds());
 
 				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
@@ -1907,7 +1906,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// la communauté avec Elodie comme membre principal (parce qu'elle est explicitement choisie)
 				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
 				assertNotNull(info);
-				assertEquals(2, info.getCount());
 				assertEquals(Arrays.asList(ids.ppId2, ids.ppId1), info.getCtbIds());
 
 				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
@@ -2006,7 +2004,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// la communauté des 3 membres
 				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
 				assertNotNull(info);
-				assertEquals(3, info.getCount());
 				assertEquals(Arrays.asList(ids.ppId2, ids.ppId1, ids.ppId3), info.getCtbIds());
 
 				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
@@ -2134,8 +2131,42 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// la communauté possède 4 membres (3 membres de base - le défunt + les deux héritiers)
 				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
 				assertNotNull(info);
-				assertEquals(4, info.getCount());
 				assertEquals(Arrays.asList(ids.membre2, ids.heritier1, ids.heritier2, ids.membre3), info.getCtbIds());
+
+				// l'historique d'appartenance devrait contenir les 5 membres
+				final List<CommunauteRFAppartenanceInfo> membresHisto = info.getMembresHisto();
+				assertNotNull(membresHisto);
+				assertEquals(5, membresHisto.size());
+
+				// l'appartenance du défunt
+				final CommunauteRFAppartenanceInfo appartenance0 = membresHisto.get(0);
+				assertEquals(dateDebutCommunaute, appartenance0.getDateDebut());
+				assertEquals(dateDebutHeritage.getOneDayBefore(), appartenance0.getDateFin());
+				assertEquals(ids.defunt, appartenance0.getCtbId());
+
+				// l'appartenance d'Elodie
+				final CommunauteRFAppartenanceInfo appartenance1 = membresHisto.get(1);
+				assertEquals(dateDebutCommunaute, appartenance1.getDateDebut());
+				assertNull(appartenance1.getDateFin());
+				assertEquals(ids.membre2, appartenance1.getCtbId());
+
+				// l'appartenance d'Edouard
+				final CommunauteRFAppartenanceInfo appartenance2 = membresHisto.get(2);
+				assertEquals(dateDebutCommunaute, appartenance2.getDateDebut());
+				assertNull(appartenance2.getDateFin());
+				assertEquals(ids.membre3, appartenance2.getCtbId());
+
+				// l'appartenance de Cosette (héritière)
+				final CommunauteRFAppartenanceInfo appartenance3 = membresHisto.get(3);
+				assertEquals(dateDebutHeritage, appartenance3.getDateDebut());
+				assertNull(appartenance3.getDateFin());
+				assertEquals(ids.heritier1, appartenance3.getCtbId());
+
+				// l'appartenance de Lucette (héritière)
+				final CommunauteRFAppartenanceInfo appartenance4 = membresHisto.get(4);
+				assertEquals(dateDebutHeritage, appartenance4.getDateDebut());
+				assertNull(appartenance4.getDateFin());
+				assertEquals(ids.heritier2, appartenance4.getCtbId());
 
 				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
 				assertEquals(4, principaux.size());
