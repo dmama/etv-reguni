@@ -9,6 +9,7 @@
 		<property name="batimentRFDAO" ref="batimentRFDAO"/>
 		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
 		<property name="ayantDroitRFDAO" ref="ayantDroitRFDAO"/>
+		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
 		<property name="situationRFDAO" ref="situationRFDAO"/>
 		<property name="modeleCommunauteRFDAO" ref="modeleCommunauteRFDAO"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>

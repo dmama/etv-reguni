@@ -621,7 +621,6 @@
 		<constructor-arg value="Extraire la liste nécessaire à l'initialisation de la taxation IFONC"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="rapportService" ref="rapportService"/>
-		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>

@@ -43,6 +43,7 @@ import ch.vd.unireg.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.unireg.registrefoncier.dao.DroitRFDAO;
 import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.unireg.registrefoncier.dao.ModeleCommunauteRFDAO;
+import ch.vd.unireg.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.unireg.registrefoncier.dao.SituationRFDAO;
 import ch.vd.unireg.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.unireg.tiers.CommunauteHeritiers;
@@ -62,6 +63,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	private ImmeubleRFDAO immeubleRFDAO;
 	private BatimentRFDAO batimentRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
+	private RapprochementRFDAO rapprochementRFDAO;
 	private SituationRFDAO situationRFDAO;
 	private ModeleCommunauteRFDAO modeleCommunauteRFDAO;
 	private ServiceInfrastructureService infraService;
@@ -86,6 +88,10 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	public void setAyantDroitRFDAO(AyantDroitRFDAO ayantDroitRFDAO) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
+	}
+
+	public void setRapprochementRFDAO(RapprochementRFDAO rapprochementRFDAO) {
+		this.rapprochementRFDAO = rapprochementRFDAO;
 	}
 
 	public void setSituationRFDAO(SituationRFDAO situationRFDAO) {
@@ -128,7 +134,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		if (includeVirtualInheritance) {
 			if (ctb instanceof PersonnePhysique) {
-				// on détermine les liens d'héritage et on les regroupe par numéros de décédé
+				// on détermine les liens d'héritage du ctb courant et on les regroupe par numéros de décédé
 				final Map<Long, List<Heritage>> heritages = ctb.getRapportsSujet().stream()
 						.filter(Heritage.class::isInstance)
 						.map(Heritage.class::cast)
@@ -165,6 +171,89 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		return droits;
 	}
+
+	@NotNull
+	@Override
+	public List<DroitVirtuelHeriteRF> determineDroitsVirtuelsHerites(@NotNull DroitProprieteRF droit, @Nullable Contribuable contribuable, @Nullable RegDate dateReference) {
+
+		final List<DroitVirtuelHeriteRF> droitsEffectifs;
+		if (contribuable == null) {
+			// le tiers n'est pas rapproché, il ne peut y avoir d'héritage/fusion
+			droitsEffectifs = Collections.emptyList();
+		}
+		else {
+			if (contribuable instanceof PersonnePhysique) {
+				// on détermine les héritiers valides du contribuable courant
+				final List<Heritage> heritages = contribuable.getRapportsObjet().stream()
+						.filter(Heritage.class::isInstance)
+						.filter(h -> h.isValidAt(dateReference))
+						.map(Heritage.class::cast)
+						.filter(AnnulableHelper::nonAnnule)
+						.collect(Collectors.toList());
+
+				if (heritages.isEmpty()) {
+					// pas d'héritage valide à la date de référence
+					droitsEffectifs = Collections.emptyList();
+				}
+				else {
+					// il y a un ou des héritages, on remplace le droit initial par les droits virtuels hérités
+					droitsEffectifs = heritages.stream()
+							.map(h -> DroitRFHelper.extract(droit, h, (range, debut, fin) -> adaptDroitVirtuel(contribuable, range, h.getSujetId(), debut, fin)))
+							.filter(Objects::nonNull)
+							.map(DroitVirtuelHeriteRF.class::cast)
+							.collect(Collectors.toList());
+				}
+			}
+			else if (contribuable instanceof Entreprise) {
+				// on détermine les entreprises absorbantes valides de l'entreprise courante
+				final List<FusionEntreprises> fusions = contribuable.getRapportsSujet().stream()
+						.filter(FusionEntreprises.class::isInstance)
+						.filter(f -> f.isValidAt(dateReference))
+						.map(FusionEntreprises.class::cast)
+						.filter(AnnulableHelper::nonAnnule)
+						.collect(Collectors.toList());
+
+				if (fusions.isEmpty()) {
+					// pas de fusion valide à la date de référence
+					droitsEffectifs = Collections.emptyList();
+				}
+				else {
+					// il y a un ou des fusions, on remplace le droit initial par les droits virtuels hérités
+					droitsEffectifs = fusions.stream()
+							.map(f -> DroitRFHelper.extract(droit, f, (range, debut, fin) -> adaptDroitVirtuel(contribuable, range, f.getObjetId(), debut, fin)))
+							.filter(Objects::nonNull)
+							.map(DroitVirtuelHeriteRF.class::cast)
+							.collect(Collectors.toList());
+				}
+			}
+			else {
+				// pas d'héritage/fusion pour les autres catégories de tiers
+				droitsEffectifs = Collections.emptyList();
+			}
+		}
+
+		return droitsEffectifs;
+	}
+
+	private static DroitVirtuelHeriteRF adaptDroitVirtuel(Contribuable contribuable, DroitProprieteRF droit, Long heritierId, RegDate debutAdapte, RegDate finAdapte) {
+
+		final RegDate dateDebut = (debutAdapte == null ? droit.getDateDebutMetier() : debutAdapte);
+		final String motifDebut = (debutAdapte == null ? droit.getMotifDebut() : "Succession");
+		final RegDate dateFin = (finAdapte == null ? droit.getDateFinMetier() : finAdapte);
+		final String motifFin = (finAdapte == null ? droit.getMotifFin() : "Succession");
+
+		final DroitVirtuelHeriteRF dv = new DroitVirtuelHeriteRF();
+		dv.setDecedeId(contribuable.getNumero());
+		dv.setHeritierId(heritierId);
+		// dv.setNombreHeritiers(0);   // pas utile, inutile de se casser la nénette
+		dv.setDateDebutMetier(dateDebut);
+		dv.setDateFinMetier(dateFin);
+		dv.setMotifDebut(motifDebut);
+		dv.setMotifFin(motifFin);
+		dv.setReference(droit);
+		return dv;
+	}
+
 
 	/**
 	 * Cette méthode calcule et retourne les droits valides pour un rapprochement déterminé.
@@ -723,6 +812,17 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
 		return ayantDroitRFDAO.getContribuableIdFor(tiersRF);
+	}
+
+	@Nullable
+	@Override
+	public Contribuable getContribuableRapproche(@NotNull AyantDroitRF ayantDroit, @Nullable RegDate dateReference) {
+		return rapprochementRFDAO.findByTiersRF(ayantDroit.getId(), true).stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(rapprochement -> rapprochement.isValidAt(dateReference))
+				.findFirst()
+				.map(RapprochementRF::getContribuable)
+				.orElse(null);
 	}
 
 	@Nullable

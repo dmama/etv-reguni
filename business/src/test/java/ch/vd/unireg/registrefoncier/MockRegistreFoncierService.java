@@ -24,6 +24,12 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 		throw new NotImplementedException();
 	}
 
+	@NotNull
+	@Override
+	public List<DroitVirtuelHeriteRF> determineDroitsVirtuelsHerites(@NotNull DroitProprieteRF droit, @Nullable Contribuable contribuable, @Nullable RegDate dateReference) {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public @Nullable ImmeubleRF getImmeuble(long immeubleId) {
 		throw new NotImplementedException();
@@ -78,6 +84,11 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 
 	@Override
 	public @Nullable Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public @Nullable Contribuable getContribuableRapproche(@NotNull AyantDroitRF ayantDroit, @Nullable RegDate dateReference) {
 		throw new NotImplementedException();
 	}
 

@@ -25,6 +25,8 @@ import ch.vd.unireg.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.DroitVirtuelHeriteRF;
+import ch.vd.unireg.registrefoncier.DroitVirtuelTransitifRF;
 import ch.vd.unireg.registrefoncier.Fraction;
 import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
@@ -240,6 +242,8 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 		map.put(DroitProprietePersonnePhysiqueRF.class, "Propriété");
 		map.put(DroitProprieteImmeubleRF.class, "Propriété");
 		map.put(UsufruitRF.class, "Usufruit");
+		map.put(DroitVirtuelHeriteRF.class, "Droit virtuel hérité");
+		map.put(DroitVirtuelTransitifRF.class, "Droit virtuel transitif");
 		return map;
 	}
 

@@ -23,23 +23,22 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.DroitVirtuelHeriteRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
-import ch.vd.unireg.registrefoncier.RapprochementRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 import ch.vd.unireg.registrefoncier.ServitudeCombinationIterator;
 import ch.vd.unireg.registrefoncier.ServitudeRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
-import ch.vd.unireg.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.unireg.tiers.Contribuable;
 
 public class InitialisationIFoncProcessor {
@@ -50,13 +49,11 @@ public class InitialisationIFoncProcessor {
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
-	private final RapprochementRFDAO rapprochementRFDAO;
 	private final RegistreFoncierService registreFoncierService;
 
-	public InitialisationIFoncProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, RapprochementRFDAO rapprochementRFDAO, RegistreFoncierService registreFoncierService) {
+	public InitialisationIFoncProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, RegistreFoncierService registreFoncierService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
-		this.rapprochementRFDAO = rapprochementRFDAO;
 		this.registreFoncierService = registreFoncierService;
 	}
 
@@ -130,6 +127,12 @@ public class InitialisationIFoncProcessor {
 				return new InitialisationIFoncResults(dateReference, nbThreads, ofsCommune, registreFoncierService);
 			}
 
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					LOGGER.warn(e.getMessage(), e);
+				}
+			}
 		}, progressMonitor);
 
 		// fin du processus
@@ -157,7 +160,22 @@ public class InitialisationIFoncProcessor {
 		final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
 		final SituationRF situation = getSituationValide(immeuble, rapport.dateReference);
 		final EstimationRF estimation = getEstimationFiscaleValide(immeuble, rapport.dateReference);
-		rapport.addDroitPropriete(contribuable, droit, situation, estimation);
+
+		final List<DroitVirtuelHeriteRF> droitsVirtuels = registreFoncierService.determineDroitsVirtuelsHerites(droit, contribuable, rapport.dateReference);
+		if (droitsVirtuels.isEmpty()) {
+			// il n'y a pas d'héritage/fusion valide à la date de référence : on ajoute le droit réel
+			rapport.addDroitPropriete(contribuable, droit, situation, estimation);
+		}
+		else {
+			// [SIFISC-27899] il y a un ou plusieurs héritages/fusions valides à la date de référence : on ajoute les droits virtuels et leurs ayants-droits respectifs
+			droitsVirtuels.forEach(virtuel -> {
+				final Contribuable heritier = hibernateTemplate.get(Contribuable.class, virtuel.getHeritierId());
+				if (heritier == null) {
+					throw new TiersNotFoundException(virtuel.getHeritierId());
+				}
+				rapport.addDroitVirtuel(heritier, virtuel, situation, estimation);
+			});
+		}
 	}
 
 	private void traiterServitude(ServitudeRF servitude, InitialisationIFoncResults rapport) {
@@ -179,12 +197,7 @@ public class InitialisationIFoncProcessor {
 
 	@Nullable
 	private Contribuable getTiersRapproche(AyantDroitRF ayantDroit, RegDate dateReference) {
-		return rapprochementRFDAO.findByTiersRF(ayantDroit.getId(), true).stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(rapprochement -> rapprochement.isValidAt(dateReference))
-				.findFirst()
-				.map(RapprochementRF::getContribuable)
-				.orElse(null);
+		return registreFoncierService.getContribuableRapproche(ayantDroit, dateReference);
 	}
 
 	@Nullable
@@ -207,6 +220,14 @@ public class InitialisationIFoncProcessor {
 			this.idDroit = idDroit;
 			this.dateDebut = dateDebut;
 			this.dateFin = dateFin;
+		}
+
+		@Nullable
+		public static InfoDroit get(@Nullable Long idDroit, RegDate dateDebut, RegDate dateFin) {
+			if (idDroit == null) {
+				return null;
+			}
+			return new InfoDroit(idDroit, dateDebut, dateFin);
 		}
 
 		public long getIdDroit() {
@@ -263,7 +284,7 @@ public class InitialisationIFoncProcessor {
 		final Iterator<Object[]> iterator = query.iterate();
 		final Iterable<Object[]> iterable = () -> iterator;
 		return StreamSupport.stream(iterable.spliterator(), false)
-				.map(row -> Pair.of((Long) row[0], row[1] == null ? null : new InfoDroit((Long) row[1], (RegDate) row[2], (RegDate) row[3])))
+				.map(row -> Pair.of((Long) row[0], InfoDroit.get((Long) row[1], (RegDate) row[2], (RegDate) row[3])))
 				.collect(Collectors.toMap(Pair::getLeft,
 				                          pair -> pair.getRight() == null ? Collections.<InfoDroit>emptyList() : Collections.singletonList(pair.getRight()),
 				                          ListUtils::union));

@@ -498,4 +498,35 @@ public abstract class DroitRFHelper {
 
 		return list;
 	}
+
+	/**
+	 * Equivalent de la méthode {@link DateRangeHelper#extract(List, List, DateRangeHelper.AdapterCallback)} spécialisée pour un seul droit RF.
+	 *
+	 * @param droit  un droit
+	 * @param range  un range
+	 * @param adapter l'adapteur pour créer les nouveaux droits
+	 * @return le droit extrait
+	 */
+	@Nullable
+	public static <T extends DroitRF> DroitRF extract(T droit, DateRange range, AdapterCallback<T> adapter) {
+
+		if (droit == null || range == null) {
+			return null;
+		}
+
+		final DateRange droitRange = droit.getRangeMetier();
+
+		final DateRange intersection = DateRangeHelper.intersection(droitRange, range);
+		if (intersection == null) {
+			return null;
+		}
+
+		final RegDate interDebut = intersection.getDateDebut();
+		final RegDate interFin = intersection.getDateFin();
+
+		// On adapte le début/fin que si nécessaire
+		final RegDate debut = (interDebut == droitRange.getDateDebut() ? null : interDebut);
+		final RegDate fin = (interFin == droitRange.getDateFin() ? null : interFin);
+		return adapter.adapt(droit, debut, fin);
+	}
 }

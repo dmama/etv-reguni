@@ -12,7 +12,6 @@ import ch.vd.unireg.document.InitialisationIFoncRapport;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
-import ch.vd.unireg.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
@@ -33,7 +32,6 @@ public class InitialisationIFoncJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 	private RapportService rapportService;
 	private HibernateTemplate hibernateTemplate;
-	private RapprochementRFDAO rapprochementRFDAO;
 	private RegistreFoncierService registreFoncierService;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -46,10 +44,6 @@ public class InitialisationIFoncJob extends JobDefinition {
 
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
-	}
-
-	public void setRapprochementRFDAO(RapprochementRFDAO rapprochementRFDAO) {
-		this.rapprochementRFDAO = rapprochementRFDAO;
 	}
 
 	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
@@ -93,7 +87,7 @@ public class InitialisationIFoncJob extends JobDefinition {
 		final RegDate dateReference = getRegDateValue(params, DATE_PARAM);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS_PARAM);
 		final Integer ofsCommune = getOptionalIntegerValue(params, COMMUNE_PARAM);
-		final InitialisationIFoncProcessor processor = new InitialisationIFoncProcessor(transactionManager, hibernateTemplate, rapprochementRFDAO, registreFoncierService);
+		final InitialisationIFoncProcessor processor = new InitialisationIFoncProcessor(transactionManager, hibernateTemplate, registreFoncierService);
 		final InitialisationIFoncResults results = processor.run(dateReference, nbThreads, ofsCommune, getStatusManager());
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

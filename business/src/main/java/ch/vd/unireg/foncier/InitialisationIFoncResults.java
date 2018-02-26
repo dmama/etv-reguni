@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -26,6 +26,7 @@ import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
+import ch.vd.unireg.registrefoncier.DroitVirtuelHeriteRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;
 import ch.vd.unireg.registrefoncier.Fraction;
 import ch.vd.unireg.registrefoncier.GenrePropriete;
@@ -104,6 +105,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		addToIdCommunauteExtractors(map, DroitProprietePersonneMoraleRF.class, DroitProprietePersonneRF::getCommunaute);
 		addToIdCommunauteExtractors(map, DroitProprietePersonnePhysiqueRF.class, DroitProprietePersonneRF::getCommunaute);
 		addToIdCommunauteExtractors(map, DroitProprieteCommunauteRF.class, droit -> (CommunauteRF) droit.getAyantDroit());
+		addToIdCommunauteExtractors(map, DroitVirtuelHeriteRF.class, droit -> extractCommunaute(droit.getReference()));
 		return map;
 	}
 
@@ -304,6 +306,34 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			idImmeubleBeneficiaire = null;
 			infoImmeuble = new InfoImmeuble(immeuble, situation, estimationFiscale);
 		}
+
+		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull DroitVirtuelHeriteRF droit, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
+			// à priori, le droit de référence toujours est un droit de propriété
+			final DroitProprieteRF droitReference = (DroitProprieteRF) droit.getReference();
+
+			// information du contribuable
+			idContribuable = (contribuable == null ?  null : contribuable.getNumero());
+			identificationRF = null;    // les héritiers/entreprises absorbantes sont des données fiscales, pas RF
+			noRFAyantDroit = null;
+
+			// l'éventuelle communauté
+			idCommunaute = Optional.ofNullable(extractCommunaute(droit)).map(CommunauteRF::getId).orElse(null);
+
+			// les données du droit lui-même
+			classAyantDroit = null;
+			idRFAyantDroit = null;
+			classDroit = droit.getClass();
+			motifDebut = droit.getMotifDebut();
+			dateDebut = droit.getDateDebutMetier();
+			motifFin = droit.getMotifFin();
+			dateFin = droit.getDateFinMetier();
+			regime = droitReference.getRegime();
+			part = droitReference.getPart();
+			idImmeubleBeneficiaire = getIdImmeubleBeneficiaire(droit);
+
+			// les données de l'immeuble et de sa situation
+			infoImmeuble = new InfoImmeuble(droitReference.getImmeuble(), situation, estimationFiscale);
+		}
 	}
 
 	public static class ErreurImmeuble {
@@ -346,6 +376,10 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 	}
 
 	public void addDroitPropriete(@Nullable Contribuable contribuable, @NotNull DroitProprieteRF droit, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
+		this.lignesExtraites.add(new InfoExtraction(contribuable, droit, situation, estimationFiscale));
+	}
+
+	public void addDroitVirtuel(@NotNull Contribuable contribuable, @NotNull DroitVirtuelHeriteRF droit, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
 		this.lignesExtraites.add(new InfoExtraction(contribuable, droit, situation, estimationFiscale));
 	}
 

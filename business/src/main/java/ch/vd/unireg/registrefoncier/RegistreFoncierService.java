@@ -39,6 +39,17 @@ public interface RegistreFoncierService {
 	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtualTransitive, boolean includeVirtualInheritance);
 
 	/**
+	 * Détermine les droits virtuels qui découlent d'un héritage ou d'une fusion d'entreprise.
+	 *
+	 * @param droit         un droit réel de référence
+	 * @param contribuable  le contribuable rapproché au droit et qui possède potentiellement des héritiers ou des entreprises absorbantes
+	 * @param dateReference une date de référence pour déterminer la validité des héritages/fusions
+	 * @return une liste des droits virtuels; ou une liste vide si aucun héritage/fusion n'existe à la date de référence.
+	 */
+	@NotNull
+	List<DroitVirtuelHeriteRF> determineDroitsVirtuelsHerites(@NotNull DroitProprieteRF droit, @Nullable Contribuable contribuable, @Nullable RegDate dateReference);
+
+	/**
 	 * @param immeubleId l'id technique d'un immeuble
 	 * @return l'immeuble qui correspond à l'id; ou <b>null</b> si aucun immeuble ne correspond.
 	 */
@@ -140,6 +151,14 @@ public interface RegistreFoncierService {
 	 */
 	@Nullable
 	Long getContribuableIdFor(@NotNull TiersRF tiersRF);
+
+	/**
+	 * @param ayantDroit    un ayant-droit RF
+	 * @param dateReference une date de référence
+	 * @return le contribuable rapproché avec l'ayant-droit spécifié à la date spécifiée; <i>null</i> s'il n'y a pas de contribuable rapproché à la date spécifiée;
+	 */
+	@Nullable
+	Contribuable getContribuableRapproche(@NotNull AyantDroitRF ayantDroit, @Nullable RegDate dateReference);
 
 	/**
 	 * @param immeuble      immeuble du RF
