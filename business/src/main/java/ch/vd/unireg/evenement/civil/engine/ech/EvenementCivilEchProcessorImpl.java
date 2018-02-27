@@ -68,7 +68,6 @@ import ch.vd.unireg.type.EtatEvenementCivil;
 public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcessor, EvenementCivilEchInternalProcessor, SmartLifecycle, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchProcessorImpl.class);
-	private static final Logger EVT_INTERNE_LOGGER = LoggerFactory.getLogger(EvenementCivilInterne.class);
 
 	private static final String COMMENTAIRE_ANNULATION_GROUPEE = "Groupe d'événements annulés alors qu'ils étaient encore en attente.";
 	private static final String COMMENTAIRE_CORRECTION_GROUPEE = "Evénement directement pris en compte dans le traitement de l'événement référencé.";
@@ -289,7 +288,6 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
 	 */
 	public boolean processEventAndDoPostProcessingOnError(EvenementCivilEchBasicInfo evt, List<EvenementCivilEchBasicInfo> evts, int pointer) {
-		serviceCivil.setIndividuLogging(EVT_INTERNE_LOGGER.isTraceEnabled());
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.getId()));
 		try {
 			final boolean success = processEvent(evt);
@@ -300,7 +298,6 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
-			serviceCivil.setIndividuLogging(false);
 		}
 	}
 

@@ -7,6 +7,8 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.HistoriqueCommune;
+import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -17,8 +19,6 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.adresse.HistoriqueCommune;
-import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 
@@ -237,11 +237,4 @@ public interface ServiceCivilService {
 	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().
 	 */
 	boolean isWarmable();
-
-	/**
-	 * Active ou non le dump des individus récupérés dans le registre civil <b>pour le thread courant</b>.
-	 *
-	 * @param value <b>vrai</b> si le dump est activé; <b>faux</b> s'il n'est pas activé.
-	 */
-	void setIndividuLogging(boolean value);
 }

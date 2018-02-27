@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.admin.indexer.GestionIndexation;
 import ch.vd.unireg.admin.indexer.IndexDocument;
 import ch.vd.unireg.common.Flash;
@@ -26,6 +25,7 @@ import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.indexer.GlobalIndexInterface;
 import ch.vd.unireg.indexer.lucene.LuceneHelper;
 import ch.vd.unireg.indexer.tiers.TiersIndexableData;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
@@ -134,19 +134,13 @@ public class GestionIndexationController {
 
 		final Long id = data.getIndNo();
 		if (id != null) {
-			serviceCivil.setIndividuLogging(data.isLogIndividu());
-			try {
-				dataEventService.onIndividuChange(id);
-				final Individu individu = serviceCivil.getIndividu(id, null);
-				if (individu == null) {
-					Flash.warning("L'individu n°" + id + " n'existe pas.");
-				}
-				else {
-					Flash.message("L'individu n°" + id + " a été rechargé.");
-				}
+			dataEventService.onIndividuChange(id);
+			final Individu individu = serviceCivil.getIndividu(id, null);
+			if (individu == null) {
+				Flash.warning("L'individu n°" + id + " n'existe pas.");
 			}
-			finally {
-				serviceCivil.setIndividuLogging(false);
+			else {
+				Flash.message("L'individu n°" + id + " a été rechargé.");
 			}
 		}
 		else {

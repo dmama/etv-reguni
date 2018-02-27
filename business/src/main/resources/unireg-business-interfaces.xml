@@ -17,7 +17,6 @@
 	<bean id="serviceCivilService" class="ch.vd.unireg.interfaces.service.ServiceCivilImpl">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="target" ref="serviceCivilRaw"/>
-		<property name="serviceLogger" ref="serviceCivilLogger"/>
 	</bean>
 
 	<!-- Service Organisation -->

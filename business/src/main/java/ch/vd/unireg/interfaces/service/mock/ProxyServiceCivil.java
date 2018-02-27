@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.adresse.HistoriqueCommune;
+import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
@@ -20,8 +22,6 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.adresse.HistoriqueCommune;
-import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
@@ -160,12 +160,6 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	public boolean isWarmable() {
 		assertTargetNotNull();
 		return service.isWarmable();
-	}
-
-	@Override
-	public void setIndividuLogging(boolean value) {
-		assertTargetNotNull();
-		service.setIndividuLogging(value);
 	}
 
 	@Override

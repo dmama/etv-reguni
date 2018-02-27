@@ -12,6 +12,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.adresse.HistoriqueCommune;
+import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
@@ -27,8 +29,6 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.adresse.HistoriqueCommune;
-import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
@@ -39,7 +39,6 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 
 	private ServiceInfrastructureService infraService;
 	private ServiceCivilRaw target;
-	private ServiceCivilLogger serviceLogger;
 
 	public ServiceCivilImpl() {
 	}
@@ -59,10 +58,6 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
-	}
-
-	public void setServiceLogger(ServiceCivilLogger serviceLogger) {
-		this.serviceLogger = serviceLogger;
 	}
 
 	@Override
@@ -343,13 +338,6 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	@Override
 	public boolean isWarmable() {
 		return target.isWarmable();
-	}
-
-	@Override
-	public void setIndividuLogging(boolean value) {
-		if (serviceLogger != null) { // les tests unitaires n'utilisent pas de logger sur le mock du service civil
-			serviceLogger.setIndividuLogging(value);
-		}
 	}
 
 	@Override

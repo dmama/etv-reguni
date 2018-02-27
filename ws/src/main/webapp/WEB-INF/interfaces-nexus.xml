@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Exécuteur HTTP pour tous les appels spring-remoting de WS vers Nexus -->
-	<bean id="nexusHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorFactoryWithCustomHeaders">
+	<bean id="nexusHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorFactory">
 		<property name="serviceName" value="nexus"/>
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
@@ -12,10 +12,6 @@
 	</bean>
 
 	<!-- Service civil -->
-
-	<bean id="serviceCivilLogger" class="ch.vd.unireg.interfaces.civil.ServiceCivilRemoteLogger">
-		<property name="executor" ref="nexusHttpRequestExecutor"/>
-	</bean>
 
 	<bean id="serviceCivilRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceCivil.remoting" />

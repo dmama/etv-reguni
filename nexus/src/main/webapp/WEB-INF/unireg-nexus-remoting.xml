@@ -6,14 +6,9 @@
 	(dont les beans de remoting ci-dessous) dans le DispatcherServlet -->
     <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
 
-	<bean name="serviceCivilRawExporterCallback" class="ch.vd.unireg.interfaces.civil.ServiceCivilRawExporterCallback">
-		<property name="serviceCivilLogger" ref="serviceCivilLogger"/>
-	</bean>
-
-	<bean name="serviceCivilRawExporter" class="ch.vd.unireg.servlet.remoting.HttpInvokerServiceExporterWithCustomHeaders">
+	<bean name="serviceCivilRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
 		<property name="service" ref="serviceCivilRaw" />
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
-		<property name="callback" ref="serviceCivilRawExporterCallback" />
  	</bean>
 
 	<bean name="serviceOrganisationRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">

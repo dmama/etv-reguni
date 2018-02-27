@@ -16,8 +16,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CheckedTransactionCallback;
@@ -34,6 +32,8 @@ import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreurFactory;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -50,7 +50,6 @@ import ch.vd.unireg.type.EtatEvenementCivil;
 public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilProcessorImpl.class);
-	private static final Logger EVT_INTERNE_LOGGER = LoggerFactory.getLogger(EvenementCivilInterne.class);
 
 	private static final EvenementCivilRegPPErreurFactory ERREUR_FACTORY = new EvenementCivilRegPPErreurFactory();
 
@@ -137,8 +136,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// on ajoute le numéro de l'événement civil comme suffix à l'utilisateur principal, de manière à faciliter le tracing
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evenementCivilId));
 		try {
-			serviceCivil.setIndividuLogging(EVT_INTERNE_LOGGER.isTraceEnabled());
-
 			// Tout d'abord, on essaie de traiter l'événement
 			result = template.execute(new CheckedTransactionCallback<Long>() {
 				@Override
@@ -170,7 +167,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
-			serviceCivil.setIndividuLogging(false);
 		}
 
 		return result;

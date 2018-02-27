@@ -13,20 +13,19 @@ import ch.vd.evd0001.v5.ListOfPersons;
 import ch.vd.evd0001.v5.Person;
 import ch.vd.evd0004.v3.Error;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BatchIterator;
+import ch.vd.unireg.common.StandardBatchIterator;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilInterceptor;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.wsclient.rcpers.RcPersClient;
-import ch.vd.unireg.common.BatchIterator;
-import ch.vd.unireg.common.StandardBatchIterator;
-import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
+import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 
 public class ServiceCivilRCPers implements ServiceCivilRaw {
 
@@ -34,7 +33,6 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 	private RcPersClient client;
 	private ServiceInfrastructureRaw infraService;
-	private ServiceCivilInterceptor interceptor;
 
 	private static final int NB_PARAMS_MAX_PAR_GET = 100;
 	private static final Integer NOT_FOUND_PERSON = 4; // voir le fichier http://subversion.etat-de-vaud.ch/SVN_ACI/registre/rcpers/trunk/06-Deploiement/ManuelsTechniques/TEC-ServicesEchangesDonnees-3-0.doc
@@ -46,10 +44,6 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 	public void setInfraService(ServiceInfrastructureRaw infraService) {
 		this.infraService = infraService;
-	}
-
-	public void setInterceptor(ServiceCivilInterceptor interceptor) {
-		this.interceptor = interceptor;
 	}
 
 	@Override
@@ -78,10 +72,6 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 				throw new IllegalArgumentException(String.format(
 						"Incohérence des données retournées détectées: individu demandé = %d, individu retourné = %d.", noIndividu, actual));
 			}
-		}
-
-		if (interceptor != null) {
-			interceptor.afterGetIndividu(individu, noIndividu, parties);
 		}
 
 		return individu;
@@ -181,10 +171,6 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		for (Person person : persons) {
 			final Individu individu = IndividuRCPers.get(person, true, infraService);
 			individus.add(individu);
-		}
-
-		if (interceptor != null) {
-			interceptor.afterGetIndividus(individus, nosIndividus, parties);
 		}
 
 		return individus;
