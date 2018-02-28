@@ -13,11 +13,18 @@
         <property name="bus" ref="cxf" />        
     </bean>
 
-	<!-- pool de threads à disposition des contrôleurs et des managers web -->
-	<bean id="wsThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+	<!-- pool de threads à disposition des web-services -->
+	<bean id="wsRawThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
 		<property name="corePoolSize" value="5"/> <!-- nombre minimum de threads -->
 		<property name="maxPoolSize" value="${extprop.webservice.threadpool.maxSize}"/> <!-- nombre maximum de threads -->
 	</bean>
+
+	<bean id="wsBraveThreadPool" class="ch.vd.unireg.servlet.tracing.BraveAwareExecutorServiceFactoryBean">
+		<property name="traceContext" ref="braveTraceContext"/>
+		<property name="target" ref="wsRawThreadPool"/>
+	</bean>
+
+	<alias alias="wsThreadPool" name="wsBraveThreadPool"/>
 
 	<bean id="wsEventDataListenerAdapter" class="ch.vd.unireg.webservices.common.WebServiceEventListenerAdapter">
 		<property name="dataEventService" ref="dataEventService" />

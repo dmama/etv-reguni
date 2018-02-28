@@ -61,6 +61,7 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:WEB-INF/unireg-web-entreprise.xml",
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_ADRESSES,
+		WebTestingConstants.UNIREG_WEBUT_BRAVE,
 		WebTestingConstants.UNIREG_WEBUT_SERVICES,
 		WebTestingConstants.UNIREG_WEBUT_SECURITY,
 		WebTestingConstants.UNIREG_WEBUT_ULRMAPPING,

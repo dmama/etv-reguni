@@ -10,6 +10,11 @@
 		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}/securite" />
 		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
 		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider"/>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">

@@ -51,6 +51,7 @@ import ch.vd.unireg.security.Role;
 		"classpath:WEB-INF/unireg-web-identification.xml",
 		"classpath:WEB-INF/unireg-web-supergra.xml",
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
+		WebTestingConstants.UNIREG_WEBUT_BRAVE,
 		WebTestingConstants.UNIREG_WEBUT_SERVICES,
 		WebTestingConstants.UNIREG_WEBUT_SECURITY,
 		WebTestingConstants.UNIREG_WEBUT_JMX,

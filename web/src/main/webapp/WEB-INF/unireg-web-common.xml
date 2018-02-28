@@ -22,10 +22,17 @@
 	</bean>
 
 	<!-- pool de threads à disposition des contrôleurs et des managers web -->
-	<bean id="webThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+	<bean id="webRawThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
 		<property name="corePoolSize" value="5"/> <!-- nombre minimum de threads -->
 		<property name="maxPoolSize" value="10"/> <!-- nombre maximum de threads -->
 	</bean>
+
+	<bean id="webBraveThreadPool" class="ch.vd.unireg.servlet.tracing.BraveAwareExecutorServiceFactoryBean">
+		<property name="traceContext" ref="braveTraceContext"/>
+		<property name="target" ref="webRawThreadPool"/>
+	</bean>
+
+	<alias alias="webThreadPool" name="webBraveThreadPool"/>
 
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />

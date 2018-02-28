@@ -23,7 +23,7 @@
 		<param name="Append" value="true" />
 		<param name="File" value="ws-access.log" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[%c{2}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+			<param name="ConversionPattern" value="[%c{2}] (%X{traceId},%X{spanId},%X{parentId}) %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
 		</layout>
 	</appender>
 
@@ -41,7 +41,7 @@
 		<param name="Append" value="true" />
 		<param name="File" value="srv-access-ws.log"/>
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[%-18.18c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
+			<param name="ConversionPattern" value="[%-18.18c{1}] (%X{traceId},%X{spanId},%X{parentId}) %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
 		</layout>
 	</appender>
 

@@ -46,8 +46,8 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<!-- Url mapper principal de l'application Unireg. A utiliser pour tous les nouveaux contrôleurs ! -->
-	<bean id="mainUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	<!-- Url mapper pour le Spring Remoting de l'application Unireg. -->
+	<bean id="remotingUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="urlMap">
 			<map>
 				<!-- Mapping des beans de remoting -->

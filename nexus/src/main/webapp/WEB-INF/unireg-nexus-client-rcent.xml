@@ -8,6 +8,11 @@
 		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
 		<property name="username" value="${extprop.webservice.rcent.username}"/>
 		<property name="password" value="${extprop.webservice.rcent.password}"/>
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider"/>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">

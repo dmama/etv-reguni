@@ -23,7 +23,7 @@
 		<param name="Append" value="true" />
 		<param name="File" value="srv-access-nexus.log" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[%-18.18c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
+			<param name="ConversionPattern" value="[%-18.18c{1}] (%X{traceId},%X{spanId},%X{parentId}) %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
 		</layout>
 	</appender>
 

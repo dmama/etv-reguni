@@ -9,6 +9,7 @@
 		<property name="password" value="${extprop.remoting.unireg.password}" />
 		<property name="maxConnectionsPerRoute" value="${extprop.remoting.web.maxConnectionsPerHost}" />
 		<property name="maxTotalConnections" value="${extprop.remoting.web.maxTotalConnections}" />
+		<property name="braveHttpTracing" ref="braveHttpTracing"/>
 	</bean>
 
 	<bean id="globalTiersSearcherRemoting" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">

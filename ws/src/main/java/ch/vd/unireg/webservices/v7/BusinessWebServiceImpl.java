@@ -972,6 +972,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			throw new BadRequestException("Le nombre de tiers demandés ne peut dépasser " + MAX_BATCH_SIZE);
 		}
 
+		// TODO (msi) : remplacer cette mécanique par un appel à CollectionsUtils.parallelMap (voir getImmovableProperties())
 		// on envoie la sauce sur plusieurs threads
 		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(threadPool);
 		final BatchIterator<Integer> iterator = new StandardBatchIterator<>(nos, PARTIES_BATCH_SIZE);

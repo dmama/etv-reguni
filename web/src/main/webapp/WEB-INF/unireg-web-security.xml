@@ -63,13 +63,13 @@
 			<security:filter-chain pattern="/logout.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
 			<security:filter-chain pattern="/logoutiam.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
 			<security:filter-chain pattern="/errors/**" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/ws/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/remoting/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/chooseoid.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter" />
-			<security:filter-chain pattern="/authenticationFailed.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/ws/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
+			<security:filter-chain pattern="/remoting/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
+			<security:filter-chain pattern="/chooseoid.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,braveServletFilter,bypassSecurityFilter,iamAuthFilter,braveServletFilter" />
+			<security:filter-chain pattern="/authenticationFailed.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,braveServletFilter" />
 			<!-- Version IAM + IFOSEC -->
-			<security:filter-chain pattern="/**/*.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter,actionExceptionFilter" />
-			<security:filter-chain pattern="/**" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/**/*.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,braveServletFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter,actionExceptionFilter" />
+			<security:filter-chain pattern="/**" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,braveServletFilter" />
 		</security:filter-chain-map>
 	</bean>
 

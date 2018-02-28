@@ -172,8 +172,38 @@
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-spring-beans</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-context-slf4j</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-instrumentation-servlet</artifactId>
+				<version>${brave.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-integration-tracing-brave</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-core</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-transports-http</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-client</artifactId>
 				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
@@ -722,7 +752,8 @@
 		<shared-base.version>5.5.2</shared-base.version>
 		<spring.version>3.2.13.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
-		<cxf.version>3.1.9</cxf.version>
+		<cxf.version>3.1.14</cxf.version>
+		<brave.version>4.16.2</brave.version>
 		<activemq.version>5.11.0.redhat-620133</activemq.version>
 		<jencks.version>2.2-dsi.0</jencks.version>
 		<jackson.version>1.9.13</jackson.version>

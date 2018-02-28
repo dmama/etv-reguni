@@ -12,6 +12,11 @@
 		<property name="baseUrl" value="${extprop.webservice.rcpers.url}" />
 		<property name="username" value="${extprop.webservice.rcpers.username}" />
 		<property name="password" value="${extprop.webservice.rcpers.password}" />
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider"/>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="rcPersClientRaw" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
@@ -50,6 +55,11 @@
 		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
 		<property name="username" value="${extprop.webservice.rcent.username}"/>
 		<property name="password" value="${extprop.webservice.rcent.password}"/>
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider"/>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
@@ -110,6 +120,11 @@
 		<property name="baseUrl" value="${extprop.webservice.fidor.url}" />
 		<property name="username" value="${extprop.webservice.fidor.username}" />
 		<property name="password" value="${extprop.webservice.fidor.password}" />
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider"/>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="fidorClientRaw" class="ch.vd.unireg.webservice.fidor.v5.FidorClientImpl">
@@ -148,6 +163,11 @@
 		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}/infrastructure" />
 		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
 		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+		<property name="providers">
+			<list>
+				<ref bean="braveJaxRsProvider"/>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">

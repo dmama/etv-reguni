@@ -9,6 +9,7 @@
 		<property name="password" value="${extprop.remoting.unireg.password}" />
 		<property name="maxConnectionsPerRoute" value="${extprop.remoting.nexus.maxConnectionsPerHost}" />
 		<property name="maxTotalConnections" value="${extprop.remoting.nexus.maxTotalConnections}" />
+		<property name="braveHttpTracing" ref="braveHttpTracing"/>
 	</bean>
 
 	<!-- Service civil -->

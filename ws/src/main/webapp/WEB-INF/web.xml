@@ -158,16 +158,29 @@
 
 	<filter>
 		<filter-name>springSecurityFilter</filter-name>
-		<!-- Ce bean va déléguer les appels au bean 'remoteHostSpringFilter' -->
+		<!-- Ce filtre va déléguer les appels au bean 'remoteHostSpringFilter' -->
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 		<init-param>
 			<param-name>targetBeanName</param-name>
 			<param-value>remoteHostSpringFilter</param-value>
 		</init-param>
 	</filter>
+	<filter>
+		<filter-name>braveTracingFilter</filter-name>
+		<!-- Ce filtre va déléguer les appels au bean 'braveServletFilter' -->
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>braveServletFilter</param-value>
+		</init-param>
+	</filter>
 
 	<filter-mapping>
 		<filter-name>springSecurityFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>braveTracingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
