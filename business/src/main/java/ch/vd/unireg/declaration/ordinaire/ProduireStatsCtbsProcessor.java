@@ -13,20 +13,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -40,13 +41,19 @@ import ch.vd.unireg.metier.assujettissement.SourcierMixte;
 import ch.vd.unireg.metier.assujettissement.SourcierPur;
 import ch.vd.unireg.metier.assujettissement.VaudoisDepense;
 import ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.tiers.ForGestion;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
@@ -68,9 +75,11 @@ public class ProduireStatsCtbsProcessor {
 	private final AssujettissementService assujettissementService;
 	private final AdresseService adresseService;
 	private final PeriodeImpositionService periodeImpositionService;
+	private final PeriodeImpositionImpotSourceService piisService;
 
 	public ProduireStatsCtbsProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService, TiersService tiersService, PlatformTransactionManager transactionManager,
-	                                  AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
+	                                  AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, AdresseService adresseService,
+	                                  PeriodeImpositionImpotSourceService piisService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.tiersService = tiersService;
@@ -78,6 +87,7 @@ public class ProduireStatsCtbsProcessor {
 		this.assujettissementService = assujettissementService;
 		this.periodeImpositionService = periodeImpositionService;
 		this.adresseService = adresseService;
+		this.piisService = piisService;
 	}
 
 	public StatistiquesCtbs runPP(int annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
@@ -164,7 +174,13 @@ public class ProduireStatsCtbsProcessor {
 				// Dans tous les cas, on prend l'assujettissement le plus récent
 				final Assujettissement assujet = assujettissements.get(assujettissements.size() - 1);
 				typeCtb = determineType(assujet);
+
 				if (typeCtb == StatistiquesCtbs.TypeContribuable.SOURCIER_PUR) {
+					//SIFISC-28319 Pas de PIIS, on ne va pas plus loin pour ce ctb
+					if (absencePIIS(ctb, rapport.annee)) {
+						return;
+					}
+
 					commune = getCommuneDepuisFors(ctb, RegDate.get(rapport.annee, 12, 31));
 					oid = getOID(commune);
 				}
@@ -214,6 +230,43 @@ public class ProduireStatsCtbsProcessor {
 			LOGGER.error(String.format("La production des statistiques pour le contribuable [%d] a échoué.", id), e);
 		}
 	}
+
+	/**
+	 * Regarde si le ctb n'a pas de PIIS  pour la période considérée
+	 * @param ctb à analyser
+	 * @param annee période considéreé
+	 * @return true si pas de PIIS trouvée, valse sinon
+	 */
+	private boolean absencePIIS(Contribuable ctb, int annee) throws PeriodeImpositionImpotSourceServiceException {
+
+		if (ctb instanceof PersonnePhysique) {
+			return absencePIIS((PersonnePhysique)ctb,annee);
+		}
+		else if (ctb instanceof MenageCommun) {
+			final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, annee);
+			return absencePIIS(etc.getPrincipal(),annee) && absencePIIS(etc.getConjoint(),annee);
+		}
+		return true;
+
+	}
+
+	private boolean absencePIIS(PersonnePhysique pp, int annee) throws PeriodeImpositionImpotSourceServiceException {
+		if (pp == null) {
+			return true;
+		}
+		final RegDate debut = RegDate.get(annee, 1, 1);
+		final RegDate fin = RegDate.get(annee, 12, 31);
+		final DateRangeHelper.Range periode = new DateRangeHelper.Range(debut, fin);
+		final List<PeriodeImpositionImpotSource> listePiis = piisService.determine(pp);
+		if (DateRangeHelper.intersect(periode, listePiis)) {
+			return false;
+		}
+		else {
+			return true;
+		}
+
+	}
+
 
 	/**
 	 * @return l'id de l'office d'impôt responsable de la commune spécifiée.

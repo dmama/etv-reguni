@@ -81,6 +81,7 @@ import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.Contribuable;
@@ -131,6 +132,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private PeriodeImpositionService periodeImpositionService;
 	private AssujettissementService assujettissementService;
 	private TicketService ticketService;
+	private PeriodeImpositionImpotSourceService piisService;
 
 	private Set<String> sourcesMonoQuittancement;
 
@@ -257,6 +259,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.sourcesMonoQuittancement = sources;
 	}
 
+	public void setPiisService(PeriodeImpositionImpotSourceService piisService) {
+		this.piisService = piisService;
+	}
+
 	/**
 	 * Pour le testing uniquement
 	 */
@@ -311,13 +317,15 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public StatistiquesCtbs produireStatsCtbsPP(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService);
+		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService,
+				piisService);
 		return processor.runPP(anneePeriode, dateTraitement, status);
 	}
 
 	@Override
 	public StatistiquesCtbs produireStatsCtbsPM(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService);
+		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService,
+				piisService);
 		return processor.runPM(anneePeriode, dateTraitement, status);
 	}
 
