@@ -28,6 +28,7 @@ import org.xml.sax.SAXException;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationLocation;
+import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.evd0023.v3.ObjectFactory;
@@ -52,6 +53,8 @@ import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;
+import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
 import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -74,6 +77,8 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
 	private static final String BASE_PATH_VALIDER_ANNONCE_IDE = "/noticeRequestValidate/";
 	private static final String BASE_PATH_ANNONCE_IDE = "/noticeRequestList";
+	private static final int RCENT_ERROR_NO_DATA_BEFORE = 9;
+	private static final int RCENT_ERROR_NOT_FOUND = 2;
 
 	// Organisation cible sur RCEnt
 	private static final long ID_BCV = 101544776L;
@@ -423,6 +428,38 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private String loadFile(String filename) throws IOException {
 		final File file = ResourceUtils.getFile(filename);
 		return FileUtils.readFileToString(file);
+	}
+
+	//Notice not found
+	@Test(timeout = 30000)
+	public void testRCEntClientGetOrganisationOfNoticeNotFound() throws Exception {
+		final RcEntClient client = createRCEntClient(true);
+		try{
+			final OrganisationsOfNotice organisationsOfNotice = client.getOrganisationsOfNotice(206949858L, RcEntClient.OrganisationState.BEFORE);
+		}catch (RcEntClientException e){
+			assertNotNull(e.getErrors());
+			assertEquals(1,e.getErrors().size());
+			final RcEntClientErrorMessage rcEntClientErrorMessage = e.getErrors().get(0);
+			//Erreur 404 evenement non trouvé
+			assertEquals(RCENT_ERROR_NOT_FOUND, rcEntClientErrorMessage.getCode().intValue());
+		}
+
+	}
+
+	//Erreur 400
+	@Test(timeout = 30000)
+	public void testRCEntClientGetOrganisationOfNoticeWithoutBefore() throws Exception {
+		final RcEntClient client = createRCEntClient(true);
+		try{
+			final OrganisationsOfNotice organisationsOfNotice = client.getOrganisationsOfNotice(819520L, RcEntClient.OrganisationState.BEFORE);
+		}catch (RcEntClientException e){
+			assertNotNull(e.getErrors());
+			assertEquals(1,e.getErrors().size());
+			final RcEntClientErrorMessage rcEntClientErrorMessage = e.getErrors().get(0);
+			//Erreur 404 evenement non trouvé
+			assertEquals(RCENT_ERROR_NO_DATA_BEFORE, rcEntClientErrorMessage.getCode().intValue());
+		}
+
 	}
 
 }
