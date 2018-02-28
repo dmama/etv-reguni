@@ -200,6 +200,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="ticketService" ref="ticketService"/>
 		<property name="sourcesMonoQuittancement" ref="sourcesMonoQuittancementDi"/>
+		<property name="piisService" ref="periodeImpositionImpotSourceService"/>
 	</bean>
 
 	<bean id="qsncService" class="ch.vd.uniregctb.declaration.snc.QuestionnaireSNCServiceImpl">
