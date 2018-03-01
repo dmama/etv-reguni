@@ -88,7 +88,6 @@ import ch.vd.unireg.type.TypeDroitAcces;
 import ch.vd.unireg.type.TypeMandat;
 import ch.vd.unireg.type.TypeRapprochementRF;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.v7.BusinessWebService;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
@@ -401,36 +400,36 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@SuppressWarnings("unchecked")
 	private static Pair<List<Integer>, Set<PartyPart>> getLastCallParametersToGetParties(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getParties");
-		assertEquals(3, lastCall.length);
-		return Pair.of((List<Integer>) lastCall[1], (Set<PartyPart>) lastCall[2]);
+		assertEquals(2, lastCall.length); // la méthode getParties possède deux paramètres
+		return Pair.of((List<Integer>) lastCall[0], (Set<PartyPart>) lastCall[1]);
 	}
 
 	@SuppressWarnings("unchecked")
 	private static Pair<Integer, Set<PartyPart>> getLastCallParametersToGetParty(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getParty");
-		assertEquals(3, lastCall.length);
-		return Pair.of((Integer) lastCall[1], (Set<PartyPart>) lastCall[2]);
+		assertEquals(2, lastCall.length); // la méthode getParty possède deux paramètres
+		return Pair.of((Integer) lastCall[0], (Set<PartyPart>) lastCall[1]);
 	}
 
 	@SuppressWarnings("unchecked")
 	private static List<Long> getLastCallParametersToGetImmovableProperties(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getImmovableProperties");
-		assertEquals(2, lastCall.length);
-		return (List<Long>) lastCall[1];
+		assertEquals(1, lastCall.length); // la méthode getImmovableProperties possède un paramètre
+		return (List<Long>) lastCall[0];
 	}
 
 	@SuppressWarnings("unchecked")
 	private static List<Long> getLastCallParametersToGetBuildings(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getBuildings");
-		assertEquals(2, lastCall.length);
-		return (List<Long>) lastCall[1];
+		assertEquals(1, lastCall.length); // la méthode getBuildings possède un paramètre
+		return (List<Long>) lastCall[0];
 	}
 
 	@SuppressWarnings("unchecked")
 	private static List<Long> getLastCallParametersToGetCommunitiesOfOwners(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getCommunitiesOfOwners");
-		assertEquals(2, lastCall.length);
-		return (List<Long>) lastCall[1];
+		assertEquals(1, lastCall.length); // la méthode getCommunitiesOfOwners possède un paramètre
+		return (List<Long>) lastCall[0];
 	}
 
 	@Override
@@ -446,10 +445,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testNomNaissanceEtOrigineEtNationalite() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
 		final int partyNo = ids.eric.intValue();
 
-		final Party party = cache.getParty(userLogin, partyNo, null);
+		final Party party = cache.getParty(partyNo, null);
 		assertInstanceOf(NaturalPerson.class, party);
 
 		final NaturalPerson np = (NaturalPerson) party;
@@ -528,12 +526,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetParty() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
 		final int partyNo = ids.eric.intValue();
 
 		// sans parts
 		{
-			assertNoPart(cache.getParty(userLogin, partyNo, null));
+			assertNoPart(cache.getParty(partyNo, null));
 
 			final GetPartyValue value = getCacheValue(partyNo);
 			assertNotNull(value);
@@ -542,8 +539,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// ajout des adresses
 		{
-			assertAddressPart(cache.getParty(userLogin, partyNo, EnumSet.of(PartyPart.ADDRESSES)));
-			assertNoPart(cache.getParty(userLogin, partyNo, null)); // on vérifie que le tiers sans part fonctionne toujours bien
+			assertAddressPart(cache.getParty(partyNo, EnumSet.of(PartyPart.ADDRESSES)));
+			assertNoPart(cache.getParty(partyNo, null)); // on vérifie que le tiers sans part fonctionne toujours bien
 
 			final GetPartyValue value = getCacheValue(partyNo);
 			assertNotNull(value);
@@ -552,10 +549,10 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// ajout des fors
 		{
-			assertTaxResidenceAndAddressePart(cache.getParty(userLogin, partyNo, EnumSet.of(PartyPart.TAX_RESIDENCES, PartyPart.ADDRESSES)));
-			assertTaxResidencePart(cache.getParty(userLogin, partyNo, EnumSet.of(PartyPart.TAX_RESIDENCES))); // on vérifie que le tiers avec seulement les fors est correct
-			assertNoPart(cache.getParty(userLogin, partyNo, null)); // on vérifie que le tiers sans part fonctionne toujours bien
-			assertAddressPart(cache.getParty(userLogin, partyNo, EnumSet.of(PartyPart.ADDRESSES))); // on vérifie que le tiers avec adresse fonctionne toujours bien
+			assertTaxResidenceAndAddressePart(cache.getParty(partyNo, EnumSet.of(PartyPart.TAX_RESIDENCES, PartyPart.ADDRESSES)));
+			assertTaxResidencePart(cache.getParty(partyNo, EnumSet.of(PartyPart.TAX_RESIDENCES))); // on vérifie que le tiers avec seulement les fors est correct
+			assertNoPart(cache.getParty(partyNo, null)); // on vérifie que le tiers sans part fonctionne toujours bien
+			assertAddressPart(cache.getParty(partyNo, EnumSet.of(PartyPart.ADDRESSES))); // on vérifie que le tiers avec adresse fonctionne toujours bien
 
 			final GetPartyValue value = getCacheValue(partyNo);
 			assertNotNull(value);
@@ -567,16 +564,14 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartyAllParts() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// on demande tour-à-tour les parties et on vérifie que 1) on les reçoit bien; et 2) qu'on ne reçoit qu'elles.
 		for (PartyPart p : PartyPart.values()) {
-			assertOnlyPart(p, cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(p)));
+			assertOnlyPart(p, cache.getParty(ids.eric.intValue(), EnumSet.of(p)));
 		}
 
 		// maintenant que le cache est chaud, on recommence la manipulation pour vérifier que cela fonctionne toujours
 		for (PartyPart p : PartyPart.values()) {
-			assertOnlyPart(p, cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(p)));
+			assertOnlyPart(p, cache.getParty(ids.eric.intValue(), EnumSet.of(p)));
 		}
 	}
 
@@ -584,12 +579,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testEvictParty() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
 		final int partyNo = ids.eric.intValue();
 
 		// On charge le cache avec des tiers
 
-		assertNotNull(cache.getParty(userLogin, partyNo, null));
+		assertNotNull(cache.getParty(partyNo, null));
 		assertNotNull(getCacheValue(partyNo));
 
 		// On evicte les tiers
@@ -606,11 +600,10 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testEvictCommunityOfHeirs() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
 		final int partyNo = ids.eric.intValue();
 
 		// On charge le cache avec des tiers
-		assertNotNull(cache.getCommunityOfHeirs(userLogin, partyNo));
+		assertNotNull(cache.getCommunityOfHeirs(partyNo));
 
 		// on vérifie que l'élément est bien dans le cache
 		{
@@ -633,10 +626,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testEvictPartyCommonHousehold() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// On charge le cache avec le ménage commun et ses adresses
-		final CommonHousehold menageAvant = (CommonHousehold) cache.getParty(userLogin, ids.menage.intValue(), EnumSet.of(PartyPart.ADDRESSES));
+		final CommonHousehold menageAvant = (CommonHousehold) cache.getParty(ids.menage.intValue(), EnumSet.of(PartyPart.ADDRESSES));
 		assertNotNull(menageAvant);
 
 		// On vérifie l'adresse d'envoi
@@ -679,7 +670,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		// Cette modification va provoquer l'éviction de madame du cache, et par transitivité l'éviction du ménage commun. Si ce n'était pas le cas, les données (périmées) du ménage commun seraient encore dans le cache.
 		// On vérifie donc que l'adresse d'envoi du ménage commun est bien mise-à-jour.
 
-		final CommonHousehold menageApres = (CommonHousehold) cache.getParty(userLogin, ids.menage.intValue(), EnumSet.of(PartyPart.ADDRESSES));
+		final CommonHousehold menageApres = (CommonHousehold) cache.getParty(ids.menage.intValue(), EnumSet.of(PartyPart.ADDRESSES));
 		assertNotNull(menageApres);
 
 		// On vérifie l'adresse d'envoi
@@ -697,15 +688,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testEvictDebtorInfo() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// au début, il n'y a rien
 		assertNull(getCacheValue(ids.debiteur.intValue(), 2009));
 		assertNull(getCacheValue(ids.debiteur.intValue(), 2010));
 
 		// On charge le cache avec des tiers
 
-		assertNotNull(cache.getDebtorInfo(userLogin, ids.debiteur.intValue(), 2010));
+		assertNotNull(cache.getDebtorInfo(ids.debiteur.intValue(), 2010));
 		assertNotNull(getCacheValue(ids.debiteur.intValue(), 2010));
 		assertNull("L'appel a été fait sur 2010, il ne devrait rien y avoir dans le cache pour 2009 !!", getCacheValue(ids.debiteur.intValue(), 2009));       // toujours rien pour le 2009
 
@@ -721,14 +710,12 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartyInexistant() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// Essaie une fois sans part
-		assertNull(cache.getParty(userLogin, 1233455, null));
+		assertNull(cache.getParty(1233455, null));
 		assertNull(getCacheValue(1233455)); // null -> on ne cache pas la réponse pour un tiers inexistant !
 
 		// Essai une seconde fois avec parts
-		assertNull(cache.getParty(userLogin, 1233455, EnumSet.of(PartyPart.ADDRESSES)));
+		assertNull(cache.getParty(1233455, EnumSet.of(PartyPart.ADDRESSES)));
 		assertNull(getCacheValue(1233455));
 	}
 
@@ -740,11 +727,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartySpecialCaseVirtualTaxResidences() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// 1. on demande le tiers avec les fors fiscaux virtuels
 		{
-			final Party tiers = cache.getParty(userLogin, ids.monsieur.intValue(), EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
+			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getMainTaxResidences());
 			assertEquals(1, tiers.getMainTaxResidences().size());
@@ -756,14 +741,14 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande le tiers *sans* les fors fiscaux virtuels
 		{
-			final Party tiers = cache.getParty(userLogin, ids.monsieur.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
+			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
 			assertNotNull(tiers);
 			assertEmpty(tiers.getMainTaxResidences());
 		}
 
 		// 3. on demande de nouveau le tiers avec les fors fiscaux virtuels => le résultat doit être identique à la demande du point 1.
 		{
-			final Party tiers = cache.getParty(userLogin, ids.monsieur.intValue(), EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
+			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getMainTaxResidences());
 			assertEquals(1, tiers.getMainTaxResidences().size());
@@ -782,11 +767,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartySpecialCaseTaxDeclarationsAndStatuses() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// 1. on demande le tiers avec les déclarations et leurs états
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -807,7 +790,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande les déclarations *sans* les états
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -820,7 +803,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3. on demande de nouveau les déclarations avec leurs états => le résultat doit être identique à la demande du point 1.
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -846,8 +829,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testGetPartyOnNonCacheablePart() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
 		// état initial -> aucun appel au web-service
 		assertEquals(0, getNumberOfCalls(calls));
 
@@ -856,7 +837,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 1er appel
 		{
-			final Party party = cache.getParty(userLogin, ids.eric.intValue(), parts);
+			final Party party = cache.getParty(ids.eric.intValue(), parts);
 			assertNotNull(party);
 			assertInstanceOf(NaturalPerson.class, party);
 			assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
@@ -872,7 +853,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2ème appel
 		{
-			final Party party = cache.getParty(userLogin, ids.eric.intValue(), parts);
+			final Party party = cache.getParty(ids.eric.intValue(), parts);
 			assertNotNull(party);
 			assertInstanceOf(NaturalPerson.class, party);
 			assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
@@ -888,7 +869,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3ème appel
 		{
-			final Party party = cache.getParty(userLogin, ids.eric.intValue(), parts);
+			final Party party = cache.getParty(ids.eric.intValue(), parts);
 			assertNotNull(party);
 			assertInstanceOf(NaturalPerson.class, party);
 			assertEquals(2, ((Taxpayer) party).getEbillingStatuses().size());
@@ -910,11 +891,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testRecompositionDonneesEtatsEtDelaisDeclaration() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
 		// 1. on demande le tiers avec les déclarations et les états
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -940,7 +919,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande maintenant les déclarations, leurs états et leurs délais
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -965,7 +944,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3. et finalement on ne demande plus que les délais
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_DEADLINES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -985,7 +964,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 4. on demande à nouveau le tout
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1016,11 +995,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testRecompositionDonneesEtatsEtDelaisDeclarationAvecEFacture() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
 		// 1. on demande le tiers avec les déclarations et les états
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1046,7 +1023,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande maintenant les déclarations, leurs états et leurs délais (+ efacture, non-cachable)
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES, PartyPart.EBILLING_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES, PartyPart.EBILLING_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1076,7 +1053,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3. et finalement on ne demande plus que les délais
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_DEADLINES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1097,7 +1074,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 4. on demande à nouveau le tout
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES, PartyPart.EBILLING_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES, PartyPart.EBILLING_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1135,11 +1112,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartyModificationCollectionRenvoyeeEtValeurCachee() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// 1. on demande le tiers avec les assujettissements
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_LIABILITIES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_LIABILITIES));
 			assertNotNull(tiers);
 			assertEquals(NaturalPerson.class, tiers.getClass());
 
@@ -1159,7 +1134,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. même appel -> rien ne doit avoir changé
 		{
-			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_LIABILITIES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_LIABILITIES));
 			assertNotNull(tiers);
 			assertEquals(NaturalPerson.class, tiers.getClass());
 
@@ -1178,15 +1153,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetParties() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// Etat initial : aucun appel au web-service
 		assertEquals(0, getNumberOfCalls(calls));
 		final List<Integer> partyNosMonsieurMadame = Arrays.asList(ids.monsieur.intValue(), ids.madame.intValue());
 
 		// 1er appel
 		{
-			final Parties parties = cache.getParties(userLogin, partyNosMonsieurMadame, null);
+			final Parties parties = cache.getParties(partyNosMonsieurMadame, null);
 			assertNotNull(parties);
 			assertEquals(2, parties.getEntries().size());
 
@@ -1209,7 +1182,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2ème appel : identique au premier
 		{
-			final Parties parties = cache.getParties(userLogin, partyNosMonsieurMadame, null);
+			final Parties parties = cache.getParties(partyNosMonsieurMadame, null);
 			assertNotNull(parties);
 			assertEquals(2, parties.getEntries().size());
 
@@ -1231,7 +1204,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3ème appel : avec un tiers de plus
 		{
-			final Parties parties = cache.getParties(userLogin, Arrays.asList(ids.monsieur.intValue(), ids.madame.intValue(), ids.eric.intValue()), null);
+			final Parties parties = cache.getParties(Arrays.asList(ids.monsieur.intValue(), ids.madame.intValue(), ids.eric.intValue()), null);
 			assertNotNull(parties);
 			assertEquals(3, parties.getEntries().size());
 
@@ -1278,8 +1251,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		//  3. que le second appel se trouve avec un cache partiellement (ou totalement) chargé au moment où le cache est mis-à-jour (rappel : le cache était vide au début des deux appels)
 		// => avant correction du SIFISC-28103, la méthode 'cacheParties' ajoutait les parts du second appels aux parts déjà stockées par le premier appel et provoquait des doublons.
 		cache.setTarget(new MockBusinessWebService(implementation) {
+			@NotNull
 			@Override
-			public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+			public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 				try {
 					// les deux appels doivent prendre du temps
 					Thread.sleep(100);
@@ -1291,11 +1265,10 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				}
-				return super.getParties(user, partyNos, parts);
+				return super.getParties(partyNos, parts);
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
 		final List<Integer> idEric = Collections.singletonList(ids.eric.intValue());
 
 		// Etat initial : aucun appel au web-service
@@ -1304,8 +1277,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		final ExecutorService executor = Executors.newFixedThreadPool(2);
 		try {
 			// on lance deux appels en parallèle
-			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS)), executor);
-			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS, PartyPart.PARENTS)), executor);
+			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS)), executor);
+			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS, PartyPart.PARENTS)), executor);
 
 
 			// on vérifique que les données retournées sont correctes
@@ -1334,7 +1307,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// on fait un appel synchrone supplémentaire pour vérifier que le cache est toujours cohérent
 		{
-			final Parties parties = getParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS));
+			final Parties parties = getParties(idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS));
 			assertNotNull(parties);
 			assertEquals(1, parties.getEntries().size());
 			final NaturalPerson eric = (NaturalPerson) parties.getEntries().get(0).getParty();
@@ -1362,19 +1335,19 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertEquals(ids.immeuble1.longValue(), landRight1.getImmovablePropertyId());
 	}
 
-	private Parties pushPrincipalAndGetParties(@NotNull UserLogin userLogin, @NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
-		AuthenticationHelper.pushPrincipal(userLogin.userId, userLogin.oid);
+	private Parties pushPrincipalAndGetParties(@NotNull String principal, int oid, @NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
+		AuthenticationHelper.pushPrincipal(principal, oid);
 		try {
-			return getParties(userLogin, ids, parts);
+			return getParties(ids, parts);
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
 	}
 
-	private Parties getParties(@NotNull UserLogin userLogin, @NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
+	private Parties getParties(@NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
 		try {
-			return cache.getParties(userLogin, ids, parts);
+			return cache.getParties(ids, parts);
 		}
 		catch (AccessDeniedException | ServiceException e) {
 			throw new RuntimeException(e);
@@ -1387,8 +1360,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testGetPartiesOnNonCacheablePart() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
 		// état initial -> aucun appel au web-service
 		assertEquals(0, getNumberOfCalls(calls));
 
@@ -1400,7 +1371,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 1er appel
 		{
-			final Parties parties = cache.getParties(userLogin, partyNos, parts);
+			final Parties parties = cache.getParties(partyNos, parts);
 			assertNotNull(parties);
 			assertEquals(2, parties.getEntries().size());
 
@@ -1444,7 +1415,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2ème appel
 		{
-			final Parties parties = cache.getParties(userLogin, partyNos, parts);
+			final Parties parties = cache.getParties(partyNos, parts);
 			assertNotNull(parties);
 			assertEquals(2, parties.getEntries().size());
 
@@ -1488,7 +1459,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3ème appel
 		{
-			final Parties parties = cache.getParties(userLogin, partyNos, parts);
+			final Parties parties = cache.getParties(partyNos, parts);
 			assertNotNull(parties);
 			assertEquals(2, parties.getEntries().size());
 
@@ -1535,7 +1506,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			final Set<PartyPart> cachedParts = EnumSet.copyOf(parts);
 			cachedParts.remove(PartyPart.EBILLING_STATUSES);
 
-			final Parties parties = cache.getParties(userLogin, partyNos, cachedParts);
+			final Parties parties = cache.getParties(partyNos, cachedParts);
 			assertNotNull(parties);
 			assertEquals(2, parties.getEntries().size());
 			assertEquals(3, getNumberOfCallsToGetParties(calls));       // <- = pas de nouvel appel, car tout ce qui est demandé est déjà dans le cache
@@ -1581,14 +1552,12 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartiesWithExceptionOnTiers() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// on intercale une implémentation du web-service qui lèvera une exception lors de la récupération de madame
 		cache.setTarget(new BusinessWebServiceCrashingWrapper(implementation, ids.madame.intValue()));
 
 		// 1er appel : monsieur est correctement récupéré et une exception est retournée à la place de madame.
 		{
-			final Parties batch = cache.getParties(userLogin, Arrays.asList(ids.monsieur.intValue(), ids.madame.intValue()), null);
+			final Parties batch = cache.getParties(Arrays.asList(ids.monsieur.intValue(), ids.madame.intValue()), null);
 			assertNotNull(batch);
 			assertNotNull(batch.getEntries());
 			assertEquals(2, batch.getEntries().size());
@@ -1611,7 +1580,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2ème appel : identique au premier pour vérifier que le cache est dans un état cohérent (provoquait un crash avant la correction de UNIREG-3288)
 		{
-			final Parties batch = cache.getParties(userLogin, Arrays.asList(ids.monsieur.intValue(), ids.madame.intValue()), null);
+			final Parties batch = cache.getParties(Arrays.asList(ids.monsieur.intValue(), ids.madame.intValue()), null);
 			assertNotNull(batch);
 			assertEquals(2, batch.getEntries().size());
 
@@ -1638,9 +1607,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testGetPartiesEtDroitAcces() throws Exception {
 
-		final UserLogin voyeur = new UserLogin(getDefaultOperateurName(), 21);
-		final UserLogin toto = new UserLogin("TOTO", 22);
-
 		final class Ids {
 			int pp;
 			int dpi;
@@ -1662,7 +1628,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// premier appel avec celui qui a le droit de tout voir -> mise en cache ok
 		{
-			final Parties parties = cache.getParties(voyeur, Arrays.asList(ids.pp, ids.dpi), null);
+			final Parties parties = cache.getParties(Arrays.asList(ids.pp, ids.dpi), null);
 			assertNotNull(parties);
 			assertNotNull(parties.getEntries());
 			assertEquals(2, parties.getEntries().size());
@@ -1671,8 +1637,10 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		}
 
 		// deuxième appel avec celui qui n'a pas le droit de voir -> devrait être bloqué
+		AuthenticationHelper.pushPrincipal("TOTO", 22);
+		try
 		{
-			final Parties parties = cache.getParties(toto, Arrays.asList(ids.pp, ids.dpi), null);
+			final Parties parties = cache.getParties(Arrays.asList(ids.pp, ids.dpi), null);
 			assertNotNull(parties);
 			assertNotNull(parties.getEntries());
 			assertEquals(2, parties.getEntries().size());
@@ -1697,8 +1665,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				assertEquals(ids.pp, e.getPartyNo());
 				assertNull(e.getParty());
 				assertNotNull(e.getError());
-				assertEquals("L'utilisateur UserLogin{userId='TOTO', oid=22} ne possède aucun droit de lecture sur le dossier " + ids.pp, e.getError().getErrorMessage());
+				assertEquals("L'utilisateur TOTO/22 ne possède aucun droit de lecture sur le dossier " + ids.pp, e.getError().getErrorMessage());
 			}
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 
@@ -1709,11 +1680,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetPartyActivityStartDate() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// 1. on demande le tiers une première fois
 		{
-			final Party party = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
+			final Party party = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
 			assertNotNull(party);
 			assertEquals(new Date(1983, 4, 13), party.getActivityStartDate());
 			assertNull(party.getActivityEndDate());
@@ -1721,7 +1690,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande le tiers une seconde fois
 		{
-			final Party party = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
+			final Party party = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
 			assertNotNull(party);
 			assertEquals(new Date(1983, 4, 13), party.getActivityStartDate()); // [SIFISC-5508] cette date était nulle avant la correction du bug
 			assertNull(party.getActivityEndDate());
@@ -1736,8 +1705,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// on va construire un contribuable avec toutes ses collections contenant quelque chose,
 		// puis on va interroger depuis plusieurs threads le contribuable, avec un nombre de parts aléatoire à chaque fois...
-
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
 
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -1796,7 +1763,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			@Override
 			public Object call() throws Exception {
 				// récupération des données + sérialisation
-				final Party party = cache.getParty(userLogin, (int) id, parts);
+				final Party party = cache.getParty((int) id, parts);
 				final Marshaller marshaller = jaxbContext.createMarshaller();
 				try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 					marshaller.marshal(partyFactory.createParty(party), out);
@@ -1843,8 +1810,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// on va construire un contribuable avec toutes ses collections contenant quelque chose,
 		// puis on va interroger depuis plusieurs threads le contribuable, avec un nombre de parts aléatoire à chaque fois...
-
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
 
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -1902,7 +1867,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			@Override
 			public Object call() throws Exception {
 				// récupération des données + sérialisation
-				final Parties parties = pushPrincipalAndGetParties(userLogin, Collections.singletonList((int) id), parts);
+				final Parties parties = pushPrincipalAndGetParties(getDefaultOperateurName(), 22, Collections.singletonList((int) id), parts);
 				final Marshaller marshaller = jaxbContext.createMarshaller();
 				try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 					marshaller.marshal(parties, out);
@@ -1944,11 +1909,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testGetImmovableProperties() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// 1er appel : on demande les immeubles 0 et 1
 		calls.clear();
-		final ImmovablePropertyList list1 = cache.getImmovableProperties(userLogin, Arrays.asList(ids.immeuble0, ids.immeuble1));
+		final ImmovablePropertyList list1 = cache.getImmovableProperties(Arrays.asList(ids.immeuble0, ids.immeuble1));
 		assertEquals(2, list1.getEntries().size());
 		assertFoundEntry(ids.immeuble0, list1.getEntries().get(0));
 		assertFoundEntry(ids.immeuble1, list1.getEntries().get(1));
@@ -1958,7 +1921,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2ème appel : on demande les immeubles 1 et 2
 		calls.clear();
-		final ImmovablePropertyList list2 = cache.getImmovableProperties(userLogin, Arrays.asList(ids.immeuble1, ids.immeuble2));
+		final ImmovablePropertyList list2 = cache.getImmovableProperties(Arrays.asList(ids.immeuble1, ids.immeuble2));
 		assertEquals(2, list2.getEntries().size());
 		assertFoundEntry(ids.immeuble1, list2.getEntries().get(0));
 		assertFoundEntry(ids.immeuble2, list2.getEntries().get(1));
@@ -1968,7 +1931,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3ème appel : on demande tous les immeubles
 		calls.clear();
-		final ImmovablePropertyList list3 = cache.getImmovableProperties(userLogin, Arrays.asList(ids.immeuble0, ids.immeuble1, ids.immeuble2));
+		final ImmovablePropertyList list3 = cache.getImmovableProperties(Arrays.asList(ids.immeuble0, ids.immeuble1, ids.immeuble2));
 		assertEquals(3, list3.getEntries().size());
 		assertFoundEntry(ids.immeuble0, list3.getEntries().get(0));
 		assertFoundEntry(ids.immeuble1, list3.getEntries().get(1));
@@ -1981,11 +1944,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testGetBuildings() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// 1er appel : on demande les bâtiments 0 et 1
 		calls.clear();
-		final BuildingList list1 = cache.getBuildings(userLogin, Arrays.asList(ids.batiment0, ids.batiment1));
+		final BuildingList list1 = cache.getBuildings(Arrays.asList(ids.batiment0, ids.batiment1));
 		assertEquals(2, list1.getEntries().size());
 		assertFoundEntry(ids.batiment0, list1.getEntries().get(0));
 		assertFoundEntry(ids.batiment1, list1.getEntries().get(1));
@@ -1995,7 +1956,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2ème appel : on demande les bâtiments 1 et 2
 		calls.clear();
-		final BuildingList list2 = cache.getBuildings(userLogin, Arrays.asList(ids.batiment1, ids.batiment2));
+		final BuildingList list2 = cache.getBuildings(Arrays.asList(ids.batiment1, ids.batiment2));
 		assertEquals(2, list2.getEntries().size());
 		assertFoundEntry(ids.batiment1, list2.getEntries().get(0));
 		assertFoundEntry(ids.batiment2, list2.getEntries().get(1));
@@ -2005,7 +1966,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3ème appel : on demande tous les bâtiments
 		calls.clear();
-		final BuildingList list3 = cache.getBuildings(userLogin, Arrays.asList(ids.batiment0, ids.batiment1, ids.batiment2));
+		final BuildingList list3 = cache.getBuildings(Arrays.asList(ids.batiment0, ids.batiment1, ids.batiment2));
 		assertEquals(3, list3.getEntries().size());
 		assertFoundEntry(ids.batiment0, list3.getEntries().get(0));
 		assertFoundEntry(ids.batiment1, list3.getEntries().get(1));
@@ -2018,11 +1979,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@Test
 	public void testGetCommunitiesOfOwners() throws Exception {
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
-
 		// 1er appel : on demande les communautés 0 et 1
 		calls.clear();
-		final CommunityOfOwnersList list1 = cache.getCommunitiesOfOwners(userLogin, Arrays.asList(ids.communaute0, ids.communaute1));
+		final CommunityOfOwnersList list1 = cache.getCommunitiesOfOwners(Arrays.asList(ids.communaute0, ids.communaute1));
 		assertEquals(2, list1.getEntries().size());
 		assertFoundEntry(ids.communaute0, list1.getEntries().get(0));
 		assertFoundEntry(ids.communaute1, list1.getEntries().get(1));
@@ -2032,7 +1991,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2ème appel : on demande les communautés 1 et 2
 		calls.clear();
-		final CommunityOfOwnersList list2 = cache.getCommunitiesOfOwners(userLogin, Arrays.asList(ids.communaute1, ids.communaute2));
+		final CommunityOfOwnersList list2 = cache.getCommunitiesOfOwners(Arrays.asList(ids.communaute1, ids.communaute2));
 		assertEquals(2, list2.getEntries().size());
 		assertFoundEntry(ids.communaute1, list2.getEntries().get(0));
 		assertFoundEntry(ids.communaute2, list2.getEntries().get(1));
@@ -2042,7 +2001,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3ème appel : on demande toutes les communautés
 		calls.clear();
-		final CommunityOfOwnersList list3 = cache.getCommunitiesOfOwners(userLogin, Arrays.asList(ids.communaute0, ids.communaute1, ids.communaute2));
+		final CommunityOfOwnersList list3 = cache.getCommunitiesOfOwners(Arrays.asList(ids.communaute0, ids.communaute1, ids.communaute2));
 		assertEquals(3, list3.getEntries().size());
 		assertFoundEntry(ids.communaute0, list3.getEntries().get(0));
 		assertFoundEntry(ids.communaute1, list3.getEntries().get(1));

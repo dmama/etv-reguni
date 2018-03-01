@@ -15,13 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
-import ch.vd.unireg.xml.error.v1.Error;
-import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.xml.error.v1.Error;
+import ch.vd.unireg.xml.error.v1.ErrorType;
 
 public abstract class WebServiceHelper {
 
@@ -113,6 +113,33 @@ public abstract class WebServiceHelper {
 	}
 
 	/**
+	 * Vérifie que l'utilisateur courant possède au moins l'un des rôles donnés
+	 *
+	 * @param securityProvider le service de vérification des droits d'accès
+	 * @param roles            les rôles attendus
+	 * @throws AccessDeniedException si aucun rôle n'est fourni ou aucun de ceux fournis ne sont associés à l'utilisateur authentifié
+	 */
+	public static void checkAnyAccess(SecurityProviderInterface securityProvider, Role... roles) throws AccessDeniedException {
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		boolean foundOne = false;
+		for (Role role : roles) {
+			if (securityProvider.isGranted(role, currentPrincipal, currentOID)) {
+				foundOne = true;
+				break;
+			}
+		}
+		if (!foundOne) {
+			throw new AccessDeniedException(String.format("L'utilisateur %s/%d ne possède aucun des droits %s", currentPrincipal, currentOID, Arrays.toString(roles)));
+		}
+	}
+
+	/**
 	 * Vérifie que le login donné possède le rôle donné
 	 * @param securityProvider le service de vérification des droits d'accès
 	 * @param userLogin les données d'authentification
@@ -122,6 +149,26 @@ public abstract class WebServiceHelper {
 	public static void checkAccess(SecurityProviderInterface securityProvider, UserLogin userLogin, Role role) throws AccessDeniedException {
 		if (!securityProvider.isGranted(role, userLogin.userId, userLogin.oid)) {
 			throw new AccessDeniedException(String.format("L'utilisateur %s ne possède pas le droit %s", userLogin, role));
+		}
+	}
+
+	/**
+	 * Vérifie que l'utilisateur courant possède le rôle donné
+	 *
+	 * @param securityProvider le service de vérification des droits d'accès
+	 * @param role             le rôle attendu
+	 * @throws AccessDeniedException si le rôle demandé n'est pas associé à l'utilisateur authentifié
+	 */
+	public static void checkAccess(SecurityProviderInterface securityProvider, Role role) throws AccessDeniedException {
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		if (!securityProvider.isGranted(role, currentPrincipal, currentOID)) {
+			throw new AccessDeniedException(String.format("L'utilisateur %s/%d ne possède pas le droit %s", currentPrincipal, currentOID, role));
 		}
 	}
 
@@ -140,6 +187,27 @@ public abstract class WebServiceHelper {
 	}
 
 	/**
+	 * Vérifie que l'utilisateur courant a bien au moins un droit de visualisation sur le dossier donné
+	 *
+	 * @param securityProvider le service de vérification des droits d'accès
+	 * @param partyNo          le numéro du dossier concerné
+	 * @throws AccessDeniedException                       si le droit de visualisation n'est pas attribué à l'utilisateur authentifié
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException si le dossier n'existe pas
+	 */
+	public static void checkPartyReadAccess(SecurityProviderInterface securityProvider, int partyNo) throws AccessDeniedException {
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		if (securityProvider.getDroitAcces(currentPrincipal, partyNo) == null) {
+			throw new AccessDeniedException(String.format("L'utilisateur %s/%d ne possède aucun droit de lecture sur le dossier %d", currentPrincipal, currentOID, partyNo));
+		}
+	}
+
+	/**
 	 * Vérifie que l'utilisateur donné a bien un droit de modification sur le dossier donné
 	 * @param securityProvider le service de vérification des droits d'accès
 	 * @param userLogin les données d'authentification
@@ -150,6 +218,27 @@ public abstract class WebServiceHelper {
 	public static void checkPartyReadWriteAccess(SecurityProviderInterface securityProvider, UserLogin userLogin, int partyNo) throws AccessDeniedException {
 		if (securityProvider.getDroitAcces(userLogin.userId, partyNo) != Niveau.ECRITURE) {
 			throw new AccessDeniedException(String.format("L'utilisateur %s ne possède aucun droit d'écriture sur le dossier %d", userLogin, partyNo));
+		}
+	}
+
+	/**
+	 * Vérifie que l'utilisateur courant a bien un droit de modification sur le dossier donné
+	 *
+	 * @param securityProvider le service de vérification des droits d'accès
+	 * @param partyNo          le numéro du dossier concerné
+	 * @throws AccessDeniedException                       si le droit de modification n'est pas attribué à l'utilisateur authentifié
+	 * @throws ch.vd.unireg.common.ObjectNotFoundException si le dossier n'existe pas
+	 */
+	public static void checkPartyReadWriteAccess(SecurityProviderInterface securityProvider, int partyNo) throws AccessDeniedException {
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		if (securityProvider.getDroitAcces(currentPrincipal, partyNo) != Niveau.ECRITURE) {
+			throw new AccessDeniedException(String.format("L'utilisateur %s/%d ne possède aucun droit d'écriture sur le dossier %d", currentPrincipal, currentOID, partyNo));
 		}
 	}
 

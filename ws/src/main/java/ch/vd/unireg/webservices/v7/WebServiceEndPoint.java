@@ -197,12 +197,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		return null;
 	}
 
-	private interface ExecutionCallbackWithUser {
-		@NotNull
-		ExecutionResult execute(UserLogin userLogin) throws Exception;
-	}
-
-	private Response execute(final String user, Supplier<String> callDescription, Logger accessLog, final ExecutionCallbackWithUser callback) {
+	private Response execute(final String user, Supplier<String> callDescription, Logger accessLog, final ExecutionCallback callback) {
 		return execute(callDescription, accessLog, () -> {
 			final UserLogin userLogin = WebServiceHelper.parseLoginParameter(user);
 			if (userLogin == null) {
@@ -212,7 +207,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 			WebServiceHelper.login(userLogin);
 			try {
-				return callback.execute(userLogin);
+				return callback.execute();
 			}
 			finally {
 				WebServiceHelper.logout();
@@ -224,14 +219,14 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response setAutomaticRepaymentBlockingFlag(final int partyNo, final String user, final String value) {
 
 		final Supplier<String> params = () -> String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s, value=%s}", partyNo, WebServiceHelper.enquote(user), WebServiceHelper.enquote(value));
-		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
+		return execute(user, params, WRITE_ACCESS_LOG, () -> {
 			if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
 				LOGGER.error("Wrong or missing new flag value");
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "Wrong or missing new flag value."));
 			}
 
 			final boolean blocked = Boolean.parseBoolean(value);
-			target.setAutomaticRepaymentBlockingFlag(partyNo, userLogin, blocked);
+			target.setAutomaticRepaymentBlockingFlag(partyNo, blocked);
 			return ExecutionResult.with(Response.ok().build());
 		});
 	}
@@ -239,8 +234,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response getAutomaticRepaymentBlockingFlag(final int partyNo, final String user) {
 		final Supplier<String> params = () -> String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s}", partyNo, WebServiceHelper.enquote(user));
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
+		return execute(user, params, READ_ACCESS_LOG, () -> {
+			final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo);
 			return ExecutionResult.with(Response.ok(blocked, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE).build());
 		});
 	}
@@ -294,9 +289,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(parts);
 			return String.format("getParty{user=%s, partyNo=%d, parts=%s}", WebServiceHelper.enquote(user), partyNo, WebServiceHelper.toString(sortedParts));
 		};
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final Party party = target.getParty(userLogin, partyNo, parts);
+				final Party party = target.getParty(partyNo, parts);
 				if (party == null) {
 					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le tiers n'existe pas."));
 				}
@@ -332,12 +327,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(parts);
 			return String.format("getParties{user=%s, partyNo=%s, parts=%s}", WebServiceHelper.enquote(user), WebServiceHelper.toString(partyNos), WebServiceHelper.toString(sortedParts));
 		};
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final Parties parties = target.getParties(userLogin, partyNos, parts);
-				if (parties == null) {
-					return ExecutionResult.with(Response.noContent().build(), 0);
-				}
+				final Parties parties = target.getParties(partyNos, parts);
 				final int nbItems = countParties(parties.getEntries());
 				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
@@ -358,9 +350,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response getCommunityOfHeirs(int deceasedId, String user) {
 		final Supplier<String> params = () -> String.format("getCommunityOfHeirs{user=%s, deceasedId=%d}", WebServiceHelper.enquote(user), deceasedId);
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final CommunityOfHeirs community = target.getCommunityOfHeirs(userLogin, deceasedId);
+				final CommunityOfHeirs community = target.getCommunityOfHeirs(deceasedId);
 				if (community == null) {
 					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le tiers n'existe pas ou ne possède pas d'héritiers."));
 				}
@@ -409,7 +401,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), WebServiceHelper.enquote(uidNumber), taxResidenceFSOId,
 			                     onlyActiveMainTaxResidence, partyTypesStr, debtorCategory, activeParty, oldWithholdingNumber);
 		};
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			final RegDate dateNaissance;
 			try {
 				dateNaissance = dateFromString(dateOfBirthStr, true);
@@ -420,7 +412,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 			SearchResult result;
 			try {
-				final List<PartyInfo> infos = target.searchParty(userLogin, partyNo, name, nameSearchMode, townOrCountry, dateNaissance, socialInsuranceNumber, uidNumber, taxResidenceFSOId,
+				final List<PartyInfo> infos = target.searchParty(partyNo, name, nameSearchMode, townOrCountry, dateNaissance, socialInsuranceNumber, uidNumber, taxResidenceFSOId,
 				                                                 onlyActiveMainTaxResidence, partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
 				result = new SearchResult(null, infos);
 			}
@@ -490,8 +482,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response ackOrdinaryTaxDeclarations(final String user, final OrdinaryTaxDeclarationAckRequest request) {
 		final Supplier<String> params = () -> String.format("ackOrdinaryTaxDeclarations{user=%s, request=%s}", WebServiceHelper.enquote(user), request);
-		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
-			final OrdinaryTaxDeclarationAckResponse response = target.ackOrdinaryTaxDeclarations(userLogin, request);
+		return execute(user, params, WRITE_ACCESS_LOG, () -> {
+			final OrdinaryTaxDeclarationAckResponse response = target.ackOrdinaryTaxDeclarations(request);
 			return ExecutionResult.with(Response.ok(ackObjectFactory.createOrdinaryTaxDeclarationAckResponse(response)).build());
 		});
 	}
@@ -500,8 +492,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo,
 	                                                  final String user, final DeadlineRequest request) {
 		final Supplier<String> params = () -> String.format("newOrdinaryTaxDeclarationDeadline{user=%s, partyNo=%d, pf=%d, seqNo=%d, request=%s}", WebServiceHelper.enquote(user), partyNo, pf, seqNo, request);
-		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
-			final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, userLogin, request);
+		return execute(user, params, WRITE_ACCESS_LOG, () -> {
+			final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, request);
 			return ExecutionResult.with(Response.ok(deadlineObjectFactory.createDeadlineResponse(response)).build());
 		});
 	}
@@ -509,7 +501,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response getModifiedTaxPayers(final String user, final Long since, final Long until) {
 		final Supplier<String> params = () -> String.format("getModifiedTaxPayers{user=%s, since=%d, until=%d}", WebServiceHelper.enquote(user), since, until);
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			if (since == null || until == null) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "'since' and 'until' are required parameters."));
 			}
@@ -519,7 +511,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 			final Date sinceTimestamp = new Date(since);
 			final Date untilTimestamp = new Date(until);
-			final PartyNumberList response = target.getModifiedTaxPayers(userLogin, sinceTimestamp, untilTimestamp);
+			final PartyNumberList response = target.getModifiedTaxPayers(sinceTimestamp, untilTimestamp);
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
 				return ExecutionResult.with(Response.ok(response, preferred).build(), response.getPartyNo().size());
@@ -534,8 +526,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response getDebtorInfo(final int debtorNo, final int pf, final String user) {
 		final Supplier<String> params = () -> String.format("getDebtorInfo{debtorNo=%d, fiscalPeriod=%d, user=%s}", debtorNo, pf, WebServiceHelper.enquote(user));
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final DebtorInfo info = target.getDebtorInfo(userLogin, debtorNo, pf);
+		return execute(user, params, READ_ACCESS_LOG, () -> {
+			final DebtorInfo info = target.getDebtorInfo(debtorNo, pf);
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
 				return ExecutionResult.with(Response.ok(info, preferred).build());
@@ -562,8 +554,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response getFiscalEvents(final int partyNo, final String user) {
 		final Supplier<String> params = () -> String.format("getFiscalEvents{partyNo=%d, user=%s}", partyNo, WebServiceHelper.enquote(user));
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final FiscalEvents events = target.getFiscalEvents(userLogin, partyNo);
+		return execute(user, params, READ_ACCESS_LOG, () -> {
+			final FiscalEvents events = target.getFiscalEvents(partyNo);
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
 				return ExecutionResult.with(Response.ok(fiscalEventsObjectFactory.createFiscalEvents(events), preferred).build(), events.getEvents().size());
@@ -575,8 +567,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response getImmovableProperty(long immoId, String user) {
 		final Supplier<String> params = () -> String.format("getImmovableProperty{immoId=%d, user=%s}", immoId, WebServiceHelper.enquote(user));
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final ImmovableProperty immovable = target.getImmovableProperty(userLogin, immoId);
+		return execute(user, params, READ_ACCESS_LOG, () -> {
+			final ImmovableProperty immovable = target.getImmovableProperty(immoId);
 			if (immovable == null) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "L'immeuble n'existe pas."));
 			}
@@ -597,8 +589,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 		final Supplier<String> params = () -> String.format("getImmovablePropertyByLocation{municipalityFsoId=%d, parcelNumber=%d, index1=%d, index2=%d, index3=%d, user=%s}",
 		                                                    municipalityFsoId, parcelNumber, index1, index2, index3, WebServiceHelper.enquote(user));
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final ImmovableProperty immovable = target.getImmovablePropertyByLocation(userLogin, municipalityFsoId, parcelNumber, index1, index2, index3);
+		return execute(user, params, READ_ACCESS_LOG, () -> {
+			final ImmovableProperty immovable = target.getImmovablePropertyByLocation(municipalityFsoId, parcelNumber, index1, index2, index3);
 			if (immovable == null) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "L'immeuble n'existe pas."));
 			}
@@ -619,9 +611,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 		final Supplier<String> params = () -> String.format("findImmovablePropertyByLocation{municipalityFsoId=%d, parcelNumber=%d, index1=%d, index2=%d, index3=%d, user=%s}",
 		                                                    municipalityFsoId, parcelNumber, index1, index2, index3, WebServiceHelper.enquote(user));
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final ImmovablePropertySearchResult searchResult = target.findImmovablePropertyByLocation(userLogin, municipalityFsoId, parcelNumber, index1, index2, index3);
+				final ImmovablePropertySearchResult searchResult = target.findImmovablePropertyByLocation(municipalityFsoId, parcelNumber, index1, index2, index3);
 				final int nbItems = Optional.ofNullable(searchResult.getEntries())
 						.map(List::size)
 						.orElse(0);
@@ -659,9 +651,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response getImmovableProperties(List<Long> immoIds, String user) {
 		final Supplier<String> params = () -> String.format("getImmovableProperties{immoId=%s, user=%s}", WebServiceHelper.toString(immoIds), WebServiceHelper.enquote(user));
 
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final ImmovablePropertyList immovableProperties = target.getImmovableProperties(userLogin, immoIds);
+				final ImmovablePropertyList immovableProperties = target.getImmovableProperties(immoIds);
 				final int nbItems = (int) immovableProperties.getEntries().stream()
 						.map(ImmovablePropertyEntry::getImmovableProperty)
 						.filter(Objects::nonNull)
@@ -683,8 +675,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response getBuilding(long buildingId, String user) {
 		final Supplier<String> params = () -> String.format("getBuilding{buildingId=%d, user=%s}", buildingId, WebServiceHelper.enquote(user));
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final Building building = target.getBuilding(userLogin, buildingId);
+		return execute(user, params, READ_ACCESS_LOG, () -> {
+			final Building building = target.getBuilding(buildingId);
 			if (building == null) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le bâtiment n'existe pas."));
 			}
@@ -700,9 +692,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response getBuildings(List<Long> buildingId, String user) {
 		final Supplier<String> params = () -> String.format("getBuildings{immoId=%s, user=%s}", WebServiceHelper.toString(buildingId), WebServiceHelper.enquote(user));
 
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final BuildingList buildings = target.getBuildings(userLogin, buildingId);
+				final BuildingList buildings = target.getBuildings(buildingId);
 				final int nbItems = (int) buildings.getEntries().stream()
 						.map(BuildingEntry::getBuilding)
 						.filter(Objects::nonNull)
@@ -724,8 +716,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response getCommunityOfOwners(long communityId, String user) {
 		final Supplier<String> params = () -> String.format("getCommunityOfOwners{communityId=%d, user=%s}", communityId, WebServiceHelper.enquote(user));
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final CommunityOfOwners community = target.getCommunityOfOwners(userLogin, communityId);
+		return execute(user, params, READ_ACCESS_LOG, () -> {
+			final CommunityOfOwners community = target.getCommunityOfOwners(communityId);
 			if (community == null) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "La communauté n'existe pas."));
 			}
@@ -741,9 +733,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response getCommunitiesOfOwners(List<Long> communityId, String user) {
 		final Supplier<String> params = () -> String.format("getCommunitiesOfOwners{communityId=%s, user=%s}", WebServiceHelper.toString(communityId), WebServiceHelper.enquote(user));
 
-		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final CommunityOfOwnersList communities = target.getCommunitiesOfOwners(userLogin, communityId);
+				final CommunityOfOwnersList communities = target.getCommunitiesOfOwners(communityId);
 				final int nbItems = (int) communities.getEntries().stream()
 						.map(CommunityOfOwnersEntry::getCommunityOfOwners)
 						.filter(Objects::nonNull)

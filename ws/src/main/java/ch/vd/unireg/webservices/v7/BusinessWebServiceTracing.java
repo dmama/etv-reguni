@@ -15,7 +15,6 @@ import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
@@ -111,11 +110,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public void setAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user, boolean blocked) throws AccessDeniedException {
+	public void setAutomaticRepaymentBlockingFlag(int partyNo, boolean blocked) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			target.setAutomaticRepaymentBlockingFlag(partyNo, user, blocked);
+			target.setAutomaticRepaymentBlockingFlag(partyNo, blocked);
 		}
 		catch (AccessDeniedException | RuntimeException | Error e) {
 			t = e;
@@ -127,11 +126,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public boolean getAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user) throws AccessDeniedException {
+	public boolean getAutomaticRepaymentBlockingFlag(int partyNo) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getAutomaticRepaymentBlockingFlag(partyNo, user);
+			return target.getAutomaticRepaymentBlockingFlag(partyNo);
 		}
 		catch (AccessDeniedException | RuntimeException | Error e) {
 			t = e;
@@ -143,11 +142,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
+	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.ackOrdinaryTaxDeclarations(user, request);
+			return target.ackOrdinaryTaxDeclarations(request);
 		}
 		catch (AccessDeniedException | RuntimeException | Error e) {
 			t = e;
@@ -159,11 +158,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
+	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, DeadlineRequest request) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
+			return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, request);
 		}
 		catch (AccessDeniedException | RuntimeException | Error e) {
 			t = e;
@@ -191,11 +190,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public PartyNumberList getModifiedTaxPayers(UserLogin user, Date since, Date until) throws AccessDeniedException {
+	public PartyNumberList getModifiedTaxPayers(Date since, Date until) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getModifiedTaxPayers(user, since, until);
+			return target.getModifiedTaxPayers(since, until);
 		}
 		catch (AccessDeniedException | RuntimeException | Error e) {
 			t = e;
@@ -207,11 +206,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public DebtorInfo getDebtorInfo(UserLogin user, int debtorNo, int pf) throws AccessDeniedException {
+	public DebtorInfo getDebtorInfo(int debtorNo, int pf) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getDebtorInfo(user, debtorNo, pf);
+			return target.getDebtorInfo(debtorNo, pf);
 		}
 		catch (AccessDeniedException | RuntimeException | Error e) {
 			t = e;
@@ -223,14 +222,14 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode,
+	public List<PartyInfo> searchParty(@Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode,
 	                                   @Nullable String townOrCountry, @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable String uidNumber,
 	                                   @Nullable Integer taxResidenceFSOId, boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes,
 	                                   @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, uidNumber, taxResidenceFSOId, onlyActiveMainTaxResidence,
+			return target.searchParty(partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, uidNumber, taxResidenceFSOId, onlyActiveMainTaxResidence,
 			                          partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
 		}
 		catch (AccessDeniedException | RuntimeException | Error e) {
@@ -242,12 +241,13 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 	}
 
+	@Nullable
 	@Override
-	public Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Party getParty(int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getParty(user, partyNo, parts);
+			return target.getParty(partyNo, parts);
 		}
 		catch (AccessDeniedException | ServiceException | RuntimeException | Error e) {
 			t = e;
@@ -258,14 +258,15 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 	}
 
+	@NotNull
 	@Override
-	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		Throwable t = null;
 		final long time = tracing.start();
 		int resultSize = 0;
 		try {
-			final Parties parties = target.getParties(user, partyNos, parts);
-			if (parties != null && parties.getEntries() != null) {
+			final Parties parties = target.getParties(partyNos, parts);
+			if (parties.getEntries() != null) {
 				for (Entry entry : parties.getEntries()) {
 					if (entry.getParty() != null) {
 						++ resultSize;
@@ -284,12 +285,12 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+	public CommunityOfHeirs getCommunityOfHeirs(int deceasedId) throws AccessDeniedException, ServiceException {
 		Throwable t = null;
 		final long time = tracing.start();
 		int resultSize = 0;
 		try {
-			final CommunityOfHeirs community = target.getCommunityOfHeirs(user, deceasedId);
+			final CommunityOfHeirs community = target.getCommunityOfHeirs(deceasedId);
 			resultSize = (community == null ? 0 : 1);
 			return community;
 		}
@@ -319,11 +320,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	}
 
 	@Override
-	public FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException {
+	public FiscalEvents getFiscalEvents(int partyNo) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getFiscalEvents(user, partyNo);
+			return target.getFiscalEvents(partyNo);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -336,11 +337,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(long immoId) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getImmovableProperty(user, immoId);
+			return target.getImmovableProperty(immoId);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -351,12 +352,13 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 	}
 
+	@Nullable
 	@Override
-	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+	public ImmovableProperty getImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
+			return target.getImmovablePropertyByLocation(municipalityFsoId, parcelNumber, index1, index2, index3);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -369,11 +371,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@NotNull
 	@Override
-	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+	public ImmovablePropertySearchResult findImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.findImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
+			return target.findImmovablePropertyByLocation(municipalityFsoId, parcelNumber, index1, index2, index3);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -386,11 +388,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@NotNull
 	@Override
-	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+	public ImmovablePropertyList getImmovableProperties(List<Long> immoIds) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getImmovableProperties(user, immoIds);
+			return target.getImmovableProperties(immoIds);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -403,11 +405,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@Nullable
 	@Override
-	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
+	public Building getBuilding(long buildingId) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getBuilding(user, buildingId);
+			return target.getBuilding(buildingId);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -420,11 +422,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@NotNull
 	@Override
-	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+	public BuildingList getBuildings(List<Long> buildingIds) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getBuildings(user, buildingIds);
+			return target.getBuildings(buildingIds);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -437,11 +439,11 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@Nullable
 	@Override
-	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
+	public CommunityOfOwners getCommunityOfOwners(long communityId) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getCommunityOfOwners(user, communityId);
+			return target.getCommunityOfOwners(communityId);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -452,12 +454,13 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 	}
 
+	@NotNull
 	@Override
-	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+	public CommunityOfOwnersList getCommunitiesOfOwners(List<Long> communityIds) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getCommunitiesOfOwners(user, communityIds);
+			return target.getCommunitiesOfOwners(communityIds);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;

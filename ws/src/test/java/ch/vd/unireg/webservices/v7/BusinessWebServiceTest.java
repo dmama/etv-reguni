@@ -29,7 +29,24 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.WebserviceTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.efacture.EFactureServiceProxy;
+import ch.vd.unireg.efacture.MockEFactureService;
+import ch.vd.unireg.etiquette.Etiquette;
+import ch.vd.unireg.etiquette.EtiquetteService;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
@@ -47,6 +64,52 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.TypeCommunaute;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.tiers.AutreCommunaute;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.DroitAcces;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.IdentificationEntreprise;
+import ch.vd.unireg.tiers.IndividuNotFoundException;
+import ch.vd.unireg.tiers.MenageCommun;
+import ch.vd.unireg.tiers.MontantMonetaire;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.DayMonth;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.FormeJuridique;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeDroitAcces;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeFlagEntreprise;
+import ch.vd.unireg.type.TypePermis;
+import ch.vd.unireg.type.TypeRapprochementRF;
+import ch.vd.unireg.type.TypeTiersEtiquette;
 import ch.vd.unireg.ws.ack.v7.AckStatus;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
@@ -161,70 +224,6 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorPeriodicity;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.ObjectNotFoundException;
-import ch.vd.unireg.common.WebserviceTest;
-import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.declaration.Declaration;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
-import ch.vd.unireg.declaration.DeclarationImpotSource;
-import ch.vd.unireg.declaration.DelaiDeclaration;
-import ch.vd.unireg.declaration.EtatDeclaration;
-import ch.vd.unireg.declaration.ModeleDocument;
-import ch.vd.unireg.declaration.PeriodeFiscale;
-import ch.vd.unireg.declaration.Periodicite;
-import ch.vd.unireg.efacture.EFactureServiceProxy;
-import ch.vd.unireg.efacture.MockEFactureService;
-import ch.vd.unireg.etiquette.Etiquette;
-import ch.vd.unireg.etiquette.EtiquetteService;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
-import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
-import ch.vd.unireg.registrefoncier.BatimentRF;
-import ch.vd.unireg.registrefoncier.BienFondsRF;
-import ch.vd.unireg.registrefoncier.CommunauteRF;
-import ch.vd.unireg.registrefoncier.CommuneRF;
-import ch.vd.unireg.registrefoncier.Fraction;
-import ch.vd.unireg.registrefoncier.GenrePropriete;
-import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
-import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.unireg.registrefoncier.TypeCommunaute;
-import ch.vd.unireg.security.Role;
-import ch.vd.unireg.tiers.AutreCommunaute;
-import ch.vd.unireg.tiers.CollectiviteAdministrative;
-import ch.vd.unireg.tiers.DebiteurPrestationImposable;
-import ch.vd.unireg.tiers.DroitAcces;
-import ch.vd.unireg.tiers.EnsembleTiersCouple;
-import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.tiers.ForFiscalPrincipal;
-import ch.vd.unireg.tiers.IdentificationEntreprise;
-import ch.vd.unireg.tiers.IndividuNotFoundException;
-import ch.vd.unireg.tiers.MenageCommun;
-import ch.vd.unireg.tiers.MontantMonetaire;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.CategorieImpotSource;
-import ch.vd.unireg.type.DayMonth;
-import ch.vd.unireg.type.EtatCivil;
-import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
-import ch.vd.unireg.type.FormeJuridique;
-import ch.vd.unireg.type.FormeJuridiqueEntreprise;
-import ch.vd.unireg.type.GenreImpot;
-import ch.vd.unireg.type.ModeCommunication;
-import ch.vd.unireg.type.ModeImposition;
-import ch.vd.unireg.type.MotifFor;
-import ch.vd.unireg.type.MotifRattachement;
-import ch.vd.unireg.type.Niveau;
-import ch.vd.unireg.type.PeriodiciteDecompte;
-import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.type.TypeAdresseCivil;
-import ch.vd.unireg.type.TypeContribuable;
-import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.type.TypeDroitAcces;
-import ch.vd.unireg.type.TypeEtatDocumentFiscal;
-import ch.vd.unireg.type.TypeFlagEntreprise;
-import ch.vd.unireg.type.TypePermis;
-import ch.vd.unireg.type.TypeRapprochementRF;
-import ch.vd.unireg.type.TypeTiersEtiquette;
-import ch.vd.unireg.webservices.common.UserLogin;
 
 import static ch.vd.unireg.xml.party.v5.strategy.NaturalPersonStrategyTest.assertInheritanceTo;
 import static org.junit.Assert.assertEquals;
@@ -260,8 +259,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Test
 	public void testBlocageRemboursementAuto() throws Exception {
 
-		final UserLogin login = new UserLogin(getDefaultOperateurName(), 22);
-
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -291,13 +288,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
+		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
 
 		// appel du WS (= sans changement)
-		service.setAutomaticRepaymentBlockingFlag((int) ppId, login, false);
+		service.setAutomaticRepaymentBlockingFlag((int) ppId, false);
 
 		// vérification
-		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
+		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -308,10 +305,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// appel du WS (= avec changement)
-		service.setAutomaticRepaymentBlockingFlag((int) ppId, login, true);
+		service.setAutomaticRepaymentBlockingFlag((int) ppId, true);
 
 		// vérification
-		Assert.assertTrue(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
+		Assert.assertTrue(service.getAutomaticRepaymentBlockingFlag((int) ppId));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -322,10 +319,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// appel du WS (= avec changement)
-		service.setAutomaticRepaymentBlockingFlag((int) ppId, login, false);
+		service.setAutomaticRepaymentBlockingFlag((int) ppId, false);
 
 		// vérification
-		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId, login));
+		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -554,7 +551,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final List<TaxDeclarationKey> keys = Arrays.asList(key1, key2);
 		final OrdinaryTaxDeclarationAckRequest req = new OrdinaryTaxDeclarationAckRequest("ADDO", DataHelper.coreToWeb(DateHelper.getCurrentDate()), keys);
-		final OrdinaryTaxDeclarationAckResponse resp = service.ackOrdinaryTaxDeclarations(new UserLogin(getDefaultOperateurName(), 22), req);
+		final OrdinaryTaxDeclarationAckResponse resp = service.ackOrdinaryTaxDeclarations(req);
 		Assert.assertNotNull(resp);
 
 		// vérification des codes retour
@@ -646,7 +643,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// demande de délai qui échoue (délai plus ancien)
 		{
 			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToWeb(delaiInitial.addMonths(-2)), DataHelper.coreToWeb(RegDate.get()));
-			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
+			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, req);
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(DeadlineStatus.ERROR_INVALID_DEADLINE, resp.getStatus());
 		}
@@ -672,7 +669,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate nouveauDelai = RegDateHelper.maximum(delaiInitial.addMonths(1), RegDate.get(), NullDateBehavior.LATEST);
 		{
 			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToWeb(nouveauDelai), DataHelper.coreToWeb(RegDate.get()));
-			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, new UserLogin(getDefaultOperateurName(), 22), req);
+			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, req);
 			Assert.assertNotNull(resp);
 			Assert.assertEquals(resp.getAdditionalMessage(), DeadlineStatus.OK, resp.getStatus());
 		}
@@ -776,20 +773,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final Date now = new Date(pp2.getRight().getTime() + 200);
 
 		// rien
-		final PartyNumberList none = service.getModifiedTaxPayers(new UserLogin(getDefaultOperateurName(), 22), end, now);
+		final PartyNumberList none = service.getModifiedTaxPayers(end, now);
 		Assert.assertNotNull(none);
 		Assert.assertNotNull(none.getPartyNo());
 		Assert.assertEquals(0, none.getPartyNo().size());
 
 		// 1 contribuable
-		final PartyNumberList one = service.getModifiedTaxPayers(new UserLogin(getDefaultOperateurName(), 22), middle, now);
+		final PartyNumberList one = service.getModifiedTaxPayers(middle, now);
 		Assert.assertNotNull(one);
 		Assert.assertNotNull(one.getPartyNo());
 		Assert.assertEquals(1, one.getPartyNo().size());
 		Assert.assertEquals(pp2.getLeft().longValue(), one.getPartyNo().get(0).longValue());
 
 		// 2 contribuables
-		final PartyNumberList two = service.getModifiedTaxPayers(new UserLogin(getDefaultOperateurName(), 22), start, now);
+		final PartyNumberList two = service.getModifiedTaxPayers(start, now);
 		Assert.assertNotNull(two);
 		Assert.assertNotNull(two.getPartyNo());
 		Assert.assertEquals(2, two.getPartyNo().size());
@@ -818,14 +815,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		Assert.assertTrue(dpiId >= Integer.MIN_VALUE && dpiId <= Integer.MAX_VALUE);
 		{
-			final DebtorInfo info = service.getDebtorInfo(new UserLogin(getDefaultOperateurName(), 22), (int) dpiId, 2012);
+			final DebtorInfo info = service.getDebtorInfo((int) dpiId, 2012);
 			Assert.assertEquals((int) dpiId, info.getNumber());
 			Assert.assertEquals(2012, info.getTaxPeriod());
 			Assert.assertEquals(0, info.getNumberOfWithholdingTaxDeclarationsIssued());
 			Assert.assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
 		}
 		{
-			final DebtorInfo info = service.getDebtorInfo(new UserLogin(getDefaultOperateurName(), 22), (int) dpiId, 2013);
+			final DebtorInfo info = service.getDebtorInfo((int) dpiId, 2013);
 			Assert.assertEquals((int) dpiId, info.getNumber());
 			Assert.assertEquals(2013, info.getTaxPeriod());
 			Assert.assertEquals(2, info.getNumberOfWithholdingTaxDeclarationsIssued());
@@ -870,7 +867,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche avec le numéro
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), Long.toString(ids.pp),
+			final List<PartyInfo> res = service.searchParty(Long.toString(ids.pp),
 			                                                null, SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
@@ -891,7 +888,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche avec le numéro et une donnée bidon à côté (qui doit donc être ignorée)
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), Long.toString(ids.pp),
+			final List<PartyInfo> res = service.searchParty(Long.toString(ids.pp),
 			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
@@ -912,7 +909,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche sans le numéro et une donnée bidon à côté -> aucun résultat
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
@@ -921,7 +918,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom -> les deux viennent
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
@@ -962,7 +959,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1003,7 +1000,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom avec liste de types mauvaise -> aucun ne vient
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.HOUSEHOLD), null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1012,7 +1009,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom avec liste de types mauvaise -> aucun ne vient
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.RESIDENT_NATURAL_PERSON), null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1021,7 +1018,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom avec liste de types des deux -> les deux viennent
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR, PartySearchType.NATURAL_PERSON), null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1062,7 +1059,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom avec liste de types d'un seul -> seul celui-là vient
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR), null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1083,7 +1080,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom avec liste de types d'un seul -> seul celui-là vient
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.NON_RESIDENT_NATURAL_PERSON), null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1150,7 +1147,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche sans critère d'IDE
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1203,7 +1200,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche avec critère d'IDE CHE123456789 -> un résultat
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE123456789", null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1225,7 +1222,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche avec critère d'IDE CHE987654321 -> un autre résultat
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE987654321", null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1247,7 +1244,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche avec critère d'IDE CHE111222333 -> aucun résultat
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE111222333", null, false, null, null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1297,7 +1294,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1391,7 +1388,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
-			final List<PartyInfo> res = service.searchParty(new UserLogin(getDefaultOperateurName(), 22), null,
+			final List<PartyInfo> res = service.searchParty(null,
 			                                                "protection", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
 
 			Assert.assertNotNull(res);
@@ -1513,11 +1510,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
 		// get PP
 		{
-			final Party party = service.getParty(userLogin, (int) ids.pp, null);
+			final Party party = service.getParty((int) ids.pp, null);
 			Assert.assertNotNull(party);
 			Assert.assertEquals(NaturalPerson.class, party.getClass());
 			Assert.assertEquals(ids.pp, party.getNumber());
@@ -1551,14 +1546,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 		// get MC
 		{
-			final Party party = service.getParty(userLogin, (int) ids.mc, null);
+			final Party party = service.getParty((int) ids.mc, null);
 			Assert.assertNotNull(party);
 			Assert.assertEquals(CommonHousehold.class, party.getClass());
 			Assert.assertEquals(ids.mc, party.getNumber());
 		}
 		// get DPI
 		{
-			final Party party = service.getParty(userLogin, (int) ids.dpi, null);
+			final Party party = service.getParty((int) ids.dpi, null);
 			Assert.assertNotNull(party);
 			Assert.assertEquals(Debtor.class, party.getClass());
 			Assert.assertEquals(ids.dpi, party.getNumber());
@@ -1570,7 +1565,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 		// get PM
 		{
-			final Party party = service.getParty(userLogin, (int) ids.pm, null);
+			final Party party = service.getParty((int) ids.pm, null);
 			Assert.assertNotNull(party);
 			Assert.assertEquals(Corporation.class, party.getClass());
 			Assert.assertEquals(ids.pm, party.getNumber());
@@ -1583,7 +1578,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 		// get CA
 		{
-			final Party party = service.getParty(userLogin, (int) ids.ca, null);
+			final Party party = service.getParty((int) ids.ca, null);
 			Assert.assertNotNull(party);
 			Assert.assertEquals(AdministrativeAuthority.class, party.getClass());
 			Assert.assertEquals(ids.ca, party.getNumber());
@@ -1594,7 +1589,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 		// get AC
 		{
-			final Party party = service.getParty(userLogin, (int) ids.ac, null);
+			final Party party = service.getParty((int) ids.ac, null);
 			Assert.assertNotNull(party);
 			Assert.assertEquals(OtherCommunity.class, party.getClass());
 			Assert.assertEquals(ids.ac, party.getNumber());
@@ -1631,9 +1626,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ppId, null);
+		final Party partySans = service.getParty(ppId, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertNotNull(partySans.getRepresentationAddresses());
 		Assert.assertNotNull(partySans.getDebtProsecutionAddressesOfOtherParty());
@@ -1646,7 +1639,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getMailAddresses().size());
 		Assert.assertEquals(0, partySans.getResidenceAddresses().size());
 
-		final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.ADDRESSES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.ADDRESSES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getRepresentationAddresses());
 		Assert.assertNotNull(partyAvec.getDebtProsecutionAddressesOfOtherParty());
@@ -1871,9 +1864,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ppId, null);
+		final Party partySans = service.getParty(ppId, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertNotNull(partySans.getMainTaxResidences());
 		Assert.assertNotNull(partySans.getOtherTaxResidences());
@@ -1882,7 +1873,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
 		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
 
-		final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.TAX_RESIDENCES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.TAX_RESIDENCES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getMainTaxResidences());
 		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
@@ -1951,9 +1942,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ppId, null);
+		final Party partySans = service.getParty(ppId, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertNotNull(partySans.getMainTaxResidences());
 		Assert.assertNotNull(partySans.getOtherTaxResidences());
@@ -1962,7 +1951,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
 		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
 
-		final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getMainTaxResidences());
 		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
@@ -2027,9 +2016,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ppId, null);
+		final Party partySans = service.getParty(ppId, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertNotNull(partySans.getMainTaxResidences());
 		Assert.assertNotNull(partySans.getOtherTaxResidences());
@@ -2038,7 +2025,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
 		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
 
-		final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.MANAGING_TAX_RESIDENCES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.MANAGING_TAX_RESIDENCES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getMainTaxResidences());
 		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
@@ -2100,9 +2087,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ids.mc, null);
+		final Party partySans = service.getParty(ids.mc, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertEquals(CommonHousehold.class, partySans.getClass());
 
@@ -2110,7 +2095,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNull(mcSans.getMainTaxpayer());
 		Assert.assertNull(mcSans.getSecondaryTaxpayer());
 
-		final Party partyAvec = service.getParty(userLogin, ids.mc, EnumSet.of(PartyPart.HOUSEHOLD_MEMBERS));
+		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(PartyPart.HOUSEHOLD_MEMBERS));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
 
@@ -2179,9 +2164,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ids.mc, null);
+		final Party partySans = service.getParty(ids.mc, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertEquals(CommonHousehold.class, partySans.getClass());
 
@@ -2189,7 +2172,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpSans.getTaxLiabilities());
 		Assert.assertEquals(0, tpSans.getTaxLiabilities().size());
 
-		final Party partyAvec = service.getParty(userLogin, ids.mc, EnumSet.of(PartyPart.TAX_LIABILITIES));
+		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(PartyPart.TAX_LIABILITIES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
 
@@ -2250,9 +2233,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ids.mc, null);
+		final Party partySans = service.getParty(ids.mc, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertEquals(CommonHousehold.class, partySans.getClass());
 
@@ -2260,7 +2241,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpSans.getTaxationPeriods());
 		Assert.assertEquals(0, tpSans.getTaxationPeriods().size());
 
-		final Party partyAvec = service.getParty(userLogin, ids.mc, EnumSet.of(PartyPart.TAXATION_PERIODS));
+		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(PartyPart.TAXATION_PERIODS));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
 
@@ -2328,9 +2309,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ids.lui, null);
+		final Party partySans = service.getParty(ids.lui, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertEquals(NaturalPerson.class, partySans.getClass());
 
@@ -2338,7 +2317,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpSans.getWithholdingTaxationPeriods());
 		Assert.assertEquals(0, tpSans.getWithholdingTaxationPeriods().size());
 
-		final Party partyAvec = service.getParty(userLogin, ids.lui, EnumSet.of(PartyPart.WITHHOLDING_TAXATION_PERIODS));
+		final Party partyAvec = service.getParty(ids.lui, EnumSet.of(PartyPart.WITHHOLDING_TAXATION_PERIODS));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 
@@ -2472,14 +2451,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ids.lui, null);
+		final Party partySans = service.getParty(ids.lui, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertNotNull(partySans.getRelationsBetweenParties());
 		Assert.assertEquals(0, partySans.getRelationsBetweenParties().size());
 
-		final Party partyAvec = service.getParty(userLogin, ids.lui, EnumSet.of(PartyPart.RELATIONS_BETWEEN_PARTIES));
+		final Party partyAvec = service.getParty(ids.lui, EnumSet.of(PartyPart.RELATIONS_BETWEEN_PARTIES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
 		Assert.assertEquals(2, partyAvec.getRelationsBetweenParties().size());
@@ -2543,9 +2520,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ppId, null);
+		final Party partySans = service.getParty(ppId, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertEquals(NaturalPerson.class, partySans.getClass());
 
@@ -2553,7 +2528,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpSans.getFamilyStatuses());
 		Assert.assertEquals(0, tpSans.getFamilyStatuses().size());
 
-		final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.FAMILY_STATUSES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.FAMILY_STATUSES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 
@@ -2640,15 +2615,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ppId, null);
+		final Party partySans = service.getParty(ppId, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertNotNull(partySans.getTaxDeclarations());
 		Assert.assertEquals(0, partySans.getTaxDeclarations().size());
 
 		{
-			final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS));
+			final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertNotNull(partyAvec.getTaxDeclarations());
 			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
@@ -2668,7 +2641,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		{
-			final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS_DEADLINES));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertNotNull(partyAvec.getTaxDeclarations());
 			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
@@ -2696,7 +2669,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		{
-			final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS_STATUSES));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertNotNull(partyAvec.getTaxDeclarations());
 			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
@@ -2746,9 +2719,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, dpiId, null);
+		final Party partySans = service.getParty(dpiId, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertEquals(Debtor.class, partySans.getClass());
 
@@ -2756,7 +2727,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(dpiSans.getPeriodicities());
 		Assert.assertEquals(0, dpiSans.getPeriodicities().size());
 
-		final Party partyAvec = service.getParty(userLogin, dpiId, EnumSet.of(PartyPart.DEBTOR_PERIODICITIES));
+		final Party partyAvec = service.getParty(dpiId, EnumSet.of(PartyPart.DEBTOR_PERIODICITIES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(Debtor.class, partyAvec.getClass());
 
@@ -2826,16 +2797,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ids.moi, null);
+		final Party partySans = service.getParty(ids.moi, null);
 		Assert.assertNotNull(partySans);
 		Assert.assertEquals(NaturalPerson.class, partySans.getClass());
 		Assert.assertNotNull(partySans.getRelationsBetweenParties());
 		Assert.assertEquals(0, partySans.getRelationsBetweenParties().size());
 
 		{
-			final Party partyAvec = service.getParty(userLogin, ids.moi, EnumSet.of(PartyPart.PARENTS));
+			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(PartyPart.PARENTS));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 
@@ -2852,7 +2821,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(rel.getCancellationDate());
 		}
 		{
-			final Party partyAvec = service.getParty(userLogin, ids.moi, EnumSet.of(PartyPart.CHILDREN));
+			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(PartyPart.CHILDREN));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 			Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
@@ -2867,7 +2836,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(rel.getCancellationDate());
 		}
 		{
-			final Party partyAvec = service.getParty(userLogin, ids.moi, EnumSet.of(PartyPart.CHILDREN, PartyPart.PARENTS));
+			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(PartyPart.CHILDREN, PartyPart.PARENTS));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 			Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
@@ -2991,8 +2960,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Party party = service.getParty(user, ids.pp, EnumSet.allOf(PartyPart.class));
+		final Party party = service.getParty(ids.pp, EnumSet.allOf(PartyPart.class));
 		Assert.assertNotNull(party);
 
 		{
@@ -3312,8 +3280,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Party party = service.getParty(user, ids.dpi, EnumSet.allOf(PartyPart.class));
+		final Party party = service.getParty(ids.dpi, EnumSet.allOf(PartyPart.class));
 		Assert.assertNotNull(party);
 		{
 			Assert.assertEquals(Debtor.class, party.getClass());
@@ -3467,8 +3434,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertValidInteger(idpm);
 
 		final Set<PartyPart> parts = EnumSet.allOf(PartyPart.class);
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Party party = service.getParty(user, (int) idpm, parts);
+		final Party party = service.getParty((int) idpm, parts);
 		Assert.assertNotNull(party);
 		{
 			Assert.assertEquals(Corporation.class, party.getClass());
@@ -3596,7 +3562,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// la limite du nombre de tiers demandables en une fois est de 100 -> "100" fonctionne, "101" ne doit plus fonctionner
 		final int max = BusinessWebServiceImpl.MAX_BATCH_SIZE;
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
 
 		final Random rnd = new Random();
 		{
@@ -3607,7 +3572,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 					nos.add(data);
 				}
 			}
-			final Parties res = service.getParties(user, nos, null);
+			final Parties res = service.getParties(nos, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(max, res.getEntries().size());
 		}
@@ -3621,7 +3586,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 
 			try {
-				service.getParties(user, nos, null);
+				service.getParties(nos, null);
 				Assert.fail("Nombre de tiers demandés trop élevé... L'appel aurait dû échouer.");
 			}
 			catch (BadRequestException e) {
@@ -3640,7 +3605,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 			nos.add(nos.get(0));
 
-			final Parties res = service.getParties(user, nos, null);
+			final Parties res = service.getParties(nos, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(max, res.getEntries().size());
 		}
@@ -3701,77 +3666,82 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin user = new UserLogin("TOTO", 22);
-		final Parties parties = service.getParties(user, Arrays.asList(ids.pp1, ids.ppProtege, 99999, ids.pp2, ids.pm, ids.ac), null);
-		Assert.assertNotNull(parties);
-		Assert.assertNotNull(parties.getEntries());
-		Assert.assertEquals(6, parties.getEntries().size());
+		AuthenticationHelper.pushPrincipal("TOTO", 22);
+		try {
+			final Parties parties = service.getParties(Arrays.asList(ids.pp1, ids.ppProtege, 99999, ids.pp2, ids.pm, ids.ac), null);
+			Assert.assertNotNull(parties);
+			Assert.assertNotNull(parties.getEntries());
+			Assert.assertEquals(6, parties.getEntries().size());
 
-		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-		Collections.sort(sorted, new Comparator<Entry>() {
-			@Override
-			public int compare(Entry o1, Entry o2) {
-				return o1.getPartyNo() - o2.getPartyNo();
+			final List<Entry> sorted = new ArrayList<>(parties.getEntries());
+			Collections.sort(sorted, new Comparator<Entry>() {
+				@Override
+				public int compare(Entry o1, Entry o2) {
+					return o1.getPartyNo() - o2.getPartyNo();
+				}
+			});
+
+			{
+				final Entry e = sorted.get(0);
+				Assert.assertNotNull(e.getParty());
+				Assert.assertNull(e.getError());
+				Assert.assertEquals(Corporation.class, e.getParty().getClass());
+				Assert.assertEquals(ids.pm, e.getPartyNo());
+				Assert.assertEquals(ids.pm, e.getParty().getNumber());
+
+				final Corporation corp = (Corporation) e.getParty();
+				Assert.assertNotNull(corp.getUidNumbers());
+				Assert.assertEquals(1, corp.getUidNumbers().getUidNumber().size());
+				Assert.assertEquals("CHE123456788", corp.getUidNumbers().getUidNumber().get(0));
 			}
-		});
+			{
+				final Entry e = sorted.get(1);
+				Assert.assertNull(e.getParty());
+				Assert.assertNotNull(e.getError());
+				Assert.assertEquals(99999, e.getPartyNo());
+				Assert.assertEquals("Le tiers n°999.99 n'existe pas", e.getError().getErrorMessage());
+				Assert.assertEquals(ErrorType.BUSINESS, e.getError().getType());
+			}
+			{
+				final Entry e = sorted.get(2);
+				Assert.assertNotNull(e.getParty());
+				Assert.assertNull(e.getError());
+				Assert.assertEquals(OtherCommunity.class, e.getParty().getClass());
+				Assert.assertEquals(ids.ac, e.getPartyNo());
+				Assert.assertEquals(ids.ac, e.getParty().getNumber());
 
-		{
-			final Entry e = sorted.get(0);
-			Assert.assertNotNull(e.getParty());
-			Assert.assertNull(e.getError());
-			Assert.assertEquals(Corporation.class, e.getParty().getClass());
-			Assert.assertEquals(ids.pm, e.getPartyNo());
-			Assert.assertEquals(ids.pm, e.getParty().getNumber());
-
-			final Corporation corp = (Corporation) e.getParty();
-			Assert.assertNotNull(corp.getUidNumbers());
-			Assert.assertEquals(1, corp.getUidNumbers().getUidNumber().size());
-			Assert.assertEquals("CHE123456788", corp.getUidNumbers().getUidNumber().get(0));
+				final OtherCommunity otherComm = (OtherCommunity) e.getParty();
+				Assert.assertNotNull(otherComm.getUidNumbers());
+				Assert.assertEquals(1, otherComm.getUidNumbers().getUidNumber().size());
+				Assert.assertEquals("CHE999999996", otherComm.getUidNumbers().getUidNumber().get(0));
+			}
+			{
+				final Entry e = sorted.get(3);
+				Assert.assertNotNull(e.getParty());
+				Assert.assertNull(e.getError());
+				Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
+				Assert.assertEquals(ids.pp1, e.getPartyNo());
+				Assert.assertEquals(ids.pp1, e.getParty().getNumber());
+			}
+			{
+				final Entry e = sorted.get(4);
+				Assert.assertNotNull(e.getParty());
+				Assert.assertNull(e.getError());
+				Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
+				Assert.assertEquals(ids.pp2, e.getPartyNo());
+				Assert.assertEquals(ids.pp2, e.getParty().getNumber());
+			}
+			{
+				final Entry e = sorted.get(5);
+				Assert.assertNull(e.getParty());
+				Assert.assertNotNull(e.getError());
+				Assert.assertEquals(ids.ppProtege, e.getPartyNo());
+				Assert.assertEquals("L'utilisateur TOTO/22 ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, e.getError().getErrorMessage());
+				Assert.assertEquals(ErrorType.ACCESS, e.getError().getType());
+			}
 		}
-		{
-			final Entry e = sorted.get(1);
-			Assert.assertNull(e.getParty());
-			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(99999, e.getPartyNo());
-			Assert.assertEquals("Le tiers n°999.99 n'existe pas", e.getError().getErrorMessage());
-			Assert.assertEquals(ErrorType.BUSINESS, e.getError().getType());
-		}
-		{
-			final Entry e = sorted.get(2);
-			Assert.assertNotNull(e.getParty());
-			Assert.assertNull(e.getError());
-			Assert.assertEquals(OtherCommunity.class, e.getParty().getClass());
-			Assert.assertEquals(ids.ac, e.getPartyNo());
-			Assert.assertEquals(ids.ac, e.getParty().getNumber());
-
-			final OtherCommunity otherComm = (OtherCommunity) e.getParty();
-			Assert.assertNotNull(otherComm.getUidNumbers());
-			Assert.assertEquals(1, otherComm.getUidNumbers().getUidNumber().size());
-			Assert.assertEquals("CHE999999996", otherComm.getUidNumbers().getUidNumber().get(0));
-		}
-		{
-			final Entry e = sorted.get(3);
-			Assert.assertNotNull(e.getParty());
-			Assert.assertNull(e.getError());
-			Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
-			Assert.assertEquals(ids.pp1, e.getPartyNo());
-			Assert.assertEquals(ids.pp1, e.getParty().getNumber());
-		}
-		{
-			final Entry e = sorted.get(4);
-			Assert.assertNotNull(e.getParty());
-			Assert.assertNull(e.getError());
-			Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
-			Assert.assertEquals(ids.pp2, e.getPartyNo());
-			Assert.assertEquals(ids.pp2, e.getParty().getNumber());
-		}
-		{
-			final Entry e = sorted.get(5);
-			Assert.assertNull(e.getParty());
-			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ids.ppProtege, e.getPartyNo());
-			Assert.assertEquals("L'utilisateur UserLogin{userId='TOTO', oid=22} ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, e.getError().getErrorMessage());
-			Assert.assertEquals(ErrorType.ACCESS, e.getError().getType());
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 
@@ -3852,8 +3822,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Parties parties = service.getParties(user, Arrays.asList(ids.pp, ids.dpi), EnumSet.allOf(PartyPart.class));
+		final Parties parties = service.getParties(Arrays.asList(ids.pp, ids.dpi), EnumSet.allOf(PartyPart.class));
 		Assert.assertNotNull(parties);
 		Assert.assertNotNull(parties.getEntries());
 		Assert.assertEquals(2, parties.getEntries().size());
@@ -4232,8 +4201,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Parties parties = service.getParties(user, Arrays.asList(ids.ppHabitant, ids.ppNonHabitant), EnumSet.of(PartyPart.WITHHOLDING_TAXATION_PERIODS));
+		final Parties parties = service.getParties(Arrays.asList(ids.ppHabitant, ids.ppNonHabitant), EnumSet.of(PartyPart.WITHHOLDING_TAXATION_PERIODS));
 		Assert.assertNotNull(parties);
 		Assert.assertNotNull(parties.getEntries());
 		Assert.assertEquals(2, parties.getEntries().size());
@@ -4308,8 +4276,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Parties parties = service.getParties(user, Arrays.asList(ids.ppConnu, ids.ppInconnu), null);
+		final Parties parties = service.getParties(Arrays.asList(ids.ppConnu, ids.ppInconnu), null);
 		Assert.assertNotNull(parties);
 		Assert.assertNotNull(parties.getEntries());
 		Assert.assertEquals(2, parties.getEntries().size());
@@ -4368,9 +4335,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
 		try {
-			final Party party = service.getParty(user, ppId, null);
+			final Party party = service.getParty(ppId, null);
 			Assert.fail("Aurait dû partir en erreur...");
 		}
 		catch (IndividuNotFoundException e) {
@@ -4408,17 +4374,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// interrogation
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
 
 		// cas avec flag
-		final Party avec = service.getParty(user, ids.dpiAvecFlag, null);
+		final Party avec = service.getParty(ids.dpiAvecFlag, null);
 		Assert.assertNotNull(avec);
 		Assert.assertEquals(Debtor.class, avec.getClass());
 		final Debtor avecDebtor = (Debtor) avec;
 		Assert.assertTrue(avecDebtor.isOtherCantonTaxAdministration());
 
 		// cas sans flag
-		final Party sans = service.getParty(user, ids.dpiSansFlag, null);
+		final Party sans = service.getParty(ids.dpiSansFlag, null);
 		Assert.assertNotNull(sans);
 		Assert.assertEquals(Debtor.class, sans.getClass());
 		final Debtor sansDebtor = (Debtor) sans;
@@ -4451,16 +4416,15 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// interrogation
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
 
 		// sans événement fiscal
-		final FiscalEvents sans = service.getFiscalEvents(user, ids.ppSans);
+		final FiscalEvents sans = service.getFiscalEvents(ids.ppSans);
 		Assert.assertNotNull(sans);
 		Assert.assertNotNull(sans.getEvents());
 		Assert.assertEquals(0, sans.getEvents().size());
 
 		// avec un événement fiscal
-		final FiscalEvents avec = service.getFiscalEvents(user, ids.ppAvec);
+		final FiscalEvents avec = service.getFiscalEvents(ids.ppAvec);
 		Assert.assertNotNull(avec);
 		Assert.assertNotNull(avec.getEvents());
 		Assert.assertEquals(1, avec.getEvents().size());
@@ -4534,8 +4498,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// interrogation
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Parties parties = service.getParties(user, Arrays.asList(ids.prn, ids.cjt, ids.mc), EnumSet.of(PartyPart.LABELS));
+		final Parties parties = service.getParties(Arrays.asList(ids.prn, ids.cjt, ids.mc), EnumSet.of(PartyPart.LABELS));
 		final Map<Integer, Party> mapParties = parties.getEntries().stream()
 				.collect(Collectors.toMap(Entry::getPartyNo, Entry::getParty));
 		Assert.assertEquals(3, mapParties.size());
@@ -4711,8 +4674,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// on demande les rapports-entre-tiers
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Party party = service.getParty(user, ids.decede.intValue(), Collections.singleton(PartyPart.RELATIONS_BETWEEN_PARTIES));
+		final Party party = service.getParty(ids.decede.intValue(), Collections.singleton(PartyPart.RELATIONS_BETWEEN_PARTIES));
 		Assert.assertNotNull(party);
 
 		// on doit bien recevoir tous les rapports-entre-tiers *sauf* les parentés et les relations d'héritages
@@ -4754,8 +4716,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// on demande les relations d'héritage : on ne reçoit qu'elles
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Party party = service.getParty(user, ids.decede.intValue(), Collections.singleton(PartyPart.INHERITANCE_RELATIONSHIPS));
+		final Party party = service.getParty(ids.decede.intValue(), Collections.singleton(PartyPart.INHERITANCE_RELATIONSHIPS));
 		Assert.assertNotNull(party);
 
 		final List<RelationBetweenParties> relations = party.getRelationsBetweenParties();
@@ -4779,8 +4740,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			return immeuble.getId();
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = service.getImmovableProperty(user, id);
+		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = service.getImmovableProperty(id);
 		Assert.assertNotNull(immo);
 		Assert.assertTrue(immo instanceof RealEstate);
 
@@ -4808,11 +4768,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			return Arrays.asList(immeuble1.getId(), immeuble2.getId());
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-
 		// on demande trois immeubles : deux existants et un inconnu
 		final long idInexistant = -1;
-		final ImmovablePropertyList immovableProperties = service.getImmovableProperties(user, Arrays.asList(ids.get(0), ids.get(1), idInexistant));
+		final ImmovablePropertyList immovableProperties = service.getImmovableProperties(Arrays.asList(ids.get(0), ids.get(1), idInexistant));
 
 		// on vérifie qu'on reçoit bien trois réponses
 		final List<ImmovablePropertyEntry> entries = immovableProperties.getEntries();
@@ -4847,8 +4805,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			return new Ids(immeuble.getId(), batiment.getId());
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final Building building = service.getBuilding(user, ids.batiment);
+		final Building building = service.getBuilding(ids.batiment);
 		Assert.assertNotNull(building);
 		Assert.assertEquals(ids.batiment, building.getId());
 
@@ -4878,11 +4835,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			return Arrays.asList(batiment1.getId(), batiment2.getId());
 		});
 
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-
 		// on demande trois bâtiments : deux existants et un inconnu
 		final long idInexistant = -1;
-		final BuildingList buildings = service.getBuildings(user, Arrays.asList(ids.get(0), ids.get(1), idInexistant));
+		final BuildingList buildings = service.getBuildings(Arrays.asList(ids.get(0), ids.get(1), idInexistant));
 
 		// on vérifie qu'on reçoit bien trois réponses
 		final List<BuildingEntry> entries = buildings.getEntries();
@@ -4936,8 +4891,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// on fait l'appel
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final CommunityOfOwners community = service.getCommunityOfOwners(user, ids.communaute);
+		final CommunityOfOwners community = service.getCommunityOfOwners(ids.communaute);
 		Assert.assertNotNull(community);
 		Assert.assertEquals(ids.communaute, community.getId());
 		Assert.assertEquals(CommunityOfOwnersType.COMMUNITY_OF_PROPERTY, community.getType());
@@ -5001,9 +4955,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// on demande trois communautés : deux existantes et une inconnue
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
 		final Long idCommunauteInconnue = -1L;
-		final CommunityOfOwnersList list = service.getCommunitiesOfOwners(user, Arrays.asList(ids.communaute1, ids.communaute2, idCommunauteInconnue));
+		final CommunityOfOwnersList list = service.getCommunitiesOfOwners(Arrays.asList(ids.communaute1, ids.communaute2, idCommunauteInconnue));
 		Assert.assertNotNull(list);
 
 		// on vérifie qu'on reçoit bien trois réponses
@@ -5042,11 +4995,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// on demande deux communautés : une existante et une inconnue
-		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		Assert.assertNull(service.getCommunityOfHeirs(user, -1));
+		Assert.assertNull(service.getCommunityOfHeirs(-1));
 
 		// on vérifie qu'on reçoit bien trois réponses
-		final CommunityOfHeirs community = service.getCommunityOfHeirs(user, (int) ids.defunt);
+		final CommunityOfHeirs community = service.getCommunityOfHeirs((int) ids.defunt);
 		Assert.assertNotNull(community);
 		Assert.assertEquals(ids.defunt, community.getInheritedFromNumber());
 		Assert.assertEquals(RegDate.get(2016, 5, 13), DataHelper.webToRegDate(community.getInheritanceDateFrom()));

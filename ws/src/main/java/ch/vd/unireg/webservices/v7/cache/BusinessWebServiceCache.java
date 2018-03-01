@@ -33,7 +33,6 @@ import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.utils.LogLevel;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.common.WebServiceHelper;
 import ch.vd.unireg.webservices.v7.BusinessWebService;
 import ch.vd.unireg.webservices.v7.PartySearchType;
@@ -166,14 +165,15 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		cache.removeAll();
 	}
 
+	@Nullable
 	@Override
-	public Party getParty(final UserLogin user, final int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Party getParty(final int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		final GetPartyKey key = new GetPartyKey(partyNo);
 		try {
 			final Party party;
 			final Element element = cache.get(key);
 			if (element == null) {
-				final Party found = target.getParty(user, partyNo, parts);
+				final Party found = target.getParty(partyNo, parts);
 				if (found != null) {
 					final GetPartyValue value = new GetPartyValue(parts, found);
 					cache.put(new Element(key, value));
@@ -186,7 +186,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			else {
 				final GetPartyValue value = (GetPartyValue) element.getObjectValue();
 				// on complète la liste des parts à la volée
-				party = value.getValueForPartsAndCompleteIfNeeded(parts, delta -> target.getParty(user, partyNo, delta));
+				party = value.getValueForPartsAndCompleteIfNeeded(parts, delta -> target.getParty(partyNo, delta));
 			}
 			return party;
 		}
@@ -199,8 +199,9 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		}
 	}
 
+	@NotNull
 	@Override
-	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> nullableParts) throws AccessDeniedException, ServiceException {
+	public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> nullableParts) throws AccessDeniedException, ServiceException {
 
 		final Parties parties;
 		final Set<PartyPart> parts = ensureNotNull(nullableParts);
@@ -208,7 +209,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		// récupération de tout ce qui peut l'être directement dans le cache
 		final List<Party> cachedEntries = getCachedParties(partyNos, parts);
 		if (cachedEntries == null || cachedEntries.isEmpty()) {
-			parties = target.getParties(user, partyNos, parts);
+			parties = target.getParties(partyNos, parts);
 			cacheParties(parties, parts);
 		}
 		else {
@@ -220,14 +221,14 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			}
 			else {
 				// on va chercher le surplus par rapport à ce qui est déjà caché
-				parties = target.getParties(user, uncachedId, parts);
+				parties = target.getParties(uncachedId, parts);
 				cacheParties(parties, parts);
 			}
 
 			// ajout des données cachées
 			for (Party party : cachedEntries) {
 				try {
-					WebServiceHelper.checkPartyReadAccess(securityProvider, user, party.getNumber());
+					WebServiceHelper.checkPartyReadAccess(securityProvider, party.getNumber());
 					parties.getEntries().add(new Entry(party.getNumber(), party, null));
 				}
 				catch (AccessDeniedException e) {
@@ -240,12 +241,12 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	@Override
-	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+	public CommunityOfHeirs getCommunityOfHeirs(int deceasedId) throws AccessDeniedException, ServiceException {
 		final CommunityOfHeirs community;
 		final GetCommunityOfHeirsKey key = new GetCommunityOfHeirsKey(deceasedId);
 		final Element element = cache.get(key);
 		if (element == null) {
-			community = target.getCommunityOfHeirs(user, deceasedId);
+			community = target.getCommunityOfHeirs(deceasedId);
 			cache.put(new Element(key, community));
 		}
 		else {
@@ -326,12 +327,12 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	@Override
-	public DebtorInfo getDebtorInfo(UserLogin user, int debtorNo, int pf) throws AccessDeniedException {
+	public DebtorInfo getDebtorInfo(int debtorNo, int pf) throws AccessDeniedException {
 		final GetDebtorInfoKey key = new GetDebtorInfoKey(debtorNo, pf);
 		final DebtorInfo info;
 		final Element element = cache.get(key);
 		if (element == null) {
-			info = target.getDebtorInfo(user, debtorNo, pf);
+			info = target.getDebtorInfo(debtorNo, pf);
 			cache.put(new Element(key, info));
 		}
 		else {
@@ -351,23 +352,23 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	@Override
-	public void setAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user, boolean blocked) throws AccessDeniedException {
-		target.setAutomaticRepaymentBlockingFlag(partyNo, user, blocked);
+	public void setAutomaticRepaymentBlockingFlag(int partyNo, boolean blocked) throws AccessDeniedException {
+		target.setAutomaticRepaymentBlockingFlag(partyNo, blocked);
 	}
 
 	@Override
-	public boolean getAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user) throws AccessDeniedException {
-		return target.getAutomaticRepaymentBlockingFlag(partyNo, user);
+	public boolean getAutomaticRepaymentBlockingFlag(int partyNo) throws AccessDeniedException {
+		return target.getAutomaticRepaymentBlockingFlag(partyNo);
 	}
 
 	@Override
-	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
-		return target.ackOrdinaryTaxDeclarations(user, request);
+	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
+		return target.ackOrdinaryTaxDeclarations(request);
 	}
 
 	@Override
-	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
-		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
+	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, DeadlineRequest request) throws AccessDeniedException {
+		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, request);
 	}
 
 	@Override
@@ -376,16 +377,16 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	@Override
-	public PartyNumberList getModifiedTaxPayers(UserLogin user, Date since, Date until) throws AccessDeniedException {
-		return target.getModifiedTaxPayers(user, since, until);
+	public PartyNumberList getModifiedTaxPayers(Date since, Date until) throws AccessDeniedException {
+		return target.getModifiedTaxPayers(since, until);
 	}
 
 	@Override
-	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode,
+	public List<PartyInfo> searchParty(@Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode,
 	                                   @Nullable String townOrCountry, @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable String uidNumber,
 	                                   @Nullable Integer taxResidenceFSOId, boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes,
 	                                   @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
-		return target.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, uidNumber, taxResidenceFSOId, onlyActiveMainTaxResidence, partyTypes,
+		return target.searchParty(partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, uidNumber, taxResidenceFSOId, onlyActiveMainTaxResidence, partyTypes,
 		                          debtorCategory, activeParty, oldWithholdingNumber);
 	}
 
@@ -395,18 +396,18 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	@Override
-	public FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException {
-		return target.getFiscalEvents(user, partyNo);
+	public FiscalEvents getFiscalEvents(int partyNo) throws AccessDeniedException {
+		return target.getFiscalEvents(partyNo);
 	}
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(long immoId) throws AccessDeniedException {
 		final ImmovableProperty immovable;
 		final GetImmovablePropertyKey key = new GetImmovablePropertyKey(immoId);
 		final Element element = cache.get(key);
 		if (element == null) {
-			immovable = target.getImmovableProperty(user, immoId);
+			immovable = target.getImmovableProperty(immoId);
 			cache.put(new Element(key, immovable));
 		}
 		else {
@@ -415,13 +416,14 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		return immovable;
 	}
 
+	@Nullable
 	@Override
-	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+	public ImmovableProperty getImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
 		final ImmovableProperty immovable;
 		final GetImmovablePropertyByLocationKey key = new GetImmovablePropertyByLocationKey(municipalityFsoId, parcelNumber, index1, index2, index3);
 		final Element element = cache.get(key);
 		if (element == null) {
-			immovable = target.getImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
+			immovable = target.getImmovablePropertyByLocation(municipalityFsoId, parcelNumber, index1, index2, index3);
 			cache.put(new Element(key, immovable));
 		}
 		else {
@@ -432,14 +434,14 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@NotNull
 	@Override
-	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+	public ImmovablePropertySearchResult findImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
 		// on ne cache pas les recherches
-		return target.findImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
+		return target.findImmovablePropertyByLocation(municipalityFsoId, parcelNumber, index1, index2, index3);
 	}
 
 	@NotNull
 	@Override
-	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+	public ImmovablePropertyList getImmovableProperties(List<Long> immoIds) throws AccessDeniedException {
 
 		final List<Long> elementsToFetch = new ArrayList<>();
 		final List<ImmovablePropertyEntry> cached = new ArrayList<>();
@@ -463,7 +465,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			list = new ImmovablePropertyList();
 		}
 		else {
-			list = target.getImmovableProperties(user, elementsToFetch);
+			list = target.getImmovableProperties(elementsToFetch);
 		}
 
 		// on met-à-jour le cache
@@ -480,12 +482,12 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@Nullable
 	@Override
-	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
+	public Building getBuilding(long buildingId) throws AccessDeniedException {
 		final Building immovable;
 		final GetBuildingKey key = new GetBuildingKey(buildingId);
 		final Element element = cache.get(key);
 		if (element == null) {
-			immovable = target.getBuilding(user, buildingId);
+			immovable = target.getBuilding(buildingId);
 			cache.put(new Element(key, immovable));
 		}
 		else {
@@ -496,7 +498,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@NotNull
 	@Override
-	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+	public BuildingList getBuildings(List<Long> buildingIds) throws AccessDeniedException {
 
 		final List<Long> elementsToFetch = new ArrayList<>();
 		final List<BuildingEntry> cached = new ArrayList<>();
@@ -520,7 +522,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			list = new BuildingList();
 		}
 		else {
-			list = target.getBuildings(user, elementsToFetch);
+			list = target.getBuildings(elementsToFetch);
 		}
 
 		// on met-à-jour le cache
@@ -537,12 +539,12 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@Nullable
 	@Override
-	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
+	public CommunityOfOwners getCommunityOfOwners(long communityId) throws AccessDeniedException {
 		final CommunityOfOwners community;
 		final GetCommunityOfOwnersKey key = new GetCommunityOfOwnersKey(communityId);
 		final Element element = cache.get(key);
 		if (element == null) {
-			community = target.getCommunityOfOwners(user, communityId);
+			community = target.getCommunityOfOwners(communityId);
 			cache.put(new Element(key, community));
 		}
 		else {
@@ -551,8 +553,9 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		return community;
 	}
 
+	@NotNull
 	@Override
-	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+	public CommunityOfOwnersList getCommunitiesOfOwners(List<Long> communityIds) throws AccessDeniedException {
 
 		final List<Long> elementsToFetch = new ArrayList<>();
 		final List<CommunityOfOwnersEntry> cached = new ArrayList<>();
@@ -576,7 +579,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			list = new CommunityOfOwnersList();
 		}
 		else {
-			list = target.getCommunitiesOfOwners(user, elementsToFetch);
+			list = target.getCommunitiesOfOwners(elementsToFetch);
 		}
 
 		// on met-à-jour le cache

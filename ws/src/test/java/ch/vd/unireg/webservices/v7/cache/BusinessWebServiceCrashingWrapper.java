@@ -3,6 +3,7 @@ package ch.vd.unireg.webservices.v7.cache;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +15,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.avatar.ImageData;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
-import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.v7.BusinessWebService;
 import ch.vd.unireg.webservices.v7.PartySearchType;
 import ch.vd.unireg.webservices.v7.SearchMode;
@@ -58,15 +58,16 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	}
 
 	@Override
-	public DebtorInfo getDebtorInfo(UserLogin user, int debtorNo, int pf) throws AccessDeniedException {
+	public DebtorInfo getDebtorInfo(int debtorNo, int pf) throws AccessDeniedException {
 		check(debtorNo);
-		return target.getDebtorInfo(user, debtorNo, pf);
+		return target.getDebtorInfo(debtorNo, pf);
 	}
 
+	@Nullable
 	@Override
-	public Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Party getParty(int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		check(partyNo);
-		return target.getParty(user, partyNo, parts);
+		return target.getParty(partyNo, parts);
 	}
 
 	@Override
@@ -80,26 +81,26 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	}
 
 	@Override
-	public void setAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user, boolean blocked) throws AccessDeniedException {
+	public void setAutomaticRepaymentBlockingFlag(int partyNo, boolean blocked) throws AccessDeniedException {
 		check(partyNo);
-		target.setAutomaticRepaymentBlockingFlag(partyNo, user, blocked);
+		target.setAutomaticRepaymentBlockingFlag(partyNo, blocked);
 	}
 
 	@Override
-	public boolean getAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user) throws AccessDeniedException {
+	public boolean getAutomaticRepaymentBlockingFlag(int partyNo) throws AccessDeniedException {
 		check(partyNo);
-		return target.getAutomaticRepaymentBlockingFlag(partyNo, user);
+		return target.getAutomaticRepaymentBlockingFlag(partyNo);
 	}
 
 	@Override
-	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
-		return target.ackOrdinaryTaxDeclarations(user, request);
+	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
+		return target.ackOrdinaryTaxDeclarations(request);
 	}
 
 	@Override
-	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
+	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, DeadlineRequest request) throws AccessDeniedException {
 		check(partyNo);
-		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
+		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, request);
 	}
 
 	@Override
@@ -108,21 +109,22 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	}
 
 	@Override
-	public PartyNumberList getModifiedTaxPayers(UserLogin user, java.util.Date since, java.util.Date until) throws AccessDeniedException {
-		return target.getModifiedTaxPayers(user, since, until);
+	public PartyNumberList getModifiedTaxPayers(Date since, Date until) throws AccessDeniedException {
+		return target.getModifiedTaxPayers(since, until);
 	}
 
 	@Override
-	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode,
+	public List<PartyInfo> searchParty(@Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode,
 	                                   @Nullable String townOrCountry, @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable String uidNumber,
 	                                   @Nullable Integer taxResidenceFSOId, boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes,
 	                                   @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
-		return target.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, uidNumber, taxResidenceFSOId, onlyActiveMainTaxResidence, partyTypes,
+		return target.searchParty(partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, uidNumber, taxResidenceFSOId, onlyActiveMainTaxResidence, partyTypes,
 		                          debtorCategory, activeParty, oldWithholdingNumber);
 	}
 
+	@NotNull
 	@Override
-	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		final List<Integer> nonCrashing = new ArrayList<>(partyNos.size());
 		final List<Integer> indeedCrashing = new ArrayList<>(partyNos.size());
 		for (int partyNo : partyNos) {
@@ -133,7 +135,7 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 				nonCrashing.add(partyNo);
 			}
 		}
-		final Parties result = target.getParties(user, nonCrashing, parts);
+		final Parties result = target.getParties(nonCrashing, parts);
 		for (int partyNo : indeedCrashing) {
 			result.getEntries().add(new Entry(partyNo, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, EXCEPTION_TEXT)));
 		}
@@ -141,9 +143,9 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	}
 
 	@Override
-	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+	public CommunityOfHeirs getCommunityOfHeirs(int deceasedId) throws AccessDeniedException, ServiceException {
 		check(deceasedId);
-		return target.getCommunityOfHeirs(user, deceasedId);
+		return target.getCommunityOfHeirs(deceasedId);
 	}
 
 	@Override
@@ -153,55 +155,57 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	}
 
 	@Override
-	public FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException {
+	public FiscalEvents getFiscalEvents(int partyNo) throws AccessDeniedException {
 		check(partyNo);
-		return target.getFiscalEvents(user, partyNo);
+		return target.getFiscalEvents(partyNo);
 	}
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
-		return target.getImmovableProperty(user, immoId);
-	}
-
-	@Override
-	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
-		return target.getImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
-	}
-
-	@NotNull
-	@Override
-	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
-		return target.findImmovablePropertyByLocation(user, municipalityFsoId, parcelNumber, index1, index2, index3);
-	}
-
-	@NotNull
-	@Override
-	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
-		return target.getImmovableProperties(user, immoIds);
+	public ImmovableProperty getImmovableProperty(long immoId) throws AccessDeniedException {
+		return target.getImmovableProperty(immoId);
 	}
 
 	@Nullable
 	@Override
-	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
-		return target.getBuilding(user, buildingId);
+	public ImmovableProperty getImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		return target.getImmovablePropertyByLocation(municipalityFsoId, parcelNumber, index1, index2, index3);
 	}
 
 	@NotNull
 	@Override
-	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
-		return target.getBuildings(user, buildingIds);
+	public ImmovablePropertySearchResult findImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+		return target.findImmovablePropertyByLocation(municipalityFsoId, parcelNumber, index1, index2, index3);
+	}
+
+	@NotNull
+	@Override
+	public ImmovablePropertyList getImmovableProperties(List<Long> immoIds) throws AccessDeniedException {
+		return target.getImmovableProperties(immoIds);
 	}
 
 	@Nullable
 	@Override
-	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
-		return target.getCommunityOfOwners(user, communityId);
+	public Building getBuilding(long buildingId) throws AccessDeniedException {
+		return target.getBuilding(buildingId);
 	}
 
+	@NotNull
 	@Override
-	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
-		return target.getCommunitiesOfOwners(user, communityIds);
+	public BuildingList getBuildings(List<Long> buildingIds) throws AccessDeniedException {
+		return target.getBuildings(buildingIds);
+	}
+
+	@Nullable
+	@Override
+	public CommunityOfOwners getCommunityOfOwners(long communityId) throws AccessDeniedException {
+		return target.getCommunityOfOwners(communityId);
+	}
+
+	@NotNull
+	@Override
+	public CommunityOfOwnersList getCommunitiesOfOwners(List<Long> communityIds) throws AccessDeniedException {
+		return target.getCommunitiesOfOwners(communityIds);
 	}
 
 	private void check(int partyNo) {

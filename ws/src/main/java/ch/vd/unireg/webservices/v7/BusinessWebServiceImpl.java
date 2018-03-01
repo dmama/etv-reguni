@@ -108,7 +108,6 @@ import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.EvenementFiscalDescriptionHelper;
-import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.common.WebServiceHelper;
 import ch.vd.unireg.ws.ack.v7.AckStatus;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
@@ -319,7 +318,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user, final boolean blocked) {
+	public void setAutomaticRepaymentBlockingFlag(final int partyNo, final boolean blocked) {
 		doInTransaction(false, new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -333,7 +332,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user) {
+	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo) {
 		return doInTransaction(true, status -> {
 			final Tiers tiers = context.tiersService.getTiers(partyNo);
 			if (tiers == null) {
@@ -344,7 +343,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin user, OrdinaryTaxDeclarationAckRequest request) {
+	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(OrdinaryTaxDeclarationAckRequest request) {
 		final RegDate dateRetour = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getDate());
 		final String source = request.getSource();
 
@@ -357,7 +356,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			@Override
 			public boolean doInTransaction(List<TaxDeclarationKey> keys, OrdinaryTaxDeclarationAckBatchResult result) {
 				for (TaxDeclarationKey key : keys) {
-					quittancerDeclaration(user, key, source, dateRetour, result);
+					quittancerDeclaration(key, source, dateRetour, result);
 				}
 				return true;
 			}
@@ -397,13 +396,13 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 	}
 
-	private void quittancerDeclaration(UserLogin userLogin, TaxDeclarationKey key, String source, RegDate dateRetour, OrdinaryTaxDeclarationAckBatchResult result) {
+	private void quittancerDeclaration(TaxDeclarationKey key, String source, RegDate dateRetour, OrdinaryTaxDeclarationAckBatchResult result) {
 		try {
 			final int partyNo = key.getTaxpayerNumber();
 			final int pf = key.getTaxPeriod();
 			final int noSeq = key.getSequenceNumber();
 
-			WebServiceHelper.checkPartyReadWriteAccess(context.securityProvider, userLogin, partyNo);
+			WebServiceHelper.checkPartyReadWriteAccess(context.securityProvider, partyNo);
 
 			final Tiers tiers = context.tiersService.getTiers(partyNo);
 			if (tiers == null) {
@@ -411,10 +410,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			}
 			else {
 				if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-					WebServiceHelper.checkAccess(context.securityProvider, userLogin, Role.DI_QUIT_PP);
+					WebServiceHelper.checkAccess(context.securityProvider, Role.DI_QUIT_PP);
 				}
 				else if (tiers instanceof Entreprise) {
-					WebServiceHelper.checkAccess(context.securityProvider, userLogin, Role.DI_QUIT_PM);
+					WebServiceHelper.checkAccess(context.securityProvider, Role.DI_QUIT_PM);
 				}
 
 				if (tiers.isDebiteurInactif()) {
@@ -532,7 +531,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, final UserLogin user, DeadlineRequest request) throws AccessDeniedException {
+	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, DeadlineRequest request) throws AccessDeniedException {
 		final RegDate nouveauDelai = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate dateObtention = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getGrantedOn());
 		final RegDate today = RegDate.get();
@@ -550,10 +549,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 						final Contribuable ctb = (Contribuable) tiers;
 
 						if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-							WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PP);
+							WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PP);
 						}
 						else if (ctb instanceof Entreprise) {
-							WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PM);
+							WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PM);
 						}
 
 						final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
@@ -612,7 +611,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public PartyNumberList getModifiedTaxPayers(UserLogin user, final Date since, final Date until) {
+	public PartyNumberList getModifiedTaxPayers(final Date since, final Date until) {
 		return doInTransaction(true, status -> {
 			final List<Long> longList = context.tiersDAO.getListeCtbModifies(since, until);
 			final List<Integer> intList = new ArrayList<>(longList.size());
@@ -640,7 +639,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public DebtorInfo getDebtorInfo(UserLogin user, final int debtorNo, final int pf) {
+	public DebtorInfo getDebtorInfo(final int debtorNo, final int pf) {
 		return doInTransaction(true, status -> {
 			final Tiers tiers = context.tiersDAO.get(debtorNo, false);
 			if (tiers == null || !(tiers instanceof DebiteurPrestationImposable)) {
@@ -656,7 +655,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode, @Nullable String townOrCountry,
+	public List<PartyInfo> searchParty(@Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode, @Nullable String townOrCountry,
 	                                   @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable String uidNumber, @Nullable Integer taxResidenceFSOId,
 	                                   boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes, @Nullable DebtorCategory debtorCategory,
 	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws IndexerException {
@@ -785,8 +784,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return factory.buildParty((T) tiers, parts, context);
 	}
 
+	@Nullable
 	@Override
-	public Party getParty(UserLogin user, final int partyNo, @Nullable final Set<PartyPart> parts) throws ServiceException {
+	public Party getParty(final int partyNo, @Nullable final Set<PartyPart> parts) throws ServiceException {
 		try {
 			return doInTransaction(true, new TxCallback<Party>() {
 				@Override
@@ -819,7 +819,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@NotNull
-	private List<Entry> resolvePartyBatch(@NotNull List<Integer> ids, @Nullable Set<PartyPart> parts, @NotNull UserLogin user) {
+	private List<Entry> resolvePartyBatch(@NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
 
 		final List<Entry> entries = new ArrayList<>(ids.size());
 
@@ -829,7 +829,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		while (idIterator.hasNext()) {
 			final int id = idIterator.next();
 			try {
-				WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, id);
+				WebServiceHelper.checkPartyReadAccess(context.securityProvider, id);
 				idLongSet.add((long) id);
 			}
 			catch (AccessDeniedException e) {
@@ -890,8 +890,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return entries;
 	}
 
+	@NotNull
 	@Override
-	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) {
+	public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> parts) {
 
 		// on enlève les doublons sur les numéros de tiers (et les éventuels <i>null</i>)
 		final Set<Integer> nos = new HashSet<>(partyNos);
@@ -919,7 +920,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			// chaque thread doit s'exécuter dans une transaction propre
 			return executeInReadOnlyTx(currentPrincipal, currentOID, status -> {
 				// on ne veut vraiment pas modifier la base
-				return executeInManualFlush(session -> resolvePartyBatch(batch, parts, user));
+				return executeInManualFlush(session -> resolvePartyBatch(batch, parts));
 			});
 		}, threadPool);
 
@@ -931,7 +932,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) {
+	public CommunityOfHeirs getCommunityOfHeirs(int deceasedId) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.tiersDAO.get((long) deceasedId))
 						.map(CommunityOfHeirsBuilder::newCommunity)
@@ -965,7 +966,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public FiscalEvents getFiscalEvents(final UserLogin user, final int partyNo) {
+	public FiscalEvents getFiscalEvents(final int partyNo) {
 		return doInTransaction(true, status -> {
 			final Tiers tiers = context.tiersDAO.get(partyNo, false);
 			if (tiers == null) {
@@ -1003,7 +1004,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) {
+	public ImmovableProperty getImmovableProperty(long immoId) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getImmeuble(immoId))
 						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
@@ -1013,8 +1014,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 						.orElse(null));
 	}
 
+	@Nullable
 	@Override
-	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
+	public ImmovableProperty getImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getImmeuble(municipalityFsoId, parcelNumber, index1, index2, index3))
 						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
@@ -1026,7 +1028,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
+	public ImmovablePropertySearchResult findImmovablePropertyByLocation(int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 		return doInTransaction(true, status -> {
 			final List<ImmovablePropertyInfo> entries = context.registreFoncierService.findImmeublesParSituation(municipalityFsoId, parcelNumber, index1, index2, index3).stream()
 					.map(ImmovablePropertyInfoBuilder::newInfo)
@@ -1037,7 +1039,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) {
+	public ImmovablePropertyList getImmovableProperties(List<Long> immoIds) {
 
 		if (immoIds.size() > MAX_BATCH_SIZE) {
 			throw new BadRequestException("Le nombre d'immeubles demandés ne peut dépasser " + MAX_BATCH_SIZE);
@@ -1082,7 +1084,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public Building getBuilding(@NotNull UserLogin user, long buildingId) {
+	public Building getBuilding(long buildingId) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getBatiment(buildingId))
 						.map(BuildingBuilder::newBuilding)
@@ -1091,7 +1093,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) {
+	public BuildingList getBuildings(List<Long> buildingIds) {
 
 		if (buildingIds.size() > MAX_BATCH_SIZE) {
 			throw new BadRequestException("Le nombre de bâtiments demandés ne peut dépasser " + MAX_BATCH_SIZE);
@@ -1132,7 +1134,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) {
+	public CommunityOfOwners getCommunityOfOwners(long communityId) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getCommunaute(communityId))
 						.map(communaute -> CommunityOfOwnersBuilder.newCommunity(communaute,
@@ -1141,8 +1143,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 						.orElse(null));
 	}
 
+	@NotNull
 	@Override
-	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) {
+	public CommunityOfOwnersList getCommunitiesOfOwners(List<Long> communityIds) {
 
 		if (communityIds.size() > MAX_BATCH_SIZE) {
 			throw new BadRequestException("Le nombre de communautés demandées ne peut dépasser " + MAX_BATCH_SIZE);
