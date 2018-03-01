@@ -1,6 +1,5 @@
 package ch.vd.unireg.webservices.v7;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,18 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -829,7 +821,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 	}
 
-	private static Set<TiersDAO.Parts> toCoreAvecForsFiscaux(Set<PartyPart> parts) {
+	@NotNull
+	private static Set<TiersDAO.Parts> toCoreAvecForsFiscaux(@Nullable Set<PartyPart> parts) {
 		Set<TiersDAO.Parts> set = ch.vd.unireg.xml.DataHelper.xmlToCoreV5(parts);
 		if (set == null) {
 			set = EnumSet.noneOf(TiersDAO.Parts.class);
@@ -839,126 +832,76 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return set;
 	}
 
-	private static class PartiesTask implements Callable<Parties> {
+	@NotNull
+	private List<Entry> resolvePartyBatch(@NotNull List<Integer> ids, @Nullable Set<PartyPart> parts, @NotNull UserLogin user) {
 
-		private final Set<Integer> partyNos;
-		private final Set<PartyPart> parts;
-		private final UserLogin user;
-		private final Context context;
+		final List<Entry> entries = new ArrayList<>(ids.size());
 
-		private PartiesTask(List<Integer> partyNos, Set<PartyPart> parts, UserLogin user, Context context) {
-			this.partyNos = new HashSet<>(partyNos);
-			this.parts = parts;
-			this.user = user;
-			this.context = context;
-		}
-
-		@Override
-		public Parties call() throws ServiceException {
-			// mode read-only..
-			final TransactionTemplate template = new TransactionTemplate(context.transactionManager);
-			template.setReadOnly(true);
+		// vérification des droits d'accès et de l'existence des tiers
+		final Iterator<Integer> idIterator = ids.iterator();
+		final Set<Long> idLongSet = new HashSet<>(ids.size());
+		while (idIterator.hasNext()) {
+			final int id = idIterator.next();
 			try {
-				return template.execute(new TxCallback<Parties>() {
-					@Override
-					public Parties execute(TransactionStatus status) throws Exception {
-						// on ne veut vraiment pas modifier la base
-						return context.hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<Parties>() {
-							@Override
-							public Parties doInHibernate(Session session) throws HibernateException, SQLException {
-								try {
-									return doExtract();
-								}
-								catch (ServiceException e) {
-									throw new TxCallbackException(e);
-								}
-							}
-						});
-					}
-				});
+				WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, id);
+				idLongSet.add((long) id);
 			}
-			catch (TxCallbackException e) {
-				final Throwable cause = e.getCause();
-				if (cause instanceof ServiceException) {
-					throw (ServiceException) cause;
-				}
-				else {
-					throw e;
-				}
+			catch (AccessDeniedException e) {
+				entries.add(new Entry(id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.ACCESS, e.getMessage())));
+				idIterator.remove();
+			}
+			catch (TiersNotFoundException e) {
+				entries.add(new Entry(id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, e.getMessage())));
+				idIterator.remove();
 			}
 		}
 
-		private Parties doExtract() throws ServiceException {
-
-			final Parties parties = new Parties();
-			final List<Entry> entries = parties.getEntries();
-
-			// vérification des droits d'accès et de l'existence des tiers
-			final Iterator<Integer> idIterator = partyNos.iterator();
-			final Set<Long> idLongSet = new HashSet<>(partyNos.size());
-			while (idIterator.hasNext()) {
-				final int id = idIterator.next();
+		// récupération des données autorisées
+		final List<Tiers> batchResult = context.tiersDAO.getBatch(idLongSet, toCoreAvecForsFiscaux(parts));
+		for (Tiers t : batchResult) {
+			if (t != null) {
 				try {
-					WebServiceHelper.checkPartyReadAccess(context.securityProvider, user, id);
-					idLongSet.add((long) id);
+					final Party party = buildParty(t, parts, context);
+					if (party == null) {
+						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "Tiers non exposé.")));
+					}
+					else {
+						entries.add(new Entry(t.getNumero().intValue(), party, null));
+					}
 				}
-				catch (AccessDeniedException e) {
-					entries.add(new Entry(id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.ACCESS, e.getMessage())));
-					idIterator.remove();
+				catch (ServiceException e) {
+					final ErrorType errorType;
+					if (e.getInfo() instanceof BusinessExceptionInfo) {
+						errorType = ErrorType.BUSINESS;
+					}
+					else if (e.getInfo() instanceof AccessDeniedExceptionInfo) {
+						errorType = ErrorType.ACCESS;
+					}
+					else {
+						errorType = ErrorType.TECHNICAL;
+					}
+
+					LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
+					entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(errorType, e.getMessage())));
 				}
-				catch (TiersNotFoundException e) {
-					entries.add(new Entry(id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, e.getMessage())));
-					idIterator.remove();
+				catch (ObjectNotFoundException e) {
+					LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
+					entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, e.getMessage())));
 				}
+				catch (Exception e) {
+					LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
+					entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage())));
+				}
+				idLongSet.remove(t.getNumero());
 			}
-
-			// récupération des données autorisées
-			final List<Tiers> batchResult = context.tiersDAO.getBatch(idLongSet, toCoreAvecForsFiscaux(parts));
-			for (Tiers t : batchResult) {
-				if (t != null) {
-					try {
-						final Party party = buildParty(t, parts, context);
-						if (party == null) {
-							entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "Tiers non exposé.")));
-						}
-						else {
-							entries.add(new Entry(t.getNumero().intValue(), party, null));
-						}
-					}
-					catch (ServiceException e) {
-						final ErrorType errorType;
-						if (e.getInfo() instanceof BusinessExceptionInfo) {
-							errorType = ErrorType.BUSINESS;
-						}
-						else if (e.getInfo() instanceof AccessDeniedExceptionInfo) {
-							errorType = ErrorType.ACCESS;
-						}
-						else {
-							errorType = ErrorType.TECHNICAL;
-						}
-
-						LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
-						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(errorType, e.getMessage())));
-					}
-					catch (ObjectNotFoundException e) {
-						LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
-						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, e.getMessage())));
-					}
-					catch (Exception e) {
-						LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
-						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage())));
-					}
-					idLongSet.remove(t.getNumero());
-				}
-			}
-
-			// le reliquat sont des erreurs techniques (= bugs ?)
-			for (long id : idLongSet) {
-				entries.add(new Entry((int) id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, "Erreur inattendue.")));
-			}
-
-			return parties;
 		}
+
+		// le reliquat sont des erreurs techniques (= bugs ?)
+		for (long id : idLongSet) {
+			entries.add(new Entry((int) id, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, "Erreur inattendue.")));
+		}
+
+		return entries;
 	}
 
 	@Override
@@ -972,44 +915,33 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			throw new BadRequestException("Le nombre de tiers demandés ne peut dépasser " + MAX_BATCH_SIZE);
 		}
 
-		// TODO (msi) : remplacer cette mécanique par un appel à CollectionsUtils.parallelMap (voir getImmovableProperties())
-		// on envoie la sauce sur plusieurs threads
-		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(threadPool);
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		// on découpe les ids en lots
+		final List<List<Integer>> batches = new ArrayList<>();
 		final BatchIterator<Integer> iterator = new StandardBatchIterator<>(nos, PARTIES_BATCH_SIZE);
-		int nbRemainingTasks = 0;
 		while (iterator.hasNext()) {
-			executor.submit(new PartiesTask(iterator.next(), parts, user, context));
-			++nbRemainingTasks;
+			batches.add(iterator.next());
 		}
 
-		// et on récolte ce que l'on a semé
-		final Parties finalResult = new Parties();
-		while (nbRemainingTasks > 0) {
-			try {
-				final Future<Parties> future = executor.poll(1, TimeUnit.SECONDS);
-				if (future != null) {
-					--nbRemainingTasks;
-					finalResult.getEntries().addAll(future.get().getEntries());
-				}
-			}
-			catch (InterruptedException e) {
-				throw new RuntimeException("Method execution was interrupted", e);
-			}
-			catch (ExecutionException e) {
-				final Throwable cause = e.getCause();
-				try {
-					throw cause;
-				}
-				catch (RuntimeException | Error | ServiceException c) {
-					throw c;
-				}
-				catch (Throwable t) {
-					throw new RuntimeException("Exception lancée pendant le traitement", t);
-				}
-			}
-		}
+		// on charge les données sur plusieurs threads
+		final List<List<Entry>> batchEntries = CollectionsUtils.parallelMap(batches, batch -> {
+			// chaque thread doit s'exécuter dans une transaction propre
+			return executeInReadOnlyTx(currentPrincipal, currentOID, status -> {
+				// on ne veut vraiment pas modifier la base
+				return executeInManualFlush(session -> resolvePartyBatch(batch, parts, user));
+			});
+		}, threadPool);
 
-		return finalResult;
+		// on construit le résultat final
+		final Parties parties = new Parties();
+		final List<Entry> partiesEntries = parties.getEntries();
+		batchEntries.forEach(partiesEntries::addAll);
+		return parties;
 	}
 
 	@Override
@@ -1140,7 +1072,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		// on charge les données sur plusieurs threads
 		final List<ImmovablePropertyEntry> entries = CollectionsUtils.parallelMap(immoIds, immoId -> {
 			//noinspection CodeBlock2Expr
-			return executeInTx(currentPrincipal, currentOID, status -> resolveImmovablePropertyEntry(immoId));
+			return executeInReadOnlyTx(currentPrincipal, currentOID, status -> resolveImmovablePropertyEntry(immoId));
 		}, threadPool);
 
 		// on retourne la liste triée
@@ -1194,7 +1126,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		// on charge les données sur plusieurs threads
 		final List<BuildingEntry> entries = CollectionsUtils.parallelMap(buildingIds, buildingId -> {
 			//noinspection CodeBlock2Expr
-			return executeInTx(currentPrincipal, currentOID, status -> resolveBuildingEntry(buildingId));
+			return executeInReadOnlyTx(currentPrincipal, currentOID, status -> resolveBuildingEntry(buildingId));
 		}, threadPool);
 
 		// on retourne la liste triée
@@ -1245,7 +1177,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		// on charge les données sur plusieurs threads
 		final List<CommunityOfOwnersEntry> entries = CollectionsUtils.parallelMap(communityIds, communityId -> {
 			//noinspection CodeBlock2Expr
-			return executeInTx(currentPrincipal, currentOID, status -> resolveCommunityEntry(communityId));
+			return executeInReadOnlyTx(currentPrincipal, currentOID, status -> resolveCommunityEntry(communityId));
 		}, threadPool);
 
 		// on retourne le résultat global
@@ -1271,7 +1203,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 	}
 
-	private <T> T executeInTx(@NotNull String currentPrincipal, int currentOID, TransactionCallback<@NotNull T> callback) {
+	private <T> T executeInReadOnlyTx(@NotNull String currentPrincipal, int currentOID, @NotNull TransactionCallback<T> callback) {
 		AuthenticationHelper.pushPrincipal(currentPrincipal, currentOID);
 		try {
 			return doInTransaction(true, callback);
@@ -1279,6 +1211,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
+	}
+
+	private <T> T executeInManualFlush(@NotNull HibernateCallback<T> callback) {
+		return context.hibernateTemplate.execute(FlushMode.MANUAL, callback);
 	}
 }
 

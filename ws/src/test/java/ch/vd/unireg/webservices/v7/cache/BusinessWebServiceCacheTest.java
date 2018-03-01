@@ -40,6 +40,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.WebserviceTest;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.efacture.EFactureServiceProxy;
+import ch.vd.unireg.efacture.MockEFactureService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
@@ -48,41 +54,6 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.ws.landregistry.v7.BuildingList;
-import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
-import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
-import ch.vd.unireg.ws.parties.v7.Entry;
-import ch.vd.unireg.ws.parties.v7.Parties;
-import ch.vd.unireg.xml.common.v2.Date;
-import ch.vd.unireg.xml.party.address.v3.Address;
-import ch.vd.unireg.xml.party.address.v3.FormattedAddress;
-import ch.vd.unireg.xml.party.corporation.v5.Corporation;
-import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
-import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
-import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
-import ch.vd.unireg.xml.party.person.v5.Nationality;
-import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
-import ch.vd.unireg.xml.party.person.v5.Origin;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.OrdinaryTaxDeclaration;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatus;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType;
-import ch.vd.unireg.xml.party.taxpayer.v5.Taxpayer;
-import ch.vd.unireg.xml.party.taxresidence.v4.ExpenditureBased;
-import ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason;
-import ch.vd.unireg.xml.party.taxresidence.v4.OrdinaryResident;
-import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiability;
-import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
-import ch.vd.unireg.xml.party.v5.Party;
-import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
-import ch.vd.unireg.common.WebserviceTest;
-import ch.vd.unireg.declaration.ModeleDocument;
-import ch.vd.unireg.declaration.PeriodeFiscale;
-import ch.vd.unireg.efacture.EFactureServiceProxy;
-import ch.vd.unireg.efacture.MockEFactureService;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -119,7 +90,37 @@ import ch.vd.unireg.type.TypeRapprochementRF;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.v7.BusinessWebService;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
+import ch.vd.unireg.ws.parties.v7.Entry;
+import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v2.Date;
+import ch.vd.unireg.xml.party.address.v3.Address;
+import ch.vd.unireg.xml.party.address.v3.FormattedAddress;
+import ch.vd.unireg.xml.party.corporation.v5.Corporation;
+import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
+import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
+import ch.vd.unireg.xml.party.person.v5.Nationality;
+import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
+import ch.vd.unireg.xml.party.person.v5.Origin;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.OrdinaryTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatus;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType;
+import ch.vd.unireg.xml.party.taxpayer.v5.Taxpayer;
+import ch.vd.unireg.xml.party.taxresidence.v4.ExpenditureBased;
+import ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason;
+import ch.vd.unireg.xml.party.taxresidence.v4.OrdinaryResident;
+import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiability;
+import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
+import ch.vd.unireg.xml.party.v5.Party;
+import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 import static ch.vd.unireg.webservices.v7.BusinessWebServiceTest.assertFoundEntry;
 import static org.junit.Assert.assertEquals;
@@ -1303,8 +1304,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		final ExecutorService executor = Executors.newFixedThreadPool(2);
 		try {
 			// on lance deux appels en parallèle
-			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> getParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS)), executor);
-			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> getParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS, PartyPart.PARENTS)), executor);
+			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS)), executor);
+			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS, PartyPart.PARENTS)), executor);
 
 
 			// on vérifique que les données retournées sont correctes
@@ -1359,6 +1360,16 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertEquals(new Date(2010, 1, 1), landRight1.getDateFrom());
 		assertNull(landRight1.getDateTo());
 		assertEquals(ids.immeuble1.longValue(), landRight1.getImmovablePropertyId());
+	}
+
+	private Parties pushPrincipalAndGetParties(@NotNull UserLogin userLogin, @NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
+		AuthenticationHelper.pushPrincipal(userLogin.userId, userLogin.oid);
+		try {
+			return getParties(userLogin, ids, parts);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	private Parties getParties(@NotNull UserLogin userLogin, @NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
@@ -1891,7 +1902,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			@Override
 			public Object call() throws Exception {
 				// récupération des données + sérialisation
-				final Parties parties = cache.getParties(userLogin, Collections.singletonList((int) id), parts);
+				final Parties parties = pushPrincipalAndGetParties(userLogin, Collections.singletonList((int) id), parts);
 				final Marshaller marshaller = jaxbContext.createMarshaller();
 				try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 					marshaller.marshal(parties, out);

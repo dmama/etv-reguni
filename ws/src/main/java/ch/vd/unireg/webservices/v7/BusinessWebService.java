@@ -39,6 +39,8 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 /**
  * Partie purement métier du traitement des appels web-service v7
+ *
+ * FIXME (msi) : supprimer les paramètres UserLogin : ces informations de login sont renseignées par le WebServiceEndPoint dans le AuthenticationHelper.
  */
 public interface BusinessWebService {
 
