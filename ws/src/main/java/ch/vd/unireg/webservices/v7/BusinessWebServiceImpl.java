@@ -319,7 +319,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user, final boolean blocked) throws AccessDeniedException {
+	public void setAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user, final boolean blocked) {
 		doInTransaction(false, new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -333,21 +333,18 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user) throws AccessDeniedException {
-		return doInTransaction(true, new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction(TransactionStatus status) {
-				final Tiers tiers = context.tiersService.getTiers(partyNo);
-				if (tiers == null) {
-					throw new TiersNotFoundException(partyNo);
-				}
-				return tiers.getBlocageRemboursementAutomatique() != null && tiers.getBlocageRemboursementAutomatique() ? Boolean.TRUE : Boolean.FALSE;
+	public boolean getAutomaticRepaymentBlockingFlag(final int partyNo, UserLogin user) {
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersService.getTiers(partyNo);
+			if (tiers == null) {
+				throw new TiersNotFoundException(partyNo);
 			}
+			return tiers.getBlocageRemboursementAutomatique() != null && tiers.getBlocageRemboursementAutomatique() ? Boolean.TRUE : Boolean.FALSE;
 		});
 	}
 
 	@Override
-	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
+	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(final UserLogin user, OrdinaryTaxDeclarationAckRequest request) {
 		final RegDate dateRetour = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getDate());
 		final String source = request.getSource();
 
@@ -358,7 +355,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		                                                                                                                                                        context.transactionManager, null);
 		template.execute(result, new BatchWithResultsCallback<TaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult>() {
 			@Override
-			public boolean doInTransaction(List<TaxDeclarationKey> keys, OrdinaryTaxDeclarationAckBatchResult result) throws Exception {
+			public boolean doInTransaction(List<TaxDeclarationKey> keys, OrdinaryTaxDeclarationAckBatchResult result) {
 				for (TaxDeclarationKey key : keys) {
 					quittancerDeclaration(user, key, source, dateRetour, result);
 				}
@@ -611,29 +608,21 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public TaxOffices getTaxOffices(final int municipalityId, @Nullable final RegDate date) {
-		return doInTransaction(true, new TransactionCallback<TaxOffices>() {
-			@Override
-			public TaxOffices doInTransaction(TransactionStatus transactionStatus) {
-				return TaxOfficesBuilder.newTaxOffices(municipalityId, date, context);
-			}
-		});
+		return doInTransaction(true, transactionStatus -> TaxOfficesBuilder.newTaxOffices(municipalityId, date, context));
 	}
 
 	@Override
-	public PartyNumberList getModifiedTaxPayers(UserLogin user, final Date since, final Date until) throws AccessDeniedException {
-		return doInTransaction(true, new TransactionCallback<PartyNumberList>() {
-			@Override
-			public PartyNumberList doInTransaction(TransactionStatus status) {
-				final List<Long> longList = context.tiersDAO.getListeCtbModifies(since, until);
-				final List<Integer> intList = new ArrayList<>(longList.size());
-				for (Long id : longList) {
-					// [SIPM] il faut écarter les établissements (les identifiants ne sont pas utilisables avec GetParty/GetParties) et ils étaient de fait écartés auparavant car il n'y en avait pas...
-					if (id != null && (id < Etablissement.ETB_GEN_FIRST_ID || id > Etablissement.ETB_GEN_LAST_ID)) {
-						intList.add(id.intValue());
-					}
+	public PartyNumberList getModifiedTaxPayers(UserLogin user, final Date since, final Date until) {
+		return doInTransaction(true, status -> {
+			final List<Long> longList = context.tiersDAO.getListeCtbModifies(since, until);
+			final List<Integer> intList = new ArrayList<>(longList.size());
+			for (Long id : longList) {
+				// [SIPM] il faut écarter les établissements (les identifiants ne sont pas utilisables avec GetParty/GetParties) et ils étaient de fait écartés auparavant car il n'y en avait pas...
+				if (id != null && (id < Etablissement.ETB_GEN_FIRST_ID || id > Etablissement.ETB_GEN_LAST_ID)) {
+					intList.add(id.intValue());
 				}
-				return new PartyNumberList(intList);
 			}
+			return new PartyNumberList(intList);
 		});
 	}
 
@@ -651,21 +640,18 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public DebtorInfo getDebtorInfo(UserLogin user, final int debtorNo, final int pf) throws AccessDeniedException {
-		return doInTransaction(true, new TransactionCallback<DebtorInfo>() {
-			@Override
-			public DebtorInfo doInTransaction(TransactionStatus status) {
-				final Tiers tiers = context.tiersDAO.get(debtorNo, false);
-				if (tiers == null || !(tiers instanceof DebiteurPrestationImposable)) {
-					throw new ObjectNotFoundException("Pas de débiteur de prestation imposable avec le numéro " + debtorNo);
-				}
-
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-				final List<? extends DateRange> lrEmises = dpi.getDeclarationsDansPeriode(DeclarationImpotSource.class, pf, false);
-				final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(dpi, RegDate.get(pf, 12, 31), new ArrayList<>());
-				final List<DateRange> lrManquantesInPf = extractIntersecting(lrManquantes, new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31)));
-				return new DebtorInfo(debtorNo, pf, lrManquantesInPf.size() + lrEmises.size(), lrEmises.size(), null);
+	public DebtorInfo getDebtorInfo(UserLogin user, final int debtorNo, final int pf) {
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersDAO.get(debtorNo, false);
+			if (tiers == null || !(tiers instanceof DebiteurPrestationImposable)) {
+				throw new ObjectNotFoundException("Pas de débiteur de prestation imposable avec le numéro " + debtorNo);
 			}
+
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+			final List<? extends DateRange> lrEmises = dpi.getDeclarationsDansPeriode(DeclarationImpotSource.class, pf, false);
+			final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(dpi, RegDate.get(pf, 12, 31), new ArrayList<>());
+			final List<DateRange> lrManquantesInPf = extractIntersecting(lrManquantes, new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31)));
+			return new DebtorInfo(debtorNo, pf, lrManquantesInPf.size() + lrEmises.size(), lrEmises.size(), null);
 		});
 	}
 
@@ -673,7 +659,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public List<PartyInfo> searchParty(UserLogin user, @Nullable String partyNo, @Nullable String name, SearchMode nameSearchMode, @Nullable String townOrCountry,
 	                                   @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable String uidNumber, @Nullable Integer taxResidenceFSOId,
 	                                   boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes, @Nullable DebtorCategory debtorCategory,
-	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
+	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws IndexerException {
 		final TiersCriteria criteria = new TiersCriteria();
 		if (partyNo != null && StringUtils.isNotBlank(partyNo)) {
 			// tous les autres critères sont ignorés si le numéro est renseigné
@@ -800,7 +786,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public Party getParty(UserLogin user, final int partyNo, @Nullable final Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Party getParty(UserLogin user, final int partyNo, @Nullable final Set<PartyPart> parts) throws ServiceException {
 		try {
 			return doInTransaction(true, new TxCallback<Party>() {
 				@Override
@@ -905,7 +891,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) {
 
 		// on enlève les doublons sur les numéros de tiers (et les éventuels <i>null</i>)
 		final Set<Integer> nos = new HashSet<>(partyNos);
@@ -945,7 +931,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.tiersDAO.get((long) deceasedId))
 						.map(CommunityOfHeirsBuilder::newCommunity)
@@ -957,7 +943,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		try {
 			return doInTransaction(true, new TxCallback<ImageData>() {
 				@Override
-				public ImageData execute(TransactionStatus status) throws ServiceException {
+				public ImageData execute(TransactionStatus status) {
 					final Tiers tiers = context.tiersService.getTiers(partyNo);
 					if (tiers == null) {
 						throw new TiersNotFoundException(partyNo);
@@ -979,51 +965,45 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public FiscalEvents getFiscalEvents(final UserLogin user, final int partyNo) throws AccessDeniedException {
-		return doInTransaction(true, new TransactionCallback<FiscalEvents>() {
-			@Override
-			public FiscalEvents doInTransaction(TransactionStatus status) {
-				final Tiers tiers = context.tiersDAO.get(partyNo, false);
-				if (tiers == null) {
-					throw new ObjectNotFoundException("Le tiers " + partyNo + " n'existe pas");
-				}
-
-				final Collection<EvenementFiscal> evts = context.evenementFiscalService.getEvenementsFiscaux(tiers);
-				final List<EvenementFiscal> sortedList;
-				if (evts == null || evts.isEmpty()) {
-					sortedList = Collections.emptyList();
-				}
-				else {
-					sortedList = AnnulableHelper.sansElementsAnnules(evts);     // on n'est jamais trop prudent...
-					sortedList.sort(new Comparator<EvenementFiscal>() {
-						@Override
-						public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-							int comparison = NullDateBehavior.EARLIEST.compare(o1.getDateValeur(), o2.getDateValeur());
-							if (comparison == 0) {
-								comparison = o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
-							}
-							return comparison;
-						}
-					});
-				}
-
-				final List<FiscalEvent> list = new ArrayList<>(sortedList.size());
-				for (EvenementFiscal evtFiscal : sortedList) {
-					final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal xml = EvenementFiscalV3Factory.buildOutputData(evtFiscal);
-					list.add(new FiscalEvent(evtFiscal.getLogCreationUser(),
-					                         XmlUtils.date2cal(evtFiscal.getLogCreationDate()),
-					                         EvenementFiscalDescriptionHelper.getTextualDescription(evtFiscal),
-					                         xml,
-					                         null));
-				}
-				return new FiscalEvents(list, 0, null);
+	public FiscalEvents getFiscalEvents(final UserLogin user, final int partyNo) {
+		return doInTransaction(true, status -> {
+			final Tiers tiers = context.tiersDAO.get(partyNo, false);
+			if (tiers == null) {
+				throw new ObjectNotFoundException("Le tiers " + partyNo + " n'existe pas");
 			}
+
+			final Collection<EvenementFiscal> evts = context.evenementFiscalService.getEvenementsFiscaux(tiers);
+			final List<EvenementFiscal> sortedList;
+			if (evts == null || evts.isEmpty()) {
+				sortedList = Collections.emptyList();
+			}
+			else {
+				sortedList = AnnulableHelper.sansElementsAnnules(evts);     // on n'est jamais trop prudent...
+				sortedList.sort((o1, o2) -> {
+					int comparison = NullDateBehavior.EARLIEST.compare(o1.getDateValeur(), o2.getDateValeur());
+					if (comparison == 0) {
+						comparison = o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
+					}
+					return comparison;
+				});
+			}
+
+			final List<FiscalEvent> list = new ArrayList<>(sortedList.size());
+			for (EvenementFiscal evtFiscal : sortedList) {
+				final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal xml = EvenementFiscalV3Factory.buildOutputData(evtFiscal);
+				list.add(new FiscalEvent(evtFiscal.getLogCreationUser(),
+				                         XmlUtils.date2cal(evtFiscal.getLogCreationDate()),
+				                         EvenementFiscalDescriptionHelper.getTextualDescription(evtFiscal),
+				                         xml,
+				                         null));
+			}
+			return new FiscalEvents(list, 0, null);
 		});
 	}
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getImmeuble(immoId))
 						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
@@ -1034,7 +1014,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+	public @Nullable ImmovableProperty getImmovablePropertyByLocation(UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getImmeuble(municipalityFsoId, parcelNumber, index1, index2, index3))
 						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
@@ -1046,7 +1026,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws AccessDeniedException {
+	public ImmovablePropertySearchResult findImmovablePropertyByLocation(@NotNull UserLogin user, int municipalityFsoId, int parcelNumber, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 		return doInTransaction(true, status -> {
 			final List<ImmovablePropertyInfo> entries = context.registreFoncierService.findImmeublesParSituation(municipalityFsoId, parcelNumber, index1, index2, index3).stream()
 					.map(ImmovablePropertyInfoBuilder::newInfo)
@@ -1057,7 +1037,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) {
 
 		if (immoIds.size() > MAX_BATCH_SIZE) {
 			throw new BadRequestException("Le nombre d'immeubles demandés ne peut dépasser " + MAX_BATCH_SIZE);
@@ -1102,7 +1082,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
+	public Building getBuilding(@NotNull UserLogin user, long buildingId) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getBatiment(buildingId))
 						.map(BuildingBuilder::newBuilding)
@@ -1111,7 +1091,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) {
 
 		if (buildingIds.size() > MAX_BATCH_SIZE) {
 			throw new BadRequestException("Le nombre de bâtiments demandés ne peut dépasser " + MAX_BATCH_SIZE);
@@ -1152,7 +1132,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
+	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getCommunaute(communityId))
 						.map(communaute -> CommunityOfOwnersBuilder.newCommunity(communaute,
@@ -1162,7 +1142,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) {
 
 		if (communityIds.size() > MAX_BATCH_SIZE) {
 			throw new BadRequestException("Le nombre de communautés demandées ne peut dépasser " + MAX_BATCH_SIZE);
