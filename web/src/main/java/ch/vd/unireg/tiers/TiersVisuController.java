@@ -15,7 +15,6 @@ import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
-import ch.vd.unireg.tache.manager.TacheListManager;
 import ch.vd.unireg.tiers.manager.TiersEditManager;
 import ch.vd.unireg.tiers.manager.TiersVisuManager;
 import ch.vd.unireg.tiers.view.TiersVisuView;
@@ -38,13 +37,10 @@ public class TiersVisuController extends AbstractTiersController {
 
 	public static final String BUTTON_ANNULER_TIERS = "annulerTiers";
 
-	private static final String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
-
 	private static final String MODE_IMPRESSION = "printview";
 
 	private TiersEditManager tiersEditManager;
 	private TiersVisuManager tiersVisuManager;
-	private TacheListManager tacheListManager;
 
 	public static final String PAGE_SIZE_NAME = "pageSize";
 	public static final String RESULT_SIZE_NAME = "resultSize";
@@ -60,7 +56,6 @@ public class TiersVisuController extends AbstractTiersController {
 		TiersVisuView tiersVisuView = null;
 
 		final String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
-		final String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
 
 		final HistoFlags histoFlags = new HistoFlags(request);
 		final boolean modeImpression = getBooleanParam(request, MODE_IMPRESSION);
@@ -96,10 +91,7 @@ public class TiersVisuController extends AbstractTiersController {
 			}
 			tiersVisuView.setAllowed(isAllowed);
 		}
-		if (idTacheTraiteParam != null && !idTacheTraiteParam.isEmpty()) {
-			Long idTache = Long.parseLong(idTacheTraiteParam);
-			tacheListManager.traiteTache(idTache);
-		}
+
 		return tiersVisuView;
 	}
 
@@ -157,13 +149,7 @@ public class TiersVisuController extends AbstractTiersController {
 		this.tiersEditManager = tiersEditManager;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersVisuManager(TiersVisuManager tiersVisuManager) {
 		this.tiersVisuManager = tiersVisuManager;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setTacheListManager(TacheListManager tacheListManager) {
-		this.tacheListManager = tacheListManager;
 	}
 }

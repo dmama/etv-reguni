@@ -2,19 +2,21 @@ package ch.vd.unireg.tache.manager;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.tache.view.ImpressionNouveauxDossiersView;
 import ch.vd.unireg.tache.view.NouveauDossierCriteriaView;
 import ch.vd.unireg.tache.view.NouveauDossierListView;
 import ch.vd.unireg.tache.view.TacheCriteriaView;
 import ch.vd.unireg.tache.view.TacheListView;
+import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.type.TypeTache;
 
 /**
@@ -100,4 +102,7 @@ public interface TacheListManager {
 	 */
 	@Transactional(readOnly = true)
 	List<String> getCommentairesDistincts(TypeTache typeTache);
+
+	@Nullable
+	Contribuable getContribuableFromTache(long tacheId);
 }

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -31,6 +32,7 @@ import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.EditiqueCommunicationException;
 import ch.vd.unireg.common.EditiqueErrorHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.RetourEditiqueControllerHelper;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.editique.EditiqueException;
@@ -44,6 +46,7 @@ import ch.vd.unireg.tache.view.NouveauDossierCriteriaView;
 import ch.vd.unireg.tache.view.NouveauDossierListView;
 import ch.vd.unireg.tache.view.TacheCriteriaView;
 import ch.vd.unireg.tache.view.TacheListView;
+import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
 
@@ -283,6 +286,26 @@ public class TacheController {
 			// UNIREG-1218 : on affiche le message d'erreur de manière sympa
 			throw new ActionException(e.getMessage());
 		}
+	}
+
+	/**
+	 * Méthode pour effectuer le contrôle d'un dossier.
+	 */
+	@RequestMapping(value = "/controller-dossier.do", method = RequestMethod.GET)
+	@Transactional(rollbackFor = Throwable.class)
+	public String controllerDossier(@RequestParam(value = "tacheId") long tacheId) throws Exception {
+
+		final Contribuable contribuable = tacheListManager.getContribuableFromTache(tacheId);
+		if (contribuable == null) {
+			throw new ObjectNotFoundException("Le contribuable de la tache n°" + tacheId + " est inconnu.");
+		}
+
+		// on passe la tâche comme traitée (bizarre, mais c'est le comportement historique)
+		controllerUtils.checkAccesDossierEnEcriture(contribuable.getId());
+		tacheListManager.traiteTache(tacheId);
+
+		// on redirige vers la visualisation du contribuable pour qu'il contrôle le dossier
+		return "redirect:/tiers/visu.do?id=" + contribuable.getId();
 	}
 
 	/**

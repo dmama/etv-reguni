@@ -9,14 +9,13 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdressesResolutionException;
@@ -30,6 +29,8 @@ import ch.vd.unireg.editique.EditiqueCompositionService;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatDocument;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -440,5 +441,14 @@ public class TacheListManagerImpl implements TacheListManager {
 	@Transactional(readOnly = true)
 	public List<String> getCommentairesDistincts(TypeTache typeTache) {
 		return tacheService.getCommentairesDistincts(typeTache);
+	}
+
+	@Override
+	public @Nullable Contribuable getContribuableFromTache(long tacheId) {
+		final Tache tache = tacheDAO.get(tacheId);
+		if (tache == null) {
+			return null;
+		}
+		return tache.getContribuable();
 	}
 }

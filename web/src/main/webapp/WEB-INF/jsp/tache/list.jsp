@@ -54,9 +54,12 @@
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" sortName="contribuable.numero">
 				<c:choose>
 					<c:when test="${tache.etatTache == 'EN_INSTANCE' && !tache.annule}">
+						<c:set var="noctb">
+							<unireg:numCTB numero="${tache.numero}"/>
+						</c:set>
 						<c:choose>
 							<c:when test="${tache.typeTache == 'TacheControleDossier'}">
-								<a href="../tiers/visu.do?id=${tache.numero}&idTacheTraite=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
+								<unireg:linkTo name="${noctb}" action="/tache/controller-dossier.do" params="{tacheId:${tache.id}}"/>
 							</c:when>
 							<c:when test="${tache.typeTache == 'TacheTransmissionDossier' && tache.authDossier.mouvements}">
 								<a href="../mouvement/edit.do?numero=${tache.numero}&depuisTache=true&idTacheTraite=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
