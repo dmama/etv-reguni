@@ -39,18 +39,6 @@
 
 	<tiles:put name="body">
 	
-	<%--@elvariable id="warnings" type="java.util.List<String>"--%>
-	<c:if test="${not empty warnings}">
-		<table class="warnings iepngfix" cellspacing="0" cellpadding="0" border="0">
-			<tr><td class="heading"><fmt:message key="label.action.avertissements"/></td></tr>
-			<tr><td class="details"><ul>
-			<c:forEach var="warn" items="${warnings}">
-				<li class="warn"><c:out value="${warn}"/></li>
-			</c:forEach>
-			</ul></td></tr>
-		</table>
-	</c:if>
-
 	<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersVisuView"--%>
 	<c:if test="${command.tiers != null}">
 
@@ -349,12 +337,6 @@
 	</c:if>
 
 	<script type="text/javascript" language="Javascript1.3">
-			function Page_AnnulerTiers(ev) {
-				if(!confirm('Voulez-vous vraiment annuler ce tiers ?'))
-					return Event.stop(ev);
-				return true;
-		 	}
-
 		 	/**
 		 	 * Vue imprimable : affichage les contenus des tabs l'un dessus l'autre
 		 	 */

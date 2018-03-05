@@ -76,7 +76,6 @@
 	<bean id="tiersVisuController" class="ch.vd.unireg.tiers.TiersVisuController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.unireg.tiers.view.TiersVisuView" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="tiersVisuManager" ref="tiersVisuManager" />
 		<property name="formView" value="tiers/visualisation/visu" />
 		<property name="successView" value="redirect:/tiers/list.do" />

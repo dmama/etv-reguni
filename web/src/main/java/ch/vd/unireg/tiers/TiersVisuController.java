@@ -3,7 +3,6 @@ package ch.vd.unireg.tiers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
-import ch.vd.unireg.tiers.manager.TiersEditManager;
 import ch.vd.unireg.tiers.manager.TiersVisuManager;
 import ch.vd.unireg.tiers.view.TiersVisuView;
 import ch.vd.unireg.type.ModeImposition;
@@ -30,16 +28,11 @@ import ch.vd.unireg.utils.HttpSessionUtils;
  * @author XSIKCE
  */
 public class TiersVisuController extends AbstractTiersController {
-	/**
-	 * Un LOGGER.
-	 */
-	protected final Logger LOGGER = LoggerFactory.getLogger(TiersVisuController.class);
 
-	public static final String BUTTON_ANNULER_TIERS = "annulerTiers";
+	protected final Logger LOGGER = LoggerFactory.getLogger(TiersVisuController.class);
 
 	private static final String MODE_IMPRESSION = "printview";
 
-	private TiersEditManager tiersEditManager;
 	private TiersVisuManager tiersVisuManager;
 
 	public static final String PAGE_SIZE_NAME = "pageSize";
@@ -47,9 +40,6 @@ public class TiersVisuController extends AbstractTiersController {
 	private static final String TABLE_NAME = "rapportPrestation";
 	private static final int PAGE_SIZE = 10;
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
@@ -95,24 +85,11 @@ public class TiersVisuController extends AbstractTiersController {
 		return tiersVisuView;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse,
-	 *      org.springframework.validation.BindException, java.util.Map)
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
 		ModelAndView mav = super.showForm(request, response, errors, model);
 		HttpSession session = request.getSession();
-		/*
-		 * Ces warnings sont le résultat de la validation métier,
-		 * pour cette raison ils sont stockés temporairement dans
-		 * la session par le controlleur de séparation.
-		 */
-		List<String> warnings = (List<String>) session.getAttribute("warnings");
-		mav.addObject("warnings", warnings);
-		session.removeAttribute("warnings");
 
 		final HistoFlags histoFlags = new HistoFlags(request);
 		final boolean rapportsPrestationHisto = histoFlags.hasHistoFlag(HistoFlag.RAPPORTS_PRESTATION);
@@ -127,10 +104,6 @@ public class TiersVisuController extends AbstractTiersController {
 		return mav;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
@@ -138,15 +111,7 @@ public class TiersVisuController extends AbstractTiersController {
 		TiersVisuView bean = (TiersVisuView) command;
 		checkAccesDossierEnEcriture(bean.getTiers().getId());
 
-		if (request.getParameter(BUTTON_ANNULER_TIERS) != null) {
-			tiersEditManager.annulerTiers(bean.getTiers().getNumero());
-			return new ModelAndView("redirect:visu.do?id=" + bean.getTiers().getNumero());
-		}
 		return showForm(request, response, errors);
-	}
-
-	public void setTiersEditManager(TiersEditManager tiersEditManager) {
-		this.tiersEditManager = tiersEditManager;
 	}
 
 	public void setTiersVisuManager(TiersVisuManager tiersVisuManager) {
