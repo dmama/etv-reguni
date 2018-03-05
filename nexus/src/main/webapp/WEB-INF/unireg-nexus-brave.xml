@@ -9,6 +9,7 @@
 	<bean id="braveTracing" class="brave.spring.beans.TracingFactoryBean">
 		<property name="localServiceName" value="unireg-nexus"/>
 		<property name="currentTraceContext" ref="braveTraceContext" />
+		<property name="spanReporter" value="NOOP" />
 	</bean>
 
 	<bean id="braveHttpTracing" class="brave.spring.beans.HttpTracingFactoryBean">
