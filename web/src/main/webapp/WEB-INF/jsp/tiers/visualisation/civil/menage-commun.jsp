@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <table class="civil"><tr>
+	<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersVisuView"--%>
 	<td width="50%">
 		<fieldset class="<c:if test="${command.individuConjoint != null || command.tiersConjoint != null}">individu</c:if><c:if test="${command.individuConjoint == null && command.tiersConjoint == null}">information</c:if>">
 			<legend><span><fmt:message key="label.individu.principal" /></span></legend>

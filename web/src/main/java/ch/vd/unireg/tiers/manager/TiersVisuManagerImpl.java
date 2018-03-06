@@ -14,12 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdressesFiscalesHisto;
@@ -33,6 +31,9 @@ import ch.vd.unireg.di.view.DeclarationImpotListView;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.InterfaceDataException;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.mouvement.MouvementDossier;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
 import ch.vd.unireg.security.Role;
@@ -147,6 +148,9 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				setDecisionAciView(tiersVisuView,contribuable);
 				setMandataires(tiersVisuView, contribuable);
 
+				// initialisation des collections pour éviter les lazy-init exceptions dans la JSP
+				initLazyCollections(contribuable);
+
 				try {
 					setSituationsFamille(tiersVisuView, contribuable);
 				}
@@ -193,6 +197,11 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCivilesConjoint,
 				                                 tiersVisuView::setExceptionAdresseCivilesConjoint);
+
+				// initialisation des collections pour éviter les lazy-init exceptions dans la JSP
+				initLazyCollections(tiersVisuView.getTiersPrincipal());
+				initLazyCollections(tiersVisuView.getTiersConjoint());
+
 			}
 			else if (tiers instanceof PersonnePhysique) {
 				assignHistoriqueAddressesCiviles((PersonnePhysique) tiers,
@@ -222,6 +231,22 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		tiersVisuView.setForsSecondairesPagines(forsSecondairesPagines && !modeImpression);
 		tiersVisuView.setAutresForsPagines(autresForsPagines && !modeImpression);
 		return tiersVisuView;
+	}
+
+	/**
+	 * Workaround temporaire pour initialiser les collections lazy d'hibernate référencées directement depuis les JSP. Normalement,
+	 * les entités hibernate ne devraient jamais être exposées dans les JSP. La bonne manière de faire serait donc de ne plus exposer
+	 * les tiers/tiersPrincipal/tiersConjoint dans la classe TiersVisuView.
+	 *
+	 * @param ctb un contribuable
+	 */
+	private static void initLazyCollections(@Nullable Contribuable ctb) {
+		if (ctb != null) {
+			ctb.getIdentificationsEntreprise().size();
+		}
+		if (ctb instanceof PersonnePhysique) {
+			((PersonnePhysique) ctb).getIdentificationsPersonnes().size();
+		}
 	}
 
 	@FunctionalInterface

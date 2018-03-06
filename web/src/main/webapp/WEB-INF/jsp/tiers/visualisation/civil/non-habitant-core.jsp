@@ -237,8 +237,9 @@
 </table>
 <fieldset class="information">
     <legend><span><fmt:message key="label.tiers.information.entreprise"/></span></legend>
-<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
-<c:if test="${param.path=='tiers' && autorisations.identificationEntreprise}">
+	<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersVisuView"--%>
+	<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+	<c:if test="${(command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant') && autorisations.identificationEntreprise}">
         <table border="0">
             <tr>
                 <td>
@@ -248,6 +249,8 @@
             </tr>
         </table>
     </c:if>
-    <jsp:include page="ide.jsp"/>
+	<jsp:include page="ide.jsp">
+		<jsp:param name="path" value="${param.path}" />
+	</jsp:include>
 </fieldset>
 

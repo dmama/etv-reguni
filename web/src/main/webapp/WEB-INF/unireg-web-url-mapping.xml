@@ -68,8 +68,6 @@
 		<property name="urlMap">
 			<map>
 				<!-- Tiers - display -->
-				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
-
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />
 

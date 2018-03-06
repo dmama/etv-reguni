@@ -73,12 +73,11 @@
 		<property name="paramApplicationManager" ref="paramApplicationManager"/>
 	</bean>
 
-	<bean id="tiersVisuController" class="ch.vd.unireg.tiers.TiersVisuController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.unireg.tiers.view.TiersVisuView" />
+	<bean id="tiersVisuController" class="ch.vd.unireg.tiers.TiersVisuController">
 		<property name="tiersVisuManager" ref="tiersVisuManager" />
-		<property name="formView" value="tiers/visualisation/visu" />
-		<property name="successView" value="redirect:/tiers/list.do" />
+		<property name="autorisationManager" ref="autorisationManager" />
+		<property name="controllerUtils" ref="controllerUtils" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="rapportsPrestationListController" class="ch.vd.unireg.tiers.RapportsPrestationListController">

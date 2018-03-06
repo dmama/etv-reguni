@@ -4,17 +4,7 @@
     <tr class="<unireg:nextRowClass/>">
         <td width="50%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
         <td>
-            <c:choose>
-                <c:when test="${param.pathTiers !=null}">
-                    <c:set var="bind" value="command.${param.pathTiers}.identificationsEntreprise" scope="request"/>
-                </c:when>
-                <c:when test="${param.path !=null}">
-                    <c:set var="bind" value="command.${param.path}.identificationsEntreprise" scope="request"/>
-                </c:when>
-                <c:otherwise>
-
-                </c:otherwise>
-            </c:choose>
+            <c:set var="bind" value="command.${param.path}.identificationsEntreprise" scope="request"/>
             <spring:bind path="${bind}">
                 <c:forEach var="noIde" items="${status.value}">
                     <unireg:numIDE numeroIDE="${noIde.numeroIde}"/><br/>

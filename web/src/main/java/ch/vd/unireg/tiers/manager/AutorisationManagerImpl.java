@@ -3,8 +3,10 @@ package ch.vd.unireg.tiers.manager;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,9 +14,9 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.mandataire.AccesMandatairesView;
@@ -114,6 +116,40 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	public void setConfigurationMandataire(ConfigurationMandataire configurationMandataire) {
 		this.configurationMandataire = configurationMandataire;
 	}
+
+	@Override
+	public boolean isVisuAllowed(@NotNull Tiers tiers) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) { // visualisation limitée
+
+			// visualisation limitée : pas de droits pour les inactifs, les DPI et les gris (selon SIFISC-25963, gris = non-habitant avec for vaudois source-pure)
+			if (tiers.isDebiteurInactif() || tiers.getNatureTiers() == NatureTiers.DebiteurPrestationImposable) {
+				return false;
+			}
+
+			// visualisation limitée : pas de droits pour les gris (selon SIFISC-25963, gris = non-habitant avec for vaudois source-pure)
+			final ForFiscalPrincipalPP ffpCourant = getForFiscalCourant(tiers, ForFiscalPrincipalPP.class);
+			if (tiers.getNatureTiers() == NatureTiers.NonHabitant && ffpCourant != null &&
+					ffpCourant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+					ffpCourant.getModeImposition() == ModeImposition.SOURCE) {
+				return false;
+			}
+		}
+
+		// dans tous les autres cas : ok
+		return true;
+	}
+
+	private static  <T extends ForFiscalPrincipal> T getForFiscalCourant(@NotNull Tiers tiers, Class<T> clazz) {
+		return Stream.of(tiers)
+				.map(t -> t.getForsFiscauxValidAt(null))
+				.flatMap(List::stream)
+				.filter(clazz::isInstance)
+				.map(clazz::cast)
+				.findFirst()
+				.orElse(null);
+	}
+
 
 	@Override
 	public boolean isEditAllowed(Tiers tiers) {

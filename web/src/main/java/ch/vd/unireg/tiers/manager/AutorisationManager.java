@@ -16,6 +16,14 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
 public interface AutorisationManager {
 
 	/**
+	 * Vérifie si l'utilisateur est autorisé à voir le tiers spécifié.
+	 *
+	 * @param tiers un tiers
+	 * @return <b>true</b> si la visualisation du tiers est autorisée; <b>false</b> autrement.
+	 */
+	boolean isVisuAllowed(@NotNull Tiers tiers);
+
+	/**
 	 * Vérifie si l'utilisateur est autorisé à éditer le tiers spécifié.
 	 *
 	 * @param tiers un tiers
