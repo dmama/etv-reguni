@@ -142,8 +142,14 @@
 			<!-- Bouton annulation de questionnaire -->
 			<authz:authorize ifAnyGranted="ROLE_QSNC_EMISSION">
 				<c:if test="${!questionnaire.annule}">
-					<unireg:buttonTo name="Annuler questionnaire" confirm="Voulez-vous vraiment annuler ce questionnaire SNC ?"
-					                 action="/qsnc/annuler.do" method="post" params='{id:${questionnaire.id},depuisTache:${depuisTache}}'/>
+					<c:if test="${tacheId == null}">
+						<unireg:buttonTo name="Annuler questionnaire" confirm="Voulez-vous vraiment annuler ce questionnaire SNC ?"
+						                 action="/qsnc/annuler.do" method="post" params='{id:${questionnaire.id}}'/>
+					</c:if>
+					<c:if test="${tacheId != null}">
+						<unireg:buttonTo name="Annuler questionnaire" confirm="Voulez-vous vraiment annuler ce questionnaire SNC ?"
+						                 action="/qsnc/annuler.do" method="post" params='{id:${questionnaire.id},tacheId:${tacheId}}'/>
+					</c:if>
 				</c:if>
 			</authz:authorize>
 

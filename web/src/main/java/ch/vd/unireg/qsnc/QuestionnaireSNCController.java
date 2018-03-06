@@ -472,7 +472,7 @@ public class QuestionnaireSNCController {
 	@RequestMapping(value = "/editer.do", method = RequestMethod.GET)
 	public String showEditerQuestionnaire(Model model,
 	                                      @RequestParam("id") long questionnaireId,
-	                                      @RequestParam(value = "depuisTache", defaultValue = "false") boolean depuisTache) {
+	                                      @RequestParam(value = "tacheId", required = false) Long tacheId) {
 
 		// vérification des droits d'accès
 		checkEditRight(false, true, true, true);
@@ -498,7 +498,8 @@ public class QuestionnaireSNCController {
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA));
 		model.addAttribute("questionnaire", view);
-		model.addAttribute("depuisTache", depuisTache);
+		model.addAttribute("depuisTache", tacheId != null);
+		model.addAttribute("tacheId", tacheId);
 		return "qsnc/editer";
 	}
 
@@ -608,7 +609,7 @@ public class QuestionnaireSNCController {
 
 	@RequestMapping(value = "/annuler.do", method = RequestMethod.POST)
 	public String annulerQuestionnaire(@RequestParam("id") final long idQuestionnaire,
-	                                   @RequestParam(value = "depuisTache", defaultValue = "false") final boolean depuisTache) {
+	                                   @RequestParam(value = "tacheId", required = false) final Long tacheId) {
 
 		// vérification des droits d'accès
 		checkEditRight(true, false, false, false);
@@ -632,11 +633,16 @@ public class QuestionnaireSNCController {
 
 				// annulation du questionnaire
 				qsncService.annulerQuestionnaire(questionnaire);
-				if (depuisTache) {
+
+				if (tacheId != null) {
+					// traitement de la tâche
+					final Tache tache = tacheDAO.get(tacheId);
+					tache.setEtat(TypeEtatTache.TRAITE);
+
 					return "redirect:/tache/list.do";
 				}
 				else {
-					return "redirect:list.do?tiersId=" + tiers.getNumero();
+					return "redirect:/qsnc/list.do?tiersId=" + tiers.getNumero();
 				}
 			}
 		});

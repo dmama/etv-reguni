@@ -77,7 +77,7 @@
 								<a href="../qsnc/add.do?depuisTache=true&tiersId=${tache.numero}&pf=${tache.annee}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
 							<c:when test="${tache.typeTache == 'TacheAnnulationQuestionnaireSNC' && tache.authDossier.questionnairesSNC}">
-								<a href="../qsnc/editer.do?depuisTache=true&id=${tache.idDI}"><unireg:numCTB numero="${tache.numero}"/></a>
+								<unireg:linkTo name="${noctb}" action="/qsnc/editer.do" params="{id:${tache.idDI},tacheId:${tache.id}}"/>
 							</c:when>
 							<c:otherwise>
 								<unireg:numCTB numero="${tache.numero}" />
