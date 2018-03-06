@@ -1,5 +1,7 @@
 package ch.vd.unireg.fors;
 
+import java.util.List;
+
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -7,6 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.validation.tiers.LocalisationDateeValidator;
 
 public abstract class AddForValidator implements Validator {
 
@@ -46,17 +49,26 @@ public abstract class AddForValidator implements Validator {
 			}
 		}
 
-		if (view.getNoAutoriteFiscale() == null) {
+		final Integer noAutoriteFiscale = view.getNoAutoriteFiscale();
+		final TypeAutoriteFiscale typeAutoriteFiscale = view.getTypeAutoriteFiscale();
+
+		if (noAutoriteFiscale == null) {
 			errors.rejectValue("noAutoriteFiscale", "error.autorite.fiscale.vide");
 		}
 
-		if (view.getTypeAutoriteFiscale() == null) {
+		if (typeAutoriteFiscale == null) {
 			errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.fiscale.vide");
 		}
 
+		if (noAutoriteFiscale != null && typeAutoriteFiscale != null) {
+			// [SIFISC-27647] on valide l'autorité fiscale comme le fait le validator hibernate
+			final List<LocalisationDateeValidator.Error> l = LocalisationDateeValidator.validateAutoriteFiscale(view, noAutoriteFiscale, typeAutoriteFiscale, "Le for fiscal", "", infraService);
+			l.forEach(e -> errors.reject("global.error.validation", e.getMessage()));
+		}
+
 		// [UNIREG-3338] en cas de création d'un nouveau for fiscal, le pays doit être valide
-		if (view.getId() == null && view.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && view.getNoAutoriteFiscale() != null) {
-			final Integer noOfsPays = view.getNoAutoriteFiscale();
+		if (view.getId() == null && typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS && noAutoriteFiscale != null) {
+			final Integer noOfsPays = noAutoriteFiscale;
 			final Pays pays = infraService.getPays(noOfsPays, dateDebut);
 			if (pays == null) {
 				errors.rejectValue("noAutoriteFiscale", "error.pays.inconnu");

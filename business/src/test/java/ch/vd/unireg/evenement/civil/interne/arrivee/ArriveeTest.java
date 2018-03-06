@@ -15,6 +15,15 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
+import ch.vd.unireg.adresse.AdresseCivile;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
@@ -29,15 +38,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
-import ch.vd.unireg.adresse.AdresseCivile;
-import ch.vd.unireg.adresse.AdresseTiers;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
-import ch.vd.unireg.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
@@ -750,7 +750,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 			final ValidationMessage erreur = e.getErrors().get(0);
 			assertEquals("Le for fiscal ForFiscalPrincipalPP (01.09.2010 - ?) a une période de validité qui dépasse " +
-					             "la période de validité de la commune Riex (5608) depuis le 01.01.2011", erreur.getMessage());
+					             "la période de validité [ ; 31.12.2010] de la commune Riex (5608) depuis le 01.01.2011", erreur.getMessage());
 		}
 	}
 

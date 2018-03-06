@@ -51,7 +51,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(0, vr.warningsCount());
 			Assert.assertEquals(1, vr.errorsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s a une période de validité qui dépasse la période de validité de la commune %s (%d) depuis le 01.01.2009",
+			final String expectedMsg = String.format("Le for fiscal %s a une période de validité qui dépasse la période de validité [ ; 31.12.2008] de la commune %s (%d) depuis le 01.01.2009",
 			                                         ffp, commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
@@ -95,7 +95,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(0, vr.warningsCount());
 			Assert.assertEquals(1, vr.errorsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s a une période de validité qui dépasse la période de validité de la commune %s (%d) entre le 01.07.2008 et le 31.12.2008",
+			final String expectedMsg = String.format("Le for fiscal %s a une période de validité qui dépasse la période de validité [01.01.2009 ; ] de la commune %s (%d) entre le 01.07.2008 et le 31.12.2008",
 			                                         ffp, commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
