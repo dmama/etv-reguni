@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v7.cache;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -206,6 +207,11 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	@Override
 	public CommunityOfOwnersList getCommunitiesOfOwners(List<Long> communityIds) throws AccessDeniedException {
 		return target.getCommunitiesOfOwners(communityIds);
+	}
+
+	@Override
+	public @NotNull String getSwaggerJson() throws IOException {
+		return target.getSwaggerJson();
 	}
 
 	private void check(int partyNo) {

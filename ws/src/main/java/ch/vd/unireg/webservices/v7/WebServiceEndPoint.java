@@ -246,6 +246,12 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
+	public Response getSwaggerJson() {
+		final Supplier<String> params = () -> "getSwaggerJson";
+		return execute(params, READ_ACCESS_LOG, () -> ExecutionResult.with(Response.ok(target.getSwaggerJson(), WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE).build()));
+	}
+
+	@Override
 	public Response getSecurityOnParty(final String user, final int partyNo) {
 		final Supplier<String> params = () -> String.format("getSecurityOnParty{user=%s, partyNo=%d}", WebServiceHelper.enquote(user), partyNo);
 		return execute(params, READ_ACCESS_LOG, () -> {

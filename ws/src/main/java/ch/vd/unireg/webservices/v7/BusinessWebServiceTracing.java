@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v7;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -468,6 +469,22 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 		finally {
 			tracing.end(time, t, "getCommunitiesOfOwners", null);
+		}
+	}
+
+	@Override
+	public @NotNull String getSwaggerJson() throws IOException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getSwaggerJson();
+		}
+		catch (RuntimeException | Error | IOException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getSwaggerJson", null);
 		}
 	}
 }

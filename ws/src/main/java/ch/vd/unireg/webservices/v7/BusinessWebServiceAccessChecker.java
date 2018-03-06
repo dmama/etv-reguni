@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v7;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -207,5 +208,10 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	public CommunityOfOwnersList getCommunitiesOfOwners(List<Long> communityIds) throws AccessDeniedException {
 		WebServiceHelper.checkAnyAccess(securityProvider, Role.VISU_IMMEUBLES, Role.VISU_ALL);
 		return target.getCommunitiesOfOwners(communityIds);
+	}
+
+	@Override
+	public @NotNull String getSwaggerJson() throws IOException {
+		return target.getSwaggerJson();
 	}
 }

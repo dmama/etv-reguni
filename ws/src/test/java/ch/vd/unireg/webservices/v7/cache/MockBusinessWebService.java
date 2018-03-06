@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v7.cache;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -176,5 +177,10 @@ public class MockBusinessWebService implements BusinessWebService {
 	@Override
 	public CommunityOfOwnersList getCommunitiesOfOwners(List<Long> communityIds) throws AccessDeniedException {
 		return target.getCommunitiesOfOwners(communityIds);
+	}
+
+	@Override
+	public @NotNull String getSwaggerJson() throws IOException {
+		return target.getSwaggerJson();
 	}
 }

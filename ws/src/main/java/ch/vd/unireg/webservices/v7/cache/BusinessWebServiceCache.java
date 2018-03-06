@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v7.cache;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -592,6 +593,21 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		}
 
 		return list;
+	}
+
+	@Override
+	public @NotNull String getSwaggerJson() throws IOException {
+		final String json;
+		final SwaggerJsonKey key = new SwaggerJsonKey();
+		final Element element = cache.get(key);
+		if (element == null) {
+			json = target.getSwaggerJson();
+			cache.put(new Element(key, json));
+		}
+		else {
+			json = (String) element.getObjectValue();
+		}
+		return json;
 	}
 
 	/**

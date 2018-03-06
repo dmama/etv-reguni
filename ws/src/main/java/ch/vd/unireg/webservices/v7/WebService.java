@@ -70,6 +70,12 @@ public interface WebService {
 	@ApiResponses(value = @ApiResponse(code = 200, message = "pong"))
 	Response ping();
 
+	@GET
+	@Path("/swagger.json")
+	@Produces(WebServiceHelper.TEXT_PLAIN_WITH_UTF8_CHARSET)
+	@ApiOperation(value = "Description JSON du WS pour Swagger")
+	Response getSwaggerJson();
+
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})

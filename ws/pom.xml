@@ -351,14 +351,14 @@
 								<title>Webservices REST Unireg</title>
 								<version>${ws.v7.version}</version>
 							</info>
-							<swaggerDirectory>${basedir}/target/generated/swagger-ui</swaggerDirectory>
-							<swaggerFileName>unireg-ws-${ws.v7.version}-swagger</swaggerFileName>
+							<swaggerDirectory>${basedir}/target/classes</swaggerDirectory>
+							<swaggerFileName>ws-v7-swagger</swaggerFileName>
 						</apiSource>
 					</apiSources>
 				</configuration>
 				<executions>
 					<execution>
-						<phase>site</phase>
+						<phase>compile</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>

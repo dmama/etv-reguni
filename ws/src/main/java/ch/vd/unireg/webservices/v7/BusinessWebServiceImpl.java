@@ -1,5 +1,7 @@
 package ch.vd.unireg.webservices.v7;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +32,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -1184,6 +1188,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		catch (Exception e) {
 			return new CommunityOfOwnersEntry(communityId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
 		}
+	}
+
+	@Override
+	public @NotNull String getSwaggerJson() throws IOException {
+		final File file = ResourceUtils.getFile("classpath:ws-v7-swagger.json"); // note : le fichier 'ws-v7-swagger.json' est généré par le plugin 'swagger-maven-plugin' lors du build de /ws
+		return FileUtils.readFileToString(file);
 	}
 
 	private <T> T executeInReadOnlyTx(@NotNull String currentPrincipal, int currentOID, @NotNull TransactionCallback<T> callback) {

@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v7;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -274,4 +275,10 @@ public interface BusinessWebService {
 	 */
 	@NotNull
 	CommunityOfOwnersList getCommunitiesOfOwners(List<Long> communityIds) throws AccessDeniedException;
+
+	/**
+	 * @return la définition Swagger du service
+	 */
+	@NotNull
+	String getSwaggerJson() throws IOException;
 }
