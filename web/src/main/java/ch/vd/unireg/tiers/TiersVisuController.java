@@ -70,7 +70,7 @@ public class TiersVisuController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String visu(@RequestParam(value = "id") long id, Model model, HttpServletRequest request) throws AdresseException, DonneesCivilesException {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_LIMITE)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
