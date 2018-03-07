@@ -71,7 +71,6 @@ import ch.vd.unireg.hibernate.meta.Property;
 import ch.vd.unireg.hibernate.meta.Sequence;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.json.InfraCategory;
-import ch.vd.unireg.mouvement.BordereauMouvementDossier;
 import ch.vd.unireg.mouvement.MouvementDossier;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
@@ -119,6 +118,7 @@ import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.FlagEntreprise;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.FusionEntreprises;
+import ch.vd.unireg.tiers.Heritage;
 import ch.vd.unireg.tiers.IdentificationEntreprise;
 import ch.vd.unireg.tiers.IdentificationPersonne;
 import ch.vd.unireg.tiers.Mandat;
@@ -237,7 +237,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		childToParentRelationships.put(EvenementCivilEchErreur.class, EvenementCivilEch.class);
 		childToParentRelationships.put(EvenementCivilRegPPErreur.class, EvenementCivilRegPP.class);
 		childToParentRelationships.put(EvenementOrganisationErreur.class, EvenementOrganisation.class);
-		childToParentRelationships.put(MouvementDossier.class, BordereauMouvementDossier.class);
+//		childToParentRelationships.put(MouvementDossier.class, BordereauMouvementDossier.class);
 		childToParentRelationships.put(DescriptionBatimentRF.class, BatimentRF.class);
 		childToParentRelationships.put(ImplantationRF.class, BatimentRF.class);
 		childToParentRelationships.put(SituationRF.class, ImmeubleRF.class);
@@ -1035,6 +1035,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		// Mandat
 		addRapportEntreTiersBuilder(builders, Mandat.class, "mandant", Contribuable.class, "mandataire", Tiers.class);
+
+		// Héritage
+		addRapportEntreTiersBuilder(builders, Heritage.class, "héritier", PersonnePhysique.class, "défunt", PersonnePhysique.class);
 
 		// Fusion d'entreprises
 		addRapportEntreTiersBuilder(builders, FusionEntreprises.class, "avant fusion", Entreprise.class, "après fusion", Entreprise.class);
