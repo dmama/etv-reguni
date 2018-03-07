@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDateEnvoiCourrierEtEmolument;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.unireg.tiers.MontantMonetaire;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
@@ -21,7 +22,7 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
  */
 @Entity
 @DiscriminatorValue("DI_SOMMEE")
-public class EtatDeclarationSommee extends EtatDeclaration implements EtatDocumentFiscalAvecDocumentArchive {
+public class EtatDeclarationSommee extends EtatDeclaration implements EtatDocumentFiscalAvecDocumentArchive, EtatDocumentFiscalAvecDateEnvoiCourrierEtEmolument {
 
 	private RegDate dateEnvoiCourrier;
 	private Integer emolument;
@@ -44,22 +45,26 @@ public class EtatDeclarationSommee extends EtatDeclaration implements EtatDocume
 		this.emolument = emolument;
 	}
 
+	@Override
 	@Column(name = "DATE_ENVOI_COURRIER")
 	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateEnvoiCourrier() {
 		return dateEnvoiCourrier;
 	}
 
+	@Override
 	public void setDateEnvoiCourrier(RegDate dateEnvoiCourrier) {
 		this.dateEnvoiCourrier = dateEnvoiCourrier;
 	}
 
+	@Override
 	@Nullable
 	@Column(name = "EMOLUMENT", nullable = true)
 	public Integer getEmolument() {
 		return emolument;
 	}
 
+	@Override
 	public void setEmolument(Integer emolument) {
 		this.emolument = emolument;
 	}

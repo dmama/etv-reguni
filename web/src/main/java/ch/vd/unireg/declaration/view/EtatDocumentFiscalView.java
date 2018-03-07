@@ -4,21 +4,24 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.Annulable;
-import ch.vd.unireg.declaration.EtatDeclarationRappelee;
-import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.documentfiscal.DocumentFiscal;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDateEnvoiCourrier;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDateEnvoiCourrierEtEmolument;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.unireg.documentfiscal.SourceQuittancement;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.utils.WebContextUtils;
 
+@SuppressWarnings("unused")
 public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView>, Annulable {
 
 	private final Long id;
@@ -45,7 +48,7 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 	 */
 	private String urlVisualisationExterneDocument;
 
-	public EtatDocumentFiscalView(EtatDocumentFiscal etat, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public EtatDocumentFiscalView(@NotNull EtatDocumentFiscal etat, @NotNull ServiceInfrastructureService infraService, @NotNull MessageSource messageSource) {
 		this.id = etat.getId();
 		this.dateObtention = etat.getDateObtention();
 		this.logCreationDate = etat.getLogCreationDate();
@@ -62,12 +65,12 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 				this.sourceMessage = messageSource.getMessage("option.source.quittancement." + this.source, null, WebContextUtils.getDefaultLocale());
 			}
 		}
-		if (etat instanceof EtatDeclarationSommee) {
-			final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
-			this.dateEnvoiCourrier = sommation.getDateEnvoiCourrier();
-			if (sommation.getEmolument() != null) {
+		if (etat instanceof EtatDocumentFiscalAvecDateEnvoiCourrier) {
+			this.dateEnvoiCourrier = ((EtatDocumentFiscalAvecDateEnvoiCourrier) etat).getDateEnvoiCourrier();
+			final Integer emolument = getEmolument(etat);
+			if (emolument != null) {
 				this.dateEnvoiCourrierMessage = messageSource.getMessage("label.date.envoi.courrier.avec.emolument",
-				                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier), Integer.toString(sommation.getEmolument())},
+				                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier), Integer.toString(emolument)},
 				                                                         WebContextUtils.getDefaultLocale());
 			}
 			else {
@@ -75,17 +78,6 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 				                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)},
 				                                                         WebContextUtils.getDefaultLocale());
 			}
-		}
-		if (etat.getType() == TypeEtatDocumentFiscal.RAPPELE) {
-			if (etat instanceof EtatDeclarationRappelee) {
-				this.dateEnvoiCourrier = ((EtatDeclarationRappelee) etat).getDateEnvoiCourrier();
-			}
-			else {
-				this.dateEnvoiCourrier = etat.getDateObtention(); // FIXME SIFISC-21866: Faut-il aussi mettre en place une date d'envoi de courrier pour les autres docs?
-			}
-			this.dateEnvoiCourrierMessage = messageSource.getMessage("label.date.envoi.courrier",
-			                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)},
-			                                                         WebContextUtils.getDefaultLocale());
 		}
 		if (etat instanceof EtatDocumentFiscalAvecDocumentArchive) {
 			final DocumentFiscal documentFiscal = etat.getDocumentFiscal();
@@ -98,6 +90,18 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 						.orElse(null);
 			}
 		}
+	}
+
+	@Nullable
+	private static Integer getEmolument(@Nullable EtatDocumentFiscal etat) {
+		final Integer emolument;
+		if (etat instanceof EtatDocumentFiscalAvecDateEnvoiCourrierEtEmolument) {
+			emolument = ((EtatDocumentFiscalAvecDateEnvoiCourrierEtEmolument) etat).getEmolument();
+		}
+		else {
+			emolument = null;
+		}
+		return emolument;
 	}
 
 	public Long getId() {
@@ -142,7 +146,7 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 	}
 
 	@Override
-	public int compareTo(EtatDocumentFiscalView o) {
+	public int compareTo(@NotNull EtatDocumentFiscalView o) {
 		if (this.dateObtention == o.dateObtention) {
 			return -1 * logCreationDate.compareTo(o.logCreationDate);
 		}

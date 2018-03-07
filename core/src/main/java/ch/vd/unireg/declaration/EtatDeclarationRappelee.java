@@ -10,6 +10,7 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDateEnvoiCourrier;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
@@ -18,7 +19,7 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
  */
 @Entity
 @DiscriminatorValue("DI_RAPPELEE")
-public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDocumentFiscalAvecDocumentArchive {
+public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDocumentFiscalAvecDocumentArchive, EtatDocumentFiscalAvecDateEnvoiCourrier {
 
 	private RegDate dateEnvoiCourrier;
 	private String cleArchivage;
@@ -39,16 +40,17 @@ public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDocu
 		this.dateEnvoiCourrier = dateEnvoiCourrier;
 	}
 
+	@Override
 	@Column(name = "DATE_ENVOI_COURRIER")
 	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateEnvoiCourrier() {
 		return dateEnvoiCourrier;
 	}
 
+	@Override
 	public void setDateEnvoiCourrier(RegDate dateEnvoiCourrier) {
 		this.dateEnvoiCourrier = dateEnvoiCourrier;
 	}
-
 
 	@Override
 	@Column(name = "CLE_ARCHIVAGE", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
