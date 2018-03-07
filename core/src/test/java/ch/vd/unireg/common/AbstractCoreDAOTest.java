@@ -1289,7 +1289,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected EtatAutreDocumentFiscalRappele addEtatAutreDocumentFiscalRappele(AutreDocumentFiscal autreDocumentFiscal, RegDate dateObtention) {
 		Assert.assertTrue(autreDocumentFiscal.isRappelable());
-		final EtatAutreDocumentFiscalRappele etat = new EtatAutreDocumentFiscalRappele(dateObtention);
+		final EtatAutreDocumentFiscalRappele etat = new EtatAutreDocumentFiscalRappele(dateObtention, dateObtention);
 		autreDocumentFiscal.addEtat(etat);
 		return etat;
 	}

@@ -10,9 +10,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.Entreprise;
@@ -20,6 +20,9 @@ import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeLettreBienvenue;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 
@@ -161,6 +164,8 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 
 		final RegDate dateDebut = date(1990, 4, 2);
 		final RegDate dateEnvoiLettre = date(1990, 6, 2);
+		final RegDate dateTraitementRappel = date(1990, 8, 20);
+		final RegDate dateEnvoiRappel = date(1990, 8, 23); // 3 jours après la date de traitement
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -179,7 +184,7 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 		});
 
 		// lancement du processeur avec une date après le délai administratif
-		final RappelLettresBienvenueResults res = processor.run(date(1990, 8, 20), null);
+		final RappelLettresBienvenueResults res = processor.run(dateTraitementRappel, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getErreurs().size());
 		Assert.assertEquals(0, res.getIgnores().size());
@@ -207,8 +212,14 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, lettre.getEtat());
 				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
 				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
-				Assert.assertEquals(date(1990, 8, 23), lettre.getDateRappel());             // 3 jours après la date de traitement
+				Assert.assertEquals(dateTraitementRappel, lettre.getDateRappel());
 				Assert.assertNull(lettre.getDateRetour());
+
+				// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
+				final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) lettre.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+				assertNotNull(rappel);
+				assertEquals(dateTraitementRappel, rappel.getDateObtention());
+				assertEquals(dateEnvoiRappel, rappel.getDateEnvoiCourrier());
 			}
 		});
 	}

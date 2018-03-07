@@ -48,16 +48,6 @@ public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 				.orElse(null);
 	}
 
-	public void setDateRappel(RegDate dateRappel) {
-		final EtatDocumentFiscal etat = getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
-		if (etat == null) {
-			addEtat(new EtatAutreDocumentFiscalRappele(dateRappel));
-		}
-		else {
-			etat.setDateObtention(dateRappel);
-		}
-	}
-
 	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
 	@Transient
 	public String getCleArchivageRappel() {

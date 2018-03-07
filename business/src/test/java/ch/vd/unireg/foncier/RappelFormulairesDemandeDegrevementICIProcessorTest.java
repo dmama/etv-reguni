@@ -11,11 +11,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalServiceImpl;
+import ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalRappele;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.documentfiscal.AutreDocumentFiscalServiceImpl;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -31,7 +32,11 @@ import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeRapprochementRF;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class RappelFormulairesDemandeDegrevementICIProcessorTest extends BusinessTest {
 
@@ -296,9 +301,16 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 					Assert.assertEquals(dateTraitement.addDays(-50), demande.getDateEnvoi());
 					Assert.assertEquals(dateTraitement.addDays(-20), demande.getDelaiRetour());
 					Assert.assertNull(demande.getDateRetour());
-					Assert.assertEquals(delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement), demande.getDateRappel());
+					Assert.assertEquals(dateTraitement, demande.getDateRappel());
 					Assert.assertNull(demande.getCleArchivageRappel());                 // c'est la partie Editique qui assigne cette valeur, mais elle est mockée dans les tests UT
 					Assert.assertEquals((Integer) 2012, demande.getPeriodeFiscale());
+
+					// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
+					final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) demande.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+					assertNotNull(rappel);
+					assertEquals(dateTraitement, rappel.getDateObtention());
+					assertEquals(delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement), rappel.getDateEnvoiCourrier());
+
 				}
 				{
 					// la déjà rappelée
@@ -531,9 +543,15 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 					Assert.assertEquals(date(2009, 4, 1), demande.getDateEnvoi());
 					Assert.assertEquals(date(2009, 4, 30), demande.getDelaiRetour());
 					Assert.assertNull(demande.getDateRetour());
-					Assert.assertEquals(delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement), demande.getDateRappel());
+					Assert.assertEquals(dateTraitement, demande.getDateRappel());
 					Assert.assertNull(demande.getCleArchivageRappel());
 					Assert.assertEquals((Integer) 2017, demande.getPeriodeFiscale());
+
+					// [SIFISC-28193] l'état rappelé doit bien posséder les deux dates de traitement et d'envoi
+					final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) demande.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+					assertNotNull(rappel);
+					assertEquals(dateTraitement, rappel.getDateObtention());
+					assertEquals(delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement), rappel.getDateEnvoiCourrier());
 				}
 			}
 		});

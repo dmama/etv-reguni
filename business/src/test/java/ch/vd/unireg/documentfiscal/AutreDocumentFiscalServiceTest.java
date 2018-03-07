@@ -2,10 +2,13 @@ package ch.vd.unireg.documentfiscal;
 
 import org.junit.Test;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.editique.mock.MockEditiqueCompositionService;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -99,5 +102,51 @@ public class AutreDocumentFiscalServiceTest {
 			assertNotNull(codeControl);
 			assertEquals(code2017, codeControl);
 		}
+	}
+
+	/**
+	 * [SIFISC-28193] Ce test vérifie que l'envoi d'un rappel sur une lettre de bienvenue permet bien de distinguer entre la date de traitement et la date d'envoi.
+	 */
+	@Test
+	public void testEnvoyerRappelLettreBienvenueBatch() throws Exception {
+
+		final AutreDocumentFiscalServiceImpl service = new AutreDocumentFiscalServiceImpl();
+		service.setEditiqueCompositionService(new MockEditiqueCompositionService());
+
+		final LettreBienvenue lettre = new LettreBienvenue();
+		final RegDate dateTraitement = RegDate.get(2018, 4, 4);
+		final RegDate dateEnvoi = RegDate.get(2018, 4, 8);
+
+		// on envoie la lettre de rappel
+		service.envoyerRappelLettreBienvenueBatch(lettre, dateTraitement, dateEnvoi);
+
+		// l'état rappelé doit bien posséder les deux dates spécifiées
+		final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) lettre.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+		assertNotNull(rappel);
+		assertEquals(dateTraitement, rappel.getDateObtention());
+		assertEquals(dateEnvoi, rappel.getDateEnvoiCourrier());
+	}
+
+	/**
+	 * [SIFISC-28193] Ce test vérifie que l'envoi d'un rappel sur une formulaire de dégrèvement ICI permet bien de distinguer entre la date de traitement et la date d'envoi.
+	 */
+	@Test
+	public void testEnvoyerRappelFormulaireDemandeDegrevementICI() throws Exception {
+
+		final AutreDocumentFiscalServiceImpl service = new AutreDocumentFiscalServiceImpl();
+		service.setEditiqueCompositionService(new MockEditiqueCompositionService());
+
+		final DemandeDegrevementICI formulaire = new DemandeDegrevementICI();
+		final RegDate dateTraitement = RegDate.get(2018, 4, 4);
+		final RegDate dateEnvoi = RegDate.get(2018, 4, 8);
+
+		// on envoie la lettre de rappel
+		service.envoyerRappelFormulaireDemandeDegrevementICIBatch(formulaire, dateTraitement, dateEnvoi);
+
+		// l'état rappelé doit bien posséder les deux dates spécifiées
+		final EtatAutreDocumentFiscalRappele rappel = (EtatAutreDocumentFiscalRappele) formulaire.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+		assertNotNull(rappel);
+		assertEquals(dateTraitement, rappel.getDateObtention());
+		assertEquals(dateEnvoi, rappel.getDateEnvoiCourrier());
 	}
 }

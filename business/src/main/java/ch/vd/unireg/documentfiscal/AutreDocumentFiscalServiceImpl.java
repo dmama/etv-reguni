@@ -19,7 +19,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.AddAndSaveHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.editique.EditiqueCompositionService;
@@ -36,6 +35,7 @@ import ch.vd.unireg.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
 import ch.vd.unireg.foncier.RappelFormulairesDemandeDegrevementICIProcessor;
 import ch.vd.unireg.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -419,8 +419,12 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 	@Override
 	public void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement, RegDate dateEnvoiRappel) throws AutreDocumentFiscalException {
+
+		// [SIFISC-28193] on ajoute le rappel sur la lettre (avec stockage séparé de la date de traitement et de la date d'envoi)
+		final EtatAutreDocumentFiscalRappele rappel = new EtatAutreDocumentFiscalRappele(dateTraitement, dateEnvoiRappel);
+		lettre.addEtat(rappel);
+
 		try {
-			lettre.setDateRappel(dateEnvoiRappel);
 			editiqueCompositionService.imprimeRappelLettreBienvenueForBatch(lettre, dateTraitement);
 		}
 		catch (EditiqueException e) {
@@ -430,8 +434,12 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 	@Override
 	public void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement, RegDate dateEnvoiRappel) throws AutreDocumentFiscalException {
+
+		// [SIFISC-28193] on ajoute le rappel sur la lettre (avec stockage séparé de la date de traitement et de la date d'envoi)
+		final EtatAutreDocumentFiscalRappele rappel = new EtatAutreDocumentFiscalRappele(dateTraitement, dateEnvoiRappel);
+		formulaire.addEtat(rappel);
+
 		try {
-			formulaire.setDateRappel(dateEnvoiRappel);
 			editiqueCompositionService.imprimeRappelFormulaireDemandeDegrevementICIForBatch(formulaire, dateTraitement);
 		}
 		catch (EditiqueException e) {
