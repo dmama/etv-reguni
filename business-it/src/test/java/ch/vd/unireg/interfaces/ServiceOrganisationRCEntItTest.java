@@ -14,21 +14,17 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.data.domain.Page;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.SAXException;
 
-import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationLocation;
-import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.evd0023.v3.ObjectFactory;
@@ -55,12 +51,6 @@ import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.type.TypeAdresseCivil;
-import ch.vd.unireg.wsclient.WebClientPool;
-import ch.vd.unireg.wsclient.rcent.RcEntClient;
-import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;
-import ch.vd.unireg.wsclient.rcent.RcEntClientException;
-import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
-import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 import static ch.vd.unireg.interfaces.civil.data.IndividuRCPersTest.assertAdresse;
@@ -74,11 +64,7 @@ import static org.junit.Assert.assertTrue;
 public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	private static final String BASE_PATH_ORGANISATION = "/organisation/CT.VD.PARTY";
-	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
-	private static final String BASE_PATH_VALIDER_ANNONCE_IDE = "/noticeRequestValidate/";
 	private static final String BASE_PATH_ANNONCE_IDE = "/noticeRequestList";
-	private static final int RCENT_ERROR_NO_DATA_BEFORE = 9;
-	private static final int RCENT_ERROR_NOT_FOUND = 2;
 
 	// Organisation cible sur RCEnt
 	private static final long ID_BCV = 101544776L;
@@ -96,7 +82,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	// Organisation de l'échantillon fichier
 	private static final long ID_BOMACO = 101636326L;
-	private static final String BOMACO_SÀRL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
+	private static final String BOMACO_SARL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
 	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/unireg/interfaces/organisation-bomaco-history.xml";
 
 	// annonce à l'IDE sur RCEnt
@@ -144,44 +130,6 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	}
 
 	@Test(timeout = 30000)
-	public void testRCEntClientGetOrganisationWithoutValidation() throws Exception {
-		final RcEntClient client = createRCEntClient(false);
-		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
-		assertNotNull(data);
-		assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-
-		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
-		boolean foundPrincipal = false;
-		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
-			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
-				assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
-				foundPrincipal = true;
-				assertEquals(NOM_BCV, location.getName());
-			}
-		}
-		assertTrue(foundPrincipal);
-	}
-
-	@Test(timeout = 30000)
-	public void testRCEntClientGetOrganisationWithValidation() throws Exception {
-		final RcEntClient client = createRCEntClient(true);
-		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
-		assertNotNull(data);
-		assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-
-		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
-		boolean foundPrincipal = false;
-		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
-			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
-				assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
-				foundPrincipal = true;
-				assertEquals(NOM_BCV, location.getName());
-			}
-		}
-		assertTrue(foundPrincipal);
-	}
-
-	@Test(timeout = 30000)
 	public void testDirectGetOrganisationWithoutValidation() throws Exception {
 		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_BCV;
 		String xml = getUrlContent(url);
@@ -226,7 +174,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(loadFile(FILE_SAMPLE_ORGANISATION_100983251_HISTORY)))).getValue();
 		assertNotNull(data);
 		assertEquals(ID_BOMACO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+		assertEquals(BOMACO_SARL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test(timeout = 30000)
@@ -238,20 +186,6 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		assertNotNull(listOfNoticeRequest);
 		assertEquals(1, listOfNoticeRequest.getNumberOfResults());
 
-	}
-
-	@Test(timeout = 30000)
-	public void testRCEntClientGetAnnonceIDE() throws Exception {
-		final RcEntClient client = createRCEntClient(true);
-		final RcEntNoticeQuery rcEntNoticeQuery = new RcEntNoticeQuery();
-		rcEntNoticeQuery.setUserId(USER_ID);
-		rcEntNoticeQuery.setNoticeId(ID_ANNONCE);
-		final Page<NoticeRequestReport> pages = client.findNotices(rcEntNoticeQuery, null, 1, 10);
-		assertNotNull(pages);
-		assertEquals(1, pages.getTotalElements());
-		final List<NoticeRequestReport> listOfNoticeRequest = pages.getContent();
-		assertEquals(1, listOfNoticeRequest.size());
-		assertEquals(Long.toString(ID_ANNONCE), listOfNoticeRequest.get(0).getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
 	}
 
 	@Test(timeout = 30000)
@@ -363,25 +297,6 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		assertEquals("Case Postale 38", adresses.get(1).getCasePostale().toString());
 	}
 
-	private RcEntClient createRCEntClient(boolean validating) throws Exception {
-		WebClientPool wcPool = new WebClientPool();
-		wcPool.setUsername(username);
-		wcPool.setPassword(password);
-		wcPool.setBaseUrl(baseUrl);
-		RcEntClientImpl client = new RcEntClientImpl();
-		client.setWcPool(wcPool);
-		client.setOrganisationPath(BASE_PATH_ORGANISATION);
-		client.setOrganisationsOfNoticePath(BASE_PATH_ORGANISATIONS_OF_NOTICE);
-		client.setNoticeRequestValidatePath(BASE_PATH_VALIDER_ANNONCE_IDE);
-		client.setNoticeRequestListPath(BASE_PATH_ANNONCE_IDE);
-		if (validating) {
-			client.setSchemasLocations(Arrays.asList(RCEntSchemaHelper.RCENT_SCHEMA));
-			client.setValidationEnabled(true);
-		}
-		client.afterPropertiesSet();
-		return client;
-	}
-
 	private Unmarshaller createMarshaller(boolean validate) throws JAXBException, IOException, SAXException {
 	/*
 		Initialize unmarshaller
@@ -429,38 +344,4 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		final File file = ResourceUtils.getFile(filename);
 		return FileUtils.readFileToString(file);
 	}
-
-	//Notice not found
-	@Test(timeout = 30000)
-	public void testRCEntClientGetOrganisationOfNoticeNotFound() throws Exception {
-		final RcEntClient client = createRCEntClient(true);
-		try{
-			final OrganisationsOfNotice organisationsOfNotice = client.getOrganisationsOfNotice(206949858L, RcEntClient.OrganisationState.BEFORE);
-		}catch (RcEntClientException e){
-			assertNotNull(e.getErrors());
-			assertEquals(1,e.getErrors().size());
-			final RcEntClientErrorMessage rcEntClientErrorMessage = e.getErrors().get(0);
-			//Erreur 404 evenement non trouvé
-			assertEquals(RCENT_ERROR_NOT_FOUND, rcEntClientErrorMessage.getCode().intValue());
-		}
-
-	}
-
-	//Erreur 400
-	@Test(timeout = 30000)
-	public void testRCEntClientGetOrganisationOfNoticeWithoutBefore() throws Exception {
-		final RcEntClient client = createRCEntClient(true);
-		try{
-			final OrganisationsOfNotice organisationsOfNotice = client.getOrganisationsOfNotice(819520L, RcEntClient.OrganisationState.BEFORE);
-		}catch (RcEntClientException e){
-			assertNotNull(e.getErrors());
-			assertEquals(1,e.getErrors().size());
-			final RcEntClientErrorMessage rcEntClientErrorMessage = e.getErrors().get(0);
-			//Erreur 404 evenement non trouvé
-			assertEquals(RCENT_ERROR_NO_DATA_BEFORE, rcEntClientErrorMessage.getCode().intValue());
-		}
-
-	}
-
-
 }
