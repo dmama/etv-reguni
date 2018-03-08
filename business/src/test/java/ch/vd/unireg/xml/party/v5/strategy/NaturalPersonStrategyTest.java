@@ -11,17 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
-import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
-import ch.vd.unireg.xml.party.person.v5.Sex;
-import ch.vd.unireg.xml.party.relation.v4.Child;
-import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
-import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
-import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
-import ch.vd.unireg.xml.party.relation.v4.WelfareAdvocate;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -29,7 +18,9 @@ import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.Fraction;
 import ch.vd.unireg.registrefoncier.GenrePropriete;
 import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
 import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
@@ -38,6 +29,18 @@ import ch.vd.unireg.type.TypeRapprochementRF;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
+import ch.vd.unireg.xml.party.person.v5.Sex;
+import ch.vd.unireg.xml.party.relation.v4.Child;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
+import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
+import ch.vd.unireg.xml.party.relation.v4.WelfareAdvocate;
+import ch.vd.unireg.xml.party.v5.PartyPart;
 
 import static ch.vd.unireg.xml.DataHelper.xmlToCore;
 import static ch.vd.unireg.xml.party.v5.LandRightBuilderTest.assertCaseIdentifier;
@@ -188,7 +191,8 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 			Long decede;
 			Long heritier1;
 			Long heritier2;
-			long immeuble;
+			long bienFonds;
+			long ppe;
 		}
 		final Ids ids = new Ids();
 
@@ -206,22 +210,30 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 
 			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
 			final BienFondsRF bienFonds = addBienFondsRF("BienFonds2", "CHBF2", commune, 30);
+			final ProprieteParEtageRF ppe = addProprieteParEtageRF("PPE", "CHPPE", new Fraction(1, 6), commune, 230, null, null, null);
+
+			// un droit de propriété
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(61, 2000, 1, 1);
 			addDroitPersonnePhysiqueRF(null, RegDate.get(2000, 1, 1), null, null, "Achat", null, "DROIT0", "1", numeroAffaire,
 			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, bienFonds, null);
 
+			// une servitude
+			addUsufruitRF(null, RegDate.get(2000, 1, 1), null, null, "Donation", null, "USU0", "1", numeroAffaire, new IdentifiantDroitRF(61, 2000, 2), tiersRF, ppe);
+
 			ids.decede = decede.getId();
 			ids.heritier1 = heritier1.getId();
 			ids.heritier2 = heritier2.getId();
-			ids.immeuble = bienFonds.getId();
+			ids.bienFonds = bienFonds.getId();
+			ids.ppe = ppe.getId();
 			return null;
 		});
 
-		// on demande le droit et vérifie que la date 'dateInheritedTo' est bien renseignée
 		final NaturalPerson decede = newFrom(ids.decede, PartyPart.LAND_RIGHTS);
 		final List<LandRight> landRights = decede.getLandRights();
 		assertNotNull(landRights);
-		assertEquals(1, landRights.size());
+		assertEquals(2, landRights.size());
+
+		// on vérifie que la date 'dateInheritedTo' est bien renseignée sur le droit de propriété
 		final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
 		assertNotNull(landRight0);
 		assertNull(landRight0.getCommunityId());
@@ -232,8 +244,19 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		assertEquals("Achat", landRight0.getStartReason());
 		assertNull(landRight0.getEndReason());
 		assertCaseIdentifier(61, "2000/1/1", landRight0.getCaseIdentifier());
-		assertEquals(ids.immeuble, landRight0.getImmovablePropertyId());
+		assertEquals(ids.bienFonds, landRight0.getImmovablePropertyId());
 		assertEquals(dateHeritage, xmlToCore(landRight0.getDateInheritedTo()));
+
+		// [IMM-1105] on vérifie que la date 'dateInheritedTo' n'est pas renseignée sur la servitude
+		final UsufructRight landRight1 = (UsufructRight) landRights.get(1);
+		assertNotNull(landRight1);
+		assertEquals(date(2000, 1, 1), xmlToCore(landRight1.getDateFrom()));
+		assertNull(landRight1.getDateTo());
+		assertEquals("Donation", landRight1.getStartReason());
+		assertNull(landRight1.getEndReason());
+		assertCaseIdentifier(61, "2000/1/1", landRight1.getCaseIdentifier());
+		assertEquals(ids.ppe, landRight1.getImmovablePropertyId());
+		assertNull(xmlToCore(landRight1.getDateInheritedTo())); // <-- jamais renseignée sur les usufruits pour les personnes physiques
 	}
 
 	private NaturalPerson newFrom(long id, PartyPart... parts) throws Exception {

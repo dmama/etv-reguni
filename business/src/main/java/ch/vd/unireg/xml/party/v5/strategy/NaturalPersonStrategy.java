@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -25,28 +27,6 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.RealLandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
-import ch.vd.unireg.xml.party.person.v5.Nationality;
-import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
-import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
-import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategoryType;
-import ch.vd.unireg.xml.party.person.v5.Origin;
-import ch.vd.unireg.xml.party.person.v5.ParentFullName;
-import ch.vd.unireg.xml.party.person.v5.ResidencyPeriod;
-import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
-import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.xml.party.v5.UidNumberList;
-import ch.vd.unireg.common.AnnulableHelper;
-import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.unireg.registrefoncier.DroitRF;
@@ -63,9 +43,26 @@ import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ExceptionHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.RealLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
+import ch.vd.unireg.xml.party.person.v5.Nationality;
+import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
+import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategoryType;
+import ch.vd.unireg.xml.party.person.v5.Origin;
+import ch.vd.unireg.xml.party.person.v5.ParentFullName;
+import ch.vd.unireg.xml.party.person.v5.ResidencyPeriod;
+import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.unireg.xml.party.v5.LandRightBuilder;
+import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.ResidencyPeriodBuilder;
+import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.unireg.xml.party.v5.WithholdingTaxationPeriodBuilder;
 
 @SuppressWarnings("Duplicates")
@@ -356,18 +353,19 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			if (landRight instanceof LandOwnershipRight) {
 				((LandOwnershipRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
 			}
-			else if (landRight instanceof UsufructRight) {
-				((UsufructRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
-			}
-			else if (landRight instanceof HousingRight) {
-				((HousingRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
-			}
 			else if (landRight instanceof VirtualLandOwnershipRight) {
 				((VirtualLandOwnershipRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
 			}
-			else if (landRight instanceof VirtualUsufructRight) {
-				((VirtualUsufructRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
-			}
+// [IMM-1105] les héritages entre personnes physiques n'influencent pas les servitudes : il ne faut jamais renseigner cette date
+//			else if (landRight instanceof UsufructRight) {
+//				((UsufructRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+//			}
+//			else if (landRight instanceof HousingRight) {
+//				((HousingRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+//			}
+//			else if (landRight instanceof VirtualUsufructRight) {
+//				((VirtualUsufructRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+//			}
 		}
 		return landRight;
 	}

@@ -1781,7 +1781,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF, IdentifiantAffaireRF numeroAffaire,
 	                                   IdentifiantDroitRF identifiantDroitRF,
-	                                   TiersRF tiersRF, BienFondsRF immeuble) {
+	                                   TiersRF tiersRF, ImmeubleRF immeuble) {
 		final UsufruitRF usufruit = new UsufruitRF();
 		usufruit.addImmeuble(immeuble);
 		usufruit.addAyantDroit(tiersRF);

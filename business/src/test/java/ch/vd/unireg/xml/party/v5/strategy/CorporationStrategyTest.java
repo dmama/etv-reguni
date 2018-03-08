@@ -1,7 +1,10 @@
 package ch.vd.unireg.xml.party.v5.strategy;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,30 +12,47 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.xml.party.corporation.v5.Corporation;
-import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
-import ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.documentfiscal.DelaiAutreDocumentFiscal;
 import ch.vd.unireg.foncier.DegrevementICI;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.foncier.ExonerationIFONC;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
+import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.TypeRapprochementRF;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.corporation.v5.Corporation;
+import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
+import ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory;
+import ch.vd.unireg.xml.party.v5.PartyPart;
 
+import static ch.vd.unireg.xml.DataHelper.xmlToCore;
+import static ch.vd.unireg.xml.party.v5.LandRightBuilderTest.assertCaseIdentifier;
+import static ch.vd.unireg.xml.party.v5.LandRightBuilderTest.assertShare;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -49,6 +69,7 @@ public class CorporationStrategyTest extends BusinessTest {
 		context = new Context();
 		context.tiersService = getBean(TiersService.class, "tiersService");
 		context.regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
+		context.registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
 	}
 
 	/**
@@ -114,6 +135,95 @@ public class CorporationStrategyTest extends BusinessTest {
 		assertEquals(2, requests.size());
 		assertAbatamentRequest(RegDate.get(2005, 3, 15), RegDate.get(2005, 6, 30), RegDate.get(2005, 5, 22), 2004, 1, 0, requests.get(0));
 		assertAbatamentRequest(RegDate.get(2006, 3, 11), RegDate.get(2006, 6, 30), RegDate.get(2006, 2, 1), 2005, 1, 0, requests.get(1));
+	}
+
+	/**
+	 * [SIFISC-24999] Teste que la construction d'un party à partir d'une entreprise absorbée renseigne bien la date 'dateInheritedTo' sur les droits de l'entreprise.
+	 */
+	@Test
+	public void testNewFromPartLandRightWithFusion() throws Exception {
+
+		final RegDate dateFusion = RegDate.get(2005, 1, 1);
+
+		class Ids {
+			Long absorbee;
+			Long absorbante;
+			long bienFonds;
+			long ppe;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			// données fiscales
+			final Entreprise absorbee = addEntrepriseInconnueAuCivil();
+			final Entreprise absorbante = addEntrepriseInconnueAuCivil();
+			addFusionEntreprises(absorbante, absorbee, dateFusion);
+
+			// données RF
+			final PersonneMoraleRF entRF = addPersonneMoraleRF("PM0", "RC444", "Ent0", 44, null);
+			addRapprochementRF(absorbee, entRF, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF bienFonds = addBienFondsRF("BienFonds2", "CHBF2", commune, 30);
+			final ProprieteParEtageRF ppe = addProprieteParEtageRF("PPE", "CHPPE", new Fraction(1, 6), commune, 230, null, null, null);
+
+			// un droit de propriété
+			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(61, 2000, 1, 1);
+			addDroitPersonneMoraleRF(null, RegDate.get(2000, 1, 1), null, null, "Achat", null, "DROIT0", "1", numeroAffaire,
+			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, entRF, bienFonds, null);
+
+			// une servitude
+			addUsufruitRF(null, RegDate.get(2000, 1, 1), null, null, "Donation", null, "USU0", "1", numeroAffaire, new IdentifiantDroitRF(61, 2000, 2), entRF, ppe);
+
+			ids.absorbee = absorbee.getId();
+			ids.absorbante = absorbante.getId();
+			ids.bienFonds = bienFonds.getId();
+			ids.ppe = ppe.getId();
+			return null;
+		});
+
+		final Corporation absorbante = newFrom(ids.absorbee, PartyPart.LAND_RIGHTS);
+		final List<LandRight> landRights = absorbante.getLandRights();
+		assertNotNull(landRights);
+		assertEquals(2, landRights.size());
+
+		// on vérifie que la date 'dateInheritedTo' est bien renseignée sur le droit de propriété
+		final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
+		assertNotNull(landRight0);
+		assertNull(landRight0.getCommunityId());
+		assertEquals(OwnershipType.SOLE_OWNERSHIP, landRight0.getType());
+		assertShare(1, 1, landRight0.getShare());
+		assertEquals(date(2000, 1, 1), xmlToCore(landRight0.getDateFrom()));
+		assertNull(landRight0.getDateTo());
+		assertEquals("Achat", landRight0.getStartReason());
+		assertNull(landRight0.getEndReason());
+		assertCaseIdentifier(61, "2000/1/1", landRight0.getCaseIdentifier());
+		assertEquals(ids.bienFonds, landRight0.getImmovablePropertyId());
+		assertEquals(dateFusion, xmlToCore(landRight0.getDateInheritedTo()));
+
+		// [IMM-1105] on vérifie que la date 'dateInheritedTo' est aussi bien renseignée sur la servitude
+		final UsufructRight landRight1 = (UsufructRight) landRights.get(1);
+		assertNotNull(landRight1);
+		assertEquals(date(2000, 1, 1), xmlToCore(landRight1.getDateFrom()));
+		assertNull(landRight1.getDateTo());
+		assertEquals("Donation", landRight1.getStartReason());
+		assertNull(landRight1.getEndReason());
+		assertCaseIdentifier(61, "2000/1/1", landRight1.getCaseIdentifier());
+		assertEquals(ids.ppe, landRight1.getImmovablePropertyId());
+		assertEquals(dateFusion, xmlToCore(landRight1.getDateInheritedTo())); // <-- renseignée sur les usufruits pour les personnes morales
+	}
+
+	private Corporation newFrom(long id, PartyPart... parts) throws Exception {
+		return doInNewTransaction(status -> {
+			final Entreprise pm = hibernateTemplate.get(Entreprise.class, id);
+			try {
+				final Set<PartyPart> p = (parts == null || parts.length == 0 ? null : new HashSet<>(Arrays.asList(parts)));
+				return strategy.newFrom(pm, p, context);
+			}
+			catch (ServiceException e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
 	private static void assertAbatamentRequest(RegDate sendDate, RegDate deadline, RegDate returnDate, int taxPeriod, int sequenceNumber, int immovablePropId, IciAbatementRequest request) {

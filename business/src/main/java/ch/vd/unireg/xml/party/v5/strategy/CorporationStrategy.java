@@ -18,26 +18,6 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.xml.party.corporation.v5.Capital;
-import ch.vd.unireg.xml.party.corporation.v5.Corporation;
-import ch.vd.unireg.xml.party.corporation.v5.CorporationFlag;
-import ch.vd.unireg.xml.party.corporation.v5.CorporationStatus;
-import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
-import ch.vd.unireg.xml.party.corporation.v5.LegalSeat;
-import ch.vd.unireg.xml.party.corporation.v5.MonetaryAmount;
-import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
-import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.RealLandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
-import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
@@ -45,6 +25,9 @@ import ch.vd.unireg.foncier.AllegementFoncier;
 import ch.vd.unireg.foncier.DegrevementICI;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.foncier.ExonerationIFONC;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.DroitRFRangeMetierComparator;
@@ -64,14 +47,34 @@ import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.corporation.v5.Capital;
+import ch.vd.unireg.xml.party.corporation.v5.Corporation;
+import ch.vd.unireg.xml.party.corporation.v5.CorporationFlag;
+import ch.vd.unireg.xml.party.corporation.v5.CorporationStatus;
+import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
+import ch.vd.unireg.xml.party.corporation.v5.LegalSeat;
+import ch.vd.unireg.xml.party.corporation.v5.MonetaryAmount;
+import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
+import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.RealLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.v5.BusinessYearBuilder;
 import ch.vd.unireg.xml.party.v5.CorporationFlagBuilder;
 import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.unireg.xml.party.v5.LandRightBuilder;
 import ch.vd.unireg.xml.party.v5.LandTaxLighteningBuilder;
+import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.TaxLighteningBuilder;
-
-import static ch.vd.unireg.xml.party.v5.strategy.NaturalPersonStrategy.updateDateDebutHeritage;
+import ch.vd.unireg.xml.party.v5.UidNumberList;
 
 @SuppressWarnings("Duplicates")
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
@@ -439,8 +442,31 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF,
 				                                                context.registreFoncierService::getContribuableIdFor,
 				                                                new EasementRightHolderComparator(context.tiersService)))
-				.map(d -> updateDateDebutHeritage(d, dateDebutFusion))
+				.map(d -> updateDateDebutFusion(d, dateDebutFusion))
 				.forEach(landRights::add);
+	}
+
+	@NotNull
+	public static LandRight updateDateDebutFusion(@NotNull LandRight landRight, @Nullable RegDate dateDebutHeritage) {
+		if (dateDebutHeritage != null) {
+			if (landRight instanceof LandOwnershipRight) {
+				((LandOwnershipRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+			// [IMM-1105] les servitudes sont bien transferées d'une entreprise à l'autre en cas de fusion : il faut bien renseigner cette date
+			else if (landRight instanceof UsufructRight) {
+				((UsufructRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+			else if (landRight instanceof HousingRight) {
+				((HousingRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+			else if (landRight instanceof VirtualLandOwnershipRight) {
+				((VirtualLandOwnershipRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+			else if (landRight instanceof VirtualUsufructRight) {
+				((VirtualUsufructRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+		}
+		return landRight;
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")
