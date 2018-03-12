@@ -5,15 +5,22 @@
 	<!-- Exécuteur HTTP pour tous les appels spring-remoting de WS vers Web -->
 	<bean id="webHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorFactory">
 		<property name="serviceName" value="web"/>
-		<property name="username" value="${extprop.remoting.unireg.username}" />
-		<property name="password" value="${extprop.remoting.unireg.password}" />
-		<property name="maxConnectionsPerRoute" value="${extprop.remoting.web.maxConnectionsPerHost}" />
-		<property name="maxTotalConnections" value="${extprop.remoting.web.maxTotalConnections}" />
+		<property name="username" value="${extprop.remoting.unireg.web.username}" />
+		<property name="password" value="${extprop.remoting.unireg.web.password}" />
+		<property name="maxConnectionsPerRoute" value="${extprop.remoting.unireg.web.maxConnectionsPerHost}" />
+		<property name="maxTotalConnections" value="${extprop.remoting.unireg.web.maxTotalConnections}" />
 		<property name="braveHttpTracing" ref="braveHttpTracing"/>
+		<property name="preAuthHosts">
+			<list>
+				<!-- active la pré-authentication pour améliorer les performances (= envoi immédiat
+					 du username/password plutôt que d'attendre une réponse HTTP 401 du serveur pour le faire) -->
+				<value>${extprop.remoting.unireg.web.host}</value>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="globalTiersSearcherRemoting" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.url}/tiersSearcher.remoting" />
+		<property name="serviceUrl" value="${extprop.remoting.unireg.web.host}" />
 		<property name="serviceInterface" value="ch.vd.unireg.indexer.tiers.GlobalTiersSearcher" />
 		<property name="executor" ref="webHttpRequestExecutor" />
 	</bean>
