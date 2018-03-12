@@ -20,7 +20,7 @@
 	</bean>
 
 	<bean id="globalTiersSearcherRemoting" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.web.host}" />
+		<property name="serviceUrl" value="${extprop.remoting.unireg.web.url}" />
 		<property name="serviceInterface" value="ch.vd.unireg.indexer.tiers.GlobalTiersSearcher" />
 		<property name="executor" ref="webHttpRequestExecutor" />
 	</bean>
