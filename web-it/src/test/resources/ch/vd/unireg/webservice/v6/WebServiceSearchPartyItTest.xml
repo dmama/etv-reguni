@@ -1038,7 +1038,7 @@
 			<value>3</value>
 		</row>
 		<row>
-			<value>delaiEcheanceSommationDeclarationImpot</value>
+			<value>delaiEcheanceSommationDeclarationImpotPP</value>
 			<null />
 			<null />
 			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
@@ -1058,7 +1058,7 @@
 			<value>15</value>
 		</row>
 		<row>
-			<value>delaiEnvoiSommationDeclarationImpot</value>
+			<value>delaiEnvoiSommationDeclarationImpotPP</value>
 			<null />
 			<null />
 			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
@@ -1088,7 +1088,7 @@
 			<value>24</value>
 		</row>
 		<row>
-			<value>delaiRetourDeclarationImpotEmiseManuellement</value>
+			<value>delaiRetourDeclarationImpotPPEmiseManuellement</value>
 			<null />
 			<null />
 			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
