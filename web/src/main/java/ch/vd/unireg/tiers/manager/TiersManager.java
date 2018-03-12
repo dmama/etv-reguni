@@ -30,14 +30,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
-import ch.vd.unireg.interfaces.infra.data.Logiciel;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
@@ -73,7 +65,15 @@ import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.individu.IndividuView;
 import ch.vd.unireg.individu.WebCivilService;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
+import ch.vd.unireg.interfaces.infra.data.Logiciel;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -1077,7 +1077,7 @@ public class TiersManager implements MessageSourceAware {
 		if (histo == null) {
 			return Collections.emptyList();
 		}
-		// [SIFISC-24996] on veut afficher toutes les adresses civiles des entreprises (y compris les adresses 'cases postales')
+		// [SIFISC-24996] on affiche toutes les adresses civiles des entreprises (y compris les adresses 'cases postales')
 		return histo.getAll().stream()
 				.map(AdresseCivilView::new)
 				.sorted(new AdresseCivilViewComparator())
@@ -1085,12 +1085,18 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Etablissement etb) throws DonneesCivilesException {
-		final List<AdresseCivilView> adresses = new ArrayList<>();
-		if (etb.isConnuAuCivil()) {
-			final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesSiteOrganisationHisto(etb.getNumeroEtablissement());
-			fillAdressesCivilesViews(adresses, histo);
+		if (!etb.isConnuAuCivil()) {
+			return Collections.emptyList();
 		}
-		return adresses;
+		final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesSiteOrganisationHisto(etb.getNumeroEtablissement());
+		if (histo == null) {
+			return Collections.emptyList();
+		}
+		// [SIFISC-28037] on affiche toutes les adresses civiles des établissements (y compris les adresses 'cases postales')
+		return histo.getAll().stream()
+				.map(AdresseCivilView::new)
+				.sorted(new AdresseCivilViewComparator())
+				.collect(Collectors.toList());
 	}
 
 	private void fillAdressesCivilesViews(List<AdresseCivilView> dest, AdressesCivilesHisto histo) throws DonneesCivilesException {

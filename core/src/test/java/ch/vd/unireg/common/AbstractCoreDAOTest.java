@@ -1174,6 +1174,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return eta;
 	}
 
+	protected Etablissement addEtablissementConnuAuCivil(long idCantonal) {
+		Etablissement eta = new Etablissement();
+		eta.setNumeroEtablissement(idCantonal);
+		eta = merge(eta);
+		return eta;
+	}
+
 	protected DebiteurPrestationImposable addDebiteur(String complementNom, Contribuable ctbLie, RegDate dateDebutContact) {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi.setComplementNom(complementNom);

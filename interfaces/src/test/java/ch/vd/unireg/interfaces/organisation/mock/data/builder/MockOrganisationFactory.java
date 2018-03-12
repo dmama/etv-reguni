@@ -367,12 +367,16 @@ public abstract class MockOrganisationFactory {
 		                                                TypeOrganisationRegistreIDE.ASSOCIATION,
 		                                                "CHE310742139");
 
-		final MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
-		site.changeDomicile(dateDemenagement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.ForelLavaux.getNoOFS());
-
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, null, MockLocalite.Savigny, dateDebut, dateDemenagement.getOneDayBefore()));
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, "Route de Vevey", MockLocalite.ForelLavaux, dateDemenagement, null));
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.CASE_POSTALE, new CasePostale(TexteCasePostale.CASE_POSTALE, 38), null, MockLocalite.Savigny, RegDate.get(2016, 12, 15), null));
+
+		final MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		site.changeDomicile(dateDemenagement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.ForelLavaux.getNoOFS());
+
+		site.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, null, MockLocalite.Savigny, dateDebut, dateDemenagement.getOneDayBefore()));
+		site.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, "Route de Vevey", MockLocalite.ForelLavaux, dateDemenagement, null));
+		site.addAdresse(new MockAdresse(TypeAdresseCivil.CASE_POSTALE, new CasePostale(TexteCasePostale.CASE_POSTALE, 38), null, MockLocalite.Savigny, RegDate.get(2016, 12, 15), null));
 
 		return org;
 	}

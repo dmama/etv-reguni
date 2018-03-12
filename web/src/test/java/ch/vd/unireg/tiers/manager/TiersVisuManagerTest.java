@@ -14,15 +14,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.WebTest;
+import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.common.WebTest;
-import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.HistoFlag;
 import ch.vd.unireg.tiers.HistoFlags;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -220,6 +221,48 @@ public class TiersVisuManagerTest extends WebTest {
 		final Long id = doInNewTransaction(status -> {
 			final Entreprise tennisClub = addEntrepriseConnueAuCivil(101830038L);
 			return tennisClub.getId();
+		});
+
+		// on construit la vue 'web' de l'entreprise
+		final TiersVisuView view = doInNewTransaction(new TxCallback<TiersVisuView>() {
+			@Override
+			public TiersVisuView execute(TransactionStatus status) throws Exception {
+				final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+				final HistoFlags flags = buildHistoFlags(true, true, false, false, false, false, false, false, false, false, false);
+				return tiersVisuManager.getView(id, flags, false, false, false, false, webParamPagination);
+			}
+		});
+		assertNotNull(view);
+
+		// on vérifie que les adresses sont bien exposées
+		final List<AdresseCivilView> histo = view.getHistoriqueAdressesCiviles();
+		assertNotNull(histo);
+		assertEquals(3, histo.size());
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "1072 Forel (Lavaux)", histo.get(0));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "1073 Savigny", histo.get(1));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "1073 Savigny", histo.get(2));
+		assertEquals("Case Postale 38", histo.get(2).getCasePostale());
+	}
+
+	/**
+	 * [SIFISC-28037] Ce test vérifie que toutes les adresses civiles des établissements sont bien affichées (notamment les adresses 'case postale').
+	 */
+	@Test
+	public void testGetAdresseCivilesEtablissement() throws Exception {
+
+		final long numeroEtablissement = MockOrganisationFactory.TENNIS_CLUB_FOREL_SAVIGNY.getSitePrincipal(null).getPayload().getNumeroSite();
+
+		// on insère les données du Tennis-Club de Forel-Savigny (dont l'établissement principal possède une boîte postale)
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.TENNIS_CLUB_FOREL_SAVIGNY);
+			}
+		});
+
+		final Long id = doInNewTransaction(status -> {
+			final Etablissement etablissement = addEtablissementConnuAuCivil(numeroEtablissement);
+			return etablissement.getId();
 		});
 
 		// on construit la vue 'web' de l'entreprise
