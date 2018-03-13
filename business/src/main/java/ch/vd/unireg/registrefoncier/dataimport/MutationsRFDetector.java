@@ -321,8 +321,6 @@ public class MutationsRFDetector {
 
 			statusManager.setMessage("Détection des mutations...");
 
-			// TODO (msi) faut-il instancier un adapteur multi-threadé (comme pour le fichier principal) ? A voir lorsqu'on recevra l'export de taille normale
-
 			final Map<String, DienstbarkeitExtendedElement> servitudes = new HashMap<>();
 			final List<ch.vd.capitastra.rechteregister.Personstamm> beneficiaires = new ArrayList<>();
 
