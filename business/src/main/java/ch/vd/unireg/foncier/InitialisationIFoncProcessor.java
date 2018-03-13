@@ -1,16 +1,17 @@
 package ch.vd.unireg.foncier;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.stream.Stream;
 
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +19,16 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
+import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -62,58 +65,65 @@ public class InitialisationIFoncProcessor {
 		final StatusManager statusManager = s != null ? s : new LoggingStatusManager(LOGGER);
 		final InitialisationIFoncResults rapportFinal = new InitialisationIFoncResults(dateReference, nbThreads, ofsCommune, registreFoncierService);
 
-		// on commence en allant chercher les immeubles et leurs droits
-		statusManager.setMessage("Récupération des immeubles...");
-		final Map<Long, List<InfoDroit>> infosDroitsParImmeuble = getImmeublesConcernes(ofsCommune);
-		statusManager.setMessage("Récupéré " + infosDroitsParImmeuble.size() + " immeubles.");
+		// on va cherche le nombre d'immeubles
+		statusManager.setMessage("Récupération du nombre d'immeubles...");
+		final Long immeublesCount = getImmeublesCount(ofsCommune);
+		rapportFinal.setNbImmeublesInspectes(immeublesCount);
 
-		// maintenant, il faut extraire les données de ces droits / immeubles
-		// on a ici la garantie que tous les droits d'un immeuble seront traités dans le même lot, ça peut nous servir pour la suite
-		final Collection<Long> idsImmeubles = infosDroitsParImmeuble.keySet();
-		final ParallelBatchTransactionTemplateWithResults<Long, InitialisationIFoncResults> template = new ParallelBatchTransactionTemplateWithResults<>(idsImmeubles.iterator(), idsImmeubles.size(), BATCH_SIZE,
-		                                                                                                                                                 nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+		// on va chercher les droits valides à la date de référence
+		statusManager.setMessage("Récupération des droits...");
+		final List<Long> droitsIds = getDroitsConcernes(dateReference, ofsCommune);
+
+		// on traite les droits
+		traiterDroits(droitsIds, rapportFinal, statusManager);
+
+		statusManager.setMessage("Récupération des immeubles sans droits...");
+		final Set<Long> immeublesIdsSansAucunDroit = getImmeublesIdsSansAucunDroit(ofsCommune);
+		final Set<Long> immeublesIdsSansDroitALaDate = getImmeublesIdsSansDroitALaDate(dateReference, ofsCommune);
+		immeublesIdsSansDroitALaDate.removeAll(immeublesIdsSansAucunDroit); // inutile de garder les immeubles sans aucun droit dans cette liste
+
+		// on traite les immeubles sans droits
+		traiterImmeublesSansAucunDroit(immeublesIdsSansAucunDroit, rapportFinal, statusManager);
+		traiterImmeublesSansDroitActif(immeublesIdsSansDroitALaDate, rapportFinal, statusManager);
+
+		// fin du processus
+		rapportFinal.end();
+		statusManager.setMessage("Extraction terminée.");
+
+		return rapportFinal;
+	}
+
+	/**
+	 * Traite les droits
+	 *
+	 * @param droitsIds     les ids des droits à traiter
+	 * @param rapportFinal  le rapport final
+	 * @param statusManager un status manager
+	 */
+	private void traiterDroits(@NotNull List<Long> droitsIds, @NotNull InitialisationIFoncResults rapportFinal, @NotNull StatusManager statusManager) {
+
+		final RegDate dateReference = rapportFinal.dateReference;
+
+		final ParallelBatchTransactionTemplateWithResults<Long, InitialisationIFoncResults> template = new ParallelBatchTransactionTemplateWithResults<>(droitsIds, BATCH_SIZE,
+		                                                                                                                                                 rapportFinal.nbThreads, Behavior.REPRISE_AUTOMATIQUE,
 		                                                                                                                                                 transactionManager, statusManager,
 		                                                                                                                                                 AuthenticationInterface.INSTANCE);
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, InitialisationIFoncResults>() {
 			@Override
-			public boolean doInTransaction(List<Long> batch, InitialisationIFoncResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> batch, InitialisationIFoncResults rapport) {
 				statusManager.setMessage("Extraction des données en cours...", progressMonitor.getProgressInPercent());
-				for (Long idImmeuble : batch) {
+				for (Long idDroit : batch) {
 
-					// si on a demandé une commune particulière, on ignore complètement les immeubles ailleurs
-					final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
-					final SituationRF situation = getSituationValide(immeuble, dateReference);
-					if (ofsCommune != null && (situation == null || situation.getCommune().getNoOfs() != ofsCommune)) {
-						continue;
+					final DroitRF droit = hibernateTemplate.get(DroitRF.class, idDroit);
+					if (droit == null) {
+						throw new ObjectNotFoundException("Le droit id = " + idDroit + " n'existe pas");
+					}
+					if (!droit.getRangeMetier().isValidAt(dateReference)) {
+						throw new ProgrammingException("Le droit n°" + idDroit + " n'est pas valide à la date de référence = " + RegDateHelper.dateToDisplayString(dateReference));
 					}
 
-					// suivi des opérations
-					rapport.onNewImmeuble();
-
-					final EstimationRF estimationFiscale = getEstimationFiscaleValide(immeuble, dateReference);
-					final List<InfoDroit> infosDroits = infosDroitsParImmeuble.get(idImmeuble);
-					if (infosDroits.isEmpty()) {
-						// immeuble sans aucun droit connu
-						rapport.addImmeubleSansDroit(immeuble, situation, estimationFiscale);
-					}
-					else {
-						// ok, il y a des droits, y a-t-il des droits valides à la date de référence ?
-						final List<InfoDroit> atReference = infosDroits.stream()
-								.filter(info -> info.isValidAt(dateReference))
-								.collect(Collectors.toList());
-						if (atReference.isEmpty()) {
-							// non, aucun droit à la date de référence
-							rapport.addImmeubleSansDroitADateReference(immeuble, situation, estimationFiscale);
-						}
-						else {
-							// certains droits au moins sont valides à la date de référence, il faut les lister
-							atReference.stream()
-									.filter(droit -> !statusManager.isInterrupted())
-									.map(info -> hibernateTemplate.get(DroitRF.class, info.getIdDroit()))
-									.forEach(droit -> traiterDroit(droit, rapport));
-						}
-					}
+					traiterDroit(droit, rapport);
 
 					if (statusManager.isInterrupted()) {
 						break;
@@ -124,7 +134,7 @@ public class InitialisationIFoncProcessor {
 
 			@Override
 			public InitialisationIFoncResults createSubRapport() {
-				return new InitialisationIFoncResults(dateReference, nbThreads, ofsCommune, registreFoncierService);
+				return new InitialisationIFoncResults(dateReference, rapportFinal.nbThreads, rapportFinal.ofsCommune, registreFoncierService);
 			}
 
 			@Override
@@ -134,12 +144,116 @@ public class InitialisationIFoncProcessor {
 				}
 			}
 		}, progressMonitor);
+	}
 
-		// fin du processus
-		rapportFinal.end();
-		statusManager.setMessage("Extraction terminée.");
+	/**
+	 * Ajoute au rapport tous les immeubles sans droit actif à la date de référence.
+	 *
+	 * @param immeublesIdsAvecDroitMaisPasALaDate les ids des immeubles sans droit actif à la date de référence
+	 * @param rapportFinal                        le rapport final
+	 * @param statusManager                       un status manager
+	 */
+	private void traiterImmeublesSansDroitActif(@NotNull Set<Long> immeublesIdsAvecDroitMaisPasALaDate, @NotNull InitialisationIFoncResults rapportFinal, @NotNull StatusManager statusManager) {
 
-		return rapportFinal;
+		final RegDate dateReference = rapportFinal.dateReference;
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+
+		final ArrayList<Long> ids = new ArrayList<>(immeublesIdsAvecDroitMaisPasALaDate);
+		ids.sort(Comparator.naturalOrder());
+
+		final ParallelBatchTransactionTemplateWithResults<Long, InitialisationIFoncResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids, BATCH_SIZE,
+		                                                                                                                                                 rapportFinal.nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                                                 transactionManager, statusManager,
+		                                                                                                                                                 AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, InitialisationIFoncResults>() {
+			@Override
+			public boolean doInTransaction(List<Long> batch, InitialisationIFoncResults rapport) {
+				for (Long immeubleId : batch) {
+
+					final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, immeubleId);
+					if (immeuble == null) {
+						throw new ObjectNotFoundException("L'immeuble avec l'id = " + immeubleId + " n'existe pas");
+					}
+
+					final EstimationRF estimationFiscale = getEstimationFiscaleValide(immeuble, dateReference);
+					final SituationRF situation = getSituationValide(immeuble, dateReference);
+					// non, aucun droit à la date de référence
+					rapport.addImmeubleSansDroitADateReference(immeuble, situation, estimationFiscale);
+
+					if (statusManager.isInterrupted()) {
+						break;
+					}
+				}
+				return !statusManager.isInterrupted();
+			}
+
+			@Override
+			public InitialisationIFoncResults createSubRapport() {
+				return new InitialisationIFoncResults(dateReference, rapportFinal.nbThreads, rapportFinal.ofsCommune, registreFoncierService);
+			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					LOGGER.warn(e.getMessage(), e);
+				}
+			}
+		}, progressMonitor);
+	}
+
+	/**
+	 * Ajoute au rapport tous les immeubles sans aucun droit connu.
+	 *
+	 * @param immeublesIdsSansAucunDroit les ids des immeubles sans aucun droit connu
+	 * @param rapportFinal               le rapport final
+	 * @param statusManager              un status manager
+	 */
+	private void traiterImmeublesSansAucunDroit(@NotNull Set<Long> immeublesIdsSansAucunDroit, @NotNull InitialisationIFoncResults rapportFinal, @NotNull StatusManager statusManager) {
+
+		final RegDate dateReference = rapportFinal.dateReference;
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+
+		final ArrayList<Long> ids = new ArrayList<>(immeublesIdsSansAucunDroit);
+		ids.sort(Comparator.naturalOrder());
+
+		final ParallelBatchTransactionTemplateWithResults<Long, InitialisationIFoncResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids, BATCH_SIZE,
+		                                                                                                                                                 rapportFinal.nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                                                 transactionManager, statusManager,
+		                                                                                                                                                 AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, InitialisationIFoncResults>() {
+			@Override
+			public boolean doInTransaction(List<Long> batch, InitialisationIFoncResults rapport) {
+				for (Long immeubleId : batch) {
+
+					final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, immeubleId);
+					if (immeuble == null) {
+						throw new ObjectNotFoundException("L'immeuble avec l'id = " + immeubleId + " n'existe pas");
+					}
+
+					final EstimationRF estimationFiscale = getEstimationFiscaleValide(immeuble, dateReference);
+					final SituationRF situation = getSituationValide(immeuble, dateReference);
+					// immeuble sans aucun droit connu
+					rapport.addImmeubleSansDroit(immeuble, situation, estimationFiscale);
+
+					if (statusManager.isInterrupted()) {
+						break;
+					}
+				}
+				return !statusManager.isInterrupted();
+			}
+
+			@Override
+			public InitialisationIFoncResults createSubRapport() {
+				return new InitialisationIFoncResults(dateReference, rapportFinal.nbThreads, rapportFinal.ofsCommune, registreFoncierService);
+			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					LOGGER.warn(e.getMessage(), e);
+				}
+			}
+		}, progressMonitor);
 	}
 
 	private void traiterDroit(DroitRF droit, InitialisationIFoncResults rapport) {
@@ -154,11 +268,17 @@ public class InitialisationIFoncProcessor {
 		}
 	}
 
-	private void traiterDroitPropriete(DroitProprieteRF droit, InitialisationIFoncResults rapport) {
-		final AyantDroitRF ayantDroit = droit.getAyantDroit();
+	private void traiterDroitPropriete(@NotNull DroitProprieteRF droit, @NotNull InitialisationIFoncResults rapport) {
+
+		// si on a demandé une commune particulière, on ignore complètement les immeubles situés ailleurs à la date de référence
 		final ImmeubleRF immeuble = droit.getImmeuble();
-		final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
 		final SituationRF situation = getSituationValide(immeuble, rapport.dateReference);
+		if (rapport.ofsCommune != null && (situation == null || situation.getCommune().getNoOfs() != rapport.ofsCommune)) {
+			return;
+		}
+
+		final AyantDroitRF ayantDroit = droit.getAyantDroit();
+		final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
 		final EstimationRF estimation = getEstimationFiscaleValide(immeuble, rapport.dateReference);
 
 		final List<DroitVirtuelHeriteRF> droitsVirtuels = registreFoncierService.determineDroitsVirtuelsHerites(droit, contribuable, rapport.dateReference);
@@ -178,7 +298,7 @@ public class InitialisationIFoncProcessor {
 		}
 	}
 
-	private void traiterServitude(ServitudeRF servitude, InitialisationIFoncResults rapport) {
+	private void traiterServitude(@NotNull ServitudeRF servitude, @NotNull InitialisationIFoncResults rapport) {
 
 		// une servitude peut contenir plusieurs bénénificiaires et plusieurs immeubles -> on calcule toutes
 		// les combinaisons possibles et on insère une ligne par combinaison
@@ -188,8 +308,14 @@ public class InitialisationIFoncProcessor {
 
 			final AyantDroitRF ayantDroit = combinaison.getAyantDroits().iterator().next(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
 			final ImmeubleRF immeuble = combinaison.getImmeubles().iterator().next(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
-			final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
+
+			// si on a demandé une commune particulière, on ignore complètement les immeubles situés ailleurs à la date de référence
 			final SituationRF situation = getSituationValide(immeuble, rapport.dateReference);
+			if (rapport.ofsCommune != null && (situation == null || situation.getCommune().getNoOfs() != rapport.ofsCommune)) {
+				continue;
+			}
+
+			final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
 			final EstimationRF estimation = getEstimationFiscaleValide(immeuble, rapport.dateReference);
 			rapport.addServitude(contribuable, combinaison, situation, estimation);
 		}
@@ -210,45 +336,11 @@ public class InitialisationIFoncProcessor {
 		return registreFoncierService.getEstimationFiscale(immeuble, dateReference);
 	}
 
-	private static class InfoDroit implements DateRange {
-
-		private final long idDroit;
-		private final RegDate dateDebut;
-		private final RegDate dateFin;
-
-		public InfoDroit(long idDroit, RegDate dateDebut, RegDate dateFin) {
-			this.idDroit = idDroit;
-			this.dateDebut = dateDebut;
-			this.dateFin = dateFin;
-		}
-
-		@Nullable
-		public static InfoDroit get(@Nullable Long idDroit, RegDate dateDebut, RegDate dateFin) {
-			if (idDroit == null) {
-				return null;
-			}
-			return new InfoDroit(idDroit, dateDebut, dateFin);
-		}
-
-		public long getIdDroit() {
-			return idDroit;
-		}
-
-		@Override
-		public RegDate getDateDebut() {
-			return dateDebut;
-		}
-
-		@Override
-		public RegDate getDateFin() {
-			return dateFin;
-		}
-	}
-
 	/**
-	 * @return une map indexée par l'identifiant de l'immeuble, auquel est associé la liste des droits sur l'immeuble
+	 * @return la liste des tous les droits de propriété et servitudes existants sur le canton ou la commune.
 	 */
-	private Map<Long, List<InfoDroit>> getImmeublesConcernes(@Nullable Integer ofsCommune) {
+	private List<Long> getDroitsConcernes(@NotNull RegDate dateReference, @Nullable Integer ofsCommune) {
+
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
 		transactionTemplate.setReadOnly(true);
 		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -257,36 +349,161 @@ public class InitialisationIFoncProcessor {
 			final Query queryDroits;
 			final Query queryServitudes;
 			if (ofsCommune == null) {
-				final String hqlDroits = "SELECT IMM.id, DT.id, DT.dateDebutMetier, DT.dateFinMetier FROM ImmeubleRF IMM LEFT OUTER JOIN IMM.droitsPropriete DT WHERE DT.annulationDate IS NULL AND IMM.annulationDate IS NULL";
-				final String hqlServitudes = "SELECT IMM.id, DT.id, DT.dateDebutMetier, DT.dateFinMetier FROM ImmeubleRF IMM LEFT OUTER JOIN IMM.servitudes DT WHERE DT.annulationDate IS NULL AND IMM.annulationDate IS NULL";
+				final String hqlDroits = "SELECT id FROM DroitProprieteRF WHERE annulationDate is null AND " +
+						"(dateDebutMetier is null OR dateDebutMetier <= :dateReference) AND (dateFinMetier is null OR dateFinMetier >= :dateReference)";
+				final String hqlServitudes = "SELECT id FROM ServitudeRF WHERE annulationDate is null AND " +
+						"(dateDebutMetier is null OR dateDebutMetier <= :dateReference) AND (dateFinMetier is null OR dateFinMetier >= :dateReference)";
 				queryDroits = session.createQuery(hqlDroits);
+				queryDroits.setParameter("dateReference", dateReference);
 				queryServitudes = session.createQuery(hqlServitudes);
+				queryServitudes .setParameter("dateReference", dateReference);
 			}
 			else {
-				final String hqlDroits = "SELECT IMM.id, DT.id, DT.dateDebutMetier, DT.dateFinMetier FROM ImmeubleRF IMM LEFT OUTER JOIN IMM.droitsPropriete DT LEFT OUTER JOIN IMM.situations SITU WHERE DT.annulationDate IS NULL AND IMM.annulationDate IS NULL AND ((SITU.noOfsCommuneSurchargee IS NULL AND SITU.commune.noOfs = :commune) OR SITU.noOfsCommuneSurchargee = :commune)";
-				final String hqlServitudes = "SELECT IMM.id, DT.id, DT.dateDebutMetier, DT.dateFinMetier FROM ImmeubleRF IMM LEFT OUTER JOIN IMM.servitudes DT LEFT OUTER JOIN IMM.situations SITU WHERE DT.annulationDate IS NULL AND IMM.annulationDate IS NULL AND ((SITU.noOfsCommuneSurchargee IS NULL AND SITU.commune.noOfs = :commune) OR SITU.noOfsCommuneSurchargee = :commune)";
+				final String hqlDroits =
+						"SELECT d.id FROM DroitProprieteRF d WHERE d.annulationDate is null AND " +
+								"(d.dateDebutMetier is null OR d.dateDebutMetier <= :dateReference) AND (d.dateFinMetier is null OR d.dateFinMetier >= :dateReference) AND " +
+								"EXISTS (from SituationRF s where s.annulationDate is null AND s.immeuble = d.immeuble AND " +
+								"(s.dateDebut is null OR s.dateDebut <= :dateReference) AND (s.dateFin is null OR s.dateFin >= :dateReference) AND " +
+								"((s.noOfsCommuneSurchargee is null AND s.commune.noOfs = :commune) OR s.noOfsCommuneSurchargee = :commune))";
+				final String hqlServitudes =
+						"SELECT d.id FROM ServitudeRF d WHERE d.annulationDate is null AND " +
+								"(d.dateDebutMetier is null OR d.dateDebutMetier <= :dateReference) AND (d.dateFinMetier is null OR d.dateFinMetier >= :dateReference) AND " +
+								"EXISTS (from SituationRF s where s.annulationDate is null AND s.immeuble in elements(d.immeubles) AND " +
+								"(s.dateDebut is null OR s.dateDebut <= :dateReference) AND (s.dateFin is null OR s.dateFin >= :dateReference) AND " +
+								"((s.noOfsCommuneSurchargee is null AND s.commune.noOfs = :commune) OR s.noOfsCommuneSurchargee = :commune))";
 				queryDroits = session.createQuery(hqlDroits);
+				queryDroits.setParameter("dateReference", dateReference);
 				queryDroits.setParameter("commune", ofsCommune);
 				queryServitudes = session.createQuery(hqlServitudes);
+				queryServitudes .setParameter("dateReference", dateReference);
 				queryServitudes.setParameter("commune", ofsCommune);
 			}
 
-			final Map<Long, List<InfoDroit>> mapDroits = mapDroitsParImmeuble(queryDroits);
-			final Map<Long, List<InfoDroit>> mapServitudes = mapDroitsParImmeuble(queryServitudes);
-			mapServitudes.forEach((key, value) -> mapDroits.merge(key, value, ListUtils::union));
+			final Set<Long> mapDroits = mapDroits(queryDroits);
+			final Set<Long> mapServitudes = mapDroits(queryServitudes);
 
-			return mapDroits;
+			return Stream.concat(mapDroits.stream(), mapServitudes.stream())
+					.sorted(Comparator.naturalOrder())
+					.collect(Collectors.toList());
 		}));
 	}
 
-	private static Map<Long, List<InfoDroit>> mapDroitsParImmeuble(Query query) {
+	private static Set<Long> mapDroits(@NotNull Query query) {
+		final Set<Long> set = new HashSet<>();
 		//noinspection unchecked
-		final Iterator<Object[]> iterator = query.iterate();
-		final Iterable<Object[]> iterable = () -> iterator;
-		return StreamSupport.stream(iterable.spliterator(), false)
-				.map(row -> Pair.of((Long) row[0], InfoDroit.get((Long) row[1], (RegDate) row[2], (RegDate) row[3])))
-				.collect(Collectors.toMap(Pair::getLeft,
-				                          pair -> pair.getRight() == null ? Collections.<InfoDroit>emptyList() : Collections.singletonList(pair.getRight()),
-				                          ListUtils::union));
+		final Iterator<Long> iterator = query.iterate();
+		while (iterator.hasNext()) {
+			set.add(iterator.next());
+		}
+		return set;
+	}
+
+	/**
+	 * @param ofsCommune un numéro OFS de commune
+	 * @return le nombre d'immeubles valides sur le canton ou la commune
+	 */
+	@NotNull
+	private Long getImmeublesCount(@Nullable Integer ofsCommune) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query query;
+			if (ofsCommune == null) {
+				query = session.createQuery("SELECT count(*) FROM ImmeubleRF WHERE annulationDate is null");
+			}
+			else {
+				query = session.createQuery("SELECT count(*) FROM ImmeubleRF i LEFT JOIN i.situations s " +
+						                            "WHERE i.annulationDate IS NULL AND " +
+						                            "((s.noOfsCommuneSurchargee IS NULL AND s.commune.noOfs = :commune) OR s.noOfsCommuneSurchargee = :commune)");
+				query.setParameter("commune", ofsCommune);
+			}
+			//noinspection unchecked
+			final Number count = (Number) query.uniqueResult();
+			return count.longValue();
+		}));
+	}
+
+	/**
+	 * @param ofsCommune un numéro OFS de commune
+	 * @return les ids des tous immeubles valides sur le canton ou la commune et sans aucun droit
+	 */
+	@NotNull
+	private Set<Long> getImmeublesIdsSansAucunDroit(@Nullable Integer ofsCommune) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query query;
+			if (ofsCommune == null) {
+				query = session.createQuery("SELECT i.id FROM ImmeubleRF i WHERE i.annulationDate is null AND " +
+						                            "NOT EXISTS (FROM DroitProprieteRF d " +
+						                            "            WHERE d.annulationDate is null AND d.immeuble = i" +
+						                            ") AND " +
+						                            "NOT EXISTS (FROM ServitudeRF s " +
+						                            "            WHERE s.annulationDate is null AND i IN elements(s.immeubles)" +
+						                            ")");
+			}
+			else {
+				query = session.createQuery("SELECT i.id FROM ImmeubleRF i LEFT JOIN i.situations si " +
+						                            "WHERE i.annulationDate IS NULL AND " +
+						                            "NOT EXISTS (FROM DroitProprieteRF d " +
+						                            "            WHERE d.annulationDate is null AND d.immeuble = i" +
+						                            ") AND " +
+						                            "NOT EXISTS (FROM ServitudeRF s " +
+						                            "            WHERE s.annulationDate is null AND i IN elements(s.immeubles)" +
+						                            ") AND " +
+				                                    "((si.noOfsCommuneSurchargee IS NULL AND si.commune.noOfs = :commune) OR si.noOfsCommuneSurchargee = :commune)");
+				query.setParameter("commune", ofsCommune);
+			}
+			//noinspection unchecked
+			return new HashSet<Long>(query.list());
+		}));
+	}
+
+	/**
+	 * @param dateReference une date de référence
+	 * @param ofsCommune    un numéro OFS de commune
+	 * @return les ids des tous immeubles valides sur le canton ou la commune et sans droit à la date donnée.
+	 */
+	@NotNull
+	private Set<Long> getImmeublesIdsSansDroitALaDate(@NotNull RegDate dateReference, @Nullable Integer ofsCommune) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query query;
+			if (ofsCommune == null) {
+				query = session.createQuery("SELECT i.id FROM ImmeubleRF i WHERE i.annulationDate is null AND " +
+						                            "NOT EXISTS (FROM DroitProprieteRF d " +
+						                            "            WHERE d.annulationDate is null AND d.immeuble = i AND " +
+						                            "            (d.dateDebutMetier is null OR d.dateDebutMetier <= :dateReference) AND " +
+						                            "            (d.dateFinMetier is null OR d.dateFinMetier >= :dateReference)" +
+						                            ") AND " +
+						                            "NOT EXISTS (FROM ServitudeRF s " +
+						                            "            WHERE s.annulationDate is null AND i IN elements(s.immeubles) AND" +
+						                            "            (s.dateDebutMetier is null OR s.dateDebutMetier <= :dateReference) AND " +
+						                            "            (s.dateFinMetier is null OR s.dateFinMetier >= :dateReference)" +
+						                            ")");
+			}
+			else {
+				query = session.createQuery("SELECT i.id FROM ImmeubleRF i LEFT JOIN i.situations si WHERE i.annulationDate is null AND " +
+						                            "NOT EXISTS (FROM DroitProprieteRF d " +
+						                            "            WHERE d.annulationDate is null AND d.immeuble = i AND " +
+						                            "            (d.dateDebutMetier is null OR d.dateDebutMetier <= :dateReference) AND " +
+						                            "            (d.dateFinMetier is null OR d.dateFinMetier >= :dateReference)" +
+						                            ") AND " +
+						                            "NOT EXISTS (FROM ServitudeRF s " +
+						                            "            WHERE s.annulationDate is null AND i IN elements(s.immeubles) AND " +
+						                            "            (s.dateDebutMetier is null OR s.dateDebutMetier <= :dateReference) AND " +
+						                            "            (s.dateFinMetier is null OR s.dateFinMetier >= :dateReference)" +
+						                            ") AND " +
+				                                    "((si.noOfsCommuneSurchargee IS NULL AND si.commune.noOfs = :commune) OR si.noOfsCommuneSurchargee = :commune)");
+				query.setParameter("commune", ofsCommune);
+			}
+			query.setParameter("dateReference", dateReference);
+			//noinspection unchecked
+			return new HashSet<Long>(query.list());
+		}));
 	}
 }

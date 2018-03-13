@@ -1,5 +1,7 @@
 package ch.vd.unireg.foncier;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -993,4 +995,186 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-26802] Ce test vérifie que les lignes extraites sont correctes dans le cas où une servitude concerne plusieurs immeubles.
+	 */
+	@Test
+	public void testPlusieursImmeublesAvecDroitProprietesEtServitudes() throws Exception {
+
+		final long noRfProprietaire = 5753865L;
+		final long noRfHabitant = 432784237L;
+		final long noRfUsufruitier = 32432L;
+
+		final class Ids {
+			long idProprietaire;
+			long idHabitant;
+			long idImmeuble1;
+			long idImmeuble2;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
+			final BienFondsRF immeuble1 = addBienFondsRF("0r385hgjbahkl", "CHEGRID1", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble2 = addBienFondsRF("4823892j2", "CHEGRID2", commune, 919, null, null, null);
+
+			// deux propriétaires sur l'immeuble 1
+			final PersonnePhysique proprio = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
+			proprioRF.setNoRF(noRfProprietaire);
+			addRapprochementRF(proprio, proprioRF, null, null, TypeRapprochementRF.AUTO);
+			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COPROPRIETE, proprioRF, immeuble1, null);
+
+			final PersonnePhysique habitant = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
+			final PersonnePhysiqueRF habitantRF = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
+			habitantRF.setNoRF(noRfHabitant);
+			addRapprochementRF(habitant, habitantRF, null, null, TypeRapprochementRF.AUTO);
+			addDroitHabitationRF(null, date(2017, 3, 1), null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", null, null, habitantRF, immeuble1);
+
+			// un usufruit sur les immeubles 1 et 2
+			final PersonnePhysiqueRF usufruitier = addPersonnePhysiqueRF("236gzbfahécf", "Gérard", "Menfais", date(2000, 3, 1));
+			usufruitier.setNoRF(noRfUsufruitier);
+			addUsufruitRF(null, date(2015, 6, 1), null, null, "Succession", null, "58gfhfba", "58gfhfbb", null, null, Collections.singletonList(usufruitier), Arrays.asList(immeuble1, immeuble2));
+
+			final Ids res = new Ids();
+			res.idProprietaire = proprio.getNumero();
+			res.idHabitant = habitant.getNumero();
+			res.idImmeuble1 = immeuble1.getId();
+			res.idImmeuble2 = immeuble2.getId();
+			return res;
+		});
+
+
+		// extraction au 01.01.2018 (tous)
+		{
+			final InitialisationIFoncResults results = processor.run(date(2018, 1, 1), 1, null, null);
+			assertNotNull(results);
+			assertEquals(2, results.getNbImmeublesInspectes());
+			assertEquals(4, results.getLignesExtraites().size());
+			assertEquals(0, results.getImmeublesIgnores().size());
+			assertEquals(0, results.getErreurs().size());
+
+			// le droit de propriété de Francis
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(0);
+				assertNotNull(info);
+				assertEquals((Long) ids.idProprietaire, info.idContribuable);
+				assertNull(info.idCommunaute);
+				assertNotNull(info.identificationRF);
+				assertEquals("Rouge", info.identificationRF.nom);
+				assertEquals("Francis", info.identificationRF.prenom);
+				assertNull(info.identificationRF.raisonSociale);
+				assertEquals(date(1975, 4, 2), info.identificationRF.dateNaissance);
+				assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
+				assertEquals(DroitProprietePersonnePhysiqueRF.class, info.classDroit);
+				assertEquals("Achat", info.motifDebut);
+				assertNull(info.motifFin);
+				assertEquals((Long) ids.idImmeuble1, info.infoImmeuble.idImmeuble);
+				assertEquals("CHEGRID1", info.infoImmeuble.egrid);
+				assertEquals((Integer) 4514, info.infoImmeuble.noParcelle);
+				assertEquals((Integer) 4, info.infoImmeuble.index1);
+				assertEquals((Integer) 2, info.infoImmeuble.index2);
+				assertEquals((Integer) 1, info.infoImmeuble.index3);
+				assertEquals("Echallens", info.infoImmeuble.nomCommune);
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
+				assertNotNull(info.part);
+				assertEquals(1, info.part.getNumerateur());
+				assertEquals(5, info.part.getDenominateur());
+				assertEquals(GenrePropriete.COPROPRIETE, info.regime);
+				assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+				assertEquals((Long) noRfProprietaire, info.noRFAyantDroit);
+				assertNull(info.idImmeubleBeneficiaire);
+			}
+
+			// le droit d'habitation d'Albertine
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(1);
+				assertNotNull(info);
+				assertEquals((Long) ids.idHabitant, info.idContribuable);
+				assertNull(info.idCommunaute);
+				assertNotNull(info.identificationRF);
+				assertEquals("Zorro", info.identificationRF.nom);
+				assertEquals("Albertine", info.identificationRF.prenom);
+				assertNull(info.identificationRF.raisonSociale);
+				assertEquals(date(1979, 6, 1), info.identificationRF.dateNaissance);
+				assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
+				assertEquals(DroitHabitationRF.class, info.classDroit);
+				assertEquals("Un motif, quoi...", info.motifDebut);
+				assertNull(info.motifFin);
+				assertEquals((Long) ids.idImmeuble1, info.infoImmeuble.idImmeuble);
+				assertEquals("CHEGRID1", info.infoImmeuble.egrid);
+				assertEquals((Integer) 4514, info.infoImmeuble.noParcelle);
+				assertEquals((Integer) 4, info.infoImmeuble.index1);
+				assertEquals((Integer) 2, info.infoImmeuble.index2);
+				assertEquals((Integer) 1, info.infoImmeuble.index3);
+				assertEquals("Echallens", info.infoImmeuble.nomCommune);
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
+				assertNull(info.part);
+				assertNull(info.regime);
+				assertEquals("5w47tgtflbsfg", info.idRFAyantDroit);
+				assertEquals((Long) noRfHabitant, info.noRFAyantDroit);
+				assertNull(info.idImmeubleBeneficiaire);
+			}
+
+			// la servitude de Gérard sur l'immeuble 1
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(2);
+				assertNotNull(info);
+				assertNull(info.idContribuable);
+				assertNull(info.idCommunaute);
+				assertNotNull(info.identificationRF);
+				assertEquals("Menfais", info.identificationRF.nom);
+				assertEquals("Gérard", info.identificationRF.prenom);
+				assertNull(info.identificationRF.raisonSociale);
+				assertEquals(date(2000, 3, 1), info.identificationRF.dateNaissance);
+				assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals("Succession", info.motifDebut);
+				assertNull(info.motifFin);
+				assertEquals((Long) ids.idImmeuble1, info.infoImmeuble.idImmeuble);
+				assertEquals("CHEGRID1", info.infoImmeuble.egrid);
+				assertEquals((Integer) 4514, info.infoImmeuble.noParcelle);
+				assertEquals((Integer) 4, info.infoImmeuble.index1);
+				assertEquals((Integer) 2, info.infoImmeuble.index2);
+				assertEquals((Integer) 1, info.infoImmeuble.index3);
+				assertEquals("Echallens", info.infoImmeuble.nomCommune);
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
+				assertNull(info.part);
+				assertNull(info.regime);
+				assertEquals("236gzbfahécf", info.idRFAyantDroit);
+				assertEquals((Long) noRfUsufruitier, info.noRFAyantDroit);
+				assertNull(info.idImmeubleBeneficiaire);
+			}
+
+			// la servitude de Gérard sur l'immeuble 2
+			{
+				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(3);
+				assertNotNull(info);
+				assertNull(info.idContribuable);
+				assertNull(info.idCommunaute);
+				assertNotNull(info.identificationRF);
+				assertEquals("Menfais", info.identificationRF.nom);
+				assertEquals("Gérard", info.identificationRF.prenom);
+				assertNull(info.identificationRF.raisonSociale);
+				assertEquals(date(2000, 3, 1), info.identificationRF.dateNaissance);
+				assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
+				assertEquals(UsufruitRF.class, info.classDroit);
+				assertEquals("Succession", info.motifDebut);
+				assertNull(info.motifFin);
+				assertEquals((Long) ids.idImmeuble2, info.infoImmeuble.idImmeuble);
+				assertEquals("CHEGRID2", info.infoImmeuble.egrid);
+				assertEquals((Integer) 919, info.infoImmeuble.noParcelle);
+				assertNull(info.infoImmeuble.index1);
+				assertNull(info.infoImmeuble.index2);
+				assertNull(info.infoImmeuble.index3);
+				assertEquals("Echallens", info.infoImmeuble.nomCommune);
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
+				assertNull(info.part);
+				assertNull(info.regime);
+				assertEquals("236gzbfahécf", info.idRFAyantDroit);
+				assertEquals((Long) noRfUsufruitier, info.noRFAyantDroit);
+				assertNull(info.idImmeubleBeneficiaire);
+			}
+		}
+	}
 }

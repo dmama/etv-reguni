@@ -395,8 +395,8 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		this.immeublesIgnores.add(new ImmeubleIgnore(immeuble, situation, estimationFiscale, "Aucun droit valide à la date de référence."));
 	}
 
-	public void onNewImmeuble() {
-		++ nbImmeublesInspectes;
+	public void setNbImmeublesInspectes(long nbImmeublesInspectes) {
+		this.nbImmeublesInspectes = nbImmeublesInspectes;
 	}
 
 	@Override
