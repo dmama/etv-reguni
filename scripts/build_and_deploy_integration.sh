@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Paramètre : IN ou INPO en fonction de l'endroit où on veut effectivement déployer l'application
 ENVIRONMENT="$1"
 if [ "$ENVIRONMENT" != "IN" -a "$ENVIRONMENT" != "INPO" ]; then
@@ -5,10 +7,9 @@ if [ "$ENVIRONMENT" != "IN" -a "$ENVIRONMENT" != "INPO" ]; then
 	exit 1
 fi
 
-# On remonte sur le répertoire contenant unireg
-cd ../..
-if [ ! -d unireg ]; then
-	echo "!!! Impossible de trouver le répertoire 'unireg' à partir du chemin $(pwd)" >&2
+# On vérifie que le script s'exécute depuis le bon répertoire
+if [ ! -f base/version.txt ]; then
+	echo "!!! Le script doit être lancé depuis le répertoire racine du projet (chemin actuel = $(pwd)) !!!" >&2
 	exit 1
 fi
 
@@ -24,7 +25,7 @@ echo "Deploy only: $DEPLOY_ONLY"
 
 #########
 # Version
-version=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
+version=$(grep "long=" base/version.txt|awk -F= '{ print $2; }')
 #########
 echo "Version: $version"
 
@@ -57,7 +58,7 @@ nexusFileOrig=unireg-nexus-release.zip
 function compile_all() {
 
   if [ $DEPLOY_ONLY == 0 ]; then
-	  (cd unireg/base && mvn -Pnot,oracle,ext,jspc clean install)
+	  (cd base && mvn -Pnot,oracle,ext,jspc clean install)
   fi
   if [ $? != 0 ]; then
 	  echo "!!! Erreur lors du build" >&2
@@ -69,7 +70,7 @@ function assemble_app() {
   local appName=$1
 
   if [ $DEPLOY_ONLY == 0 ]; then
-	  (cd unireg/$appName && mvn -Pnot,oracle,jspc assembly:assembly)
+	  (cd $appName && mvn -Pnot,oracle,jspc assembly:assembly)
   fi
   if [ $? != 0 ]; then
 	  echo "!!! Erreur lors de l'assembly de $appName" >&2
@@ -118,9 +119,9 @@ assemble_app ws
 assemble_app nexus
 
 # add timestamps to zip files
-webFileDest=$(copy_with_timestamp unireg/web/target/$webFileOrig)
-wsFileDest=$(copy_with_timestamp unireg/ws/target/$wsFileOrig)
-nexusFileDest=$(copy_with_timestamp unireg/nexus/target/$nexusFileOrig)
+webFileDest=$(copy_with_timestamp web/target/$webFileOrig)
+wsFileDest=$(copy_with_timestamp ws/target/$wsFileOrig)
+nexusFileDest=$(copy_with_timestamp nexus/target/$nexusFileOrig)
 
 # arrêt
 ssh $user "cd $baseDir && ./tomcatctl.sh stop"

@@ -1,8 +1,8 @@
-#!/bin/bash
-# On remonte sur le répertoire contenant unireg
-cd ../..
-if [ ! -d unireg ]; then
-	echo "!!! Impossible de trouver le répertoire 'unireg' à partir du chemin $(pwd)"
+#!/usr/bin/env bash
+
+# On vérifie que le script s'exécute depuis le bon répertoire
+if [ ! -f base/version.txt ]; then
+	echo "!!! Le script doit être lancé depuis le répertoire racine du projet (chemin actuel = $(pwd)) !!!" >&2
 	exit 1
 fi
 
@@ -17,7 +17,7 @@ fi
 
 #########
 # Version
-version=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
+version=$(grep "long=" base/version.txt|awk -F= '{ print $2; }')
 #########
 
 echo "Building version $version"
@@ -34,61 +34,59 @@ MVN_OPTS="-Pnot,build.source,oracle,all,jspc"
 
 # on vérifie que l'on ne dépend pas de librairies SNAPSHOT
 IGNORE_SNAPSHOT="org.apache.activemq.protobuf:activemq-protobuf:jar:1.0-SNAPSHOT"
-SNAPSHOT_PRESENT=$((cd unireg/base && mvn $MVN_OPTS dependency:list) | sed -e '/The following files have been resolved/,/^[INFO][[:blank:]]+$/ !D' | grep -v ":test$" | grep SNAPSHOT | grep -v $IGNORE_SNAPSHOT | grep -v "checking for updates from" | sort -u)
+SNAPSHOT_PRESENT=$((cd base && mvn $MVN_OPTS dependency:list) | sed -e '/The following files have been resolved/,/^[INFO][[:blank:]]+$/ !D' | grep -v ":test$" | grep SNAPSHOT | grep -v $IGNORE_SNAPSHOT | grep -v "checking for updates from" | sort -u)
 if [ -n "$SNAPSHOT_PRESENT" ]; then
 	echo "$SNAPSHOT_PRESENT"
 	echo "!!! Erreur : l'application dépend de librairies SNAPSHOT (voir liste ci-dessus). Veuillez modifier la configuration maven pour utiliser des versions fixes."
 	exit 1
 fi
 
-# JDE 27.06.2013 : on ne publie plus dans NEXUS (pour gagner de la place...), seulement dans le m2 local
-#(cd unireg/base && mvn $MVN_OPTS clean deploy)
-(cd unireg/base && mvn $MVN_OPTS clean install)
+(cd base && mvn $MVN_OPTS clean install)
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors du build"
 	exit 1
 fi
 
-(cd unireg/nexus && mvn $MVN_OPTS assembly:assembly)
+(cd nexus && mvn $MVN_OPTS assembly:assembly)
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors de l'assembly de nexus"
 	exit 1
 fi
 
-(cd unireg/web && mvn $MVN_OPTS assembly:assembly)
+(cd web && mvn $MVN_OPTS assembly:assembly)
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors de l'assembly de web"
 	exit 1
 fi
 
-(cd unireg/ws && mvn $MVN_OPTS assembly:assembly)
+(cd ws && mvn $MVN_OPTS assembly:assembly)
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors de l'assembly de ws"
 	exit 1
 fi
 
-(cd unireg/ubr && mvn $MVN_OPTS assembly:assembly)
+(cd ubr && mvn $MVN_OPTS assembly:assembly)
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors de l'assembly de ubr"
 	exit 1
 fi
 
 # Renommage des fichiers ZIP avec la date
-cp unireg/nexus/target/$nexusFileOrig unireg/nexus/target/$nexusFileDest
-cp unireg/web/target/$relFileOrig unireg/web/target/$relFileDest
-cp unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
-cp unireg/ubr/target/$ubrFileOrig unireg/ubr/target/$ubrFileDest
+cp nexus/target/$nexusFileOrig nexus/target/$nexusFileDest
+cp web/target/$relFileOrig web/target/$relFileDest
+cp ws/target/$wsFileOrig ws/target/$wsFileDest
+cp ubr/target/$ubrFileOrig ubr/target/$ubrFileDest
 
 # dépôt direct dans le système du CEI
 URL_DEPOT=http://exploitation.etat-de-vaud.ch/outils/web/ws/rest/file/upload
 CEI_GROUPE_CIBLE=WEB
-curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/unireg/nexus/target/$nexusFileDest $URL_DEPOT
+curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/nexus/target/$nexusFileDest $URL_DEPOT
 echo
-curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/unireg/web/target/$relFileDest $URL_DEPOT
+curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/web/target/$relFileDest $URL_DEPOT
 echo
-curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/unireg/ws/target/$wsFileDest $URL_DEPOT
+curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/ws/target/$wsFileDest $URL_DEPOT
 echo
-curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/unireg/ubr/target/$ubrFileDest $URL_DEPOT
+curl -X POST --form from=$DEPOSANT --form to=$CEI_GROUPE_CIBLE --form file=@$(pwd)/ubr/target/$ubrFileDest $URL_DEPOT
 echo
 
 
