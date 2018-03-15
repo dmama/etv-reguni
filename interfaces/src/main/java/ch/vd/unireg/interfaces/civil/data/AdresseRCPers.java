@@ -16,12 +16,12 @@ import ch.vd.evd0001.v5.DwellingAddress;
 import ch.vd.evd0001.v5.Residence;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class AdresseRCPers implements Adresse, Serializable {
@@ -203,6 +203,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 		final RegDate df;
 		if (next != null && movingInSameMunicipality(residence, next)) {
 			final RegDate nextMovingDate = XmlUtils.xmlcal2regdate(next.getDwellingAddress().getMovingDate());
+			if (nextMovingDate == null) {
+				// [SIFISC-28560] la date de déménagement n'est pas renseignée (bug RCPers SIREF-11428) : cette information est obligatoire pour interpréter correctement l'adresse
+				throw new IllegalArgumentException("Bug RCPers ? La date de déménagement n'est pas renseignée sur l'adresse suivante de l'individu");
+			}
 			df = nextMovingDate.getOneDayBefore();
 		}
 		else {
