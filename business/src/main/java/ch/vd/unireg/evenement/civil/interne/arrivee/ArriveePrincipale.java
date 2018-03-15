@@ -1,7 +1,11 @@
 package ch.vd.unireg.evenement.civil.interne.arrivee;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,14 +14,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.HistoriqueCommune;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.DonneesCivilesException;
@@ -31,6 +27,14 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -405,14 +409,15 @@ public class ArriveePrincipale extends Arrivee {
 	}
 
 	@NotNull
-	private ModeImposition getSourceOuMixteSuivantAgeRetraite(RegDate dateArrivee, PersonnePhysique principal, PersonnePhysique conjoint) {
-		final ModeImposition prn = getSourceOuMixteSuivantAgeRetraite(dateArrivee, principal);
-		final ModeImposition cjt = getSourceOuMixteSuivantAgeRetraite(dateArrivee, conjoint);
-		if (prn == ModeImposition.MIXTE_137_1 || cjt == ModeImposition.MIXTE_137_1) {
+	private ModeImposition getSourceOuMixteSuivantAgeRetraite(@NotNull RegDate dateArrivee, @NotNull List<PersonnePhysique> membres) {
+		final List<ModeImposition> modes = membres.stream()
+				.map(m -> getSourceOuMixteSuivantAgeRetraite(dateArrivee, m))
+				.collect(Collectors.toList());
+		if (modes.contains(ModeImposition.MIXTE_137_1)) {
 			return ModeImposition.MIXTE_137_1;
 		}
 		else {
-			return prn;
+			return modes.get(0);
 		}
 	}
 
@@ -436,6 +441,145 @@ public class ArriveePrincipale extends Arrivee {
 		}
 	}
 
+	private static class ModeImpositionDetermination {
+
+		@Nullable
+		final ModeImposition modeImposition;
+
+		@Nullable
+		final RattrapageDepartHSInconnu rattrapageDepartHSInconnu;
+
+		public ModeImpositionDetermination(@Nullable ModeImposition modeImposition, @Nullable RattrapageDepartHSInconnu rattrapageDepartHSInconnu) {
+			this.modeImposition = modeImposition;
+			this.rattrapageDepartHSInconnu = rattrapageDepartHSInconnu;
+		}
+
+		@Nullable
+		public ModeImposition getModeImposition() {
+			return modeImposition;
+		}
+
+		@Nullable
+		public RattrapageDepartHSInconnu getRattrapageDepartHSInconnu() {
+			return rattrapageDepartHSInconnu;
+		}
+	}
+
+	/**
+	 * Détermine le mode d'imposition d'un contribuable en cas d'arrivée dans le canton
+	 *
+	 * @param contribuable         le contribuable en question (personne physique ou ménage commun)
+	 * @param dateArriveeEffective la date effective d'arrivée
+	 * @param motifOuverture       le motif de l'arrivée
+	 * @param forPrincipal         le for principal courant
+	 * @param members              la liste des personnes physiques correspondant au contribuable (= le contribuable lui-même pour une personne physique ou les membres du ménage pour un ménage commun)
+	 * @return le mode d'imposition déterminé
+	 */
+	@NotNull
+	private ModeImpositionDetermination determineModeImposition(@NotNull ContribuableImpositionPersonnesPhysiques contribuable,
+	                                                            @NotNull RegDate dateArriveeEffective,
+	                                                            @Nullable MotifFor motifOuverture,
+	                                                            @Nullable ForFiscalPrincipalPP forPrincipal,
+	                                                            @NotNull List<PersonnePhysique> members) throws EvenementCivilException {
+
+		// détermination du mode d'imposition
+		final ModeImposition modeImposition;
+		final RattrapageDepartHSInconnu rattrapageDepartHSInconnu;
+		if (forPrincipal == null) {
+			if (members.stream().anyMatch(m -> isSuisseOuPermisC(m, dateArriveeEffective))) {
+				// un membre au moins est suisse ou titulaire d'un permis C => ordinaire
+				modeImposition = ModeImposition.ORDINAIRE;
+			}
+			else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
+				modeImposition = getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, members);
+			}
+			else {
+				// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
+				modeImposition = null;
+			}
+			rattrapageDepartHSInconnu = null;
+		}
+		else {
+			if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
+				if (members.stream().anyMatch(m -> isSuisseOuPermisC(m, dateArriveeEffective))) {
+					modeImposition = ModeImposition.ORDINAIRE;
+				}
+				else {
+					// Si le contribuable possède déjà un for secondaire, il passe mixte_1, sinon, il passe source
+					final List<ForFiscal> fors = contribuable.getForsFiscauxValidAt(dateArriveeEffective);
+					boolean hasForSecondaire = false;
+					for (ForFiscal ff : fors) {
+						// si on trouve au moins un for secondaire, alors mixte_1
+						if (ff instanceof ForFiscalSecondaire) {
+							hasForSecondaire = true;
+							break;
+						}
+					}
+					modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, members);
+				}
+				rattrapageDepartHSInconnu = null;
+			}
+			else {
+				// déménagement vaudois d'après la provenance
+
+				// [SIFISC-5451] détermination du for référent (peut ne pas être le "for fiscal" si celui ci est HS pays inconnu
+				// alors que la provenance indiquée est vaudoise et que cela ne fait pas trop longtemps qu'on a quitté le canton)
+				final ForFiscalPrincipalPP forPrecedent = contribuable.getForFiscalPrincipalAt(forPrincipal.getDateDebut().getOneDayBefore());
+				final ForFiscalPrincipalPP forReferent;
+				if (forPrecedent != null
+						&& forPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS
+						&& forPrincipal.getNumeroOfsAutoriteFiscale() == ServiceInfrastructureService.noPaysInconnu
+						&& forPrecedent.getMotifFermeture() == MotifFor.DEPART_HS
+						&& forPrecedent.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+
+					// nous sommes clairement dans le cas d'un départ HS pays inconnu erroné (au moment du traitement du départ, nous avions sans doute trouvé une destination vide..)
+
+					// il reste cependant quelques trucs à vérifier :
+					// - la commune d'avant le départ HS
+					// - les dates
+					final Localisation localisationPrecedente = nouvelleAdresse.getLocalisationPrecedente();
+					if (localisationPrecedente == null
+							|| localisationPrecedente.getType() != LocalisationType.CANTON_VD
+							|| !forPrecedent.getNumeroOfsAutoriteFiscale().equals(localisationPrecedente.getNoOfs())) {
+
+						// problème -> la commune n'est pas la même
+						throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de communes vaudoises différentes.");
+					}
+					else if (!isDifferenceTwoYearsOrLess(forPrincipal.getDateDebut(), dateArriveeEffective)) {
+						// problème -> ça fait trop longtemps !
+						throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de la date de départ, trop vieille.");
+					}
+
+					forReferent = forPrecedent;
+					rattrapageDepartHSInconnu = new RattrapageDepartHSInconnu(forPrecedent, forPrincipal);
+				}
+				else {
+					forReferent = forPrincipal;
+					rattrapageDepartHSInconnu = null;
+				}
+
+				// récupération du mode d'imposition sur le for référent
+				if (forReferent.getModeImposition() == ModeImposition.SOURCE) {
+					modeImposition = getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, members);
+				}
+				else {
+					modeImposition = forReferent.getModeImposition();
+				}
+			}
+		}
+
+		return new ModeImpositionDetermination(modeImposition, rattrapageDepartHSInconnu);
+	}
+
+	private boolean isSuisseOuPermisC(PersonnePhysique principal, RegDate dateEvenement) {
+		try {
+			return getService().isSuisseOuPermisC(principal, dateEvenement);
+		}
+		catch (TiersException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Override
 	protected void doHandleCreationForIndividuSeul(PersonnePhysique habitant, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
@@ -448,119 +592,49 @@ public class ArriveePrincipale extends Arrivee {
 			final int numeroOfsNouveau = nouvelleCommune.getNoOFS();
 			final ForFiscalPrincipalPP forFiscal = habitant.getForFiscalPrincipalAt(null);
 
-			// détermination du mode d'imposition
-			final ModeImposition modeImposition;
-			final RattrapageDepartHSInconnu rattrapageDepartHSInconnu;
-			try {
-				if (forFiscal == null) {
-					if (getService().isSuisseOuPermisC(habitant, dateArriveeEffective)) {
-						// s'il est suisse ou titulaire d'un permis C => ordinaire
-						modeImposition = ModeImposition.ORDINAIRE;
-					}
-					else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-						modeImposition = getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, habitant);
-					}
-					else {
-						// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
-						modeImposition = null;
-					}
-					rattrapageDepartHSInconnu = null;
-				}
-				else {
-					if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-						if (getService().isSuisseOuPermisC(habitant, dateArriveeEffective)) {
-							modeImposition = ModeImposition.ORDINAIRE;
-						}
-						else {
-							// Si l'individu est déjà présent en for secondaire, il passe mixte_1, sinon, il passe source
-							final List<ForFiscal> fors = habitant.getForsFiscauxValidAt(dateArriveeEffective);
-							boolean hasForSecondaire = false;
-							for (ForFiscal ff : fors) {
-								// si on trouve au moins un for secondaire, alors mixte_1
-								if (ff instanceof ForFiscalSecondaire) {
-									hasForSecondaire = true;
-									break;
-								}
-							}
-							modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, habitant);
-						}
-						rattrapageDepartHSInconnu = null;
-					}
-					else {
-						// déménagement vaudois d'après la provenance
-
-						// [SIFISC-5451] détermination du for référent (peut ne pas être le "for fiscal" si celui ci est HS pays inconnu
-						// alors que la provenance indiquée est vaudoise et que cela ne fait pas trop longtemps qu'on a quitté le canton)
-						final ForFiscalPrincipalPP forPrecedent = habitant.getForFiscalPrincipalAt(forFiscal.getDateDebut().getOneDayBefore());
-						final ForFiscalPrincipalPP forReferent;
-						if (forPrecedent != null
-								&& forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS
-								&& forFiscal.getNumeroOfsAutoriteFiscale() == ServiceInfrastructureService.noPaysInconnu
-								&& forPrecedent.getMotifFermeture() == MotifFor.DEPART_HS
-								&& forPrecedent.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-
-							// nous sommes clairement dans le cas d'un départ HS pays inconnu erroné (au moment du traitement du départ, nous avions sans doute trouvé une destination vide..)
-
-							// il reste cependant quelques trucs à vérifier :
-							// - la commune d'avant le départ HS
-							// - les dates
-							final Localisation localisationPrecedente = nouvelleAdresse.getLocalisationPrecedente();
-							if (localisationPrecedente == null
-									|| localisationPrecedente.getType() != LocalisationType.CANTON_VD
-									|| !forPrecedent.getNumeroOfsAutoriteFiscale().equals(localisationPrecedente.getNoOfs())) {
-
-								// problème -> la commune n'est pas la même
-								throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de communes vaudoises différentes.");
-							}
-							else if (!isDifferenceTwoYearsOrLess(forFiscal.getDateDebut(), dateArriveeEffective)) {
-								// problème -> ça fait trop longtemps !
-								throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de la date de départ, trop vieille.");
-							}
-
-							forReferent = forPrecedent;
-							rattrapageDepartHSInconnu = new RattrapageDepartHSInconnu(forPrecedent, forFiscal);
-						}
-						else {
-							forReferent = forFiscal;
-							rattrapageDepartHSInconnu = null;
-						}
-
-						// récupération du mode d'imposition sur le for référent
-						if (forReferent.getModeImposition() == ModeImposition.SOURCE) {
-							modeImposition = getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, habitant);
-						}
-						else {
-							modeImposition = forReferent.getModeImposition();
-						}
-					}
-				}
-			}
-			catch (TiersException e) {
-				throw new EvenementCivilException(e.getMessage(), e);
-			}
+			final ModeImpositionDetermination determination = determineModeImposition(habitant, dateArriveeEffective, motifOuverture, forFiscal);
 
 			// détermination de la date d'ouverture
+			//noinspection UnnecessaryLocalVariable
 			final RegDate dateOuverture = dateArriveeEffective; // [UNIREG-2212] La date d'ouverture est toujours la date d'événement
 
-			if (modeImposition != null) {
+			if (determination.getModeImposition() != null) {
 				if (motifOuverture == null) {
 					motifOuverture = MotifFor.ARRIVEE_HS;
 					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.");
 				}
 				if (forFiscal == null) {
-					Audit.info(getNumeroEvenement(), "Création d'un for fiscal ordinaire avec mode d'imposition [" + modeImposition + ']');
-					openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition);
+					Audit.info(getNumeroEvenement(), "Création d'un for fiscal ordinaire avec mode d'imposition [" + determination.getModeImposition() + ']');
+					openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determination.getModeImposition());
 				}
-				else if (rattrapageDepartHSInconnu != null) {
+				else if (determination.getRattrapageDepartHSInconnu() != null) {
 					Audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
-					openForFiscalPrincipalAvecRattrapage(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, modeImposition, rattrapageDepartHSInconnu);
+					openForFiscalPrincipalAvecRattrapage(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, determination.getModeImposition(), determination.getRattrapageDepartHSInconnu());
 				}
 				else {
-					Audit.info(getNumeroEvenement(), "Mise-à-jour du fors fiscal avec mode d'imposition [" + modeImposition + ']');
-					updateForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition);
+					Audit.info(getNumeroEvenement(), "Mise-à-jour du fors fiscal avec mode d'imposition [" + determination.getModeImposition() + ']');
+					updateForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determination.getModeImposition());
 				}
 			}
 		}
+	}
+
+	/**
+	 * Détermine le mode d'imposition d'un personne physique en cas d'arrivée dans le canton
+	 *
+	 * @param pp                   la personne physique en question
+	 * @param dateArriveeEffective la date effective d'arrivée
+	 * @param motifOuverture       le motif de l'arrivée
+	 * @param forFiscal            le for principal courant
+	 * @return le mode d'imposition déterminé
+	 */
+	@NotNull
+	private ModeImpositionDetermination determineModeImposition(@NotNull PersonnePhysique pp,
+	                                                            @NotNull RegDate dateArriveeEffective,
+	                                                            @Nullable MotifFor motifOuverture,
+	                                                            @Nullable ForFiscalPrincipalPP forFiscal) throws EvenementCivilException {
+
+		return determineModeImposition(pp, dateArriveeEffective, motifOuverture, forFiscal, Collections.singletonList(pp));
 	}
 
 	private void openForFiscalPrincipalAvecRattrapage(ContribuableImpositionPersonnesPhysiques ctb,
@@ -651,145 +725,83 @@ public class ArriveePrincipale extends Arrivee {
 		final RegDate dateEvenement = getDateArriveeEffective(infosFor.getSecond());
 		final Commune commune = infosFor.getFirst();
 
-		try {
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final ForFiscalPrincipalPP ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipalPP ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
+		final ForFiscalPrincipalPP ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
+		final int numeroOfsNouveau = commune.getNoOFS();
 
-			final PersonnePhysique principal = ensemble.getPrincipal();
-			final PersonnePhysique conjoint = ensemble.getConjoint();
-			final ForFiscalPrincipalPP ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
-			final ForFiscalPrincipalPP ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
-			final ForFiscalPrincipalPP ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
-			final int numeroOfsNouveau = commune.getNoOFS();
+		// pour un couple, le for principal est toujours sur le ménage commun
+		if (ffpHabitantPrincipal != null) {
+			throw new EvenementCivilException(String.format("Le contribuable principal [%s] du ménage [%s] possède un for fiscal principal individuel",
+					FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()),
+					FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
+		}
+		if (ffpHabitantConjoint != null) {
+			throw new EvenementCivilException(String.format("Le conjoint [%s] du ménage [%s] possède un for fiscal principal individuel",
+					FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()),
+					FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
+		}
 
-			// pour un couple, le for principal est toujours sur le ménage commun
-			if (ffpHabitantPrincipal != null) {
-				throw new EvenementCivilException(String.format("Le contribuable principal [%s] du ménage [%s] possède un for fiscal principal individuel",
-						FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()),
-						FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
+		MotifFor motifOuverture = getMotifOuvertureFor();
+
+		if (ffpMenage != null && ffpMenage.getDateFin() == null && ffpMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			// SIFISC-26927 dans le cas d'une arrivée HS/HC d'un conjoint sur un ménage qui possède déjà un for fiscal actif sur une commune vaudoise,
+			//              le motif d'ouverture doit être DEMENAGEMENT_VD (et non pas ARRIVEE_HS ou ARRIVEE_HC)
+			motifOuverture = MotifFor.DEMENAGEMENT_VD;
+		}
+
+		final ModeImpositionDetermination determination = determineModeImposition(ensemble, dateEvenement, motifOuverture, ffpMenage);
+
+		// détermination de la date d'ouverture
+		//noinspection UnnecessaryLocalVariable
+		final RegDate dateOuvertureFor = dateEvenement; // [UNIREG-2212] La date d'ouverture est toujours la date d'événement
+
+		if (determination.getModeImposition() != null) {
+			if (motifOuverture == null) {
+				motifOuverture = MotifFor.ARRIVEE_HS;
+				warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.");
 			}
-			if (ffpHabitantConjoint != null) {
-				throw new EvenementCivilException(String.format("Le conjoint [%s] du ménage [%s] possède un for fiscal principal individuel",
-						FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()),
-						FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
-			}
-
-			MotifFor motifOuverture = getMotifOuvertureFor();
-
-			if (ffpMenage != null && ffpMenage.getDateFin() == null && ffpMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				// SIFISC-26927 dans le cas d'une arrivée HS/HC d'un conjoint sur un ménage qui possède déjà un for fiscal actif sur une commune vaudoise,
-				//              le motif d'ouverture doit être DEMENAGEMENT_VD (et non pas ARRIVEE_HS ou ARRIVEE_HC)
-				motifOuverture = MotifFor.DEMENAGEMENT_VD;
-			}
-
-			// détermination du mode d'imposition
-			final ModeImposition modeImposition;
-			final RattrapageDepartHSInconnu rattrapageDepartHSInconnu;
 			if (ffpMenage == null) {
-				if (getService().isSuisseOuPermisC(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisC(conjoint, dateEvenement)))) {
-					modeImposition = ModeImposition.ORDINAIRE;
-				}
-				else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
-					modeImposition = getSourceOuMixteSuivantAgeRetraite(dateEvenement, principal, conjoint);
-				}
-				else {
-					// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
-					modeImposition = null;
-				}
-				rattrapageDepartHSInconnu = null;
+				Audit.info(getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + determination.getModeImposition() + ']');
+				openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determination.getModeImposition());
+			}
+			else if (determination.getRattrapageDepartHSInconnu() != null) {
+				Audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
+				openForFiscalPrincipalAvecRattrapage(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, determination.getModeImposition(), determination.getRattrapageDepartHSInconnu());
 			}
 			else {
-				if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-					if (getService().isSuisseOuPermisC(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisC(conjoint, dateEvenement)))) {
-						modeImposition = ModeImposition.ORDINAIRE;
-					}
-					else {
-						// Si le couple est déjà présent en for secondaire, il passe mixte_1, sinon, il passe source
-						final List<ForFiscal> fors = menageCommun.getForsFiscauxValidAt(dateEvenement);
-						boolean hasForSecondaire = false;
-						for (ForFiscal ff : fors) {
-							// si on trouve au moins un for secondaire, alors mixte_1
-							if (ff instanceof ForFiscalSecondaire) {
-								hasForSecondaire = true;
-								break;
-							}
-						}
-						modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : getSourceOuMixteSuivantAgeRetraite(dateEvenement, principal, conjoint);
-					}
-					rattrapageDepartHSInconnu = null;
-				}
-				else {
-					// déménagement vaudois d'après la provenance
-
-					// [SIFISC-5451] détermination du for référent (peut ne pas être le "for fiscal" si celui ci est HS pays inconnu
-					// alors que la provenance indiquée est vaudoise et que cela ne fait pas trop longtemps qu'on a quitté le canton)
-					final ForFiscalPrincipalPP forPrecedent = menageCommun.getForFiscalPrincipalAt(ffpMenage.getDateDebut().getOneDayBefore());
-					final ForFiscalPrincipalPP forReferent;
-					if (forPrecedent != null
-							&& ffpMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS
-							&& ffpMenage.getNumeroOfsAutoriteFiscale() == ServiceInfrastructureService.noPaysInconnu
-							&& forPrecedent.getMotifFermeture() == MotifFor.DEPART_HS
-							&& forPrecedent.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-
-						// nous sommes clairement dans le cas d'un départ HS pays inconnu erroné (au moment du traitement du départ, nous avions sans doute trouvé une destination vide..)
-
-						// il reste cependant quelques trucs à vérifier :
-						// - la commune d'avant le départ HS
-						// - les dates
-						final Localisation localisationPrecedente = nouvelleAdresse.getLocalisationPrecedente();
-						if (localisationPrecedente == null
-								|| localisationPrecedente.getType() != LocalisationType.CANTON_VD
-								|| !forPrecedent.getNumeroOfsAutoriteFiscale().equals(localisationPrecedente.getNoOfs())) {
-
-							// problème -> la commune n'est pas la même
-							throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de communes vaudoises différentes.");
-						}
-						else if (!isDifferenceTwoYearsOrLess(ffpMenage.getDateDebut(), dateEvenement)) {
-							// problème -> ça fait trop longtemps !
-							throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de la date de départ, trop vieille.");
-						}
-
-						forReferent = forPrecedent;
-						rattrapageDepartHSInconnu = new RattrapageDepartHSInconnu(forPrecedent, ffpMenage);
-					}
-					else {
-						forReferent = ffpMenage;
-						rattrapageDepartHSInconnu = null;
-					}
-
-					// récupération du mode d'imposition sur le for référent
-					if (forReferent.getModeImposition() == ModeImposition.SOURCE) {
-						modeImposition = getSourceOuMixteSuivantAgeRetraite(dateEvenement, principal, conjoint);
-					}
-					else {
-						modeImposition = forReferent.getModeImposition();
-					}
-				}
-			}
-
-			// détermination de la date d'ouverture
-			final RegDate dateOuvertureFor = dateEvenement; // [UNIREG-2212] La date d'ouverture est toujours la date d'événement
-
-			if (modeImposition != null) {
-				if (motifOuverture == null) {
-					motifOuverture = MotifFor.ARRIVEE_HS;
-					warnings.addWarning("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.");
-				}
-				if (ffpMenage == null) {
-					Audit.info(getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
-					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition);
-				}
-				if (rattrapageDepartHSInconnu != null) {
-					Audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
-					openForFiscalPrincipalAvecRattrapage(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, modeImposition, rattrapageDepartHSInconnu);
-				}
-				else {
-					Audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + ']');
-					updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition);
-				}
+				Audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + determination.getModeImposition() + ']');
+				updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determination.getModeImposition());
 			}
 		}
-		catch (TiersException e) {
-			throw new EvenementCivilException(e.getMessage(), e);
-		}
+	}
+
+	/**
+	 * Détermine le mode d'imposition d'un ménage commun en cas d'arrivée dans le canton
+	 *
+	 * @param ensemble       l'ensemble tiers-couple du ménage commun
+	 * @param dateEvenement  la date effective d'arrivée
+	 * @param motifOuverture le motif de l'arrivée
+	 * @param ffpMenage      le for principal courant
+	 * @return le mode d'imposition déterminé
+	 */
+	private ModeImpositionDetermination determineModeImposition(@NotNull EnsembleTiersCouple ensemble,
+	                                                            @NotNull RegDate dateEvenement,
+	                                                            @Nullable MotifFor motifOuverture,
+	                                                            @Nullable ForFiscalPrincipalPP ffpMenage) throws EvenementCivilException {
+
+		final MenageCommun menage = ensemble.getMenage();
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+
+		// la liste des membres connus
+		final List<PersonnePhysique> members = Stream.of(principal, conjoint)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+
+		return determineModeImposition(menage, dateEvenement, motifOuverture, ffpMenage, members);
 	}
 
 	/**
@@ -921,8 +933,6 @@ public class ArriveePrincipale extends Arrivee {
 	 * @param date date de référence
 	 * @param pp personne physique concernée
 	 * @return commune de l'adresse de domicile, à la date donnée, de la personne physique donnée
-	 * @throws DonneesCivilesException
-	 * @throws ServiceInfrastructureException
 	 */
 	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, ServiceInfrastructureException {
 		final Commune commune;
