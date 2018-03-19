@@ -47,27 +47,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.unireg.interfaces.civil.data.Origine;
-import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.Capital;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseMandataire;
@@ -95,6 +74,7 @@ import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.common.LiteralStringHelper;
 import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.common.NationaliteHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.NumeroIDEHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.Rerangeable;
@@ -120,8 +100,28 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Origine;
+import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.organisation.data.Capital;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -1111,36 +1111,40 @@ public class TiersServiceImpl implements TiersService {
      * @throws TiersException si la nationalite ne peut être déterminée
      */
     private boolean isHabitantEtrangerAvecOuSansPermisC(PersonnePhysique habitant, boolean avecPermisC, RegDate date) throws TiersException {
-
-        /* Récupération de l'individu avec ses permis, ses nationalités et son origine */
-        final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date,
-                AttributeIndividu.NATIONALITES, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
-
-        // A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ?
-	    final Nationalite nationalite = NationaliteHelper.refAt(individu.getNationalites(), date);
-	    boolean nationaliteSuisse = false;
-	    boolean nationalitesEtrangeres = false;
-	    if (nationalite != null) {
-	        final int noOFS = nationalite.getPays().getNoOFS();
-	        nationaliteSuisse = noOFS == ServiceInfrastructureService.noOfsSuisse;
-	        nationalitesEtrangeres = noOFS != ServiceInfrastructureService.noPaysInconnu;
-	    }
-
-        /* Nationalité suisse : il est suisse */
-        if (nationaliteSuisse) {
-            return false;
-        }
-
-        /* Nationalites etrangeres : il est étranger on vérifie ses permis suisses */
-        if (nationalitesEtrangeres) {
-            return avecPermisC ? isAvecPermisC(individu, date) : isSansPermisC(individu, false, date);
-        }
-
-        /* Nationalité inconnue, on regarde les permis en cours (il doit forcément en avoir un) */
-        return avecPermisC ? isAvecPermisC(individu, date) : isSansPermisC(individu, true, date);
+	    return isIndividuEtrangerAvecOuSansPermisC(habitant.getNumeroIndividu(), avecPermisC, date);
     }
 
-    /**
+	private boolean isIndividuEtrangerAvecOuSansPermisC(long numeroIndividu, boolean avecPermisC, RegDate date) throws TiersException {
+
+		// Récupération de l'individu avec ses permis, ses nationalités et son origine
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, date,
+		                                                          AttributeIndividu.NATIONALITES, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
+
+		// A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ?
+		final Nationalite nationalite = NationaliteHelper.refAt(individu.getNationalites(), date);
+		boolean nationaliteSuisse = false;
+		boolean nationalitesEtrangeres = false;
+		if (nationalite != null) {
+		    final int noOFS = nationalite.getPays().getNoOFS();
+		    nationaliteSuisse = noOFS == ServiceInfrastructureService.noOfsSuisse;
+		    nationalitesEtrangeres = noOFS != ServiceInfrastructureService.noPaysInconnu;
+		}
+
+		// Nationalité suisse : il est suisse
+		if (nationaliteSuisse) {
+		    return false;
+		}
+
+		// Nationalites etrangeres : il est étranger on vérifie ses permis suisses
+		if (nationalitesEtrangeres) {
+		    return avecPermisC ? isAvecPermisC(individu, date) : isSansPermisC(individu, false, date);
+		}
+
+		// Nationalité inconnue, on regarde les permis en cours (il doit forcément en avoir un)
+		return avecPermisC ? isAvecPermisC(individu, date) : isSansPermisC(individu, true, date);
+	}
+
+	/**
      * L'individu est-t-il sans permis C en cours de validité ?
      *
      * @param individu        l'individu
@@ -1207,15 +1211,17 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-	/**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isSuisseOuPermisC(PersonnePhysique pp, RegDate dateEvenement) throws TiersException {
         return !isEtrangerSansPermisC(pp, dateEvenement);
     }
 
-    /**
+	@Override
+	public boolean isSuisseOuPermisC(long numeroIndividu, RegDate date) throws TiersException {
+		return !isIndividuEtrangerAvecOuSansPermisC(numeroIndividu, false /* sans permis */, date);
+	}
+
+	/**
      * {@inheritDoc}
      */
     @Override

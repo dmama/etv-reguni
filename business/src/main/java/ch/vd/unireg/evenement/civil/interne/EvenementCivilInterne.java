@@ -12,8 +12,6 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
@@ -22,6 +20,8 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.DecisionAci;
@@ -464,8 +464,7 @@ public abstract class EvenementCivilInterne {
 	}
 
 	/**
-	 * Met-à-jour (= ferme l'ancien et ouvre un nouveau) le for fiscal principal d'un contribuable lors d'un changement de commune. Aucun changement n'est enregistré si la nouvelle commune n'est pas
-	 * différente de la commune actuelle.
+	 * Met-à-jour (= ferme l'ancien et ouvre un nouveau, ou annule et recrée selon les cas) le for fiscal principal d'un contribuable en fonction des valeurs spécifiées. Aucun changement n'est enregistré si les valeurs spécifiées sont identiques à celles du for fiscal principal courant.
 	 *
 	 * @param contribuable             le contribuable en question.
 	 * @param dateChangement           la date de début de validité du nouveau for.
@@ -476,15 +475,21 @@ public abstract class EvenementCivilInterne {
 	 * @param modeImposition           le mode d'imposition du nouveau for. Peut être <b>null</b> auquel cas le mode d'imposition de l'ancien for est utilisé.
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal updateForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateChangement, TypeAutoriteFiscale typeAutorite, int numeroOfsAutoriteFiscale,
-	                                                      @Nullable MotifRattachement motifRattachement, MotifFor motifFermetureOuverture, @Nullable ModeImposition modeImposition) {
+	protected ForFiscalPrincipal updateForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable,
+	                                                      final RegDate dateChangement,
+	                                                      TypeAutoriteFiscale typeAutorite,
+	                                                      int numeroOfsAutoriteFiscale,
+	                                                      @Nullable MotifRattachement motifRattachement,
+	                                                      MotifFor motifFermetureOuverture,
+	                                                      @Nullable ModeImposition modeImposition) {
 
 		ForFiscalPrincipalPP forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
 		Assert.notNull(forFiscalPrincipal);
 		final Integer numeroOfsActuel = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
 
 		// On ne ferme et ouvre les fors que si nécessaire
-		if (numeroOfsActuel == null || !numeroOfsActuel.equals(numeroOfsAutoriteFiscale) || typeAutorite != forFiscalPrincipal.getTypeAutoriteFiscale()) {
+		if (numeroOfsActuel == null || !numeroOfsActuel.equals(numeroOfsAutoriteFiscale) || typeAutorite != forFiscalPrincipal.getTypeAutoriteFiscale() ||
+				(modeImposition != null && modeImposition != forFiscalPrincipal.getModeImposition())) {
 
 			// on va fermer ou annuler le for principal courant
 			if (dateChangement == forFiscalPrincipal.getDateDebut()) {

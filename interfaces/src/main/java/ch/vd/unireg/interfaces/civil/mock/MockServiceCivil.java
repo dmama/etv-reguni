@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -45,7 +46,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
@@ -278,7 +278,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une rue).
 	 */
-	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, @Nullable RegDate debutValidite, @Nullable RegDate finValidite) {
+	public MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, @Nullable RegDate debutValidite, @Nullable RegDate finValidite) {
 		final MockAdresse adresse = new MockAdresse(type, rue, casePostale, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
@@ -503,7 +503,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		}
 	}
 
-	protected Permis addPermis(MockIndividu individu, TypePermis type, RegDate debut, @Nullable RegDate fin, boolean permisAnnule) {
+	public Permis addPermis(MockIndividu individu, TypePermis type, RegDate debut, @Nullable RegDate fin, boolean permisAnnule) {
 		final MockPermis permis = new MockPermis();
 		permis.setTypePermis(type);
 		permis.setDateDebutValidite(debut);

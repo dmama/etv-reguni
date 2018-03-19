@@ -13,18 +13,11 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.linkedentity.LinkedEntity;
@@ -33,6 +26,13 @@ import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
@@ -496,6 +496,16 @@ public interface TiersService {
      * @throws TiersException si la nationalite ne peut être déterminée
      */
     boolean isSuisseOuPermisC(PersonnePhysique pp, RegDate dateEvenement) throws TiersException;
+
+	/**
+	 * Détermine si un individu est suisse ou possède un permis C
+	 *
+	 * @param numeroIndividu un numéro d'un indiviu
+	 * @param date           la date à laquelle on désire connaître cette information
+	 * @return <b>true</b> si la personne physique possède la nationalité suisse ou si elle possède un permis C; <b>false</b> autrement.
+	 * @throws TiersException si la nationalite ne peut être déterminée
+	 */
+	boolean isSuisseOuPermisC(long numeroIndividu, RegDate date) throws TiersException;
 
     /**
      * Détermine si un individu est suisse.

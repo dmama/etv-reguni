@@ -38,7 +38,6 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.ParametreAppService;
-import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
@@ -486,7 +485,7 @@ public class ArriveePrincipale extends Arrivee {
 		final ModeImposition modeImposition;
 		final RattrapageDepartHSInconnu rattrapageDepartHSInconnu;
 		if (forPrincipal == null) {
-			if (members.stream().anyMatch(m -> isSuisseOuPermisC(m, dateArriveeEffective))) {
+			if (members.stream().anyMatch(m -> isSuisseOuPermisC(m.getNumeroIndividu(), dateArriveeEffective))) {
 				// un membre au moins est suisse ou titulaire d'un permis C => ordinaire
 				modeImposition = ModeImposition.ORDINAIRE;
 			}
@@ -501,7 +500,7 @@ public class ArriveePrincipale extends Arrivee {
 		}
 		else {
 			if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-				if (members.stream().anyMatch(m -> isSuisseOuPermisC(m, dateArriveeEffective))) {
+				if (members.stream().anyMatch(m -> isSuisseOuPermisC(m.getNumeroIndividu(), dateArriveeEffective))) {
 					modeImposition = ModeImposition.ORDINAIRE;
 				}
 				else {
@@ -571,9 +570,9 @@ public class ArriveePrincipale extends Arrivee {
 		return new ModeImpositionDetermination(modeImposition, rattrapageDepartHSInconnu);
 	}
 
-	private boolean isSuisseOuPermisC(PersonnePhysique principal, RegDate dateEvenement) {
+	private boolean isSuisseOuPermisC(long numeroIndividu, RegDate dateEvenement) {
 		try {
-			return getService().isSuisseOuPermisC(principal, dateEvenement);
+			return getService().isSuisseOuPermisC(numeroIndividu, dateEvenement);
 		}
 		catch (TiersException e) {
 			throw new RuntimeException(e);
@@ -749,7 +748,12 @@ public class ArriveePrincipale extends Arrivee {
 		if (ffpMenage != null && ffpMenage.getDateFin() == null && ffpMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			// SIFISC-26927 dans le cas d'une arrivée HS/HC d'un conjoint sur un ménage qui possède déjà un for fiscal actif sur une commune vaudoise,
 			//              le motif d'ouverture doit être DEMENAGEMENT_VD (et non pas ARRIVEE_HS ou ARRIVEE_HC)
-			motifOuverture = MotifFor.DEMENAGEMENT_VD;
+			// SIFISC-28216 mais si l'arrivée correspond à la date d'ouverture du for existant, on considère qu'on traite l'événement d'arrivée *simultanée*
+			//              du conjoint et à ce moment-là, on veut garder le motif d'ouverture normal (ARRIVEE_HS ou ARRIVEE_HC) pour calculer correctement
+			//              le mode d'imposition
+			if (ffpMenage.getDateDebut() != dateEvenement) {
+				motifOuverture = MotifFor.DEMENAGEMENT_VD;
+			}
 		}
 
 		final ModeImpositionDetermination determination = determineModeImposition(ensemble, dateEvenement, motifOuverture, ffpMenage);
@@ -966,13 +970,58 @@ public class ArriveePrincipale extends Arrivee {
 		return isRedondant;
 	}
 
-	private boolean isForDejaBon(Contribuable ctb, RegDate dateArrivee, boolean beginDateMustMatch) {
-		final ForFiscalPrincipal ffp = ctb.getForFiscalPrincipalAt(dateArrivee);
+	private boolean isForDejaBon(@NotNull EnsembleTiersCouple ensemble, @NotNull RegDate dateArrivee, boolean beginDateMustMatch) {
+
+		final ForFiscalPrincipalPP ffp = ensemble.getMenage().getForFiscalPrincipalAt(dateArrivee);
+		if (ffp == null) {
+			// pas de bras, pas de chocolat
+			return false;
+		}
+
 		final MotifFor motifAttendu = getMotifOuvertureFor();
 		final int ofsCommuneArrivee = nouvelleCommune.getNoOFS();
-		return ffp != null && (!beginDateMustMatch || ffp.getDateDebut() == dateArrivee) && motifAttendu == ffp.getMotifOuverture()
-				&& ofsCommuneArrivee == ffp.getNumeroOfsAutoriteFiscale() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		final ModeImposition modeImposition;
+		try {
+			modeImposition = determineModeImposition(ensemble, dateArrivee, motifAttendu, ffp).getModeImposition();
+		}
+		catch (EvenementCivilException e) {
+			// on n'arrive pas déterminer le mode d'imposition, inutile d'en faire plus
+			return false;
+		}
+
+		return (!beginDateMustMatch || ffp.getDateDebut() == dateArrivee) &&
+				ffp.getMotifOuverture() == motifAttendu &&
+				ffp.getNumeroOfsAutoriteFiscale() == ofsCommuneArrivee &&
+				ffp.getModeImposition() == modeImposition &&    // SIFISC-28216
+				ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
+
+	private boolean isForDejaBon(@NotNull PersonnePhysique pp, @NotNull RegDate dateArrivee, boolean beginDateMustMatch) {
+
+		final ForFiscalPrincipalPP ffp = pp.getForFiscalPrincipalAt(dateArrivee);
+		if (ffp == null) {
+			// pas de bras, pas de chocolat
+			return false;
+		}
+
+		final MotifFor motifAttendu = getMotifOuvertureFor();
+		final int ofsCommuneArrivee = nouvelleCommune.getNoOFS();
+		final ModeImposition modeImposition;
+		try {
+			modeImposition = determineModeImposition(pp, dateArrivee, motifAttendu, ffp).getModeImposition();
+		}
+		catch (EvenementCivilException e) {
+			// on n'arrive pas déterminer le mode d'imposition, inutile d'en faire plus
+			return false;
+		}
+
+		return (!beginDateMustMatch || ffp.getDateDebut() == dateArrivee) &&
+				ffp.getMotifOuverture() == motifAttendu &&
+				ffp.getNumeroOfsAutoriteFiscale() == ofsCommuneArrivee &&
+				ffp.getModeImposition() == modeImposition &&    // SIFISC-28216
+				ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+	}
+
 	@Override
 	protected boolean isArriveeRedondanteAnterieurPourIndividuEnMenage(){
 		boolean isRedondant = getPrincipalPP() != null;
@@ -1049,7 +1098,7 @@ public class ArriveePrincipale extends Arrivee {
 		if (isRedondant) {
 			final RegDate dateArrivee = getDateArriveeEffective(getDate());
 			final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(getPrincipalPP(), dateArrivee);
-			isRedondant = (coupleExistant != null && isForDejaBon(coupleExistant.getMenage(), dateArrivee, false));
+			isRedondant = (coupleExistant != null && isForDejaBon(coupleExistant, dateArrivee, false));
 			if (isRedondant) {
 				// reste le conjoint à vérifier
 				final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), dateArrivee);
