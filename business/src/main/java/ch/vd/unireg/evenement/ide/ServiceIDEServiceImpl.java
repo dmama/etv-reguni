@@ -13,6 +13,16 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdressesFiscales;
+import ch.vd.unireg.adresse.AdressesFiscalesHisto;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
@@ -30,16 +40,6 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
-import ch.vd.unireg.adresse.AdresseException;
-import ch.vd.unireg.adresse.AdresseGenerique;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.adresse.AdressesFiscales;
-import ch.vd.unireg.adresse.AdressesFiscalesHisto;
-import ch.vd.unireg.audit.Audit;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.tiers.Contribuable;
@@ -265,7 +265,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final AnnonceIDEEnvoyee derniereAnnonceEmise;
 		final ReferenceAnnonceIDE derniereReferenceAnnonceIDE = referenceAnnonceIDEDAO.getLastReferenceAnnonceIDE(etablissement.getNumero());
 		if (derniereReferenceAnnonceIDE != null) {
-			derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(derniereReferenceAnnonceIDE.getId(), null);
+			derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(derniereReferenceAnnonceIDE.getId());
 		}
 		else {
 			derniereAnnonceEmise = null;

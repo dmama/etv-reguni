@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
@@ -18,7 +19,6 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationImpl;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -81,9 +81,9 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 
 	@Nullable
 	@Override
-	public AnnonceIDE getAnnonceIDE(Long numero, String userId) {
+	public AnnonceIDE getAnnonceIDE(long numero) {
 		assertTargetNotNull();
-		return service.getAnnonceIDE(numero, userId);
+		return service.getAnnonceIDE(numero);
 	}
 
 	@NotNull

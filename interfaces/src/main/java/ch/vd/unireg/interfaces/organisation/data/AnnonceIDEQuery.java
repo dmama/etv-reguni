@@ -34,6 +34,13 @@ public class AnnonceIDEQuery implements Serializable {
 
 	private Long tiersId;
 
+	public AnnonceIDEQuery() {
+	}
+
+	public AnnonceIDEQuery(long noticeId) {
+		this.noticeId = noticeId;
+	}
+
 	public Long getNoticeId() {
 		return this.noticeId;
 	}

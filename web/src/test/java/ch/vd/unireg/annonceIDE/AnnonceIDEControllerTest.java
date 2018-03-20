@@ -25,6 +25,14 @@ import org.springframework.web.util.NestedServletException;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.MockMessageSource;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.pagination.ParamPagination;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationCriteria;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
@@ -36,14 +44,6 @@ import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.common.MockMessageSource;
-import ch.vd.unireg.common.ObjectNotFoundException;
-import ch.vd.unireg.common.pagination.ParamPagination;
-import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationCriteria;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.unireg.interfaces.service.mock.MockServiceOrganisationService;
 import ch.vd.unireg.tiers.TiersMapHelper;
 import ch.vd.unireg.type.TypeEvenementOrganisation;
@@ -167,7 +167,7 @@ public class AnnonceIDEControllerTest {
 		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
 			@Nullable
 			@Override
-			public AnnonceIDE getAnnonceIDE(Long numero, String userId) {
+			public AnnonceIDE getAnnonceIDE(long numero) {
 				return null;
 			}
 		};
@@ -201,7 +201,7 @@ public class AnnonceIDEControllerTest {
 		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
 			@Nullable
 			@Override
-			public AnnonceIDE getAnnonceIDE(Long numero, String userId) {
+			public AnnonceIDE getAnnonceIDE(long numero) {
 				final AnnonceIDEData.UtilisateurImpl testuser = new AnnonceIDEData.UtilisateurImpl("testuser", null);
 				final AnnonceIDE annonce = new AnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, testuser, TypeDeSite.ETABLISSEMENT_PRINCIPAL,
 				                                          new AnnonceIDEData.StatutImpl(StatutAnnonce.ACCEPTE_IDE, DateHelper.getDate(2000, 1, 3), null), SERVICE_UNIREG);

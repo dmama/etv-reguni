@@ -16,13 +16,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.StringsUtils;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -74,6 +67,13 @@ import ch.vd.unireg.evenement.organisation.interne.transformation.LiquidationStr
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.identification.contribuable.TooManyIdentificationPossibilitiesException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.metier.MetierServiceException;
@@ -259,7 +259,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				);
 			}
 
-			final AnnonceIDEEnvoyee annonceIDE = serviceOrganisationService.getAnnonceIDE(noAnnonceIDE, null);
+			final AnnonceIDEEnvoyee annonceIDE = serviceOrganisationService.getAnnonceIDE(noAnnonceIDE);
 			if (annonceIDE == null) {
 				throw new EvenementOrganisationException(
 						String.format(
