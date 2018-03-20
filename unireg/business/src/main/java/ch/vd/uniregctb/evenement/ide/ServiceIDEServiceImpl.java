@@ -265,7 +265,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final AnnonceIDEEnvoyee derniereAnnonceEmise;
 		final ReferenceAnnonceIDE derniereReferenceAnnonceIDE = referenceAnnonceIDEDAO.getLastReferenceAnnonceIDE(etablissement.getNumero());
 		if (derniereReferenceAnnonceIDE != null) {
-			derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(derniereReferenceAnnonceIDE.getId(), null);
+			derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(derniereReferenceAnnonceIDE.getId());
 		}
 		else {
 			derniereAnnonceEmise = null;

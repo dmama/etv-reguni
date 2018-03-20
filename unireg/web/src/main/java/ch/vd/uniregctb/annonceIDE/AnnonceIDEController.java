@@ -152,7 +152,7 @@ public class AnnonceIDEController {
 					Map<String, AnnonceIDE> map = new HashMap<>();
 					if (referencesAnnonceIDE != null && !referencesAnnonceIDE.isEmpty()) {
 						for (ReferenceAnnonceIDE ref : referencesAnnonceIDE) {
-							final AnnonceIDE annonceIDE = organisationService.getAnnonceIDE(ref.getId(), null);
+							final AnnonceIDE annonceIDE = organisationService.getAnnonceIDE(ref.getId());
 							if (annonceIDE != null) {
 								map.put(annonceIDE.getUniqueKey(), annonceIDE);
 							}
@@ -234,10 +234,10 @@ public class AnnonceIDEController {
 	 */
 	@SecurityCheck(rolesToCheck = {Role.SUIVI_ANNONCES_IDE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
-	public String visu(@RequestParam Long id, String userId, Model model) {
+	public String visu(@RequestParam Long id, Model model) {
 
 		// on effectue la recherche
-		final AnnonceIDEEnvoyee annonce = organisationService.getAnnonceIDE(id, userId);
+		final AnnonceIDEEnvoyee annonce = organisationService.getAnnonceIDE(id);
 		if (annonce == null) {
 			throw new ObjectNotFoundException("Aucune demande ne correspond à l'identifiant " + id);
 		}

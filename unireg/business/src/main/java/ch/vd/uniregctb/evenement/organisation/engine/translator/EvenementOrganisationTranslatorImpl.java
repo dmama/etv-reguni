@@ -259,7 +259,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				);
 			}
 
-			final AnnonceIDEEnvoyee annonceIDE = serviceOrganisationService.getAnnonceIDE(noAnnonceIDE, null);
+			final AnnonceIDEEnvoyee annonceIDE = serviceOrganisationService.getAnnonceIDE(noAnnonceIDE);
 			if (annonceIDE == null) {
 				throw new EvenementOrganisationException(
 						String.format(
