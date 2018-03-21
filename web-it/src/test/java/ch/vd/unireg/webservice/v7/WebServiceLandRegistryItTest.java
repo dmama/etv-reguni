@@ -36,6 +36,8 @@ import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
 import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementEncumbrance;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementMembership;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
 import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -104,6 +106,90 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 
 		final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noTiers, 264822986L, 264310664, landRight0);
+	}
+
+	/**
+	 * [IMM-795] Vérifie que les usufruits sont correctement exposés dans le WS, notamment en cas d'évolution de la composition de l'usufruit.
+	 */
+	@Test
+	public void testGetPPLandRightsWithUsufruct() throws Exception {
+		final int noTiers = 12345678;   // Charles de Noblebois
+
+		final Pair<String, Map<String, ?>> params = buildUriAndParams(noTiers, EnumSet.of(PartyPart.LAND_RIGHTS));
+		final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final Party party = resp.getBody();
+		assertNotNull(party);
+		assertEquals(NaturalPerson.class, party.getClass());
+
+		final NaturalPerson naturalPerson = (NaturalPerson) party;
+		assertEquals("de Noblebois", naturalPerson.getOfficialName());
+		assertEquals("Charles", naturalPerson.getFirstName());
+
+		final List<LandRight> landRights = naturalPerson.getLandRights();
+		assertEquals(2, landRights.size());
+
+		final UsufructRight usufruct0 = (UsufructRight) landRights.get(0);
+		{
+			// [IMM-795] la période de validité est adaptée en fonction de celle de l'appartenance du tiers à l'usufruit (20171017 -> 20161212)
+			assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2016, 12, 12), "Convention", null, usufruct0);
+			final List<RightHolder> rightHolders = usufruct0.getRightHolders();
+			assertEquals(2, rightHolders.size());
+			assertRightHolderParty(noTiers, rightHolders.get(0));
+			assertRightHolderNaturalPerson("Roland", "Proutch", null, rightHolders.get(1));
+			assertEquals(Collections.singletonList(264310664L), usufruct0.getImmovablePropertyIds());
+
+			final List<EasementMembership> memberships = usufruct0.getMemberships();
+			assertEquals(2, memberships.size());
+
+			final EasementMembership membership0 = memberships.get(0);
+			assertDate(RegDate.get(1985, 10, 10), membership0.getDateFrom());
+			assertDate(RegDate.get(2016, 12, 12), membership0.getDateTo());
+			assertNull(membership0.getCancellationDate());
+			assertRightHolderParty(noTiers, membership0.getRightHolder());
+
+			final EasementMembership membership1 = memberships.get(1);
+			assertDate(RegDate.get(1985, 10, 10), membership1.getDateFrom());
+			assertDate(RegDate.get(2017, 10, 17), membership1.getDateTo());
+			assertNull(membership1.getCancellationDate());
+			assertRightHolderNaturalPerson("Roland", "Proutch", null, membership1.getRightHolder());
+
+			final List<EasementEncumbrance> encumbrances = usufruct0.getEncumbrances();
+			assertEquals(1, encumbrances.size());
+			final EasementEncumbrance encumbrance0 = encumbrances.get(0);
+			assertDate(RegDate.get(1985, 10, 10), encumbrance0.getDateFrom());
+			assertDate(RegDate.get(2017, 10, 17), encumbrance0.getDateTo());
+			assertNull(encumbrance0.getCancellationDate());
+			assertEquals(264310664, encumbrance0.getImmovablePropertyId());
+		}
+
+		final HousingRight housingRight1 = (HousingRight) landRights.get(1);
+		{
+			assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, housingRight1);
+			final List<RightHolder> rightHolders = housingRight1.getRightHolders();
+			assertEquals(1, rightHolders.size());
+			assertRightHolderParty(noTiers, rightHolders.get(0));
+			assertEquals(Collections.singletonList(264310664L), housingRight1.getImmovablePropertyIds());
+
+			final List<EasementMembership> memberships = housingRight1.getMemberships();
+			assertEquals(1, memberships.size());
+
+			final EasementMembership membership0 = memberships.get(0);
+			assertDate(RegDate.get(1999, 8, 8), membership0.getDateFrom());
+			assertNull(membership0.getDateTo());
+			assertNull(membership0.getCancellationDate());
+			assertRightHolderParty(noTiers, membership0.getRightHolder());
+
+			final List<EasementEncumbrance> encumbrances = housingRight1.getEncumbrances();
+			assertEquals(1, encumbrances.size());
+			final EasementEncumbrance encumbrance0 = encumbrances.get(0);
+			assertDate(RegDate.get(1999, 8, 8), encumbrance0.getDateFrom());
+			assertNull(encumbrance0.getDateTo());
+			assertNull(encumbrance0.getCancellationDate());
+			assertEquals(264310664, encumbrance0.getImmovablePropertyId());
+		}
 	}
 
 	/**
@@ -408,18 +494,64 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 10035633, 264822986L, noImmo, (LandOwnershipRight) landRights.get(3));
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, null, "Berard Renée", null, 264822986L, (LandOwnershipRight) landRights.get(4));
 
-		assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, landRights.get(5));
-		final List<RightHolder> usufructHolders = ((UsufructRight) landRights.get(5)).getRightHolders();
-		assertEquals(2, usufructHolders.size());
-		assertRightHolderNaturalPerson("Charles", "de Noblebois", null, usufructHolders.get(0));
-		assertRightHolderNaturalPerson("Roland", "Proutch", null, usufructHolders.get(1));
+		final UsufructRight usufruct = (UsufructRight) landRights.get(5);
+		{
+			assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, usufruct);
+			final List<RightHolder> usufructHolders = usufruct.getRightHolders();
+			assertEquals(2, usufructHolders.size());
+			assertRightHolderParty(12345678, usufructHolders.get(0));
+			assertRightHolderNaturalPerson("Roland", "Proutch", null, usufructHolders.get(1));
+
+			final List<EasementMembership> memberships = usufruct.getMemberships();
+			assertEquals(2, memberships.size());
+
+			final EasementMembership membership0 = memberships.get(0);
+			assertDate(RegDate.get(1985, 10, 10), membership0.getDateFrom());
+			assertDate(RegDate.get(2016, 12, 12), membership0.getDateTo());
+			assertNull(membership0.getCancellationDate());
+			assertRightHolderParty(12345678, membership0.getRightHolder());
+
+			final EasementMembership membership1 = memberships.get(1);
+			assertDate(RegDate.get(1985, 10, 10), membership1.getDateFrom());
+			assertDate(RegDate.get(2017, 10, 17), membership1.getDateTo());
+			assertNull(membership1.getCancellationDate());
+			assertRightHolderNaturalPerson("Roland", "Proutch", null, membership1.getRightHolder());
+
+			final List<EasementEncumbrance> encumbrances = usufruct.getEncumbrances();
+			assertEquals(1, encumbrances.size());
+			final EasementEncumbrance encumbrance0 = encumbrances.get(0);
+			assertDate(RegDate.get(1985, 10, 10), encumbrance0.getDateFrom());
+			assertDate(RegDate.get(2017, 10, 17), encumbrance0.getDateTo());
+			assertNull(encumbrance0.getCancellationDate());
+			assertEquals(264310664, encumbrance0.getImmovablePropertyId());
+		}
 
 		assertLandOwnershipRightImmovableProp(RegDate.get(1996, 4, 16), null, "Constitution de PPE", null, OwnershipType.CONDOMINIUM_OWNERSHIP, 10, 1000, 357426402, noImmo, (LandOwnershipRight) landRights.get(6));
 
-		assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, landRights.get(7));
-		final List<RightHolder> housingRightHolders = ((HousingRight) landRights.get(7)).getRightHolders();
-		assertEquals(1, housingRightHolders.size());
-		assertRightHolderNaturalPerson("Charles", "de Noblebois", null, housingRightHolders.get(0));
+		final HousingRight housingRight = (HousingRight) landRights.get(7);
+		{
+			assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, landRights.get(7));
+			final List<RightHolder> housingRightHolders = housingRight.getRightHolders();
+			assertEquals(1, housingRightHolders.size());
+			assertRightHolderParty(12345678, housingRightHolders.get(0));
+
+			final List<EasementMembership> memberships = housingRight.getMemberships();
+			assertEquals(1, memberships.size());
+
+			final EasementMembership membership0 = memberships.get(0);
+			assertDate(RegDate.get(1999, 8, 8), membership0.getDateFrom());
+			assertNull(membership0.getDateTo());
+			assertNull(membership0.getCancellationDate());
+			assertRightHolderParty(12345678, membership0.getRightHolder());
+
+			final List<EasementEncumbrance> encumbrances = housingRight.getEncumbrances();
+			assertEquals(1, encumbrances.size());
+			final EasementEncumbrance encumbrance0 = encumbrances.get(0);
+			assertDate(RegDate.get(1999, 8, 8), encumbrance0.getDateFrom());
+			assertNull(encumbrance0.getDateTo());
+			assertNull(encumbrance0.getCancellationDate());
+			assertEquals(264310664, encumbrance0.getImmovablePropertyId());
+		}
 
 		// [SIFISC-23894] ce droit possède plusieurs raisons d'acquisition
 		final List<AcquisitionReason> reasons = landRight1.getAcquisitionReasons();
@@ -495,7 +627,7 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, landRights.get(5));
 		final List<RightHolder> usufructHolders = ((UsufructRight) landRights.get(5)).getRightHolders();
 		assertEquals(2, usufructHolders.size());
-		assertRightHolderNaturalPerson("Charles", "de Noblebois", null, usufructHolders.get(0));
+		assertRightHolderParty(12345678, usufructHolders.get(0));
 		assertRightHolderNaturalPerson("Roland", "Proutch", null, usufructHolders.get(1));
 
 		assertLandOwnershipRightImmovableProp(RegDate.get(1996, 4, 16), null, "Constitution de PPE", null, OwnershipType.CONDOMINIUM_OWNERSHIP, 10, 1000, 357426402, noImmo, (LandOwnershipRight) landRights.get(6));
@@ -503,7 +635,7 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, landRights.get(7));
 		final List<RightHolder> housingRightHolders = ((HousingRight) landRights.get(7)).getRightHolders();
 		assertEquals(1, housingRightHolders.size());
-		assertRightHolderNaturalPerson("Charles", "de Noblebois", null, housingRightHolders.get(0));
+		assertRightHolderParty(12345678, housingRightHolders.get(0));
 
 		// [SIFISC-23894] ce droit possède plusieurs raisons d'acquisition
 		final List<AcquisitionReason> reasons = landRight1.getAcquisitionReasons();

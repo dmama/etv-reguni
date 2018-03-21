@@ -14,7 +14,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.common.AnnulableHelper;
 
-public class ServitudeCombinator {
+public class ServitudeHelper {
 
 	/**
 	 * Met à plat les combinaisons bénéficiaire/immeuble d'une servitude donnée.
@@ -125,5 +125,31 @@ public class ServitudeCombinator {
 		}
 
 		return adapte;
+	}
+
+	/**
+	 * Adapte une servitude pour que son range métier corresponde au range spécifié.
+	 *
+	 * @param servitude   une servitude
+	 * @param targetRange un range cible
+	 * @return la servitude originelle si elle correspondait déjà au range ou une copie adaptée si les ranges étaient différents.
+	 */
+	@NotNull
+	public static ServitudeRF adapteServitude(@NotNull ServitudeRF servitude, @NotNull DateRange targetRange) {
+		if (DateRangeHelper.equals(servitude.getRangeMetier(), targetRange)) {
+			// validités identiques, pas besoin d'adapter
+			return servitude;
+		}
+		else {
+			// on adapte la durée de validité de la servitude (sur une copie)
+			final ServitudeRF clone = servitude.duplicate();
+			final DateRange intersection = DateRangeHelper.intersection(servitude.getRangeMetier(), targetRange);
+			if (intersection == null) {
+				throw new IllegalArgumentException("La plage de validité de la charge de servitude n'est pas compatible avec celle de la servitude.");
+			}
+			clone.setDateDebutMetier(intersection.getDateDebut());
+			clone.setDateFinMetier(intersection.getDateFin());
+			return clone;
+		}
 	}
 }

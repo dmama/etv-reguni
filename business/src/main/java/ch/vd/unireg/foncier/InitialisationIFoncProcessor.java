@@ -38,7 +38,7 @@ import ch.vd.unireg.registrefoncier.DroitVirtuelHeriteRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
-import ch.vd.unireg.registrefoncier.ServitudeCombinator;
+import ch.vd.unireg.registrefoncier.ServitudeHelper;
 import ch.vd.unireg.registrefoncier.ServitudeRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.tiers.Contribuable;
@@ -301,9 +301,9 @@ public class InitialisationIFoncProcessor {
 
 		// une servitude peut contenir plusieurs bénéficiaires et plusieurs immeubles -> on calcule toutes
 		// les combinaisons possibles et on insère une ligne par combinaison
-		final List<ServitudeRF> combinaisons = ServitudeCombinator.combinate(servitude,
-		                                                                     b -> b.isValidAt(rapport.dateReference),
-		                                                                     c -> c.isValidAt(rapport.dateReference));
+		final List<ServitudeRF> combinaisons = ServitudeHelper.combinate(servitude,
+	                                                                     b -> b.isValidAt(rapport.dateReference),
+	                                                                     c -> c.isValidAt(rapport.dateReference));
 		combinaisons.forEach(combinaison -> {
 			final AyantDroitRF ayantDroit = combinaison.getBenefices().iterator().next().getAyantDroit(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
 			final ImmeubleRF immeuble = combinaison.getCharges().iterator().next().getImmeuble(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison

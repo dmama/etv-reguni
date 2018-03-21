@@ -56,11 +56,11 @@ public class DroitRFDAOImpl extends BaseDAOImpl<DroitRF, Long> implements DroitR
 		queryProp.setParameter("ayantDroitId", ayantDroitId);
 
 		// les servitudes
-		final StringBuilder sqlServ = new StringBuilder();
-		sqlServ.append("SELECT DISTINCT bene.servitude FROM BeneficeServitudeRF bene");
-		sqlServ.append(" WHERE bene.ayantDroit.id = :ayantDroitId");
+		final String sqlServ = "SELECT DISTINCT bene.servitude " +
+				"FROM BeneficeServitudeRF bene " +
+				"WHERE bene.annulationDate is null AND bene.ayantDroit.id = :ayantDroitId";
 
-		final Query queryServ = getCurrentSession().createQuery(sqlServ.toString());
+		final Query queryServ = getCurrentSession().createQuery(sqlServ);
 		queryServ.setParameter("ayantDroitId", ayantDroitId);
 
 		return ListUtils.union(queryProp.list(), queryServ.list());

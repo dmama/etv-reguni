@@ -292,6 +292,64 @@
 			<null />
 		</row>
 		<row>
+			<value>PersonnePhysique</value>
+			<value>12345678</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>2008-01-01 00:00:00.0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>de Noblebois Charles</value>
+			<value>0</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<value>de Noblebois</value>
+			<null />
+			<null />
+			<null />
+			<value>Charles</value>
+			<null />
+			<value>Charles Edouard</value>
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
 			<value>Entreprise</value>                          <!-- TIERS_TYPE -->
 			<value>21550</value>                               <!-- NUMERO -->
 			<null />                                           <!-- ANNULATION_DATE -->
@@ -1246,29 +1304,92 @@
 		</row>
 	</table>
 	<table name="RF_SERVITUDE_AYANT_DROIT">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
 		<column>DROIT_ID</column>
 		<column>AYANT_DROIT_ID</column>
 		<row>
+			<value>1</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>19851010</value>
+			<value>20161212</value>
 			<value>265220714</value>
 			<value>265043585</value>
 		</row>
 		<row>
+			<value>2</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>19851010</value>
+			<value>20171017</value>
 			<value>265220714</value>
 			<value>265043586</value>
 		</row>
 		<row>
+			<value>3</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>19990808</value>
+			<null />
 			<value>265220715</value>
 			<value>265043585</value>
 		</row>
 	</table>
 	<table name="RF_SERVITUDE_IMMEUBLE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
 		<column>DROIT_ID</column>
 		<column>IMMEUBLE_ID</column>
 		<row>
+			<value>1</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>19851010</value>
+			<value>20171017</value>
 			<value>265220714</value>
 			<value>264310664</value>
 		</row>
 		<row>
+			<value>2</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>SQL-IMM-795</value>
+			<value>19990808</value>
+			<null />
 			<value>265220715</value>
 			<value>264310664</value>
 		</row>
@@ -1447,6 +1568,20 @@
 			<value>AUTO</value>
 			<value>21550</value>
 			<value>306862280</value>
+		</row>
+		<row>
+			<value>2222</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:55:03.571000</value>
+			<value>RapprocherTiersRFJob</value>
+			<value>2016-12-14 11:55:03.574000</value>
+			<value>RapprocherTiersRFJob</value>
+			<null />
+			<null />
+			<value>AUTO</value>
+			<value>12345678</value>
+			<value>265043585</value>
 		</row>
 	</table>
 	<table name="RF_MODELE_COMMUNAUTE">

@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
-import ch.vd.unireg.registrefoncier.CommunauteRFAppartenanceInfo;
 import ch.vd.unireg.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.unireg.registrefoncier.CommunauteRFPrincipalInfo;
 import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
@@ -20,7 +19,6 @@ import ch.vd.unireg.registrefoncier.DroitProprieteRF;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnerMembership;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
@@ -48,7 +46,7 @@ public abstract class CommunityOfOwnersBuilder {
 		community.setLandRight(buildLandRight(droitCommunaute, ctbIdProvider));
 		community.getLeaders().addAll(buildLeaders(membreInfo.getPrincipaux()));
 		// [SIFISC-28067] on expose l'historique de l'appartenance des membres de la communauté
-		community.getMemberships().addAll(buildMemberships(membreInfo.getMembresHisto()));
+		community.getMemberships().addAll(MembershipBuilder.buildCommunityOfOwnerMemberships(membreInfo.getMembresHisto()));
 		return community;
 	}
 
@@ -97,17 +95,6 @@ public abstract class CommunityOfOwnersBuilder {
 				                              (int) p.getCtbId(),
 				                              0,
 				                              null))
-				.collect(Collectors.toList());
-	}
-
-	@NotNull
-	private static List<CommunityOfOwnerMembership> buildMemberships(@NotNull List<CommunauteRFAppartenanceInfo> membresHisto) {
-		return membresHisto.stream()
-				.map(m -> new CommunityOfOwnerMembership(DataHelper.coreToXMLv2(m.getDateDebut()),
-				                                         DataHelper.coreToXMLv2(m.getDateFin()),
-				                                         DataHelper.coreToXMLv2(m.getAnnulationDate()),
-				                                         RightHolderBuilder.getRightHolder(m),
-				                                         null))
 				.collect(Collectors.toList());
 	}
 

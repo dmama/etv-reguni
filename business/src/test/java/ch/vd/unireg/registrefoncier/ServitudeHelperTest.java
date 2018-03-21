@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class ServitudeCombinatorTest {
+public class ServitudeHelperTest {
 
 	@Test
 	public void testServitudesAvecUnSeulImmeuble() throws Exception {
@@ -29,11 +29,11 @@ public class ServitudeCombinatorTest {
 		                                                      Collections.singletonList(jeanne),
 		                                                      Collections.singletonList("33333333"));
 
-		final List<ServitudeRF> list0 = ServitudeCombinator.combinate(servitude0, null, null);
+		final List<ServitudeRF> list0 = ServitudeHelper.combinate(servitude0, null, null);
 		assertEquals(1, list0.size());
 		assertServitude(list0.get(0), "2348923892389", "8888888", felipe);
 
-		final List<ServitudeRF> list1 = ServitudeCombinator.combinate(servitude1, null, null);
+		final List<ServitudeRF> list1 = ServitudeHelper.combinate(servitude1, null, null);
 		assertEquals(1, list1.size());
 		assertServitude(list1.get(0), "4873838", "33333333", jeanne);
 	}
@@ -51,13 +51,13 @@ public class ServitudeCombinatorTest {
 		                                                      Collections.singletonList(jeanne),
 		                                                      Arrays.asList("33333333", "99999"));
 
-		final List<ServitudeRF> list0 = ServitudeCombinator.combinate(servitude0, null, null);
+		final List<ServitudeRF> list0 = ServitudeHelper.combinate(servitude0, null, null);
 		assertEquals(3, list0.size());
 		assertServitude(list0.get(0), "2348923892389", "00000111", felipe);
 		assertServitude(list0.get(1), "2348923892389", "7777777", felipe);
 		assertServitude(list0.get(2), "2348923892389", "8888888", felipe);
 
-		final List<ServitudeRF> list1 = ServitudeCombinator.combinate(servitude1, null, null);
+		final List<ServitudeRF> list1 = ServitudeHelper.combinate(servitude1, null, null);
 		assertEquals(2, list1.size());
 		assertServitude(list1.get(0), "4873838", "33333333", jeanne);
 		assertServitude(list1.get(1), "4873838", "99999", jeanne);
@@ -82,12 +82,12 @@ public class ServitudeCombinatorTest {
 		                                                      communaute2,
 		                                                      Collections.singletonList("33333333"));
 
-		final List<ServitudeRF> list0 = ServitudeCombinator.combinate(servitude0, null, null);
+		final List<ServitudeRF> list0 = ServitudeHelper.combinate(servitude0, null, null);
 		assertEquals(2, list0.size());
 		assertServitude(list0.get(0), "2348923892389", "8888888", felipe);
 		assertServitude(list0.get(1), "2348923892389", "8888888", jeanne);
 
-		final List<ServitudeRF> list1 = ServitudeCombinator.combinate(servitude1, null, null);
+		final List<ServitudeRF> list1 = ServitudeHelper.combinate(servitude1, null, null);
 		assertEquals(3, list1.size());
 		assertServitude(list1.get(0), "4873838", "33333333", robert);
 		assertServitude(list1.get(1), "4873838", "33333333", marcel);
@@ -113,7 +113,7 @@ public class ServitudeCombinatorTest {
 		                                                      communaute2,
 		                                                      Arrays.asList("33333333", "99999"));
 
-		final List<ServitudeRF> list0 = ServitudeCombinator.combinate(servitude0, null, null);
+		final List<ServitudeRF> list0 = ServitudeHelper.combinate(servitude0, null, null);
 		assertEquals(6, list0.size());
 		assertServitude(list0.get(0), "2348923892389", "00000111", felipe);
 		assertServitude(list0.get(1), "2348923892389", "00000111", jeanne);
@@ -122,7 +122,7 @@ public class ServitudeCombinatorTest {
 		assertServitude(list0.get(4), "2348923892389", "8888888", felipe);
 		assertServitude(list0.get(5), "2348923892389", "8888888", jeanne);
 
-		final List<ServitudeRF> list1 = ServitudeCombinator.combinate(servitude1, null, null);
+		final List<ServitudeRF> list1 = ServitudeHelper.combinate(servitude1, null, null);
 		assertEquals(6, list1.size());
 		assertServitude(list1.get(0), "4873838", "33333333", robert);
 		assertServitude(list1.get(1), "4873838", "33333333", marcel);
@@ -142,7 +142,7 @@ public class ServitudeCombinatorTest {
 		final ServitudeRF servitude = newServitude("2348923892389",
 		                                                     Collections.emptyList(),
 		                                                     Collections.singletonList("8888888"));
-		assertEmpty(ServitudeCombinator.combinate(servitude, null, null)); // il y a bien une servitude, mais elle est vide et ignorée
+		assertEmpty(ServitudeHelper.combinate(servitude, null, null)); // il y a bien une servitude, mais elle est vide et ignorée
 	}
 
 	/**

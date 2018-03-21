@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -32,6 +33,8 @@ import ch.vd.unireg.registrefoncier.UsufruitVirtuelRF;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementEncumbrance;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementMembership;
 import ch.vd.unireg.xml.party.landregistry.v1.EasementRight;
 import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
@@ -139,9 +142,22 @@ public abstract class LandRightBuilder {
 	}
 
 	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+
+		final List<EasementMembership> memberships = usufruitRF.getBenefices().stream()
+				.sorted(new DateRangeComparator<>())
+				.map(bene -> MembershipBuilder.buildEasementMembership(bene, ctbIdProvider))
+				.collect(Collectors.toList());
+		final List<EasementEncumbrance> encumbrances = usufruitRF.getCharges().stream()
+				.sorted(new DateRangeComparator<>())
+				.map(MembershipBuilder::buildEasementEncumbrance)
+				.collect(Collectors.toList());
+
 		final UsufructRight right = new UsufructRight();
 		right.setId(usufruitRF.getId());
+		right.getMemberships().addAll(memberships);
+		right.getEncumbrances().addAll(encumbrances);
 		fillEasementRight(usufruitRF, right, ctbIdProvider, rightHolderComparator);
+
 		return right;
 	}
 
@@ -157,9 +173,22 @@ public abstract class LandRightBuilder {
 	}
 
 	public static HousingRight newHousingRight(@NotNull DroitHabitationRF droitHabitationRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+
+		final List<EasementMembership> memberships = droitHabitationRF.getBenefices().stream()
+				.sorted(new DateRangeComparator<>())
+				.map(bene -> MembershipBuilder.buildEasementMembership(bene, ctbIdProvider))
+				.collect(Collectors.toList());
+		final List<EasementEncumbrance> encumbrances = droitHabitationRF.getCharges().stream()
+				.sorted(new DateRangeComparator<>())
+				.map(MembershipBuilder::buildEasementEncumbrance)
+				.collect(Collectors.toList());
+
 		final HousingRight right = new HousingRight();
 		right.setId(droitHabitationRF.getId());
+		right.getMemberships().addAll(memberships);
+		right.getEncumbrances().addAll(encumbrances);
 		fillEasementRight(droitHabitationRF, right, ctbIdProvider, rightHolderComparator);
+
 		return right;
 	}
 
@@ -192,14 +221,12 @@ public abstract class LandRightBuilder {
 		right.setCaseIdentifier(getCaseIdentifier(servitude.getNumeroAffaire()));
 
 		final List<RightHolder> rightHolders = servitude.getBenefices().stream()
-				// TODO (msi) exposer les dates de début/fin
 				.map(lien -> RightHolderBuilder.getRightHolder(lien.getAyantDroit(), ctbIdProvider))
 				.sorted(rightHolderComparator)
 				.collect(Collectors.toList());
 		right.getRightHolders().addAll(rightHolders);
 
 		final List<Long> immovablePropIds = servitude.getCharges().stream()
-				// TODO (msi) exposer les dates de début/fin
 				.map(ChargeServitudeRF::getImmeuble)
 				.map(ImmeubleRF::getId)
 				.sorted(Comparator.naturalOrder())
