@@ -1,7 +1,9 @@
 package ch.vd.unireg.metier.piis;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -200,34 +203,32 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	}
 
 	/**
-	 * @param fors la liste des fors à considérer
-	 * @param rpis la liste des rapports de travail à considérer
+	 * @param fors la liste des fors à considérer (les fors sont considérés non-annulés)
+	 * @param rpis la liste des rapports de travail à considérer (les rapports sont considérés non-annulés)
 	 * @return une paire {min, max} sur les périodes fiscales concernées (<code>null</code> si tout est vide...)
 	 */
 	@Nullable
-	private static Pair<Integer, Integer> getPeriodInterval(List<ForFiscalPrincipalPP> fors, List<RapportPrestationImposable> rpis) {
-		final Pair<ForFiscalPrincipalPP, ForFiscalPrincipalPP> universeFors = getFirstAndLast(fors);
-		final Pair<RapportPrestationImposable, RapportPrestationImposable> universeRpis = getFirstAndLast(rpis);
-		if (universeFors == null && universeRpis == null) {
+	private static Pair<Integer, Integer> getPeriodInterval(@NotNull List<ForFiscalPrincipalPP> fors, @NotNull List<RapportPrestationImposable> rpis) {
+
+		final Collection<DateRange> ranges = CollectionUtils.union(fors, rpis);
+		if (ranges.isEmpty()) {
+			// aucun donnée
 			return null;
 		}
 
-		final RegDate debut;
-		final RegDate fin;
-		if (universeFors == null) {
-			debut = universeRpis.getLeft().getDateDebut();
-			fin = universeRpis.getRight().getDateFin();
-		}
-		else if (universeRpis == null) {
-			debut = universeFors.getLeft().getDateDebut();
-			fin = universeFors.getRight().getDateFin();
-		}
-		else {
-			debut = RegDateHelper.minimum(universeFors.getLeft().getDateDebut(), universeRpis.getLeft().getDateDebut(), NullDateBehavior.EARLIEST);
-			fin = RegDateHelper.maximum(universeFors.getRight().getDateFin(), universeRpis.getRight().getDateFin(), NullDateBehavior.LATEST);
-		}
+		final int debut = ranges.stream()
+				.min(Comparator.comparing(DateRange::getDateDebut, NullDateBehavior.EARLIEST::compare))
+				.map(DateRange::getDateDebut)
+				.map(RegDate::year)
+				.orElseThrow(() -> new IllegalArgumentException("Aucune date de début renseignée sur les fors fiscaux et les rapports de prestation"));
 
-		return Pair.of(debut.year(), fin == null ? RegDate.get().year() : fin.year());
+		final int fin = ranges.stream()
+				.max(Comparator.comparing(DateRange::getDateFin, NullDateBehavior.LATEST::compare))
+				.map(DateRange::getDateFin)
+				.map(RegDate::year)
+				.orElse(RegDate.get().year());
+
+		return Pair.of(debut, fin);
 	}
 
 	/**

@@ -13,12 +13,12 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -7263,6 +7263,79 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), pi.getNoOfs());
 				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-28504] Vérifie que les périodes d'impôt source sont bien toutes prises en compte lorsque une personne sans for fiscal possède plusieurs rapports de travail ouverts sauf le plus récent qui est fermé.
+	 */
+	@Test
+	public void testHorsSuisseAvecPlusieursRapportsTravailOuvertsSaufPlusRecentQuiEstFerme() throws Exception {
+
+		final int anneeCourante = RegDate.get().year();
+		final RegDate dateDebutImposition = RegDate.get(2014, 7, 1);
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Julien", "Chasseneige", RegDate.get(1980,1,1), Sexe.MASCULIN);
+			final DebiteurPrestationImposable debiteur1 = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL,  date(2007, 1, 1));
+			final DebiteurPrestationImposable debiteur2 = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL,  date(2007, 1, 1));
+			addRapportPrestationImposable(debiteur1, pp, dateDebutImposition, null, false);
+			addRapportPrestationImposable(debiteur2, pp, RegDate.get(2015, 11, 1), RegDate.get(2015, 12, 31), false);
+			return pp.getNumero();
+		});
+
+		// calcul de toutes les PIIS
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+
+				final int periodeCount = anneeCourante - dateDebutImposition.year() + 1;
+				Assert.assertEquals(periodeCount, piis.size());
+
+				// 2014
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(date(2014, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(2014, 12, 31), pi.getDateFin());
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
+					Assert.assertNull(pi.getTypeAutoriteFiscale());
+					Assert.assertNull(pi.getNoOfs());
+				}
+
+				// 2015
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(date(2015, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(2015, 12, 31), pi.getDateFin());
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
+					Assert.assertNull(pi.getTypeAutoriteFiscale());
+					Assert.assertNull(pi.getNoOfs());
+				}
+
+				// 2016
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(date(2016, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(2016, 12, 31), pi.getDateFin());
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getInconnue(), pi.getLocalisation());
+					Assert.assertNull(pi.getTypeAutoriteFiscale());
+					Assert.assertNull(pi.getNoOfs());
+				}
+
+				// etc...
 			}
 		});
 	}
