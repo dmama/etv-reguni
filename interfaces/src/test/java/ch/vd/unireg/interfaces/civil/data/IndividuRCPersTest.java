@@ -28,6 +28,8 @@ import ch.vd.evd0001.v5.PersonIdentification;
 import ch.vd.evd0001.v5.Residence;
 import ch.vd.evd0001.v5.ResidencePermit;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -37,8 +39,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypePermis;
@@ -1625,21 +1625,39 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testGetPersonorWithTypePermisInvalide() throws Exception {
+	public void testGetPersonWithTypePermisInvalide() throws Exception {
 
 		final Person person = newPerson(123345L, "Jean", "Rucher", date(1965, 3, 12), Sexe.MASCULIN);
 
 		// les permis
 		person.getResidencePermitHistory().add(newResidencePermitTypeInvalide(date(1965, 3, 12), null));
 
-
 		// on vérifie que les valeurs historisées sont bien lues
 		try {
-			final Individu ind = IndividuRCPers.get(person, true, infraService);
-		}catch (TypePermisInvalideException e){
-			assertEquals(e.getMessage(),"Impossible d'interpréter le type de  permis pour l'individu n°123345, détails: Erreur détectée: °Type de permis non reconnu: '23'");
+			IndividuRCPers.get(person, true, infraService);
+			fail();
 		}
+		catch (TypePermisInvalideException e) {
+			assertEquals(e.getMessage(), "Impossible d'interpréter le type de  permis pour l'individu n°123345, détails: Erreur détectée: °Type de permis non reconnu: '23'");
+		}
+	}
 
+	/**
+	 * [SIFISC-28657] Vérifie que la construction d'une personne remplacée par une autre lève une erreur explicite lorsque la personne de remplacement ne possède pas d'id RCPers.
+	 */
+	@Test
+	public void testGetPersonReplacedByAnotherWithoutId() {
 
+		final Person person = newPerson(123456L, "Jean", "Mielleux", date(1965, 1, 1), Sexe.MASCULIN);
+		final PersonIdentificationPartner replacedBy = new PersonIdentificationPartner(null, null, null, "Rugueux", "Jean", null, null);
+		person.setStatus(new Person.Status(null, new Person.Status.Canceled(replacedBy), null));
+
+		try {
+			IndividuRCPers.get(person, true, infraService);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("L'id RCPers de l'individu de remplacement n'est pas renseigné", e.getMessage());
+		}
 	}
 }

@@ -42,6 +42,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.mock.CollectionLimitator;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
@@ -49,7 +50,6 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.AdresseCourrierMinimale;
 import ch.vd.unireg.interfaces.infra.data.RangeChangingAdresseWrapper;
-import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypePermisInvalideException;
@@ -262,7 +262,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 	}
 
-	public static long getNoIndividu(NamedPersonId personId) {
+	public static long getNoIndividu(@NotNull NamedPersonId personId) {
 		return Long.parseLong(personId.getPersonId());
 	}
 
@@ -334,7 +334,11 @@ public class IndividuRCPers implements Individu, Serializable {
 				return StatutIndividu.inactiveWithoutReplacement();
 			}
 			else {
-				return StatutIndividu.replaced(getNoIndividu(replacedBy.getLocalPersonId()));
+				final NamedPersonId replacedById = replacedBy.getLocalPersonId();
+				if (replacedById == null) {
+					throw new IllegalArgumentException("L'id RCPers de l'individu de remplacement n'est pas renseigné");
+				}
+				return StatutIndividu.replaced(getNoIndividu(replacedById));
 			}
 		}
 		else {
