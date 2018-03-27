@@ -3,6 +3,7 @@ package ch.vd.unireg.tache.sync;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
@@ -37,7 +38,14 @@ public class AddDIPP extends AddDI<PeriodeImpositionPersonnesPhysiques> {
 			final int todaysYear = today.year();
 			final int year = periodeImposition.getPeriodeFiscale();
 			final PeriodeFiscale pf = context.periodeFiscaleDAO.getPeriodeFiscaleByYear(year);
-			final RegDate dateFinEnvoiMasseDI = pf.getParametrePeriodeFiscalePP(periodeImposition.getTypeContribuable()).getDateFinEnvoiMasseDI();
+			if (pf == null) {
+				throw new IllegalArgumentException("La période fiscale " + year + " n'existe pas ");
+			}
+			final ParametrePeriodeFiscalePP periode = pf.getParametrePeriodeFiscalePP(periodeImposition.getTypeContribuable());
+			if (periode == null) {
+				throw new IllegalArgumentException("Le type de contribuable " + periodeImposition.getTypeContribuable() + " n'est pas défini sur la période fiscale " + year);
+			}
+			final RegDate dateFinEnvoiMasseDI = periode.getDateFinEnvoiMasseDI();
 			if (todaysYear == year + 1 && RegDateHelper.isBefore(today, dateFinEnvoiMasseDI, NullDateBehavior.LATEST)) {
 				// si on est dans la période de début d'année d'envoi des déclarations d'impôt, l'échéance de la tâche doit être placée en conséquence
 				// (sauf si cela fait arriver la tâche à échéance avant le processus normal)
