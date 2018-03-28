@@ -35,11 +35,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.FiscalDateHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
@@ -54,6 +54,7 @@ import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -529,7 +530,10 @@ public class TacheServiceImpl implements TacheService {
 				final OfficeImpot office = serviceInfra.getOfficeImpotDeCommune(ffp.getNumeroOfsAutoriteFiscale());
 				//UNIREG-1886 si l'office nest pas trouvé (cas hors canton, hors suisse) on ne génère pas de tâche
 				if (office != null) {
-					final CollectiviteAdministrative collectivite = tiersService.getCollectiviteAdministrative(office.getNoColAdm());
+					final CollectiviteAdministrative collectivite = tiersService.getCollectiviteAdministrative(office.getNoColAdm(), true);
+					if (collectivite == null) {
+						throw new ObjectNotFoundException("La collectivité administrative n°" + office.getNoColAdm() + " n'existe pas");
+					}
 					genereTacheControleDossier(contribuable, collectivite, "Déménagement dans une période échue avec changement d'OID");
 				}
 
