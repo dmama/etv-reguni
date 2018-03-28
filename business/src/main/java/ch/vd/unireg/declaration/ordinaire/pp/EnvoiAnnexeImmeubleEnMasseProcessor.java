@@ -16,7 +16,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
@@ -30,6 +29,7 @@ import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
@@ -284,12 +284,12 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	protected void initCache(int anneePeriode) throws DeclarationException {
 
 		// Récupère le CEDI
-		CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI, true);
 		if (cedi == null) {
 			throw new DeclarationException("Impossible de charger le centre d'enregistrement des déclarations d'impôt (CEDI).");
 		}
 
-		final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+		final CollectiviteAdministrative aci = tiersService.getOfficeImpot(ServiceInfrastructureService.noACI);
 		if (aci == null) {
 			throw new DeclarationException("Impossible de charger la collectivité administrative de l'administration cantonale des impôts (ACI).");
 		}

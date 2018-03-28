@@ -312,7 +312,7 @@ public class DeterminationDIsPPAEmettreProcessor {
 				CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
 				if (oid == null) {
 					// le contribuable n'a jamais possédé de for fiscal vaudois -> on l'envoie sur l'ACI
-					oid = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+					oid = tiersService.getOfficeImpot(ServiceInfrastructureService.noACI);
 					Assert.notNull(oid);
 				}
 

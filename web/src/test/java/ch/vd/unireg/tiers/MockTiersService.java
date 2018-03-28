@@ -289,6 +289,11 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
+	public CollectiviteAdministrative getOfficeImpot(int noTechnique) {
+		return null;
+	}
+
+	@Override
 	public CollectiviteAdministrative getCollectiviteAdministrative(int noTechnique) {
 		return null;
 	}

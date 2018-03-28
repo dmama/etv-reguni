@@ -322,7 +322,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 
 			if (tacheDAO.count(criterion, true /* don't flush */) == 0) {
 
-				final CollectiviteAdministrative oid = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+				final CollectiviteAdministrative oid = tiersService.getOfficeImpot(ServiceInfrastructureService.noOIPM);
 
 				// [UNIREG-1742] pas de période pour la déclaration => on crée une tâche d'annulation
 				final TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, entreprise, di, oid);
@@ -523,7 +523,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 			}
 		}
 
-		final CollectiviteAdministrative oid = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpot(ServiceInfrastructureService.noOIPM);
 		Assert.notNull(oid);
 
 		// Création et sauvegarde de la tâche en base

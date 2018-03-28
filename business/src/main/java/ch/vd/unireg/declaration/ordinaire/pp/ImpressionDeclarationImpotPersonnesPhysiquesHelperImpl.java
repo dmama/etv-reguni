@@ -40,16 +40,13 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
@@ -60,6 +57,9 @@ import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.LegacyEditiqueHelper;
 import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -564,7 +564,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		CollectiviteAdministrative collAdm = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
 		if (collAdm == null) {
 			// valeur par défaut
-			collAdm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+			collAdm = tiersService.getOfficeImpot(ServiceInfrastructureService.noCEDI);
 			Assert.notNull(collAdm);
 		}
 

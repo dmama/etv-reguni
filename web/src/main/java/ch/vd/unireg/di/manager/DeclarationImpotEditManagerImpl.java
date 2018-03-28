@@ -491,17 +491,17 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		final ch.vd.unireg.tiers.CollectiviteAdministrative collectiviteAdministrative;
 		if (typeAdresseRetour == TypeAdresseRetour.ACI) {
-			collectiviteAdministrative = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+			collectiviteAdministrative = tiersService.getOfficeImpot(ServiceInfrastructureService.noACI);
 		}
 		else if (typeAdresseRetour == TypeAdresseRetour.CEDI) {
-			collectiviteAdministrative = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+			collectiviteAdministrative = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI, true);
 		}
 		else {
 			final Integer officeImpot = tiersService.getOfficeImpotId(ctb);
 			if (officeImpot == null) {
 				throw new ActionException("le contribuable ne possède pas de for de gestion");
 			}
-			collectiviteAdministrative = tiersService.getCollectiviteAdministrative(officeImpot);
+			collectiviteAdministrative = tiersService.getOfficeImpot(officeImpot);
 		}
 		di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
 

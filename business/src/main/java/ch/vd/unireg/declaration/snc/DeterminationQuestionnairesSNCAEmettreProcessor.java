@@ -153,7 +153,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 			}
 		});
 
-		final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+		final CollectiviteAdministrative oipm = tiersService.getOfficeImpot(ServiceInfrastructureService.noOIPM);
 		Assert.notNull(oipm);
 
 		// Traitement de tous les contribuables un par un

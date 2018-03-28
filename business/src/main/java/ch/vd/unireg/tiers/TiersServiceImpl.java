@@ -988,9 +988,11 @@ public class TiersServiceImpl implements TiersService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+	@Override
+	public CollectiviteAdministrative getOfficeImpot(int noTechnique) {
+		return tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(noTechnique, true);
+	}
+
     @Override
     public CollectiviteAdministrative getCollectiviteAdministrative(int noTechnique, boolean doNotAutoFlush) {
         return tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(noTechnique, doNotAutoFlush);

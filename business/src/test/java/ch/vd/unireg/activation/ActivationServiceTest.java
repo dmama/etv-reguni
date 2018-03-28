@@ -14,13 +14,13 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.BusinessTestingConstants;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.AnnuleEtRemplace;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
@@ -179,7 +179,7 @@ public class ActivationServiceTest extends BusinessTest {
 					addPeriodeFiscale(pf);
 				}
 
-				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
+				final CollectiviteAdministrative colAdm = tiersService.getOfficeImpot(ServiceInfrastructureRaw.noACI);
 				addTacheControleDossier(TypeEtatTache.TRAITE, date(2002, 4, 1), pp, colAdm);
 				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 5), pp, colAdm);
 				return pp.getNumero();

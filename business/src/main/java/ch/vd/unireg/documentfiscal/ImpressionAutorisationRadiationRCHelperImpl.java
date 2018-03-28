@@ -15,13 +15,13 @@ import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.EditiqueAbstractHelperImpl;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.tiers.Entreprise;
@@ -40,7 +40,7 @@ public class ImpressionAutorisationRadiationRCHelperImpl extends EditiqueAbstrac
 	public FichierImpression.Document buildDocument(AutorisationRadiationRC lettre, RegDate dateTraitement, Signataires signataires, ServiceSecuriteService serviceSecurite) throws EditiqueException {
 		try {
 			final Entreprise entreprise = lettre.getEntreprise();
-			final Tiers rc = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noRC);
+			final Tiers rc = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noRC, true);
 			final AdresseEnvoiDetaillee adresseRC = getAdresseEnvoi(rc);
 			final CTypeInfoDocument infoDocument = buildInfoDocument(adresseRC, entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);

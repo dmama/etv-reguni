@@ -1615,7 +1615,7 @@ public class TacheServiceImpl implements TacheService {
 				if (oid == null) {
 					throw new IllegalArgumentException("Impossible de déterminer l'OID pour la commune avec le numéro Ofs n°" + forConvenable.getNumeroOfsAutoriteFiscale());
 				}
-				collectivite = tiersService.getCollectiviteAdministrative(oid);
+				collectivite = tiersService.getOfficeImpot(oid);
 			}
 		}
 

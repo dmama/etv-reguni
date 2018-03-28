@@ -439,6 +439,15 @@ public interface TiersService {
      */
     ContribuableImpositionPersonnesPhysiques getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite);
 
+	/**
+	 * Renvoie l'office d'impôt correspondant au numéro de l'office d'impôt spécifié.
+	 * <b>Note : </b> cette méthode ne provoque jamais le flush de la session Hibernate car les offices d'impôt sont sensés exister dans la DB.
+	 *
+	 * @param noTechnique le numéro technique de l'office d'impôt (= numéro technique de la collectivité administrative)
+	 * @return le tiers représentant l'office d'impôt (qui est une collectivité administrative) correspondant
+	 */
+	CollectiviteAdministrative getOfficeImpot(int noTechnique);
+
     /**
      * Renvoie la collectivité administrative rattachée au numero de collectivité donné.
      *
