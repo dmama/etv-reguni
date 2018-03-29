@@ -1778,7 +1778,7 @@ var App = {
 		if (!url) {
 			return '';
 		}
-		while (url.indexOf('/') == 0) {
+		while (url.indexOf('/') === 0) {
 			url = url.substring(1);
 		}
 		return this.contextPath + url;
@@ -3478,5 +3478,116 @@ var VisuExterneDoc = {
 	 */
 	openWindow: function(url) {
 		window.open(url, 'UniregVisuExterneDoc', 'location=no, menubar=no, toolbar=no, scrollbars=yes, resizable=yes');
+	}
+};
+
+//===================================================
+
+/**
+ * Méthodes pour gérer la navigation dans l'historique des pages consultées par un utilisateur dans sa session courante.
+ */
+var Navigation = {
+
+	/**
+	 * Mémorise l'affichage de la page courante.
+	 *
+	 * @param url l'url de la page courante
+	 */
+	onShow: function (url) {
+		this.__addUrl(this.__getRelativeUrl(url));
+	},
+
+	/**
+	 * Retourne à la page précédante. Cette méthode permet de simuler l'utilisation du bouton <i>back</i> tout en assurant
+	 * d'atterrir sur une page valide si l'historique est vide.
+	 *
+	 * @param defaultPageUrl       l'URL de la page sur laquelle on veut revenir (e.g. '/tiers/visu.do')
+	 * @param defaultParams les paramètres par défaut à utiliser si la page n'est pas trouvée dans l'historique (e.g. 'id=12345')
+	 */
+	back: function (defaultPageUrl, defaultParams) {
+
+		// valeur par défaut
+		var targetUrl = defaultPageUrl + (StringUtils.isNotBlank(defaultParams) ? '?' + defaultParams : '');
+
+		// on recherche dans l'historique la dernière url visitée sur la page spécifiée
+		this.__doInHistory(function (histo) {
+			histo.pop();    // on ignore l'url courante de la page
+			var u = histo.pop();
+			if (u) {
+				// il y a une page dans l'historique, on l'utilise
+				targetUrl = u;
+			}
+			return histo;
+		});
+
+		// on navigue vers l'url de destination
+		window.location.href = App.curl(targetUrl);
+	},
+
+	/**
+	 * Retourne à une page précédemment consultée par l'utilisateur. Cette méthode permet de simuler l'utilisation répétée
+	 * du bouton <i>back</i> en remontant sélectivement dans l'historique des pages consultées par l'utilisateur,
+	 * tout en assurant d'atterrir sur une page valide si la page souhaitée ne se trouve pas dans l'historique.
+	 *
+	 * @param pageUrl       l'URL de la page sur laquelle on veut revenir (e.g. '/tiers/visu.do')
+	 * @param defaultParams les paramètres par défaut à utiliser si la page n'est pas trouvée dans l'historique (e.g. 'id=12345')
+	 */
+	backTo: function (pageUrl, defaultParams) {
+
+		// valeur par défaut
+		var targetUrl = pageUrl + (StringUtils.isNotBlank(defaultParams) ? '?' + defaultParams : '');
+
+		// on recherche dans l'historique la dernière url visitée sur la page spécifiée
+		this.__doInHistory(function (histo) {
+			var u;
+			while (u = histo.pop()) {
+				if (u.indexOf(pageUrl) >= 0) {
+					// on a trouvé une page correspondante dans l'historique, on l'utilise
+					targetUrl = u;
+					break;
+				}
+			}
+			return histo;
+		});
+
+		// on navigue vers l'url de destination
+		window.location.href = App.curl(targetUrl);
+	},
+
+	__getRelativeUrl: function (url) {
+		var pos = url.indexOf(App.contextPath);
+		if (pos >= 0) {
+			url = url.slice(pos + App.contextPath.length - 1); // -1 : on veut garder le / final : http://localhost:8079/unireg/web/tiers/visu.do => /tiers/visu.do
+		}
+		return url;
+	},
+
+	__doInHistory: function (action) {
+
+		// on récupère l'historique dans le session storage
+		var histoAsString = sessionStorage.getItem('unireg-url-history');
+		var histo = histoAsString ? JSON.parse(histoAsString) : null;
+		if (!histo || !Array.isArray(histo)) {
+			histo = [];
+		}
+
+		// on appelle l'action
+		histo = action(histo);
+
+		// on met-à-jour l'historique dans le session storage
+		sessionStorage.setItem('unireg-url-history', JSON.stringify(histo));
+	},
+
+	__addUrl: function (url) {
+		this.__doInHistory(function (histo) {
+			if (!histo.length || histo[histo.length - 1] !== url) { // inutile de mémoriser plusieurs fois de suite la même url
+				histo.push(url);
+			}
+			// on limite l'historique à 20 positions, ça devrait suffire
+			while (histo.length > 20) {
+				histo.shift();
+			}
+			return histo;
+		});
 	}
 };

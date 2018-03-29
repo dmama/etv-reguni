@@ -34,6 +34,7 @@
 				</div>
 				<script type="text/javascript">
 					App.init('<c:url value="/"/>');
+					Navigation.onShow(window.location.href);
 				</script>
 				<div class="canton">
 					<a href="http://www.vd.ch" target="_blank">
