@@ -7,8 +7,7 @@
 	<%--@elvariable id="rapportEditView" type="ch.vd.unireg.rapport.view.RapportView"--%>
 	<tiles:put name="title">
 		<fmt:message key="title.edition.rapport">
-			<fmt:param>
-			<unireg:numCTB numero="${rapportEditView.numeroCourant}"/></fmt:param>
+			<fmt:param><unireg:numCTB numero="${rapportEditView.numeroCourant}"/></fmt:param>
 			<fmt:param><unireg:numCTB numero="${rapportEditView.numero}"/></fmt:param>
 		</fmt:message>
 	</tiles:put>
@@ -93,7 +92,7 @@
 				<td width="25%">&nbsp;</td>
 			</c:if>
 			<td width="25%">
-				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler"/>" onclick="document.location.href='<c:url value="${rapportEditView.viewRetour}"/>'" />
+				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler"/>" onclick="Navigation.back('/rapport/list.do', 'id=${rapportEditView.numeroCourant}')" />
 			</td>
 			<td width="25%">&nbsp;</td>
 		</tr>

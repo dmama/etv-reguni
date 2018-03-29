@@ -46,6 +46,8 @@
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 
+	<bean id="navigationController" class="ch.vd.unireg.NavigationController" />
+
 	<bean id="authenticationController" class="ch.vd.unireg.security.AuthenticationController" />
 
 	<bean id="logoutController" class="ch.vd.unireg.LogoutController">

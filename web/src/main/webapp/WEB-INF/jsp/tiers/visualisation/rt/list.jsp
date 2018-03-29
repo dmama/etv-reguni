@@ -40,7 +40,7 @@
 				<display:column style="action">
 					<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${rapportPrestation.id}"/>
 					<c:if test="${!rapportPrestation.annule && command.editionAllowed}">
-						<unireg:raccourciModifier link="../rapport/edit.do?idRapport=${rapportPrestation.id}&sens=SUJET&viewRetour=%2Frapports-prestation%2Flist.do%3FidDpi%3D${command.idDpi}" tooltip="Edition de rapport"/>
+						<unireg:raccourciModifier link="../rapport/edit.do?idRapport=${rapportPrestation.id}&sens=SUJET" tooltip="Edition de rapport"/>
 						<unireg:raccourciAnnuler onClick="annulerRapportPrestation(${rapportPrestation.id}); return false;" tooltip="Annulation de rapport"/>
 					</c:if>
 				</display:column>

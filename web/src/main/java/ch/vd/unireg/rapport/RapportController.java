@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdressesResolutionException;
@@ -43,9 +42,11 @@ import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.common.URLHelper;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.rapport.manager.RapportEditManager;
 import ch.vd.unireg.rapport.view.RapportListView;
 import ch.vd.unireg.rapport.view.RapportView;
@@ -323,7 +324,7 @@ public class RapportController {
 			LOGGER.error("Erreur à l'ajout d'un rapport entre les tiers " + numeroTiers + " et " + numeroTiersLie, e);
 			throw new ActionException(e.getMessage());
 		}
-		return "redirect:/tiers/visu.do?id=" + numeroTiers;
+		return URLHelper.navigateBackTo("/tiers/visu.do", "id=" + numeroTiers);
 	}
 
 	/**
@@ -334,7 +335,7 @@ public class RapportController {
 	 */
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String edit(@RequestParam("idRapport") long idRapport, @RequestParam("sens") SensRapportEntreTiers sens, @RequestParam(value = "urlRetour", required = false) String urlRetour, Model model) throws AdresseException {
+	public String edit(@RequestParam("idRapport") long idRapport, @RequestParam("sens") SensRapportEntreTiers sens, Model model) throws AdresseException {
 
 		final RapportEntreTiers rapport = rapportEntreTiersDAO.get(idRapport);
 		if (rapport == null) {
@@ -361,8 +362,6 @@ public class RapportController {
 		}
 
 		final RapportView rapportView = rapportEditManager.get(idRapport, sens);
-		final String viewRetour = StringUtils.isBlank(urlRetour) ? "/rapport/list.do?id=" + rapportView.getNumeroCourant() : urlRetour;
-		rapportView.setViewRetour(viewRetour);
 		model.addAttribute("rapportEditView", rapportView);
 
 		return "tiers/edition/rapport/edit";
@@ -404,8 +403,7 @@ public class RapportController {
 			throw new ActionException(e.getMessage());
 		}
 
-		final String viewRetour = StringUtils.isBlank(view.getViewRetour()) ? "/rapport/list.do?id=" + view.getNumeroCourant() : view.getViewRetour();
-		return "redirect:" + viewRetour;
+		return URLHelper.navigateBack("/rapport/list.do", "id=" + view.getNumeroCourant());
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -467,7 +465,7 @@ public class RapportController {
 				              " a été désigné comme principal de la communauté à partir du " +
 				              RegDateHelper.dateToDisplayString(view.getDateDebut()) + ".");
 
-		return "redirect:/rapport/list.do?id=" + view.getDefuntId();
+		return URLHelper.navigateBackTo("/rapport/list.do", "id=" + view.getDefuntId());
 	}
 
 	/**
@@ -529,7 +527,7 @@ public class RapportController {
 			Flash.error("Impossible d'annuler le rapport n°" + rapportId + " pour la raison suivante: " + e.getMessage());
 		}
 
-		return "redirect:/rapport/list.do?id=" + sujetId;
+		return URLHelper.navigateBackTo("/rapport/list.do", "id=" + sujetId);
 	}
 
 	/**
