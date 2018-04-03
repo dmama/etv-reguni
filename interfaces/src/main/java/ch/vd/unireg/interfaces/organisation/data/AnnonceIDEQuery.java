@@ -37,8 +37,9 @@ public class AnnonceIDEQuery implements Serializable {
 	public AnnonceIDEQuery() {
 	}
 
-	public AnnonceIDEQuery(long noticeId) {
+	public AnnonceIDEQuery(@NotNull Long noticeId, @NotNull String userId) {
 		this.noticeId = noticeId;
+		this.userId = userId;
 	}
 
 	public Long getNoticeId() {

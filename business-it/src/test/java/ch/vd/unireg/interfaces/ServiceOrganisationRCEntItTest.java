@@ -190,7 +190,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test(timeout = 30000)
 	public void testGetAnnonceIDE() {
-		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
+		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, RCEntAnnonceIDEHelper.UNIREG_USER);
 
 		assertNotNull(annonceIDE);
 		assertEquals(ID_ANNONCE, annonceIDE.getNumero().longValue());

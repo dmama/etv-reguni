@@ -2,8 +2,6 @@ package ch.vd.unireg.interfaces.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +26,6 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 
 public class ServiceOrganisationImpl implements ServiceOrganisationService {
 
@@ -117,30 +114,16 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 
 	@Nullable
 	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException {
-
-		// [SIFISC-28557] les ids d'annonces sont attribués par les applications demandeuses : il est possible que plusieurs
-		//                applications différentes utilisent le même id pour des annonces différentes. Normalement, on peut
-		//                filtrer les demandes en utilisant le paramètre 'userId' dans la query, mais il y a un bug dans RCEnt
-		//                qui fait qu'on obtient jamais de résultats. Comme workaround, on n'utilise pas le paramètre 'userId'
-		//                et on filtre les résultats.
-		final Page<AnnonceIDE> annoncesIDE = target.findAnnoncesIDE(new AnnonceIDEQuery(numero), null, 0, 10);
-
+	public AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) throws ServiceOrganisationException {
+		final Page<AnnonceIDE> annoncesIDE = target.findAnnoncesIDE(new AnnonceIDEQuery(numero, userId), null, 0, 10);
 		final List<AnnonceIDE> content = annoncesIDE.getContent();
-		if (content.isEmpty()) {
+		if (content.size() == 0) {
 			return null;
 		}
-
-		// [SIFISC-28557] On filtre ici les résultats pour ne garder que les annonces d'Unireg.
-		final List<AnnonceIDE> filtered = content.stream()
-				.filter(Objects::nonNull)
-				.filter(a -> Objects.equals(a.getUtilisateur().getUserId(), RCEntAnnonceIDEHelper.UNIREG_USER))
-				.collect(Collectors.toList());
-		if (filtered.size() > 1) {
+		if (content.size() > 1) {
 			throw new ServiceOrganisationException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
 		}
-
-		return filtered.isEmpty() ? null : filtered.get(0);
+		return content.get(0);
 	}
 
 	@NotNull

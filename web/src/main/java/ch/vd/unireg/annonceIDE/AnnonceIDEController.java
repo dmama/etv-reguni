@@ -43,6 +43,7 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityCheck;
@@ -152,7 +153,7 @@ public class AnnonceIDEController {
 					Map<String, AnnonceIDE> map = new HashMap<>();
 					if (referencesAnnonceIDE != null && !referencesAnnonceIDE.isEmpty()) {
 						for (ReferenceAnnonceIDE ref : referencesAnnonceIDE) {
-							final AnnonceIDE annonceIDE = organisationService.getAnnonceIDE(ref.getId());
+							final AnnonceIDE annonceIDE = organisationService.getAnnonceIDE(ref.getId(), RCEntAnnonceIDEHelper.UNIREG_USER);
 							if (annonceIDE != null) {
 								map.put(annonceIDE.getUniqueKey(), annonceIDE);
 							}
@@ -234,10 +235,14 @@ public class AnnonceIDEController {
 	 */
 	@SecurityCheck(rolesToCheck = {Role.SUIVI_ANNONCES_IDE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
-	public String visu(@RequestParam Long id, Model model) {
+	public String visu(@RequestParam Long id, @RequestParam(required = false) String userId, Model model) {
+
+		if (StringUtils.isBlank(userId)) {
+			userId = RCEntAnnonceIDEHelper.UNIREG_USER;
+		}
 
 		// on effectue la recherche
-		final AnnonceIDEEnvoyee annonce = organisationService.getAnnonceIDE(id);
+		final AnnonceIDEEnvoyee annonce = organisationService.getAnnonceIDE(id, userId);
 		if (annonce == null) {
 			throw new ObjectNotFoundException("Aucune demande ne correspond à l'identifiant " + id);
 		}

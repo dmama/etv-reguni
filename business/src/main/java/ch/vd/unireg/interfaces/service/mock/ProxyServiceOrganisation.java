@@ -81,9 +81,9 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 
 	@Nullable
 	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) {
+	public AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) {
 		assertTargetNotNull();
-		return service.getAnnonceIDE(numero);
+		return service.getAnnonceIDE(numero, userId);
 	}
 
 	@NotNull

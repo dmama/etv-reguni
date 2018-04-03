@@ -74,6 +74,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.metier.MetierServiceException;
@@ -259,7 +260,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				);
 			}
 
-			final AnnonceIDEEnvoyee annonceIDE = serviceOrganisationService.getAnnonceIDE(noAnnonceIDE);
+			final AnnonceIDEEnvoyee annonceIDE = serviceOrganisationService.getAnnonceIDE(noAnnonceIDE, RCEntAnnonceIDEHelper.UNIREG_USER);
 			if (annonceIDE == null) {
 				throw new EvenementOrganisationException(
 						String.format(
