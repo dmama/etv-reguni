@@ -25,6 +25,7 @@
 
 		    <fieldset>
 			    <legend><span><fmt:message key="label.caracteristiques.deces" /></span></legend>
+			    <form:errors  cssClass="error"/>
 			    <table>
 				    <tr class="<unireg:nextRowClass/>" >
 					    <td width="25%"><fmt:message key="label.date.deces" />&nbsp;:</td>
