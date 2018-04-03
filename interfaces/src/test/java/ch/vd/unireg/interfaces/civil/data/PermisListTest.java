@@ -6,8 +6,8 @@ import java.util.Collections;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.unireg.type.TypePermis;
 
 import static org.junit.Assert.assertNotNull;
@@ -131,7 +131,7 @@ public class PermisListTest extends WithoutSpringTest {
 	@Test
 	public void testGetPermisActifSiVieuxPermisSansDateFin() throws Exception {
 		final MockPermis vieux = new MockPermis(date(2011, 1, 1), null, null, TypePermis.SEJOUR);
-		final MockPermis nouveau = new MockPermis(date(2013, 4, 1), date(2018, 3, 31), null, TypePermis.ETABLISSEMENT);
+		final MockPermis nouveau = new MockPermis(date(2013, 4, 1), date(2028, 3, 31), null, TypePermis.ETABLISSEMENT);
 
 		final PermisList list = new PermisListImpl(Arrays.<Permis>asList(vieux, nouveau));
 		final Permis actif = list.getPermisActif(null);
