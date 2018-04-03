@@ -37,6 +37,7 @@ import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.store.EsbStore;
 import ch.vd.unireg.common.DefaultThreadFactory;
 import ch.vd.unireg.common.DefaultThreadNameGenerator;
+import ch.vd.unireg.common.ErrorAwareStatusManager;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ObjectNotFoundException;
@@ -278,7 +279,14 @@ public class MutationsRFDetector {
 			                                                              new DefaultThreadFactory(new DefaultThreadNameGenerator(String.format("%s-feed", Thread.currentThread().getName()))));
 			try {
 				future = executor.submit(() -> {
-					fichierImmeubleParser.processFile(is, adapter);    // <-- émetteur des données
+					try {
+						fichierImmeubleParser.processFile(is, adapter);    // <-- émetteur des données
+					}
+					catch (Exception e) {
+						LOGGER.error(e.getMessage(), e);
+						adapter.onSourceError(); // [IMM-1136] on n'attend pas plus longtemps sur les données du parser
+						throw e;
+					}
 					return null;
 				});
 			}
@@ -288,11 +296,12 @@ public class MutationsRFDetector {
 			}
 
 			// on détecte les changements et crée les mutations
-			processImmeubles(importId, nbThreads, adapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
-			processDroits(importId, nbThreads, adapter.getDroitsIterator(), new SubStatusManager(20, 40, statusManager));
-			processProprietaires(importId, nbThreads, adapter.getProprietairesIterator(), new SubStatusManager(40, 60, statusManager));
-			processBatiments(importId, nbThreads, adapter.getConstructionsIterator(), new SubStatusManager(60, 80, statusManager));
-			processSurfaces(importId, nbThreads, adapter.getSurfacesIterator(), new SubStatusManager(80, 100, statusManager));
+			final ErrorAwareStatusManager errorAwareStatus = new ErrorAwareStatusManager(statusManager, adapter::hasSourceError);
+			processImmeubles(importId, nbThreads, adapter.getImmeublesIterator(), new SubStatusManager(0, 20, errorAwareStatus));   // <-- consommateur des données
+			processDroits(importId, nbThreads, adapter.getDroitsIterator(), new SubStatusManager(20, 40, errorAwareStatus));
+			processProprietaires(importId, nbThreads, adapter.getProprietairesIterator(), new SubStatusManager(40, 60, errorAwareStatus));
+			processBatiments(importId, nbThreads, adapter.getConstructionsIterator(), new SubStatusManager(60, 80, errorAwareStatus));
+			processSurfaces(importId, nbThreads, adapter.getSurfacesIterator(), new SubStatusManager(80, 100, errorAwareStatus));
 
 			// on attend que le parsing soit terminé
 			boolean finished = false;

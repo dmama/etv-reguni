@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class QueuedIterator<T> implements Iterator<T> {
 
 	private final BlockingQueue<T> queue;
+	private boolean sourceError = false;
 	private boolean done = false;
 
 	public QueuedIterator(int queueSize) {
@@ -26,6 +27,13 @@ public class QueuedIterator<T> implements Iterator<T> {
 		}
 	}
 
+	/**
+	 * Une erreur dans la source des données a été détectée, il faut tout arrêter.
+	 */
+	public void onSourceError() {
+		sourceError = true;
+	}
+
 	public void done() {
 		done = true;
 	}
@@ -35,6 +43,9 @@ public class QueuedIterator<T> implements Iterator<T> {
 	 */
 	@Override
 	public boolean hasNext() {
+		if (sourceError) {
+			throw new RuntimeException("Erreur dans la source des données, veuillez consulter le log.");
+		}
 		return !queue.isEmpty() || !done;
 	}
 
@@ -43,6 +54,9 @@ public class QueuedIterator<T> implements Iterator<T> {
 		try {
 			T o;
 			do {
+				if (sourceError) {
+					throw new RuntimeException("Erreur dans la source des données, veuillez consulter le log.");
+				}
 				o = queue.poll(100, TimeUnit.MILLISECONDS);
 			} while (o == null && !done);
 			return o;

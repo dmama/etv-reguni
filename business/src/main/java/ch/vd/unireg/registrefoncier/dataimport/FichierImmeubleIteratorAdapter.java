@@ -1,6 +1,7 @@
 package ch.vd.unireg.registrefoncier.dataimport;
 
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +19,7 @@ public class FichierImmeubleIteratorAdapter implements FichierImmeublesRFParser.
 	// on ne garde que 100 éléments en mémoire, ça semble suffisant
 	private static final int QUEUE_SIZE = 100;
 
+	private final AtomicBoolean hasSourceError = new AtomicBoolean(false);
 	private final QueuedIterator<Grundstueck> immeublesIterator = new QueuedIterator<>(QUEUE_SIZE);
 	private final QueuedIterator<EigentumAnteil> droitsIterator = new QueuedIterator<>(QUEUE_SIZE);
 	private final QueuedIterator<Personstamm> proprietairesIterator = new QueuedIterator<>(QUEUE_SIZE);
@@ -95,6 +97,22 @@ public class FichierImmeubleIteratorAdapter implements FichierImmeublesRFParser.
 		proprietairesIterator.done();
 		constructionsIterator.done();
 		surfacesIterator.put(surface);
+	}
+
+	/**
+	 * Une erreur de parsing a été détectée, il faut tout arrêter.
+	 */
+	public void onSourceError() {
+		hasSourceError.set(true);
+		immeublesIterator.onSourceError();
+		droitsIterator.onSourceError();
+		proprietairesIterator.onSourceError();
+		constructionsIterator.onSourceError();
+		surfacesIterator.onSourceError();
+	}
+
+	public boolean hasSourceError() {
+		return hasSourceError.get();
 	}
 
 	@Override
