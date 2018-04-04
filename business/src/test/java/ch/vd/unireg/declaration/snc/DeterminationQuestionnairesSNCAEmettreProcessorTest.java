@@ -11,14 +11,14 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -1075,16 +1075,19 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		final int pf = 2014;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(status -> {
-			addPeriodeFiscale(pf);
+		final long pmId = doWithoutValidation(() -> {
+			// sans validation parce que le régime fiscal se termine avant le for fiscal principal, ce qui n'est pas autorisé (mais on veut quand même tester le cas)
+			return doInNewTransactionAndSession(status -> {
+				addPeriodeFiscale(pf);
 
-			final RegDate dateDebutEntreprise = date(2008, 8, 12);
-			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-			addFormeJuridique(entreprise, dateDebutEntreprise, date(2013, 1, 2), FormeJuridiqueEntreprise.SNC);     // forme juridique terminée
-			addRegimeFiscalVD(entreprise, dateDebutEntreprise, date(2013, 1, 2), MockTypeRegimeFiscal.SOCIETE_PERS); // régime fiscal terminé en 2013
-			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-			return entreprise.getNumero();
+				final RegDate dateDebutEntreprise = date(2008, 8, 12);
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise, dateDebutEntreprise, date(2013, 1, 2), FormeJuridiqueEntreprise.SNC);     // forme juridique terminée
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, date(2013, 1, 2), MockTypeRegimeFiscal.SOCIETE_PERS); // régime fiscal terminé en 2013
+				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+				return entreprise.getNumero();
+			});
 		});
 
 		// vérification en base de données
@@ -1101,17 +1104,17 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		final DeterminationQuestionnairesSNCResults res = processor.run(pf, dateTraitement, 1, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNbContribuablesInspectes());
-		Assert.assertEquals(0, res.getErreurs().size());
-		Assert.assertEquals(1, res.getIgnores().size());
+		Assert.assertEquals(1, res.getErreurs().size());
+		Assert.assertEquals(0, res.getIgnores().size());
 		Assert.assertEquals(0, res.getTraites().size());
 
-		// ignoré en raison de la catégorie d'entreprise qui est mauvaise
-		final DeterminationQuestionnairesSNCResults.Ignore ignore = res.getIgnores().get(0);
-		Assert.assertNotNull(ignore);
-		Assert.assertEquals(pmId, ignore.noCtb);
-		Assert.assertEquals("Ma société de personnes", ignore.nomCtb);
-		Assert.assertEquals((Integer) ServiceInfrastructureService.noOIPM, ignore.officeImpotID);
-		Assert.assertEquals(DeterminationQuestionnairesSNCResults.IgnoreType.AUCUN_QUESTIONNAIRE_REQUIS, ignore.type);
-		Assert.assertNull(ignore.details);
+		// en erreur en raison de la forme juridique qui s'arrête trop tôt
+		final DeterminationQuestionnairesSNCResults.Erreur erreur = res.getErreurs().get(0);
+		Assert.assertNotNull(erreur);
+		Assert.assertEquals(pmId, erreur.noCtb);
+		Assert.assertEquals("Ma société de personnes", erreur.nomCtb);
+		Assert.assertEquals((Integer) ServiceInfrastructureService.noOIPM, erreur.officeImpotID);
+		Assert.assertEquals(DeterminationQuestionnairesSNCResults.ErreurType.CTB_INVALIDE, erreur.type);
+		Assert.assertNull(erreur.details);
 	}
 }

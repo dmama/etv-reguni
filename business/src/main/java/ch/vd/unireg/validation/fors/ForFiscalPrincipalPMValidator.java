@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.regimefiscal.RegimeFiscalConsolide;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
@@ -31,6 +33,31 @@ public class ForFiscalPrincipalPMValidator extends ForFiscalPrincipalValidator<F
 	@Override
 	protected Class<ForFiscalPrincipalPM> getValidatedClass() {
 		return ForFiscalPrincipalPM.class;
+	}
+
+	@Override
+	public ValidationResults validate(ForFiscalPrincipalPM ff) {
+		final ValidationResults validate = super.validate(ff);
+
+		if (!ff.isAnnule()) {
+
+				final RegDate dateFin = ff.getDateFin();
+			if (dateFin == null || dateFin.isAfterOrEqual(DATE_SAISIE_REGIME_FISCAUX)) {
+				// [SIFISC-28092] un for fiscal principal PM ne doit pas se trouver à cheval sur des régimes fiscaux PM/SP différents
+				final ContribuableImpositionPersonnesMorales cipm = ff.getTiers();
+				final List<RegimeFiscalConsolide> regimes = regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie((Entreprise) cipm);
+
+				final Set<Boolean> genreImpots = regimes.stream()
+						.filter(r -> DateRangeHelper.intersect(r, ff))
+						.map(RegimeFiscalConsolide::isSocieteDePersonnes)
+						.collect(Collectors.toSet());
+				if (genreImpots.size() > 1) {
+					validate.addError(String.format("Le for %s est à cheval sur deux régimes fiscaux de type 'SOCIETE_PERS' et 'ORDINAIRE_PM'.", getEntityDisplayString(ff)));
+				}
+			}
+		}
+
+		return validate;
 	}
 
 	/**
@@ -63,20 +90,31 @@ public class ForFiscalPrincipalPMValidator extends ForFiscalPrincipalValidator<F
 
 			// [SIFISC-26314] on va chercher les régimes fiscaux de l'entreprise
 			final List<RegimeFiscalConsolide> regimes = regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie((Entreprise) cipm);
+
 			final List<RegimeFiscalConsolide> regimesPM = regimes.stream()
-					.filter(r -> !r.isSocieteDePersonnes())
+					.filter(r -> r.isIndetermine() || !r.isSocieteDePersonnes())    // [SIFISC-28092] la catégorie 'en attente de détermination' est considérée à la fois comme PM et SP
 					.collect(Collectors.toList());
 			final List<RegimeFiscalConsolide> regimesSP = regimes.stream()
-					.filter(RegimeFiscalConsolide::isSocieteDePersonnes)
+					.filter(r -> r.isIndetermine() || r.isSocieteDePersonnes())     // [SIFISC-28092] la catégorie 'en attente de détermination' est considérée à la fois comme PM et SP
 					.collect(Collectors.toList());
 
 			allowed = new HashSet<>();
-			if (DateRangeHelper.intersect(forFiscal, regimesPM)) {
-				// le for fiscal est sur une période avec des régimes 'personne morales' -> bénéfice capital
+
+			final DateRange effectiveRange;
+			if (forFiscal.getDateDebut() == null || forFiscal.getDateDebut().isBefore(DATE_SAISIE_REGIME_FISCAUX)) {
+				// [SIFISC-26314][SIFISC-28092] on ignore la plage avant le 1er janvier 2009 pour ce qui est de la validation du régime fiscal
+				effectiveRange = new DateRangeHelper.Range(DATE_SAISIE_REGIME_FISCAUX, forFiscal.getDateFin());
+			}
+			else {
+				effectiveRange = forFiscal;
+			}
+
+			if (DateRangeHelper.isFullyCovered(effectiveRange, regimesPM)) {
+				// le for fiscal est complètement dans une période avec des régimes 'personne morales' -> bénéfice capital
 				allowed.add(GenreImpot.BENEFICE_CAPITAL);
 			}
-			if (DateRangeHelper.intersect(forFiscal, regimesSP)) {
-				// le for fiscal est sur une période avec des régimes 'société de personnes' -> revenu fortune
+			if (DateRangeHelper.isFullyCovered(effectiveRange, regimesSP)) {
+				// le for fiscal est complètement dans une période avec des régimes 'société de personnes' -> revenu fortune
 				allowed.add(GenreImpot.REVENU_FORTUNE);
 			}
 		}
