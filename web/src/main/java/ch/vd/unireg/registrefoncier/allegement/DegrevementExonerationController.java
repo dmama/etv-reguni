@@ -1249,6 +1249,7 @@ public class DegrevementExonerationController {
 		model.addAttribute("idContribuable", demande.getEntreprise().getNumero());
 		model.addAttribute("immeuble", new ResumeImmeubleView(demande.getImmeuble(), null, registreFoncierService));
 		model.addAttribute("editDemandeDegrevementCommand", view);
+		model.addAttribute("demandeRetournee", demande.getDateRetour() != null);
 		return "tiers/edition/pm/degrevement-exoneration/edit-demande-degrevement";
 	}
 
@@ -1275,8 +1276,7 @@ public class DegrevementExonerationController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
-	public String ajouterDelai(@RequestParam("id") long id,
-	                               Model model) throws AccessDeniedException {
+	public String ajouterDelai(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un délai à une demande de dégrèvement ICI.");
@@ -1286,6 +1286,11 @@ public class DegrevementExonerationController {
 
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		if (doc.getDateRetour() != null) {
+			Flash.warning("Impossible d'ajouter un délai : la demande de dégrèvement est déjà retournée.");
+			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+		}
 
 		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(doc.getDelaiAccordeAu());
 		model.addAttribute("ajouterView", new EditionDelaiAutreDocumentFiscalView(doc, delaiAccordeAu));
@@ -1307,8 +1312,7 @@ public class DegrevementExonerationController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
-	public String ajouterDelai(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view,
-	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
+	public String ajouterDelai(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view, BindingResult result) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
 			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une demande de dégrèvement ICI");
@@ -1327,6 +1331,11 @@ public class DegrevementExonerationController {
 
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		if (doc.getDateRetour() != null) {
+			Flash.error("Impossible d'ajouter un délai : la demande de dégrèvement est déjà retournée.");
+			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+		}
 
 		// On ajoute le délai
 		final RegDate delaiAccordeAu = view.getDelaiAccordeAu();
