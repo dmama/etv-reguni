@@ -45,7 +45,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 	private static boolean alreadySetUp = false;
 
 	private UserLogin zaiptf; // Francis Perroset
-	private UserLogin zaimkd; // Marinette Kellenberger
+	private UserLogin zaizzt; // Utilisateur technique taxation
 	private UserLogin zciddo; // Daniel Di Lallo
 	private UserLogin zaipmx; // Pascal Mutrux
 
@@ -81,9 +81,9 @@ public class SecuriteWebServiceTest extends WebitTest {
 		zaiptf.setUserId("zaiptf");
 		zaiptf.setOid(22); // ACI
 
-		zaimkd = new UserLogin();
-		zaimkd.setUserId("zaimkd");
-		zaimkd.setOid(22); // ACI
+		zaizzt = new UserLogin();
+		zaizzt.setUserId("zaizzt");
+		zaizzt.setOid(22); // ACI
 
 		zciddo = new UserLogin();
 		zciddo.setUserId("zciddo");
@@ -137,13 +137,13 @@ public class SecuriteWebServiceTest extends WebitTest {
 	}
 
 	/**
-	 * Teste que Marinette Kellenberger possède les droits d'écriture sur tous les contribuables (parce qu'elle fait partie de la direction de l'ACI)
+	 * Teste que l'utilisateur technique de taxation qui possède les rôles IZPOUDP et IZPOUDM peut bien accéder en lecture et en écriture sur tous les contribuables
 	 */
 	@Test
-	public void testAutorisationsMarinetteKellenberger() throws Exception {
+	public void testAutorisationsUserTechniqueTaxation() throws Exception {
 
 		GetAutorisationSurDossier params = new GetAutorisationSurDossier();
-		params.setLogin(zaimkd);
+		params.setLogin(zaizzt);
 
 		params.setNumeroTiers(12300001L); // Christine Schmid
 		assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params));

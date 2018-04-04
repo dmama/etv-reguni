@@ -25,7 +25,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	private static boolean alreadySetUp = false;
 
 	private static final UserLogin zaiptf = new UserLogin("zaiptf", 22); // Francis Perroset
-	private static final UserLogin zaimkd = new UserLogin("zaimkd", 22); // Marinette Kellenberger
+	private static final UserLogin zaizzt = new UserLogin("zaizzt", 22); // Utilisateur technique taxation
 	private static final UserLogin zciddo = new UserLogin("zciddo", 0);  // Daniel Di Lallo
 	private static final UserLogin zaipmx = new UserLogin("zaipmx", 19); // Pascal Mutrux
 
@@ -130,43 +130,43 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	}
 
 	/**
-	 * Teste que Marinette Kellenberger possède les droits d'écriture sur tous les contribuables (parce qu'elle fait partie de la direction de l'ACI)
+	 * Teste que l'utilisateur technique de taxation qui possède les rôles IZPOUDP et IZPOUDM peut bien accéder en lecture et en écriture sur tous les contribuables
 	 */
 	@Test
-	public void testGetSecurityMarinetteKellenbeger() throws Exception {
+	public void testGetSecurityUserTechniqueTaxation() throws Exception {
 
 		// Christine Schmid
-		doTest(zaimkd, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaimkd, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaizzt, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaizzt, 12300001L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Laurent Schmid
-		doTest(zaimkd, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaimkd, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaizzt, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaizzt, 12300002L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Christine & Laurent Schmid
-		doTest(zaimkd, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaimkd, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaizzt, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaizzt, 86006202L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Jean-Eric Cuendet
-		doTest(zaimkd, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaimkd, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaizzt, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaizzt, 10210315L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Jean-Philippe Maillefer
-		doTest(zaimkd, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaimkd, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaizzt, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaizzt, 61615502L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 
 		// Pascal Broulis
-		doTest(zaimkd, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
-		doTest(zaimkd, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+		doTest(zaizzt, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
+		doTest(zaizzt, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
 	}
 
 	/**
-	 * Teste que Marinette Kellenberger possède les droits d'écriture sur tous les contribuables (parce qu'elle fait partie de la direction de l'ACI)
+	 * Teste que l'utilisateur technique de taxation qui possède les rôles IZPOUDP et IZPOUDM peut bien accéder en lecture et en écriture sur tous les contribuables
 	 */
 	@Test
-	public void testGetBatchSecurityMarinetteKellenbeger() throws Exception {
-		doTestBatch(zaimkd, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
-		doTestBatch(zaimkd, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
+	public void testGetBatchSecurityUserTechniqueTaxation() throws Exception {
+		doTestBatch(zaizzt, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
+		doTestBatch(zaizzt, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
 	}
 
 	/**
