@@ -252,8 +252,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/editer.do", method = RequestMethod.GET)
-	public String editer(@RequestParam("id") long id,
-	                     Model model) throws AccessDeniedException {
+	public String editer(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		/* Pour l'instant, la lettre de bienvenue est le seul document fiscal avec suivi qu'on est susceptible d'éditer. */
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
@@ -275,6 +274,7 @@ public class AutreDocumentFiscalController {
 		}
 
 		model.addAttribute("command", view);
+		model.addAttribute("documentRetourne", doc.getDateRetour() != null);
 		return "documentfiscal/editer";
 	}
 
@@ -292,8 +292,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
-	public String ajouterDelai(@RequestParam("id") long id,
-	                               Model model) throws AccessDeniedException {
+	public String ajouterDelai(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un délai à un autre document fiscal.");
@@ -303,6 +302,11 @@ public class AutreDocumentFiscalController {
 
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		if (doc.getDateRetour() != null) {
+			Flash.warning("Impossible d'ajouter un délai : le document est déjà retourné.");
+			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+		}
 
 		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(doc.getDelaiAccordeAu());
 		model.addAttribute("ajouterView", new EditionDelaiAutreDocumentFiscalView(doc, delaiAccordeAu));
@@ -343,6 +347,11 @@ public class AutreDocumentFiscalController {
 
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		if (doc.getDateRetour() != null) {
+			Flash.error("Impossible d'ajouter un délai : le document est déjà retourné.");
+			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+		}
 
 		// On ajoute le délai
 		final RegDate delaiAccordeAu = view.getDelaiAccordeAu();
