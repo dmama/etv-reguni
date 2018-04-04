@@ -34,19 +34,6 @@ public class ForFiscalPrincipalPMValidator extends ForFiscalPrincipalValidator<F
 	}
 
 	/**
-	 * Sur le principe, un for fiscal sur une société de personnes (= qui n'est pas un sujet fiscal) devrait avoir le genre d'impôt {@link GenreImpot#REVENU_FORTUNE} alors qu'il devrait être {@link GenreImpot#BENEFICE_CAPITAL} pour une société de
-	 * capitaux.
-	 *
-	 * @param forFiscal le for fiscal à tester
-	 * @return <code>true</code> si le genre d'impôt du for fiscal est autorisé
-	 */
-	@Override
-	protected boolean isGenreImpotCoherent(@NotNull ForFiscalPrincipalPM forFiscal) {
-		final Set<GenreImpot> allowed = determineAllowedGenreImpots(forFiscal);
-		return allowed.contains(forFiscal.getGenreImpot());
-	}
-
-	/**
 	 * Détermine les genres d'impôt autorisés pour l'entreprise dans la période du for fiscal spécifié.
 	 * <p/>
 	 * Depuis le SIFISC-26314, les genres d'impôt autorisés sont déduits des régimes fiscaux selon la règle suivante :
@@ -61,7 +48,7 @@ public class ForFiscalPrincipalPMValidator extends ForFiscalPrincipalValidator<F
 	 * @return les genres d'impôt autorisés.
 	 */
 	@NotNull
-	private Set<GenreImpot> determineAllowedGenreImpots(@NotNull ForFiscalPrincipalPM forFiscal) {
+	protected Set<GenreImpot> determineAllowedGenreImpots(@NotNull ForFiscalPrincipalPM forFiscal) {
 
 		final RegDate dateFin = forFiscal.getDateFin();
 		if (dateFin != null && dateFin.isBefore(DATE_SAISIE_REGIME_FISCAUX)) {

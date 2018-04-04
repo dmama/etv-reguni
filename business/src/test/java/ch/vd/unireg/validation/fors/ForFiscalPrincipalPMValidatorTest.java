@@ -88,7 +88,7 @@ public class ForFiscalPrincipalPMValidatorTest extends AbstractValidatorTest<For
 			final List<String> errors = results.getErrors();
 			assertNotNull(errors);
 			assertEquals(1, errors.size());
-			assertEquals("Le for ForFiscalPrincipalPM (01.01.2009 - ?) avec genre d'impôt 'BENEFICE_CAPITAL' est invalide.", errors.get(0));
+			assertEquals("Le for ForFiscalPrincipalPM (01.01.2009 - ?) avec genre d'impôt 'BENEFICE_CAPITAL' est invalide (autorisé(s) = REVENU_FORTUNE).", errors.get(0));
 		}
 	}
 
@@ -124,7 +124,7 @@ public class ForFiscalPrincipalPMValidatorTest extends AbstractValidatorTest<For
 			final List<String> errors = results.getErrors();
 			assertNotNull(errors);
 			assertEquals(1, errors.size());
-			assertEquals("Le for ForFiscalPrincipalPM (01.01.2009 - ?) avec genre d'impôt 'REVENU_FORTUNE' est invalide.", errors.get(0));
+			assertEquals("Le for ForFiscalPrincipalPM (01.01.2009 - ?) avec genre d'impôt 'REVENU_FORTUNE' est invalide (autorisé(s) = BENEFICE_CAPITAL).", errors.get(0));
 		}
 	}
 }
