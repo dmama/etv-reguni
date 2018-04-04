@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class AbstractServiceCivilTest extends BusinessItTest {
+public class ServiceCivilRcPersTest extends BusinessItTest {
 
 	protected ServiceCivilService service;
 
