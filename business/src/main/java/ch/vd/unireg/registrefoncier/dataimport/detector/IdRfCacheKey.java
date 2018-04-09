@@ -47,4 +47,11 @@ public class IdRfCacheKey implements ObjectKey {
 	public String getComplement() {
 		return idRF;
 	}
+
+	@Override
+	public String toString() {
+		return "IdRfCacheKey{" +
+				"idRF='" + idRF + '\'' +
+				'}';
+	}
 }
