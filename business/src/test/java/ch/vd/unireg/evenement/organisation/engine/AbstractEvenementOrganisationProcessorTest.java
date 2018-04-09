@@ -77,11 +77,10 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 
 	protected void buildProcessor(EvenementOrganisationTranslator translator) throws Exception {
 		processor = createProcessor(translator);
-		((EvenementOrganisationProcessorInternal) processor.getInternalProcessor()).afterPropertiesSet();
 		processor.start();
 	}
 
-	protected EvenementOrganisationProcessorFacade createProcessor(EvenementOrganisationTranslator translator) {
+	protected EvenementOrganisationProcessorFacade createProcessor(EvenementOrganisationTranslator translator) throws Exception {
 		final EvenementOrganisationProcessorFacade facade = new EvenementOrganisationProcessorFacade();
 		facade.setNotificationQueue(queue);
 
@@ -92,6 +91,7 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 		internal.setTiersService(tiersService);
 		internal.setIndexer(globalTiersIndexer);
 		internal.setDataEventService(dataEventService);
+		internal.afterPropertiesSet();
 
 		facade.setInternalProcessor(internal);
 		return facade;
