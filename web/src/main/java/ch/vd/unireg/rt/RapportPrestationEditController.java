@@ -83,7 +83,7 @@ public class RapportPrestationEditController  extends AbstractRapportPrestationC
 			mav.setView(new RedirectView("../tiers/visu.do?id=" + rapportView.getDebiteur().getNumero()));
 		}
 		if (provenance.equals(PROVENANCE_LISTE_RAPPORTS)) {
-			mav.setView(new RedirectView("../rapports-prestation/list.do?idDpi=" + rapportView.getDebiteur().getNumero()));
+			mav.setView(new RedirectView("../rapports-prestation/full-list.do?idDpi=" + rapportView.getDebiteur().getNumero()));
 		}
 
 		return mav;

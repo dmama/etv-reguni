@@ -67,11 +67,8 @@
 		</property>
 		<property name="urlMap">
 			<map>
-				<!-- Tiers - display -->
-				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
-				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />
-
 				<!-- Rapport Prestation -->
+				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rt/list-debiteur.do" value-ref="debiteurListController" />
 				<entry key="/rt/list-sourcier.do" value-ref="sourcierListController" />
 				<entry key="/rt/edit.do" value-ref="rapportPrestationEditController" />

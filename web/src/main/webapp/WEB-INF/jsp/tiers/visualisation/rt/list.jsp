@@ -13,13 +13,14 @@
 		</jsp:include>
 		<!-- Fin Caracteristiques generales -->
 
+		<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.RapportsPrestationView"--%>
 		<c:if test="${command.editionAllowed}">
 			<unireg:raccourciAjouter link="../rt/list-sourcier.do?numeroDpi=${command.idDpi}&provenance=listeRPI" tooltip="Ajouter rapport" display="label.bouton.ajouter"/>
 		</c:if>
 
 		<!-- Debut liste de tous les rapports -->
 		<c:if test="${not empty command.rapports}">
-			<display:table name="command.rapports" id="rapportPrestation" requestURI="/rapports-prestation/list.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
+			<display:table name="command.rapports" id="rapportPrestation" requestURI="/rapports-prestation/full-list.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
 				<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 					<unireg:regdate regdate="${rapportPrestation.dateDebut}"/>

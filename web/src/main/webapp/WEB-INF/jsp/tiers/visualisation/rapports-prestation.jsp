@@ -33,7 +33,7 @@
 			</td>
 
 			<td id="timeline" align="right">
-				<a href="<c:url value="/rapports-prestation/list.do?idDpi=" /><c:out value="${command.tiers.numero}" />" >Liste complète</a>
+				<a href="<c:url value="/rapports-prestation/full-list.do?idDpi=" /><c:out value="${command.tiers.numero}" />" >Liste complète</a>
 			</td>
 		</tr>
 	</table>

@@ -80,7 +80,7 @@
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
-	<bean id="rapportsPrestationListController" class="ch.vd.unireg.tiers.RapportsPrestationListController">
+	<bean id="rapportPrestationController" class="ch.vd.unireg.rt.RapportPrestationController">
 		<property name="manager" ref="tiersVisuManager" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
