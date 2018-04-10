@@ -13,6 +13,7 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationService;
 import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
 import ch.vd.unireg.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
@@ -26,8 +27,10 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesREE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.unireg.metier.MetierServicePM;
@@ -53,6 +56,7 @@ import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.type.TypeEvenementOrganisation;
 import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 
+import static ch.vd.unireg.interfaces.organisation.data.TypeDeSite.ETABLISSEMENT_PRINCIPAL;
 import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -855,6 +859,90 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 			             evt.getErreurs().get(4).getMessage());
 			assertEquals("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC, qui reste en faillite.",
 			             evt.getErreurs().get(5).getMessage());
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-19494] Ce test vérifie que la radiation d'une SNC avec un for vaudois (ou un assujettissement) fait bien passer l'événement dans l'état A_VERIFIER.
+	 */
+	@Test(timeout = 10000L)
+	public void testRadiationSNC() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 102059155L;
+		final Long noSite = 102059156L;
+
+		final RegDate dateCreation = date(2018, 1, 11);
+		final RegDate dateRadiation = date(2018, 1, 29);
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+
+				// source : http://rp-ws-va.etat-de-vaud.ch/registres/rcent/services/v3/organisation/CT.VD.PARTY/102059155?history=true
+				final RegDate dateSnapshot1 = RegDate.get(2018, 1, 16);
+				final RegDate dateSnapshot2 = RegDate.get(2018, 2, 1);
+
+				final MockDonneesRC donneesRC = new MockDonneesRC();
+				donneesRC.addInscription(dateSnapshot1, dateSnapshot2.getOneDayBefore(), new InscriptionRC(StatusInscriptionRC.ACTIF, null, dateCreation, null, dateCreation, null));
+				donneesRC.addInscription(dateSnapshot2, null, new InscriptionRC(StatusInscriptionRC.RADIE, null, dateCreation, dateRadiation, dateCreation, dateRadiation));
+
+				final MockSiteOrganisation site = new MockSiteOrganisation(noSite, new MockDonneesRegistreIDE(), donneesRC, new MockDonneesREE());
+				site.changeNom(dateSnapshot1, "By Hina Boutique SNC");
+				site.changeTypeDeSite(dateSnapshot1, ETABLISSEMENT_PRINCIPAL);
+				site.changeFormeLegale(dateSnapshot1, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF);
+				site.changeDomicile(dateSnapshot1, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Vallorbe.getNoOFS());
+				site.changeDomicile(dateSnapshot2, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Vallorbe.getNoOFS());
+
+				final MockOrganisation organisation = new MockOrganisation(noOrganisation);
+				organisation.addDonneesSite(site);
+				addOrganisation(organisation);
+			}
+		});
+
+		// Création de l'entreprise
+		final Long entrepriseId = doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+			tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, dateCreation, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			addRegimeFiscalVD(entreprise, RegDate.get(2018, 1, 12), null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, RegDate.get(2018, 1, 12), null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, RegDate.get(2018, 1, 12), MotifFor.DEBUT_EXPLOITATION, MockCommune.Vallorbe, GenreImpot.REVENU_FORTUNE);
+			return entreprise.getNumero();
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 1189567L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(transactionStatus -> {
+			final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_RADIATION_ENTREPRISE, RegDate.get(2018, 2, 1), A_TRAITER);
+			return hibernateTemplate.merge(event);
+		});
+
+		buildProcessor(translator);
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(status -> {
+
+			final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+
+			// la SNC doit maintenant être radiée
+			final Entreprise entreprise1 = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+			assertEquals(TypeEtatEntreprise.RADIEE_RC, entreprise1.getEtatActuel().getType());
+
+			// un message de vérification doit être présent
+			final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
+			assertEquals(4, erreurs.size());
+			assertEquals("Entreprise n°" + entrepriseId + " (By Hina Boutique SNC) identifiée sur la base du numéro civil 102059155 (numéro cantonal).", erreurs.get(0).getMessage());
+			assertEquals("Mutation : Radiation", erreurs.get(1).getMessage());
+			assertEquals("Réglage de l'état: Radiée du RC.", erreurs.get(2).getMessage());
+			assertEquals("Vérification requise pour la radiation de l'entreprise encore dotée d'un for principal.", erreurs.get(3).getMessage());
 			return null;
 		});
 	}

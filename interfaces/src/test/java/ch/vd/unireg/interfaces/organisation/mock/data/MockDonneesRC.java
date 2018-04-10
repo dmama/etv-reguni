@@ -111,8 +111,8 @@ public class MockDonneesRC implements DonneesRC {
 		MockOrganisationHelper.changeRangedData(inscription, date, nouvelleInscription);
 	}
 
-	public void addInscription(RegDate dateDebut, @Nullable RegDate dateFin, InscriptionRC nouvelleInscription) {
-		MockOrganisationHelper.addRangedData(inscription, dateDebut, dateFin, nouvelleInscription);
+	public void addInscription(RegDate dateDebut, @Nullable RegDate dateFin, InscriptionRC inscription) {
+		MockOrganisationHelper.addRangedData(this.inscription, dateDebut, dateFin, inscription);
 	}
 
 	public List<DateRanged<String>> getButs() {
