@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.unireg.rt.DebiteurListController;
 import ch.vd.unireg.rt.SourcierListController;
 
 /**
@@ -33,8 +32,7 @@ public class SearchCriteriaRemovalController {
 
 	@RequestMapping(value = "/rt/debiteur/reset-search.do", method = RequestMethod.GET)
 	public String effacerCriteresRechercheDebiteurPourRT(HttpSession session, @RequestParam("numeroSrc") long numeroSrc) {
-		session.removeAttribute(DebiteurListController.DEBITEUR_CRITERIA_NAME);
-		return String.format("redirect:/rt/list-debiteur.do?numeroSrc=%d", numeroSrc);
+		return String.format("redirect:/rapports-prestation/search-debiteur.do?numeroSourcier=%d", numeroSrc);
 	}
 
 	@RequestMapping(value = "/rt/sourcier/reset-search.do", method = RequestMethod.GET)

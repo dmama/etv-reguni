@@ -42,6 +42,11 @@
 
 	<bean id="tiersCriteriaValidator" class="ch.vd.unireg.tiers.validator.TiersCriteriaValidator" />
 
+	<bean id="tiersCriteriaValidatorAllowsEmpty" class="ch.vd.unireg.tiers.validator.TiersCriteriaValidator">
+		<!-- allowsEmpty -->
+		<constructor-arg value="true"/>
+	</bean>
+
 	<bean id="tiersLaunchCatController" class="ch.vd.unireg.tiers.TiersLaunchCatController" />
 
 	<bean id="tiersVignetteController" class="ch.vd.unireg.tiers.vignette.VignetteController" >
@@ -78,15 +83,6 @@
 		<property name="autorisationManager" ref="autorisationManager" />
 		<property name="controllerUtils" ref="controllerUtils" />
 		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
-	<bean id="rapportPrestationController" class="ch.vd.unireg.rt.RapportPrestationController">
-		<property name="tiersVisuManager" ref="tiersVisuManager" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
-		<property name="rapportEditManager" ref="rapportEditManager" />
-		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
-		<property name="rapportEditValidator" ref="rapportPrestationValidator" />
-		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="tiersTimelineController" class="ch.vd.unireg.tiers.timeline.ForsTimelineController">

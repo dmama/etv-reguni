@@ -18,8 +18,7 @@
 		<c:if test="${(command.natureTiers == 'Habitant') || (command.natureTiers == 'NonHabitant')}">
 		<tr>
 			<td>
-				<a href="../rt/list-debiteur.do?numeroSrc=<c:out value="${command.tiers.numero}"/>"
-				class="add" title="Ajouter rapport de travail"><fmt:message key="label.bouton.ajouter.rt" /></a>
+				<unireg:linkTo name="Ajouter RT" action="/rapports-prestation/search-debiteur.do" params="{numeroSourcier:${command.tiers.numero}}" link_class="add" title="Ajouter rapport de travail"/>
 			</td>
 		</tr>
 		</c:if>

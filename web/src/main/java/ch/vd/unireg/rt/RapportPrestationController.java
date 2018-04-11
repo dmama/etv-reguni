@@ -2,7 +2,11 @@ package ch.vd.unireg.rt;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -18,13 +22,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.ControllerUtils;
+import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.common.URLHelper;
 import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.rapport.manager.RapportEditManager;
 import ch.vd.unireg.rt.manager.RapportPrestationEditManager;
+import ch.vd.unireg.rt.view.DebiteurListView;
 import ch.vd.unireg.rt.view.RapportPrestationView;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityCheck;
+import ch.vd.unireg.tiers.TiersIndexedDataView;
+import ch.vd.unireg.tiers.TiersMapHelper;
+import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.manager.TiersEditManager;
 import ch.vd.unireg.tiers.manager.TiersVisuManager;
 import ch.vd.unireg.tiers.view.RapportsPrestationView;
@@ -37,18 +48,23 @@ import ch.vd.unireg.utils.RegDateEditor;
 @Controller
 public class RapportPrestationController {
 
+	private final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationController.class);
+
 	public static final String DROIT_CONSULTATION_RT = "vous ne possédez pas le droit IfoSec de consultation des rapports de prestations imposables";
 	public static final String DROIT_MODIFICATION_RT = "vous ne possédez pas le droit IfoSec de modification des rapports de prestations imposables";
 
 	private static final String TABLE_NAME = "rapportPrestation";
 	private static final int PAGE_SIZE = 10;
 
+	private TiersService tiersService;
+	private TiersMapHelper tiersMapHelper;
 	private TiersVisuManager tiersVisuManager;
 	private TiersEditManager tiersEditManager;
 	private RapportEditManager rapportEditManager;
 	private RapportPrestationEditManager rapportPrestationEditManager;
 	private ControllerUtils controllerUtils;
 	private Validator rapportEditValidator;
+	private Validator tiersCriteriaValidator;
 
 	/**
 	 * Affiche l'écran d'édition des rapports de prestation d'un débiteur
@@ -70,6 +86,61 @@ public class RapportPrestationController {
 
 		return "tiers/edition/rt/edit";
 	}
+
+	@InitBinder("debiteurCriteriaView")
+	public void initTiersCriteriaBinder(WebDataBinder binder) {
+		binder.setValidator(tiersCriteriaValidator);
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+	}
+
+	/**
+	 * Affiche l'écran de recherche d'un débiteur à lier par un rapport de prestation à un contribuable donné.
+	 */
+	@SecurityCheck(rolesToCheck = Role.RT, accessDeniedMessage = DROIT_MODIFICATION_RT)
+	@RequestMapping(value = "/rapports-prestation/search-debiteur.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String searchDebiteur(@Valid @ModelAttribute("debiteurCriteriaView") final DebiteurListView view, BindingResult binding, Model model) {
+
+		final long idSourcier = view.getNumeroSourcier();
+
+		if (!rapportPrestationEditManager.isExistingTiers(idSourcier)) {
+			throw new TiersNotFoundException(idSourcier);
+		}
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnEcriture(idSourcier);
+
+		model.addAttribute("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
+		model.addAttribute("formesJuridiquesEnum", tiersMapHelper.getMapFormesJuridiquesEntreprise());
+		model.addAttribute("categoriesEntreprisesEnum", tiersMapHelper.getMapCategoriesEntreprise());
+
+		if (binding.hasErrors() || view.isEmpty()) {
+			return "tiers/edition/rt/debiteur/list";
+		}
+
+		// on effectue la recherche
+		try {
+			final List<TiersIndexedDataView> list = tiersService.search(view.asCore()).stream()
+					.map(TiersIndexedDataView::new)
+					.collect(Collectors.toList());
+			model.addAttribute("list", list);
+		}
+		catch (TooManyResultsIndexerException ee) {
+			if (ee.getNbResults() > 0) {
+				binding.reject("error.preciser.recherche.trouves", new Object[]{String.valueOf(ee.getNbResults())}, null);
+			}
+			else {
+				binding.reject("error.preciser.recherche");
+			}
+		}
+		catch (IndexerException e) {
+			LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
+			binding.reject("error.recherche");
+		}
+
+		return "tiers/edition/rt/debiteur/list";
+	}
+
 
 	/**
 	 * Affiche l'écran de récapitulation avant ajout d'un rapport de prestations imposables.
@@ -167,6 +238,14 @@ public class RapportPrestationController {
 		return "tiers/visualisation/rt/list";
 	}
 
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
+		this.tiersMapHelper = tiersMapHelper;
+	}
+
 	public void setTiersVisuManager(TiersVisuManager tiersVisuManager) {
 		this.tiersVisuManager = tiersVisuManager;
 	}
@@ -185,6 +264,10 @@ public class RapportPrestationController {
 
 	public void setRapportEditValidator(Validator rapportEditValidator) {
 		this.rapportEditValidator = rapportEditValidator;
+	}
+
+	public void setTiersCriteriaValidator(Validator tiersCriteriaValidator) {
+		this.tiersCriteriaValidator = tiersCriteriaValidator;
 	}
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {

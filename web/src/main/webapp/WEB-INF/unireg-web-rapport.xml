@@ -2,14 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="debiteurListController" class="ch.vd.unireg.rt.DebiteurListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.unireg.rt.view.DebiteurListView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="tiers/edition/rt/debiteur/list" />
-		<property name="successView" value="edit.do" />
+	<bean id="rapportPrestationController" class="ch.vd.unireg.rt.RapportPrestationController">
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="tiersVisuManager" ref="tiersVisuManager" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="rapportEditManager" ref="rapportEditManager" />
 		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
-		<property name="validator" ref="tiersCriteriaValidator"/>
+		<property name="rapportEditValidator" ref="rapportPrestationValidator" />
+		<property name="tiersCriteriaValidator" ref="tiersCriteriaValidatorAllowsEmpty" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="sourcierListController" class="ch.vd.unireg.rt.SourcierListController" parent="abstractTiersListController">
@@ -71,12 +73,7 @@
 	<bean id="contribuableAssocieListController" class="ch.vd.unireg.contribuableAssocie.ContribuableAssocieController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="paramApplicationManager" ref="paramApplicationManager"/>
-		<property name="criteriaValidator">
-			<bean class="ch.vd.unireg.tiers.validator.TiersCriteriaValidator">
-				<!-- allowsEmpty -->
-				<constructor-arg value="true"/>
-			</bean>
-		</property>
+		<property name="criteriaValidator" ref="tiersCriteriaValidatorAllowsEmpty"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
