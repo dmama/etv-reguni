@@ -39,7 +39,6 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:WEB-INF/unireg-web-evenements.xml",
 		"classpath:WEB-INF/unireg-web-lr.xml",
 		"classpath:WEB-INF/unireg-web-rapport.xml",
-		"classpath:WEB-INF/unireg-web-fusion.xml",
 		"classpath:WEB-INF/unireg-web-couple.xml",
 		"classpath:WEB-INF/unireg-web-separation.xml",
 		"classpath:WEB-INF/unireg-web-deces.xml",

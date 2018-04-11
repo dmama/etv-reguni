@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.unireg.fusion.HabitantListController;
-import ch.vd.unireg.fusion.NonHabitantListController;
 import ch.vd.unireg.rt.DebiteurListController;
 import ch.vd.unireg.rt.SourcierListController;
 
@@ -26,18 +24,6 @@ public class SearchCriteriaRemovalController {
 	@RequestMapping(value = "/deces/reset-search.do", method = RequestMethod.GET)
 	public String effacerCriteresRechercheDeces() {
 		return "redirect:/deces/list.do";
-	}
-
-	@RequestMapping(value = "/fusion/habitant/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheFusionHabitant(HttpSession session) {
-		session.removeAttribute(HabitantListController.HABITANT_CRITERIA_NAME);
-		return "redirect:/fusion/list-habitant.do";
-	}
-
-	@RequestMapping(value = "/fusion/nonhabitant/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheFusionNonHabitant(HttpSession session) {
-		session.removeAttribute(NonHabitantListController.NON_HABITANT_CRITERIA_NAME);
-		return "redirect:/fusion/list-non-habitant.do";
 	}
 
 	@RequestMapping(value = "/rapport/reset-search.do", method = RequestMethod.GET)

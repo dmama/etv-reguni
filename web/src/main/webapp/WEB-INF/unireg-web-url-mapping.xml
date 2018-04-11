@@ -70,13 +70,6 @@
 				<!-- Rapport Prestation -->
 				<entry key="/rt/list-debiteur.do" value-ref="debiteurListController" />
 				<entry key="/rt/list-sourcier.do" value-ref="sourcierListController" />
-				<!-- Fusion -->
-				<!-- La fusion est désactivée -->
-				<!--
-				<entry key="/fusion/list-non-habitant.do" value-ref="nonHabitantListController" />
-				<entry key="/fusion/list-habitant.do" value-ref="habitantListController" />
-				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
-				-->
 
 				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !!  -->
 			</map>
