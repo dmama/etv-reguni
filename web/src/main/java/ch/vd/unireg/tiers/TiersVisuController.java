@@ -28,12 +28,12 @@ import ch.vd.unireg.tiers.view.TiersVisuView;
 import ch.vd.unireg.utils.HttpSessionUtils;
 import ch.vd.unireg.utils.RegDateEditor;
 
-import static ch.vd.unireg.tiers.AbstractTiersController.URL_RETOUR_SESSION_NAME;
-import static ch.vd.unireg.tiers.AbstractTiersController.getBooleanParam;
-import static ch.vd.unireg.tiers.AbstractTiersController.getOptionalBooleanParam;
 import static ch.vd.unireg.utils.HttpSessionConstants.AUTRES_FORS_PAGINES;
 import static ch.vd.unireg.utils.HttpSessionConstants.FORS_PRINCIPAUX_PAGINES;
 import static ch.vd.unireg.utils.HttpSessionConstants.FORS_SECONDAIRES_PAGINES;
+import static ch.vd.unireg.utils.HttpSessionConstants.URL_RETOUR_SESSION_NAME;
+import static ch.vd.unireg.utils.HttpSessionUtils.getBooleanParam;
+import static ch.vd.unireg.utils.HttpSessionUtils.getOptionalBooleanParam;
 
 /**
  * Contrôleur du visualisation d'un tiers.

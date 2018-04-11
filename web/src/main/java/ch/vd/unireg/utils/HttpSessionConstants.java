@@ -14,4 +14,5 @@ public abstract class HttpSessionConstants {
 	public static final String FORS_SECONDAIRES_PAGINES = "forsFiscauxSecondairesPagines";
 	public static final String AUTRES_FORS_PAGINES = "autresForsFiscauxPagines";
 
+	public static final String URL_RETOUR_SESSION_NAME = "urlRetour";
 }

@@ -35,8 +35,8 @@ import ch.vd.unireg.tiers.TiersMapHelper;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.utils.RegDateEditor;
 
-import static ch.vd.unireg.tiers.AbstractTiersController.PARAMETRES_APP;
-import static ch.vd.unireg.tiers.AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME;
+import static ch.vd.unireg.utils.HtmlFormConstants.PARAMETRES_APP;
+import static ch.vd.unireg.utils.HtmlFormConstants.TYPE_RECHERCHE_NOM_MAP_NAME;
 
 @Controller
 @RequestMapping(value = "/contribuable-associe")

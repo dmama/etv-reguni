@@ -31,7 +31,6 @@ import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityCheck;
-import ch.vd.unireg.tiers.AbstractTiersController;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersCriteria;
@@ -40,6 +39,7 @@ import ch.vd.unireg.tiers.TiersMapHelper;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.validator.TiersCriteriaValidator;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
+import ch.vd.unireg.utils.HtmlFormConstants;
 import ch.vd.unireg.utils.RegDateEditor;
 
 @Controller
@@ -106,7 +106,7 @@ public class AnnulationDecesController {
 		return bean;
 	}
 
-	@ModelAttribute(AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME)
+	@ModelAttribute(HtmlFormConstants.TYPE_RECHERCHE_NOM_MAP_NAME)
 	public Map<TiersCriteria.TypeRecherche, String> referenceData () {
 		return tiersMapHelper.getMapTypeRechercheNom();
 	}

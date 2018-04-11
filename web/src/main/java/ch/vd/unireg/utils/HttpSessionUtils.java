@@ -1,8 +1,10 @@
 package ch.vd.unireg.utils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -72,5 +74,20 @@ public abstract class HttpSessionUtils {
 		else {
 			session.removeAttribute(name);
 		}
+	}
+
+	public static boolean getBooleanParam(HttpServletRequest request, String paramName) {
+		return getBooleanParam(request, paramName, false);
+	}
+
+	public static boolean getBooleanParam(HttpServletRequest request, String paramName, boolean defaultValue) {
+		final Boolean value = getOptionalBooleanParam(request, paramName);
+		return value == null ? defaultValue : value;
+	}
+
+	@Nullable
+	public static Boolean getOptionalBooleanParam(HttpServletRequest request, String paramName) {
+		final String param = request.getParameter(paramName);
+		return StringUtils.isBlank(param) ? null : param.equalsIgnoreCase("true");
 	}
 }

@@ -3,7 +3,7 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<!-- ======== Config MVC Spring 3.x ======== -->
+	<!-- ======== Config MVC Spring ======== -->
 
 	<!-- Scans within the base package of the application for @Components to configure as beans @Controller, @Service, @Configuration, etc. -->
 	<!-- (msi, 12.04.2011) Désactivé. On préfère instancier les beans des contrôleurs à la main, de manière à gérer finement l'injection des dépendances -->
@@ -37,14 +37,7 @@
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 	</bean>
 
-	<!-- ======== Config MVC Spring 2.x ======== -->
-
-	<!-- HandlerAdapter qui enregistre les contrôleurs spring 2.x dans le DispatcherServlet -->
-	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
-
-	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
+	<!-- ======== Config Spring Remoting ======== -->
 
 	<!-- Url mapper pour le Spring Remoting de l'application Unireg. -->
 	<bean id="remotingUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -56,23 +49,7 @@
 		</property>
 	</bean>
 
-	<!-- Url mapper historique de l'application Unireg. C'est-à-dire avec l'intercepteur 'openSessionInView' qui permet d'utiliser des collections
-	     hibernate non-initialisées dans les pages jsp, mais qui pose plein de problème car il s'agit en fait d'un gros hack. Pour tous les nouveaux
-	     contrôleurs il convient de les enregistrer dans le 'mainUrlMapping' url mapper. -->
-	<bean id="legacyUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<property name="interceptors">
-			<list>
-				<ref bean="openSessionInViewInterceptor" />
-			</list>
-		</property>
-		<property name="urlMap">
-			<map>
-				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !!  -->
-			</map>
-		</property>
-	</bean>
-
-	<!-- ======== Exceptions resolvers (communs à Spring 2.x et Spring 3.x) ======== -->
+	<!-- ======== Exceptions resolvers ======== -->
 
 	<!-- Exception resolver qui ne résoud rien mais notifie par email les exceptions levées -->
 	<bean id="notifyingExceptionResolver" class="ch.vd.unireg.servlet.NotifyingExceptionResolver">

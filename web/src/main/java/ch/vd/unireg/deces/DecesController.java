@@ -36,7 +36,7 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
 import ch.vd.unireg.utils.RegDateEditor;
 
-import static ch.vd.unireg.tiers.AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME;
+import static ch.vd.unireg.utils.HtmlFormConstants.TYPE_RECHERCHE_NOM_MAP_NAME;
 
 @Controller
 @RequestMapping(value = "/deces")

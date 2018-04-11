@@ -73,10 +73,6 @@
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.unireg.common.AbstractSimpleFormController">
-		<property name="controllerUtils" ref="controllerUtils"/>
-	</bean>
-
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.vd.ch" />
 	</bean>

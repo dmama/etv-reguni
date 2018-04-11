@@ -5,17 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 						   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="abstractTiersController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.unireg.tiers.AbstractTiersController">
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="paramApplicationManager" ref="paramApplicationManager" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
-	</bean>
-
-	<bean id="abstractTiersListController" parent="abstractTiersController" abstract="true" class="ch.vd.unireg.tiers.AbstractTiersListController">
-		<property name="infraService" ref="serviceInfrastructureService" />
-	</bean>
-
 	<bean id="tiersMapHelper" class="ch.vd.unireg.tiers.TiersMapHelper" >
 		<property name="messageSource" ref="messageSource"/>
 		<property name="infraService" ref="serviceInfrastructureService" />
