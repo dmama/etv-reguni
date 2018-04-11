@@ -202,4 +202,41 @@ public class ForFiscalPrincipalPMValidatorTest extends AbstractValidatorTest<For
 			assertEquals("Le for ForFiscalPrincipalPM (01.01.2009 - ?) est à cheval sur deux régimes fiscaux de type 'SOCIETE_PERS' et 'ORDINAIRE_PM'.", errors.get(1));
 		}
 	}
+
+	/**
+	 * [SIFISC-28092] Ce test vérifie qu'un for fiscal principal ne peut pas être à cheval sur deux régimes fiscaux différents ; cas spécial du régime en attente de détermination qui convient à tous les fors fiscaux.
+	 */
+	@Test
+	public void testForFiscalAChevalSurRegimesDifferentsDontUnEnAttenteDeDetermination() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addRegimeFiscal(new RegimeFiscal(date(2009, 1, 1), date(2009, 12, 31), RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.SOCIETE_PERS.getCode()));
+		entreprise.addRegimeFiscal(new RegimeFiscal(date(2010, 1, 1), null, RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.INDETERMINE.getCode()));
+
+		final ForFiscalPrincipalPM ff = new ForFiscalPrincipalPM();
+		ff.setMotifRattachement(MotifRattachement.DOMICILE);
+		ff.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		ff.setNumeroOfsAutoriteFiscale(MockCommune.Grandson.getNoOFS());
+		ff.setDateDebut(date(2009, 1, 1));
+		ff.setDateFin(null);
+		ff.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+		ff.setMotifFermeture(null);
+		ff.setTiers(entreprise);
+
+		// pas autorisé, mais seulement à cause du genre d'impôt : pas parce que le for est à cheval sur deux régimes différents
+		ff.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+		{
+			final ValidationResults results = validate(ff);
+			assertTrue(results.hasErrors());
+
+			final List<String> errors = results.getErrors();
+			assertNotNull(errors);
+			assertEquals(1, errors.size());
+			assertEquals("Le for ForFiscalPrincipalPM (01.01.2009 - ?) avec genre d'impôt 'BENEFICE_CAPITAL' est invalide (autorisé(s) = REVENU_FORTUNE).", errors.get(0));
+		}
+
+		// bien autorisé
+		ff.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		assertFalse(validate(ff).hasErrors());
+	}
 }

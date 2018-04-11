@@ -41,7 +41,7 @@ public class ForFiscalPrincipalPMValidator extends ForFiscalPrincipalValidator<F
 
 		if (!ff.isAnnule()) {
 
-				final RegDate dateFin = ff.getDateFin();
+			final RegDate dateFin = ff.getDateFin();
 			if (dateFin == null || dateFin.isAfterOrEqual(DATE_SAISIE_REGIME_FISCAUX)) {
 				// [SIFISC-28092] un for fiscal principal PM ne doit pas se trouver à cheval sur des régimes fiscaux PM/SP différents
 				final ContribuableImpositionPersonnesMorales cipm = ff.getTiers();
@@ -49,6 +49,7 @@ public class ForFiscalPrincipalPMValidator extends ForFiscalPrincipalValidator<F
 
 				final Set<Boolean> genreImpots = regimes.stream()
 						.filter(r -> DateRangeHelper.intersect(r, ff))
+						.filter(r -> !r.isIndetermine())        // [SIFISC-28092] on ignore les régimes 'en attente de détermination' car ils sont autorisés sur les deux genres d'impôt
 						.map(RegimeFiscalConsolide::isSocieteDePersonnes)
 						.collect(Collectors.toSet());
 				if (genreImpots.size() > 1) {
