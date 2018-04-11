@@ -3525,23 +3525,24 @@ var Navigation = {
 	},
 
 	/**
-	 * Retourne à une page précédemment consultée par l'utilisateur. Cette méthode permet de simuler l'utilisation répétée
-	 * du bouton <i>back</i> en remontant sélectivement dans l'historique des pages consultées par l'utilisateur,
-	 * tout en assurant d'atterrir sur une page valide si la page souhaitée ne se trouve pas dans l'historique.
+	 * Construit l'URL pour retourner à une page précédemment consultée par l'utilisateur. Cette méthode permet de simuler l'utilisation
+	 * répétée du bouton <i>back</i> en remontant sélectivement dans l'historique des pages consultées par l'utilisateur.
+	 * Si la page spécifiée n'existe pas dans l'historique de navigation, l'utilisateur est renvoyé vers la page en utilisant des paramètres par défaut.
 	 *
-	 * @param pageUrl       l'URL de la page sur laquelle on veut revenir (e.g. '/tiers/visu.do')
-	 * @param defaultParams les paramètres par défaut à utiliser si la page n'est pas trouvée dans l'historique (e.g. 'id=12345')
+	 * @param pageUrls       les URLs des pages vers lesquelles on veut revenir, le plus récente des pages visitée sera choisie (e.g. '/tiers/visu.do')
+	 * @param defaultPageUrl l'URL de la page par défaut (e.g. '/tiers/visu.do')
+	 * @param defaultParams  les paramètres par défaut à utiliser si la page n'est pas trouvée dans l'historique (e.g. 'id=12345')
 	 */
-	backTo: function (pageUrl, defaultParams) {
+	backTo: function (pageUrls, defaultPageUrl, defaultParams) {
 
 		// valeur par défaut
-		var targetUrl = pageUrl + (StringUtils.isNotBlank(defaultParams) ? '?' + defaultParams : '');
+		var targetUrl = defaultPageUrl + (StringUtils.isNotBlank(defaultParams) ? '?' + defaultParams : '');
 
-		// on recherche dans l'historique la dernière url visitée sur la page spécifiée
+		// on recherche dans l'historique la dernière url visitée parmi les pages spécifiées
 		this.__doInHistory(function (histo) {
 			var u;
 			while (u = histo.pop()) {
-				if (u.indexOf(pageUrl) >= 0) {
+				if (Navigation.__inList(u, pageUrls)) {
 					// on a trouvé une page correspondante dans l'historique, on l'utilise
 					targetUrl = u;
 					break;
@@ -3552,6 +3553,15 @@ var Navigation = {
 
 		// on navigue vers l'url de destination
 		window.location.href = App.curl(targetUrl);
+	},
+
+	__inList: function (string, list) {
+		for (var i = 0; i < list.length; ++i) {
+			if (string.indexOf(list[i]) >= 0) {
+				return true;
+			}
+		}
+		return false;
 	},
 
 	__getRelativeUrl: function (url) {

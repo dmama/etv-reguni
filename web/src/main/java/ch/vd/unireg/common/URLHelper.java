@@ -59,18 +59,13 @@ public abstract class URLHelper {
 	}
 
 	/**
-	 * Construit l'URL pour retourner à une page précédemment consultée par l'utilisateur. Cette méthode permet de simuler l'utilisation
+	 * Débute la construction d'une URL pour retourner à une page précédemment consultée par l'utilisateur. Cette méthode permet de simuler l'utilisation
 	 * répétée du bouton <i>back</i> en remontant sélectivement dans l'historique des pages consultées par l'utilisateur,
 	 * tout en assurant d'atterrir sur une page valide si la page souhaitée ne se trouve pas dans l'historique.
 	 *
-	 * @param pageUrl       l'URL de la page sur laquelle on veut revenir (e.g. '/tiers/visu.do')
-	 * @param defaultParams les paramètres par défaut à utiliser si la page n'est pas trouvée dans l'historique (e.g. 'id=12345')
+	 * @param pageUrl l'URL de la page sur laquelle on veut revenir (e.g. '/tiers/visu.do')
 	 */
-	public static String navigateBackTo(@NotNull String pageUrl, @Nullable String defaultParams) {
-		String url = "redirect:/navigation/backTo.do?pageUrl=" + URLHelper.encodeQueryString(pageUrl);
-		if (StringUtils.isNotBlank(defaultParams)) {
-			url = url + "&defaultParams=" + URLHelper.encodeQueryString(defaultParams);
-		}
-		return url;
+	public static NavigateBackToURLBuilder navigateBackTo(@NotNull String pageUrl) {
+		return new NavigateBackToURLBuilder(pageUrl);
 	}
 }

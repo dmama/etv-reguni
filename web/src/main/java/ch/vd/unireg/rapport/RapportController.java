@@ -324,7 +324,7 @@ public class RapportController {
 			LOGGER.error("Erreur à l'ajout d'un rapport entre les tiers " + numeroTiers + " et " + numeroTiersLie, e);
 			throw new ActionException(e.getMessage());
 		}
-		return URLHelper.navigateBackTo("/tiers/visu.do", "id=" + numeroTiers);
+		return URLHelper.navigateBackTo("/tiers/visu.do").defaultTo("/tiers/visu.do", "id=" + numeroTiers);
 	}
 
 	/**
@@ -465,7 +465,7 @@ public class RapportController {
 				              " a été désigné comme principal de la communauté à partir du " +
 				              RegDateHelper.dateToDisplayString(view.getDateDebut()) + ".");
 
-		return URLHelper.navigateBackTo("/rapport/list.do", "id=" + view.getDefuntId());
+		return URLHelper.navigateBackTo("/rapport/list.do").defaultTo("/rapport/list.do", "id=" + view.getDefuntId());
 	}
 
 	/**
@@ -527,7 +527,7 @@ public class RapportController {
 			Flash.error("Impossible d'annuler le rapport n°" + rapportId + " pour la raison suivante: " + e.getMessage());
 		}
 
-		return URLHelper.navigateBackTo("/rapport/list.do", "id=" + sujetId);
+		return URLHelper.navigateBackTo("/rapport/list.do").defaultTo("/rapport/list.do", "id=" + sujetId);
 	}
 
 	/**

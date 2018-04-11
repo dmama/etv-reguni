@@ -10,10 +10,11 @@
 	<%@ include file="../templates/jsInclude.jsp" %>
 </head>
 <body>
-<%--@elvariable id="pageUrl" type="java.lang.String"--%>
+<%--@elvariable id="pageUrls" type="java.lang.String[]"--%>
+<%--@elvariable id="defaultPageUrl" type="java.lang.String"--%>
 <%--@elvariable id="defaultParams" type="java.lang.String"--%>
 <script type="text/javascript">
 	App.init('<c:url value="/"/>');
-	Navigation.backTo('${pageUrl}', '${defaultParams}');
+	Navigation.backTo([<c:forEach items="${pageUrls}" var="url">'${url}', </c:forEach>], '${defaultPageUrl}', '${defaultParams}');
 </script>
 </body>
