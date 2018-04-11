@@ -27,6 +27,7 @@
 	</table>
 	</c:if>
 
+	<!-- liste des rapports-entre-tiers d'un contribuable normal (= pas un débiteur) -->
 	<c:if test="${not empty command.dossiersApparentes}">
 
 		<%-- détermine si un rapport est de type représentation conventionnelle --%>
@@ -102,13 +103,19 @@
 
 			<display:column style="action">
 				<c:if test="${!dossierApparente.annule}">
-					<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (autorisations.rapportsDeTravail)) ||
-			((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (autorisations.autresRapports))  && (dossierApparente.id != null)}">
+					<c:if test="${dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE' && dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE' && autorisations.autresRapports && dossierApparente.id != null}">
 						<unireg:raccourciModifier
 								link="../rapport/edit.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}"
 								tooltip="Edition de rapport"/>
 						<unireg:linkTo name="" action="/rapport/cancel.do" method="POST" params="{id:${dossierApparente.id}}" link_class="delete"
 						               title="Annulation du rapport-entre-tiers" confirm="Voulez-vous vraiment annuler ce rapport-entre-tiers ?"/>
+					</c:if>
+					<c:if test="${dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE' && autorisations.rapportsDeTravail && dossierApparente.id != null}">
+						<unireg:raccourciModifier
+								link="../rapport/edit.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}"
+								tooltip="Edition de rapport"/>
+						<unireg:linkTo name="" title="Annulation de rapport" confirm="Voulez-vous vraiment annuler ce rapport de prestation ?"
+						               action="/rapports-prestation/cancel.do" method="post" params="{rapportId:${dossierApparente.id}}" link_class="delete"/>
 					</c:if>
 				</c:if>
 			</display:column>

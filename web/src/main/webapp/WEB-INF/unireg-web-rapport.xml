@@ -82,14 +82,6 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
-	<bean id="rapportsPrestationEditController" class="ch.vd.unireg.tiers.RapportsPrestationEditController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.unireg.tiers.view.TiersEditView" />
-		<property name="formView" value="tiers/edition/rt/edit" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
-		<property name="rapportEditManager" ref="rapportEditManager" />
-	</bean>
-
 	<bean id="contribuableAssocieListController" class="ch.vd.unireg.contribuableAssocie.ContribuableAssocieController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="paramApplicationManager" ref="paramApplicationManager"/>

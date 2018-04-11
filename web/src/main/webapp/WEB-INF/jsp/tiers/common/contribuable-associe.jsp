@@ -33,7 +33,8 @@
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!contribuableAssocie.annule}">
-					<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${contribuableAssocie.id});" tooltip="Annuler le rapport"/>
+					<unireg:linkTo name="" action="/rapport/cancel.do" method="POST" params="{id:${contribuableAssocie.id}}" link_class="delete"
+					               title="Annulation du rapport-entre-tiers" confirm="Voulez-vous vraiment annuler ce rapport-entre-tiers ?"/>
 				</c:if>
 			</c:if>
 		</display:column>

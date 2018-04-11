@@ -4,10 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.view.RapportView;
 import ch.vd.unireg.tiers.view.TiersEditView;
@@ -71,6 +71,19 @@ public interface RapportEditManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	void annulerRapport(Long idRapport) ;
+
+	/**
+	 * Annule le rapport de prestations imposables spécifié. Lève une exception si l'id spécifié ne correspond pas à un rapport de prestations imposables.
+	 *
+	 * @param rapportId l'id d'un rapport de prestations imposables.
+	 */
+	void annulerRapportPrestation(long rapportId);
+
+	/**
+	 * @param rapportId l'id d'un rapport de prestations imposables.
+	 * @return l'id du débiteur du rapport de prestations imposables.
+	 */
+	long getDebiteurId(long rapportId);
 
 	/**
 	 * Charge les informations dans TiersView

@@ -30,7 +30,8 @@
 			<display:column sortable ="true" property="personneContact" titleKey="label.contact"  />
 			<display:column style="action">
 				<c:if test="${!debiteur.annule}">
-					<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${debiteur.id});" tooltip="Annuler"/>
+					<unireg:linkTo name="" action="/rapport/cancel.do" method="POST" params="{id:${debiteur.id}}" link_class="delete"
+					               title="Annulation du rapport-entre-tiers" confirm="Voulez-vous vraiment annuler ce rapport-entre-tiers ?"/>
 				</c:if>
 			</display:column>
 			<display:setProperty name="paging.banner.all_items_found" value=""/>

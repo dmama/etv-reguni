@@ -7,6 +7,7 @@
 <c:if test="${page == 'edit' }">
 	<c:set var="url" value="edit.do" />
 </c:if>
+<!-- liste des rapports de prestations d'un débiteur -->
 <c:if test="${not empty command.rapportsPrestation}">
 		<display:table 	name="command.rapportsPrestation" id="rapportPrestation" pagesize="${pageSize}" 
 						requestURI="${url}" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator"
@@ -33,7 +34,8 @@
 				<c:if test="${page == 'edit' }">
 					<c:if test="${!rapportPrestation.annule}">
 						<unireg:raccourciModifier link="../rapport/edit.do?idRapport=${rapportPrestation.id}&sens=SUJET" tooltip="Edition de rapport"/>
-						<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${rapportPrestation.id});" tooltip="Annuler"/>
+						<unireg:linkTo name="" title="Annulation de rapport" confirm="Voulez-vous vraiment annuler ce rapport de prestation ?"
+						               action="/rapports-prestation/cancel.do" method="post" params="{rapportId:${rapportPrestation.id}}" link_class="delete"/>
 					</c:if>
 				</c:if>
 			</display:column>

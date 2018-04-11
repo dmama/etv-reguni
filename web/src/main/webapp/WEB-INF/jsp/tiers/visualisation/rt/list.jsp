@@ -18,7 +18,7 @@
 			<unireg:raccourciAjouter link="../rt/list-sourcier.do?numeroDpi=${command.idDpi}&provenance=listeRPI" tooltip="Ajouter rapport" display="label.bouton.ajouter"/>
 		</c:if>
 
-		<!-- Debut liste de tous les rapports -->
+		<!-- liste de tous les rapports de prestation (non-paginé) d'un débiteur -->
 		<c:if test="${not empty command.rapports}">
 			<display:table name="command.rapports" id="rapportPrestation" requestURI="/rapports-prestation/full-list.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 
@@ -42,27 +42,14 @@
 					<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${rapportPrestation.id}"/>
 					<c:if test="${!rapportPrestation.annule && command.editionAllowed}">
 						<unireg:raccourciModifier link="../rapport/edit.do?idRapport=${rapportPrestation.id}&sens=SUJET" tooltip="Edition de rapport"/>
-						<unireg:raccourciAnnuler onClick="annulerRapportPrestation(${rapportPrestation.id}); return false;" tooltip="Annulation de rapport"/>
+						<unireg:linkTo name="" title="Annulation de rapport" confirm="Voulez-vous vraiment annuler ce rapport de prestation ?"
+						               action="/rapports-prestation/cancel.do" method="post" params="{rapportId:${rapportPrestation.id}}" link_class="delete"/>
 					</c:if>
 				</display:column>
 				<display:setProperty name="paging.banner.all_items_found" value=""/>
 				<display:setProperty name="paging.banner.one_item_found" value=""/>
 			</display:table>
-
-			<script>
-				function annulerRapportPrestation(idRapport) {
-					if (confirm('Voulez-vous vraiment annuler ce rapport entre tiers ?')) {
-						var form = $('<form method="POST" action="' + App.curl('/rapports-prestation/edit.do') + '">' +
-							'<input type="hidden" name="__TARGET__" value="annulerRapport"/>' +
-							'<input type="hidden" name="__EVENT_ARGUMENT__" value="' + idRapport + '"/>' +
-							'<input type="hidden" name="__URL_RETOUR__" value="' + window.location + '"/></form>');
-						form.appendTo('body');
-						form.submit();
-					}
-				}
-			</script>
 		</c:if>
-		<!-- Fin liste de tous les rapports -->
 
     <div>
 		    <unireg:RetourButton link="../tiers/visu.do?id=${command.idDpi}" checkIfModified="true"/>

@@ -12,7 +12,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -21,6 +20,7 @@ import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.unireg.rapport.view.RapportView;
@@ -332,6 +332,32 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 	}
 
+	@Override
+	public void annulerRapportPrestation(long rapportId) {
+
+		final RapportEntreTiers rapport = rapportEntreTiersDAO.get(rapportId);
+		if (rapport == null) {
+			throw new ObjectNotFoundException("Le rapport avec l'id = " + rapportId + "n'existe pas");
+		}
+		if (!(rapport instanceof RapportPrestationImposable)) {
+			throw new IllegalArgumentException("Le rapport avec l'id = " + rapportId + "n'est pas un rapport de prestations imposables");
+		}
+
+		rapport.setAnnule(true);
+	}
+
+	@Override
+	public long getDebiteurId(long rapportId) {
+
+		final RapportEntreTiers rapport = rapportEntreTiersDAO.get(rapportId);
+		if (rapport == null) {
+			throw new ObjectNotFoundException("Le rapport avec l'id = " + rapportId + "n'existe pas");
+		}
+		if (!(rapport instanceof RapportPrestationImposable)) {
+			throw new IllegalArgumentException("Le rapport avec l'id = " + rapportId + "n'est pas un rapport de prestations imposables");
+		}
+		return rapport.getObjetId();
+	}
 
 	/**
 	 * Charge les informations dans TiersView

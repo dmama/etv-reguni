@@ -81,7 +81,9 @@
 	</bean>
 
 	<bean id="rapportPrestationController" class="ch.vd.unireg.rt.RapportPrestationController">
-		<property name="manager" ref="tiersVisuManager" />
+		<property name="tiersVisuManager" ref="tiersVisuManager" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="rapportEditManager" ref="rapportEditManager" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
