@@ -49,7 +49,7 @@
 		</table>
 
 		<!-- Debut Boutons -->
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onclick="Navigation.back('/rt/list-sourcier.do?numeroDpi=1552505', 'numeroDpi=${rapportAddView.debiteur.numero}')" />
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onclick="Navigation.back('/rapports-prestation/search-sourcier.do', 'numeroDebiteur=${rapportAddView.debiteur.numero}')" />
 		<input type="submit" value="<fmt:message key="label.bouton.sauver" />" />
 		<!-- Fin Boutons -->
 	</form:form>

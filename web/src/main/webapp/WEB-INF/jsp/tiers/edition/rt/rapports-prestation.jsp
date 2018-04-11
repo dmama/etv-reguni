@@ -6,7 +6,7 @@
 	<table border="0">
 		<tr>
 			<td>
-				<unireg:raccourciAjouter link="../rt/list-sourcier.do?numeroDpi=${command.tiers.numero}" tooltip="Ajouter rapport" display="label.bouton.ajouter"/>
+				<unireg:linkTo name="Ajouter" action="/rapports-prestation/search-sourcier.do" params="{numeroDebiteur:${command.tiers.numero}}" link_class="add" title="Ajouter rapport de travail"/>
 			</td>
 		</tr>
 	</table>

@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<c:set var="numeroDpi" value="${param.numeroDpi}" />
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title"><fmt:message key="title.recherche.sourcier" /></tiles:put>
@@ -12,23 +11,24 @@
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 
-	    <jsp:include page="../../../../general/debiteur.jsp" >
-		    <jsp:param name="idDebiteur" value="${command.debiteur.numero}" />
-		</jsp:include>
-	    
-	    <form:form method="post" id="formRechercheTiers">
+	    <%--@elvariable id="sourcierCriteriaView" type="ch.vd.unireg.rt.view.SourcierListView"--%>
+	    <c:set var="titre"><fmt:message key="label.caracteristiques.debiteur.is"/></c:set>
+	    <unireg:bandeauTiers numero="${sourcierCriteriaView.numeroDebiteur}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+
+	    <form:form method="get" id="formRechercheTiers" commandName="sourcierCriteriaView">
+		    <form:hidden path="numeroDebiteur"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rt-sourcier" />
 					<jsp:param name="prefixeEffacer" value="/rt/sourcier" />
-					<jsp:param name="paramsEffacer" value="numeroDpi:${numeroDpi}"/>
+					<jsp:param name="paramsEffacer" value="numeroDpi:${sourcierCriteriaView.numeroDebiteur}"/>
 				</jsp:include>
 			</fieldset>
 		</form:form>
 
-		<display:table 	name="list" id="row" pagesize="${parametresApp.nbMaxParPage}" requestURI="/rt/list-sourcier.do" class="display" sort="list">
+		<display:table 	name="list" id="row" pagesize="25" requestURI="/rapports-prestation/search-sourcier.do" class="display" sort="list">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.sourcier.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.sourcier.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.sourciers.trouves" /></span></display:setProperty>
@@ -38,7 +38,7 @@
 				<c:set var="idSourcier">
 					<unireg:numCTB numero="${row.numero}"/>
 				</c:set>
-				<unireg:linkTo name="${idSourcier}" action="/rapports-prestation/add.do" params="{numeroSrc:${row.numero},numeroDpi:${numeroDpi}}" title="Sélectionner ce contribuable"/>
+				<unireg:linkTo name="${idSourcier}" action="/rapports-prestation/add.do" params="{numeroSrc:${row.numero},numeroDpi:${sourcierCriteriaView.numeroDebiteur}}" title="Sélectionner ce contribuable"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.prenom.nom" >
 				<c:out value="${row.nom1}" />
@@ -63,7 +63,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../rapports-prestation/edit.do?id=${numeroDpi}';" />
+					<input type="button" value="<fmt:message key="label.bouton.retour"/>" onclick="Navigation.backTo(['/rapports-prestation/edit.do', '/rapports-prestation/full-list.do'], '/rapports-prestation/edit.do', 'id=${sourcierCriteriaView.numeroDebiteur}')" />
 				</td>
 			</tr>
 		</table>

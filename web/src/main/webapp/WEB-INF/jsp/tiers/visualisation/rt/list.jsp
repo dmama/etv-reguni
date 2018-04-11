@@ -15,7 +15,7 @@
 
 		<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.RapportsPrestationView"--%>
 		<c:if test="${command.editionAllowed}">
-			<unireg:raccourciAjouter link="../rt/list-sourcier.do?numeroDpi=${command.idDpi}&provenance=listeRPI" tooltip="Ajouter rapport" display="label.bouton.ajouter"/>
+			<unireg:linkTo name="Ajouter" action="/rapports-prestation/search-sourcier.do" params="{numeroDebiteur:${command.idDpi}}" link_class="add" title="Ajouter rapport de travail"/>
 		</c:if>
 
 		<!-- liste de tous les rapports de prestation (non-paginé) d'un débiteur -->

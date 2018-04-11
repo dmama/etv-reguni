@@ -31,6 +31,7 @@ import ch.vd.unireg.rapport.manager.RapportEditManager;
 import ch.vd.unireg.rt.manager.RapportPrestationEditManager;
 import ch.vd.unireg.rt.view.DebiteurListView;
 import ch.vd.unireg.rt.view.RapportPrestationView;
+import ch.vd.unireg.rt.view.SourcierListView;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityCheck;
 import ch.vd.unireg.tiers.TiersIndexedDataView;
@@ -87,7 +88,7 @@ public class RapportPrestationController {
 		return "tiers/edition/rt/edit";
 	}
 
-	@InitBinder("debiteurCriteriaView")
+	@InitBinder({"debiteurCriteriaView", "sourcierCriteriaView"})
 	public void initTiersCriteriaBinder(WebDataBinder binder) {
 		binder.setValidator(tiersCriteriaValidator);
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
@@ -141,6 +142,53 @@ public class RapportPrestationController {
 		return "tiers/edition/rt/debiteur/list";
 	}
 
+	/**
+	 * Affiche l'écran de recherche d'un sourcier à lier par un rapport de prestation à un débiteur donné.
+	 */
+	@SecurityCheck(rolesToCheck = Role.RT, accessDeniedMessage = DROIT_MODIFICATION_RT)
+	@RequestMapping(value = "/rapports-prestation/search-sourcier.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String searchSourcier(@Valid @ModelAttribute("sourcierCriteriaView") final SourcierListView view, BindingResult binding, Model model) {
+
+		final long idDebiteur = view.getNumeroDebiteur();
+
+		if (!rapportPrestationEditManager.isExistingTiers(idDebiteur)) {
+			throw new TiersNotFoundException(idDebiteur);
+		}
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnEcriture(idDebiteur);
+
+		model.addAttribute("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
+		model.addAttribute("formesJuridiquesEnum", tiersMapHelper.getMapFormesJuridiquesEntreprise());
+		model.addAttribute("categoriesEntreprisesEnum", tiersMapHelper.getMapCategoriesEntreprise());
+
+		if (binding.hasErrors() || view.isEmpty()) {
+			return "tiers/edition/rt/sourcier/list";
+		}
+
+		// on effectue la recherche
+		try {
+			final List<TiersIndexedDataView> list = tiersService.search(view.asCore()).stream()
+					.map(TiersIndexedDataView::new)
+					.collect(Collectors.toList());
+			model.addAttribute("list", list);
+		}
+		catch (TooManyResultsIndexerException ee) {
+			if (ee.getNbResults() > 0) {
+				binding.reject("error.preciser.recherche.trouves", new Object[]{String.valueOf(ee.getNbResults())}, null);
+			}
+			else {
+				binding.reject("error.preciser.recherche");
+			}
+		}
+		catch (IndexerException e) {
+			LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
+			binding.reject("error.recherche");
+		}
+
+		return "tiers/edition/rt/sourcier/list";
+	}
 
 	/**
 	 * Affiche l'écran de récapitulation avant ajout d'un rapport de prestations imposables.

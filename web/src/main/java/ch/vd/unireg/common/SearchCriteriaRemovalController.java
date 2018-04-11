@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.unireg.rt.SourcierListController;
-
 /**
  * Contrôleur qui regroupe les actions /reset-search.do des contrôleurs pas encore passés en Spring 3+
  */
@@ -37,8 +35,7 @@ public class SearchCriteriaRemovalController {
 
 	@RequestMapping(value = "/rt/sourcier/reset-search.do", method = RequestMethod.GET)
 	public String effacerCriteresRechercheSourcierPourRT(HttpSession session, @RequestParam("numeroDpi") long numeroDpi) {
-		session.removeAttribute(SourcierListController.SOURCIER_CRITERIA_NAME);
-		return String.format("redirect:/rt/list-sourcier.do?numeroDpi=%d", numeroDpi);
+		return String.format("redirect:/rapports-prestation/search-sourcier.do?numeroDebiteur=%d", numeroDpi);
 	}
 
 }

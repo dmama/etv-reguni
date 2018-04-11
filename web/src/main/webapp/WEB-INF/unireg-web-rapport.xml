@@ -14,16 +14,6 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	<bean id="sourcierListController" class="ch.vd.unireg.rt.SourcierListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.unireg.rt.view.SourcierListView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="tiers/edition/rt/sourcier/list" />
-		<property name="successView" value="edit.do" />
-		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
-		<property name="validator" ref="tiersCriteriaValidator"/>
-	</bean>
-
 	<bean id="rapportPrestationEditManager" class="ch.vd.unireg.rt.manager.RapportPrestationEditManagerImpl" >
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="tiersService" ref="tiersService" />

@@ -67,9 +67,6 @@
 		</property>
 		<property name="urlMap">
 			<map>
-				<!-- Rapport Prestation -->
-				<entry key="/rt/list-sourcier.do" value-ref="sourcierListController" />
-
 				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !!  -->
 			</map>
 		</property>
