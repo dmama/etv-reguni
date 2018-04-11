@@ -2,10 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="abstractRapportPrestationController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.unireg.rt.AbstractRapportPrestationController">
-		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
 	<bean id="debiteurListController" class="ch.vd.unireg.rt.DebiteurListController" parent="abstractTiersListController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.unireg.rt.view.DebiteurListView" />
@@ -26,16 +22,6 @@
 		<property name="validator" ref="tiersCriteriaValidator"/>
 	</bean>
 
-	<bean id="rapportPrestationEditController" class="ch.vd.unireg.rt.RapportPrestationEditController" parent="abstractRapportPrestationController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.unireg.rt.view.RapportPrestationView" />
-		<property name="commandName" value="command" />
-		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
-		<property name="formView" value="tiers/edition/rt/contrat/edit" />
-		<property name="successView" value="/tiers/visu.do" />
-		<property name="validator" ref="rapportPrestationValidator" />
-	</bean>
-	
 	<bean id="rapportPrestationEditManager" class="ch.vd.unireg.rt.manager.RapportPrestationEditManagerImpl" >
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="tiersService" ref="tiersService" />

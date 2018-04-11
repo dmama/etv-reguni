@@ -36,7 +36,10 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.debiteurs.trouves" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.debiteur" sortProperty="numero" >
-				<a href="edit.do?numeroSrc=${numeroSrc}&numeroDpi=${debiteur.numero}&provenance=sourcier"><unireg:numCTB numero="${debiteur.numero}" /></a>
+				<c:set var="idDpi">
+					<unireg:numCTB numero="${debiteur.numero}"/>
+				</c:set>
+				<unireg:linkTo name="${idDpi}" action="/rapports-prestation/add.do" params="{numeroSrc:${numeroSrc},numeroDpi:${debiteur.numero}}" title="Sélectionner ce débiteur"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.nom.raison" >
 				<c:out value="${debiteur.nom1}" />

@@ -35,7 +35,10 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.sourciers.trouves" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-				<a href="edit.do?numeroSrc=${row.numero}&numeroDpi=${numeroDpi}&provenance=${command.provenance}"><unireg:numCTB numero="${row.numero}" /></a>
+				<c:set var="idSourcier">
+					<unireg:numCTB numero="${row.numero}"/>
+				</c:set>
+				<unireg:linkTo name="${idSourcier}" action="/rapports-prestation/add.do" params="{numeroSrc:${row.numero},numeroDpi:${numeroDpi}}" title="Sélectionner ce contribuable"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.prenom.nom" >
 				<c:out value="${row.nom1}" />

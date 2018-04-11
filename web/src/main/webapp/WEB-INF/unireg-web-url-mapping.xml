@@ -70,7 +70,6 @@
 				<!-- Rapport Prestation -->
 				<entry key="/rt/list-debiteur.do" value-ref="debiteurListController" />
 				<entry key="/rt/list-sourcier.do" value-ref="sourcierListController" />
-				<entry key="/rt/edit.do" value-ref="rapportPrestationEditController" />
 				<!-- Fusion -->
 				<!-- La fusion est désactivée -->
 				<!--
