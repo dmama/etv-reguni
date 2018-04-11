@@ -16,4 +16,5 @@
 	<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-all.js"/>"></script>
 </c:if>
 
+<script type="text/javascript" language="Javascript" src="<c:url value="/js/navigation.js"/>"></script>
 <script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
