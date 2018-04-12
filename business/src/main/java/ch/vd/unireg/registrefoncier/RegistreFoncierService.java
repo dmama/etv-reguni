@@ -115,6 +115,13 @@ public interface RegistreFoncierService {
 	Long getCommunauteCurrentPrincipalId(@NotNull CommunauteRF communaute);
 
 	/**
+	 * @param contribuable un contribuable
+	 * @return la liste des regroupements de communautés dans lesquels apparaît le contribuable spécifié.
+	 */
+	@NotNull
+	List<RegroupementCommunauteRF> getRegroupementsCommunautes(@NotNull Contribuable contribuable);
+
+	/**
 	 * Construit la vue historique des principaux (par défaut + explicites) pour un modèle de communauté.
 	 *
 	 * @param modeleCommunaute un modèle de communauté

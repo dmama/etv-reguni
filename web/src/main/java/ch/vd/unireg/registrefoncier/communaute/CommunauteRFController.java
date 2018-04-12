@@ -2,7 +2,6 @@ package ch.vd.unireg.registrefoncier.communaute;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -37,9 +36,6 @@ import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
-import ch.vd.unireg.registrefoncier.AyantDroitRF;
-import ch.vd.unireg.registrefoncier.CommunauteRF;
-import ch.vd.unireg.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.unireg.registrefoncier.ModeleCommunauteRF;
 import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
 import ch.vd.unireg.registrefoncier.RapprochementRF;
@@ -281,24 +277,12 @@ public class CommunauteRFController {
 		}
 		else {
 			// on détermine la liste des communautés dans lesquels apparaît le contribuable
-			modeleCount = ctb.getRapprochementsRFNonAnnulesTries().stream()
-					.map(RapprochementRF::getTiersRF)
-					.map(AyantDroitRF::getDroitsPropriete)
-					.flatMap(Collection::stream)
-					.filter(DroitProprietePersonneRF.class::isInstance)
-					.map(DroitProprietePersonneRF.class::cast)
-					.map(DroitProprietePersonneRF::getCommunaute)
-					.filter(Objects::nonNull)
-					.filter(AnnulableHelper::nonAnnule)
-					.map(CommunauteRF::getRegroupements)
-					.flatMap(Collection::stream)
-					.filter(AnnulableHelper::nonAnnule)
+			modeleCount = registreFoncierService.getRegroupementsCommunautes(ctb).stream()
 					.map(RegroupementCommunauteRF::getModele)
 					// [SIFISC-27517] on n'affiche pas les modèles avec un seul membre parce que cela rend les utilisateurs confus (et il n'y pas grand-chose à faire sur de telles communautés)
 					.filter(m -> m.getMembres().size() > 1)
 					.distinct()
 					.count();
-
 		}
 
 		return new TiersIndexedDataWithCommunauteView(data, modeleCount);
@@ -313,25 +297,10 @@ public class CommunauteRFController {
 			throw new TiersNotFoundException(ctbId);
 		}
 
-		// on détermine la liste des communautés dans lesquels apparaît le contribuable
-		final List<CommunauteRF> communautes = ctb.getRapprochementsRFNonAnnulesTries().stream()
-				.map(RapprochementRF::getTiersRF)
-				.map(AyantDroitRF::getDroitsPropriete)
-				.flatMap(Collection::stream)
-				.filter(DroitProprietePersonneRF.class::isInstance)
-				.map(DroitProprietePersonneRF.class::cast)
-				.map(DroitProprietePersonneRF::getCommunaute)
-				.filter(Objects::nonNull)
-				.filter(AnnulableHelper::nonAnnule)
-				.distinct()
-				.collect(Collectors.toList());
-
-		// on regroupe ces communautés par modèle de communauté
 		final Map<Long, ModeleCommunauteForTiersView> map = new HashMap<>();
-		communautes.stream()
-				.map(CommunauteRF::getRegroupements)
-				.flatMap(Collection::stream)
-				.filter(AnnulableHelper::nonAnnule)
+
+		// on regroupe les communautés dans lesquels apparaît le contribuable par modèle de communauté
+		registreFoncierService.getRegroupementsCommunautes(ctb)
 				.forEach(r -> {
 					final ModeleCommunauteRF modele = r.getModele();
 					// [SIFISC-27517] on n'affiche pas les modèles avec un seul membre parce que cela rend les utilisateurs confus (et il n'y pas grand-chose à faire sur de telles communautés)

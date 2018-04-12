@@ -66,6 +66,11 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public @NotNull List<RegroupementCommunauteRF> getRegroupementsCommunautes(@NotNull Contribuable contribuable) {
+		throw new NotImplementedException();
+	}
+
 	@NotNull
 	@Override
 	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute, boolean includeAnnules) {

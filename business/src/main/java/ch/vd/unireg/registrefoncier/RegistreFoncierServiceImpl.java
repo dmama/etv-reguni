@@ -597,6 +597,26 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		return ctbIds.isEmpty() ? null : ctbIds.get(0);
 	}
 
+	@Override
+	@NotNull
+	public List<RegroupementCommunauteRF> getRegroupementsCommunautes(@NotNull Contribuable contribuable) {
+		return contribuable.getRapprochementsRFNonAnnulesTries().stream()
+				.map(RapprochementRF::getTiersRF)
+				.map(AyantDroitRF::getDroitsPropriete)
+				.flatMap(Collection::stream)
+				// TODO (msi) filter les droits annulés
+				.filter(DroitProprietePersonneRF.class::isInstance)
+				.map(DroitProprietePersonneRF.class::cast)
+				.map(DroitProprietePersonneRF::getCommunaute)
+				.filter(Objects::nonNull)
+				.filter(AnnulableHelper::nonAnnule)
+				.distinct()
+				.map(CommunauteRF::getRegroupements)
+				.flatMap(Collection::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.collect(Collectors.toList());
+	}
+
 	/**
 	 * Construit la vue historique des principaux (par défaut + explicites) pour une communauté.
 	 *
