@@ -3169,6 +3169,147 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * [IMM-1142] Ce test vérifie que la méthode 'getRegroupementsCommunautes' ne retourne bien que les regroupements de communauté dans lesquels le contribuable apparaît.
+	 *
+	 * Cas testé : un contribuables qui appartient à une communauté puisque lègue son droit à un autre contribuable. La communauté possède donc deux regroupements :
+	 * <ul>
+	 *     <li>un premier avec le contribuable en question</li>
+	 *     <li>un second sans le contribuable en question</li>
+	 * </ul>
+	 *
+	 * => seul le premier regroupement doit être retourné.
+	 */
+	@Test
+	public void testGetRegroupementsCommunautes() throws Exception {
+
+		final RegDate dateDebut = RegDate.get(2003, 7, 28);
+		final RegDate dateDonation = RegDate.get(2005, 4, 12);
+
+		final class Ids {
+			Long carmine;
+			Long evelyne;
+			Long mickael;
+			Long communaute;
+			Long modele1;
+			Long modele2;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			final BienFondsRF immeuble = addImmeubleRF("3893983");
+
+			final PersonnePhysiqueRF carmine = addPersonnePhysiqueRF("Carmine", "XXX", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF evelyne = addPersonnePhysiqueRF("Evelyne", "XXX", date(1970, 7, 2), "434545", 411451L, null);
+			final PersonnePhysiqueRF mickael = addPersonnePhysiqueRF("Mickaël", "XXX", date(1970, 7, 2), "010289290", 777L, null);
+
+			final PersonnePhysique ctbCarmine = addNonHabitant("Carmine", "XXX", date(1970, 7, 2), Sexe.FEMININ);
+			final PersonnePhysique ctbEvelyne = addNonHabitant("Evelyne", "XXX", date(1970, 7, 2), Sexe.FEMININ);
+			final PersonnePhysique ctbMickael = addNonHabitant("Mickaël", "XXX", date(1970, 7, 2), Sexe.MASCULIN);
+
+			addRapprochementRF(ctbCarmine, carmine, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(ctbEvelyne, evelyne, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(ctbMickael, mickael, null, null, TypeRapprochementRF.AUTO);
+
+			// le modèle de communauté n°1 : Carmine + Evelyne
+			ModeleCommunauteRF modele1 = new ModeleCommunauteRF();
+			modele1.addMembre(carmine);
+			modele1.addMembre(evelyne);
+			modele1.setMembresHashCode(ModeleCommunauteRF.hashCode(modele1.getMembres()));
+			modele1 = modeleCommunauteRFDAO.save(modele1);
+
+			final PrincipalCommunauteRF p1 = new PrincipalCommunauteRF();
+			p1.setModeleCommunaute(modele1);
+			p1.setPrincipal(carmine);
+			p1.setDateDebut(dateDebut);
+			p1.setDateFin(null);
+			modele1.addPrincipal(p1);
+
+			// le modèle de communauté n°2 : Evelyne + Mickaël
+			ModeleCommunauteRF modele2 = new ModeleCommunauteRF();
+			modele2.addMembre(evelyne);
+			modele2.addMembre(mickael);
+			modele2.setMembresHashCode(ModeleCommunauteRF.hashCode(modele2.getMembres()));
+			modele2 = modeleCommunauteRFDAO.save(modele2);
+
+			final PrincipalCommunauteRF p2 = new PrincipalCommunauteRF();
+			p2.setModeleCommunaute(modele2);
+			p2.setPrincipal(mickael);
+			p2.setDateDebut(dateDonation);
+			p2.setDateFin(null);
+			modele2.addPrincipal(p2);
+
+			// un communauté
+			final CommunauteRF communaute = addCommunauteRF("2892929", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(42, 2005, 32, 1);
+			final DroitProprietePersonnePhysiqueRF droitCarmine = addDroitPropriete(carmine, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                        null, null, dateDebut, dateDonation,
+			                                                                        "Succession", null, numeroAffaire, "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droitEvelyne = addDroitPropriete(evelyne, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                        null, null, dateDebut, null,
+			                                                                        "Succession", null, numeroAffaire, "3490349djkdjk", "1");
+			final DroitProprietePersonnePhysiqueRF droitMickael = addDroitPropriete(mickael, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                        null, null, dateDonation, null,
+			                                                                        "Succession", null, numeroAffaire, "389289212", "1");
+			communaute.addMembre(droitCarmine);
+			communaute.addMembre(droitEvelyne);
+			communaute.addMembre(droitMickael);
+
+			// les regroupements sur les deux modèles
+			addRegroupementRF(communaute, modele1, dateDebut, dateDonation.getOneDayBefore());
+			addRegroupementRF(communaute, modele2, dateDonation, null);
+
+			ids.carmine = ctbCarmine.getId();
+			ids.evelyne = ctbEvelyne.getId();
+			ids.mickael = ctbMickael.getId();
+			ids.communaute = communaute.getId();
+			ids.modele1 = modele1.getId();
+			ids.modele2 = modele2.getId();
+			return null;
+		});
+
+		// on vérifie que les regroupements de communauté des membres sont correcs
+		doInNewTransaction(status -> {
+
+			final PersonnePhysique carmine = (PersonnePhysique) tiersDAO.get(ids.carmine);
+			final PersonnePhysique evelyne = (PersonnePhysique) tiersDAO.get(ids.evelyne);
+			final PersonnePhysique mickael = (PersonnePhysique) tiersDAO.get(ids.mickael);
+
+			// les regroupements de Carmine
+			{
+				final List<RegroupementCommunauteRF> regroupements = serviceRF.getRegroupementsCommunautes(carmine);
+				assertEquals(1, regroupements.size());
+				assertRegroupement(dateDebut, dateDonation.getOneDayBefore(), ids.communaute, ids.modele1, regroupements.get(0));
+			}
+
+			// les regroupements d'Evelyne
+			{
+				final List<RegroupementCommunauteRF> regroupements = serviceRF.getRegroupementsCommunautes(evelyne);
+				assertEquals(2, regroupements.size());
+				assertRegroupement(dateDebut, dateDonation.getOneDayBefore(), ids.communaute, ids.modele1, regroupements.get(0));
+				assertRegroupement(dateDonation, null, ids.communaute, ids.modele2, regroupements.get(1));
+			}
+
+			// les regroupements de Mickaël
+			{
+				final List<RegroupementCommunauteRF> regroupements = serviceRF.getRegroupementsCommunautes(mickael);
+				assertEquals(1, regroupements.size());
+				assertRegroupement(dateDonation, null, ids.communaute, ids.modele2, regroupements.get(0));
+			}
+
+			return null;
+		});
+	}
+
+	private static void assertRegroupement(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, Long communauteId, Long modeleId, RegroupementCommunauteRF regroupement) {
+		assertNotNull(regroupement);
+		assertEquals(dateDebut, regroupement.getDateDebut());
+		assertEquals(dateFin, regroupement.getDateFin());
+		assertEquals(communauteId, regroupement.getCommunaute().getId());
+		assertEquals(modeleId, regroupement.getModele().getId());
+	}
+
 	private ModeleCommunauteRF loadModelInTx(Long idPP1, Long idPP2) {
 		AuthenticationHelper.pushPrincipal("test-user");
 		try {

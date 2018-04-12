@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -600,20 +601,29 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	@NotNull
 	public List<RegroupementCommunauteRF> getRegroupementsCommunautes(@NotNull Contribuable contribuable) {
-		return contribuable.getRapprochementsRFNonAnnulesTries().stream()
+
+		// on part du contribuable et on récupère son (ou ses) ayants-droits
+		final Set<TiersRF> ayantDroits = contribuable.getRapprochementsRFNonAnnulesTries().stream()
 				.map(RapprochementRF::getTiersRF)
+				.collect(Collectors.toSet());
+
+		return ayantDroits.stream()
+				// on récupère tous les droits de propriété en communauté
 				.map(AyantDroitRF::getDroitsPropriete)
 				.flatMap(Collection::stream)
-				// TODO (msi) filter les droits annulés
+				.filter(AnnulableHelper::nonAnnule)
 				.filter(DroitProprietePersonneRF.class::isInstance)
 				.map(DroitProprietePersonneRF.class::cast)
+				// on récupère tous les communautés
 				.map(DroitProprietePersonneRF::getCommunaute)
 				.filter(Objects::nonNull)
 				.filter(AnnulableHelper::nonAnnule)
 				.distinct()
+				// on récupère tous les regroupements
 				.map(CommunauteRF::getRegroupements)
 				.flatMap(Collection::stream)
 				.filter(AnnulableHelper::nonAnnule)
+				.filter(r -> CollectionUtils.containsAny(r.getModele().getMembres(), ayantDroits))  // [IMM-1145] on ne tient compte que des regroupements qui pointent vers des modèles de communauté où le contribuable apparaît réellement
 				.collect(Collectors.toList());
 	}
 

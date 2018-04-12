@@ -37,6 +37,7 @@ import ch.vd.unireg.tiers.Tiers;
 import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -636,8 +637,101 @@ public class CommunauteRFProcessorTest {
 		// un événement de modification de principal devrait être envoyé
 		assertEquals(1, evenementsModificationPrincipalCommunaute.size());
 		final Pair<RegDate, CommunauteRF> event0 = evenementsModificationPrincipalCommunaute.get(0);
-		assertEquals(null, event0.getFirst());
+		assertNull(event0.getFirst());
 		assertEquals(communaute, event0.getSecond());
+	}
+
+	/**
+	 * [IMM-1142] Vérifie que le calcul des regroupements sur une communauté dont un membre font une donation à un autre est correct.
+	 */
+	@Test
+	public void testCorrectionRegroupementEnTrop() {
+
+		final PersonnePhysique carmineCtb = new PersonnePhysique();
+		carmineCtb.setNumero(10000001L);
+
+		final PersonnePhysique evelyneCtb = new PersonnePhysique();
+		evelyneCtb.setNumero(10000002L);
+
+		final PersonnePhysique mickaelCtb = new PersonnePhysique();
+		mickaelCtb.setNumero(10000003L);
+
+		final RapprochementRF rp1 = new RapprochementRF();
+		rp1.setContribuable(carmineCtb);
+
+		final PersonnePhysiqueRF carmine = new PersonnePhysiqueRF();
+		carmine.setId(1L);
+		carmine.setPrenom("Carmine");
+		carmine.setNom("XXX");
+		carmine.addRapprochementRF(rp1);
+
+		final RapprochementRF rp2 = new RapprochementRF();
+		rp2.setContribuable(evelyneCtb);
+
+		final PersonnePhysiqueRF evelyne = new PersonnePhysiqueRF();
+		evelyne.setId(2L);
+		evelyne.setPrenom("Evelyne");
+		evelyne.setNom("XXX");
+		evelyne.addRapprochementRF(rp2);
+
+		final RapprochementRF rp3 = new RapprochementRF();
+		rp3.setContribuable(mickaelCtb);
+
+		final PersonnePhysiqueRF mickael = new PersonnePhysiqueRF();
+		mickael.setId(3L);
+		mickael.setPrenom("Mickael");
+		mickael.setNom("XXX");
+		mickael.addRapprochementRF(rp3);
+
+		final RegDate dateDebutComm = RegDate.get(1994, 9, 9);
+		final RegDate dateDonation = RegDate.get(2017, 11, 21);
+
+		// communauté : Carmine + Evelyne + Mickaël
+
+		final DroitProprietePersonnePhysiqueRF droitCarmine = new DroitProprietePersonnePhysiqueRF();
+		droitCarmine.setId(11L);
+		droitCarmine.setDateDebutMetier(dateDebutComm);
+		droitCarmine.setDateFinMetier(dateDonation);    // <--- donation de Carmine à Mickael
+		droitCarmine.setAyantDroit(carmine);
+
+		final DroitProprietePersonnePhysiqueRF droitEvelyne = new DroitProprietePersonnePhysiqueRF();
+		droitEvelyne.setId(12L);
+		droitEvelyne.setDateDebutMetier(dateDebutComm);
+		droitEvelyne.setDateFinMetier(null);
+		droitEvelyne.setAyantDroit(evelyne);
+
+		final DroitProprietePersonnePhysiqueRF droitMickael = new DroitProprietePersonnePhysiqueRF();
+		droitMickael.setId(13L);
+		droitMickael.setDateDebutMetier(dateDonation);
+		droitMickael.setDateFinMetier(null);
+		droitMickael.setAyantDroit(mickael);
+
+		final CommunauteRF communaute = new CommunauteRF();
+		communaute.setRegroupements(new HashSet<>());
+		communaute.addMembre(droitCarmine);
+		communaute.addMembre(droitEvelyne);
+		communaute.addMembre(droitMickael);
+
+		droitCarmine.setCommunaute(communaute);
+		droitEvelyne.setCommunaute(communaute);
+		droitMickael.setCommunaute(communaute);
+
+		processor.process(communaute);
+
+		// deux nouveaus regroupements devraient être créés :
+		//  - pour la période avec Carmine et Evelyne
+		//  - un autre pour la période avec Evelyne et Mickael
+		final List<RegroupementCommunauteRF> regroupements = new ArrayList<>(communaute.getRegroupements());
+		regroupements.sort(new DateRangeComparator<>());
+		assertEquals(2, regroupements.size());
+
+		final RegroupementCommunauteRF regroupement0 = regroupements.get(0);
+		assertFalse(regroupement0.isAnnule());
+		assertRegroupement(dateDebutComm, dateDonation.getOneDayBefore(), communaute, regroupement0, carmine, evelyne);
+
+		final RegroupementCommunauteRF regroupement1 = regroupements.get(1);
+		assertFalse(regroupement1.isAnnule());
+		assertRegroupement(dateDonation, null, communaute, regroupement1, evelyne, mickael);
 	}
 
 	private static void assertRegroupement(RegDate dateDebut, RegDate dateFin, CommunauteRF communaute, RegroupementCommunauteRF regroupement, AyantDroitRF... ayantDroits) {
