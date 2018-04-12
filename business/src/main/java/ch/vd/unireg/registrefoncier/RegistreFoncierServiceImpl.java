@@ -624,6 +624,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.flatMap(Collection::stream)
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(r -> CollectionUtils.containsAny(r.getModele().getMembres(), ayantDroits))  // [IMM-1145] on ne tient compte que des regroupements qui pointent vers des modèles de communauté où le contribuable apparaît réellement
+				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toList());
 	}
 
