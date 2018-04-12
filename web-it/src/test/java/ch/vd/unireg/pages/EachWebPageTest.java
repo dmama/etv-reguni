@@ -4,7 +4,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.unireg.common.WebitTest;
@@ -151,41 +150,39 @@ public class EachWebPageTest extends WebitTest {
 	// Rapport de prestation - Page de recherche des débiteurs potentiels
 	@Test
 	public void testDebiteurList() throws Exception {
-		assertPage("/rt/list-debiteur.do?numeroSrc=12900001", "Rapport de prestation - Recherche du débiteur");
+		assertPage("/rapports-prestation/search-debiteur.do?numeroSourcier=12900001", "Rapport de prestation - Recherche du débiteur");
 	}
 
 	@Test
 	public void testDebiteurListInexistant() throws Exception {
-		assertPage("/rt/list-debiteur.do?numeroSrc=12345678", "Page d'erreur", "Le sourcier spécifié n'existe pas");
+		assertPage("/rapports-prestation/search-debiteur.do?numeroSourcier=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	// Rapport de prestation - Page de recherche des sourciers potentiels
 	@Test
 	public void testSourcierList() throws Exception {
-		assertPage("/rt/list-sourcier.do?numeroDpi=1678432", "Rapport de prestation - Recherche du sourcier");
+		assertPage("/rapports-prestation/search-sourcier.do?numeroDebiteur=1678432", "Rapport de prestation - Recherche du sourcier");
 	}
 
 	@Test
 	public void testSourcierListInexistant() throws Exception {
-		assertPage("/rt/list-sourcier.do?numeroDpi=12345678", "Page d'erreur", "Le débiteur spécifié n'existe pas");
+		assertPage("/rapports-prestation/search-sourcier.do?numeroDebiteur=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	// Rapport de prestation - Page récapitulative
 	@Test
 	public void testRapportPrestationRecap() throws Exception {
-		assertPage("/rt/edit.do?numeroSrc=12900001&numeroDpi=1678432", "Récapitulatif du rapport de prestation");
+		assertPage("/rapports-prestation/add.do?numeroSrc=12900001&numeroDpi=1678432", "Récapitulatif du rapport de prestation");
 	}
 
 	@Test
 	public void testRapportPrestationRecapSourcierInexistant() throws Exception {
-		assertPage("/rt/edit.do?numeroSrc=12345678&numeroDpi=1678432", "Page d'erreur",
-				"Le sourcier spécifié n'existe pas");
+		assertPage("/rapports-prestation/add.do?numeroSrc=12345678&numeroDpi=1678432", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	@Test
 	public void testRapportPrestationRecapDebiteurInexistant() throws Exception {
-		assertPage("/rt/edit.do?numeroSrc=12900001&numeroDpi=12345678", "Page d'erreur",
-				"Le débiteur spécifié n'existe pas");
+		assertPage("/rapports-prestation/add.do?numeroSrc=12900001&numeroDpi=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	/*----------------------
@@ -262,53 +259,6 @@ public class EachWebPageTest extends WebitTest {
 	@Test
 	public void testDecesRecap() throws Exception {
 		assertPage("/deces/recap.do?numero=12300001", "Récapitulatif du décès");
-	}
-
-	/*----------------------
-	 *
-	 * Fusion
-	 *
-	 *----------------------*/
-	// Fusion - Recherche d'une PP inconnue au C.hab
-	@Test
-	@Ignore
-	public void testFusionListNonHabitant() throws Exception {
-		assertPage("/fusion/list-non-habitant.do", "Fusion - Recherche d'une PP inconnue au C.hab");
-	}
-
-	// Fusion - Recherche d'une PP inconnue au C.hab
-	@Test
-	@Ignore
-	public void testFusionListHabitant() throws Exception {
-		assertPage("/fusion/list-habitant.do?numeroNonHab=12900001", "Fusion - Recherche d'une PP référencée au C.hab");
-	}
-
-	@Test
-	@Ignore
-	public void testFusionListHabitantInexistant() throws Exception {
-		assertPage("/fusion/list-habitant.do?numeroNonHab=12345678", "Page d'erreur",
-				"Le non-habitant spécifié n'existe pas");
-	}
-
-	// Fusion - Récapitulatif des personnes à fusionner
-	@Test
-	@Ignore
-	public void testFusionRecap() throws Exception {
-		assertPage("/fusion/recap.do?numeroNonHab=12900001&numeroHab=12300003", "Récapitulatif des personnes à fusionner");
-	}
-
-	@Test
-	@Ignore
-	public void testFusionRecapNonHabitantInexistant() throws Exception {
-		assertPage("/fusion/recap.do?numeroNonHab=12345678&numeroHab=12300003", "Page d'erreur",
-				"Le non-habitant spécifié n'existe pas");
-	}
-
-	@Test
-	@Ignore
-	public void testFusionRecapHabitantInexistant() throws Exception {
-		assertPage("/fusion/recap.do?numeroNonHab=12900001&numeroHab=12345678", "Page d'erreur",
-				"L'habitant spécifié n'existe pas");
 	}
 
 	/*----------------------
