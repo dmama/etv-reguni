@@ -188,7 +188,7 @@ public abstract class LengthConstants {
 	public static final int RF_ETAT_EVENEMENT = 13;
 	public static final int RF_TYPE_ENTITE = 14;
 	public static final int RF_TYPE_MUTATION = 13;
-	public static final int RF_ID_RF = 33;
+	public static final int RF_ID_RF = 37;
 	public static final int RF_FILE_URL = 512;
 	public static final int RF_ERROR_MESSAGE = 1000;
 	public static final int RF_TYPE_BATIMENT = 255;
