@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.data.DataEventService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
@@ -939,7 +940,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 			// un message de vérification doit être présent
 			final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
 			assertEquals(4, erreurs.size());
-			assertEquals("Entreprise n°" + entrepriseId + " (By Hina Boutique SNC) identifiée sur la base du numéro civil 102059155 (numéro cantonal).", erreurs.get(0).getMessage());
+			assertEquals("Entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(entrepriseId) + " (By Hina Boutique SNC) identifiée sur la base du numéro civil 102059155 (numéro cantonal).", erreurs.get(0).getMessage());
 			assertEquals("Mutation : Radiation", erreurs.get(1).getMessage());
 			assertEquals("Réglage de l'état: Radiée du RC.", erreurs.get(2).getMessage());
 			assertEquals("Vérification requise pour la radiation de l'entreprise encore dotée d'un for principal.", erreurs.get(3).getMessage());
