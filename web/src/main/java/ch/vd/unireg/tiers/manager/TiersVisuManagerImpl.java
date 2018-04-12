@@ -1,43 +1,25 @@
 package ch.vd.unireg.tiers.manager;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdressesFiscalesHisto;
-import ch.vd.unireg.common.DonneesCivilesException;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.decision.aci.DecisionAciViewComparator;
 import ch.vd.unireg.di.view.DeclarationImpotListView;
-import ch.vd.unireg.hibernate.HibernateCallback;
-import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.InterfaceDataException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.mouvement.MouvementDossier;
 import ch.vd.unireg.mouvement.view.MouvementDetailView;
-import ch.vd.unireg.security.Role;
-import ch.vd.unireg.security.SecurityHelper;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
@@ -49,15 +31,11 @@ import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.HistoFlags;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.tiers.RapportEntreTiers;
-import ch.vd.unireg.tiers.RapportPrestationImposable;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.view.AdresseCivilView;
 import ch.vd.unireg.tiers.view.AdresseView;
-import ch.vd.unireg.tiers.view.RapportsPrestationView;
 import ch.vd.unireg.tiers.view.TiersView;
 import ch.vd.unireg.tiers.view.TiersVisuView;
-import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Service qui fournit les methodes pour visualiser un tiers
@@ -68,16 +46,9 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 	private MouvementVisuManager mouvementVisuManager;
 
-	private HibernateTemplate hibernateTemplate;
-
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementVisuManager(MouvementVisuManager mouvementVisuManager) {
 		this.mouvementVisuManager = mouvementVisuManager;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	/**
@@ -87,7 +58,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, HistoFlags histoFlags,
 	                             boolean modeImpression, boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
-			throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
+			throws AdresseException, ServiceInfrastructureException {
 
 		final TiersVisuView tiersVisuView = new TiersVisuView(histoFlags);
 
@@ -314,218 +285,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 		Collections.sort(mvtsView);
 		return mvtsView;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public void fillRapportsPrestationView(long noDebiteur, RapportsPrestationView view) {
-
-		final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersDAO.get(noDebiteur);
-		if (debiteur == null) {
-			throw new TiersNotFoundException(noDebiteur);
-		}
-
-		final List<RapportsPrestationView.Rapport> rapports = new ArrayList<>();
-		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumero = new HashMap<>();
-
-		final long startRapports = System.nanoTime();
-
-		final Set<RapportEntreTiers> list = debiteur.getRapportsObjet();
-
-		// Rempli les informations de base
-
-		for (RapportEntreTiers r : list) {
-			if (r.getType() != TypeRapportEntreTiers.PRESTATION_IMPOSABLE) {
-				continue;
-			}
-
-			final RapportPrestationImposable rpi = (RapportPrestationImposable) r;
-
-			final RapportsPrestationView.Rapport rapport = new RapportsPrestationView.Rapport();
-			rapport.id = r.getId();
-			rapport.annule = r.isAnnule();
-			rapport.noCTB = r.getSujetId();
-			rapport.dateDebut = r.getDateDebut();
-			rapport.dateFin = r.getDateFin();
-			rapport.noCTB = rpi.getSujetId();
-			rapports.add(rapport);
-
-			ArrayList<RapportsPrestationView.Rapport> rl = (ArrayList<RapportsPrestationView.Rapport>) rapportsByNumero.get(rapport.noCTB);
-			if (rl == null) {
-				rl = new ArrayList<>();
-				rapportsByNumero.put(rapport.noCTB, rl);
-			}
-
-			rl.add(rapport);
-		}
-
-		final long endRapports = System.nanoTime();
-		LOGGER.debug("- chargement des rapports en " + ((endRapports - startRapports) / 1000000) + " ms");
-
-		// Complète les noms, prénoms et nouveaux numéros AVS des non-habitants
-
-		final long startNH = System.nanoTime();
-
-		final Set<Long> pasDeNouveauNosAvs = new HashSet<>();
-
-		final List infoNonHabitants = hibernateTemplate.find("select pp.numero, pp.prenomUsuel, pp.nom, pp.numeroAssureSocial from PersonnePhysique pp, RapportPrestationImposable rpi "
-				                                                     + "where pp.habitant = false and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null);
-		for (Object o : infoNonHabitants) {
-			final Object line[] = (Object[]) o;
-			final Long numero = (Long) line[0];
-			final String prenom = (String) line[1];
-			final String nom = (String) line[2];
-			final String noAVS = (String) line[3];
-
-			if (StringUtils.isBlank(noAVS)) {
-				pasDeNouveauNosAvs.add(numero);
-			}
-
-			final List<RapportsPrestationView.Rapport> rl = rapportsByNumero.get(numero);
-			Assert.notNull(rl);
-
-			for (RapportsPrestationView.Rapport r : rl) {
-				r.nomCourrier = Collections.singletonList(getNomPrenom(prenom, nom));
-				r.noAVS = FormatNumeroHelper.formatNumAVS(noAVS);
-			}
-		}
-
-		// Complète les anciens numéros AVS des non-habitants qui n'en possède pas des nouveaux
-
-		if (!pasDeNouveauNosAvs.isEmpty()) {
-			final StandardBatchIterator<Long> it = new StandardBatchIterator<>(pasDeNouveauNosAvs, 500);
-			while (it.hasNext()) {
-				final List<Long> ids = it.next();
-
-				final List<Object[]> ancienNosAvs = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
-					@Override
-					public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
-						final Query query = session.createQuery(
-								"select ip.personnePhysique.id, ip.identifiant from IdentificationPersonne ip where ip.categorieIdentifiant = 'CH_AHV_AVS' and ip.personnePhysique.id in (:ids)");
-						query.setParameterList("ids", ids);
-						//noinspection unchecked
-						return query.list();
-					}
-				});
-
-				for (Object[] line : ancienNosAvs) {
-					final Long numero = (Long) line[0];
-					final String noAVS = (String) line[1];
-
-					final List<RapportsPrestationView.Rapport> rl = rapportsByNumero.get(numero);
-					Assert.notNull(rl);
-
-					for (RapportsPrestationView.Rapport r : rl) {
-						r.noAVS = FormatNumeroHelper.formatAncienNumAVS(noAVS);
-					}
-				}
-			}
-		}
-
-		final long endNH = System.nanoTime();
-		LOGGER.debug("- chargement des non-habitants en " + ((endNH - startNH) / 1000000) + " ms");
-
-		// Complète les noms, prénoms et numéros AVS des habitants
-
-		final long startH = System.nanoTime();
-
-		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumeroIndividu = new HashMap<>();
-
-		final List infoHabitants = hibernateTemplate.find("select pp.numero, pp.numeroIndividu from PersonnePhysique pp, RapportPrestationImposable rpi "
-				                                                  + "where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null);
-		for (Object o : infoHabitants) {
-			final Object line[] = (Object[]) o;
-			final Long numero = (Long) line[0];
-			final Long numeroIndividu = (Long) line[1];
-
-			ArrayList<RapportsPrestationView.Rapport> rl = (ArrayList<RapportsPrestationView.Rapport>) rapportsByNumeroIndividu.get(numeroIndividu);
-			if (rl == null) {
-				rl = new ArrayList<>();
-				rapportsByNumeroIndividu.put(numeroIndividu, rl);
-			}
-
-			rl.addAll(rapportsByNumero.get(numero));
-		}
-
-		final Set<Long> numerosIndividus = rapportsByNumeroIndividu.keySet();
-		final StandardBatchIterator<Long> iterator = new StandardBatchIterator<>(numerosIndividus, 500);
-		while (iterator.hasNext()) {
-			final List<Long> batch = iterator.next();
-			try {
-				final List<Individu> individus = serviceCivilService.getIndividus(batch, null);
-				for (Individu ind : individus) {
-					final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
-					Assert.notNull(rl);
-					for (RapportsPrestationView.Rapport rapport : rl) {
-						rapport.nomCourrier = Collections.singletonList(serviceCivilService.getNomPrenom(ind));
-						rapport.noAVS = getNumeroAvs(ind);
-					}
-				}
-			}
-			catch (ServiceCivilException e) {
-				LOGGER.debug("Impossible de charger le lot d'individus [" + batch + "], on continue un-par-un. L'erreur est : " + e.getMessage());
-				// on recommence, un-par-un
-				for (Long numero : batch) {
-					try {
-						Individu ind = serviceCivilService.getIndividu(numero, null);
-						if (ind != null) {
-							final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
-							Assert.notNull(rl);
-							for (RapportsPrestationView.Rapport rapport : rl) {
-								rapport.nomCourrier = Collections.singletonList(serviceCivilService.getNomPrenom(ind));
-								rapport.noAVS = getNumeroAvs(ind);
-							}
-						}
-					}
-					catch (ServiceCivilException ex) {
-						LOGGER.warn("Impossible de charger l'individu [" + numero + "]. L'erreur est : " + ex.getMessage(), ex);
-						// on affiche le message d'erreur directement dans la page, pour éviter qu'il soit perdu
-						final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(numero);
-						Assert.notNull(rl);
-						for (RapportsPrestationView.Rapport rapport : rl) {
-							rapport.nomCourrier = Collections.singletonList("##erreur## : " + ex.getMessage());
-							rapport.noAVS = "##erreur##";
-						}
-					}
-				}
-			}
-		}
-
-		final long endH = System.nanoTime();
-		LOGGER.debug("- chargement des habitants en " + ((endH - startH) / 1000000) + " ms");
-
-		view.idDpi = noDebiteur;
-		view.tiersGeneral = tiersGeneralManager.getDebiteur(debiteur, true);
-		view.editionAllowed = SecurityHelper.isGranted(securityProvider, Role.RT);
-		view.rapports = rapports;
-	}
-
-	private String getNumeroAvs(Individu ind) {
-		final String noAVS;
-		if (StringUtils.isBlank(ind.getNouveauNoAVS())) {
-			noAVS = FormatNumeroHelper.formatAncienNumAVS(ind.getNoAVS11());
-		}
-		else {
-			noAVS = FormatNumeroHelper.formatNumAVS(ind.getNouveauNoAVS());
-		}
-		return noAVS;
-	}
-
-	private String getNomPrenom(String prenom, String nom) {
-		final String nomPrenom;
-		if (nom != null && prenom != null) {
-			nomPrenom = String.format("%s %s", prenom, nom);
-		}
-		else if (nom != null) {
-			nomPrenom = nom;
-		}
-		else if (prenom != null) {
-			nomPrenom = prenom;
-		}
-		else {
-			nomPrenom = "";
-		}
-		return nomPrenom;
 	}
 
 	/**

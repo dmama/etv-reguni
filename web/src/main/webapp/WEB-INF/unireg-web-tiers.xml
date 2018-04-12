@@ -130,7 +130,6 @@
 
 	<bean id="tiersVisuManager" class="ch.vd.unireg.tiers.manager.TiersVisuManagerImpl" parent="tiersManager">
 		<property name="mouvementVisuManager" ref="mouvementVisuManager"/>
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 	
 	<bean id="consultLogController" class="ch.vd.unireg.common.ConsultLogController">

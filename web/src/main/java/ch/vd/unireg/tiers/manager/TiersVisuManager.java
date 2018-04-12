@@ -2,12 +2,11 @@ package ch.vd.unireg.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.tiers.HistoFlags;
-import ch.vd.unireg.tiers.view.RapportsPrestationView;
 import ch.vd.unireg.tiers.view.TiersVisuView;
 
 /**
@@ -48,6 +47,4 @@ public interface TiersVisuManager {
 	@Transactional(readOnly = true)
 	int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto);
 
-	@Transactional(readOnly = true)
-	void fillRapportsPrestationView(long noDebiteur, RapportsPrestationView view);
 }

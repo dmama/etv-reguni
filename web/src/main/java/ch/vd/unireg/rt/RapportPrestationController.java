@@ -37,8 +37,6 @@ import ch.vd.unireg.security.SecurityCheck;
 import ch.vd.unireg.tiers.TiersIndexedDataView;
 import ch.vd.unireg.tiers.TiersMapHelper;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.tiers.manager.TiersEditManager;
-import ch.vd.unireg.tiers.manager.TiersVisuManager;
 import ch.vd.unireg.tiers.view.RapportsPrestationView;
 import ch.vd.unireg.tiers.view.TiersEditView;
 import ch.vd.unireg.utils.RegDateEditor;
@@ -59,11 +57,10 @@ public class RapportPrestationController {
 
 	private TiersService tiersService;
 	private TiersMapHelper tiersMapHelper;
-	private TiersVisuManager tiersVisuManager;
-	private TiersEditManager tiersEditManager;
 	private RapportEditManager rapportEditManager;
 	private RapportPrestationEditManager rapportPrestationEditManager;
 	private ControllerUtils controllerUtils;
+
 	private Validator rapportEditValidator;
 	private Validator tiersCriteriaValidator;
 
@@ -81,7 +78,7 @@ public class RapportPrestationController {
 
 		final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
 		final TiersEditView view = rapportEditManager.getRapportsPrestationView(id, pagination, true);
-		final int rapportCount = tiersEditManager.countRapportsPrestationImposable(id, true);
+		final int rapportCount = rapportPrestationEditManager.countRapportsPrestationImposable(id, true);
 		model.addAttribute("resultSize", rapportCount);
 		model.addAttribute("command", view);
 
@@ -280,7 +277,7 @@ public class RapportPrestationController {
 		controllerUtils.checkAccesDossierEnLecture(idDpi);
 
 		final RapportsPrestationView view = new RapportsPrestationView();
-		tiersVisuManager.fillRapportsPrestationView(idDpi, view);
+		rapportPrestationEditManager.fillRapportsPrestationView(idDpi, view);
 		model.addAttribute("command", view);
 
 		return "tiers/visualisation/rt/list";
@@ -292,14 +289,6 @@ public class RapportPrestationController {
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
-	}
-
-	public void setTiersVisuManager(TiersVisuManager tiersVisuManager) {
-		this.tiersVisuManager = tiersVisuManager;
-	}
-
-	public void setTiersEditManager(TiersEditManager tiersEditManager) {
-		this.tiersEditManager = tiersEditManager;
 	}
 
 	public void setRapportEditManager(RapportEditManager rapportEditManager) {

@@ -5,8 +5,6 @@
 	<bean id="rapportPrestationController" class="ch.vd.unireg.rt.RapportPrestationController">
 		<property name="tiersService" ref="tiersService" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="tiersVisuManager" ref="tiersVisuManager" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="rapportEditManager" ref="rapportEditManager" />
 		<property name="rapportPrestationEditManager" ref="rapportPrestationEditManager" />
 		<property name="rapportEditValidator" ref="rapportPrestationValidator" />
@@ -15,9 +13,12 @@
 	</bean>
 
 	<bean id="rapportPrestationEditManager" class="ch.vd.unireg.rt.manager.RapportPrestationEditManagerImpl" >
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>

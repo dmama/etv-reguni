@@ -1,64 +1,30 @@
 package ch.vd.unireg.rt.manager;
 
-import org.springframework.transaction.annotation.Transactional;
-
-import ch.vd.unireg.adresse.AdressesResolutionException;
-import ch.vd.unireg.rt.view.DebiteurListView;
 import ch.vd.unireg.rt.view.RapportPrestationView;
-import ch.vd.unireg.rt.view.SourcierListView;
-import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.tiers.view.RapportsPrestationView;
 
 public interface RapportPrestationEditManager {
 
 	/**
 	 * Alimente la vue RapportPrestationView
-	 *
-	 * @param numeroSrc
-	 * @param numeroDpi
-	 * @return
-	 * @throws AdressesResolutionException
 	 */
-	@Transactional(readOnly = true)
 	RapportPrestationView get (Long numeroSrc, Long numeroDpi, String provenance) ;
 
 	/**
 	 * Persiste le rapport de travail
-	 * @param rapportView
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void save(RapportPrestationView rapportView) ;
-
-
-	/**
-	 * Charge l'écran de recherche débiteurs pour un sourcier
-	 *
-	 * @param numeroSrc
-	 * @return
-	 */
-	@Transactional(readOnly = true)
-	DebiteurListView getDebiteurList(Long numeroSrc) ;
-
-
-	/**
-	 * Charge l'écran de recherche sourciers pour un debiteur
-	 *
-	 * @param numeroDpi
-	 * @return
-	 */
-	@Transactional(readOnly = true)
-	SourcierListView getSourcierList(Long numeroDpi) ;
-
-	/**
-	 * @param tiersId le numéro du tiers qui nous intéresse
-	 * @return le niveau d'accès autorisé par l'utilisateur actuellement connecté au débiteur
-	 */
-	@Transactional(readOnly = true)
-	Niveau getAccessLevel(long tiersId);
 
 	/**
 	 * @param tiersId le numéro du tiers dont on aimerait s'assurer de l'existence
 	 * @return <code>true</code> si le tiers existe bien, <code>false</code> sinon
 	 */
-	@Transactional(readOnly = true)
 	boolean isExistingTiers(long tiersId);
+
+	/**
+	 * @return  le nombre de rapports prestation imposable pour un débiteur
+	 */
+	int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto);
+
+	void fillRapportsPrestationView(long noDebiteur, RapportsPrestationView view);
 }
