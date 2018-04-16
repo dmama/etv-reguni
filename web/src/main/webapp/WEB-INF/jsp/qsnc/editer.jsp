@@ -51,7 +51,7 @@
 			<legend><span><fmt:message key="label.etats"/></span></legend>
 
 			<c:if test="${!depuisTache}">
-				<authz:authorize ifAnyGranted="ROLE_QSNC_QUITTANCEMENT">
+				<authz:authorize access="hasAnyRole('ROLE_QSNC_QUITTANCEMENT')">
 					<table id="quittancerBouton" border="0">
 						<tr>
 							<td>
@@ -86,7 +86,7 @@
 					</display:column>
 					<display:column style="action">
 						<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
-						<authz:authorize ifAnyGranted="ROLE_QSNC_QUITTANCEMENT">
+						<authz:authorize access="hasAnyRole('ROLE_QSNC_QUITTANCEMENT')">
 							<c:if test="${!etat.annule && etat.etat == 'RETOURNE'}">
 								<unireg:linkTo name="" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
 								               action="/qsnc/annuler-quittance.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
@@ -114,7 +114,7 @@
 			</c:choose>
 
 			<!-- Bouton de rappel -->
-			<authz:authorize ifAnyGranted="ROLE_QSNC_RAPPEL">
+			<authz:authorize access="hasAnyRole('ROLE_QSNC_RAPPEL')">
 				<c:if test="${!depuisTache && !questionnaire.annule && questionnaire.rappelable}">
 					<input type="button" value="<fmt:message key="label.bouton.rappeler"/>" class="button_to" onclick="return EnvoiRappel.execute(${questionnaire.id});"/>
 					<script type="application/javascript">
@@ -133,14 +133,14 @@
 			</authz:authorize>
 
 			<!-- Bouton d'impression de duplicata -->
-			<authz:authorize ifAnyGranted="ROLE_QSNC_DUPLICATA">
+			<authz:authorize access="hasAnyRole('ROLE_QSNC_DUPLICATA')">
 				<c:if test="${!depuisTache && !questionnaire.annule && questionnaire.duplicable}">
 					<unireg:buttonTo name="Duplicata" action="/qsnc/duplicata.do" method="post" params='{id:${questionnaire.id}}'/>
 				</c:if>
 			</authz:authorize>
 
 			<!-- Bouton annulation de questionnaire -->
-			<authz:authorize ifAnyGranted="ROLE_QSNC_EMISSION">
+			<authz:authorize access="hasAnyRole('ROLE_QSNC_EMISSION')">
 				<c:if test="${!questionnaire.annule}">
 					<c:if test="${tacheId == null}">
 						<unireg:buttonTo name="Annuler questionnaire" confirm="Voulez-vous vraiment annuler ce questionnaire SNC ?"

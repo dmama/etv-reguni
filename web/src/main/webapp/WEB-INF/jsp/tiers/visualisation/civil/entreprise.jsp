@@ -69,7 +69,7 @@
 					<td width="20%"><fmt:message key="label.controle.donnees.civiles"/>&nbsp;:</td>
 					<td>
 						<fmt:message key="label.controle.donnees.civiles.aci"/>&nbsp;
-						<authz:authorize ifAnyGranted="ROLE_SUIVI_ANNONCES_IDE">
+						<authz:authorize access="hasAnyRole('ROLE_SUIVI_ANNONCES_IDE')">
 							<unireg:raccourciHistorique link="../annonceIDE/find.do?tiersId=${entreprise.id}" tooltip="Ouvrir le suivi des annonces au registre IDE pour cette entreprise"  display="label.bouton.historique.annonces.ide"/>
 						</authz:authorize>
 					</td>

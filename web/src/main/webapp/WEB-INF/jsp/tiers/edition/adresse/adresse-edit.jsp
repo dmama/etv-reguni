@@ -265,7 +265,7 @@
 		<form:hidden path="etatSuccessoral.numeroConjointDecede"/>
 
 		<table border="0">
-		<authz:authorize ifAnyGranted="ROLE_ADR_PP_C_DCD">
+		<authz:authorize access="hasAnyRole('ROLE_ADR_PP_C_DCD')">
 		<c:if test="${editCommand.etatSuccessoral.numeroPrincipalDecede != null || editCommand.etatSuccessoral.numeroConjointDecede != null}">
 			<tr>
 				<td colspan="4">

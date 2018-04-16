@@ -109,7 +109,7 @@
 					<fmt:message key="option.rf.type.mutation.${mutation.typeMutation}" />
 				</display:column>
 				<display:column titleKey="label.id.rf" sortable="true" sortName="idRF">
-					<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+					<authz:authorize access="hasAnyRole('ROLE_SUPERGRA')">
 						<c:if test="${mutation.entityKey != null}">
 							<unireg:linkTo name="${mutation.idRF}" action="/supergra/entity/show.do" params="{id:${mutation.entityKey.id},class:'${mutation.entityKey.type}'}"/>
 						</c:if>
@@ -117,7 +117,7 @@
 							${mutation.idRF}
 						</c:if>
 					</authz:authorize>
-					<authz:authorize ifNotGranted="ROLE_SUPERGRA">
+					<authz:authorize access="!hasAnyRole('ROLE_SUPERGRA')">
 						${mutation.idRF}
 					</authz:authorize>
 				</display:column>

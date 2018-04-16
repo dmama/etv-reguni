@@ -244,6 +244,16 @@
 				<artifactId>cxf-rt-rs-service-description</artifactId>
 				<version>${cxf.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-json-provider</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -760,13 +770,13 @@
 		<tomcat.version>8.0.17</tomcat.version>
 		<embedded-tomcat.version>4.0.0</embedded-tomcat.version>
 		<shared-base.version>5.5.2</shared-base.version>
-		<spring.version>3.2.13.RELEASE</spring.version>
-		<spring.security.version>3.2.5.RELEASE</spring.security.version>
+		<spring.version>4.3.9.RELEASE</spring.version>
+		<spring.security.version>4.2.5.RELEASE</spring.security.version>
 		<cxf.version>3.1.14</cxf.version>
 		<brave.version>4.16.2</brave.version>
 		<activemq.version>5.11.0.redhat-620133</activemq.version>
 		<jencks.version>2.2-dsi.0</jencks.version>
-		<jackson.version>1.9.13</jackson.version>
+		<jackson.version>2.9.5</jackson.version>
 		<wsparty3.version>3.10</wsparty3.version>
 		<wsparty4.version>4.3</wsparty4.version>
 		<ws.v5.version>5.5.3</ws.v5.version>

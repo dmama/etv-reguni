@@ -48,7 +48,7 @@
 				<ul>
 					<li><a href="<c:url value='/tiers/list.do'/>"><fmt:message key="title.rechercher" /></a></li>
 
-					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+					<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 						<li>
 							<a href="<c:url value='/admin/inbox/show.do'/>">
 								<span id="inboxSize"><fmt:message key="title.inbox"/></span>
@@ -72,10 +72,10 @@
 					<c:if test="${creationpp || modifpp || annulpp}">
 						<li><fmt:message key="title.personnes.physiques"/>
 							<ul>
-								<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB">
+								<authz:authorize access="hasAnyRole('ROLE_CREATE_NONHAB')">
 									<li><a href="<c:url value='/tiers/nonhabitant/create.do'/>"><fmt:message key="title.creation.inconnu.controle.habitants" /></a></li>
 								</authz:authorize>
-								<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
+								<authz:authorize access="hasAnyRole('ROLE_CREATE_AC')">
 									<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.creation.autre.communaute" /></a></li>
 								</authz:authorize>
 								<c:if test="${annulpp}">
@@ -104,7 +104,7 @@
 						</li>
 					</c:if>
 
-					<authz:authorize ifAnyGranted="ROLE_LR">
+					<authz:authorize access="hasAnyRole('ROLE_LR')">
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
 
@@ -126,30 +126,30 @@
 								<c:if test="${proccomplexeent}">
 									<li><fmt:message key="label.action.processus.complexes"/>
 										<ul>
-											<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_FAILLITE_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
 												<li><a href="<c:url value="/processuscomplexe/revocation/faillite/list.do"/>"><fmt:message key="title.revocation.faillite"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_FIN_ACTIVITE_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
 												<li><a href="<c:url value="/processuscomplexe/repriseactivite/list.do"/>"><fmt:message key="title.reprise.partielle.activite"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
+											<authz:authorize access="hasAnyRole('ROLE_FUSION_ENTREPRISES')">
 												<li><a href="<c:url value="/processuscomplexe/fusion/absorbante/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_SCISSION_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/scission/scindee/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/transfertpatrimoine/emettrice/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_REQUISITION_RADIATION_RC">
+											<authz:authorize access="hasAnyRole('ROLE_REQUISITION_RADIATION_RC')">
 												<li><a href="<c:url value="/processuscomplexe/requisitionradiationrc/list.do"/>"><fmt:message key="title.requisition.radiation.rc"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_REINSCRIPTION_RC_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_REINSCRIPTION_RC_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/reinscriptionrc/list.do"/>"><fmt:message key="title.reinscription.rc"/></a></li>
 											</authz:authorize>
 										</ul>
@@ -158,22 +158,22 @@
 								<c:if test="${annulproccomplexeent}">
 									<li><fmt:message key="label.action.annulation.processus.complexes"/>
 										<ul>
-											<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_FAILLITE_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/annulation/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/annulation/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_FIN_ACTIVITE_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/annulation/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
+											<authz:authorize access="hasAnyRole('ROLE_FUSION_ENTREPRISES')">
 												<li><a href="<c:url value="/processuscomplexe/annulation/fusion/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_SCISSION_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/annulation/scission/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
 											</authz:authorize>
-											<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
+											<authz:authorize access="hasAnyRole('ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE')">
 												<li><a href="<c:url value="/processuscomplexe/annulation/transfertpatrimoine/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
 											</authz:authorize>
 										</ul>
@@ -183,41 +183,41 @@
 						</li>
 					</c:if>
 					
-					<authz:authorize ifAnyGranted="ROLE_EVEN, ROLE_EVEN_PM, ROLE_SUIVI_IMPORT_RF, ROLE_SUIVI_ANNONCES_IDE">
+					<authz:authorize access="hasAnyRole('ROLE_EVEN', 'ROLE_EVEN_PM', 'ROLE_SUIVI_IMPORT_RF', 'ROLE_SUIVI_ANNONCES_IDE')">
 					<li><fmt:message key="title.evenements" />
 						<ul>
-							<authz:authorize ifAnyGranted="ROLE_EVEN">
+							<authz:authorize access="hasAnyRole('ROLE_EVEN')">
 								<li><a href="<c:url value='/evenement/regpp/list.do'/>"><fmt:message key="title.evenements.regpp"/></a></li>
 								<li><a href="<c:url value='/evenement/ech/list.do'/>"><fmt:message key="title.evenements.ech"/></a></li>
 							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_EVEN_PM">
+							<authz:authorize access="hasAnyRole('ROLE_EVEN_PM')">
 								<li><a href="<c:url value='/evenement/organisation/list.do'/>"><fmt:message key="title.evenements.organisation"/></a></li>
 							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_EVEN">
+							<authz:authorize access="hasAnyRole('ROLE_EVEN')">
 								<unireg:ifReqDes>
 									<li><a href="<c:url value='/evenement/reqdes/list.do'/>"><fmt:message key="title.evenements.reqdes"/></a></li>
 								</unireg:ifReqDes>
 							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_SUIVI_IMPORT_RF">
+							<authz:authorize access="hasAnyRole('ROLE_SUIVI_IMPORT_RF')">
 								<li><a href="<c:url value='/registrefoncier/import/list.do'/>"><fmt:message key="title.evenements.registrefoncier"/></a></li>
 							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_SUIVI_ANNONCES_IDE">
+							<authz:authorize access="hasAnyRole('ROLE_SUIVI_ANNONCES_IDE')">
 								<li><a href="<c:url value='/annonceIDE/find.do'/>"><fmt:message key="title.suivi.demandes.menu"/></a></li>
 							</authz:authorize>
 						</ul>
 					</li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_PM, ROLE_DI_EMIS_PP, ROLE_DI_EMIS_PM, ROLE_QSNC_EMISSION">
+					<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+					<authz:authorize access="hasAnyRole('ROLE_MODIF_VD_ORD', 'ROLE_MODIF_VD_SOURC', 'ROLE_MODIF_HC_HS', 'ROLE_MODIF_HAB_DEBPUR', 'ROLE_MODIF_NONHAB_DEBPUR', 'ROLE_MODIF_PM', 'ROLE_DI_EMIS_PP', 'ROLE_DI_EMIS_PM', 'ROLE_QSNC_EMISSION')">
 						<li><a href="<c:url value='/tache/list.do'/>"><fmt:message key="title.taches" /></a></li>
 					</authz:authorize>
 					</authz:authorize>
-					<authz:authorize ifAnyGranted="ROLE_FORM_OUV_DOSS">
+					<authz:authorize access="hasAnyRole('ROLE_FORM_OUV_DOSS')">
 						<li><a href="<c:url value='/tache/list-nouveau-dossier.do'/>"><fmt:message key="title.nouveaux.dossiers" /></a></li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_MVT_DOSSIER_MASSE">
+					<authz:authorize access="hasAnyRole('ROLE_MVT_DOSSIER_MASSE')">
 					    <li><fmt:message key="title.mouvements.dossiers.masse"/>
 					        <ul>
 					        <li><a href="<c:url value='/mouvement/masse/consulter.do'/>"><fmt:message key="title.mouvements.dossiers.masse.consulter"/></a></li>
@@ -228,42 +228,42 @@
 					    </li>
 					</authz:authorize>
 					
-					<authz:authorize ifAnyGranted="ROLE_PARAM_APP, ROLE_PARAM_PERIODE">
+					<authz:authorize access="hasAnyRole('ROLE_PARAM_APP', 'ROLE_PARAM_PERIODE')">
 						<li><fmt:message key="label.action.parametrage" />
 							<ul>
-							<authz:authorize ifAnyGranted="ROLE_PARAM_APP">
+							<authz:authorize access="hasAnyRole('ROLE_PARAM_APP')">
 								<li><a href="<c:url value='/param/app/list.do'/>"><fmt:message key="label.action.param.application" /></a></li>
 							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_PARAM_PERIODE">
+							<authz:authorize access="hasAnyRole('ROLE_PARAM_PERIODE')">
 								<li><a href="<c:url value='/param/periode/list.do'/>"><fmt:message key="label.action.param.periode" /></a></li>
 							</authz:authorize>
 							</ul>
 						</li>
 					</authz:authorize>
 					
-					<authz:authorize ifAnyGranted="ROLE_SEC_DOS_LEC, ROLE_SEC_DOS_ECR">
+					<authz:authorize access="hasAnyRole('ROLE_SEC_DOS_LEC', 'ROLE_SEC_DOS_ECR')">
 						<li><fmt:message key="label.action.acces" />
 							<ul>
 								<li><a href="<c:url value='/acces/par-dossier.do'/>"><fmt:message key="label.action.par.dossier" /></a></li>
 								<li><a href="<c:url value='/acces/par-utilisateur.do'/>"><fmt:message key="label.action.par.utilisateur" /></a></li>
-								<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
+								<authz:authorize access="hasAnyRole('ROLE_SEC_DOS_ECR')">
 									<li><a href="<c:url value='/acces/copie-transfert.do'/>"><fmt:message key="label.action.copie.transfert" /></a></li>
 								</authz:authorize>
 							</ul>
 						</li>
 					</authz:authorize>
 					
-					<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_VISU,ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO,ROLE_RAPPROCHEMENT_RF_IDENTIFICATION_CTB">
+					<authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_VISU', 'ROLE_MW_IDENT_CTB_CELLULE_BO', 'ROLE_MW_IDENT_CTB_GEST_BO', 'ROLE_MW_IDENT_CTB_ADMIN', 'ROLE_NCS_IDENT_CTB_CELLULE_BO', 'ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO', 'ROLE_RAPPROCHEMENT_RF_IDENTIFICATION_CTB')">
 						<li><fmt:message key="label.identification.ctb" />
 							<ul>
 								<li><a href="<c:url value='/identification/gestion-messages/nav-listEnCours.do?wipeCriteria=yes'/>"><fmt:message key="label.demande.en.cours" /></a></li>
-								<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_GEST_BO">
+								<authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_ADMIN', 'ROLE_MW_IDENT_CTB_GEST_BO')">
 									<li><a href="<c:url value='/identification/gestion-messages/nav-listSuspendu.do?wipeCriteria=yes'/>"><fmt:message key="label.demande.suspendu" /></a></li>
 								</authz:authorize>
-								<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
+								<authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_ADMIN')">
 									<li><a href="<c:url value='/identification/tableau-bord/stats.do'/>"><fmt:message key="label.tableau.bord" /></a></li>
 								</authz:authorize>
-							     <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_VISU,ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO,ROLE_RAPPROCHEMENT_RF_IDENTIFICATION_CTB">
+							     <authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_VISU', 'ROLE_MW_IDENT_CTB_CELLULE_BO', 'ROLE_MW_IDENT_CTB_GEST_BO', 'ROLE_MW_IDENT_CTB_ADMIN', 'ROLE_NCS_IDENT_CTB_CELLULE_BO', 'ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO', 'ROLE_RAPPROCHEMENT_RF_IDENTIFICATION_CTB')">
 									<li><a href="<c:url value='/identification/gestion-messages/nav-listTraite.do?wipeCriteria=yes'/>"><fmt:message key="label.demande.archives" /></a></li>
 								</authz:authorize>
 							</ul>
@@ -271,7 +271,7 @@
 					</authz:authorize>
 
 					<unireg:ifEfacture>
-	                    <authz:authorize ifAnyGranted="ROLE_GEST_QUIT_EFACTURE">
+	                    <authz:authorize access="hasAnyRole('ROLE_GEST_QUIT_EFACTURE')">
 	                        <li><fmt:message key="label.efacture"/>
 	                            <ul>
 	                                <li><a href="<c:url value='/efacture/quittancement/show.do'/>"><fmt:message key="label.efacture.quittancement"/></a></li>
@@ -280,7 +280,7 @@
 	                    </authz:authorize>
 					</unireg:ifEfacture>
 
-					<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
+					<authz:authorize access="hasAnyRole('ROLE_GEST_QUIT_LETTRE_BIENVENUE')">
 						<li><fmt:message key="label.autre.document.fiscal.lettre.bienvenue"/>
 							<ul>
 								<li><a href="<c:url value='/autresdocs/lettrebienvenue/quittancement/show.do'/>"><fmt:message key="label.autre.document.fiscal.lettre.bienvenue.quittancement"/></a></li>
@@ -289,20 +289,20 @@
 						</li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_GEST_FRACTIONS_COMMUNE_RF, ROLE_ELECTION_PRINCIPAL_COMMUNAUTE_RF">
+					<authz:authorize access="hasAnyRole('ROLE_GEST_FRACTIONS_COMMUNE_RF', 'ROLE_ELECTION_PRINCIPAL_COMMUNAUTE_RF')">
 						<li><fmt:message key="label.registre.foncier"/>
 							<ul>
-								<authz:authorize ifAnyGranted="ROLE_GEST_FRACTIONS_COMMUNE_RF">
+								<authz:authorize access="hasAnyRole('ROLE_GEST_FRACTIONS_COMMUNE_RF')">
 								<li><a href="<c:url value='/registrefoncier/situation/surcharge/list.do'/>"><fmt:message key="label.fraction.communes"/></a></li>
 								</authz:authorize>
-								<authz:authorize ifAnyGranted="ROLE_ELECTION_PRINCIPAL_COMMUNAUTE_RF">
+								<authz:authorize access="hasAnyRole('ROLE_ELECTION_PRINCIPAL_COMMUNAUTE_RF')">
 								<li><a href="<c:url value='/registrefoncier/communaute/searchTiers.do'/>"><fmt:message key="label.election.principal.communes"/></a></li>
 								</authz:authorize>
 							</ul>
 						</li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_TESTER, ROLE_ADMIN">
+					<authz:authorize access="hasAnyRole('ROLE_TESTER', 'ROLE_ADMIN')">
 						<li><fmt:message key="label.action.admin" />
 							<ul>
 								<li><a href="<c:url value='/admin/indexation/show.do'/>"><fmt:message key="title.indexation" /></a></li>
@@ -328,8 +328,8 @@
 					</authz:authorize>
 
 				</ul>
-				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_FORM_OUV_DOSS">
+				<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
+					<authz:authorize access="hasAnyRole('ROLE_MODIF_VD_ORD', 'ROLE_MODIF_VD_SOURC', 'ROLE_MODIF_HC_HS', 'ROLE_MODIF_HAB_DEBPUR', 'ROLE_MODIF_NONHAB_DEBPUR', 'ROLE_FORM_OUV_DOSS')">
 
 						<div id="postit" class="postit" style="display:none;">
 							<table cellpadding="0" class="postit" border="0" cellspacing="0">
@@ -389,7 +389,7 @@
 							<a href="<c:url value='/'/>" title="Recherche" accesskey="d"><fmt:message key="label.recherche" /></a>
 						</li>
 						<tiles:getAsString name='fichierAide' ignore='true'/>
-						<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+						<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 						<li>
                             <%--suppress JspAbsolutePathInspection, HtmlUnknownTarget --%>
                             <a href="/fiscalite/kbaci/advancedSearch.htm" title="Base ACI" accesskey="b"><fmt:message key="label.kbaci" /></a>

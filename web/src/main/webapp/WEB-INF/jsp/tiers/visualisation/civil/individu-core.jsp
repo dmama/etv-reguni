@@ -8,7 +8,7 @@
 			<c:set var="bind" value="command.${param.path}" scope="request"/>
 			<spring:bind path="${bind}">
 				<c:out value="${status.value.numeroIndividuFormatte}"/>
-				<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD">
+				<authz:authorize access="hasAnyRole('ROLE_MODIF_VD_ORD')">
 					<c:if test="${status.value.canceled}">
 						<span class="warn">
 							<c:choose>

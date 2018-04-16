@@ -14,7 +14,7 @@
 				class="add" title="Ajouter rapport"><fmt:message key="label.bouton.ajouter" /></a>
 			</td>
 		</tr>
-		<authz:authorize ifAnyGranted="ROLE_RT">
+		<authz:authorize access="hasAnyRole('ROLE_RT')">
 		<c:if test="${(command.natureTiers == 'Habitant') || (command.natureTiers == 'NonHabitant')}">
 		<tr>
 			<td>

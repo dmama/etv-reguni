@@ -2,6 +2,7 @@ package ch.vd.unireg.common;
 
 import java.lang.reflect.Field;
 
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.util.ObjectUtils;
@@ -20,7 +21,7 @@ public class SingleContextTestExecutionListener implements TestExecutionListener
 		final String key = getKey(testContext);
 		if (previousKey != null && !key.equals(previousKey)) {
 			// si le context précédent est différent du (futur) context, on le ferme avant de continuer.
-			previousContext.markApplicationContextDirty();
+			previousContext.markApplicationContextDirty(DirtiesContext.HierarchyMode.EXHAUSTIVE);
 		}
 
 		previousKey = key;

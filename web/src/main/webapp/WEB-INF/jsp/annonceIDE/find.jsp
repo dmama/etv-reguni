@@ -131,7 +131,7 @@
 				</display:column>
 				<display:column titleKey="label.numero.evenement.organisation" >
 					<c:if test="${annonce.noEvtOrganisation != null}">
-						<authz:authorize ifAnyGranted="ROLE_EVEN_PM">
+						<authz:authorize access="hasAnyRole('ROLE_EVEN_PM')">
 							<c:set var="even_pm_authorized" value="true" />
 						</authz:authorize>
 						<c:choose>

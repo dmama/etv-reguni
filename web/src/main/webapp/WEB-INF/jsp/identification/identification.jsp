@@ -156,7 +156,7 @@
 
 			    <!-- Bouton de passage en expertise -->
 			    <c:if test="${!hideSoumissionExpertise}">
-				    <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO">
+				    <authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_CELLULE_BO', 'ROLE_MW_IDENT_CTB_ADMIN', 'ROLE_NCS_IDENT_CTB_CELLULE_BO', 'ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO')">
 					    <c:set var="expertiserButtonName">
 						    <fmt:message key="label.bouton.expertiser" />
 					    </c:set>
@@ -166,7 +166,7 @@
 
 			    <!-- Bouton de non-identification -->
 			    <c:if test="${!hideNonIdentifiable}">
-				    <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN">
+				    <authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_GEST_BO', 'ROLE_MW_IDENT_CTB_ADMIN')">
 					    <c:set var="nonIdentifiableButtonName">
 						    <fmt:message key="label.bouton.identification.impossible" />
 					    </c:set>

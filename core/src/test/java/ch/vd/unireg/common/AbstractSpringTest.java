@@ -65,12 +65,8 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	 * Set the {@link ApplicationContext} to be used by this test instance, provided via {@link ApplicationContextAware} semantics.
 	 */
 	@Override
-	public final void setApplicationContext(final ApplicationContext applicationContext) {
+	public void setApplicationContext(final ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-		afterContextInitialization();
-	}
-	// To be overriden by sub-classes
-	protected final void afterContextInitialization() {
 	}
 
 	@Before

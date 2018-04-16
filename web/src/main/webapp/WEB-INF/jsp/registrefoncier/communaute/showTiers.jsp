@@ -31,7 +31,7 @@
 
 	    <fieldset>
 	    <legend><span><fmt:message key="label.communautes.associees" /></span></legend>
-		    <authz:authorize ifAnyGranted="ROLE_TESTER, ROLE_ADMIN">
+		    <authz:authorize access="hasAnyRole('ROLE_TESTER', 'ROLE_ADMIN')">
 		    <div style="float: right">
 		        <unireg:buttonTo name="Recalculer les regroupements" action="/registrefoncier/communaute/recalculRegroupement.do?id=${tiers.ctbId}" method="post"
 		        title="Recalcule les regroupements entre les communautés RF et les modèles de communauté Unireg à partir des droits de propriété du tiers. Tous les regroupements sur toutes les communautés de tous les immeubles du tiers sont recalculés."/>

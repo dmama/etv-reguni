@@ -42,7 +42,7 @@
 						<%--@elvariable id="roles" type="ch.vd.unireg.security.Role[]"--%>
 						<ul>
 						<c:forEach items="${roles}" var="r">
-							<authz:authorize ifAnyGranted="${r.code}">
+							<authz:authorize access="hasAnyRole('${r.code}')">
 								<c:if test="${not empty r.ifosecCode}">
 									<li><c:out value="${r.ifosecCode}"/> (<c:out value="${r}"/>)</li>
 								</c:if>

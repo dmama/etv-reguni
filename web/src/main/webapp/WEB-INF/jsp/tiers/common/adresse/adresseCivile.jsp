@@ -34,7 +34,7 @@
 					<display:column sortable ="true" titleKey="label.rueCasePostale">
 						<c:out value="${adresseCivile.rue}"/>
 						<c:if test="${adresseCivile.egid != null || adresseCivile.ewid != null}">
-							<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+							<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 								<a href="#" class="consult staticTip" id="prn-${adresseCivile.usageCivil}-<unireg:regdate regdate="${adresseCivile.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivile.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>
 								<div id="prn-${adresseCivile.usageCivil}-<unireg:regdate regdate="${adresseCivile.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivile.dateFin}" format="yyyyMMdd"/>-tooltip" style="display: none;">
 									<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresseCivile.egid != null}"><c:out value="${adresseCivile.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
@@ -84,7 +84,7 @@
 					<display:column sortable ="true" titleKey="label.rueCasePostale">
 						<c:out value="${adresseCivileConjoint.rue}"/>
 						<c:if test="${adresseCivileConjoint.egid != null || adresseCivileConjoint.ewid != null}">
-							<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+							<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 								<a href="#" class="consult staticTip" id="cnj-${adresseCivileConjoint.usageCivil}-<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivileConjoint.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>
 								<div id="cnj-${adresseCivileConjoint.usageCivil}-<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresseCivileConjoint.dateFin}" format="yyyyMMdd"/>-tooltip" style="display: none;">
 									<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresseCivileConjoint.egid != null}"><c:out value="${adresseCivileConjoint.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>

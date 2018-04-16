@@ -1,6 +1,6 @@
 package ch.vd.unireg.checker;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.vd.shared.statusmanager.StatusManager;
 import ch.vd.unireg.common.TimeHelper;

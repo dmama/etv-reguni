@@ -6,10 +6,10 @@
 <c:set var="hasDroitGestionDecision" value="${autorisations.decisionsAci}" />
 <c:set var="showTimelineLink" value="${false}" />
 <c:set var="showMessagePresenceDecision" value="${command.decisionRecente && ! hasDroitGestionDecision}" />
-<authz:authorize ifAnyGranted="ROLE_VISU_ALL,ROLE_VISU_FORS">
+<authz:authorize access="hasAnyRole('ROLE_VISU_ALL', 'ROLE_VISU_FORS')">
 	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux && command.natureTiers != 'DebiteurPrestationImposable'}" />
 </authz:authorize>
-<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+<authz:authorize access="hasAnyRole('ROLE_SUPERGRA')">
 	<c:set var="showTimelineLink" value="${showTimelineLink || command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}"/>
 </authz:authorize>
 
@@ -60,12 +60,12 @@
 		<jsp:include page="for-debiteur.jsp"/>
 	</c:when>
 	<c:otherwise>
-		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+		<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 			<jsp:include page="decision-aci.jsp"/>
 		</authz:authorize>
 		<jsp:include page="for.jsp"/>
 		<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
-		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+		<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 			<jsp:include page="situation-famille.jsp"/>
 		</authz:authorize>
 	</c:otherwise>

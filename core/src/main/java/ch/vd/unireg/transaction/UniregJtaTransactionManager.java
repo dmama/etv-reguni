@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.support.DefaultTransactionStatus;
@@ -33,6 +34,7 @@ public class UniregJtaTransactionManager extends JtaTransactionManager implement
 
 	public UniregJtaTransactionManager(UserTransaction userTransaction, TransactionManager transactionManager) {
 		super(userTransaction, transactionManager);
+		this.logger = LogFactory.getLog(JtaTransactionManager.class);   // pour éviter de se faire spammer par la classe de base Spring
 	}
 
 	@Override

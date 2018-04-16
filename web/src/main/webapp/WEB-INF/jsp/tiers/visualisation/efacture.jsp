@@ -17,7 +17,7 @@
             $.get('<c:url value="/efacture/histo.do?ctb=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(destinataire) {
                 var html = '';
                 if (destinataire !== null) {
-                    <authz:authorize ifAnyGranted="ROLE_GEST_EFACTURE">
+                    <authz:authorize access="hasAnyRole('ROLE_GEST_EFACTURE')">
                         html += '<table border="0"><tr><td>';
                         html += '<unireg:raccourciModifier link="../efacture/edit.do?ctb=' + destinataire.ctbId + '" tooltip="Interagir avec les états e-Facture" display="label.bouton.modifier"/>';
                         html += '</td></tr></table>';

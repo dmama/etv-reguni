@@ -263,12 +263,12 @@
 						</c:if>
 					</display:column>
 					<display:column style="action">
-						<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
+						<authz:authorize access="hasAnyRole('ROLE_GEST_QUIT_LETTRE_BIENVENUE')">
 							<c:if test="${!doc.annule}">
 								<unireg:linkTo name="" action="/autresdocs/editer.do" method="get" params="{id:${doc.id}}" title="Editer le document fiscal" link_class="edit"/>
 							</c:if>
 						</authz:authorize>
-						<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
+						<authz:authorize access="hasAnyRole('ROLE_GEST_QUIT_LETTRE_BIENVENUE')">
 							<c:if test="${doc.annule}">
 								<unireg:linkTo name="" title="Désannuler le document fiscal" action="/autresdocs/desannuler.do" method="post" params="{id:${doc.id}}"
 								               confirm="Voulez-vous vraiment désannuler ce document fiscal ?" link_class="undelete" />

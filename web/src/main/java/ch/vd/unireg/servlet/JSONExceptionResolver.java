@@ -10,7 +10,7 @@ import org.springframework.core.Ordered;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -25,7 +25,7 @@ public class JSONExceptionResolver implements HandlerExceptionResolver, Ordered 
 	protected final Logger LOGGER = LoggerFactory.getLogger(JSONExceptionResolver.class);
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
-	private final MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
+	private final MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setOrder(int order) {

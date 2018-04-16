@@ -18,7 +18,7 @@
 		<!-- Debut Liste des restrictions -->
 		<fieldset>
 		<legend><span><fmt:message key="label.caracteristiques.acces" /></span></legend>
-		<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
+		<authz:authorize access="hasAnyRole('ROLE_SEC_DOS_ECR')">
 			<table border="0">
 			<tr>
 				<td>
@@ -51,7 +51,7 @@
 				</display:column>
 				<display:column style="white-space:nowrap">
 					<unireg:consulterLog entityNature="DroitAcces" entityId="${restriction.id}"/>
-					<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
+					<authz:authorize access="hasAnyRole('ROLE_SEC_DOS_ECR')">
 						<c:if test="${!restriction.annule}">
 							<unireg:raccourciAnnuler onClick="javascript:Page_AnnulerRestriction(${restriction.id});" tooltip="Annulation de la restriction"/>
 						</c:if>

@@ -17,7 +17,7 @@
 <div id="rapportsDiv" style="position:relative"><img src="<c:url value="/images/loading.gif"/>"/></div>
 
 <!-- Debut Liens de parentés -->
-<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 	<div id="parentesDiv" style="position:relative"></div>
 </authz:authorize>
 
@@ -31,7 +31,7 @@
 	// chargement Ajax des rapports-entre-tiers
 	$(function() {
 		DossiersApparentes.loadRapports(1);
-		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+		<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 			DossiersApparentes.loadParentes();
 		</authz:authorize>
         DossiersApparentes.loadDebiteurs();
@@ -230,7 +230,7 @@
             return html;
         },
 
-		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+		<authz:authorize access="hasAnyRole('ROLE_VISU_ALL')">
 		    loadParentes: function() {
 			    // get the data
 			    $.get('<c:url value="/rapport/parentes.do?tiers=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(parentes) {

@@ -177,7 +177,7 @@
 			<bean class="org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper">
 				<property name="printStackTrace" value="true" />
 			</bean>
-			<bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/>
+			<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider"/>
 		</jaxrs:providers>
 	</jaxrs:server>
 
@@ -266,7 +266,7 @@
 			<bean class="org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper">
 				<property name="printStackTrace" value="true" />
 			</bean>
-			<bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/>
+			<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider"/>
 		</jaxrs:providers>
 	</jaxrs:server>
 
@@ -357,7 +357,7 @@
 			<bean class="org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper">
 				<property name="printStackTrace" value="true" />
 			</bean>
-			<bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/>
+			<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider"/>
 		</jaxrs:providers>
 	</jaxrs:server>
 

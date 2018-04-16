@@ -3,7 +3,7 @@ package ch.vd.unireg.webservices.v7;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ch.vd.unireg.xml.party.taxdeclaration.v5.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.PartnershipForm;

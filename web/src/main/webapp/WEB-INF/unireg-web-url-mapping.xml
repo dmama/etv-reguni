@@ -23,8 +23,8 @@
 				</bean>
 				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
 				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
-				<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
-				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+				<bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 					<property name="objectMapper">
 						<bean class="ch.vd.unireg.json.JsonObjectMapperFactory"/>
 					</property>
@@ -59,15 +59,15 @@
 	</bean>
 
 	<!-- Exception resolver pour activer les annotations @ExceptionHandler sur les controllers -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver">
 		<property name="order" value="10"/> <!-- pour prendre la précédence sur les JSONExceptionResolver et urlMappingExceptionResolver -->
 		<property name="messageConverters">
 			<list>
 				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
 				<bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
 				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
-				<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
-				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
 			</list>
 		</property>
 	</bean>
