@@ -2,7 +2,6 @@ package ch.vd.unireg.webservice.rcpers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
@@ -14,13 +13,13 @@ import ch.vd.evd0001.v5.Parent;
 import ch.vd.evd0001.v5.Person;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
-import ch.vd.unireg.wsclient.WebClientPool;
-import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
-import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.utils.UniregProperties;
 import ch.vd.unireg.utils.UniregPropertiesImpl;
+import ch.vd.unireg.wsclient.WebClientPool;
+import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -83,48 +82,31 @@ public class RcPersServiceTest {
 		// certitude que les parents étaient restés les mêmes)
 		final List<Parent> parents = person.getParentHistory();
 		assertNotNull(parents);
-		assertEquals(4, parents.size());
+		assertEquals(2, parents.size());
 
 		final List<Parent> parentSorted = new ArrayList<>(parents);
-		Collections.sort(parentSorted, new Comparator<Parent>() {
-			@Override
-			public int compare(Parent o1, Parent o2) {
-				// papa (1 = M) avant maman (2 = F)
-				int comparison = o1.getIdentification().getIdentification().getSex().compareTo(o2.getIdentification().getIdentification().getSex());
-				if (comparison == 0) {
-					// 2 fois papa, ou deux fois maman... -> comparaison sur la date
-					final RegDate refDate1 = o1.getParentFrom() == null ? XmlUtils.xmlcal2regdate(o1.getReportingDate()) : XmlUtils.xmlcal2regdate(o1.getParentFrom());
-					final RegDate refDate2 = o2.getParentFrom() == null ? XmlUtils.xmlcal2regdate(o2.getReportingDate()) : XmlUtils.xmlcal2regdate(o2.getParentFrom());
-					comparison = NullDateBehavior.EARLIEST.compare(refDate1, refDate2);
-				}
-				return comparison;
+		parentSorted.sort((o1, o2) -> {
+			// papa (1 = M) avant maman (2 = F)
+			int comparison = o1.getIdentification().getIdentification().getSex().compareTo(o2.getIdentification().getIdentification().getSex());
+			if (comparison == 0) {
+				// 2 fois papa, ou deux fois maman... -> comparaison sur la date
+				final RegDate refDate1 = o1.getParentFrom() == null ? XmlUtils.xmlcal2regdate(o1.getReportingDate()) : XmlUtils.xmlcal2regdate(o1.getParentFrom());
+				final RegDate refDate2 = o2.getParentFrom() == null ? XmlUtils.xmlcal2regdate(o2.getReportingDate()) : XmlUtils.xmlcal2regdate(o2.getParentFrom());
+				comparison = NullDateBehavior.EARLIEST.compare(refDate1, refDate2);
 			}
+			return comparison;
 		});
 		{
 			final Parent parent = parentSorted.get(0);
 			assertEquals("347148", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
 			assertNull(parent.getParentFrom());
-			assertEquals(RegDate.get(2015, 12, 31), XmlUtils.xmlcal2regdate(parent.getParentTill()));
+			assertNull(parent.getParentTill());
 		}
 		{
 			final Parent parent = parentSorted.get(1);
-			assertNull(parent.getIdentification().getIdentification().getLocalPersonId());
-			assertNull(parent.getParentFrom());
-			assertNull(parent.getParentTill());
-			assertEquals(RegDate.get(2016, 1, 1), XmlUtils.xmlcal2regdate(parent.getReportingDate()));
-		}
-		{
-			final Parent parent = parentSorted.get(2);
 			assertEquals("347149", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
 			assertNull(parent.getParentFrom());
-			assertEquals(RegDate.get(2015, 12, 31), XmlUtils.xmlcal2regdate(parent.getParentTill()));
-		}
-		{
-			final Parent parent = parentSorted.get(3);
-			assertNull(parent.getIdentification().getIdentification().getLocalPersonId());
-			assertNull(parent.getParentFrom());
 			assertNull(parent.getParentTill());
-			assertEquals(RegDate.get(2016, 1, 1), XmlUtils.xmlcal2regdate(parent.getReportingDate()));
 		}
 
 		// le conjoint (non-habitant)
