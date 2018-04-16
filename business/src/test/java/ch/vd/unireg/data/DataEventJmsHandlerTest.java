@@ -11,17 +11,17 @@ import com.openpojo.reflection.impl.PojoClassFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalSender;
+import ch.vd.unireg.xml.event.data.v1.DataEvent;
 
 public class DataEventJmsHandlerTest extends BusinessTest {
 
 	private DataEventJmsHandler handler;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		handler = new DataEventJmsHandler();
 		handler.setDataEventService(new MockDataEventService());

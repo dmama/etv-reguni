@@ -11,6 +11,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalRegimeFiscal;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -22,12 +28,6 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalRegimeFiscal;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
 import ch.vd.unireg.tiers.Bouclement;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -59,8 +59,8 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		evtFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
 

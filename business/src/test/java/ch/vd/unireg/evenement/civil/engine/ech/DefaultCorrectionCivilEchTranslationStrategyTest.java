@@ -9,13 +9,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
@@ -28,8 +28,8 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 	private DefaultCorrectionCivilEchTranslationStrategy strategy;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		strategy = new DefaultCorrectionCivilEchTranslationStrategy(serviceCivil, serviceInfra, tiersService);
 	}
 

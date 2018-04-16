@@ -29,8 +29,8 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 	private RappelLettresBienvenueProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final ParametreAppService paramAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final AutreDocumentFiscalService autreDocumentFiscalService = getBean(AutreDocumentFiscalService.class, "autreDocumentFiscalService");

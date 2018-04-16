@@ -19,12 +19,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseMandataireSuisse;
 import ch.vd.unireg.adresse.AdresseSuisse;
@@ -38,6 +32,12 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
@@ -86,11 +86,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
+	public void onSetUp() throws Exception {
 		// petit passage par l'indexation des tiers activée pour vider l'indexeur en entrée
 		setWantIndexationTiers(true);
 		try {
-			super.runOnSetUp();
+			super.onSetUp();
 			service = getBean(RetourDIPMService.class, "retourDIPMService");
 			parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 			tacheDAO = getBean(TacheDAO.class, "tacheDAO");

@@ -13,8 +13,8 @@ public class DateDecesComparisonStrategyTest extends AbstractIndividuComparisonS
 	private DateDecesComparisonStrategy strategy;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		strategy = new DateDecesComparisonStrategy();
 	}
 

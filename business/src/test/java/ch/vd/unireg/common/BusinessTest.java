@@ -2,9 +2,9 @@ package ch.vd.unireg.common;
 
 import java.util.Date;
 
+import ch.vd.unireg.evenement.ide.AnnonceIDEService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.evenement.ide.AnnonceIDEService;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceOrganisation;
@@ -22,7 +22,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	protected RegimeFiscalService regimeFiscalService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
+	public void onSetUp() throws Exception {
 
 		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
 		serviceOrganisation = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
@@ -30,7 +30,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 		serviceInfra.setUpDefault();
 
-		super.runOnSetUp();
+		super.onSetUp();
 	}
 
 	protected static void waitUntilRunning(JobDefinition job, Date startTime) throws Exception {

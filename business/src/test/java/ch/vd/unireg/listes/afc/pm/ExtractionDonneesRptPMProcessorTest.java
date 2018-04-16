@@ -4,13 +4,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.DayMonth;
@@ -25,8 +25,8 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 	private ExtractionDonneesRptPMProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		final ServiceCivilCacheWarmer civilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");

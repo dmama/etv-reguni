@@ -18,6 +18,8 @@ import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
@@ -25,15 +27,13 @@ import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.wsclient.efacture.EFactureClient;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.wsclient.efacture.EFactureClient;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,8 +49,8 @@ public class EFactureServiceTest extends BusinessTest {
 
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		efactureService = getBean(EFactureServiceImpl.class, "efactureService");
 	}
 

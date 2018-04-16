@@ -25,8 +25,8 @@ public class MessageIdentificationIndexerHibernateInterceptorTest extends Busine
 	private GlobalIndexInterface index;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		this.index = getBean(GlobalIndexInterface.class, "globalMessageIdentificationIndex");
 	}
 

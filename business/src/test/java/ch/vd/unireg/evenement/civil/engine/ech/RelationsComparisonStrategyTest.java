@@ -18,8 +18,8 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 	private RelationsComparisonStrategy strategy;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		strategy = new RelationsComparisonStrategy();
 	}
 

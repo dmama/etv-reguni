@@ -33,8 +33,8 @@ public class RapprochementManuelTiersRFServiceTest extends BusinessTest {
 	private IdentCtbDAO identCtbDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		identCtbDAO = getBean(IdentCtbDAO.class, "identCtbDAO");
 		service = new RapprochementManuelTiersRFServiceImpl();
 		service.setEmetteurDemandeIdentification("MON_EMETTEUR");

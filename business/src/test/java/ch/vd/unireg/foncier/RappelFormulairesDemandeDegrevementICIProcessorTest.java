@@ -44,8 +44,8 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 	private DelaisService delaisService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final ParametreAppService paramAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final AutreDocumentFiscalServiceImpl autreDocFiscalService = getBean(AutreDocumentFiscalServiceImpl.class, "autreDocumentFiscalService");

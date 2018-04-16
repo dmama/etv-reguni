@@ -23,18 +23,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdresseSuisse;
@@ -48,6 +36,18 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.tache.TacheService;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.DomicileEtablissement;
@@ -85,8 +85,8 @@ public class MetierServicePMTest extends BusinessTest {
 	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 

@@ -6,9 +6,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
@@ -19,8 +19,8 @@ public class ExtractionRegimesFiscauxProcessorTest extends BusinessTest {
 	private ExtractionRegimesFiscauxProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		processor = new ExtractionRegimesFiscauxProcessor(hibernateTemplate, transactionManager, serviceInfra, tiersService);
 	}
 

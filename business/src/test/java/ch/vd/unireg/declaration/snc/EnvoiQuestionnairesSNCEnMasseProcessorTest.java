@@ -11,8 +11,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.BusinessTestingConstants;
 import ch.vd.unireg.common.TicketService;
@@ -24,6 +22,8 @@ import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDeclarationRappelable;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Entreprise;
@@ -50,8 +50,8 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");

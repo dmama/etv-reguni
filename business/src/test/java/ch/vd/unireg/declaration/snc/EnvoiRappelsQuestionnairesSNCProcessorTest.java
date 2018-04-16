@@ -8,12 +8,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
@@ -27,8 +27,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 	private EnvoiRappelsQuestionnairesSNCProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		final QuestionnaireSNCDAO qsncDAO = getBean(QuestionnaireSNCDAO.class, "questionnaireSNCDAO");
 		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
 		final QuestionnaireSNCService qsncService = getBean(QuestionnaireSNCService.class, "qsncService");

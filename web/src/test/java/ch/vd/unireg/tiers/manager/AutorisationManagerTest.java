@@ -1,8 +1,6 @@
 package ch.vd.unireg.tiers.manager;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
 
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.security.MockSecurityProvider;
@@ -20,8 +18,8 @@ public class AutorisationManagerTest extends WebTest {
 	private AutorisationManager autorisationManager;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		autorisationManager = getBean(AutorisationManagerImpl.class, "autorisationManager");
 	}
 

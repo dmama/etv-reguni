@@ -26,8 +26,8 @@ public abstract class AbstractEvenementReqDesProcessingTest extends BusinessTest
 	protected EvenementReqDesDAO evenementReqDesDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		uniteTraitementDAO = getBean(UniteTraitementDAO.class, "reqdesUniteTraitementDAO");
 		evenementReqDesDAO = getBean(EvenementReqDesDAO.class, "reqdesEvenementDAO");
 	}

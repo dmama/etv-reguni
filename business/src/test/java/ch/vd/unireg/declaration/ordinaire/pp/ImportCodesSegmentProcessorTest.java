@@ -8,13 +8,13 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.NatureTiers;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -29,8 +29,8 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	private ImportCodesSegmentProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService, adresseService);
 	}

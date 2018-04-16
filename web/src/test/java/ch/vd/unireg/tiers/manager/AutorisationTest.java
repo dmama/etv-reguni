@@ -6,12 +6,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -25,8 +25,8 @@ public class AutorisationTest  extends WebTest {
 	private AutorisationManager autorisationManager;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		autorisationManager = getBean(AutorisationManagerImpl.class, "autorisationManager");
 	}
 

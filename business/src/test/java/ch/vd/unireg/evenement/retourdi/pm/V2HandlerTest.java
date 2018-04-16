@@ -11,9 +11,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.NumeroIDEHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.AddressInformation;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.InformationMandataire;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.InformationPersonneMoraleModifiee;
@@ -24,10 +28,6 @@ import ch.vd.unireg.xml.event.taxation.ibc.v2.TypAdresse;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypNumeroIdeAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTelephoneAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTxtMax40Attr;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.common.NumeroIDEHelper;
-import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.jms.EsbBusinessException;
 
 @SuppressWarnings("Duplicates")
 public class V2HandlerTest extends BusinessTest {
@@ -50,8 +50,8 @@ public class V2HandlerTest extends BusinessTest {
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		retourService = new CollectingRetourService();
 		handler = new V2Handler();
 		handler.setInfraService(getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"));

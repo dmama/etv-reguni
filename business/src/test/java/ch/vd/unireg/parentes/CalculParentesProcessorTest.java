@@ -13,11 +13,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.MultipleSwitch;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.common.MultipleSwitch;
 import ch.vd.unireg.tiers.Parente;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -29,8 +29,8 @@ public class CalculParentesProcessorTest extends BusinessTest {
 	private CalculParentesProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final RapportEntreTiersDAO rapportDAO = getBean(RapportEntreTiersDAO.class, "rapportEntreTiersDAO");
 

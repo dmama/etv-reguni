@@ -16,6 +16,12 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.adresse.AdresseEtrangere;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.Fuse;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
@@ -23,12 +29,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.AdresseEtrangere;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.adresse.AdresseTiers;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.common.Fuse;
 import ch.vd.unireg.metier.MetierService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.reqdes.ErreurTraitement;
@@ -76,8 +76,8 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 	private RemarqueDAO remarqueDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		remarqueDAO = getBean(RemarqueDAO.class, "remarqueDAO");
 

@@ -75,8 +75,8 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 	private EvenementOrganisationTranslatorImpl translator;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		evtFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 
 		// Configuration par défaut du translator

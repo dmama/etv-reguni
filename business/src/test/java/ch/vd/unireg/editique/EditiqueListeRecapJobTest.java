@@ -32,8 +32,8 @@ public class EditiqueListeRecapJobTest extends JobTest {
 	private TiersDAO tiersDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		batchScheduler = getBean(BatchScheduler.class, "batchScheduler");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 	}

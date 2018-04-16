@@ -29,8 +29,8 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 	private EvenementCivilEchTranslatorImplOverride translator;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		
 		translator = new EvenementCivilEchTranslatorImplOverride();
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));

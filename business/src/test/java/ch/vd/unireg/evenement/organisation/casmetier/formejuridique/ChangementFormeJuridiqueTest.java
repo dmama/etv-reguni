@@ -51,8 +51,8 @@ public class ChangementFormeJuridiqueTest extends AbstractEvenementOrganisationP
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		evtFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
 

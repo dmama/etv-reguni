@@ -23,8 +23,8 @@ public class AvatarServiceTest extends BusinessTest {
 	private AvatarService avatarService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		this.avatarService = getBean(AvatarService.class, "avatarService");
 	}
 

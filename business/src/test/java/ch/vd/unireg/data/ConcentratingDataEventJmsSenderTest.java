@@ -11,17 +11,17 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.xml.event.data.v1.DataEvent;
-import ch.vd.unireg.xml.event.data.v1.FiscalEventSendRequestEvent;
-import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.transaction.TransactionSynchronizationRegistrar;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.event.data.v1.DataEvent;
+import ch.vd.unireg.xml.event.data.v1.FiscalEventSendRequestEvent;
+import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 
 public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 
@@ -43,8 +43,8 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		this.concentrator = null;               // pour en avoir un, il faut appeler buildConcentrator()
 	}
 

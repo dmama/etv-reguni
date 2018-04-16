@@ -8,14 +8,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -37,8 +37,8 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 	private ParametreAppService paramAppService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		final ServiceCivilCacheWarmer cacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");

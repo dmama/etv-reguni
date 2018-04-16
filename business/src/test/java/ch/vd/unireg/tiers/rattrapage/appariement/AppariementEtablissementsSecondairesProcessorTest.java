@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -21,7 +22,6 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -34,8 +34,8 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 	private AppariementEtablissementsSecondairesProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		final Dialect dialect = getBean(Dialect.class, "hibernateDialect");
 		final AppariementService appariementService = getBean(AppariementService.class, "appariementService");
 		processor = new AppariementEtablissementsSecondairesProcessor(transactionManager, hibernateTemplate, appariementService, tiersService, dialect);

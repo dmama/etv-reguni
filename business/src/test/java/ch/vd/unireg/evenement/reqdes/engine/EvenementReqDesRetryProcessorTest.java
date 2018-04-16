@@ -25,8 +25,8 @@ public class EvenementReqDesRetryProcessorTest extends AbstractEvenementReqDesPr
 	private MyCollectingProcessor mainProcessor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		mainProcessor = new MyCollectingProcessor();
 		mainProcessor.setHibernateTemplate(hibernateTemplate);

@@ -9,12 +9,6 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.ModeleDocument;
@@ -32,6 +26,12 @@ import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.mock.MockEditiqueService;
 import ch.vd.unireg.efacture.ImpressionDocumentEfactureHelperImpl;
 import ch.vd.unireg.evenement.docsortant.EvenementDocumentSortantService;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.mouvement.ImpressionBordereauMouvementDossierHelper;
 import ch.vd.unireg.tache.ImpressionNouveauxDossiersHelper;
@@ -48,8 +48,8 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 	private EditiqueCompositionServiceImpl service;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		service = new EditiqueCompositionServiceImpl();
 		service.setEditiqueService(new MockEditiqueService());
 		service.setImpressionDIPPHelper(getBean(ImpressionDeclarationImpotPersonnesPhysiquesHelper.class, "impressionDIPPHelper"));

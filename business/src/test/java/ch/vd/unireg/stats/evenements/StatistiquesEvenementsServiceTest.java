@@ -14,8 +14,8 @@ public class StatistiquesEvenementsServiceTest extends BusinessTest {
 	private boolean dbOracle;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		statService = getBean(StatistiquesEvenementsService.class, "statistiquesEvenementsService");
 		dbOracle = dialect instanceof Oracle10gDialect;
 	}

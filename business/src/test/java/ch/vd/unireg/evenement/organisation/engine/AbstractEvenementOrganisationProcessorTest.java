@@ -32,8 +32,8 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 	protected ModificationInterceptor mainInterceptor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		evtOrganisationDAO  = getBean(EvenementOrganisationDAO.class, "evenementOrganisationDAO");
 		evtOrganisationService  = getBean(EvenementOrganisationService.class, "evtOrganisationService");

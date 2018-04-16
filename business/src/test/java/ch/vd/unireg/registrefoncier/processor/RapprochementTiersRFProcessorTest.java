@@ -12,12 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
@@ -25,6 +19,12 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalRapprochementTiersRF;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.MockRapprochementManuelTiersRFService;
 import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
@@ -72,8 +72,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		rapprochementDAO = getBean(RapprochementRFDAO.class, "rapprochementRFDAO");

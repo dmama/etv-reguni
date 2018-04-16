@@ -8,6 +8,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -20,8 +22,6 @@ import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.IdentificationEntreprise;
@@ -41,8 +41,8 @@ public class ReponseIDEProcessorTest extends BusinessTest {
 	private ReponseIDEProcessor reponseIDEProcessor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		reponseIDEProcessor  = getBean(ReponseIDEProcessor.class, "reponseIDEProcessor");
 

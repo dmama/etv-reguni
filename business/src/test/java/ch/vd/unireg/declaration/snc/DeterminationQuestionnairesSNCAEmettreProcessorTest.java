@@ -46,8 +46,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 	private TacheDAO tacheDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final PeriodeFiscaleDAO periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");

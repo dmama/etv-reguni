@@ -8,6 +8,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
@@ -15,8 +17,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
@@ -28,9 +28,9 @@ import ch.vd.unireg.type.TypeEvenementCivilEch;
 public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	@Override
-	protected void runOnSetUp() throws Exception {
+	public void onSetUp() throws Exception {
 		setWantIndexationTiers(true);
-		super.runOnSetUp();
+		super.onSetUp();
 	}
 	
 	private void doTest(final ActionEvenementCivilEch action) throws Exception {

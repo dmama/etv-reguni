@@ -22,8 +22,8 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	protected ModificationInterceptor mainInterceptor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		evtCivilDAO  = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
 		evtCivilService  = getBean(EvenementCivilEchService.class, "evtCivilEchService");

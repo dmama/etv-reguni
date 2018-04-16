@@ -30,16 +30,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
-import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -54,6 +44,16 @@ import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.unireg.editique.ZoneAffranchissementEditique;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -93,8 +93,8 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	private EtiquetteService etiquetteService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
 
 		adresseService = getBean(AdresseService.class, "adresseService");

@@ -11,10 +11,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.data.DataEventService;
@@ -29,6 +25,10 @@ import ch.vd.unireg.evenement.organisation.engine.translator.EvenementOrganisati
 import ch.vd.unireg.evenement.organisation.engine.translator.NiveauCappingEtat;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.unireg.metier.MetierServicePM;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -56,8 +56,8 @@ public class CappingEnErrorTest extends AbstractEvenementOrganisationProcessorTe
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		evtFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
 

@@ -9,14 +9,14 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.BusinessTestingConstants;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -53,8 +53,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 	private static final int PREMIERE_PERIODE_DECLARATIONS_PM = 2014;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");

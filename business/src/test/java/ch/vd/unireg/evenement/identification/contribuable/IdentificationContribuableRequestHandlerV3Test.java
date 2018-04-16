@@ -12,18 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.xml.common.v2.PartialDate;
 import ch.vd.unireg.xml.event.identification.request.v3.IdentificationContribuableRequest;
 import ch.vd.unireg.xml.event.identification.request.v3.IdentificationData;
 import ch.vd.unireg.xml.event.identification.response.v3.IdentificationContribuableResponse;
 import ch.vd.unireg.xml.event.identification.response.v3.IdentificationResult;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
-import ch.vd.unireg.jms.EsbBusinessCode;
-import ch.vd.unireg.jms.EsbBusinessException;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,8 +40,8 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		handler = new IdentificationContribuableRequestHandlerV3();
 		handler.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));

@@ -10,6 +10,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
@@ -20,7 +21,6 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -46,8 +46,8 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 	private Integer[] seuilLettresBienvenue;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		paramAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		final AutreDocumentFiscalService autreDocumentFiscalService = getBean(AutreDocumentFiscalService.class, "autreDocumentFiscalService");

@@ -14,8 +14,8 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 	private AdresseContactComparisonStrategy strategy;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		strategy = new AdresseContactComparisonStrategy();
 	}
 

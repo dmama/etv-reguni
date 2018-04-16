@@ -8,14 +8,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.unireg.xml.common.v1.PartialDate;
-import ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest;
-import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribuableResponse;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.common.v1.PartialDate;
+import ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest;
+import ch.vd.unireg.xml.event.identification.response.v2.IdentificationContribuableResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,8 +32,8 @@ public class IdentificationContribuableRequestHandlerV2Test extends BusinessTest
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		handler = new IdentificationContribuableRequestHandlerV2();
 		handler.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));

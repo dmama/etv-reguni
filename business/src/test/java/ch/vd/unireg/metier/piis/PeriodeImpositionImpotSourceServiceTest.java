@@ -38,8 +38,8 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	private PeriodeImpositionImpotSourceService service;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		service = getBean(PeriodeImpositionImpotSourceService.class, "periodeImpositionImpotSourceService");
 	}
 

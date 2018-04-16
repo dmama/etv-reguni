@@ -65,8 +65,8 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	private MetierService metierService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		metierService = getBean(MetierService.class, "metierService");
 	}
 

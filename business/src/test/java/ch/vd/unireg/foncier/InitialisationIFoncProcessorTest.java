@@ -40,8 +40,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 	private InitialisationIFoncProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final RegistreFoncierService registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
 		processor = new InitialisationIFoncProcessor(transactionManager, hibernateTemplate, registreFoncierService);

@@ -60,8 +60,8 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilNotificationQueueTest.class);
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		final EvenementCivilEchService evtCivilEchService = getBean(EvenementCivilEchService.class, "evtCivilEchService");
 		queueTemplate = new QueueTemplate(evtCivilEchService, transactionManager);
 	}

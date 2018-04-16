@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -23,6 +25,12 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.xml.common.v2.PartialDate;
 import ch.vd.unireg.xml.event.identification.request.v4.CorporationIdentificationData;
 import ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest;
@@ -33,14 +41,6 @@ import ch.vd.unireg.xml.event.identification.response.v4.IdentificationResult;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedCorporation;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
-import ch.vd.unireg.jms.EsbBusinessCode;
-import ch.vd.unireg.jms.EsbBusinessException;
-import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -57,8 +57,8 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		handler = new IdentificationContribuableRequestHandlerV4();
 		handler.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));

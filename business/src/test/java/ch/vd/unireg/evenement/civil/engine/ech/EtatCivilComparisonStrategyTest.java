@@ -14,8 +14,8 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 	private EtatCivilComparisonStrategy strategy;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		strategy = new EtatCivilComparisonStrategy();
 	}
 

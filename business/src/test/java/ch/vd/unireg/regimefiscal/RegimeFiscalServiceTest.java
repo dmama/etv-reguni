@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -21,7 +22,6 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.CategorieEntreprise;
@@ -31,40 +31,7 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ADM_CH;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ADM_CO;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ADM_CT;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ADM_DI;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ADM_PUBLIQUE_HS;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ASSOCIATION;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.CORP_DP_ADM;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.CORP_DP_ENT;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.EI;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ENT_CH;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ENT_CO;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ENT_CT;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ENT_DI;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ENT_HS;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ENT_PUBLIQUE_HS;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.FILIALE_CH_RC;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.FILIALE_HS_NIRC;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.FILIALE_HS_RC;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.FONDATION;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.IDP;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.INDIVISION;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.ORG_INTERNAT;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.PARTICULIER;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.PNC;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SA;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SARL;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SC;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SCA;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SCOOP;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SCPC;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SICAF;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SICAV;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SNC;
-import static ch.vd.unireg.type.FormeJuridiqueEntreprise.SS;
+import static ch.vd.unireg.type.FormeJuridiqueEntreprise.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -76,8 +43,8 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 	private RegimeFiscalService regimeFiscalService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 	}
 

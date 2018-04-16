@@ -22,7 +22,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -75,28 +74,8 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	}
 
 	@Before
-	public final void beforeMethod() throws Exception {
-		runOnSetUp();
-	}
-	@BeforeTransaction
-	public void beforeTransaction() throws Exception {
-		runOnSetUp();
-	}
-
-	/**
-	 * S'assure que le onSetUp() n'est appelé qu'une fois, qu'on soit dans une méthode transactionnelle ou non
-	 * @throws Exception
-	 */
-	protected void runOnSetUp() throws Exception {
-		if (!onSetUpWasRun) {
-			onSetUpWasRun = true;
-			onSetUp();
-		}
-	}
-
 	public void onSetUp() throws Exception {
 		setAuthentication();
-
 		transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 	}
 

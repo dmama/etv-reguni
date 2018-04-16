@@ -16,19 +16,6 @@ import ch.vd.dperm.xml.common.v1.TypImmeuble;
 import ch.vd.dperm.xml.common.v1.TypeImposition;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
-import ch.vd.unireg.xml.event.degrevement.v1.Caracteristiques;
-import ch.vd.unireg.xml.event.degrevement.v1.CodeSupport;
-import ch.vd.unireg.xml.event.degrevement.v1.DonneesMetier;
-import ch.vd.unireg.xml.event.degrevement.v1.Message;
-import ch.vd.unireg.xml.event.degrevement.v1.SousTypeDocument;
-import ch.vd.unireg.xml.event.degrevement.v1.Supervision;
-import ch.vd.unireg.xml.event.degrevement.v1.TypDateAttr;
-import ch.vd.unireg.xml.event.degrevement.v1.TypEntMax12Attr;
-import ch.vd.unireg.xml.event.degrevement.v1.TypPctPosDecMax32Attr;
-import ch.vd.unireg.xml.event.degrevement.v1.TypeDocument;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.foncier.AllegementFoncier;
@@ -36,6 +23,8 @@ import ch.vd.unireg.foncier.DegrevementICI;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.foncier.DonneesLoiLogement;
 import ch.vd.unireg.foncier.DonneesUtilisation;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -54,14 +43,25 @@ import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.TypeRapprochementRF;
+import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
+import ch.vd.unireg.xml.event.degrevement.v1.Caracteristiques;
+import ch.vd.unireg.xml.event.degrevement.v1.CodeSupport;
+import ch.vd.unireg.xml.event.degrevement.v1.DonneesMetier;
+import ch.vd.unireg.xml.event.degrevement.v1.Message;
+import ch.vd.unireg.xml.event.degrevement.v1.SousTypeDocument;
+import ch.vd.unireg.xml.event.degrevement.v1.Supervision;
+import ch.vd.unireg.xml.event.degrevement.v1.TypDateAttr;
+import ch.vd.unireg.xml.event.degrevement.v1.TypEntMax12Attr;
+import ch.vd.unireg.xml.event.degrevement.v1.TypPctPosDecMax32Attr;
+import ch.vd.unireg.xml.event.degrevement.v1.TypeDocument;
 
 public class EvenementDegrevementHandlerTest extends BusinessTest {
 
 	private EvenementDegrevementHandler handler;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final EvenementDegrevementHandlerImpl impl = new EvenementDegrevementHandlerImpl();
 		impl.setTiersService(tiersService);

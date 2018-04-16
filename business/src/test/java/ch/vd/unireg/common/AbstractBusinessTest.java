@@ -16,20 +16,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseAutreTiers;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdresseEtrangere;
@@ -60,6 +46,20 @@ import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationSea
 import ch.vd.unireg.indexer.messageidentification.MessageIdentificationIndexerHibernateInterceptor;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.unireg.registrefoncier.BatimentRF;
@@ -221,6 +221,19 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	@Override
 	public void onSetUp() throws Exception {
+		tiersService = getBean(TiersService.class, "tiersService");
+		globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
+		globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(wantIndexationTiers);
+		globalMessageIdentificationSearcher = getBean(GlobalMessageIdentificationSearcher.class, "globalMessageIdentificationSearcher");
+		globalMessageIdentificationIndexer = getBean(GlobalMessageIdentificationIndexer.class, "globalMessageIdentificationIndexer");
+		messageIdentificationIndexerHibernateInterceptor = getBean(MessageIdentificationIndexerHibernateInterceptor.class, "messageIdentificationIndexInterceptor");
+		messageIdentificationIndexerHibernateInterceptor.setEnabled(wantIndexationMessagesIdentification);
+		tacheSynchronizer = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
+		tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
+		parentesSynchronizer = getBean(ParentesSynchronizerInterceptor.class, "parentesSynchronizerInterceptor");
+		parentesSynchronizer.setEnabled(wantSynchroParentes);
 		super.onSetUp();
 		if (wantCollectivitesAdministratives) {
 			/*
@@ -260,24 +273,6 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 			}
 		}
 	}
-
-	@Override
-    protected void runOnSetUp() throws Exception {
-        tiersService = getBean(TiersService.class, "tiersService");
-	    globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
-	    globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
-        globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(wantIndexationTiers);
-		globalMessageIdentificationSearcher = getBean(GlobalMessageIdentificationSearcher.class, "globalMessageIdentificationSearcher");
-		globalMessageIdentificationIndexer = getBean(GlobalMessageIdentificationIndexer.class, "globalMessageIdentificationIndexer");
-		messageIdentificationIndexerHibernateInterceptor = getBean(MessageIdentificationIndexerHibernateInterceptor.class, "messageIdentificationIndexInterceptor");
-		messageIdentificationIndexerHibernateInterceptor.setEnabled(wantIndexationMessagesIdentification);
-        tacheSynchronizer = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
-        tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);
-        validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
-	    parentesSynchronizer = getBean(ParentesSynchronizerInterceptor.class, "parentesSynchronizerInterceptor");
-	    parentesSynchronizer.setEnabled(wantSynchroParentes);
-        super.runOnSetUp();
-    }
 
 	@Override
 	public void onTearDown() throws Exception {

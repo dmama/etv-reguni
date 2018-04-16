@@ -6,6 +6,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
@@ -13,8 +15,6 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
 import ch.vd.unireg.type.EtatEvenementOrganisation;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementOrganisation;
@@ -31,8 +31,8 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementOrganisationPro
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 	}
 
 	protected boolean buildProcessorOnSetup() {

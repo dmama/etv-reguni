@@ -17,6 +17,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -28,8 +30,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.Contribuable;
@@ -62,8 +62,8 @@ public class RoleServiceTest extends BusinessTest {
 	private AssujettissementService assujettissementService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		roleService = new RoleServiceImpl();
 		roleService.setAdresseService(getBean(AdresseService.class, "adresseService"));

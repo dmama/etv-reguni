@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.editique.LegacyEditiqueHelper;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.MotifFor;
@@ -36,8 +36,8 @@ public class ImpressionSommationLRHelperTest extends BusinessTest {
 	private LegacyEditiqueHelper editiqueHelper;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		editiqueHelper =  getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		impressionSommationLRHelper = new ImpressionSommationLRHelperImpl();
 		impressionSommationLRHelper.setLegacyEditiqueHelper(editiqueHelper);

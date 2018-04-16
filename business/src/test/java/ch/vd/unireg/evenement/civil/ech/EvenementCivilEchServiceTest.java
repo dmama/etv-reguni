@@ -10,6 +10,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -19,8 +21,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
@@ -44,8 +44,8 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		evenementCivilEchDAO = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
 	}
 

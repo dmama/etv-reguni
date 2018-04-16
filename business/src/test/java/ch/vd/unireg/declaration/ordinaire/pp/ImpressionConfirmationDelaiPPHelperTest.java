@@ -13,8 +13,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.DelaiDeclaration;
@@ -22,6 +20,8 @@ import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.MotifFor;
@@ -37,8 +37,8 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 	private EtiquetteService etiquetteService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		impressionConfirmationDelaiHelper = getBean(ImpressionConfirmationDelaiPPHelperImpl.class, "impressionConfirmationDelaiPPHelper");
 		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");

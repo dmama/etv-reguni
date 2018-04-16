@@ -8,10 +8,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
@@ -23,8 +23,8 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 	private ExerciceCommercialHelper helper;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		helper = new ExerciceCommercialHelper(tiersService);
 	}
 

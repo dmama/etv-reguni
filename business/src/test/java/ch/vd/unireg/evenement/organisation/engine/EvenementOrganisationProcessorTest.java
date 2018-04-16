@@ -13,16 +13,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.data.DataEventService;
@@ -46,6 +36,16 @@ import ch.vd.unireg.evenement.organisation.interne.ValideurDebutDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.information.InformationComplementaire;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.unireg.metier.MetierServicePM;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -81,8 +81,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 	EvenementFiscalDAO evtFiscalDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		evtFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
 

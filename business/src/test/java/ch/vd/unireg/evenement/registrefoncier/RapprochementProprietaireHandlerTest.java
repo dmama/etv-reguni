@@ -31,8 +31,8 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		rapprochementRFDAO = getBean(RapprochementRFDAO.class, "rapprochementRFDAO");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");

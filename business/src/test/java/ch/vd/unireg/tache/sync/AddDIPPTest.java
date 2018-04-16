@@ -11,10 +11,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.unireg.declaration.ParametrePeriodeFiscale;
@@ -23,6 +19,10 @@ import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -50,8 +50,8 @@ public class AddDIPPTest extends BusinessTest {
 	private ParametreAppService parametreAppService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		diService = getBean(DeclarationImpotService.class, "diService");

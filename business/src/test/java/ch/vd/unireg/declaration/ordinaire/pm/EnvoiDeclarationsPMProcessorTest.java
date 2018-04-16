@@ -9,11 +9,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.Declaration;
@@ -27,6 +22,11 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDeclarationSommable;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalTiers;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -54,8 +54,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");

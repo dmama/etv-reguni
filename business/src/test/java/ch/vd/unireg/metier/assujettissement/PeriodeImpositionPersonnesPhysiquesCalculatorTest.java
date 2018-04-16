@@ -46,8 +46,8 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 	private PeriodeImpositionPersonnesPhysiquesCalculator calculator;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 

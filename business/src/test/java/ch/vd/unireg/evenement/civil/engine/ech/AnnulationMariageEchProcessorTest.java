@@ -7,13 +7,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTestingConstants;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.BusinessTestingConstants;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -30,8 +30,8 @@ import ch.vd.unireg.type.TypeEvenementCivilEch;
 public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		// nécessaire pour le calcul des tâches d'envoi de DI
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

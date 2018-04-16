@@ -8,6 +8,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -16,7 +17,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.DecisionAci;
@@ -38,8 +38,8 @@ public class AutorisationCacheTest extends WebTest {
 	private AutorisationCacheImpl cache;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		cache = getBean(AutorisationCacheImpl.class, "autorisationCache");
 		cache.reset();

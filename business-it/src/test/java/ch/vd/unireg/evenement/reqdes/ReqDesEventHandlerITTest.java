@@ -26,10 +26,27 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.common.BusinessItTest;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.EvenementHelper;
+import ch.vd.unireg.evenement.reqdes.engine.MockEvenementReqDesProcessor;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.reqdes.EtatTraitement;
+import ch.vd.unireg.reqdes.EvenementReqDes;
+import ch.vd.unireg.reqdes.InformationsActeur;
+import ch.vd.unireg.reqdes.ModeInscription;
+import ch.vd.unireg.reqdes.PartiePrenante;
+import ch.vd.unireg.reqdes.RolePartiePrenante;
+import ch.vd.unireg.reqdes.TransactionImmobiliere;
+import ch.vd.unireg.reqdes.TypeInscription;
+import ch.vd.unireg.reqdes.TypeRole;
+import ch.vd.unireg.reqdes.UniteTraitement;
+import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.xml.common.v2.Date;
 import ch.vd.unireg.xml.common.v2.PartialDate;
 import ch.vd.unireg.xml.event.reqdes.v1.Actor;
@@ -52,23 +69,6 @@ import ch.vd.unireg.xml.event.reqdes.v1.StakeholderRole;
 import ch.vd.unireg.xml.event.reqdes.v1.SwissResidence;
 import ch.vd.unireg.xml.event.reqdes.v1.Swissness;
 import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
-import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.evenement.EvenementHelper;
-import ch.vd.unireg.evenement.reqdes.engine.MockEvenementReqDesProcessor;
-import ch.vd.unireg.jms.EsbMessageValidator;
-import ch.vd.unireg.reqdes.EtatTraitement;
-import ch.vd.unireg.reqdes.EvenementReqDes;
-import ch.vd.unireg.reqdes.InformationsActeur;
-import ch.vd.unireg.reqdes.ModeInscription;
-import ch.vd.unireg.reqdes.PartiePrenante;
-import ch.vd.unireg.reqdes.RolePartiePrenante;
-import ch.vd.unireg.reqdes.TransactionImmobiliere;
-import ch.vd.unireg.reqdes.TypeInscription;
-import ch.vd.unireg.reqdes.TypeRole;
-import ch.vd.unireg.reqdes.UniteTraitement;
-import ch.vd.unireg.type.EtatCivil;
-import ch.vd.unireg.type.Sexe;
 
 @SuppressWarnings({"JavaDoc"})
 public class ReqDesEventHandlerITTest extends BusinessItTest {
@@ -95,8 +95,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 		processor = getBean(MockEvenementReqDesProcessor.class, "reqdesEventProcessor");

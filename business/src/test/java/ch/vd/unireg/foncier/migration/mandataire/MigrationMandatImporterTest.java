@@ -10,11 +10,11 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import ch.vd.unireg.interfaces.infra.mock.MockGenreImpotMandataire;
-import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseMandataireSuisse;
 import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.interfaces.infra.mock.MockGenreImpotMandataire;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.Sexe;
@@ -40,8 +40,8 @@ public class MigrationMandatImporterTest extends BusinessTest {
 	}
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		this.importer = new MigrationMandatImporter(serviceInfra, transactionManager, hibernateTemplate);
 	}
 

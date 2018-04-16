@@ -18,10 +18,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.xml.event.reqdes.v1.CreationModification;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.reqdes.EtatTraitement;
 import ch.vd.unireg.reqdes.EvenementReqDes;
 import ch.vd.unireg.reqdes.EvenementReqDesDAO;
@@ -34,6 +33,7 @@ import ch.vd.unireg.reqdes.TypeRole;
 import ch.vd.unireg.reqdes.UniteTraitement;
 import ch.vd.unireg.reqdes.UniteTraitementDAO;
 import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.xml.event.reqdes.v1.CreationModification;
 
 public class ReqDesEventHandlerTest extends BusinessTest {
 
@@ -44,8 +44,8 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 	private Set<Long> idsUnitesTraitement;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		utDao = getBean(UniteTraitementDAO.class, "reqdesUniteTraitementDAO");
 

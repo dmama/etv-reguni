@@ -10,6 +10,8 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
@@ -21,8 +23,6 @@ import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -37,8 +37,8 @@ public class EFactureEventHandlerTest extends BusinessTest {
 	private EFactureServiceProxy eFactureService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		eFactureService = new EFactureServiceProxy();

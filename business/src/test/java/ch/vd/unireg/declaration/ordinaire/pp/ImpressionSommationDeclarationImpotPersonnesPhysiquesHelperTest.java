@@ -12,12 +12,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
@@ -30,6 +24,12 @@ import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.LegacyEditiqueHelper;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -64,8 +64,8 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	private EtiquetteService etiquetteService;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		adresseService = getBean(AdresseService.class, "adresseService");
 		tiersService = getBean(TiersService.class, "tiersService");

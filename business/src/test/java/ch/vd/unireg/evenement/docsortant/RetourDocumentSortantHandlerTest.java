@@ -19,14 +19,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.xml.event.docsortant.retour.v3.DocumentQuittance;
-import ch.vd.unireg.xml.event.docsortant.retour.v3.FileExtension;
-import ch.vd.unireg.xml.event.docsortant.retour.v3.FoldersArchive;
-import ch.vd.unireg.xml.event.docsortant.retour.v3.Quittance;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.XmlUtils;
@@ -41,6 +33,10 @@ import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.efacture.DocumentEFacture;
 import ch.vd.unireg.efacture.DocumentEFactureDAO;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Entreprise;
@@ -53,6 +49,10 @@ import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeLettreBienvenue;
+import ch.vd.unireg.xml.event.docsortant.retour.v3.DocumentQuittance;
+import ch.vd.unireg.xml.event.docsortant.retour.v3.FileExtension;
+import ch.vd.unireg.xml.event.docsortant.retour.v3.FoldersArchive;
+import ch.vd.unireg.xml.event.docsortant.retour.v3.Quittance;
 
 public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
@@ -60,8 +60,8 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 	private DocumentEFactureDAO documentEFactureDAO;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 
 		documentEFactureDAO = getBean(DocumentEFactureDAO.class, "documentEFactureDAO");
 

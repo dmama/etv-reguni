@@ -33,8 +33,8 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 	private ProduireStatsCtbsProcessor processor;
 
 	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
+	public void onSetUp() throws Exception {
+		super.onSetUp();
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		final PeriodeImpositionImpotSourceService piisService = getBean(PeriodeImpositionImpotSourceService.class, "periodeImpositionImpotSourceService");
