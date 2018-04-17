@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationLocation;
-import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
@@ -24,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class RcEntClientItTest extends BusinessItTest {
 
@@ -115,32 +115,34 @@ public class RcEntClientItTest extends BusinessItTest {
 	@Test(timeout = 30000)
 	public void testGetOrganisationOfNoticeNotFound() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
-		try{
-			final OrganisationsOfNotice organisationsOfNotice = client.getOrganisationsOfNotice(206949858L, RcEntClient.OrganisationState.BEFORE);
-		}catch (RcEntClientException e){
+		try {
+			client.getOrganisationsOfNotice(206949858L, RcEntClient.OrganisationState.BEFORE);
+			fail();
+		}
+		catch (RcEntClientException e) {
 			assertNotNull(e.getErrors());
-			assertEquals(1,e.getErrors().size());
+			assertEquals(1, e.getErrors().size());
 			final RcEntClientErrorMessage rcEntClientErrorMessage = e.getErrors().get(0);
 			//Erreur 404 evenement non trouvé
 			assertEquals(RCENT_ERROR_NOT_FOUND, rcEntClientErrorMessage.getCode().intValue());
 		}
-
 	}
 
 	//Erreur 400
 	@Test(timeout = 30000)
 	public void testGetOrganisationOfNoticeWithoutBefore() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
-		try{
-			final OrganisationsOfNotice organisationsOfNotice = client.getOrganisationsOfNotice(819520L, RcEntClient.OrganisationState.BEFORE);
-		}catch (RcEntClientException e){
+		try {
+			client.getOrganisationsOfNotice(819520L, RcEntClient.OrganisationState.BEFORE);
+			fail();
+		}
+		catch (RcEntClientException e) {
 			assertNotNull(e.getErrors());
-			assertEquals(1,e.getErrors().size());
+			assertEquals(1, e.getErrors().size());
 			final RcEntClientErrorMessage rcEntClientErrorMessage = e.getErrors().get(0);
 			//Erreur 404 evenement non trouvé
 			assertEquals(RCENT_ERROR_NO_DATA_BEFORE, rcEntClientErrorMessage.getCode().intValue());
 		}
-
 	}
 
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {
