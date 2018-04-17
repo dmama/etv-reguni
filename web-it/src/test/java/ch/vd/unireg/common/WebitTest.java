@@ -111,9 +111,10 @@ public abstract class WebitTest {
 		LOGGER.debug("baseWsUrl: " + baseWsUrl);
 
 		webClient = new WebClient();
-		webClient.setJavaScriptEnabled(false);
+		webClient.getCookieManager().setCookiesEnabled(true);
+		webClient.getOptions().setJavaScriptEnabled(false);
 		webClient.setRefreshHandler(new ThreadedRefreshHandler());
-		webClient.setThrowExceptionOnFailingStatusCode(false);
+		webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 	}
 
 	@After

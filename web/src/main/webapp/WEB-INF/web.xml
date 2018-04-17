@@ -261,6 +261,16 @@
 	<session-config>
 		<!-- timeout de 1 heure, comme IAM -->
 		<session-timeout>60</session-timeout>
+		<!-- désactive l'utilisation du jsessionid dans l'URL (e.g. "/unireg/web/evenement/regpp/nav-list.do;jsessionid=6E25744E440")
+			 et force l'utilisation des cookies pour passer le jsessionid.
+
+			 Raisons :
+			  - parce qu'exposer le jsessionid est un problème de sécurité
+			  - pour se conformer avec le StrictHttpFirewall de Spring 4 qui ne supporte pas les caractères ';' dans les URLs
+			  - le test EachWebPageTest saute dès qu'on tombe sur une redirection
+			  (voir aussi https://stackoverflow.com/questions/962729/is-it-possible-to-disable-jsessionid-in-tomcat-servlet)
+	    -->
+		<tracking-mode>COOKIE</tracking-mode>
 	</session-config>
 	<jsp-config>
 		<jsp-property-group>
