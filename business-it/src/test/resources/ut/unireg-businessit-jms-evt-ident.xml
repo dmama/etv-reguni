@@ -34,7 +34,7 @@
 		<property name="handler" ref="identificationContribuableRequestHandler" />
 		<property name="destinationName" value="${testprop.jms.queue.ident.ctb.input}"/>
 		<property name="concurrentConsumers" value="1"/>
-		<property name="autoStartup" value="true" />
+		<property name="autoStartup" value="false" /><!-- listener à démarrer et à stopper explicitement dans les tests qui en ont besoin -->
 	</bean>
 
 </beans>
