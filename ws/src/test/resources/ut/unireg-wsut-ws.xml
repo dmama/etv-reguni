@@ -9,7 +9,6 @@
 		<property name="listeners">
 			<util:list>
 				<ref bean="partyService3CacheManager"/>
-				<ref bean="partyService4CacheManager"/>
 				<ref bean="wsv5CacheEventListener"/>
 				<ref bean="wsv6CacheEventListener"/>
 				<ref bean="wsv7CacheEventListener"/>
@@ -61,52 +60,6 @@
 
 	<bean id="partyService3CacheManager" class="ch.vd.unireg.webservices.party3.cache.PartyWebServiceCacheManager">
 		<property name="cache" ref="partyService3Cache" />
-	</bean>
-
-	<!-- Beans du web-service Tiers v4 mais sans le end-point jaxws -->
-
-	<bean id="partyService4EndPoint" class="ch.vd.unireg.webservices.party4.impl.PartyWebServiceEndPoint">
-		<property name="service" ref="partyService4Cache" />
-	</bean>
-
-	<bean id="partyService4Impl" class="ch.vd.unireg.webservices.party4.impl.PartyWebServiceImpl">
-		<property name="adresseService" ref="adresseService" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersSearcher" ref="globalTiersSearcher" />
-		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="situationService" ref="situationFamilleService" />
-		<property name="ibanValidator" ref="ibanValidator" />
-		<property name="parametreService" ref="parametreAppService" />
-		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="lrService" ref="lrService" />
-		<property name="diService" ref="diService" />
-		<property name="bamMessageSender" ref="bamMessageSender" />
-		<property name="threadPool" ref="wsThreadPoolParty4" />
-		<property name="assujettissementService" ref="assujettissementService" />
-		<property name="periodeImpositionService" ref="periodeImpositionService" />
-		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
-		<property name="evenementFiscalService" ref="evenementFiscalService"/>
-		<property name="regimeFiscalService" ref="regimeFiscalService"/>
-	</bean>
-
-	<bean id="wsThreadPoolParty4" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
-		<property name="corePoolSize" value="10"/> <!-- nombre minimum de threads -->
-		<property name="maxPoolSize" value="20"/> <!-- nombre maximum de threads -->
-	</bean>
-
-	<bean id="partyService4Cache" class="ch.vd.unireg.webservices.party4.cache.PartyWebServiceCache">
-		<property name="target" ref="partyService4Impl" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webServiceParty4" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-	</bean>
-
-	<bean id="partyService4CacheManager" class="ch.vd.unireg.webservices.party4.cache.PartyWebServiceCacheManager">
-		<property name="cache" ref="partyService4Cache" />
 	</bean>
 
 	<!-- Beans du web-service v5 mais sans le end-point jaxrs -->

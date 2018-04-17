@@ -99,14 +99,6 @@
         overflowToDisk="false"
         />
 
-    <cache name="webServiceParty4"
-        maxElementsInMemory="1000"
-        eternal="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="300"
-        overflowToDisk="false"
-        />
-
 	<cache name="webService5"
 	       maxElementsInMemory="1000"
 	       eternal="false"

@@ -101,16 +101,6 @@
 	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
-	<category name="party4.read" additivity="false">
-	  <priority value="INFO"/>
-	  <appender-ref ref="WS_ACCESS"/>
-	</category>
-
-	<category name="party4.write" additivity="false">
-	  <priority value="INFO"/>
-	  <appender-ref ref="WS_ACCESS"/>
-	</category>
-
 	<category name="ws.v5.read" additivity="false">
 	  <priority value="INFO"/>
 	  <appender-ref ref="WS_ACCESS"/>

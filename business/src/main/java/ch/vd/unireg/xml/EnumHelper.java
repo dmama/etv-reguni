@@ -7,15 +7,12 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.avatar.TypeAvatar;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.xml.party.corporation.v5.LighteningType;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
-import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
-import ch.vd.unireg.avatar.TypeAvatar;
 import ch.vd.unireg.interfaces.model.CompteBancaire;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.unireg.registrefoncier.GenrePropriete;
@@ -39,6 +36,9 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.type.TypeFlagEntreprise;
 import ch.vd.unireg.type.TypePermis;
+import ch.vd.unireg.xml.party.corporation.v5.LighteningType;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 
 public abstract class EnumHelper {
 
@@ -3495,77 +3495,6 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.MINIMAL_TAX;
 		default:
 			throw new IllegalArgumentException("Type de flag inconnu : " + type);
-		}
-	}
-
-	@Nullable
-	public static String coreToXMLv1v2v3(FormeJuridiqueEntreprise fj) {
-		if (fj == null) {
-			return null;
-		}
-
-		switch (fj) {
-
-		case ASSOCIATION:
-			return "ASS";
-
-		case SCOOP:
-			return "S. COOP.";
-
-		case ADM_CH:
-		case ADM_CT:
-		case ADM_DI:
-		case ADM_CO:
-		case CORP_DP_ADM:
-			return "DP";
-
-		case ENT_CH:
-		case ENT_CT:
-		case ENT_DI:
-		case ENT_CO:
-		case CORP_DP_ENT:
-			return "DP/PM";
-
-		case FONDATION:
-			return "FONDATION";
-
-		case SA:
-			return "S.A.";
-
-		case SARL:
-			return "S.A.R.L.";
-
-		case SC:
-			return "S. COMM.";
-
-		case SCA:
-			return "S.COMM.ACT";
-
-		case SNC:
-			return "S.N.C.";
-
-		case SCPC:
-			return "FDS. PLAC.";
-
-		case SICAV:
-		case SICAF:
-		case EI:
-		case ADM_PUBLIQUE_HS:
-		case ENT_HS:
-		case ENT_PUBLIQUE_HS:
-		case FILIALE_HS_NIRC:
-		case FILIALE_HS_RC:
-		case IDP:
-		case INDIVISION:
-		case ORG_INTERNAT:
-		case PARTICULIER:
-		case PNC:
-		case SS:
-		case FILIALE_CH_RC:
-			return null;
-
-		default:
-			throw new IllegalArgumentException("Forme juridique inconnue : " + fj);
 		}
 	}
 

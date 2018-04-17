@@ -73,11 +73,6 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
-			<artifactId>unireg-ws-party4</artifactId>
-			<version>${wsparty4.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
 		</dependency>

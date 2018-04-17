@@ -32,7 +32,6 @@
 		<property name="listeners">
 			<util:list>
 				<ref bean="partyService3CacheManager"/>
-				<ref bean="partyService4CacheManager"/>
 				<ref bean="wsv5CacheEventListener"/>
 				<ref bean="wsv6CacheEventListener"/>
 				<ref bean="wsv7CacheEventListener"/>
@@ -85,55 +84,6 @@
 	</bean>
 
 	<bean id="partyService3Tracing" class="ch.vd.unireg.webservices.party3.impl.PartyWebServiceTracing">
-		<property name="counterRepository" ref="counterRepository" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<!-- WS - Party Service v4 -->
-	<jaxws:endpoint implementor="#partyService4EndPoint" address="/party4" wsdlLocation="PartyService4.wsdl" />
-
-	<bean id="partyService4EndPoint" class="ch.vd.unireg.webservices.party4.impl.PartyWebServiceEndPoint">
-		<property name="service" ref="partyService4Cache" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
-	</bean>
-
-	<bean id="partyService4Impl" class="ch.vd.unireg.webservices.party4.impl.PartyWebServiceImpl">
-		<property name="adresseService" ref="adresseService" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersSearcher" ref="globalTiersSearcher" />
-		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="situationService" ref="situationFamilleService" />
-		<property name="ibanValidator" ref="ibanValidator" />
-		<property name="parametreService" ref="parametreAppService" />
-		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="lrService" ref="lrService" />
-		<property name="diService" ref="diService" />
-		<property name="bamMessageSender" ref="bamMessageSender" />
-		<property name="threadPool" ref="wsThreadPool" />
-		<property name="assujettissementService" ref="assujettissementService" />
-		<property name="periodeImpositionService" ref="periodeImpositionService" />
-		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
-		<property name="evenementFiscalService" ref="evenementFiscalService"/>
-		<property name="regimeFiscalService" ref="regimeFiscalService"/>
-	</bean>
-
-	<bean id="partyService4Cache" class="ch.vd.unireg.webservices.party4.cache.PartyWebServiceCache">
-		<property name="target" ref="partyService4Impl" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="webServiceParty4" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<bean id="partyService4CacheManager" class="ch.vd.unireg.webservices.party4.cache.PartyWebServiceCacheManager">
-		<property name="cache" ref="partyService4Cache" />
-	</bean>
-
-	<bean id="partyService4Tracing" class="ch.vd.unireg.webservices.party4.impl.PartyWebServiceTracing">
 		<property name="counterRepository" ref="counterRepository" />
 		<property name="statsService" ref="statsService" />
 	</bean>

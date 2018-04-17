@@ -41,11 +41,6 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
-			<artifactId>unireg-ws-party4</artifactId>
-			<version>${wsparty4.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.vd.unireg</groupId>
 			<artifactId>unireg-ws-v5</artifactId>
 			<version>${ws.v5.version}</version>
 		</dependency>

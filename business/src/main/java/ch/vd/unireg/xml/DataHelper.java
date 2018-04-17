@@ -21,7 +21,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -35,6 +34,7 @@ import ch.vd.unireg.indexer.tiers.EtablissementIndexable;
 import ch.vd.unireg.indexer.tiers.HabitantIndexable;
 import ch.vd.unireg.indexer.tiers.MenageCommunIndexable;
 import ch.vd.unireg.indexer.tiers.NonHabitantIndexable;
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.Contribuable;
@@ -810,72 +810,6 @@ public abstract class DataHelper {
 
 		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
 		for (ch.vd.unireg.xml.party.v1.PartyPart p : parts) {
-			switch (p) {
-			case ADDRESSES:
-				results.add(TiersDAO.Parts.ADRESSES);
-				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
-				break;
-			case TAX_DECLARATIONS:
-			case TAX_DECLARATIONS_STATUSES:
-			case TAX_DECLARATIONS_DEADLINES:
-				results.add(TiersDAO.Parts.DECLARATIONS);
-				break;
-			case TAX_RESIDENCES:
-			case VIRTUAL_TAX_RESIDENCES:
-			case MANAGING_TAX_RESIDENCES:
-				results.add(TiersDAO.Parts.FORS_FISCAUX);
-				break;
-			case TAX_LIABILITIES:
-			case SIMPLIFIED_TAX_LIABILITIES:
-			case TAXATION_PERIODS:
-				results.add(TiersDAO.Parts.FORS_FISCAUX);
-				results.add(TiersDAO.Parts.BOUCLEMENTS);
-				break;
-			case RELATIONS_BETWEEN_PARTIES:
-			case CHILDREN:
-			case PARENTS:
-			case HOUSEHOLD_MEMBERS:
-			case BANK_ACCOUNTS:
-				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
-				break;
-			case FAMILY_STATUSES:
-				results.add(TiersDAO.Parts.SITUATIONS_FAMILLE);
-				break;
-			case DEBTOR_PERIODICITIES:
-				results.add(TiersDAO.Parts.PERIODICITES);
-				break;
-			case IMMOVABLE_PROPERTIES:
-				// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
-				break;
-			case CORPORATION_STATUSES:
-				results.add(TiersDAO.Parts.ETATS_FISCAUX);
-				break;
-			case CAPITALS:
-			case LEGAL_FORMS:
-				results.add(TiersDAO.Parts.DONNEES_CIVILES);
-				break;
-			case TAX_SYSTEMS:
-				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
-				break;
-			case LEGAL_SEATS:
-				// rien à faire
-				break;
-			default:
-				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');
-			}
-		}
-
-		return results;
-	}
-
-	public static Set<TiersDAO.Parts> xmlToCoreV2(Set<ch.vd.unireg.xml.party.v2.PartyPart> parts) {
-
-		if (parts == null) {
-			return null;
-		}
-
-		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
-		for (ch.vd.unireg.xml.party.v2.PartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
 				results.add(TiersDAO.Parts.ADRESSES);

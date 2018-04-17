@@ -778,7 +778,6 @@
 		<jencks.version>2.2-dsi.0</jencks.version>
 		<jackson.version>2.9.5</jackson.version>
 		<wsparty3.version>3.10</wsparty3.version>
-		<wsparty4.version>4.3</wsparty4.version>
 		<ws.v5.version>5.5.3</ws.v5.version>
 		<ws.v6.version>6.5.3</ws.v6.version>
 		<ws.v7.version>7.12</ws.v7.version>
