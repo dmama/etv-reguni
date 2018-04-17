@@ -291,6 +291,9 @@ public class BatchSchedulerTest extends JobTest {
 		batchScheduler.queueJob(RecordingJob.NAME, params2);
 		batchScheduler.queueJob(RecordingJob.NAME, params3);
 
+		// on laisse le temps au job de démarrer
+		Thread.sleep(50);
+
 		// seul le premier job doit démarrer et les deux autres doivent être mis en attente
 		assertEquals(1, RecordingJob.executions.size());
 		assertSame(params1, RecordingJob.executions.get(0));
