@@ -270,12 +270,12 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		assertEquals(0, adresses.secondaires.size());
 		assertEquals(0, adresses.tutelles.size());
 
-		assertEquals(1, adresses.courriers.size());
-//		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.courriers.get(0));
-		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.courriers.get(0));
+		assertEquals(2, adresses.courriers.size());
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.courriers.get(0));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.courriers.get(1));
 
 		assertEquals(1, adresses.casesPostales.size());
-		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2017, 8, 23), null, null, "Savigny", adresses.casesPostales.get(0));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "Savigny", adresses.casesPostales.get(0));
 		assertEquals("Case Postale 38", adresses.casesPostales.get(0).getCasePostale().toString());
 	}
 
@@ -290,10 +290,10 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		assertNotNull(org);
 
 		final List<Adresse> adresses = org.getAdresses();
-		assertEquals(2, adresses.size());
-//		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.get(0));
-		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.get(0));
-		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2017, 8, 23), null, null, "Savigny", adresses.get(1));
+		assertEquals(3, adresses.size());
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.get(0));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "Savigny", adresses.get(1));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.get(2));
 		assertEquals("Case Postale 38", adresses.get(1).getCasePostale().toString());
 	}
 
