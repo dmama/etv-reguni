@@ -15,11 +15,6 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.EtatCivilHelper;
@@ -35,6 +30,11 @@ import ch.vd.unireg.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -210,10 +210,6 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	protected abstract boolean isConjointMarieSeul();
 
-	/**
-	 * @return <code>true</code> si l'arrivée de cet individu en ménage est posterieur à une arrivée déjà traitée pour l'autre conjoint
-	 */
-	protected abstract boolean isArriveeRedondantePosterieurPourIndividuEnMenage();
 	/**
 	 * Création des fors lors de l'arrivée d'un invididu seul
 	 *
@@ -502,7 +498,7 @@ public abstract class Arrivee extends Mouvement {
 
 		final Individu conjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
 
-		if (isArriveeRedondantePosterieurPourIndividuEnMenage() || isArriveeRedondantePourIndividuEnMenage()) {
+		if (isArriveeRedondantePourIndividuEnMenage()) {
 			Audit.info(getNumeroEvenement(), "Arrivée considérée comme redondante fiscalement, ré-évaluation du flag habitant");
 			updateHabitantStatus(getPrincipalPP(), dateEvenement);
 			return HandleStatus.REDONDANT;

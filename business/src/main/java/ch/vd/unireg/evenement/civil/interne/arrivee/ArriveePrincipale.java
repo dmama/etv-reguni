@@ -20,6 +20,7 @@ import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.unireg.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
@@ -791,6 +792,7 @@ public class ArriveePrincipale extends Arrivee {
 	 * @param ffpMenage      le for principal courant
 	 * @return le mode d'imposition déterminé
 	 */
+	@NotNull
 	private ModeImpositionDetermination determineModeImposition(@NotNull EnsembleTiersCouple ensemble,
 	                                                            @NotNull RegDate dateEvenement,
 	                                                            @Nullable MotifFor motifOuverture,
@@ -970,32 +972,6 @@ public class ArriveePrincipale extends Arrivee {
 		return isRedondant;
 	}
 
-	private boolean isForDejaBon(@NotNull EnsembleTiersCouple ensemble, @NotNull RegDate dateArrivee, boolean beginDateMustMatch) {
-
-		final ForFiscalPrincipalPP ffp = ensemble.getMenage().getForFiscalPrincipalAt(dateArrivee);
-		if (ffp == null) {
-			// pas de bras, pas de chocolat
-			return false;
-		}
-
-		final MotifFor motifAttendu = getMotifOuvertureFor();
-		final int ofsCommuneArrivee = nouvelleCommune.getNoOFS();
-		final ModeImposition modeImposition;
-		try {
-			modeImposition = determineModeImposition(ensemble, dateArrivee, motifAttendu, ffp).getModeImposition();
-		}
-		catch (EvenementCivilException e) {
-			// on n'arrive pas déterminer le mode d'imposition, inutile d'en faire plus
-			return false;
-		}
-
-		return (!beginDateMustMatch || ffp.getDateDebut() == dateArrivee) &&
-				ffp.getMotifOuverture() == motifAttendu &&
-				ffp.getNumeroOfsAutoriteFiscale() == ofsCommuneArrivee &&
-				ffp.getModeImposition() == modeImposition &&    // SIFISC-28216
-				ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-	}
-
 	private boolean isForDejaBon(@NotNull PersonnePhysique pp, @NotNull RegDate dateArrivee, boolean beginDateMustMatch) {
 
 		final ForFiscalPrincipalPP ffp = pp.getForFiscalPrincipalAt(dateArrivee);
@@ -1057,27 +1033,6 @@ public class ArriveePrincipale extends Arrivee {
 		return isConjointMarieSeul;
 	}
 
-	@Override
-	protected boolean isArriveeRedondantePosterieurPourIndividuEnMenage() {
-		boolean isRedondant = getPrincipalPP() != null;
-		if (isRedondant) {
-			final MotifFor motifOuverture = getMotifOuvertureFor();
-			final RegDate dateArrivee = getDateArriveeEffective(getDate());
-			final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(getPrincipalPP(), dateArrivee);
-			if (coupleExistant != null) {
-				final ForFiscalPrincipal ffp = coupleExistant.getMenage().getForFiscalPrincipalAt(dateArrivee);
-				isRedondant = ffp != null && dateArrivee.isAfter(ffp.getDateDebut()) &&
-						(MotifFor.ARRIVEE_HC == ffp.getMotifOuverture() || MotifFor.ARRIVEE_HS == ffp.getMotifOuverture()) &&
-						(MotifFor.ARRIVEE_HC == motifOuverture || MotifFor.ARRIVEE_HS == motifOuverture);
-			}
-			else {
-				// SIFISC-6926 : si on n'a pas de couple, on n'a pas le droit de dire que c'est redondant !!!
-				isRedondant = false;
-			}
-		}
-		return isRedondant;
-	}
-
 	private static boolean existForArriveeOuvertApres(List<ForFiscalPrincipal> listeFor, RegDate dateArrivee) {
 		for (ForFiscalPrincipal forFiscalPrincipal : listeFor) {
 			if (MotifFor.ARRIVEE_HC == forFiscalPrincipal.getMotifOuverture() || MotifFor.ARRIVEE_HS == forFiscalPrincipal.getMotifOuverture()) {
@@ -1091,30 +1046,90 @@ public class ArriveePrincipale extends Arrivee {
 
 	@Override
 	protected boolean isArriveeRedondantePourIndividuEnMenage() {
-		// l'événement sera considéré comme redondant si
-		//   - le tiers contribuable PP existe déjà, ainsi que celui de son couple (lié au même conjoint si couple complet)
-		//   - le for du couple a été ouvert à la bonne date sur la bonne commune avec le bon motif
-		boolean isRedondant = getPrincipalPP() != null;
-		if (isRedondant) {
-			final RegDate dateArrivee = getDateArriveeEffective(getDate());
-			final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(getPrincipalPP(), dateArrivee);
-			isRedondant = (coupleExistant != null && isForDejaBon(coupleExistant, dateArrivee, false));
-			if (isRedondant) {
-				// reste le conjoint à vérifier
-				final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), dateArrivee);
-				if (individuConjoint != null) {
-					final PersonnePhysique conjoint = context.getTiersDAO().getPPByNumeroIndividu(individuConjoint.getNoTechnique(), true);
-					if (conjoint == null) {
-						// visiblement, le conjoint n'a pas encore été créé chez nous... Il reste donc des trucs à faire
-						isRedondant = false;
-					}
-					else {
-						final PersonnePhysique conjointFiscal = coupleExistant.getConjoint(getPrincipalPP());
-						isRedondant = conjointFiscal != null && conjointFiscal.getNumero().equals(conjoint.getNumero());
-					}
-				}
-			}
+
+		final PersonnePhysique principal = getPrincipalPP();
+		if (principal == null) {
+			return false;
 		}
-		return isRedondant;
+
+		final RegDate dateArrivee = getDateArriveeEffective(getDate());
+
+		//
+		// on vérifie l'état du ménage commun
+		//
+
+		final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(principal, dateArrivee);
+		if (coupleExistant == null) {
+			// SIFISC-6926 : si on n'a pas de couple, on n'a pas le droit de dire que c'est redondant !!!
+			return false;
+		}
+
+		final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), dateArrivee);
+		if (individuConjoint == null) {
+			// pas de conjoint au civil...
+			return false;
+		}
+
+		final PersonnePhysique conjoint = context.getTiersDAO().getPPByNumeroIndividu(individuConjoint.getNoTechnique(), true);
+		if (conjoint == null) {
+			// visiblement, le conjoint n'a pas encore été créé chez nous... Il reste donc des trucs à faire
+			return false;
+		}
+
+		final PersonnePhysique conjointFiscal = coupleExistant.getConjoint(principal);
+		if (conjointFiscal == null) {
+			// le conjoint n'est pas enregistré dans le ménage commun
+			return false;
+		}
+		if (!conjointFiscal.getNumero().equals(conjoint.getNumero())) {
+			// le conjoint civil et le conjoint fiscal ne sont pas les mêmes
+			return false;
+		}
+
+		//
+		// on vérifie l'état du for fiscal principal du ménage commun
+		//
+
+		final ForFiscalPrincipalPP ffp = coupleExistant.getMenage().getForFiscalPrincipalAt(dateArrivee);
+		if (ffp == null) {
+			// pas de for fiscal principal
+			return false;
+		}
+
+		final MotifFor motifOuverture = getMotifOuvertureFor();
+
+		if (dateArrivee.isAfter(ffp.getDateDebut())) {
+			// arrivée du conjoint postérieure à la date d'ouverture du for fiscal du ménage
+
+			// l'événement sera considéré comme redondant si
+			//  - le for fiscal a été ouvert avec un motif arrivée HS/HC et
+			//  - qu'on est bien entrain de traiter une arrivée HS/HC
+			return (ffp.getMotifOuverture() == MotifFor.ARRIVEE_HC || ffp.getMotifOuverture() == MotifFor.ARRIVEE_HS) &&
+					(motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS);
+		}
+		else if (dateArrivee.isBefore(ffp.getDateDebut())) {
+			throw new ProgrammingException("La date d'arrivée du conjoint est antérieure à la date d'ouverture du for fiscal principal du ménage-commun. On ne devrait pas arriver là dans ce cas.");
+		}
+		else {
+			// arrivée du conjoint à la même date que l'ouverture du for fiscal du ménage
+
+			final ModeImposition modeImposition;
+			try {
+				modeImposition = determineModeImposition(coupleExistant, dateArrivee, motifOuverture, ffp).getModeImposition();
+			}
+			catch (EvenementCivilException e) {
+				// on n'arrive pas déterminer le mode d'imposition, inutile d'en faire plus
+				return false;
+			}
+
+			// l'événement sera considéré comme redondant si
+			//   - le tiers contribuable PP existe déjà, ainsi que celui de son couple (lié au même conjoint si couple complet)
+			//   - le for du couple a été ouvert à la bonne date sur la bonne commune avec le bon motif
+			//   - le mode d'imposition est le bon (SIFISC-28216)
+			return ffp.getMotifOuverture() == motifOuverture &&
+					ffp.getNumeroOfsAutoriteFiscale() == nouvelleCommune.getNoOFS() &&
+					ffp.getModeImposition() == modeImposition &&
+					ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		}
 	}
 }
