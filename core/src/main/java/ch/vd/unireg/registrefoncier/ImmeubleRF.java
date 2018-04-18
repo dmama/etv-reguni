@@ -90,9 +90,9 @@ public abstract class ImmeubleRF extends HibernateEntity {
 	private Set<DroitProprieteRF> droitsPropriete;
 
 	/**
-	 * Les servitudes définies sur l'immeuble
+	 * Les servitudes à charge sur l'immeuble
 	 */
-	private Set<ServitudeRF> servitudes;
+	private Set<ChargeServitudeRF> chargesServitudes;
 
 	/**
 	 * L'ayant-droit correspondant à cet immeuble. Renseigné si cet immeuble possède des droits vers d'autres immeubles.
@@ -250,22 +250,22 @@ public abstract class ImmeubleRF extends HibernateEntity {
 		droitsPropriete.add(droit);
 	}
 
-	// configuration hibernate : l'immeuble ne possède pas les servitudes
-	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "immeubles")
-	public Set<ServitudeRF> getServitudes() {
-		return servitudes;
+	// configuration hibernate : l'immeuble ne possède pas les charges de servitudes
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "immeuble")
+	public Set<ChargeServitudeRF> getChargesServitudes() {
+		return chargesServitudes;
 	}
 
-	public void setServitudes(Set<ServitudeRF> servitudes) {
-		this.servitudes = servitudes;
+	public void setChargesServitudes(Set<ChargeServitudeRF> chargesServitudes) {
+		this.chargesServitudes = chargesServitudes;
 	}
 
-	public void addServitude(ServitudeRF servitude) {
-		if (servitudes == null) {
-			servitudes = new HashSet<>();
+	public void addChargeServitude(ChargeServitudeRF charge) {
+		if (chargesServitudes == null) {
+			chargesServitudes = new HashSet<>();
 		}
-		servitude.addImmeuble(this);
-		servitudes.add(servitude);
+		charge.setImmeuble(this);
+		chargesServitudes.add(charge);
 	}
 
 	@Nullable

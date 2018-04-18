@@ -15,7 +15,6 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
@@ -25,7 +24,10 @@ import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.unireg.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.unireg.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonneMoraleRF;
@@ -1677,8 +1679,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				UsufruitRF usufruit = new UsufruitRF();
 				usufruit.setMasterIdRF("38388232");
 				usufruit.setVersionIdRF("1");
-				usufruit.addAyantDroit(beneficiaire);
-				usufruit.addImmeuble(ppe);
+				usufruit.addBenefice(new BeneficeServitudeRF(null, null, null, beneficiaire));
+				usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe));
 				usufruit.setDateDebut(RegDate.get(2010, 6, 1));
 				usufruit.setDateFin(null);
 				usufruit.setDateDebutMetier(RegDate.get(2010, 4, 23));
@@ -1736,10 +1738,13 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals("Radiation", droit1.getMotifFin());
 
 				// l'usufruit est fermé
-				final Set<ServitudeRF> servitudes = ppe.getServitudes();
-				assertEquals(1, servitudes.size());
+				final Set<ChargeServitudeRF> liensImmeubles = ppe.getChargesServitudes();
+				assertEquals(1, liensImmeubles.size());
 
-				final ServitudeRF servitude0 = servitudes.iterator().next();
+				final ChargeServitudeRF lien0 = liensImmeubles.iterator().next();
+				assertEquals(veilleImport, lien0.getDateFin());
+
+				final ServitudeRF servitude0 = lien0.getServitude();
 				assertEquals(veilleImport, servitude0.getDateFinMetier());
 				assertEquals("Radiation", servitude0.getMotifFin());
 			}
@@ -1822,9 +1827,9 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				UsufruitRF usufruit = new UsufruitRF();
 				usufruit.setMasterIdRF("38388232");
 				usufruit.setVersionIdRF("1");
-				usufruit.addAyantDroit(beneficiaire);
-				usufruit.addImmeuble(ppe1);
-				usufruit.addImmeuble(ppe2);
+				usufruit.addBenefice(new BeneficeServitudeRF(null, null, null, beneficiaire));
+				usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe1));
+				usufruit.addCharge(new ChargeServitudeRF(null, null, null, ppe2));
 				usufruit.setDateDebut(RegDate.get(2010, 6, 1));
 				usufruit.setDateFin(null);
 				usufruit.setDateDebutMetier(RegDate.get(2010, 4, 23));
@@ -1871,10 +1876,13 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(ppe2.getDateRadiation());
 
 				// l'usufruit n'est pas fermé
-				final Set<ServitudeRF> servitudes = ppe1.getServitudes();
-				assertEquals(1, servitudes.size());
+				final Set<ChargeServitudeRF> liensImmeubles = ppe1.getChargesServitudes();
+				assertEquals(1, liensImmeubles.size());
 
-				final ServitudeRF servitude0 = servitudes.iterator().next();
+				final ChargeServitudeRF lien0 = liensImmeubles.iterator().next();
+				assertNull(lien0.getDateFin());
+
+				final ServitudeRF servitude0 = lien0.getServitude();
 				assertNull(servitude0.getDateFinMetier());
 				assertNull(servitude0.getMotifFin());
 			}

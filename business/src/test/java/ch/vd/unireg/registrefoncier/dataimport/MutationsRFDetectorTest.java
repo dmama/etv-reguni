@@ -5,7 +5,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.UsufruitRF;
@@ -104,8 +106,8 @@ public class MutationsRFDetectorTest extends BusinessTest {
 			usufruit.setMasterIdRF("23489238923");
 			usufruit.setVersionIdRF("23489238922");
 			usufruit.setDateDebut(RegDate.get(2000, 1, 1));
-			usufruit.addImmeuble(immeuble);
-			usufruit.addAyantDroit(pp);
+			usufruit.addCharge(new ChargeServitudeRF(null, null, null, immeuble));
+			usufruit.addBenefice(new BeneficeServitudeRF(null, null, null, pp));
 			droitRFDAO.save(usufruit);
 
 			return null;

@@ -146,7 +146,7 @@
 	<bean id="servitudeRFProcessor" class="ch.vd.unireg.registrefoncier.dataimport.processor.ServitudeRFProcessor">
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="immeubleRFDAO"/>
-		<constructor-arg ref="droitRFDAO"/>
+		<constructor-arg ref="servitudeRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="evenementFiscalService"/>
 	</bean>

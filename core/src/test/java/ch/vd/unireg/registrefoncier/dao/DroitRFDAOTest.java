@@ -9,8 +9,9 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.CoreDAOTest;
-import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.DroitRFRangeMetierComparator;
@@ -18,7 +19,6 @@ import ch.vd.unireg.registrefoncier.Fraction;
 import ch.vd.unireg.registrefoncier.GenrePropriete;
 import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
-import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.UsufruitRF;
 
@@ -107,17 +107,17 @@ public class DroitRFDAOTest extends CoreDAOTest {
 			final UsufruitRF usufruit0 = (UsufruitRF) droits.get(0);
 			assertNotNull(usufruit0);
 
-			final List<AyantDroitRF> ayantDroits = new ArrayList<>(usufruit0.getAyantDroits());
-			assertEquals(2, ayantDroits.size());
-			ayantDroits.sort(Comparator.comparing(AyantDroitRF::getId));
-			assertEquals(ids.arnold, ayantDroits.get(0).getId());
-			assertEquals(ids.evelyne, ayantDroits.get(1).getId());
+			final List<BeneficeServitudeRF> benefices = new ArrayList<>(usufruit0.getBenefices());
+			assertEquals(2, benefices.size());
+			benefices.sort(Comparator.comparing(bene -> bene.getAyantDroit().getId()));
+			assertEquals(ids.arnold, benefices.get(0).getAyantDroit().getId());
+			assertEquals(ids.evelyne, benefices.get(1).getAyantDroit().getId());
 
-			final List<ImmeubleRF> immeubles = new ArrayList<>(usufruit0.getImmeubles());
-			assertEquals(2, immeubles.size());
-			immeubles.sort(Comparator.comparing(ImmeubleRF::getId));
-			assertEquals(ids.immeuble1, immeubles.get(0).getId());
-			assertEquals(ids.immeuble2, immeubles.get(1).getId());
+			final List<ChargeServitudeRF> charges = new ArrayList<>(usufruit0.getCharges());
+			assertEquals(2, charges.size());
+			charges.sort(Comparator.comparing(charge -> charge.getImmeuble().getId()));
+			assertEquals(ids.immeuble1, charges.get(0).getImmeuble().getId());
+			assertEquals(ids.immeuble2, charges.get(1).getImmeuble().getId());
 			return null;
 		});
 
@@ -130,17 +130,17 @@ public class DroitRFDAOTest extends CoreDAOTest {
 			final UsufruitRF usufruit0 = (UsufruitRF) droits.get(0);
 			assertNotNull(usufruit0);
 
-			final List<AyantDroitRF> ayantDroits = new ArrayList<>(usufruit0.getAyantDroits());
-			assertEquals(2, ayantDroits.size());
-			ayantDroits.sort(Comparator.comparing(AyantDroitRF::getId));
-			assertEquals(ids.arnold, ayantDroits.get(0).getId());
-			assertEquals(ids.evelyne, ayantDroits.get(1).getId());
+			final List<BeneficeServitudeRF> benefices = new ArrayList<>(usufruit0.getBenefices());
+			assertEquals(2, benefices.size());
+			benefices.sort(Comparator.comparing(bene -> bene.getAyantDroit().getId()));
+			assertEquals(ids.arnold, benefices.get(0).getAyantDroit().getId());
+			assertEquals(ids.evelyne, benefices.get(1).getAyantDroit().getId());
 
-			final List<ImmeubleRF> immeubles = new ArrayList<>(usufruit0.getImmeubles());
-			assertEquals(2, immeubles.size());
-			immeubles.sort(Comparator.comparing(ImmeubleRF::getId));
-			assertEquals(ids.immeuble1, immeubles.get(0).getId());
-			assertEquals(ids.immeuble2, immeubles.get(1).getId());
+			final List<ChargeServitudeRF> charges = new ArrayList<>(usufruit0.getCharges());
+			assertEquals(2, charges.size());
+			charges.sort(Comparator.comparing(charge -> charge.getImmeuble().getId()));
+			assertEquals(ids.immeuble1, charges.get(0).getImmeuble().getId());
+			assertEquals(ids.immeuble2, charges.get(1).getImmeuble().getId());
 			return null;
 		});
 

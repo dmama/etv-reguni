@@ -1,7 +1,6 @@
 package ch.vd.unireg.foncier;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,7 +38,7 @@ import ch.vd.unireg.registrefoncier.DroitVirtuelHeriteRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
-import ch.vd.unireg.registrefoncier.ServitudeCombinationIterator;
+import ch.vd.unireg.registrefoncier.ServitudeHelper;
 import ch.vd.unireg.registrefoncier.ServitudeRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.tiers.Contribuable;
@@ -300,25 +299,23 @@ public class InitialisationIFoncProcessor {
 
 	private void traiterServitude(@NotNull ServitudeRF servitude, @NotNull InitialisationIFoncResults rapport) {
 
-		// une servitude peut contenir plusieurs bénénificiaires et plusieurs immeubles -> on calcule toutes
+		// une servitude peut contenir plusieurs bénéficiaires et plusieurs immeubles -> on calcule toutes
 		// les combinaisons possibles et on insère une ligne par combinaison
-		final ServitudeCombinationIterator iterator = new ServitudeCombinationIterator(Collections.singletonList(servitude).iterator());
-		while (iterator.hasNext()) {
-			final ServitudeRF combinaison = iterator.next();
+		final List<ServitudeRF> combinaisons = ServitudeHelper.combinate(servitude,
+	                                                                     b -> b.isValidAt(rapport.dateReference),
+	                                                                     c -> c.isValidAt(rapport.dateReference));
+		combinaisons.forEach(combinaison -> {
+			final AyantDroitRF ayantDroit = combinaison.getBenefices().iterator().next().getAyantDroit(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
+			final ImmeubleRF immeuble = combinaison.getCharges().iterator().next().getImmeuble(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
 
-			final AyantDroitRF ayantDroit = combinaison.getAyantDroits().iterator().next(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
-			final ImmeubleRF immeuble = combinaison.getImmeubles().iterator().next(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
-
-			// si on a demandé une commune particulière, on ignore complètement les immeubles situés ailleurs à la date de référence
+			// si on a demandé une commune particulière, on ne prend que les immeubles situés sur la commune à la date de référence
 			final SituationRF situation = getSituationValide(immeuble, rapport.dateReference);
-			if (rapport.ofsCommune != null && (situation == null || situation.getCommune().getNoOfs() != rapport.ofsCommune)) {
-				continue;
+			if (rapport.ofsCommune == null || (situation != null && situation.getCommune().getNoOfs() == rapport.ofsCommune)) {
+				final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
+				final EstimationRF estimation = getEstimationFiscaleValide(immeuble, rapport.dateReference);
+				rapport.addServitude(contribuable, combinaison, situation, estimation);
 			}
-
-			final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
-			final EstimationRF estimation = getEstimationFiscaleValide(immeuble, rapport.dateReference);
-			rapport.addServitude(contribuable, combinaison, situation, estimation);
-		}
+		});
 	}
 
 	@Nullable
@@ -349,10 +346,14 @@ public class InitialisationIFoncProcessor {
 			final Query queryDroits;
 			final Query queryServitudes;
 			if (ofsCommune == null) {
-				final String hqlDroits = "SELECT id FROM DroitProprieteRF WHERE annulationDate is null AND " +
-						"(dateDebutMetier is null OR dateDebutMetier <= :dateReference) AND (dateFinMetier is null OR dateFinMetier >= :dateReference)";
-				final String hqlServitudes = "SELECT id FROM ServitudeRF WHERE annulationDate is null AND " +
-						"(dateDebutMetier is null OR dateDebutMetier <= :dateReference) AND (dateFinMetier is null OR dateFinMetier >= :dateReference)";
+				final String hqlDroits = "SELECT id FROM DroitProprieteRF " +
+						"WHERE annulationDate is null AND " +
+						"(dateDebutMetier is null OR dateDebutMetier <= :dateReference) AND " +
+						"(dateFinMetier is null OR dateFinMetier >= :dateReference)";
+				final String hqlServitudes = "SELECT id FROM ServitudeRF " +
+						"WHERE annulationDate is null AND " +
+						"(dateDebutMetier is null OR dateDebutMetier <= :dateReference) AND " +
+						"(dateFinMetier is null OR dateFinMetier >= :dateReference)";
 				queryDroits = session.createQuery(hqlDroits);
 				queryDroits.setParameter("dateReference", dateReference);
 				queryServitudes = session.createQuery(hqlServitudes);
@@ -360,17 +361,31 @@ public class InitialisationIFoncProcessor {
 			}
 			else {
 				final String hqlDroits =
-						"SELECT d.id FROM DroitProprieteRF d WHERE d.annulationDate is null AND " +
-								"(d.dateDebutMetier is null OR d.dateDebutMetier <= :dateReference) AND (d.dateFinMetier is null OR d.dateFinMetier >= :dateReference) AND " +
-								"EXISTS (from SituationRF s where s.annulationDate is null AND s.immeuble = d.immeuble AND " +
-								"(s.dateDebut is null OR s.dateDebut <= :dateReference) AND (s.dateFin is null OR s.dateFin >= :dateReference) AND " +
-								"((s.noOfsCommuneSurchargee is null AND s.commune.noOfs = :commune) OR s.noOfsCommuneSurchargee = :commune))";
+						"SELECT drt.id FROM DroitProprieteRF drt " +
+								"JOIN drt.immeuble imm " +
+								"JOIN imm.situations sit " +
+								"WHERE drt.annulationDate is null AND " +
+								"   sit.annulationDate is null AND " +
+								"   (drt.dateDebutMetier is null OR drt.dateDebutMetier <= :dateReference) AND " +
+								"   (drt.dateFinMetier is null OR drt.dateFinMetier >= :dateReference) AND " +
+								"   (sit.dateDebut is null OR sit.dateDebut <= :dateReference) AND " +
+								"   (sit.dateFin is null OR sit.dateFin >= :dateReference) AND " +
+								"   ((sit.noOfsCommuneSurchargee is null AND sit.commune.noOfs = :commune) OR sit.noOfsCommuneSurchargee = :commune))";
 				final String hqlServitudes =
-						"SELECT d.id FROM ServitudeRF d WHERE d.annulationDate is null AND " +
-								"(d.dateDebutMetier is null OR d.dateDebutMetier <= :dateReference) AND (d.dateFinMetier is null OR d.dateFinMetier >= :dateReference) AND " +
-								"EXISTS (from SituationRF s where s.annulationDate is null AND s.immeuble in elements(d.immeubles) AND " +
-								"(s.dateDebut is null OR s.dateDebut <= :dateReference) AND (s.dateFin is null OR s.dateFin >= :dateReference) AND " +
-								"((s.noOfsCommuneSurchargee is null AND s.commune.noOfs = :commune) OR s.noOfsCommuneSurchargee = :commune))";
+						"SELECT serv.id FROM ServitudeRF serv " +
+								"JOIN serv.charges chg " +
+								"JOIN chg.immeuble imm " +
+								"JOIN imm.situations sit " +
+								"WHERE serv.annulationDate is null AND " +
+								"   chg.annulationDate is null AND " +
+								"   sit.annulationDate is null AND " +
+								"   (serv.dateDebutMetier is null OR serv.dateDebutMetier <= :dateReference) AND " +
+								"   (serv.dateFinMetier is null OR serv.dateFinMetier >= :dateReference) AND " +
+								"   (chg.dateDebut is null OR chg.dateDebut <= :dateReference) AND " +
+								"   (chg.dateFin is null OR chg.dateFin >= :dateReference) AND " +
+								"   (sit.dateDebut is null OR sit.dateDebut <= :dateReference) AND " +
+								"   (sit.dateFin is null OR sit.dateFin >= :dateReference) AND " +
+								"   ((sit.noOfsCommuneSurchargee is null AND sit.commune.noOfs = :commune) OR sit.noOfsCommuneSurchargee = :commune))";
 				queryDroits = session.createQuery(hqlDroits);
 				queryDroits.setParameter("dateReference", dateReference);
 				queryDroits.setParameter("commune", ofsCommune);
@@ -441,7 +456,10 @@ public class InitialisationIFoncProcessor {
 						                            "            WHERE d.annulationDate is null AND d.immeuble = i" +
 						                            ") AND " +
 						                            "NOT EXISTS (FROM ServitudeRF s " +
-						                            "            WHERE s.annulationDate is null AND i IN elements(s.immeubles)" +
+						                            "            JOIN s.charges charge" +
+						                            "            WHERE s.annulationDate is null AND " +
+						                            "            charge.annulationDate is null AND " +
+						                            "            charge.immeuble = i" +
 						                            ")");
 			}
 			else {
@@ -451,7 +469,10 @@ public class InitialisationIFoncProcessor {
 						                            "            WHERE d.annulationDate is null AND d.immeuble = i" +
 						                            ") AND " +
 						                            "NOT EXISTS (FROM ServitudeRF s " +
-						                            "            WHERE s.annulationDate is null AND i IN elements(s.immeubles)" +
+						                            "            JOIN s.charges charge" +
+						                            "            WHERE s.annulationDate is null AND " +
+						                            "            charge.annulationDate is null AND " +
+						                            "            charge.immeuble = i" +
 						                            ") AND " +
 				                                    "((si.noOfsCommuneSurchargee IS NULL AND si.commune.noOfs = :commune) OR si.noOfsCommuneSurchargee = :commune)");
 				query.setParameter("commune", ofsCommune);
@@ -481,9 +502,14 @@ public class InitialisationIFoncProcessor {
 						                            "            (d.dateFinMetier is null OR d.dateFinMetier >= :dateReference)" +
 						                            ") AND " +
 						                            "NOT EXISTS (FROM ServitudeRF s " +
-						                            "            WHERE s.annulationDate is null AND i IN elements(s.immeubles) AND" +
+						                            "            JOIN s.charges charge" +
+						                            "            WHERE s.annulationDate is null AND " +
+						                            "            charge.annulationDate is null AND " +
+						                            "            charge.immeuble = i AND " +
 						                            "            (s.dateDebutMetier is null OR s.dateDebutMetier <= :dateReference) AND " +
-						                            "            (s.dateFinMetier is null OR s.dateFinMetier >= :dateReference)" +
+						                            "            (s.dateFinMetier is null OR s.dateFinMetier >= :dateReference) AND" +
+						                            "            (charge.dateDebut is null OR charge.dateDebut <= :dateReference) AND " +
+						                            "            (charge.dateFin is null OR charge.dateFin >= :dateReference)" +
 						                            ")");
 			}
 			else {
@@ -494,9 +520,14 @@ public class InitialisationIFoncProcessor {
 						                            "            (d.dateFinMetier is null OR d.dateFinMetier >= :dateReference)" +
 						                            ") AND " +
 						                            "NOT EXISTS (FROM ServitudeRF s " +
-						                            "            WHERE s.annulationDate is null AND i IN elements(s.immeubles) AND " +
+						                            "            JOIN s.charges charge" +
+						                            "            WHERE s.annulationDate is null AND " +
+						                            "            charge.annulationDate is null AND " +
+						                            "            charge.immeuble = i AND " +
 						                            "            (s.dateDebutMetier is null OR s.dateDebutMetier <= :dateReference) AND " +
-						                            "            (s.dateFinMetier is null OR s.dateFinMetier >= :dateReference)" +
+						                            "            (s.dateFinMetier is null OR s.dateFinMetier >= :dateReference) AND" +
+						                            "            (charge.dateDebut is null OR charge.dateDebut <= :dateReference) AND " +
+						                            "            (charge.dateFin is null OR charge.dateFin >= :dateReference)" +
 						                            ") AND " +
 				                                    "((si.noOfsCommuneSurchargee IS NULL AND si.commune.noOfs = :commune) OR si.noOfsCommuneSurchargee = :commune)");
 				query.setParameter("commune", ofsCommune);

@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,11 @@ import ch.vd.capitastra.rechteregister.Beleg;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.StandardRecht;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.DroitHabitationRF;
 import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
@@ -76,7 +81,7 @@ public class ServitudesRFHelper {
 
 
 	public static boolean dataEquals(ServitudeRF droitRF, DienstbarkeitExtendedElement dienstbarkeit) {
-		return dataEquals(droitRF, get(dienstbarkeit, ServitudesRFHelper::simplisticAyantDroitProvider, ServitudesRFHelper::simplisticImmeubleProvider));
+		return currentDataEquals(droitRF, get(dienstbarkeit, ServitudesRFHelper::simplisticAyantDroitProvider, ServitudesRFHelper::simplisticImmeubleProvider));
 	}
 
 	/**
@@ -101,21 +106,22 @@ public class ServitudesRFHelper {
 		return i;
 	}
 
-	public static boolean dataEquals(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
+	/**
+	 * Compare les valeurs courantes des deux servitudes et retourne <i>vrai</i> si elles sont égales.
+	 *
+	 * @param left  une servitude
+	 * @param right une autre servitude
+	 * @return <i>vrai</i> si les valeurs courantes des deux servitudes sont égales; <i>faux</i> autrement.
+	 */
+	public static boolean currentDataEquals(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
 
 		if (!masterIdAndVersionIdEquals(left, right)) {
 			return false;
 		}
 
-		//noinspection SimplifiableIfStatement
 		if (!left.getClass().equals(right.getClass())) {
 			return false;
 		}
-
-		return equalsServitude(left, right);
-	}
-
-	private static boolean equalsServitude(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
 
 		final boolean baseEquals = Objects.equals(left.getIdentifiantDroit(), right.getIdentifiantDroit()) &&
 				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
@@ -128,37 +134,38 @@ public class ServitudesRFHelper {
 		}
 
 		// [SIFISC-27523] on vérifie que les listes d'ayants-droit et d'immeubles sont les mêmes
-		return ayantDroitsEquals(left.getAyantDroits(), right.getAyantDroits()) &&
-				immeublesEquals(left.getImmeubles(), right.getImmeubles());
+		return currentAyantDroitsEquals(left.getBenefices(), right.getBenefices()) &&
+				currentImmeublesEquals(left.getCharges(), right.getCharges());
 	}
 
 	/**
-	 * @param left  une collection d'ayants-droits (une collection nulle est assimilée à une collection vide)
-	 * @param right une autre collection d'ayants-droits (une collection nulle est assimilée à une collection vide)
-	 * @return <b>vrai</b> si les deux collections possèdent les mêmes ayants-droits (= les mêmes ID RF); <b>faux</b> autrement.
+	 * @param left  une collection de bénéficiaires de servitude (une collection nulle est assimilée à une collection vide)
+	 * @param right une autre collection de bénéficiaires de servitude (une collection nulle est assimilée à une collection vide)
+	 * @return <b>vrai</b> si les deux collections possèdent les mêmes de bénéficiaires de servitude courants (= sans date de fin et avec les mêmes ID RF); <b>faux</b> autrement.
 	 */
-	private static boolean ayantDroitsEquals(@Nullable Collection<AyantDroitRF> left, @Nullable Collection<AyantDroitRF> right) {
+	private static boolean currentAyantDroitsEquals(@Nullable Collection<BeneficeServitudeRF> left, @Nullable Collection<BeneficeServitudeRF> right) {
 
-		if (left == null) {
-			left = Collections.emptyList();
-		}
-		if (right == null) {
-			right = Collections.emptyList();
-		}
+		final List<AyantDroitRF> leftList = (left == null ? Collections.emptyList() : left.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(l -> l.getDateFin() == null)
+				.map(BeneficeServitudeRF::getAyantDroit)
+				.collect(Collectors.toList()));
+		final List<AyantDroitRF> rightList = (right == null ? Collections.emptyList() : right.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(l -> l.getDateFin() == null)
+				.map(BeneficeServitudeRF::getAyantDroit)
+				.collect(Collectors.toList()));
 
-		if (left.size() != right.size()) {
+		if (leftList.size() != rightList.size()) {
 			return false;
 		}
 
-		final List<AyantDroitRF> sortedLeft = new ArrayList<>(left);
-		sortedLeft.sort(Comparator.comparing(AyantDroitRF::getIdRF));
+		leftList.sort(Comparator.comparing(AyantDroitRF::getIdRF));
+		rightList.sort(Comparator.comparing(AyantDroitRF::getIdRF));
 
-		final List<AyantDroitRF> sortedRight = new ArrayList<>(right);
-		sortedRight.sort(Comparator.comparing(AyantDroitRF::getIdRF));
-
-		for (int i = 0; i < sortedLeft.size(); i++) {
-			final AyantDroitRF l = sortedLeft.get(i);
-			final AyantDroitRF r = sortedRight.get(i);
+		for (int i = 0; i < leftList.size(); i++) {
+			final AyantDroitRF l = leftList.get(i);
+			final AyantDroitRF r = rightList.get(i);
 			if (!l.getIdRF().equals(r.getIdRF())) {
 				return false;
 			}
@@ -170,23 +177,31 @@ public class ServitudesRFHelper {
 	/**
 	 * @param left  une collection d'immeubles
 	 * @param right une autre collection d'immeubles
-	 * @return <b>vrai</b> si les deux collections possèdent les mêmes immeubles (= les mêmes ID RF); <b>faux</b> autrement.
+	 * @return <b>vrai</b> si les deux collections possèdent les mêmes immeubles courants (= sans date de fin et les mêmes ID RF); <b>faux</b> autrement.
 	 */
-	private static boolean immeublesEquals(@NotNull Collection<ImmeubleRF> left, @NotNull Collection<ImmeubleRF> right) {
+	private static boolean currentImmeublesEquals(@Nullable Collection<ChargeServitudeRF> left, @Nullable Collection<ChargeServitudeRF> right) {
 
-		if (left.size() != right.size()) {
+		final List<ImmeubleRF> leftList = (left == null ? Collections.emptyList() : left.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(l -> l.getDateFin() == null)
+				.map(ChargeServitudeRF::getImmeuble)
+				.collect(Collectors.toList()));
+		final List<ImmeubleRF> rightList = (right == null ? Collections.emptyList() : right.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(r -> r.getDateFin() == null)
+				.map(ChargeServitudeRF::getImmeuble)
+				.collect(Collectors.toList()));
+
+		if (leftList.size() != rightList.size()) {
 			return false;
 		}
 
-		final List<ImmeubleRF> sortedLeft = new ArrayList<>(left);
-		sortedLeft.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+		leftList.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+		rightList.sort(Comparator.comparing(ImmeubleRF::getIdRF));
 
-		final List<ImmeubleRF> sortedRight = new ArrayList<>(right);
-		sortedRight.sort(Comparator.comparing(ImmeubleRF::getIdRF));
-
-		for (int i = 0; i < sortedLeft.size(); i++) {
-			final ImmeubleRF l = sortedLeft.get(i);
-			final ImmeubleRF r = sortedRight.get(i);
+		for (int i = 0; i < leftList.size(); i++) {
+			final ImmeubleRF l = leftList.get(i);
+			final ImmeubleRF r = rightList.get(i);
 			if (!l.getIdRF().equals(r.getIdRF())) {
 				return false;
 			}
@@ -222,21 +237,26 @@ public class ServitudesRFHelper {
 			throw new IllegalArgumentException("Type de servitude inconnue = [" + typeServitude + "]");
 		}
 
+		final RegDate dateDebutMetier = dienstbarkeit.getBeginDatum();
+		final RegDate dateFinMetier = dienstbarkeit.getAblaufDatum();
+
 		lastRechtGruppe.getBerechtigtePerson().forEach(person -> {
 			final String personIDRef = DienstbarkeitExtendedElement.getPersonIDRef(DienstbarkeitExtendedElement.getPerson(person));
-			servitude.addAyantDroit(ayantDroitProvider.apply(personIDRef));
+			final AyantDroitRF ayantDroit = ayantDroitProvider.apply(personIDRef);
+			servitude.addBenefice(new BeneficeServitudeRF(dateDebutMetier, dateFinMetier, servitude, ayantDroit));
 		});
 
 		lastRechtGruppe.getBelastetesGrundstueck().forEach(grundstueck -> {
-			servitude.addImmeuble(immeubleProvider.apply(grundstueck.getBelastetesGrundstueckIDREF()));
+			final ImmeubleRF immeuble = immeubleProvider.apply(grundstueck.getBelastetesGrundstueckIDREF());
+			servitude.addCharge(new ChargeServitudeRF(dateDebutMetier, dateFinMetier, servitude, immeuble));
 		});
 
 		servitude.setMasterIdRF(masterIdRF);
 		servitude.setVersionIdRF(versionIdRF);
 		servitude.setIdentifiantDroit(getIdentifiantDroit(dienstbarkeit));
 		servitude.setNumeroAffaire(getAffaire(dienstbarkeit));
-		servitude.setDateDebutMetier(dienstbarkeit.getBeginDatum());
-		servitude.setDateFinMetier(dienstbarkeit.getAblaufDatum());
+		servitude.setDateDebutMetier(dateDebutMetier);
+		servitude.setDateFinMetier(dateFinMetier);
 		servitude.setMotifDebut(null);
 		servitude.setMotifFin(null);
 

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.EvenementTest;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
@@ -18,7 +17,10 @@ import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.DroitProprietePersonneMoraleRF;
@@ -294,8 +296,8 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			tiers.setId(281819L);
 
 			final UsufruitRF servitude = new UsufruitRF();
-			servitude.addImmeuble(immeuble);
-			servitude.addAyantDroit(tiers);
+			servitude.addCharge(new ChargeServitudeRF(null, null, servitude, immeuble));
+			servitude.addBenefice(new BeneficeServitudeRF(null, null, servitude, tiers));
 
 			final EvenementFiscalServitude event = new EvenementFiscalServitude(RegDate.get(2017, 1, 1), servitude, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE);
 			event.setId(1234L);
@@ -353,8 +355,8 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			tiers.setNom("Rentznik");
 
 			final UsufruitRF servitude = new UsufruitRF();
-			servitude.addImmeuble(immeuble);
-			servitude.addAyantDroit(tiers);
+			servitude.addCharge(new ChargeServitudeRF(null, null, servitude, immeuble));
+			servitude.addBenefice(new BeneficeServitudeRF(null, null, servitude, tiers));
 
 			final EvenementFiscalServitude event = new EvenementFiscalServitude(RegDate.get(2017, 1, 1), servitude, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE);
 			event.setId(1234L);

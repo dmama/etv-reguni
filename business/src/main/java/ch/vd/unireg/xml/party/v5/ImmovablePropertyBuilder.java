@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CapitastraURLProvider;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.DroitRFRangeMetierComparator;
@@ -22,6 +23,8 @@ import ch.vd.unireg.registrefoncier.MineRF;
 import ch.vd.unireg.registrefoncier.PartCoproprieteRF;
 import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
 import ch.vd.unireg.registrefoncier.QuotePartRF;
+import ch.vd.unireg.registrefoncier.ServitudeHelper;
+import ch.vd.unireg.registrefoncier.ServitudeRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
 import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
@@ -168,12 +171,27 @@ public abstract class ImmovablePropertyBuilder {
 				                                      .sorted()
 				                                      .map(BuildingBuilder::newBuildSetting)
 				                                      .collect(Collectors.toList()));
-		property.getLandRights().addAll(buildLandRights(Stream.concat(immeuble.getDroitsPropriete().stream(), immeuble.getServitudes().stream()), contribuableIdProvider, rightHolderComparator));
+
+		final Stream<DroitRF> droits = Stream.concat(immeuble.getDroitsPropriete().stream(),
+		                                             immeuble.getChargesServitudes().stream()
+				                                             .map(ImmovablePropertyBuilder::getAdaptedServitude));
+		property.getLandRights().addAll(buildLandRights(droits, contribuableIdProvider, rightHolderComparator));
 
 		final ImmeubleBeneficiaireRF beneficiaire = immeuble.getEquivalentBeneficiaire();
 		if (beneficiaire != null) {
 			property.getLandRightsFrom().addAll(buildLandRights(beneficiaire.getDroitsPropriete().stream(), contribuableIdProvider, rightHolderComparator));
 		}
+	}
+
+	/**
+	 * [IMM-795] Adapte la validité de la servitude à celle de la charge de l'immeuble
+	 *
+	 * @param charge une charge de servitude
+	 * @return la servitude la charge adaptée à la durée de validité de la charge
+	 */
+	private static ServitudeRF getAdaptedServitude(@NotNull ChargeServitudeRF charge) {
+		final ServitudeRF servitude = charge.getServitude();
+		return ServitudeHelper.adapteServitude(servitude, charge);
 	}
 
 	private static List<LandRight> buildLandRights(Stream<? extends DroitRF> droits, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {

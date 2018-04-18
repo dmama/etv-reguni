@@ -12,6 +12,34 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
+import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
+import ch.vd.unireg.registrefoncier.CommuneRF;
+import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.unireg.registrefoncier.DroitProprieteImmeubleRF;
+import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.EstimationRF;
+import ch.vd.unireg.registrefoncier.Fraction;
+import ch.vd.unireg.registrefoncier.GenrePropriete;
+import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
+import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.unireg.registrefoncier.ImmeubleRF;
+import ch.vd.unireg.registrefoncier.ImplantationRF;
+import ch.vd.unireg.registrefoncier.MineRF;
+import ch.vd.unireg.registrefoncier.PartCoproprieteRF;
+import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
+import ch.vd.unireg.registrefoncier.QuotePartRF;
+import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.unireg.registrefoncier.SituationRF;
+import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
+import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
+import ch.vd.unireg.registrefoncier.TiersRF;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
 import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
@@ -29,29 +57,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
 import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
-import ch.vd.unireg.registrefoncier.BatimentRF;
-import ch.vd.unireg.registrefoncier.BienFondsRF;
-import ch.vd.unireg.registrefoncier.CommuneRF;
-import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
-import ch.vd.unireg.registrefoncier.DroitProprieteImmeubleRF;
-import ch.vd.unireg.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.unireg.registrefoncier.EstimationRF;
-import ch.vd.unireg.registrefoncier.Fraction;
-import ch.vd.unireg.registrefoncier.GenrePropriete;
-import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
-import ch.vd.unireg.registrefoncier.ImmeubleRF;
-import ch.vd.unireg.registrefoncier.ImplantationRF;
-import ch.vd.unireg.registrefoncier.MineRF;
-import ch.vd.unireg.registrefoncier.PartCoproprieteRF;
-import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
-import ch.vd.unireg.registrefoncier.QuotePartRF;
-import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
-import ch.vd.unireg.registrefoncier.SituationRF;
-import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
-import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
-import ch.vd.unireg.registrefoncier.TiersRF;
-import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -124,9 +130,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		ppe.setDroitsPropriete(Collections.singleton(droit));
-		ppe.setServitudes(Collections.emptySet());
+		ppe.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -204,9 +210,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, pcp);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		pcp.setDroitsPropriete(Collections.singleton(droit));
-		pcp.setServitudes(Collections.emptySet());
+		pcp.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -279,9 +285,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ddp);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		ddp.setDroitsPropriete(Collections.singleton(droit));
-		ddp.setServitudes(Collections.emptySet());
+		ddp.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -347,9 +353,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, m);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		m.setDroitsPropriete(Collections.singleton(droit));
-		m.setServitudes(Collections.emptySet());
+		m.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(m, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -419,9 +425,9 @@ public class ImmovablePropertyBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, bienFonds);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		bienFonds.setDroitsPropriete(Collections.singleton(droit));
-		bienFonds.setServitudes(Collections.emptySet());
+		bienFonds.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFonds, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -496,16 +502,16 @@ public class ImmovablePropertyBuilderTest {
 		// la PPE possède une part du bien-fonds
 		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm(4343L, "0293929", new Fraction(1, 30), GenrePropriete.PPE, RegDate.get(1993, 5, 13), "Consitution de PPE", beneficiaire, bienFonds);
 		beneficiaire.setDroitsPropriete(Collections.singleton(droit0));
-		beneficiaire.setServitudes(Collections.emptySet());
+		beneficiaire.setBeneficesServitudes(Collections.emptySet());
 		bienFonds.setDroitsPropriete(Collections.singleton(droit0));
-		bienFonds.setServitudes(Collections.emptySet());
+		bienFonds.setChargesServitudes(Collections.emptySet());
 
 		// la personne physique possède la PPE
 		final DroitProprietePersonnePhysiqueRF droit1 = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 		pp.setDroitsPropriete(Collections.singleton(droit1));
-		pp.setServitudes(Collections.emptySet());
+		pp.setBeneficesServitudes(Collections.emptySet());
 		ppe.setDroitsPropriete(Collections.singleton(droit1));
-		ppe.setServitudes(Collections.emptySet());
+		ppe.setChargesServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
@@ -524,6 +530,88 @@ public class ImmovablePropertyBuilderTest {
 		final List<LandRight> landRightsFrom = condo.getLandRightsFrom();
 		assertEquals(1, landRightsFrom.size());
 		assertLandOwnershipRight(48383L, 723721L, RegDate.get(1993, 5, 13), 1, 30, OwnershipType.CONDOMINIUM_OWNERSHIP, (LandOwnershipRight) landRightsFrom.get(0));
+	}
+
+	/**
+	 * [IMM-795] Vérifie que les validités des usufruits exposés sur un immeuble sont bien adaptés aux périodes de grèvement de l'immeuble en question.
+	 */
+	@Test
+	public void testImmeubleAvecHistoriqueServitude() throws Exception {
+
+		final RegDate dateAchat = RegDate.get(2003, 4, 2);
+
+		// données core
+		final SituationRF situation = newSituationRF(dateAchat, BUSSIGNY, 12280, 13);
+
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setNom("Ramon");
+
+		final ProprieteParEtageRF immeuble0 = new ProprieteParEtageRF();
+		immeuble0.setId(48383L);
+		immeuble0.setIdRF("7d7e7a7f7");
+		immeuble0.setEgrid("rhoooo");
+		immeuble0.setUrlIntercapi(null);
+		immeuble0.addSituation(situation);
+		immeuble0.setSurfacesTotales(Collections.emptySet());
+		immeuble0.setSurfacesAuSol(Collections.emptySet());
+		immeuble0.setEstimations(Collections.emptySet());
+		immeuble0.setImplantations(Collections.emptySet());
+		immeuble0.setDateRadiation(null);
+		immeuble0.addQuotePart(new QuotePartRF(null, null, new Fraction(1, 23)));
+		immeuble0.setDroitsPropriete(new HashSet<>());
+		immeuble0.setChargesServitudes(new HashSet<>());
+
+		final ProprieteParEtageRF immeuble1 = new ProprieteParEtageRF();
+		immeuble1.setId(1212L);
+		immeuble1.setIdRF("8383uz2");
+		immeuble1.setEgrid("baaah");
+		immeuble1.setUrlIntercapi(null);
+		immeuble1.addSituation(situation);
+		immeuble1.setSurfacesTotales(Collections.emptySet());
+		immeuble1.setSurfacesAuSol(Collections.emptySet());
+		immeuble1.setEstimations(Collections.emptySet());
+		immeuble1.setImplantations(Collections.emptySet());
+		immeuble1.setDateRadiation(null);
+		immeuble1.addQuotePart(new QuotePartRF(null, null, new Fraction(1, 23)));
+		immeuble1.setDroitsPropriete(new HashSet<>());
+		immeuble1.setChargesServitudes(new HashSet<>());
+
+		// la servitude commence en 2004 avec deux immeubles et le second est radié en 2006
+		final RegDate dateDebutServitude = RegDate.get(2004, 3, 2);
+		final RegDate dateRadiation = RegDate.get(2006, 2, 23);
+
+		final UsufruitRF usufruit = newUsufruitRF(2323432L, null, dateDebutServitude, null, null, "Achat", null, "389389", "1",
+		                                          new IdentifiantAffaireRF(92, 2004, null, null),
+		                                          new IdentifiantDroitRF(92, 2004, 1),
+		                                          Collections.singletonList(pp),
+		                                          Collections.singletonList(immeuble0));
+		final ChargeServitudeRF charge = new ChargeServitudeRF(dateDebutServitude, dateRadiation, usufruit, immeuble1);
+		usufruit.addCharge(charge);
+		immeuble1.addChargeServitude(charge);
+
+		// l'immeuble 0
+		final CondominiumOwnership condo0 = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(immeuble0, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
+		assertEquals(48383L, condo0.getId());
+		{
+			final List<LandRight> landRights = condo0.getLandRights();
+			assertEquals(1, landRights.size());
+			final UsufructRight landRight = (UsufructRight) landRights.get(0);
+			assertNotNull(landRight);
+			assertEquals(dateDebutServitude, DataHelper.xmlToCore(landRight.getDateFrom()));
+			assertNull(landRight.getDateTo());                                                  // <-- l'immeuble 0 est toujours dans la servitude
+		}
+
+		// l'immeuble 1
+		final CondominiumOwnership condo1 = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(immeuble1, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
+		assertEquals(1212L, condo1.getId());
+		{
+			final List<LandRight> landRights = condo1.getLandRights();
+			assertEquals(1, landRights.size());
+			final UsufructRight landRight = (UsufructRight) landRights.get(0);
+			assertNotNull(landRight);
+			assertEquals(dateDebutServitude, DataHelper.xmlToCore(landRight.getDateFrom()));
+			assertEquals(dateRadiation, DataHelper.xmlToCore(landRight.getDateTo()));    // <-- l'immeuble 1 est n'est plus dans servitude à partir de sa date de radiation
+		}
 	}
 
 	private static void assertShare(int numerator, int denominator, Share share) {
@@ -691,4 +779,30 @@ public class ImmovablePropertyBuilderTest {
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebut, motifDebut, null));
 		return droit;
 	}
+
+	protected UsufruitRF newUsufruitRF(Long id, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF,
+	                                   String versionIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF, List<? extends TiersRF> tiersRF, List<? extends ImmeubleRF> immeubles) {
+		final UsufruitRF usufruit = new UsufruitRF();
+		usufruit.setId(id);
+		usufruit.setCharges(new HashSet<>());
+		usufruit.setBenefices(new HashSet<>());
+		immeubles.forEach(immeuble -> usufruit.addCharge(new ChargeServitudeRF(dateDebutMetier, dateFinMetier, usufruit, immeuble)));
+		tiersRF.forEach(tiers -> usufruit.addBenefice(new BeneficeServitudeRF(dateDebutMetier, dateFinMetier, usufruit, tiers)));
+		usufruit.setDateDebut(dateDebut);
+		usufruit.setDateDebutMetier(dateDebutMetier);
+		usufruit.setDateFin(dateFin);
+		usufruit.setDateFinMetier(dateFinMetier);
+		usufruit.setMotifDebut(motifDebut);
+		usufruit.setMotifFin(motifFin);
+		usufruit.setMasterIdRF(masterIdRF);
+		usufruit.setVersionIdRF(versionIdRF);
+		usufruit.setNumeroAffaire(numeroAffaire);
+		usufruit.setIdentifiantDroit(identifiantDroitRF);
+
+		usufruit.getCharges().forEach(lien -> lien.getImmeuble().addChargeServitude(lien));
+		usufruit.getBenefices().forEach(lien -> lien.getAyantDroit().addBeneficeServitude(lien));
+
+		return usufruit;
+	}
+
 }

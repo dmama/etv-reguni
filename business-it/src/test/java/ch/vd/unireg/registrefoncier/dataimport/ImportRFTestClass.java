@@ -22,7 +22,9 @@ import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.unireg.evenement.registrefoncier.TypeImportRF;
 import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
@@ -286,8 +288,8 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	                                       IdentifiantDroitRF identifiantDroit,
 	                                       IdentifiantAffaireRF numeroAffaire) {
 		final UsufruitRF usu = new UsufruitRF();
-		immeubles.forEach(usu::addImmeuble);
-		personnes.forEach(usu::addAyantDroit);
+		immeubles.forEach(i -> usu.addCharge(new ChargeServitudeRF(dateDebutMetier, dateFinMetier, usu, i)));
+		personnes.forEach(a -> usu.addBenefice(new BeneficeServitudeRF(dateDebutMetier, dateFinMetier, usu, a)));
 		usu.setDateDebut(dateDebut);
 		usu.setDateDebutMetier(dateDebutMetier);
 		usu.setDateFin(dateFin);

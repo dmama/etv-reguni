@@ -9,19 +9,9 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
-import ch.vd.unireg.xml.party.landregistry.v1.EasementRight;
-import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
-import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
-import ch.vd.unireg.xml.party.landregistry.v1.Share;
-import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.DroitHabitationRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
@@ -42,6 +32,20 @@ import ch.vd.unireg.registrefoncier.UsufruitRF;
 import ch.vd.unireg.registrefoncier.UsufruitVirtuelRF;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementEncumbrance;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementMembership;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementRight;
+import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
+import ch.vd.unireg.xml.party.landregistry.v1.Share;
+import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 
 @SuppressWarnings("Duplicates")
 public abstract class LandRightBuilder {
@@ -138,9 +142,22 @@ public abstract class LandRightBuilder {
 	}
 
 	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+
+		final List<EasementMembership> memberships = usufruitRF.getBenefices().stream()
+				.sorted(new DateRangeComparator<>())
+				.map(bene -> MembershipBuilder.buildEasementMembership(bene, ctbIdProvider))
+				.collect(Collectors.toList());
+		final List<EasementEncumbrance> encumbrances = usufruitRF.getCharges().stream()
+				.sorted(new DateRangeComparator<>())
+				.map(MembershipBuilder::buildEasementEncumbrance)
+				.collect(Collectors.toList());
+
 		final UsufructRight right = new UsufructRight();
 		right.setId(usufruitRF.getId());
+		right.getMemberships().addAll(memberships);
+		right.getEncumbrances().addAll(encumbrances);
 		fillEasementRight(usufruitRF, right, ctbIdProvider, rightHolderComparator);
+
 		return right;
 	}
 
@@ -156,9 +173,22 @@ public abstract class LandRightBuilder {
 	}
 
 	public static HousingRight newHousingRight(@NotNull DroitHabitationRF droitHabitationRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+
+		final List<EasementMembership> memberships = droitHabitationRF.getBenefices().stream()
+				.sorted(new DateRangeComparator<>())
+				.map(bene -> MembershipBuilder.buildEasementMembership(bene, ctbIdProvider))
+				.collect(Collectors.toList());
+		final List<EasementEncumbrance> encumbrances = droitHabitationRF.getCharges().stream()
+				.sorted(new DateRangeComparator<>())
+				.map(MembershipBuilder::buildEasementEncumbrance)
+				.collect(Collectors.toList());
+
 		final HousingRight right = new HousingRight();
 		right.setId(droitHabitationRF.getId());
+		right.getMemberships().addAll(memberships);
+		right.getEncumbrances().addAll(encumbrances);
 		fillEasementRight(droitHabitationRF, right, ctbIdProvider, rightHolderComparator);
+
 		return right;
 	}
 
@@ -190,15 +220,16 @@ public abstract class LandRightBuilder {
 		fillLandRight(servitude, right);
 		right.setCaseIdentifier(getCaseIdentifier(servitude.getNumeroAffaire()));
 
-		final List<RightHolder> rightHolders = servitude.getAyantDroits().stream()
-				.map(r -> RightHolderBuilder.getRightHolder(r, ctbIdProvider))
+		final List<RightHolder> rightHolders = servitude.getBenefices().stream()
+				.map(lien -> RightHolderBuilder.getRightHolder(lien.getAyantDroit(), ctbIdProvider))
 				.sorted(rightHolderComparator)
 				.collect(Collectors.toList());
 		right.getRightHolders().addAll(rightHolders);
 
-		final List<Long> immovablePropIds = servitude.getImmeubles().stream()
-				.sorted(Comparator.comparing(ImmeubleRF::getId))
+		final List<Long> immovablePropIds = servitude.getCharges().stream()
+				.map(ChargeServitudeRF::getImmeuble)
 				.map(ImmeubleRF::getId)
+				.sorted(Comparator.naturalOrder())
 				.collect(Collectors.toList());
 		right.getImmovablePropertyIds().addAll(immovablePropIds);
 

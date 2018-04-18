@@ -298,7 +298,9 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	List<DroitRF> getDroitsForTiersRF(AyantDroitRF ayantDroitRF, boolean prefetchSituationsImmeuble, boolean includeVirtualTransitive) {
 
 		// on charge les droits réels
-		final List<DroitRF> droits = droitRFDAO.findForAyantDroit(ayantDroitRF.getId(), prefetchSituationsImmeuble);
+		final List<DroitRF> droits = droitRFDAO.findForAyantDroit(ayantDroitRF.getId(), prefetchSituationsImmeuble).stream()
+				.map(d -> adapteServitude(d, ayantDroitRF))
+				.collect(Collectors.toList());
 
 		if (includeVirtualTransitive) {
 			// on parcourt les droits entre immeubles pour déterminer la liste des droits virtuels
@@ -322,6 +324,30 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		}
 
 		return droits;
+	}
+
+	/**
+	 * [IMM-795] Adapte la validité des servitudes à la plage de validité de l'appartenance de l'ayant-droit dans la servitude. Les droits de propriétés ne sont pas touchés.
+	 *
+	 * @param droit un droit (de propritété ou servitude)
+	 * @return le même droit de propriété ou une servitude dont les dates de validité ont été adaptées
+	 */
+	private static DroitRF adapteServitude(@NotNull DroitRF droit, @NotNull AyantDroitRF ayantDroit) {
+		if (droit instanceof ServitudeRF) {
+			final ServitudeRF servitude = (ServitudeRF) droit;
+			// on recherche le benefice de l'ayant-droit courant
+			final BeneficeServitudeRF benefice = servitude.getBenefices().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(bene -> Objects.equals(bene.getAyantDroit().getId(), ayantDroit.getId()))
+					.findFirst()
+					.orElseThrow(() -> new IllegalArgumentException("L'ayant-droit n°" + ayantDroit.getId() + " n'est pas un bénéficiaire de la servitude n°" + droit.getId()));
+
+			return ServitudeHelper.adapteServitude(servitude, benefice);
+		}
+		else {
+			// pas une servitude, on ne fait rien
+			return droit;
+		}
 	}
 
 	@NotNull
@@ -432,11 +458,30 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		final List<DroitRF> chemin = new ArrayList<>();
 		chemin.add(droitReel);
 
-		final Set<ImmeubleRF> immeubles = droitReel.getImmeubles();
-		return immeubles.stream()
-				.map(i -> determineDroitsVirtuels(ayantDroit, droitReel, i, chemin, RegistreFoncierServiceImpl::newUsufruitRFVirtuel))
+		// [SIFISC-28067] une servitude est liée à un ou plusieurs ayants-droits et un ou plusieurs immeubles.
+		// Ces liens sont historisés : ils possèdent des dates de début et de fin qui déterminent une plage de
+		// validité. Pour calculer les servitudes virtuelles du point de vue d'un ayant-droit, il faut donc
+		// traverser les liens ayantDroit -> servitudes, puis servitudes -> immeubles et tenir compte de leurs
+		// périodes de validité.
+		final List<ServitudeRF> usufruitsCombines = ServitudeHelper.combinate(droitReel,
+		                                                                      // on ne s'intèresse qu'à l'ayant-droit courant
+	                                                                          lien -> Objects.equals(lien.getAyantDroit().getId(), ayantDroit.getId()),
+		                                                                      null);
+
+		// à ce niveau-là, on a une liste d'usufruits adaptés qui pointent chacun vers un ayant-droit et un immeuble.
+		return usufruitsCombines.stream()
+				.map(i -> determineDroitsVirtuels(ayantDroit, i, getImmeubleUnique(i), chemin, RegistreFoncierServiceImpl::newUsufruitRFVirtuel))
 				.flatMap(Collection::stream)
 				.collect(Collectors.toList());
+	}
+
+	@NotNull
+	private static ImmeubleRF getImmeubleUnique(@NotNull ServitudeRF usufruit) {
+		final Set<ChargeServitudeRF> charges = usufruit.getCharges();
+		if (charges.size() != 1) {
+			throw new IllegalArgumentException("Il y a " + charges.size() + " immeubles dans l'usufruit.");
+		}
+		return charges.iterator().next().getImmeuble();
 	}
 
 	private interface DroitVirtuelSupplier {

@@ -12,20 +12,10 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.xml.party.landregistry.v1.AcquisitionReason;
-import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
-import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
-import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
-import ch.vd.unireg.xml.party.landregistry.v1.Share;
-import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.unireg.registrefoncier.DroitHabitationRF;
@@ -53,6 +43,20 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.party.landregistry.v1.AcquisitionReason;
+import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementEncumbrance;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementMembership;
+import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
+import ch.vd.unireg.xml.party.landregistry.v1.Share;
+import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -454,26 +458,31 @@ public class LandRightBuilderTest {
 		immeuble1.setIdRF("a8388e8e83");
 		immeuble1.setId(123456L);
 		immeuble1.setDroitsPropriete(Collections.emptySet());
-		immeuble1.setServitudes(Collections.emptySet());
+		immeuble1.setChargesServitudes(Collections.emptySet());
 
 		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("a26271e8e2");
 		immeuble2.setId(4783711L);
 		immeuble2.setDroitsPropriete(Collections.emptySet());
-		immeuble2.setServitudes(Collections.emptySet());
+		immeuble2.setChargesServitudes(Collections.emptySet());
+
+		final RegDate dateDebutUsufruit = RegDate.get(2016, 9, 22);
+		final RegDate dateFinUsufruit = RegDate.get(2017, 4, 14);
+		final RegDate dateChangementBeneficiaire = RegDate.get(2017, 1, 8);
+		final RegDate dateChangementImmeuble = RegDate.get(2016, 11, 10);
 
 		final UsufruitRF usufruit = new UsufruitRF();
 		usufruit.setId(2332L);
 		usufruit.setDateDebut(RegDate.get(2016, 11, 3));
 		usufruit.setDateFin(RegDate.get(2017, 9, 22));
 		usufruit.setMotifDebut("Convention");
-		usufruit.setDateDebutMetier(RegDate.get(2016, 9, 22));
-		usufruit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		usufruit.setDateDebutMetier(dateDebutUsufruit);
+		usufruit.setDateFinMetier(dateFinUsufruit);
 		usufruit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
-		usufruit.addAyantDroit(ppRF1);
-		usufruit.addAyantDroit(ppRF2);
-		usufruit.addImmeuble(immeuble1);
-		usufruit.addImmeuble(immeuble2);
+		usufruit.addBenefice(new BeneficeServitudeRF(dateDebutUsufruit, dateChangementBeneficiaire, usufruit, ppRF1));
+		usufruit.addBenefice(new BeneficeServitudeRF(dateChangementBeneficiaire.getOneDayAfter(), dateFinUsufruit, usufruit, ppRF2));
+		usufruit.addCharge(new ChargeServitudeRF(dateDebutUsufruit, dateChangementImmeuble, usufruit, immeuble1));
+		usufruit.addCharge(new ChargeServitudeRF(dateChangementImmeuble.getOneDayAfter(), dateFinUsufruit, usufruit, immeuble2));
 
 		final LandRight landRight = LandRightBuilder.newLandRight(usufruit, AyantDroitRF::getId, rightHolderComparator);
 		assertNotNull(landRight);
@@ -482,8 +491,8 @@ public class LandRightBuilderTest {
 		final UsufructRight usufructRight = (UsufructRight) landRight;
 		assertNotNull(usufructRight);
 		assertEquals(2332L, usufructRight.getId());
-		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(usufructRight.getDateFrom()));
-		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(usufructRight.getDateTo()));
+		assertEquals(dateDebutUsufruit, DataHelper.xmlToCore(usufructRight.getDateFrom()));
+		assertEquals(dateFinUsufruit, DataHelper.xmlToCore(usufructRight.getDateTo()));
 		assertEquals("Convention", usufructRight.getStartReason());
 		assertNull(usufructRight.getEndReason());
 		assertCaseIdentifier(21, "2016/322/3", usufructRight.getCaseIdentifier());
@@ -501,6 +510,34 @@ public class LandRightBuilderTest {
 		// pour des raisons de compatibilité ascendante, ces deux propriétés sont encore renseignées
 		assertEquals(123456L, usufructRight.getImmovablePropertyId());
 		assertEquals(Integer.valueOf((int) ctbId2), usufructRight.getRightHolder().getTaxPayerNumber());
+
+		// [IMM-795] l'historique des membres
+		final List<EasementMembership> memberships = usufructRight.getMemberships();
+		assertEquals(2, memberships.size());
+
+		final EasementMembership membership0 = memberships.get(0);
+		assertEquals(dateDebutUsufruit, DataHelper.xmlToCore(membership0.getDateFrom()));
+		assertEquals(dateChangementBeneficiaire, DataHelper.xmlToCore(membership0.getDateTo()));
+		assertEquals(Integer.valueOf((int) ctbId1), membership0.getRightHolder().getTaxPayerNumber());
+
+		final EasementMembership membership1 = memberships.get(1);
+		assertEquals(dateChangementBeneficiaire.getOneDayAfter(), DataHelper.xmlToCore(membership1.getDateFrom()));
+		assertEquals(dateFinUsufruit, DataHelper.xmlToCore(membership1.getDateTo()));
+		assertEquals(Integer.valueOf((int) ctbId2), membership1.getRightHolder().getTaxPayerNumber());
+
+		// [IMM-795] l'historique des immeubles
+		final List<EasementEncumbrance> encumbrances = usufructRight.getEncumbrances();
+		assertEquals(2, encumbrances.size());
+
+		final EasementEncumbrance encumbrance0 = encumbrances.get(0);
+		assertEquals(dateDebutUsufruit, DataHelper.xmlToCore(encumbrance0.getDateFrom()));
+		assertEquals(dateChangementImmeuble, DataHelper.xmlToCore(encumbrance0.getDateTo()));
+		assertEquals(123456L, encumbrance0.getImmovablePropertyId());
+
+		final EasementEncumbrance encumbrance1 = encumbrances.get(1);
+		assertEquals(dateChangementImmeuble.getOneDayAfter(), DataHelper.xmlToCore(encumbrance1.getDateFrom()));
+		assertEquals(dateFinUsufruit, DataHelper.xmlToCore(encumbrance1.getDateTo()));
+		assertEquals(4783711L, encumbrance1.getImmovablePropertyId());
 	}
 
 	/**
@@ -513,13 +550,13 @@ public class LandRightBuilderTest {
 		immeuble1.setIdRF("a8388e8e83");
 		immeuble1.setId(123456L);
 		immeuble1.setDroitsPropriete(Collections.emptySet());
-		immeuble1.setServitudes(Collections.emptySet());
+		immeuble1.setChargesServitudes(Collections.emptySet());
 
 		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("a26271e8e2");
 		immeuble2.setId(4783711L);
 		immeuble2.setDroitsPropriete(Collections.emptySet());
-		immeuble2.setServitudes(Collections.emptySet());
+		immeuble2.setChargesServitudes(Collections.emptySet());
 
 		final UsufruitRF usufruit = new UsufruitRF();
 		usufruit.setId(2332L);
@@ -529,9 +566,9 @@ public class LandRightBuilderTest {
 		usufruit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		usufruit.setDateFinMetier(RegDate.get(2017, 4, 14));
 		usufruit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
-		usufruit.setAyantDroits(Collections.emptySet());
-		usufruit.addImmeuble(immeuble1);
-		usufruit.addImmeuble(immeuble2);
+		usufruit.setBenefices(Collections.emptySet());
+		usufruit.addCharge(new ChargeServitudeRF(null, null, usufruit, immeuble1));
+		usufruit.addCharge(new ChargeServitudeRF(null, null, usufruit, immeuble2));
 
 		final LandRight landRight = LandRightBuilder.newLandRight(usufruit, AyantDroitRF::getId, rightHolderComparator);
 		assertNotNull(landRight);
@@ -602,13 +639,13 @@ public class LandRightBuilderTest {
 		immeuble0.setIdRF("a8388e8e83");
 		immeuble0.setId(123456L);
 		immeuble0.setDroitsPropriete(Collections.emptySet());
-		immeuble0.setServitudes(Collections.emptySet());
+		immeuble0.setChargesServitudes(Collections.emptySet());
 
 		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("a26271e8e2");
 		immeuble1.setId(4783711L);
 		immeuble1.setDroitsPropriete(Collections.emptySet());
-		immeuble1.setServitudes(Collections.emptySet());
+		immeuble1.setChargesServitudes(Collections.emptySet());
 
 		final ImmeubleBeneficiaireRF beneficiaire0 = new ImmeubleBeneficiaireRF();
 		beneficiaire0.setIdRF(immeuble0.getIdRF());
@@ -622,10 +659,10 @@ public class LandRightBuilderTest {
 		usufruit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		usufruit.setDateFinMetier(RegDate.get(2017, 4, 14));
 		usufruit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
-		usufruit.addAyantDroit(ppRF1);
-		usufruit.addAyantDroit(ppRF2);
-		usufruit.addImmeuble(immeuble0);
-		usufruit.addImmeuble(immeuble1);
+		usufruit.addBenefice(new BeneficeServitudeRF(null, null, usufruit, ppRF1));
+		usufruit.addBenefice(new BeneficeServitudeRF(null, null, usufruit, ppRF2));
+		usufruit.addCharge(new ChargeServitudeRF(null, null, usufruit, immeuble0));
+		usufruit.addCharge(new ChargeServitudeRF(null, null, usufruit, immeuble1));
 
 		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
 		droit1.setId(23321L);
@@ -724,13 +761,13 @@ public class LandRightBuilderTest {
 		immeuble1.setIdRF("a8388e8e83");
 		immeuble1.setId(123456L);
 		immeuble1.setDroitsPropriete(Collections.emptySet());
-		immeuble1.setServitudes(Collections.emptySet());
+		immeuble1.setChargesServitudes(Collections.emptySet());
 
 		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("a26271e8e2");
 		immeuble2.setId(4783711L);
 		immeuble2.setDroitsPropriete(Collections.emptySet());
-		immeuble2.setServitudes(Collections.emptySet());
+		immeuble2.setChargesServitudes(Collections.emptySet());
 
 		final DroitHabitationRF droitHabitation = new DroitHabitationRF();
 		droitHabitation.setId(2332L);
@@ -740,10 +777,10 @@ public class LandRightBuilderTest {
 		droitHabitation.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droitHabitation.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droitHabitation.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
-		droitHabitation.addAyantDroit(ppRF1);
-		droitHabitation.addAyantDroit(ppRF2);
-		droitHabitation.addImmeuble(immeuble1);
-		droitHabitation.addImmeuble(immeuble2);
+		droitHabitation.addBenefice(new BeneficeServitudeRF(null, null, droitHabitation, ppRF1));
+		droitHabitation.addBenefice(new BeneficeServitudeRF(null, null, droitHabitation, ppRF2));
+		droitHabitation.addCharge(new ChargeServitudeRF(null, null, droitHabitation, immeuble1));
+		droitHabitation.addCharge(new ChargeServitudeRF(null, null, droitHabitation, immeuble2));
 
 		final LandRight landRight = LandRightBuilder.newLandRight(droitHabitation, AyantDroitRF::getId, this.rightHolderComparator);
 		assertNotNull(landRight);

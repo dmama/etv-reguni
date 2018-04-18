@@ -1157,19 +1157,19 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals(1, droits.size());
 
 			final UsufruitRF droit0 = (UsufruitRF) droits.get(0);
-			Set<AyantDroitRF> ayantDroits0 = droit0.getAyantDroits();
-			assertEquals(1, ayantDroits0.size());
-			assertEquals(tiersId, ayantDroits0.iterator().next().getId());
+			final Set<BeneficeServitudeRF> benefices = droit0.getBenefices();
+			assertEquals(1, benefices.size());
+			assertEquals(tiersId, benefices.iterator().next().getAyantDroit().getId());
 			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
 			assertEquals("Convention", droit0.getMotifDebut());
 			assertNull(droit0.getMotifFin());
 			assertEquals("783626161", droit0.getMasterIdRF());
 
-			final List<ImmeubleRF> immeubles = new ArrayList<>(droit0.getImmeubles());
-			assertEquals(2, immeubles.size());
-			immeubles.sort(Comparator.comparing(ImmeubleRF::getIdRF));
-			assertEquals("01faeee", immeubles.get(0).getIdRF());
-			assertEquals("02faeee", immeubles.get(1).getIdRF());
+			final List<ChargeServitudeRF> charges = new ArrayList<>(droit0.getCharges());
+			assertEquals(2, charges.size());
+			charges.sort(Comparator.comparing(lien -> lien.getImmeuble().getIdRF()));
+			assertEquals("01faeee", charges.get(0).getImmeuble().getIdRF());
+			assertEquals("02faeee", charges.get(1).getImmeuble().getIdRF());
 
 			return null;
 		});
@@ -1254,20 +1254,19 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			droits.sort(new DroitRFRangeMetierComparator());
 
 			final UsufruitRF droit0 = (UsufruitRF) droits.get(0);
-			final Set<AyantDroitRF> ayantDroits0 = droit0.getAyantDroits();
-			assertEquals(1, ayantDroits0.size());
-			assertEquals(ids.tiers, ayantDroits0.iterator().next().getId());
+			final Set<BeneficeServitudeRF> benefice0 = droit0.getBenefices();
+			assertEquals(1, benefice0.size());
+			assertEquals(ids.tiers, benefice0.iterator().next().getAyantDroit().getId());
 			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
 			assertEquals("Convention", droit0.getMotifDebut());
 			assertNull(droit0.getMotifFin());
 			assertEquals("783626161", droit0.getMasterIdRF());
 
-			final List<ImmeubleRF> immeubles1 = new ArrayList<>(droit0.getImmeubles());
-			assertEquals(2, immeubles1.size());
-			immeubles1.sort(Comparator.comparing(ImmeubleRF::getIdRF));
-			assertEquals("01faeee", immeubles1.get(0).getIdRF());
-			assertEquals("02faeee", immeubles1.get(1).getIdRF());
-
+			final List<ChargeServitudeRF> charges0 = new ArrayList<>(droit0.getCharges());
+			assertEquals(2, charges0.size());
+			charges0.sort(Comparator.comparing(lien -> lien.getImmeuble().getIdRF()));
+			assertEquals("01faeee", charges0.get(0).getImmeuble().getIdRF());
+			assertEquals("02faeee", charges0.get(1).getImmeuble().getIdRF());
 
 			final UsufruitVirtuelRF droit1 = (UsufruitVirtuelRF) droits.get(1);
 			final AyantDroitRF ayantDroit0 = droit1.getAyantDroit();
@@ -1378,19 +1377,19 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 			// usufruit réel
 			final UsufruitRF droit0 = (UsufruitRF) droits.get(0);
-			final Set<AyantDroitRF> ayantDroits2 = droit0.getAyantDroits();
-			assertEquals(1, ayantDroits2.size());
-			assertEquals(ids.tiers, ayantDroits2.iterator().next().getId());
+			final Set<BeneficeServitudeRF> benefice0 = droit0.getBenefices();
+			assertEquals(1, benefice0.size());
+			assertEquals(ids.tiers, benefice0.iterator().next().getAyantDroit().getId());
 			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
 			assertEquals("Convention", droit0.getMotifDebut());
 			assertNull(droit0.getMotifFin());
 			assertEquals("783626161", droit0.getMasterIdRF());
 
-			final List<ImmeubleRF> immeubles1 = new ArrayList<>(droit0.getImmeubles());
-			assertEquals(2, immeubles1.size());
-			immeubles1.sort(Comparator.comparing(ImmeubleRF::getIdRF));
-			assertEquals("01faeee", immeubles1.get(0).getIdRF());
-			assertEquals("02faeee", immeubles1.get(1).getIdRF());
+			final List<ChargeServitudeRF> charges0 = new ArrayList<>(droit0.getCharges());
+			assertEquals(2, charges0.size());
+			charges0.sort(Comparator.comparing(lien -> lien.getImmeuble().getIdRF()));
+			assertEquals("01faeee", charges0.get(0).getImmeuble().getIdRF());
+			assertEquals("02faeee", charges0.get(1).getImmeuble().getIdRF());
 
 			// usufruit virtuel (Tiers RF -> Immeuble 0 -> Immeuble 2)
 			final UsufruitVirtuelRF droit1 = (UsufruitVirtuelRF) droits.get(1);
@@ -3308,6 +3307,112 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		assertEquals(dateFin, regroupement.getDateFin());
 		assertEquals(communauteId, regroupement.getCommunaute().getId());
 		assertEquals(modeleId, regroupement.getModele().getId());
+	}
+
+	/**
+	 * [IMM-795] Ce test vérifie que la méthode getDroitsForCtb fonctionne dans le cas où un contribuable appartient à une servitude dont la période de validité est différente de la période de validité d'appartenance du contribuable à la servitude.
+	 */
+	@Test
+	public void testGetDroitsForCtbAvecHistoriqueServitude() throws Exception {
+
+		final long noIndividuCharles = 481548L;
+		final long noIndividuAdelaide = 347848L;
+
+		final RegDate dateNaissanceCharles = date(1970, 7, 2);
+		final RegDate dateDecesCharles = date(2006, 9, 3);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu charles = addIndividu(noIndividuCharles, dateNaissanceCharles, "Charles", "Widmer", Sexe.MASCULIN);
+				addAdresse(charles, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1980, 1, 1), null);
+				final MockIndividu adelaide = addIndividu(noIndividuAdelaide, date(1970, 7, 2), "Adelaide", "Widmer", Sexe.FEMININ);
+				addAdresse(adelaide, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1980, 1, 1), null);
+			}
+		});
+
+		class Ids {
+			Long charles;
+			Long adelaide;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place fiscale
+		doInNewTransaction(status -> {
+			final PersonnePhysique charles = tiersService.createNonHabitantFromIndividu(noIndividuCharles);
+			final PersonnePhysique adelaide = tiersService.createNonHabitantFromIndividu(noIndividuAdelaide);
+			ids.charles = charles.getId();
+			ids.adelaide = adelaide.getId();
+			return null;
+		});
+
+		// la servitude est valable depuis 2004 mais Charles décède en 2006
+		final RegDate dateDebutServitude = date(2004, 5, 23);
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// une servitude avec deux bénéficiaires et deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "some egrid", gland, 4298);
+
+			final PersonnePhysiqueRF charlesRF = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF adelaideRF = addPersonnePhysiqueRF("Adélaide", "Widmer", date(1970, 7, 2), "39r8f783", 3837287L, null);
+
+
+			final UsufruitRF usufruit = addUsufruitRF(null, dateDebutServitude, null, null, "Achat", null, "389389", "1",
+			                                          new IdentifiantAffaireRF(92, 2004, null, null),
+			                                          new IdentifiantDroitRF(92, 2004, 1),
+			                                          Collections.singletonList(adelaideRF),
+			                                          Arrays.asList(immeuble0, immeuble1));
+			usufruit.addBenefice(new BeneficeServitudeRF(dateDebutServitude, dateDecesCharles, usufruit, charlesRF));
+
+			final PersonnePhysique charles = (PersonnePhysique) tiersDAO.get(ids.charles);
+			addRapprochementRF(charles, charlesRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+
+			final PersonnePhysique adelaide = (PersonnePhysique) tiersDAO.get(ids.adelaide);
+			addRapprochementRF(adelaide, adelaideRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+
+			return null;
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) {
+
+				// on demande les droits de Charles
+				final PersonnePhysique charles = (PersonnePhysique) tiersDAO.get(ids.charles);
+				assertNotNull(charles);
+				{
+					final List<DroitRF> droits = serviceRF.getDroitsForCtb(charles, false, false);
+					assertEquals(1, droits.size());
+
+					final ServitudeRF serv = (ServitudeRF) droits.get(0);
+					assertEquals(dateDebutServitude, serv.getDateDebutMetier());
+					assertEquals(dateDecesCharles, serv.getDateFinMetier());        // <-- la validité de la servitude doit être adaptée à celle de la présence de Charles dans la servitude
+					assertEquals("Achat", serv.getMotifDebut());
+					assertNull(serv.getMotifFin());
+				}
+
+				// on demande les droits d'Adelaide
+				final PersonnePhysique adelaide = (PersonnePhysique) tiersDAO.get(ids.charles);
+				assertNotNull(adelaide);
+				{
+					final List<DroitRF> droits = serviceRF.getDroitsForCtb(adelaide, false, false);
+					assertEquals(1, droits.size());
+
+					final ServitudeRF serv = (ServitudeRF) droits.get(0);
+					assertEquals(dateDebutServitude, serv.getDateDebutMetier());
+					assertEquals(dateDecesCharles, serv.getDateFinMetier());        // <-- la validité de la servitude n'est pas adaptée (c'est-à-dire qu'elle n'a pas besoin d'être adaptée)
+					assertEquals("Achat", serv.getMotifDebut());
+					assertNull(serv.getMotifFin());
+				}
+			}
+		});
 	}
 
 	private ModeleCommunauteRF loadModelInTx(Long idPP1, Long idPP2) {

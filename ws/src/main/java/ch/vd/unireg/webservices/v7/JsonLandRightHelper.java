@@ -64,7 +64,7 @@ public abstract class JsonLandRightHelper {
 		private JsonUsufructRight(UsufructRight source) {
 			super(source.getDateFrom(), source.getDateTo(), source.getStartReason(), source.getEndReason(), source.getCaseIdentifier(), source.getRightHolder(),
 			      source.getImmovablePropertyId(), source.getRightHolders(), source.getImmovablePropertyIds(), source.getPadding(), source.getId(),
-			      source.getDateInheritedTo(), source.getPadding2(), source.getAny());
+			      source.getDateInheritedTo(), source.getPadding2(), source.getMemberships(), source.getEncumbrances(), source.getPadding3(), source.getAny());
 		}
 
 		@Override
@@ -88,7 +88,7 @@ public abstract class JsonLandRightHelper {
 		private JsonHousingRight(HousingRight source) {
 			super(source.getDateFrom(), source.getDateTo(), source.getStartReason(), source.getEndReason(), source.getCaseIdentifier(), source.getRightHolder(),
 			      source.getImmovablePropertyId(), source.getRightHolders(), source.getImmovablePropertyIds(), source.getPadding(), source.getId(),
-			      source.getDateInheritedTo(), source.getPadding2(), source.getAny());
+			      source.getDateInheritedTo(), source.getPadding2(), source.getMemberships(), source.getEncumbrances(), source.getPadding3(), source.getAny());
 		}
 
 		@Override
