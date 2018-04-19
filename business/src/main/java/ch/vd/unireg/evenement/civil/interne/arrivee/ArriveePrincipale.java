@@ -486,7 +486,7 @@ public class ArriveePrincipale extends Arrivee {
 		final ModeImposition modeImposition;
 		final RattrapageDepartHSInconnu rattrapageDepartHSInconnu;
 		if (forPrincipal == null) {
-			if (members.stream().anyMatch(m -> isSuisseOuPermisC(m.getNumeroIndividu(), dateArriveeEffective))) {
+			if (anySuisseOuPermis(members, dateArriveeEffective)) {
 				// un membre au moins est suisse ou titulaire d'un permis C => ordinaire
 				modeImposition = ModeImposition.ORDINAIRE;
 			}
@@ -501,7 +501,7 @@ public class ArriveePrincipale extends Arrivee {
 		}
 		else {
 			if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-				if (members.stream().anyMatch(m -> isSuisseOuPermisC(m.getNumeroIndividu(), dateArriveeEffective))) {
+				if (anySuisseOuPermis(members, dateArriveeEffective)) {
 					modeImposition = ModeImposition.ORDINAIRE;
 				}
 				else {
@@ -569,6 +569,13 @@ public class ArriveePrincipale extends Arrivee {
 		}
 
 		return new ModeImpositionDetermination(modeImposition, rattrapageDepartHSInconnu);
+	}
+
+	private boolean anySuisseOuPermis(@NotNull List<PersonnePhysique> members, @NotNull RegDate dateValeur) {
+		return members.stream()
+				.map(PersonnePhysique::getNumeroIndividu)
+				.filter(Objects::nonNull)                   // [SIFISC-28817] tous les membres ne possèdent pas forcément un numéro d'individu
+				.anyMatch(numero -> isSuisseOuPermisC(numero, dateValeur));
 	}
 
 	private boolean isSuisseOuPermisC(long numeroIndividu, RegDate dateEvenement) {

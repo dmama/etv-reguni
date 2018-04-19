@@ -1431,6 +1431,104 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		}
 	}
 
+	/**
+	 * [SIFISC-28817] Ce test vérifie que Unireg ne crashe pas sur le traitement d'un événement d'arrivée avec les conditions suivantes :
+	 * <ul>
+	 * <li>un couple de non-habitants connus d'Unireg</li>
+	 * <li>le principal est un ancien habitant, il possède donc un numéro d'individu</li>
+	 * <li>le conjoint est un non-habitant, il ne possède pas de numéro d'individu</li>
+	 * <li>le principal n'est pas suisse</li>
+	 * <li>le principal arrive depuis HC/HS dans le canton de Vaud</li>
+	 * </ul>
+	 */
+	@Test//(timeout = 10000L)
+	public void testArriveeHCSurCoupleNonHabitants() throws Exception {
+
+		try {
+			final long noIndividuIgnacio = 126673246L;
+			final long noIndividuUrsule = 126672111L;
+			final RegDate dateNaissanceIgnacio = date(1956, 4, 23);
+			final RegDate dateNaissanceUrsule = date(1956, 11, 7);
+			final RegDate dateAchat = date(2010, 1, 15);
+			final RegDate dateMariage = date(2000, 3, 2);
+			final RegDate dateArrivee = date(2011, 10, 31);
+
+			setWantIndexationTiers(true);
+
+			// Les deux membres arrivent sur Vaud
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ignacio = addIndividu(noIndividuIgnacio, dateNaissanceIgnacio, "Dubois", "Ignacio", true);
+					{
+						final MockAdresse adresse = addAdresse(ignacio, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+						adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+						addNationalite(ignacio, MockPays.France, dateNaissanceIgnacio, null);
+					}
+
+					final MockIndividu ursule = addIndividu(noIndividuUrsule, dateNaissanceUrsule, "Dubois", "Ursule", false);
+					{
+						final MockAdresse adresse = addAdresse(ursule, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+						adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+						addNationalite(ursule, MockPays.Suisse, dateNaissanceUrsule, null);
+					}
+					marieIndividus(ignacio, ursule, dateMariage);
+				}
+			});
+
+			// Mise en place du fiscal : un couple de non-habitants dont le principal est connu au civil
+			final long menageId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique ignacio = addNonHabitant("Ignacio", "Dubois", dateNaissanceIgnacio, Sexe.MASCULIN);
+				ignacio.setNumeroIndividu(noIndividuIgnacio);   // <-- Ignacio est un ancien habitant
+				final PersonnePhysique ursule = addNonHabitant("Ursule", "Dubois", dateNaissanceUrsule, Sexe.FEMININ);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ignacio, ursule, dateMariage, null);
+				final MenageCommun menage = ensemble.getMenage();
+				addForPrincipal(menage, dateAchat, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addForSecondaire(menage, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Vaulion.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return menage.getNumero();
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée d'Ignacio (Ursule est encore non-habitante)
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuIgnacio);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividuIgnacio);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final MenageCommun menage = (MenageCommun) tiersService.getTiers(menageId);
+				assertNotNull(menage);
+
+				// le for fiscal du ménage a été déplacé à Echallens
+				final ForFiscalPrincipal ffpMenage = menage.getForFiscalPrincipalAt(null);
+				assertNotNull(ffpMenage);
+				assertEquals(MotifFor.ARRIVEE_HC, ffpMenage.getMotifOuverture());
+				assertEquals(Integer.valueOf(MockCommune.Echallens.getNoOFS()), ffpMenage.getNumeroOfsAutoriteFiscale());
+				assertNull(ffpMenage.getDateFin());
+
+				return null;
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
 	@Test
 	public void testArriveeNonHabitantNAVS13() throws Exception {
 
