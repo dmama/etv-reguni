@@ -4437,6 +4437,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			}
 		});
 
+
+
+
 		// réception des données de retour (en particulier, pas de mandataire)
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
 		final RegDate dateTraitement = RegDate.get();
@@ -7746,6 +7749,82 @@ public class RetourDIPMServiceTest extends BusinessTest {
 						.map(Mandat.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(Collections.emptyList(), mandats);
+			}
+		});
+	}
+
+	//SIFISC-28705 les liens mandataires  sur les APM ne doivent pas être touchées en cas de retour DI qui ne contiennent aucune infos sur les mandataires.
+	@Test
+	public void testAbsenceInformationMandatairePourAPM() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2010, 2, 1);
+		final RegDate dateQuittance = date(annee + 1, 5, 13);
+
+		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite Association qui va bien");
+				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, pf);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+				addEtatDeclarationRetournee(di, dateQuittance);
+
+
+				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
+				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
+
+				addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+
+				return entreprise.getNumero();
+			}
+		});
+
+
+
+
+		// réception des données de retour (en particulier, pas de mandataire)
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RegDate dateTraitement = RegDate.get();
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				final List<Mandat> mandats = new ArrayList<>();
+				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+					if (ret instanceof Mandat) {
+						mandats.add((Mandat) ret);
+					}
+				}
+				Assert.assertEquals(1, mandats.size());
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertNull(mandat.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 			}
 		});
 	}
