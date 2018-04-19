@@ -753,18 +753,27 @@ public class ArriveePrincipale extends Arrivee {
 
 		MotifFor motifOuverture = getMotifOuvertureFor();
 
-		if (ffpMenage != null && ffpMenage.getDateFin() == null && ffpMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+		final ModeImpositionDetermination determination = determineModeImposition(ensemble, dateEvenement, motifOuverture, ffpMenage);
+
+		if (isArriveeDecaleeConjointSurForVaudois(ffpMenage, dateEvenement)) {
 			// SIFISC-26927 dans le cas d'une arrivée HS/HC d'un conjoint sur un ménage qui possède déjà un for fiscal actif sur une commune vaudoise,
 			//              le motif d'ouverture doit être DEMENAGEMENT_VD (et non pas ARRIVEE_HS ou ARRIVEE_HC)
 			// SIFISC-28216 mais si l'arrivée correspond à la date d'ouverture du for existant, on considère qu'on traite l'événement d'arrivée *simultanée*
 			//              du conjoint et à ce moment-là, on veut garder le motif d'ouverture normal (ARRIVEE_HS ou ARRIVEE_HC) pour calculer correctement
 			//              le mode d'imposition
-			if (ffpMenage.getDateDebut() != dateEvenement) {
+			if (ffpMenage.getModeImposition() != determination.getModeImposition()) {
+				// [SIFISC-28216] si le mode d'imposition change, l'événement doit être traité manuellement
+				throw new EvenementCivilException(String.format("Le contribuable arrivant [%s] dans le ménage [%s] est suisse ou possède un permis C : " +
+						                                                "le mode d'imposition du for fiscal principal du ménage doit être changé en [" +
+						                                                determination.getModeImposition() + "] manuellement.",
+				                                                FormatNumeroHelper.numeroCTBToDisplay(arrivant.getNumero()),
+				                                                FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
+			}
+			else {
+				// autrement, c'est forcément un déménagement (ou alors, il n'y a pas de changement et le for fiscal ne sera pas modifié)
 				motifOuverture = MotifFor.DEMENAGEMENT_VD;
 			}
 		}
-
-		final ModeImpositionDetermination determination = determineModeImposition(ensemble, dateEvenement, motifOuverture, ffpMenage);
 
 		// détermination de la date d'ouverture
 		//noinspection UnnecessaryLocalVariable
@@ -788,6 +797,13 @@ public class ArriveePrincipale extends Arrivee {
 				updateForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, determination.getModeImposition());
 			}
 		}
+	}
+
+	private static boolean isArriveeDecaleeConjointSurForVaudois(@Nullable ForFiscalPrincipalPP ffpMenage, @NotNull RegDate dateEvenement) {
+		return ffpMenage != null &&                                                                     // il y a un for fiscal principal sur le ménage-commun
+				ffpMenage.getDateFin() == null &&                                                       // le for fiscal principal est ouvert
+				ffpMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&     // le for fiscal principal est sur une commune vaudoise
+				ffpMenage.getDateDebut() != dateEvenement;                                              // le conjoint n'arrive pas en même temps que le principal
 	}
 
 	/**
@@ -1104,30 +1120,34 @@ public class ArriveePrincipale extends Arrivee {
 		}
 
 		final MotifFor motifOuverture = getMotifOuvertureFor();
+		final ModeImposition modeImposition;
+		try {
+			modeImposition = determineModeImposition(coupleExistant, dateArrivee, motifOuverture, ffp).getModeImposition();
+		}
+		catch (EvenementCivilException e) {
+			// on n'arrive pas déterminer le mode d'imposition, inutile d'en faire plus
+			return false;
+		}
 
 		if (dateArrivee.isAfter(ffp.getDateDebut())) {
 			// arrivée du conjoint postérieure à la date d'ouverture du for fiscal du ménage
 
 			// l'événement sera considéré comme redondant si
-			//  - le for fiscal a été ouvert avec un motif arrivée HS/HC et
-			//  - qu'on est bien entrain de traiter une arrivée HS/HC
+			//   - le for fiscal a été ouvert avec un motif arrivée HS/HC et
+			//   - qu'on est bien entrain de traiter une arrivée HS/HC
+			//   - le for du couple a été ouvert sur la bonne commune
+			//   - le mode d'imposition est le bon (SIFISC-28216)
 			return (ffp.getMotifOuverture() == MotifFor.ARRIVEE_HC || ffp.getMotifOuverture() == MotifFor.ARRIVEE_HS) &&
-					(motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS);
+					(motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) &&
+					ffp.getNumeroOfsAutoriteFiscale() == nouvelleCommune.getNoOFS() &&
+					ffp.getModeImposition() == modeImposition &&
+					ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 		}
 		else if (dateArrivee.isBefore(ffp.getDateDebut())) {
 			throw new ProgrammingException("La date d'arrivée du conjoint est antérieure à la date d'ouverture du for fiscal principal du ménage-commun. On ne devrait pas arriver là dans ce cas.");
 		}
 		else {
 			// arrivée du conjoint à la même date que l'ouverture du for fiscal du ménage
-
-			final ModeImposition modeImposition;
-			try {
-				modeImposition = determineModeImposition(coupleExistant, dateArrivee, motifOuverture, ffp).getModeImposition();
-			}
-			catch (EvenementCivilException e) {
-				// on n'arrive pas déterminer le mode d'imposition, inutile d'en faire plus
-				return false;
-			}
 
 			// l'événement sera considéré comme redondant si
 			//   - le tiers contribuable PP existe déjà, ainsi que celui de son couple (lié au même conjoint si couple complet)

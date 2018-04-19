@@ -323,7 +323,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	 * .... calcule bien le mode d'imposition comme 'ordinaire' sur le ménage commun.
 	 */
 	@Test//(timeout = 10000L)
-	public void testArriveesCoupleAvecMonsieurPermisBMadamePersmisC() throws Exception {
+	public void testArriveesMemeDateCoupleAvecMonsieurPermisBMadamePermisC() throws Exception {
 
 		final long noLui = 246L;
 		final long noElle = 3342L;
@@ -450,6 +450,153 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			assertEquals(dateArrivee, ffp.getDateDebut());
 			assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-28216] Ce test vérifie que l'arrivée à des dates valeurs différentes (monsieur puis madame) de deux personnes mariées mais avec :
+	 * <ul>
+	 *     <li>des permis différent (Monsieur = permis B, Madame = permis C)</li>
+	 *     <li>des traitements des arrivées différées (arrivée de Madame traitée plusieurs jours après celle de Monsieur) </li>
+	 * </ul>
+	 * .... lève bien une erreur car le mode d'imposition sur le for fiscal devrait changer mais on n'est pas sûr à partir de quand
+	 * (normalement, la date d'obtention du permis C de l'arrivant, mais cette date peut dater de plusieurs années).
+	 */
+	@Test//(timeout = 10000L)
+	public void testArriveesDatesDecaleesCoupleAvecMonsieurPermisBMadamePermisC() throws Exception {
+
+		final long noLui = 246L;
+		final long noElle = 3342L;
+		final RegDate dateArriveeMonsieur = date(2017, 7, 20);
+		final RegDate dateArriveeMadame = date(2017, 8, 1);
+		final RegDate dateMariage = date(2016, 6, 10);
+
+		class Ids {
+			Long monsieur;
+			Long madame;
+			Long menage;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place civile (seule l'arrivée de Monsieur est disponible à cet instant)
+		final MockServiceCivil mockServiceCivil = new MockServiceCivil() {
+			@Override
+			protected void init() {
+
+				final RegDate naissanceLui = date(1970, 1, 1);
+				final MockIndividu lui = addIndividu(noLui, naissanceLui, "Tartempion", "François", true);
+				addNationalite(lui, MockPays.Danemark, naissanceLui, null);
+				addPermis(lui, TypePermis.SEJOUR, dateArriveeMonsieur, null, false);
+
+				final RegDate naissanceElle = date(1970, 1, 1);
+				final MockIndividu elle = addIndividu(noElle, naissanceElle, "Tartempion", "Françoise", false);
+				addNationalite(elle, MockPays.France, naissanceElle, null);
+				// Madame est toujours à Genève et toujours sans permis connu)
+
+				marieIndividus(lui, elle, dateMariage);
+
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeMonsieur, null);
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCanton.Geneve.getNoOFS(), null));
+			}
+		};
+		serviceCivil.setUp(mockServiceCivil);
+
+		// le ménage existait avant leurs arrivées en raison d'un immeuble à Lausanne
+		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			final PersonnePhysique lui = addHabitant(noLui);
+			final PersonnePhysique elle = addHabitant(noElle);
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			addForPrincipal(etc.getMenage(), date(2017, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
+			addForSecondaire(etc.getMenage(), date(2017, 6, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			ids.monsieur = lui.getNumero();
+			ids.madame = elle.getNumero();
+			ids.menage = etc.getMenage().getNumero();
+			return null;
+		});
+
+
+		// création de l'événement civil pour l'arrivée de monsieur
+		final long evtLui = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeMonsieur);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
+		});
+
+		// traitement de l'arrivée de monsieur
+		traiterEvenements(noLui);
+
+		// le ménage commun doit maintenant avoir un for principal à Lausanne avec le mode d'imposition Mixte (= Monsieur permis B + immeuble)
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
+			assertNotNull(pp);
+
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getConjoint());
+			assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArriveeMonsieur, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
+			assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
+
+			return null;
+		});
+
+		// saisie différée du permis C et de l'arrivée de madame dans le service civil
+		{
+			final MockIndividu elle = mockServiceCivil.getIndividu(noElle);
+			assertNotNull(elle);
+			mockServiceCivil.addPermis(elle, TypePermis.ETABLISSEMENT, dateArriveeMadame, null, false);
+
+			final MockAdresse adrElle = mockServiceCivil.addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeMadame, null);
+			adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCanton.Geneve.getNoOFS(), null));
+		}
+
+		// événement civil de l'arrivée de madame
+		final long evtElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeMadame);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noElle);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
+		});
+
+		// traitement de l'arrivée de madame
+		traiterEvenements(noElle);
+
+		// vérification de l'état de traitement de l'événement : le mode d'imposition du for du ménage doit corrigé en ordinaire
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			Assert.assertNotNull(erreurs);
+			Assert.assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			Assert.assertNotNull(erreur);
+			Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+			Assert.assertEquals("Le contribuable arrivant [" + FormatNumeroHelper.numeroCTBToDisplay(ids.madame) + "] dans le ménage [" +
+					                    FormatNumeroHelper.numeroCTBToDisplay(ids.menage) + "] est suisse ou possède un permis C : le mode d'imposition " +
+					                    "du for fiscal principal du ménage doit être changé en [ORDINAIRE] manuellement.", erreur.getMessage());
 
 			return null;
 		});
