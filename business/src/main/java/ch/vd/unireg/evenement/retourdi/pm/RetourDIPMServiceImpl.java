@@ -87,6 +87,7 @@ import ch.vd.unireg.tiers.Remarque;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
@@ -227,17 +228,24 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			traiterInformationsBancaires(entreprise, retour.getPf(), retour.getNoSequence(), infosEntreprise.getIban(), infosEntreprise.getTitulaireCompteBancaire());
 		}
 
+		//retour
 		// Y a-t-il des choses à faire au niveau du mandataire général de l'entreprise ?
-		final InformationsMandataire infosMandataire = retour.getMandataire();
-		if (infosMandataire != null && infosMandataire.isNotEmpty()) {
-			// ah ah... il y a quelque chose...
-			traiterInformationsMandataire(entreprise, retour.getPf(), retour.getNoSequence(), infosMandataire);
+		//SIFISC-28705 le traitement du mandataire ne doit pas s'appliquer pour le moment sur des entreprise de type APM
+		//Pour l'instant on ne recoit pas le contenu de la DI pour les APM.
+		if (CategorieEntreprise.APM != tiersService.getCategorieEntreprise(entreprise, null)) {
+
+
+			final InformationsMandataire infosMandataire = retour.getMandataire();
+			if (infosMandataire != null && infosMandataire.isNotEmpty()) {
+				// ah ah... il y a quelque chose...
+				traiterInformationsMandataire(entreprise, retour.getPf(), retour.getNoSequence(), infosMandataire);
+			}
+			else {
+				// pas d'information fournie -> on stoppe l'éventuel mandat général en cours
+				fermerMandatGeneralActif(entreprise, retour.getPf(), retour.getNoSequence());
+			}
 		}
-		else {
-			// pas d'information fournie -> on stoppe l'éventuel mandat général en cours
-			fermerMandatGeneralActif(entreprise, retour.getPf(), retour.getNoSequence());
-		}
-   	}
+	}
 
 	/**
 	 * Traitement des informations de mandataire général présentes dans la déclaration retournée
