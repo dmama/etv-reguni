@@ -38,4 +38,9 @@
 		<property name="rapprochementDAO" ref="rapprochementRFDAO"/>
 	</bean>
 
+	<bean id="blacklistRFHelper" class="ch.vd.unireg.registrefoncier.dataimport.helper.BlacklistRFHelperImpl">
+		<property name="blacklistRFDAO" ref="blacklistRFDAO"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
 </beans>

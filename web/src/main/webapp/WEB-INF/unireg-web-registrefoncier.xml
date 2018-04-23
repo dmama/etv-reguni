@@ -4,10 +4,6 @@
 
 	<!-- Import des données du RF -->
 
-	<bean id="blacklistRFHelper" class="ch.vd.unireg.registrefoncier.dataimport.helper.BlacklistRFHelperImpl">
-		<property name="blacklistedImmeubles" value="${extprop.rf.blacklist.immeubles}"/>
-	</bean>
-
 	<bean id="tempRFCacheDroits" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
 		<property name="homeDirectory" value="${extprop.rf.import.cache.homedir}/droits" />
 		<property name="clazz" value="java.util.ArrayList" />

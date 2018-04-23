@@ -54,7 +54,7 @@ import ch.vd.unireg.registrefoncier.dao.MockImmeubleRFDAO;
 import ch.vd.unireg.registrefoncier.dataimport.MutationComparator;
 import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRFImpl;
-import ch.vd.unireg.registrefoncier.dataimport.helper.BlacklistRFHelperImpl;
+import ch.vd.unireg.registrefoncier.dataimport.helper.BlacklistRFHelper;
 import ch.vd.unireg.transaction.MockTransactionManager;
 
 import static org.junit.Assert.assertEquals;
@@ -66,7 +66,7 @@ public class DroitRFDetectorTest {
 
 	private static final Long IMPORT_ID = 1L;
 	private XmlHelperRF xmlHelperRF;
-	private BlacklistRFHelperImpl blacklistRFHelper;
+	private BlacklistRFHelper blacklistRFHelper;
 	private PlatformTransactionManager transactionManager;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
@@ -75,8 +75,7 @@ public class DroitRFDetectorTest {
 	@Before
 	public void setUp() throws Exception {
 		xmlHelperRF = new XmlHelperRFImpl();
-		blacklistRFHelper = new BlacklistRFHelperImpl();
-		blacklistRFHelper.setBlacklistedImmeubles(new String[]{"_1f1091523810108101381012b3d64cb4", "_1f1091523810190f0138101cd6404148"});
+		blacklistRFHelper = idRF -> idRF.equals("_1f1091523810108101381012b3d64cb4") || idRF.equals("_1f1091523810190f0138101cd6404148");
 		transactionManager = new MockTransactionManager();
 		immeubleRFDAO = new MockImmeubleRFDAO();
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();

@@ -99,6 +99,7 @@
 	<bean id="situationRFDAO" class="ch.vd.unireg.registrefoncier.dao.SituationRFDAOImpl" parent="hibernateDao" />
 	<bean id="modeleCommunauteRFDAO" class="ch.vd.unireg.registrefoncier.dao.ModeleCommunauteRFDAOImpl" parent="hibernateDao" />
 	<bean id="principalCommunauteRFDAO" class="ch.vd.unireg.registrefoncier.dao.PrincipalCommunauteRFDAOImpl" parent="hibernateDao" />
+	<bean id="blacklistRFDAO" class="ch.vd.unireg.registrefoncier.dao.BlacklistRFDAOImpl" parent="hibernateDao" />
 
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.unireg.audit.AuditLineDAOImpl" parent="hibernateDao">

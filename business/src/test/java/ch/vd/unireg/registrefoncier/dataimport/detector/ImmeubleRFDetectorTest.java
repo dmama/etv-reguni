@@ -48,7 +48,7 @@ import ch.vd.unireg.registrefoncier.dao.MockCommuneRFDAO;
 import ch.vd.unireg.registrefoncier.dao.MockImmeubleRFDAO;
 import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.unireg.registrefoncier.dataimport.XmlHelperRFImpl;
-import ch.vd.unireg.registrefoncier.dataimport.helper.BlacklistRFHelperImpl;
+import ch.vd.unireg.registrefoncier.dataimport.helper.BlacklistRFHelper;
 import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.unireg.transaction.MockTransactionManager;
 
@@ -60,15 +60,14 @@ public class ImmeubleRFDetectorTest {
 
 	private static final Long IMPORT_ID = 1L;
 	private XmlHelperRF xmlHelperRF;
-	private BlacklistRFHelperImpl blacklistRFHelper;
+	private BlacklistRFHelper blacklistRFHelper;
 	private PlatformTransactionManager transactionManager;
 	private CommuneRFDAO communeRFDAO;
 
 	@Before
 	public void setUp() throws Exception {
 		xmlHelperRF = new XmlHelperRFImpl();
-		blacklistRFHelper = new BlacklistRFHelperImpl();
-		blacklistRFHelper.setBlacklistedImmeubles(new String[]{"_1f1091523810108101381012b3d64cb4"});
+		blacklistRFHelper = idRF -> idRF.equals("_1f1091523810108101381012b3d64cb4");
 		transactionManager = new MockTransactionManager();
 		communeRFDAO = new MockCommuneRFDAO(new CommuneRF(2233, "Le-gros-du-lac", 5555),
 		                                    new CommuneRF(238, "Lausanne", 5586),
