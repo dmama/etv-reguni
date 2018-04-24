@@ -35,9 +35,20 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public @Nullable ImmeubleRF getImmeuble(@NotNull String egrid) {
+		throw new NotImplementedException();
+	}
+
 	@NotNull
 	@Override
 	public List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, Integer index1, Integer index2, Integer index3) {
+		throw new NotImplementedException();
+	}
+
+	@Nullable
+	@Override
+	public DroitRF getDroit(long droitId) {
 		throw new NotImplementedException();
 	}
 

@@ -568,6 +568,11 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	}
 
 	@Override
+	public @Nullable ImmeubleRF getImmeuble(@NotNull String egrid) {
+		return immeubleRFDAO.findByEgrid(egrid);
+	}
+
+	@Override
 	public @Nullable ImmeubleRF getImmeuble(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 		return immeubleRFDAO.getBySituation(noOfsCommune, noParcelle, index1, index2, index3);
 	}
@@ -576,6 +581,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	public List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, Integer index1, Integer index2, Integer index3) {
 		return immeubleRFDAO.findImmeublesParSituation(noOfsCommune, noParcelle, index1, index2, index3);
+	}
+
+	@Nullable
+	@Override
+	public DroitRF getDroit(long droitId) {
+		return droitRFDAO.get(droitId);
 	}
 
 	@Nullable

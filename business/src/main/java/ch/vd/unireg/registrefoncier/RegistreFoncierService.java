@@ -57,6 +57,13 @@ public interface RegistreFoncierService {
 	ImmeubleRF getImmeuble(long immeubleId);
 
 	/**
+	 * @param egrid l'egrid d'un immeuble
+	 * @return l'immeuble qui correspond à l'egrid; ou <b>null</b> si aucun immeuble ne correspond.
+	 */
+	@Nullable
+	ImmeubleRF getImmeuble(@NotNull String egrid);
+
+	/**
 	 * Retourne un immeuble à partir de sa situation précise.
 	 *
 	 * @param noOfsCommune le numéro OFS de la commune de l'immeuble (obligatoire)
@@ -81,6 +88,9 @@ public interface RegistreFoncierService {
 	 */
 	@NotNull
 	List<SituationRF> findImmeublesParSituation(int noOfsCommune, int noParcelle, Integer index1, Integer index2, Integer index3);
+
+	@Nullable
+	DroitRF getDroit(long droitId);
 
 	/**
 	 * @param batimentId l'id technique d'un bâtiment

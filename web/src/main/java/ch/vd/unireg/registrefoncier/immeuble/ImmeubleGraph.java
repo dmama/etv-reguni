@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -39,67 +38,122 @@ public class ImmeubleGraph {
 
 	private static final DecimalFormat MONTANT_FORMAT = new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(new Locale("fr", "CH")));
 
-	private static class Immeuble {
+	@SuppressWarnings("unused")
+	public static class Immeuble {
 
 		private final String name;
-		private final String type;
-		private final String label;
+		private final Long id;
+		private final String egrid;
+		private final String idRF;
+		private final String typeShort;
+		private final String typeLong;
+		private final String commune;
+		private final String parcelle;
 		private final String estimationFiscale;
 
 		public Immeuble(@NotNull ImmeubleRF immeuble) {
 
 			final RegDate today = RegDate.get();
 
-			this.name = getName(immeuble);
+			this.name = buildName(immeuble);
+			this.id = immeuble.getId();
+			this.egrid = immeuble.getEgrid();
+			this.idRF = immeuble.getIdRF();
+
 			final SituationRF situation = immeuble.getSituations().stream()
 					.filter(s -> s.isValidAt(today))
 					.findFirst()
 					.orElseThrow(IllegalArgumentException::new);
 
-			final String type;
+			final String typeShort;
+			final String typeLong;
 			if (immeuble instanceof BienFondsRF) {
-				type = "BF";
+				typeShort = "BF";
+				typeLong = "Bien-fonds";
 			}
 			else if (immeuble instanceof DroitDistinctEtPermanentRF) {
-				type = "DDP";
+				typeShort = "DDP";
+				typeLong = "Droit distinct et permanent";
 			}
 			else if (immeuble instanceof MineRF) {
-				type = "Mine";
+				typeShort = "Mine";
+				typeLong = "Mine";
 			}
 			else if (immeuble instanceof PartCoproprieteRF) {
-				type = "PC";
+				typeShort = "PC";
+				typeLong = "Part de copropriété";
 			}
 			else if (immeuble instanceof ProprieteParEtageRF) {
-				type = "PPE";
+				typeShort = "PPE";
+				typeLong = "Propriété par étage";
 			}
 			else {
 				throw new IllegalArgumentException();
 			}
-			this.type = type;
+			this.typeShort = typeShort;
+			this.typeLong = typeLong;
 
-			String label = situation.getCommune().getNomRf() + " / " + situation.getNoParcelle();
+			this.commune = situation.getCommune().getNomRf();
+
+			String parcelle = String.valueOf(situation.getNoParcelle());
 			if (situation.getIndex1() != null) {
-				label += "-" + situation.getIndex1();
+				parcelle += "-" + situation.getIndex1();
 			}
 			if (situation.getIndex2() != null) {
-				label += "-" + situation.getIndex2();
+				parcelle += "-" + situation.getIndex2();
 			}
 			if (situation.getIndex3() != null) {
-				label += "-" + situation.getIndex3();
+				parcelle += "-" + situation.getIndex3();
 			}
-			this.label = label;
+			this.parcelle = parcelle;
 
-			estimationFiscale = immeuble.getEstimations().stream()
+			this.estimationFiscale = immeuble.getEstimations().stream()
 					.filter(e -> e.isValidAt(today))
 					.findFirst()
 					.map(EstimationRF::getMontant)
-					.filter(Objects::nonNull)
 					.map(montant -> MONTANT_FORMAT.format(montant) + " CHF")
 					.orElse(null);
+
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public String getEgrid() {
+			return egrid;
+		}
+
+		public String getIdRF() {
+			return idRF;
+		}
+
+		public String getTypeShort() {
+			return typeShort;
+		}
+
+		public String getTypeLong() {
+			return typeLong;
+		}
+
+		public String getCommune() {
+			return commune;
+		}
+
+		public String getParcelle() {
+			return parcelle;
+		}
+
+		public String getEstimationFiscale() {
+			return estimationFiscale;
 		}
 
 		public String toDot(boolean showEstimationFiscales) {
-			String s = name + " [shape=record, label=\"" + type + "|" + label;
+			String s = name + " [shape=record, label=\"" + typeShort + "|" + commune + "/" + parcelle;
 			if (showEstimationFiscales && StringUtils.isNotBlank(estimationFiscale)) {
 				s += "|" + estimationFiscale;
 			}
@@ -180,13 +234,15 @@ public class ImmeubleGraph {
 	}
 
 	private static class Droit {
+		private final Long id;
 		private final String color;
 		private final String style;
 		private final String source;
 		private final String destination;
 		private final String label;
 
-		public Droit(String source, String destination, String label, String color, String style) {
+		public Droit(Long id, String source, String destination, String label, String color, String style) {
+			this.id = id;
 			this.color = color;
 			this.source = source;
 			this.destination = destination;
@@ -195,7 +251,7 @@ public class ImmeubleGraph {
 		}
 
 		public String toDot() {
-			return source + " -> " + destination + " [label=\"" + label + "\", color=" + color + ", style=" + style + "]";
+			return source + " -> " + destination + " [id=\"link" + id + "\", label=\"" + label + "\", color=" + color + ", style=" + style + "]";
 		}
 	}
 
@@ -259,7 +315,7 @@ public class ImmeubleGraph {
 	}
 
 	private boolean isProcessed(@NotNull ImmeubleRF immeuble) {
-		return immeubles.containsKey(getName(immeuble));
+		return immeubles.containsKey(buildName(immeuble));
 	}
 
 	private void addProcessed(@NotNull ImmeubleRF immeuble) {
@@ -274,19 +330,19 @@ public class ImmeubleGraph {
 		final CommunauteRF communaute = getCommunaute(droit);
 		if (communaute == null) {
 			// un droit normal
-			final String source = getName(droit.getAyantDroit());
-			final String destination = getName(droit.getImmeuble());
+			final String source = buildName(droit.getAyantDroit());
+			final String destination = buildName(droit.getImmeuble());
 
 			addAyantDroit(ayantDroits, droit.getAyantDroit());
-			droits.add(new Droit(source, destination, label, color, "solid"));
+			droits.add(new Droit(droit.getId(), source, destination, label, color, "solid"));
 		}
 		else {
 			// en cas de communauté, on crée une copie de l'ayant-droit pour l'associer à la communauté
 			final Communaute comm = (Communaute) addAyantDroit(ayantDroits, communaute);
 			final AyantDroit membre = comm.addMembre(droit.getAyantDroit());
 			final String source = membre.name;
-			final String destination = getName(droit.getImmeuble());
-			droits.add(new Droit(source, destination, label, color, "dashed"));
+			final String destination = buildName(droit.getImmeuble());
+			droits.add(new Droit(droit.getId(), source, destination, label, color, "dashed"));
 		}
 	}
 
@@ -327,14 +383,14 @@ public class ImmeubleGraph {
 		return color;
 	}
 
-	private static String getName(@NotNull AyantDroitRF ayantDroit) {
+	public static String buildName(@NotNull AyantDroitRF ayantDroit) {
 		if (ayantDroit instanceof CommunauteRF) {
 			final CommunauteRF communaute = (CommunauteRF) ayantDroit;
 			return "clusterComm" + communaute.getId();
 		}
 		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
 			final ImmeubleBeneficiaireRF beneficiaire = (ImmeubleBeneficiaireRF) ayantDroit;
-			return getName(beneficiaire.getImmeuble());
+			return buildName(beneficiaire.getImmeuble());
 		}
 		else if (ayantDroit instanceof PersonnePhysiqueRF) {
 			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroit;
@@ -353,8 +409,45 @@ public class ImmeubleGraph {
 		}
 	}
 
+	@Nullable
+	public static Long parseAyantDroitId(@NotNull String elementKey) {
+		if (elementKey.startsWith("PP")) {
+
+			String id = elementKey.substring(2);
+
+			final int cluster = id.indexOf("clusterComm");
+			if (cluster >= 0) {
+				// en cas de communauté, l'élément représentant la PP possède le suffice 'clusterComm' (ex: 'PP206992222clusterComm206992437')
+				id = id.substring(0, cluster);
+			}
+
+			return Long.valueOf(id);
+		}
+		else if (elementKey.startsWith("PM")) {
+
+			String id = elementKey.substring(2);
+
+			final int cluster = id.indexOf("clusterComm");
+			if (cluster >= 0) {
+				// en cas de communauté, l'élément représentant la PM possède le suffice 'clusterComm' (ex: 'PM206992222clusterComm206992437')
+				id = id.substring(0, cluster);
+			}
+
+			return Long.valueOf(id);
+		}
+		else if (elementKey.startsWith("COLL")) {
+			return Long.valueOf(elementKey.substring(4));
+		}
+		else if (elementKey.startsWith("clusterComm")) {
+			return Long.valueOf(elementKey.substring("clusterComm".length()));
+		}
+		else {
+			return null;    // pas un ayant-droit
+		}
+	}
+
 	private static AyantDroit addAyantDroit(@NotNull Map<String, AyantDroit> ayantDroits, @NotNull AyantDroitRF ayantDroit) {
-		final String name = getName(ayantDroit);
+		final String name = buildName(ayantDroit);
 		if (ayantDroit instanceof CommunauteRF) {
 			final CommunauteRF communaute = (CommunauteRF) ayantDroit;
 			return ayantDroits.computeIfAbsent(name, n -> new Communaute(name, "Communauté #" + communaute.getId()));
@@ -379,9 +472,29 @@ public class ImmeubleGraph {
 		}
 	}
 
-	private static String getName(@NotNull ImmeubleRF immeuble) {
+	public static String buildName(@NotNull ImmeubleRF immeuble) {
 		final String egrid = immeuble.getEgrid();
 		return egrid == null ? immeuble.getIdRF() : egrid;
+	}
+
+	@Nullable
+	public static String parseImmeubleEgrid(@NotNull String elementKey) {
+		if (elementKey.startsWith("CH")) {
+			return elementKey;
+		}
+		else {
+			return null;    // pas un immeuble
+		}
+	}
+
+	@Nullable
+	public static Long parseLien(@NotNull String elementKey) {
+		if (elementKey.startsWith("link")) {
+			return Long.valueOf(elementKey.substring(4));
+		}
+		else {
+			return null;    // pas un lien
+		}
 	}
 
 	public String toDot(boolean showEstimationFiscales) {

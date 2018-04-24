@@ -28,6 +28,8 @@
 
 	<bean id="immeubleRFController" class="ch.vd.unireg.registrefoncier.immeuble.ImmeubleRFController">
 		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="adresseService" ref="adresseService"/>
 		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
