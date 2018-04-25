@@ -7,9 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.declaration.Declaration;
@@ -19,6 +17,7 @@ import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -63,7 +62,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		// Création d'un contribuable ordinaire et de sa DI
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -98,7 +97,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2008);
 				scan.setNoSequenceDI(1);
-				service.onRetourDI(scan, Collections.<String, String>emptyMap());
+				service.onRetourDI(scan, Collections.emptyMap());
 				return null;
 			}
 		});
@@ -106,7 +105,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
@@ -136,7 +135,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		// Création d'un contribuable ordinaire et de sa DI
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -171,7 +170,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2008);
 				scan.setNoSequenceDI(1);
-				service.onRetourDI(scan, Collections.<String, String>emptyMap());
+				service.onRetourDI(scan, Collections.emptyMap());
 				return null;
 			}
 		});
@@ -179,7 +178,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("Maison: zuzu@gmail.com Boulot: toto@monentreprise.ch", eric.getAdresseCourrierElectronique());
@@ -204,18 +203,15 @@ public class EvenementCediServiceTest extends BusinessTest {
 	public void testModificationsIban() throws Exception {
 
 		// mise en place des données de base
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
-				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+			final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
+			addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
+			return null;
 		});
 
 		doTestModificationIban("CH452365", null, false);                        // null ignoré sur IBAN invalide
@@ -241,7 +237,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		// Création d'un contribuable ordinaire et de sa DI
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				final PeriodeFiscale periode2008 = pfDao.getPeriodeFiscaleByYear(2008);
 				final ModeleDocument declarationComplete2008 = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode2008, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
@@ -271,7 +267,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2008);
 				scan.setNoSequenceDI(1);
-				service.onRetourDI(scan, Collections.<String, String>emptyMap());
+				service.onRetourDI(scan, Collections.emptyMap());
 				return null;
 			}
 		});
@@ -279,7 +275,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				if ((!replacementExpected && ibanInitial == null) || (replacementExpected && nouvelIban == null)) {
 					assertNull(eric.getNumeroCompteBancaire());
@@ -300,7 +296,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		// Création d'un contribuable ordinaire et de sa DI
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
 				final ModeleDocument declarationComplete2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2014);
@@ -316,8 +312,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire d2014_1 = addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						declarationComplete2014);
 				d2014_1.setAnnule(true);
-				final DeclarationImpotOrdinaire d2014_2 = addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						declarationComplete2014);
+				addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2014);
 
 
 				return eric.getNumero();
@@ -338,7 +333,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2014);
 				scan.setNoSequenceDI(1);
-				service.onRetourDI(scan, Collections.<String, String>emptyMap());
+				service.onRetourDI(scan, Collections.emptyMap());
 				return null;
 			}
 		});
@@ -346,7 +341,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());

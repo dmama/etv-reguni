@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -115,13 +114,13 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		}
 
 		@Override
-		public void init() throws Exception {
+		public void init() {
 			oldPremiereAnnee = parametreAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
 			parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(premiereAnneeVoulue);
 		}
 
 		@Override
-		public void cleanup() throws Exception {
+		public void cleanup() {
 			parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremiereAnnee);
 		}
 	}
@@ -154,12 +153,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	public void testRetourSurContribuableNonEntreprise() throws Exception {
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("André", "Malraux", date(1901, 11, 3), Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("André", "Malraux", date(1901, 11, 3), Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		// réception des données de retour
@@ -187,18 +183,15 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -228,25 +221,22 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 4, 1), date(annee, 3, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 4, 12));
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 4, 1), date(annee, 3, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 4, 12));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -308,34 +298,31 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testRetourSurDeclarationAnnulée() throws Exception {
+	public void testRetourSurDeclarationAnnulee() throws Exception {
 
 		final int annee = 2015;
 		final RegDate dateDebutEntreprise = date(annee - 1, 2, 1);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 4, 1), date(annee, 3, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 4, 12));
-				addEtatDeclarationRetournee(di, date(annee, 7, 31));
-				di.setAnnule(true);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 4, 1), date(annee, 3, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 4, 12));
+			addEtatDeclarationRetournee(di, date(annee, 7, 31));
+			di.setAnnule(true);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -404,26 +391,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 4, 1), nouvelleFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 4, 12));
-				addEtatDeclarationRetournee(di, date(annee, 7, 31));
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 4, 1), nouvelleFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 4, 12));
+			addEtatDeclarationRetournee(di, date(annee, 7, 31));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -483,26 +467,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-				addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+			addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -590,26 +571,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-				addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+			addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -692,37 +670,34 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// la DI qui va revenir
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(annee);
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
-				}
-				// la DI suivante juste envoyée
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(annee + 1);
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
-				}
-
-				return entreprise.getNumero();
+			// la DI qui va revenir
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
 			}
+			// la DI suivante juste envoyée
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(annee + 1);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -805,37 +780,34 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(3, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// la DI qui va revenir
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(annee);
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
-				}
-				// la DI suivante juste envoyée
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(annee + 1);
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
-				}
-
-				return entreprise.getNumero();
+			// la DI qui va revenir
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
 			}
+			// la DI suivante juste envoyée
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(annee + 1);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -919,38 +891,35 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// la DI qui va revenir
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(annee);
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
-				}
-				// la DI suivante également déjà quittancée
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(annee + 1);
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
-					addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addYears(1).addDays(20));
-				}
-
-				return entreprise.getNumero();
+			// la DI qui va revenir
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
 			}
+			// la DI suivante également déjà quittancée
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(annee + 1);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
+				addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addYears(1).addDays(20));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -1058,38 +1027,35 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, ancienneFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, ancienneFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// la DI qui va revenir
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(annee);
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
-				}
-				// la DI suivante également déjà quittancée
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(annee + 1);
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
-					addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addYears(1).addDays(20));
-				}
-
-				return entreprise.getNumero();
+			// la DI qui va revenir
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addDays(20));
 			}
+			// la DI suivante également déjà quittancée
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(annee + 1);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
+				addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addYears(1).addDays(20));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -1181,40 +1147,37 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(anneeFinale, 12, 31);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
-				final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
+			final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
+			final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
 
-				final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// déclaration retournée
-				{
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, date(anneeFinale, 7, 1), ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
-				}
-
-				// pour tester le re-calcul du numéro de séquence, plaçons une déclaration sur le début de la nouvelle PF
-				{
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfFinale, dateDebutEntreprise, date(anneeFinale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, null);
-					di.setNumero(42);
-					addEtatDeclarationEmise(di, date(anneeFinale, 4, 10));
-					addEtatDeclarationRetournee(di, date(anneeFinale, 10, 3));
-				}
-
-				return entreprise.getNumero();
+			// déclaration retournée
+			{
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, date(anneeFinale, 7, 1), ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
 			}
+
+			// pour tester le re-calcul du numéro de séquence, plaçons une déclaration sur le début de la nouvelle PF
+			{
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfFinale, dateDebutEntreprise, date(anneeFinale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, null);
+				di.setNumero(42);
+				addEtatDeclarationEmise(di, date(anneeFinale, 4, 10));
+				addEtatDeclarationRetournee(di, date(anneeFinale, 10, 3));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -1340,41 +1303,38 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateFaillite = date(anneeSuivante, 6, 10);
 
 		// mise en place fiscale (je ne veux pas de génération de tâche d'envoi pour les années 2016 et suivantes...)
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Echallens);
 
-				final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeSuivante);
-				final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
-				final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
+			final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeSuivante);
+			final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
+			final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// déclaration retournée
-				{
-					final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, date(anneeFinale, 7, 1), ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
-				}
-
-				// déclaration non-retournée ultérieure
-				{
-					final ModeleDocument mdSuivante = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfSuivante, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdSuivante);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(4));
-				}
-
-				return entreprise.getNumero();
+			// déclaration retournée
+			{
+				final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, date(anneeFinale, 7, 1), ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
 			}
+
+			// déclaration non-retournée ultérieure
+			{
+				final ModeleDocument mdSuivante = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfSuivante, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdSuivante);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(4));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -1533,42 +1493,39 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateFaillite = date(anneeSuivante, 6, 10);
 
 		// mise en place fiscale (je ne veux pas de génération de tâche d'envoi pour les années 2016 et suivantes...)
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Echallens);
 
-				final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeSuivante);
-				final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
-				final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
+			final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeSuivante);
+			final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
+			final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// déclaration retournée
-				{
-					final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, date(anneeFinale, 7, 1), ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
-				}
-
-				// déclaration retournée ultérieure
-				{
-					final ModeleDocument mdSuivante = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfSuivante, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdSuivante);
-					addEtatDeclarationEmise(di, dateFaillite.addDays(30));
-					addEtatDeclarationRetournee(di, dateFaillite.addDays(50));
-				}
-
-				return entreprise.getNumero();
+			// déclaration retournée
+			{
+				final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, date(anneeFinale, 7, 1), ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
 			}
+
+			// déclaration retournée ultérieure
+			{
+				final ModeleDocument mdSuivante = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfSuivante, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdSuivante);
+				addEtatDeclarationEmise(di, dateFaillite.addDays(30));
+				addEtatDeclarationRetournee(di, dateFaillite.addDays(50));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -1581,13 +1538,13 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			private Integer oldPremiereAnnee;
 
 			@Override
-			public void init() throws Exception {
+			public void init() {
 				oldPremiereAnnee = parametreAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
 				parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(2014);
 			}
 
 			@Override
-			public void cleanup() throws Exception {
+			public void cleanup() {
 				parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremiereAnnee);
 			}
 		};
@@ -1747,31 +1704,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(anneeFinale, 6, 30);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
-				final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
+			final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
+			final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
 
-				final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
-				final ModeleDocument mdFinale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// déclaration retournée
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
-				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-				addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
+			// déclaration retournée
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
+			addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+			addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -1878,39 +1832,36 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateFaillite = date(anneeFinale, 6, 10);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Echallens);
 
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// déclaration retournée
-				{
-					final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
-					final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
-				}
-
-				// déclaration présente ultérieure mais non-retournée encore
-				{
-					final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
-					final ModeleDocument mdFinale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfFinale, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdFinale);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
-				}
-
-				return entreprise.getNumero();
+			// déclaration retournée
+			{
+				final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
+				final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
 			}
+
+			// déclaration présente ultérieure mais non-retournée encore
+			{
+				final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
+				final ModeleDocument mdFinale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfFinale, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdFinale);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2053,40 +2004,37 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateFaillite = date(anneeFinale, 8, 10);
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Echallens);
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Echallens);
 
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-				// déclaration retournée
-				{
-					final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
-					final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
-					addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
-				}
-
-				// déclaration présente ultérieure déjà retournée
-				{
-					final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
-					final ModeleDocument mdFinale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
-					final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfFinale, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdFinale);
-					addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
-					addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addYears(1).addMonths(1));
-				}
-
-				return entreprise.getNumero();
+			// déclaration retournée
+			{
+				final PeriodeFiscale pfInitiale = addPeriodeFiscale(anneeInitiale);
+				final ModeleDocument mdInitiale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebutEntreprise, ancienneFinExerciceCommercial, oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitiale);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addDays(5));
+				addEtatDeclarationRetournee(di, nouvelleFinExerciceCommercial.addDays(12));
 			}
+
+			// déclaration présente ultérieure déjà retournée
+			{
+				final PeriodeFiscale pfFinale = addPeriodeFiscale(anneeFinale);
+				final ModeleDocument mdFinale = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfFinale, ancienneFinExerciceCommercial.getOneDayAfter(), ancienneFinExerciceCommercial.addYears(1), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdFinale);
+				addEtatDeclarationEmise(di, ancienneFinExerciceCommercial.addYears(1).addDays(5));
+				addEtatDeclarationRetournee(di, ancienneFinExerciceCommercial.addYears(1).addMonths(1));
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2222,26 +2170,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2300,26 +2245,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2381,26 +2323,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2466,26 +2405,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2538,31 +2474,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				// surcharge d'adresse représentation qui donne donc un défaut à l'adresse courrier
-				final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.REPRESENTATION, dateDebutEntreprise, null, MockRue.Lausanne.AvenueDeBeaulieu);
-				surcharge.setPermanente(false);
-				surcharge.setNumeroMaison("24");
+			// surcharge d'adresse représentation qui donne donc un défaut à l'adresse courrier
+			final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.REPRESENTATION, dateDebutEntreprise, null, MockRue.Lausanne.AvenueDeBeaulieu);
+			surcharge.setPermanente(false);
+			surcharge.setNumeroMaison("24");
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2626,31 +2559,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				// surcharge d'adresse représentation qui donne donc un défaut à l'adresse courrier
-				final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.REPRESENTATION, dateDebutEntreprise, null, MockLocalite.Lausanne1003.getNoOrdre(), null);
-				surcharge.setPermanente(false);
-				surcharge.setRue("AVEnue dE beauLiEU 24");
+			// surcharge d'adresse représentation qui donne donc un défaut à l'adresse courrier
+			final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.REPRESENTATION, dateDebutEntreprise, null, MockLocalite.Lausanne1003.getNoOrdre(), null);
+			surcharge.setPermanente(false);
+			surcharge.setRue("AVEnue dE beauLiEU 24");
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2715,31 +2645,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				// surcharge d'adresse courrier non-permanente
-				final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Echallens.GrandRue);
-				surcharge.setPermanente(false);
-				surcharge.setNumeroMaison("12");
+			// surcharge d'adresse courrier non-permanente
+			final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Echallens.GrandRue);
+			surcharge.setPermanente(false);
+			surcharge.setNumeroMaison("12");
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2816,31 +2743,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				// surcharge d'adresse courrier non-permanente mais fermée
-				final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, dateQuittance.addMonths(1), MockRue.Echallens.GrandRue);
-				surcharge.setPermanente(false);
-				surcharge.setNumeroMaison("12");
+			// surcharge d'adresse courrier non-permanente mais fermée
+			final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, dateQuittance.addMonths(1), MockRue.Echallens.GrandRue);
+			surcharge.setPermanente(false);
+			surcharge.setNumeroMaison("12");
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -2912,31 +2836,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				// surcharge d'adresse courrier permanente
-				final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Echallens.GrandRue);
-				surcharge.setPermanente(true);
-				surcharge.setNumeroMaison("12");
+			// surcharge d'adresse courrier permanente
+			final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Echallens.GrandRue);
+			surcharge.setPermanente(true);
+			surcharge.setNumeroMaison("12");
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3008,31 +2929,28 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				// surcharge d'adresse courrier permanente (pour vérifier que même en présence d'une adresse permanente, la raison sociale est inspectée)
-				final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Echallens.GrandRue);
-				surcharge.setPermanente(true);
-				surcharge.setNumeroMaison("12");
+			// surcharge d'adresse courrier permanente (pour vérifier que même en présence d'une adresse permanente, la raison sociale est inspectée)
+			final AdresseSuisse surcharge = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Echallens.GrandRue);
+			surcharge.setPermanente(true);
+			surcharge.setNumeroMaison("12");
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3124,30 +3042,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3206,30 +3121,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3296,30 +3208,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3385,30 +3294,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3475,30 +3381,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3565,30 +3468,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3663,30 +3563,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3760,30 +3657,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -3857,38 +3751,34 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final int annee = 2015;
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
-		final String ibanConnu = null;
 		final String titulaireCompteConnu = null;
 		final String nouvelIban = "CH690023000123456789A";      // valide
 		final String nouveauTitulaireCompte = null;
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				entreprise.setCoordonneesFinancieres(ibanConnu != null ? new CoordonneesFinancieres(ibanConnu, null) : null);
-				entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.setCoordonneesFinancieres(null);
+			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (iban valide sans titulaire)
@@ -3939,33 +3829,30 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final String nouvelIban = "CH690023000123456789A";      // valide
 		final String nouveauTitulaireCompte = null;
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				entreprise.setCoordonneesFinancieres(ibanConnu != null ? new CoordonneesFinancieres(ibanConnu, null) : null);
-				entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
+			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -4011,38 +3898,34 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final int annee = 2015;
 		final RegDate dateDebutEntreprise = date(2015, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
-		final String ibanConnu = null;
 		final String titulaireCompteConnu = null;
 		final String nouvelIban = "CH410023000123456789A";      // invalide (les chiffres de contrôle devraient être "69", pas "41")
 		final String nouveauTitulaireCompte = null;
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				entreprise.setCoordonneesFinancieres(ibanConnu != null ? new CoordonneesFinancieres(ibanConnu, null) : null);
-				entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.setCoordonneesFinancieres(null);
+			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (iban valide sans titulaire)
@@ -4093,33 +3976,30 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final String nouvelIban = "CH410023000123456789A";      // invalide (les chiffres de contrôle devraient être "69", pas "41")
 		final String nouveauTitulaireCompte = null;
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				entreprise.setCoordonneesFinancieres(ibanConnu != null ? new CoordonneesFinancieres(ibanConnu, null) : null);
-				entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
+			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -4178,33 +4058,30 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final String nouvelIban = "CH410023000123456789A";      // invalide (les chiffres de contrôle devraient être "69", pas "41")
 		final String nouveauTitulaireCompte = null;
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				entreprise.setCoordonneesFinancieres(ibanConnu != null ? new CoordonneesFinancieres(ibanConnu, null) : null);
-				entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
+			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -4255,33 +4132,30 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final String nouvelIban = null;
 		final String nouveauTitulaireCompte = "Albert Zweisteinen";
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				entreprise.setCoordonneesFinancieres(ibanConnu != null ? new CoordonneesFinancieres(ibanConnu, null) : null);
-				entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
+			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -4332,33 +4206,30 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final String nouvelIban = "FR4812345678901234567890123";    // valide
 		final String nouveauTitulaireCompte = "Albert Zweisteinen";
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				entreprise.setCoordonneesFinancieres(ibanConnu != null ? new CoordonneesFinancieres(ibanConnu, null) : null);
-				entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
+			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -4405,36 +4276,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2010, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
-				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
+			addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
-				addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+			addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 
@@ -4484,36 +4352,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 		final RegDate dateTraitement = RegDate.get();
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
-				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
+			addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
-				addMandatGeneral(entreprise, mandataire, dateTraitement, null, true);        // sera annulé
+			addMandatGeneral(entreprise, mandataire, dateTraitement, null, true);        // sera annulé
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
@@ -4564,41 +4429,38 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
-				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
+			addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
-				final Mandat mandat = addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, dateTraitement, true);
-				mandat.setPersonneContact("Alfonso Bertarello");
-				mandat.setNoTelephoneContact("0525551247");
+			final Mandat mandat = addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, dateTraitement, true);
+			mandat.setPersonneContact("Alfonso Bertarello");
+			mandat.setNoTelephoneContact("0525551247");
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = mandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = mandataire.getNumero();
+			return ids1;
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
@@ -4660,32 +4522,29 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2010, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, null, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);
+			addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, null, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
@@ -4736,32 +4595,29 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 		final RegDate dateTraitement = RegDate.get();
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				addAdresseMandataireSuisse(entreprise, dateTraitement, null, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);     // sera annulée
+			addAdresseMandataireSuisse(entreprise, dateTraitement, null, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);     // sera annulée
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
@@ -4811,36 +4667,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 		final RegDate dateTraitement = RegDate.get();
 
-		final Long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Etablissement etb = addEtablissement();
-				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
-				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
+			final Etablissement etb = addEtablissement();
+			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
+			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
-				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
+			addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
-				addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, dateTraitement, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);
+			addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, dateTraitement, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
@@ -4910,36 +4763,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la communauté SA");
-				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
+			final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la communauté SA");
+			addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = futurMandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = futurMandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5018,36 +4868,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la communauté SA");
-				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
+			final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la communauté SA");
+			addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = futurMandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = futurMandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5128,36 +4975,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
+			final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = futurMandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = futurMandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5242,36 +5086,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
+			final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = futurMandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = futurMandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5356,36 +5197,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
+			final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = futurMandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = futurMandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5477,36 +5315,33 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
+			final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = futurMandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = futurMandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5587,47 +5422,44 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire2;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				{
-					final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-					addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-					addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-					final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-					adresse.setNumeroMaison("42");
-					addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));     // même IDE dans les deux cas de mandataire
-					ids.idMandataire1 = futurMandataire.getNumero();
-				}
-				{
-					final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-					addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au la bonne vôtre SARL");
-					addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-					final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Chur.Grabenstrasse);        // servira de défaut pour l'adresse de représentation
-					adresse.setNumeroMaison("24");
-					addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));     // même IDE dans les deux cas de mandataire
-					ids.idMandataire2 = futurMandataire.getNumero();
-				}
-
-				return ids;
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			{
+				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+				adresse.setNumeroMaison("42");
+				addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));     // même IDE dans les deux cas de mandataire
+				ids1.idMandataire1 = futurMandataire.getNumero();
 			}
+			{
+				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au la bonne vôtre SARL");
+				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Chur.Grabenstrasse);        // servira de défaut pour l'adresse de représentation
+				adresse.setNumeroMaison("24");
+				addIdentificationEntreprise(futurMandataire, NumeroIDEHelper.normalize(ideMandataire));     // même IDE dans les deux cas de mandataire
+				ids1.idMandataire2 = futurMandataire.getNumero();
+			}
+
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5706,34 +5538,31 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 		final String ideMandataire = "CHE429111243";        // inconnu...
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
 
-				addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+			addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5824,37 +5653,34 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 		final String ideMandataire = "CHE429111243";
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(futurMandataire, ideMandataire);
+			final Entreprise futurMandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(futurMandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(futurMandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(futurMandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(futurMandataire, ideMandataire);
 
-				final AdresseMandataireSuisse adresseMandataire = addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, null, TypeMandat.GENERAL, "Chapi chapo", MockRue.Lausanne.AvenueGabrielDeRumine);
-				adresseMandataire.setWithCopy(false);
-				adresseMandataire.setNumeroMaison("17");
+			final AdresseMandataireSuisse adresseMandataire = addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, null, TypeMandat.GENERAL, "Chapi chapo", MockRue.Lausanne.AvenueGabrielDeRumine);
+			adresseMandataire.setWithCopy(false);
+			adresseMandataire.setNumeroMaison("17");
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -5949,38 +5775,35 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(mandataire, ideMandataire);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(mandataire, ideMandataire);
 
-				addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+			addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = mandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = mandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -6074,39 +5897,36 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(mandataire, ideMandataire);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(mandataire, ideMandataire);
 
-				final Mandat mandat = addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
-				mandat.setNoTelephoneContact(oldTelContact);
+			final Mandat mandat = addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+			mandat.setNoTelephoneContact(oldTelContact);
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = mandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = mandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -6198,38 +6018,35 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(mandataire, ideMandataire);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(mandataire, ideMandataire);
 
-				addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+			addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = mandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = mandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -6308,38 +6125,35 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			long idMandataire;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
-				addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
-				final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
-				adresse.setNumeroMaison("42");
-				addIdentificationEntreprise(mandataire, ideMandataire);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+			addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+			adresse.setNumeroMaison("42");
+			addIdentificationEntreprise(mandataire, ideMandataire);
 
-				addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+			addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
 
-				final Ids ids = new Ids();
-				ids.idEntreprise = entreprise.getNumero();
-				ids.idMandataire = mandataire.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idMandataire = mandataire.getNumero();
+			return ids1;
 		});
 
 		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
@@ -6423,26 +6237,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2009, 8, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (pas de numéro IDE, adresse non-reconnue)
@@ -6490,32 +6301,29 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2009, 8, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				entreprise.setPersonneContact("Le Chef");
-				entreprise.setNumeroTelephonePortable("0789999999");
-				entreprise.setNumeroTelephonePrive("0219999999");
-				entreprise.setNumeroTelephoneProfessionnel("0213169999");
-				entreprise.setNumeroTelecopie("0213160000");
+			entreprise.setPersonneContact("Le Chef");
+			entreprise.setNumeroTelephonePortable("0789999999");
+			entreprise.setNumeroTelephonePrive("0219999999");
+			entreprise.setNumeroTelephoneProfessionnel("0213169999");
+			entreprise.setNumeroTelecopie("0213160000");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -6567,32 +6375,29 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2009, 8, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				entreprise.setPersonneContact("Le Chef");
-				entreprise.setNumeroTelephonePortable("0789999999");
-				entreprise.setNumeroTelephonePrive("0219999999");
-				entreprise.setNumeroTelephoneProfessionnel("0213169999");
-				entreprise.setNumeroTelecopie("0213160000");
+			entreprise.setPersonneContact("Le Chef");
+			entreprise.setNumeroTelephonePortable("0789999999");
+			entreprise.setNumeroTelephonePrive("0219999999");
+			entreprise.setNumeroTelephoneProfessionnel("0213169999");
+			entreprise.setNumeroTelecopie("0213160000");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (on notera l'absence de majuscules dans "le chef")
@@ -6719,32 +6524,29 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2009, 8, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				entreprise.setPersonneContact("Le Chef");
-				entreprise.setNumeroTelephonePortable("0789999999");
-				entreprise.setNumeroTelephonePrive("0219999999");
-				entreprise.setNumeroTelephoneProfessionnel("0213169999");
-				entreprise.setNumeroTelecopie("0213160000");
+			entreprise.setPersonneContact("Le Chef");
+			entreprise.setNumeroTelephonePortable("0789999999");
+			entreprise.setNumeroTelephonePrive("0219999999");
+			entreprise.setNumeroTelephoneProfessionnel("0213169999");
+			entreprise.setNumeroTelecopie("0213160000");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour (juste ajout d'un titre sur le nom déjà connu)
@@ -6797,32 +6599,29 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2009, 8, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				entreprise.setPersonneContact("Le Chef");
-				entreprise.setNumeroTelephonePortable("0789999999");
-				entreprise.setNumeroTelephonePrive("0219999999");
-				entreprise.setNumeroTelephoneProfessionnel("0213169999");
-				entreprise.setNumeroTelecopie("0213160000");
+			entreprise.setPersonneContact("Le Chef");
+			entreprise.setNumeroTelephonePortable("0789999999");
+			entreprise.setNumeroTelephonePrive("0219999999");
+			entreprise.setNumeroTelephoneProfessionnel("0213169999");
+			entreprise.setNumeroTelecopie("0213160000");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -6875,32 +6674,29 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2009, 8, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				entreprise.setPersonneContact("Le Chef");
-				entreprise.setNumeroTelephonePortable("0789999999");
-				entreprise.setNumeroTelephonePrive("0219999999");
-				entreprise.setNumeroTelephoneProfessionnel("0213169999");
-				entreprise.setNumeroTelecopie("0213160000");
+			entreprise.setPersonneContact("Le Chef");
+			entreprise.setNumeroTelephonePortable("0789999999");
+			entreprise.setNumeroTelephonePrive("0219999999");
+			entreprise.setNumeroTelephoneProfessionnel("0213169999");
+			entreprise.setNumeroTelecopie("0213160000");
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -6952,26 +6748,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2009, 8, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 18);
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee, 7, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// réception des données de retour
@@ -7033,29 +6826,26 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebut = RegDate.get(anneeInitiale - 1, 1, 1);
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebut, null, "Entreprise Dugenou");
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);      // initialement, bouclements tous les ans au 30.06
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Entreprise Dugenou");
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);      // initialement, bouclements tous les ans au 30.06
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 
-				final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeInitiale);
-				final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeInitiale + 1);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfCourante);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
+			final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeInitiale);
+			final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeInitiale + 1);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfCourante);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
-				addEtatDeclarationRetournee(di, date(anneeInitiale, 11, 1));
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
+			addEtatDeclarationRetournee(di, date(anneeInitiale, 11, 1));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// arrivée du contenu de la DI avec un changement de PF -> année suivante (l'ancienne PF de la DI se retrouve alors sans bouclement du tout...)
@@ -7143,29 +6933,26 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebut = RegDate.get(anneeInitiale, 1, 1);
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebut, null, "Entreprise Dugenou");
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);      // initialement, bouclements tous les ans au 30.06
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Entreprise Dugenou");
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);      // initialement, bouclements tous les ans au 30.06
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 
-				final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeInitiale);
-				final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeInitiale + 1);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfCourante);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
+			final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeInitiale);
+			final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeInitiale + 1);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfCourante);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
-				addEtatDeclarationRetournee(di, date(anneeInitiale + 1, 1, 20));
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
+			addEtatDeclarationRetournee(di, date(anneeInitiale + 1, 1, 20));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// arrivée du contenu de la DI avec un changement de PF -> année suivante (l'ancienne PF de la DI se retrouve alors sans bouclement du tout, mais ce n'est pas grave, car c'est la première...)
@@ -7278,30 +7065,27 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebut = RegDate.get(anneeInitiale, 1, 1);
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addRaisonSociale(entreprise, dateDebut, null, "Entreprise Dugenou");
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);      // initialement, bouclements tous les ans au 30.06
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Entreprise Dugenou");
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);      // initialement, bouclements tous les ans au 30.06
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 
-				final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeInitiale);
-				final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeInitiale + 1);
-				addPeriodeFiscale(anneeInitiale + 2);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfCourante);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
+			final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeInitiale);
+			final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeInitiale + 1);
+			addPeriodeFiscale(anneeInitiale + 2);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfCourante);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
-				addEtatDeclarationRetournee(di, date(anneeInitiale + 1, 1, 20));
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
+			addEtatDeclarationRetournee(di, date(anneeInitiale + 1, 1, 20));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// arrivée du contenu de la DI avec un changement de PF -> année + 2 (l'ancienne PF de la DI se retrouve alors sans bouclement du tout, ce qui n'est pas grave, puisque c'est
@@ -7393,28 +7177,25 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		final RegDate dateDebut = date(2016, 4, 27);
 
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 
-				final PeriodeFiscale pfInitiale = addPeriodeFiscale(dateDebut.year());
-				final PeriodeFiscale pfFinale = addPeriodeFiscale(dateDebut.year() + 1);
-				final ModeleDocument mdInitial = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
-				final ModeleDocument mdFinal = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitial);
-				addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
-				addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
+			final PeriodeFiscale pfInitiale = addPeriodeFiscale(dateDebut.year());
+			final PeriodeFiscale pfFinale = addPeriodeFiscale(dateDebut.year() + 1);
+			final ModeleDocument mdInitial = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitial);
+			addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
+			addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(dateDebut.year() + 1, 12, 31), null, null, null, null, null, null);
@@ -7494,28 +7275,25 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		final RegDate dateDebut = date(2016, 4, 27);
 
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 
-				final PeriodeFiscale pfFinale = addPeriodeFiscale(dateDebut.year() - 1);
-				final PeriodeFiscale pfInitiale = addPeriodeFiscale(dateDebut.year());
-				final ModeleDocument mdFinal = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
-				final ModeleDocument mdInitial = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitial);
-				addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
-				addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
+			final PeriodeFiscale pfFinale = addPeriodeFiscale(dateDebut.year() - 1);
+			final PeriodeFiscale pfInitiale = addPeriodeFiscale(dateDebut.year());
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
+			final ModeleDocument mdInitial = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitial);
+			addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
+			addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(dateDebut.year() - 1, 12, 31), null, null, null, null, null, null);
@@ -7587,29 +7365,26 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		final RegDate dateDebut = date(2016, 4, 27);
 
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(dateDebut.year());
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
-				addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
+			final PeriodeFiscale pf = addPeriodeFiscale(dateDebut.year());
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
+			addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
 
-				// on ajoute une adresse dont la date de début de validité est postérieure à la date de quittance de la DI
-				addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(dateDebut.year() + 1, 2, 14), null, MockRue.Echallens.RouteDeMoudon);
+			// on ajoute une adresse dont la date de début de validité est postérieure à la date de quittance de la DI
+			addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(dateDebut.year() + 1, 2, 14), null, MockRue.Echallens.RouteDeMoudon);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
         final AdresseRaisonSociale adresseCourrier = new AdresseRaisonSociale.Brutte("Ma grande entreprise", "Avenue du 14 avril 12", null, null, null, null, "1020", "Renens VD");
@@ -7668,26 +7443,23 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		final RegDate dateDebut = date(2016, 4, 27);
 
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(dateDebut.year());
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
-				addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
+			final PeriodeFiscale pf = addPeriodeFiscale(dateDebut.year());
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
+			addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		final DestinataireAdresse destinataire = new DestinataireAdresse.Personne(null, "François", "Morin", "Gérance");
@@ -7761,33 +7533,30 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate dateDebutEntreprise = date(2010, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
 
-		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite Association qui va bien");
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
-				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+		final long idEntreprise = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite Association qui va bien");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, pf);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
-				addEtatDeclarationRetournee(di, dateQuittance);
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
 
 
-				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
-				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
+			addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
-				addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+			addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 
@@ -7795,7 +7564,6 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (en particulier, pas de mandataire)
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
-		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {

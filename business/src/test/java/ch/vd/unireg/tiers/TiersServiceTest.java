@@ -33,11 +33,23 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalParente;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
@@ -61,19 +73,6 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
-import ch.vd.unireg.adresse.AdresseGenerique;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.adresse.AdresseTiers;
-import ch.vd.unireg.adresse.TypeAdresseFiscale;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.declaration.PeriodeFiscale;
-import ch.vd.unireg.declaration.Periodicite;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalParente;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.dao.DecisionAciDAO;
@@ -468,8 +467,7 @@ public class TiersServiceTest extends BusinessTest {
 			fail("une erreur aurait du se produire : impossible de determiner la nationalité de Pierre");
 		}
 		catch (Exception e) {
-			assertTrue("Message d'erreur incorrect", e.getMessage().equals(
-					"Impossible de déterminer la nationalité de l'individu " + NUMERO_INDIVIDU));
+			assertEquals("Message d'erreur incorrect", e.getMessage(), "Impossible de déterminer la nationalité de l'individu " + NUMERO_INDIVIDU);
 		}
 	}
 
@@ -761,7 +759,7 @@ public class TiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				ids.noCtbPourAnnulation = addHabitant(noIndividu).getNumero();
 				return null;
 			}
@@ -772,7 +770,7 @@ public class TiersServiceTest extends BusinessTest {
 		// premier essai, le "get par numéro d'individu" doit fonctionner
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				assertNotNull(pp);
 				assertEquals(ids.noCtbPourAnnulation, pp.getNumero());
@@ -786,7 +784,7 @@ public class TiersServiceTest extends BusinessTest {
 		// deuxième essai, maintenant que le tiers a été annulé, le "get par numéro d'individu" ne doit plus fonctionner
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				assertNull(pp);
 				return null;
@@ -796,7 +794,7 @@ public class TiersServiceTest extends BusinessTest {
 		// création d'un deuxième tiers avec le même numéro d'individu -> il devait alors sortir du "get par numéro d'individu"
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				ids.noCtbAutre = addHabitant(noIndividu).getNumero();
 				return null;
 			}
@@ -808,7 +806,7 @@ public class TiersServiceTest extends BusinessTest {
 		// le "get par numéro d'individu" doit maintenant retourner le deuxième tiers
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				assertNotNull(pp);
 				assertEquals(ids.noCtbAutre, pp.getNumero());
@@ -826,7 +824,7 @@ public class TiersServiceTest extends BusinessTest {
 		// le "get par numéro d'individu" doit maintenant exploser avec une exception bien précise...
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				try {
 					tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -866,7 +864,7 @@ public class TiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique habitant = addHabitant(noIndividu);
 				addForPrincipal(habitant, date(2001, 9, 11), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 
@@ -880,7 +878,7 @@ public class TiersServiceTest extends BusinessTest {
 		// premier essai, le "get par numéro d'individu" doit fonctionner
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				assertNotNull(pp);
 				assertEquals(ids.noCtbPourDesactivation, pp.getNumero());
@@ -896,7 +894,7 @@ public class TiersServiceTest extends BusinessTest {
 		// deuxième essai, maintenant que le tiers a été désactivé, le "get par numéro d'individu" ne doit plus fonctionner
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				assertNull(pp);
 				return null;
@@ -906,7 +904,7 @@ public class TiersServiceTest extends BusinessTest {
 		// création d'un deuxième tiers avec le même numéro d'individu -> il devait alors sortir du "get par numéro d'individu"
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique habitant = addHabitant(noIndividu);
 				addForPrincipal(habitant, date(2001, 9, 11), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
 
@@ -921,7 +919,7 @@ public class TiersServiceTest extends BusinessTest {
 		// le "get par numéro d'individu" doit maintenant retourner le deuxième tiers
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				assertNotNull(pp);
 				assertEquals(ids.noCtbAutre, pp.getNumero());
@@ -939,7 +937,7 @@ public class TiersServiceTest extends BusinessTest {
 		// le "get par numéro d'individu" doit maintenant exploser avec une exception bien précise...
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				try {
 					tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -968,7 +966,7 @@ public class TiersServiceTest extends BusinessTest {
 		// le "get par numéro d'individu" doit maintenant retourner le deuxième tiers
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				assertNotNull(pp);
 				assertEquals(ids.noCtbDoublonNonAnnule, pp.getNumero());
@@ -985,7 +983,7 @@ public class TiersServiceTest extends BusinessTest {
 		// le "get par numéro d'individu" doit maintenant exploser avec une exception bien précise...
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				try {
 					tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
@@ -1050,7 +1048,7 @@ public class TiersServiceTest extends BusinessTest {
 		final Numeros numeros = new Numeros();
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				{
 					// Personne seule
 					PersonnePhysique pierre = new PersonnePhysique(true);
@@ -1180,15 +1178,15 @@ public class TiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		/**
-		 * Une personne avec deux ménages :
-		 *
-		 *  o [1990,1,1] à [2000,1,1]
-		 *  o [2004,1,1] à ...
-		 */
+		//
+		// Une personne avec deux ménages :
+		//
+		// o [1990,1,1] à [2000,1,1]
+		// o [2004,1,1] à ...
+		//
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				PersonnePhysique personne = addNonHabitant("Jean", "Sairien", date(1990, 9, 9), Sexe.MASCULIN);
 				MenageCommun menage1 = (MenageCommun) tiersDAO.save(new MenageCommun());
 				MenageCommun menage2 = (MenageCommun) tiersDAO.save(new MenageCommun());
@@ -1311,7 +1309,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Ids execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) {
 
 				// Un contribuable avec deux fors principaux adjacent
 				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1376,7 +1374,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				// Un contribuable avec deux fors principaux non-adjacents
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1418,7 +1416,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				// Un contribuable décédé
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1461,7 +1459,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				// Un contribuable avec deux fors principaux non-adjacents
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1512,7 +1510,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Ids execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) {
 
 				// Un contribuable avec deux fors principaux adjacent
 				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1952,7 +1950,7 @@ public class TiersServiceTest extends BusinessTest {
 	public void testGetForGestionContribuableDeuxForsSecondairesConsecutifs() {
 
 		// Contribuable avec deux fors secondaires
-		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
 		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,date(2002, 12, 31),MotifFor.VENTE_IMMOBILIER,MockCommune.Lausanne.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(c, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -2006,7 +2004,7 @@ public class TiersServiceTest extends BusinessTest {
 	public void testGetForGestionContribuableUnForPrincipalOuvertEtUnForSecondaireOuvert() {
 
 		// Contribuable avec un for principal ouvert et un for secondaire ouvert
-		PersonnePhysique c =addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c =addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.ARRIVEE_HC, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Moudon.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
 
@@ -2415,6 +2413,7 @@ For principal	         Mode imposition: ORDINAIRE         |                     
 		final RegDate dateDebutForAvecDepartHS = date(2001, 1, 1);
 		final RegDate dateDebutForSecondaire = date(2001, 1, 1);
 		final RegDate dateDebutForAvecDepartHC = date(2014, 6, 15);
+		//noinspection UnnecessaryLocalVariable
 		final RegDate dateFinForSecondaire = dateFinForAvecDepartHS;
 		addForPrincipal(c, dateDebutForAvecDepartHS, MotifFor.ARRIVEE_HC, dateFinForAvecDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 		final RegDate dateFinForHC = date(2014, 10, 1);
@@ -2544,7 +2543,7 @@ debut PF                                                                        
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableDepartHorsCantonEtUnForSecondaire() {
 
-		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		final RegDate dateDebutForAvecDepartHC = date(2001, 1, 1);
 		final RegDate dateFinForAvecDepartHC = date(2014, 6, 14);
 		addForPrincipal(c, dateDebutForAvecDepartHC, MotifFor.ARRIVEE_HC, dateFinForAvecDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne, MotifRattachement.DOMICILE,
@@ -2576,7 +2575,7 @@ debut PF                                                                        
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableDepartHorsCantonMixte2EtUnForSecondaire() {
 
-		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 
 		final RegDate dateDebutForAvecDepartHC = date(2001, 1, 1);
 		final RegDate dateFinForAvecDepartHC = date(2014, 6, 14);
@@ -2609,7 +2608,7 @@ debut PF                                                                        
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableDepartHorsCantonEtUnForSecondaireOuvert() {
 
-		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		final RegDate dateDebutForAvecDepartHC = date(2001, 1, 1);
 		final RegDate dateFinForAvecDepartHC = date(2014, 6, 14);
 		addForPrincipal(c, dateDebutForAvecDepartHC, MotifFor.ARRIVEE_HC, dateFinForAvecDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne, MotifRattachement.DOMICILE,
@@ -2628,7 +2627,7 @@ debut PF                                                                        
 	public void testGetForGestionContribuableUnForPrincipalHorsCantonEtDeuxForsSecondairesSeRecoupant() {
 
 		// Contribuable avec un for principal hors-canton et deux fors secondaires dans le canton se recoupant
-		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HC, null, null, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 
@@ -2658,7 +2657,7 @@ debut PF                                                                        
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalCantonFermeUnForPrincipalHorsCantonOuvertEtDeuxForsSecondairesSeRecoupant() {
 
-		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c, date(1990, 1, 1), MotifFor.ARRIVEE_HC, date(2000, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		addForPrincipal(c, date(2001, 1, 1), MotifFor.DEPART_HC, date(2001, 1, 1), MotifFor.DEPART_HS, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
@@ -2697,7 +2696,7 @@ debut PF                                                                        
 
 		// Cas du numéro Ofs du fors secondaire identique au dernier for principal vaudois
 		{
-			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 			addForPrincipal(c, date(1990, 1, 1), MotifFor.ARRIVEE_HC, date(1998, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bex, MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE);
 			addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HC, date(2001, 1, 1), MotifFor.DEPART_HS, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
@@ -2728,7 +2727,7 @@ debut PF                                                                        
 
 		// Cas où aucun for secondaire ne possède du numéro Ofs identique au dernier for principal vaudois
 		{
-			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 
 			addForPrincipal(c, date(1990, 1, 1), MotifFor.ARRIVEE_HC, date(1998, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE);
@@ -2760,7 +2759,7 @@ debut PF                                                                        
 
 		// Cas où il n'y a pas de dernier for principal vaudois
 		{
-			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 
 			addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HC, date(2001, 1, 1), MotifFor.DEPART_HS, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE);
@@ -2829,12 +2828,12 @@ debut PF                                                                        
 		assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c2, null));
 
 		// Contribuable avec deux fors principaux
-		PersonnePhysique c3 = addNonHabitant("john","Doe",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c3 = addNonHabitant("john","Doe",date(1973,2,3),Sexe.MASCULIN);
 
 		addForPrincipal(c3, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2002, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		addForPrincipal(c3, date(2003, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE,
-				ModeImposition.ORDINAIRE);;
+				ModeImposition.ORDINAIRE);
 		assertNull(tiersService.getDernierForGestionConnu(c3, date(1997, 3, 3)));
 		assertNull(tiersService.getDernierForGestionConnu(c3, date(1999, 12, 31)));
 		assertForGestion(date(2000, 1, 1), date(2002, 12, 31), MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c3, date(2000, 1, 1)));
@@ -2868,7 +2867,7 @@ debut PF                                                                        
 		assertForGestion(date(2003, 1, 1), null, MockCommune.Bussigny.getNoOFS(), tiersService.getDernierForGestionConnu(c5, null));
 
 		// Contribuable avec un for principal et un for secondaire
-		PersonnePhysique c6 = addNonHabitant("Saul","Goodman",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c6 = addNonHabitant("Saul","Goodman",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c6, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		addForSecondaire(c6,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
@@ -2878,7 +2877,7 @@ debut PF                                                                        
 		assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c6, null));
 
 		// Contribuable avec un for principal fermé et un for secondaires ouvert
-		PersonnePhysique c7 = addNonHabitant("Ava","Gartner",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c7 = addNonHabitant("Ava","Gartner",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c7, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2004, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		addForPrincipal(c7, date(2005, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
@@ -2891,7 +2890,7 @@ debut PF                                                                        
 		assertForGestion(date(2000, 1, 1), null, MockCommune.Bussigny.getNoOFS(), tiersService.getDernierForGestionConnu(c7, null));
 
 		// Contribuable avec un for principal ouvert et un for secondaire fermé
-		PersonnePhysique c8 = addNonHabitant("Melchior","Duvoisin",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c8 = addNonHabitant("Melchior","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c8, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		addForSecondaire(c8,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2004, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
@@ -2901,7 +2900,7 @@ debut PF                                                                        
 		assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c8, null));
 
 		// Contribuable avec deux fors principaux dont le plus récent est annulé
-		PersonnePhysique c9 = addNonHabitant("Eymeric","Onasys",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c9 = addNonHabitant("Eymeric","Onasys",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c9, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2002, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		ForFiscalPrincipal for9_2 = addForPrincipal(c9, date(2003, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE,
@@ -2915,7 +2914,7 @@ debut PF                                                                        
 		assertForGestion(date(2000, 1, 1), date(2002, 12, 31), MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c9, null));
 
 		// Contribuable avec deux fors principaux disjoints et fermés
-		PersonnePhysique c10 = addNonHabitant("Raul","Castro",date(1973,2,3),Sexe.MASCULIN);;
+		PersonnePhysique c10 = addNonHabitant("Raul","Castro",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c10, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2002, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE,ModeImposition.ORDINAIRE);
 		addForPrincipal(c10, date(2005, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Bussigny, MotifRattachement.DOMICILE,ModeImposition.ORDINAIRE);
 				assertNull(tiersService.getDernierForGestionConnu(c10, date(1999, 12, 31)));
@@ -2938,14 +2937,14 @@ debut PF                                                                        
 		// individu avec nationalité suisse
 		{
 			MockIndividu ind = new MockIndividu();
-			ind.setNationalites(Collections.<Nationalite>singletonList(new MockNationalite(null, null, MockPays.Suisse)));
+			ind.setNationalites(Collections.singletonList(new MockNationalite(null, null, MockPays.Suisse)));
 			assertTrue(tiersService.isSuisse(ind, null));
 		}
 
 		// individu avec nationalité française
 		{
 			MockIndividu ind = new MockIndividu();
-			ind.setNationalites(Collections.<Nationalite>singletonList(new MockNationalite(null, null, MockPays.France)));
+			ind.setNationalites(Collections.singletonList(new MockNationalite(null, null, MockPays.France)));
 			assertFalse(tiersService.isSuisse(ind, null));
 		}
 
@@ -2962,7 +2961,7 @@ debut PF                                                                        
 
 			try {
 				MockIndividu ind = new MockIndividu();
-				ind.setNationalites(Collections.<Nationalite>emptyList());
+				ind.setNationalites(Collections.emptyList());
 				tiersService.isSuisse(ind, null);
 				fail();
 			}
@@ -3127,7 +3126,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				// ancien habitant...
 				final PersonnePhysique monsieur = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
@@ -3148,7 +3147,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
 				tiersService.closeForFiscalPrincipal(mc, date(2001, 12, 31), MotifFor.DEMENAGEMENT_VD);
@@ -3161,7 +3160,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(mc, null);
@@ -3206,7 +3205,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				// ancien habitant...
 				final PersonnePhysique monsieur = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
@@ -3226,7 +3225,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
 				final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(date(2010, 2, 24));
@@ -3237,7 +3236,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(mc, null);
@@ -3260,47 +3259,38 @@ debut PF                                                                        
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleDernierForFiscalPrincipalDeuxFois() throws Exception {
 
-		final long ffpId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Simon", date(1930, 4, 3), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 5, 2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				return ffp.getId();
-			}
+		final long ffpId = doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Simon", date(1930, 4, 3), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 5, 2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			return ffp.getId();
 		});
 
 		// première annulation
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
-				assertNotNull(ffp);
-				assertFalse(ffp.isAnnule());
-				tiersService.annuleForFiscal(ffp);
-				return null;
-			}
+		doInNewTransactionAndSession(transactionStatus -> {
+			final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
+			assertNotNull(ffp);
+			assertFalse(ffp.isAnnule());
+			tiersService.annuleForFiscal(ffp);
+			return null;
 		});
 
 		// deuxième annulation
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
-				assertNotNull(ffp);
-				assertTrue(ffp.isAnnule());
-				try {
-					tiersService.annuleForFiscal(ffp);
-					fail("La deuxième annulation du for fiscal aurait dû être refusée !");
-				}
-				catch (ValidationException e) {
-					assertEmpty(e.getWarnings());
-					assertEquals(1, e.getErrors().size());
-
-					final String erreur = e.getErrors().get(0).getMessage();
-					assertEquals("Tous les fors principaux sont déjà annulés.", erreur);
-				}
-				return null;
+		doInNewTransactionAndSession(transactionStatus -> {
+			final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
+			assertNotNull(ffp);
+			assertTrue(ffp.isAnnule());
+			try {
+				tiersService.annuleForFiscal(ffp);
+				fail("La deuxième annulation du for fiscal aurait dû être refusée !");
 			}
+			catch (ValidationException e) {
+				assertEmpty(e.getWarnings());
+				assertEquals(1, e.getErrors().size());
+
+				final String erreur = e.getErrors().get(0).getMessage();
+				assertEquals("Tous les fors principaux sont déjà annulés.", erreur);
+			}
+			return null;
 		});
 	}
 
@@ -3325,7 +3315,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique achille = addHabitant(noIndAchille);
 				addForPrincipal(achille, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				idCtbHabitant.setValue(achille.getNumero());
@@ -3352,7 +3342,7 @@ debut PF                                                                        
 
 		final long noCtb = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				return nh.getNumero();
@@ -3369,7 +3359,7 @@ debut PF                                                                        
 
 		final long noCtb = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Neuchatel, ModeImposition.SOURCE);
 				return nh.getNumero();
@@ -3386,7 +3376,7 @@ debut PF                                                                        
 
 		final long noCtb = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				addForPrincipal(nh, date(2008, 1, 1), MotifFor.MAJORITE, MockPays.Espagne, ModeImposition.SOURCE);
 				return nh.getNumero();
@@ -3406,7 +3396,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 
 				final PersonnePhysique nh1 = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				addForPrincipal(nh1, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
@@ -3437,7 +3427,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				idCtbPrincipal.setValue(prn.getNumero());
@@ -3473,7 +3463,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				idCtbPrincipal.setValue(prn.getNumero());
@@ -3513,7 +3503,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				prn.setNumeroIndividu(noIndAchille);
@@ -3559,7 +3549,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				prn.setNumeroIndividu(noIndAchille);
@@ -3600,7 +3590,7 @@ debut PF                                                                        
 		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2011, 1, 1), null);
 				return dpi.getNumero();
@@ -3609,7 +3599,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 1, 1));
 				assertNotNull(periodicite);
@@ -3621,7 +3611,7 @@ debut PF                                                                        
 		//Ajout d'une première periodicite'
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
 				return null;
@@ -3630,7 +3620,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 1, 1));
 				assertNotNull(periodicite);
@@ -3643,7 +3633,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2012, 1, 1), null);
 				return null;
@@ -3652,7 +3642,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2012, 1, 1));
 				assertNotNull(periodicite);
@@ -3666,7 +3656,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2012, 1, 1), null);
 				return null;
@@ -3675,7 +3665,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 1, 1));
 				assertNotNull(periodicite);
@@ -3701,7 +3691,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2012, 1, 1), null);
 				return null;
@@ -3710,7 +3700,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2012, 1, 1));
 				assertNotNull(periodicite);
@@ -3729,7 +3719,7 @@ debut PF                                                                        
 	public void testAddForDebiteurPeriodePassee() throws Exception {
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				tiersService.addForDebiteur(dpi, date(2009,6,22), MotifFor.INDETERMINE, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
 				return dpi.getNumero();
@@ -3739,7 +3729,7 @@ debut PF                                                                        
 		//Ajout d'un second for avant le dernier for ouvert
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addForDebiteur(dpi, date(2009, 4, 1), MotifFor.INDETERMINE, date(2009, 6, 21), MotifFor.INDETERMINE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
 				return null;
@@ -3748,7 +3738,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 
 
@@ -3773,7 +3763,7 @@ debut PF                                                                        
 		//Ajout d'un troisième for après le dernier for ouvert
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addForDebiteur(dpi, date(2010,4,1), MotifFor.INDETERMINE, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
 				return null;
@@ -3782,7 +3772,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 
 				//on doit se retrouver avec 3 fors
@@ -3815,7 +3805,7 @@ debut PF                                                                        
 		final int anneePrecedente = anneeReference - 1;
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M11, date(anneeSuivante, 1, 1), null);
@@ -3834,7 +3824,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				RegDate dateDebut = tiersService.getDateDebutNouvellePeriodicite(dpi, PeriodiciteDecompte.UNIQUE);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M12, dateDebut, null);
@@ -3867,22 +3857,19 @@ debut PF                                                                        
 		final Ids ids = new Ids();
 
 		// on désactive temporairement la validation pour permettre de sauver un ménage-commun qui ne valide pas (manque les rapports d'appartenance ménage)
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSessionWithoutValidation(status -> {
 
-				// Crée un non-habitant tout nu
-				PersonnePhysique paul = addNonHabitant("Paul", "Ruccola", date(1968, 1, 1), Sexe.MASCULIN);
-				ids.paul = paul.getId();
+			// Crée un non-habitant tout nu
+			PersonnePhysique paul = addNonHabitant("Paul", "Ruccola", date(1968, 1, 1), Sexe.MASCULIN);
+			ids.paul = paul.getId();
 
-				// Crée un ménage commun avec un for principal ouvert
-				MenageCommun mc = new MenageCommun();
-				mc = hibernateTemplate.merge(mc);
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ids.mc = mc.getId();
+			// Crée un ménage commun avec un for principal ouvert
+			MenageCommun mc = new MenageCommun();
+			mc = hibernateTemplate.merge(mc);
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+			ids.mc = mc.getId();
 
-				return null;
-			}
+			return null;
 		});
 
 		// On vérifie l'état initial : paul doit valider mais pas le ménage commun
@@ -3915,7 +3902,7 @@ debut PF                                                                        
 		//Ajout d'une première periodicite et d'un for à la même date
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null);
 				addForDebiteur(dpi, date(2010, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
@@ -3925,7 +3912,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getDernierePeriodicite();
 				assertNotNull(periodicite);
@@ -3938,7 +3925,7 @@ debut PF                                                                        
 		//Ajout d'une première periodicite' et d'un for, le for ayant une date de début anterieur à celle de la périodicité
 		final long dpiId2 = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null);
 				addForDebiteur(dpi, date(2009, 6, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
@@ -3949,7 +3936,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);
 				Periodicite periodicite = dpi.getDernierePeriodicite();
 				assertNotNull(periodicite);
@@ -3968,7 +3955,7 @@ debut PF                                                                        
 		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur();
 				addForDebiteur(dpi, date(2009, 11, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				return dpi.getNumero();
@@ -3977,8 +3964,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final RegDate dateDebutPeriodicite = RegDate.get(2009, 6, 1);
+			public Object execute(TransactionStatus status) {
 				final DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
 				assertEquals(date(2009, 11, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.MENSUEL));
 				assertEquals(date(2009, 10, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.TRIMESTRIEL));
@@ -3997,7 +3983,7 @@ debut PF                                                                        
 		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur();
 				addForDebiteur(dpi, date(2009, 6, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				final PeriodeFiscale fiscale = addPeriodeFiscale(2009);
@@ -4009,7 +3995,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
 				assertEquals(date(2009, 10, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.MENSUEL));
 				assertEquals(date(2009, 10, 1), tiersService.getDateDebutNouvellePeriodicite(debiteur, PeriodiciteDecompte.TRIMESTRIEL));
@@ -4028,7 +4014,7 @@ debut PF                                                                        
 		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur();
 				return dpi.getNumero();
 			}
@@ -4036,7 +4022,7 @@ debut PF                                                                        
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final int anneeCourante = RegDate.get().year();
 				final RegDate dateDebutPeriodicite = RegDate.get(anneeCourante, 1, 1);
 				final DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
@@ -4055,26 +4041,20 @@ debut PF                                                                        
 	public void testGetRaisonSocialeActiviteEconomiqueSansTiersReferent() throws Exception {
 
 		// mise en place des données fiscales
-		final long etbId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etb = addEtablissement();
-				etb.setRaisonSociale("Une super raison sociale");
-				etb.setComplementNom("Titi");
-				return etb.getNumero();
-			}
+		final long etbId = doInNewTransactionAndSession(status -> {
+			final Etablissement etb = addEtablissement();
+			etb.setRaisonSociale("Une super raison sociale");
+			etb.setComplementNom("Titi");
+			return etb.getNumero();
 		});
 
 		// vérification de la raison sociale d'un débiteur sans tiers référent
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Etablissement etb = (Etablissement) tiersDAO.get(etbId);
-				final String raisonSociale = tiersService.getDerniereRaisonSociale(etb);
-				Assert.assertNotNull(raisonSociale);
-				Assert.assertEquals("Une super raison sociale", raisonSociale);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Etablissement etb = (Etablissement) tiersDAO.get(etbId);
+			final String raisonSociale = tiersService.getDerniereRaisonSociale(etb);
+			Assert.assertNotNull(raisonSociale);
+			Assert.assertEquals("Une super raison sociale", raisonSociale);
+			return null;
 		});
 	}
 
@@ -4090,33 +4070,27 @@ debut PF                                                                        
 		});
 
 		// mise en place des données fiscales
-		final long etbId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etb = addEtablissement();
-				etb.setRaisonSociale("Une super raison sociale");
-				etb.setComplementNom("Titi");
+		final long etbId = doInNewTransactionAndSession(status -> {
+			final Etablissement etb = addEtablissement();
+			etb.setRaisonSociale("Une super raison sociale");
+			etb.setComplementNom("Titi");
 
-				// on indique le tiers référent
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
-				tiersService.addActiviteEconomique(etb, pm, date(2009, 1, 1), false);
+			// on indique le tiers référent
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+			tiersService.addActiviteEconomique(etb, pm, date(2009, 1, 1), false);
 
-				return etb.getNumero();
-			}
+			return etb.getNumero();
 		});
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Etablissement etb = (Etablissement) tiersDAO.get(etbId);
-				final String raisonSociale = tiersService.getDerniereRaisonSociale(etb);
-				Assert.assertNotNull(raisonSociale);
-				final Set<RapportEntreTiers> rapportsEntreTiers = etb.getRapportsObjet();
-				Assert.assertNotNull(rapportsEntreTiers);
-				Assert.assertEquals(1, rapportsEntreTiers.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final Etablissement etb = (Etablissement) tiersDAO.get(etbId);
+			final String raisonSociale = tiersService.getDerniereRaisonSociale(etb);
+			Assert.assertNotNull(raisonSociale);
+			final Set<RapportEntreTiers> rapportsEntreTiers = etb.getRapportsObjet();
+			Assert.assertNotNull(rapportsEntreTiers);
+			Assert.assertEquals(1, rapportsEntreTiers.size());
+			return null;
 		});
 	}
 
@@ -4124,29 +4098,23 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurSansTiersReferent() throws Exception {
 
 		// mise en place des données fiscales
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				dpi.setNom1("Tartempion");
-				dpi.setNom2("Toto");
-				dpi.setComplementNom("Titi");
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+			dpi.setNom1("Tartempion");
+			dpi.setNom2("Toto");
+			dpi.setComplementNom("Titi");
+			return dpi.getNumero();
 		});
 
 		// vérification de la raison sociale d'un débiteur sans tiers référent
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
-				Assert.assertNotNull(raisonSociale);
-				Assert.assertEquals(2, raisonSociale.size());
-				Assert.assertEquals("Tartempion", raisonSociale.get(0));
-				Assert.assertEquals("Toto", raisonSociale.get(1));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+			Assert.assertNotNull(raisonSociale);
+			Assert.assertEquals(2, raisonSociale.size());
+			Assert.assertEquals("Tartempion", raisonSociale.get(0));
+			Assert.assertEquals("Toto", raisonSociale.get(1));
+			return null;
 		});
 	}
 
@@ -4162,33 +4130,27 @@ debut PF                                                                        
 		});
 
 		// mise en place des données fiscales
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				dpi.setNom1("Tartempion");
-				dpi.setNom2("Toto");
-				dpi.setComplementNom("Titi");
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+			dpi.setNom1("Tartempion");
+			dpi.setNom2("Toto");
+			dpi.setComplementNom("Titi");
 
-				// on indique le tiers référent
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
-				tiersService.addContactImpotSource(dpi, pm, date(2009, 1, 1));
+			// on indique le tiers référent
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+			tiersService.addContactImpotSource(dpi, pm, date(2009, 1, 1));
 
-				return dpi.getNumero();
-			}
+			return dpi.getNumero();
 		});
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
-				Assert.assertNotNull(raisonSociale);
-				Assert.assertEquals(1, raisonSociale.size());
-				Assert.assertEquals(MockOrganisationFactory.NESTLE.getNom().get(0).getPayload(), raisonSociale.get(0));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+			Assert.assertNotNull(raisonSociale);
+			Assert.assertEquals(1, raisonSociale.size());
+			Assert.assertEquals(MockOrganisationFactory.NESTLE.getNom().get(0).getPayload(), raisonSociale.get(0));
+			return null;
 		});
 	}
 
@@ -4196,33 +4158,27 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentPersonnePhysique() throws Exception {
 
 		// mise en place des données fiscales
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				dpi.setNom1("Tartempion");
-				dpi.setNom2("Toto");
-				dpi.setComplementNom("Titi");
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+			dpi.setNom1("Tartempion");
+			dpi.setNom2("Toto");
+			dpi.setComplementNom("Titi");
 
-				// on indique le tiers référent
-				final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1956, 7, 4), Sexe.MASCULIN);
-				tiersService.addContactImpotSource(dpi, pp, date(2009, 1, 1));
+			// on indique le tiers référent
+			final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1956, 7, 4), Sexe.MASCULIN);
+			tiersService.addContactImpotSource(dpi, pp, date(2009, 1, 1));
 
-				return dpi.getNumero();
-			}
+			return dpi.getNumero();
 		});
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
-				Assert.assertNotNull(raisonSociale);
-				Assert.assertEquals(1, raisonSociale.size());
-				Assert.assertEquals("Albus Dumbledore", raisonSociale.get(0));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+			Assert.assertNotNull(raisonSociale);
+			Assert.assertEquals(1, raisonSociale.size());
+			Assert.assertEquals("Albus Dumbledore", raisonSociale.get(0));
+			return null;
 		});
 	}
 
@@ -4230,36 +4186,30 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentMenageCommun() throws Exception {
 
 		// mise en place des données fiscales
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				dpi.setNom1("Tartempion");
-				dpi.setNom2("Toto");
-				dpi.setComplementNom("Titi");
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+			dpi.setNom1("Tartempion");
+			dpi.setNom2("Toto");
+			dpi.setComplementNom("Titi");
 
-				// on indique le tiers référent
-				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1956, 7, 4), Sexe.MASCULIN);
-				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1956, 2, 4), Sexe.FEMININ);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, date(2001, 9, 11), null);
-				tiersService.addContactImpotSource(dpi, ensemble.getMenage(), date(2009, 1, 1));
+			// on indique le tiers référent
+			final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1956, 7, 4), Sexe.MASCULIN);
+			final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1956, 2, 4), Sexe.FEMININ);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, date(2001, 9, 11), null);
+			tiersService.addContactImpotSource(dpi, ensemble.getMenage(), date(2009, 1, 1));
 
-				return dpi.getNumero();
-			}
+			return dpi.getNumero();
 		});
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
-				Assert.assertNotNull(raisonSociale);
-				Assert.assertEquals(2, raisonSociale.size());
-				Assert.assertEquals("Vernon Dursley", raisonSociale.get(0));
-				Assert.assertEquals("Petunia Dursley", raisonSociale.get(1));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+			Assert.assertNotNull(raisonSociale);
+			Assert.assertEquals(2, raisonSociale.size());
+			Assert.assertEquals("Vernon Dursley", raisonSociale.get(0));
+			Assert.assertEquals("Petunia Dursley", raisonSociale.get(1));
+			return null;
 		});
 	}
 
@@ -4267,33 +4217,27 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentAutreCommunaute() throws Exception {
 
 		// mise en place des données fiscales
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				dpi.setNom1("Tartempion");
-				dpi.setNom2("Toto");
-				dpi.setComplementNom("Titi");
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+			dpi.setNom1("Tartempion");
+			dpi.setNom2("Toto");
+			dpi.setComplementNom("Titi");
 
-				// on indique le tiers référent
-				final AutreCommunaute ac = addAutreCommunaute("Hogwards college");
-				tiersService.addContactImpotSource(dpi, ac, date(2009, 1, 1));
+			// on indique le tiers référent
+			final AutreCommunaute ac = addAutreCommunaute("Hogwards college");
+			tiersService.addContactImpotSource(dpi, ac, date(2009, 1, 1));
 
-				return dpi.getNumero();
-			}
+			return dpi.getNumero();
 		});
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
-				Assert.assertNotNull(raisonSociale);
-				Assert.assertEquals(1, raisonSociale.size());
-				Assert.assertEquals("Hogwards college", raisonSociale.get(0));
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+			Assert.assertNotNull(raisonSociale);
+			Assert.assertEquals(1, raisonSociale.size());
+			Assert.assertEquals("Hogwards college", raisonSociale.get(0));
+			return null;
 		});
 	}
 
@@ -4301,35 +4245,29 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentCollectiviteAdministrative() throws Exception {
 
 		// mise en place des données fiscales
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				dpi.setNom1("Tartempion");
-				dpi.setNom2("Toto");
-				dpi.setComplementNom("Titi");
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+			dpi.setNom1("Tartempion");
+			dpi.setNom2("Toto");
+			dpi.setComplementNom("Titi");
 
-				// on indique le tiers référent
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
-				tiersService.addContactImpotSource(dpi, ca, date(2009, 1, 1));
+			// on indique le tiers référent
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
+			tiersService.addContactImpotSource(dpi, ca, date(2009, 1, 1));
 
-				return dpi.getNumero();
-			}
+			return dpi.getNumero();
 		});
 
 		// vérification de la raison sociale d'un débiteur avec tiers référent
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
-				Assert.assertNotNull(raisonSociale);
-				Assert.assertEquals(2, raisonSociale.size());
-				Assert.assertEquals(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet1(), raisonSociale.get(0));
-				Assert.assertEquals(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet2(), raisonSociale.get(1));
-				Assert.assertNull(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet3());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+			Assert.assertNotNull(raisonSociale);
+			Assert.assertEquals(2, raisonSociale.size());
+			Assert.assertEquals(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet1(), raisonSociale.get(0));
+			Assert.assertEquals(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet2(), raisonSociale.get(1));
+			Assert.assertNull(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet3());
+			return null;
 		});
 	}
 
@@ -4337,20 +4275,17 @@ debut PF                                                                        
 	public void testOuvertureForHorsCantonEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(status -> {
 
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
-				return pp.getNumero();
-			}
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+			return pp.getNumero();
 		});
 
 		// ouverture d'un for hors-canton
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
@@ -4366,20 +4301,17 @@ debut PF                                                                        
 	public void testOuvertureForHorsSuisseEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(status -> {
 
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
-				return pp.getNumero();
-			}
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+			return pp.getNumero();
 		});
 
 		// ouverture d'un for hors-canton
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
@@ -4395,20 +4327,17 @@ debut PF                                                                        
 	public void testOuvertureForVaudoisEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		final long ppId = doInNewTransactionAndSession(status -> {
 
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
-				return pp.getNumero();
-			}
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+			return pp.getNumero();
 		});
 
 		// ouverture d'un for hors-canton
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
@@ -4421,7 +4350,7 @@ debut PF                                                                        
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -4433,34 +4362,28 @@ debut PF                                                                        
 	public void testAnnulationForVaudoisSansForRestantEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 
 		// annulation du for vaudois -> le contribuable se retrouve sans aucun for (le blocage devrait alors être réactivé)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp);
-				Assert.assertNull(pp.getDernierForFiscalPrincipal());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			tiersService.annuleForFiscal(ffp);
+			Assert.assertNull(pp.getDernierForFiscalPrincipal());
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -4472,35 +4395,29 @@ debut PF                                                                        
 	public void testAnnulationForVaudoisAvecForVaudoisRestantEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ARRIVEE_HS, date(2005, 6, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE);
-				addForPrincipal(pp, date(2005, 6, 2), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 5, 12), MotifFor.ARRIVEE_HS, date(2005, 6, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+			addForPrincipal(pp, date(2005, 6, 2), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 
 		// annulation du dernier for vaudois -> le contribuable a encore un for vaudois ouvert -> pas de nouveau blocage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			tiersService.annuleForFiscal(ffp);
 
-				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(autreFfp);
-				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
-				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+			final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(autreFfp);
+			Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
+			Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				return null;
-			}
+			return null;
 		});
 	}
 
@@ -4508,40 +4425,34 @@ debut PF                                                                        
 	public void testAnnulationForVaudoisAvecForHorsCantonRestantEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
-				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HC, MockCommune.Renens);
-				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
+			addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HC, MockCommune.Renens);
+			addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 
 		// annulation du dernier for vaudois -> le contribuable n'a plus de for vaudois ouvert -> blocage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			tiersService.annuleForFiscal(ffp);
 
-				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(autreFfp);
-				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
-				Assert.assertEquals(MockCommune.Bern.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(autreFfp);
+			Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
+			Assert.assertEquals(MockCommune.Bern.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -4553,41 +4464,35 @@ debut PF                                                                        
 	public void testAnnulationForVaudoisAvecForHorsSuisseRestantEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
-				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
-				                 MotifRattachement.IMMEUBLE_PRIVE);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+			addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
+			                 MotifRattachement.IMMEUBLE_PRIVE);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 
 		// annulation du dernier for vaudois -> le contribuable n'a plus de for vaudois ouvert -> blocage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp);
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			tiersService.annuleForFiscal(ffp);
 
-				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(autreFfp);
-				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
-				Assert.assertEquals(MockPays.Allemagne.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(autreFfp);
+			Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
+			Assert.assertEquals(MockPays.Allemagne.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -4599,36 +4504,30 @@ debut PF                                                                        
 	public void testFermetureForVaudoisDecesEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 
 		// fermeture du for vaudois pour décès -> blocage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.VEUVAGE_DECES);
+			tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.VEUVAGE_DECES);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -4640,36 +4539,30 @@ debut PF                                                                        
 	public void testFermetureForVaudoisDepartHorsSuisseEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 
 		// fermeture du for vaudois pour décès -> blocage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.DEPART_HS);
+			tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.DEPART_HS);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -4681,36 +4574,30 @@ debut PF                                                                        
 	public void testFermetureForVaudoisDepartHorsCantonEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 
 		// fermeture du for vaudois pour décès -> blocage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
-				tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.DEPART_HC);
+			tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.DEPART_HC);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -4722,20 +4609,17 @@ debut PF                                                                        
 	public void testFermetureForVaudoisDemenagementVaudoisEtBlocageRemboursementAutomatique() throws Exception {
 
 		// mise en place d'un contribuable
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				pp.setBlocageRemboursementAutomatique(true);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+			pp.setBlocageRemboursementAutomatique(true);
+			return pp.getNumero();
 		});
 
 		// fermeture du for vaudois pour déménagement vaudois (avec ré-ouverture d'un autre for vaudois) -> déblocage
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 
@@ -4753,7 +4637,7 @@ debut PF                                                                        
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -4779,26 +4663,20 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long idMenage = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndM);
-				final PersonnePhysique mme = addHabitant(noIndMme);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				return ensemble.getMenage().getNumero();
-			}
+		final long idMenage = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndM);
+			final PersonnePhysique mme = addHabitant(noIndMme);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			return ensemble.getMenage().getNumero();
 		});
 
 		// test
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final MenageCommun menage = (MenageCommun) tiersDAO.get(idMenage);
-				final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(menage);
-				Assert.assertNotNull(noIndividu);
-				Assert.assertEquals(noIndM, (long) noIndividu);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(idMenage);
+			final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(menage);
+			Assert.assertNotNull(noIndividu);
+			Assert.assertEquals(noIndM, (long) noIndividu);
+			return null;
 		});
 	}
 
@@ -4820,34 +4698,28 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long idMenage = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addHabitant(noIndM);
-				final PersonnePhysique mme = addHabitant(noIndMme);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, dateMariage, null);
+		final long idMenage = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addHabitant(noIndM);
+			final PersonnePhysique mme = addHabitant(noIndMme);
+			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, dateMariage, null);
 
-				// annulation des rapports entre tiers
-				final Set<RapportEntreTiers> rapports = ensemble.getMenage().getRapportsObjet();
-				for (RapportEntreTiers rapport : rapports) {
-					if (rapport instanceof AppartenanceMenage) {
-						rapport.setAnnule(true);
-					}
+			// annulation des rapports entre tiers
+			final Set<RapportEntreTiers> rapports = ensemble.getMenage().getRapportsObjet();
+			for (RapportEntreTiers rapport : rapports) {
+				if (rapport instanceof AppartenanceMenage) {
+					rapport.setAnnule(true);
 				}
-
-				return ensemble.getMenage().getNumero();
 			}
+
+			return ensemble.getMenage().getNumero();
 		});
 
 		// test
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final MenageCommun menage = (MenageCommun) tiersDAO.get(idMenage);
-				final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(menage);
-				Assert.assertNull(noIndividu);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final MenageCommun menage = (MenageCommun) tiersDAO.get(idMenage);
+			final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(menage);
+			Assert.assertNull(noIndividu);
+			return null;
 		});
 	}
 
@@ -4931,70 +4803,61 @@ debut PF                                                                        
 		final RegDate dateFermetureFor = date(2009, 10, 31);
 
 		// mise en place
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebut);
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebut);
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
-				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
-				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
+			final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+			final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
 
-				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
-				addRapportPrestationImposable(dpi, pp2, dateDebut, dateFermetureFor.addMonths(-1), false);
+			addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+			addRapportPrestationImposable(dpi, pp2, dateDebut, dateFermetureFor.addMonths(-1), false);
 
-				return dpi.getNumero();
-			}
+			return dpi.getNumero();
 		});
 
 		// fermeture du for débiteur
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable forDebiteur = dpi.getForDebiteurPrestationImposableAt(null);
-				assertNotNull(forDebiteur);
+			final ForDebiteurPrestationImposable forDebiteur = dpi.getForDebiteurPrestationImposableAt(null);
+			assertNotNull(forDebiteur);
 
-				tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, false);
-				return null;
-			}
+			tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, false);
+			return null;
 		});
 
 		// vérification des rapports de travail : ils ne doivent pas avoir bougé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
-				assertNotNull(rapports);
-				assertEquals(2, rapports.size());
+			final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+			assertNotNull(rapports);
+			assertEquals(2, rapports.size());
 
-				boolean foundOpen = false;
-				boolean foundClosed = false;
-				for (RapportEntreTiers r : rapports) {
-					assertNotNull(r);
-					assertInstanceOf(RapportPrestationImposable.class, r);
-					assertEquals(dateDebut, r.getDateDebut());
-					assertFalse(r.isAnnule());
-					if (r.getDateFin() == null) {
-						assertFalse(foundOpen);
-						foundOpen = true;
-					}
-					else {
-						assertFalse(foundClosed);
-						assertEquals(dateFermetureFor.addMonths(-1), r.getDateFin());
-						foundClosed = true;
-					}
+			boolean foundOpen = false;
+			boolean foundClosed = false;
+			for (RapportEntreTiers r : rapports) {
+				assertNotNull(r);
+				assertInstanceOf(RapportPrestationImposable.class, r);
+				assertEquals(dateDebut, r.getDateDebut());
+				assertFalse(r.isAnnule());
+				if (r.getDateFin() == null) {
+					assertFalse(foundOpen);
+					foundOpen = true;
 				}
-				assertTrue(foundOpen);
-				assertTrue(foundClosed);
-
-				return null;
+				else {
+					assertFalse(foundClosed);
+					assertEquals(dateFermetureFor.addMonths(-1), r.getDateFin());
+					foundClosed = true;
+				}
 			}
+			assertTrue(foundOpen);
+			assertTrue(foundClosed);
+
+			return null;
 		});
 	}
 
@@ -5005,81 +4868,72 @@ debut PF                                                                        
 		final RegDate dateFermetureFor = date(2009, 10, 31);
 
 		// mise en place
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebut);
-				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebut);
+			addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
-				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
-				final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
+			final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+			final PersonnePhysique pp2 = addNonHabitant("Weasley", "Ronnald", date(1980, 5, 12), Sexe.MASCULIN);
 
-				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
-				addRapportPrestationImposable(dpi, pp2, dateDebut, dateFermetureFor.addMonths(-1), false);
-				addRapportPrestationImposable(dpi, pp2, dateFermetureFor.addMonths(1), null, false);
+			addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+			addRapportPrestationImposable(dpi, pp2, dateDebut, dateFermetureFor.addMonths(-1), false);
+			addRapportPrestationImposable(dpi, pp2, dateFermetureFor.addMonths(1), null, false);
 
-				return dpi.getNumero();
-			}
+			return dpi.getNumero();
 		});
 
 		// fermeture du for débiteur
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final ForDebiteurPrestationImposable forDebiteur = dpi.getForDebiteurPrestationImposableAt(null);
-				assertNotNull(forDebiteur);
+			final ForDebiteurPrestationImposable forDebiteur = dpi.getForDebiteurPrestationImposableAt(null);
+			assertNotNull(forDebiteur);
 
-				tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, MotifFor.INDETERMINE, true);
-				return null;
-			}
+			tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteur, dateFermetureFor, MotifFor.INDETERMINE, true);
+			return null;
 		});
 
 		// vérification des rapports de travail : ils ne doivent pas avoir bougé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertNotNull(dpi);
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			assertNotNull(dpi);
 
-				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
-				assertNotNull(rapports);
-				assertEquals(3, rapports.size());
+			final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+			assertNotNull(rapports);
+			assertEquals(3, rapports.size());
 
-				final List<RapportEntreTiers> rapportsTries = new ArrayList<>(rapports);
-				Collections.sort(rapportsTries, new DateRangeComparator<>());
+			final List<RapportEntreTiers> rapportsTries = new ArrayList<>(rapports);
+			rapportsTries.sort(new DateRangeComparator<>());
 
-				// rapport déjà fermé -> pas modifié
-				{
-					final RapportEntreTiers r = rapportsTries.get(0);
-					assertNotNull(r);
-					assertInstanceOf(RapportPrestationImposable.class, r);
-					assertEquals(dateDebut, r.getDateDebut());
-					assertEquals(dateFermetureFor.addMonths(-1), r.getDateFin());
-					assertFalse(r.isAnnule());
-				}
-				// rapport précédemment ouvert à la date de fermeture -> fermé
-				{
-					final RapportEntreTiers r = rapportsTries.get(1);
-					assertNotNull(r);
-					assertInstanceOf(RapportPrestationImposable.class, r);
-					assertEquals(dateDebut, r.getDateDebut());
-					assertEquals(dateFermetureFor, r.getDateFin());
-					assertFalse(r.isAnnule());
-				}
-				// rapport précédemment ouvert après la date de fermeture du for -> annulé
-				{
-					final RapportEntreTiers r = rapportsTries.get(2);
-					assertNotNull(r);
-					assertInstanceOf(RapportPrestationImposable.class, r);
-					assertEquals(dateFermetureFor.addMonths(1), r.getDateDebut());
-					assertNull(r.getDateFin());
-					assertTrue(r.isAnnule());
-				}
-				return null;
+			// rapport déjà fermé -> pas modifié
+			{
+				final RapportEntreTiers r = rapportsTries.get(0);
+				assertNotNull(r);
+				assertInstanceOf(RapportPrestationImposable.class, r);
+				assertEquals(dateDebut, r.getDateDebut());
+				assertEquals(dateFermetureFor.addMonths(-1), r.getDateFin());
+				assertFalse(r.isAnnule());
 			}
+			// rapport précédemment ouvert à la date de fermeture -> fermé
+			{
+				final RapportEntreTiers r = rapportsTries.get(1);
+				assertNotNull(r);
+				assertInstanceOf(RapportPrestationImposable.class, r);
+				assertEquals(dateDebut, r.getDateDebut());
+				assertEquals(dateFermetureFor, r.getDateFin());
+				assertFalse(r.isAnnule());
+			}
+			// rapport précédemment ouvert après la date de fermeture du for -> annulé
+			{
+				final RapportEntreTiers r = rapportsTries.get(2);
+				assertNotNull(r);
+				assertInstanceOf(RapportPrestationImposable.class, r);
+				assertEquals(dateFermetureFor.addMonths(1), r.getDateDebut());
+				assertNull(r.getDateFin());
+				assertTrue(r.isAnnule());
+			}
+			return null;
 		});
 	}
 
@@ -5095,17 +4949,14 @@ debut PF                                                                        
 			long idmc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", RegDate.get(1974, 8, 3), Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", RegDate.get(1974, 8, 3), Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
 
-				final Ids ids = new Ids();
-				ids.idpp = pp.getNumero();
-				ids.idmc = couple.getMenage().getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idpp = pp.getNumero();
+			ids1.idmc = couple.getMenage().getNumero();
+			return ids1;
 		});
 
 		// pour l'instant, le rapport existant n'est pas annulé -> on ne doit pas être capable d'en ajouter un entre les même personnes aux mêmes dates
@@ -5186,7 +5037,7 @@ debut PF                                                                        
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
@@ -5199,7 +5050,7 @@ debut PF                                                                        
 		// Précondition : pas d'événement fiscal envoyé
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				assertEmpty(evenementFiscalDAO.getAll());
 				return null;
 			}
@@ -5208,7 +5059,7 @@ debut PF                                                                        
 		// Le fils devient majeur
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
@@ -5223,18 +5074,13 @@ debut PF                                                                        
 		// - un événement pour la fin d'autorité parentale
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
 				assertNotNull(events);
 				assertEquals(2, events.size());
 
 				final List<EvenementFiscal> tries = new ArrayList<>(events);
-				Collections.sort(tries, new Comparator<EvenementFiscal>() {
-					@Override
-					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+				tries.sort(Comparator.comparingLong(EvenementFiscal::getId));
 
 				final EvenementFiscalFor event0 = (EvenementFiscalFor) tries.get(0);
 				assertNotNull(event0);
@@ -5278,7 +5124,7 @@ debut PF                                                                        
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pere = addHabitant(indPere);
 				ids.pere = pere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
@@ -5291,7 +5137,7 @@ debut PF                                                                        
 		// Précondition : pas d'événement fiscal envoyé
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				assertEmpty(evenementFiscalDAO.getAll());
 				return null;
 			}
@@ -5300,7 +5146,7 @@ debut PF                                                                        
 		// Le fils devient majeur
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
@@ -5315,7 +5161,7 @@ debut PF                                                                        
 		// - il n'y a pas eu d'événement pour la fin d'autorité parentale
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
 				assertNotNull(events);
 				assertEquals(1, events.size());
@@ -5357,7 +5203,7 @@ debut PF                                                                        
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(mere, null, date(1990, 1, 1), null);
@@ -5372,7 +5218,7 @@ debut PF                                                                        
 		// Précondition : pas d'événement fiscal envoyé
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				assertEmpty(evenementFiscalDAO.getAll());
 				return null;
 			}
@@ -5381,7 +5227,7 @@ debut PF                                                                        
 		// Le fils devient majeur
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
@@ -5396,18 +5242,13 @@ debut PF                                                                        
 		// - un événement pour la fin d'autorité parentale associé au ménage commun de la mère
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
 				assertNotNull(events);
 				assertEquals(2, events.size());
 
 				final List<EvenementFiscal> tries = new ArrayList<>(events);
-				Collections.sort(tries, new Comparator<EvenementFiscal>() {
-					@Override
-					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+				tries.sort(Comparator.comparingLong(EvenementFiscal::getId));
 
 				final EvenementFiscalFor event0 = (EvenementFiscalFor) tries.get(0);
 				assertNotNull(event0);
@@ -5452,7 +5293,7 @@ debut PF                                                                        
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
@@ -5467,7 +5308,7 @@ debut PF                                                                        
 		// Précondition : pas d'événement fiscal envoyé
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				assertEmpty(evenementFiscalDAO.getAll());
 				return null;
 			}
@@ -5476,7 +5317,7 @@ debut PF                                                                        
 		// Le fils devient majeur
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
@@ -5491,7 +5332,7 @@ debut PF                                                                        
 		// - il n'y a pas eu d'événement pour la fin d'autorité parentale
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
 				assertNotNull(events);
 				assertEquals(1, events.size());
@@ -5544,7 +5385,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -5619,7 +5460,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -5692,7 +5533,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -5765,7 +5606,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -5845,7 +5686,7 @@ debut PF                                                                        
 
 		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Ids execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				final PersonnePhysique pere = addHabitant(indPere);
 				final PersonnePhysique fils = addHabitant(indFils);
@@ -5926,7 +5767,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -5954,7 +5795,7 @@ debut PF                                                                        
 		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
 		assertNotNull(enfantsForDeclaration);
 		assertEquals(1, enfantsForDeclaration.size());
-		assertEquals((Long) ids.fille, enfantsForDeclaration.get(0).getNumero());
+		assertEquals(ids.fille, enfantsForDeclaration.get(0).getNumero());
 	}
 
 	//Couple avec Enfant  ayant des EWID absents (oubli de saisie ?)
@@ -5999,7 +5840,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -6027,7 +5868,7 @@ debut PF                                                                        
 		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
 		assertNotNull(enfantsForDeclaration);
 		assertEquals(1, enfantsForDeclaration.size());
-		assertEquals((Long) ids.fille, enfantsForDeclaration.get(0).getNumero());
+		assertEquals(ids.fille, enfantsForDeclaration.get(0).getNumero());
 	}
 
 	//SIFISC-3053
@@ -6071,7 +5912,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -6143,7 +5984,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -6214,9 +6055,9 @@ debut PF                                                                        
 		final Ids ids = new Ids();
 
 
-		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+		doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -6277,16 +6118,15 @@ debut PF                                                                        
 
 		class Ids {
 			Long mere;
-			Long pere;
 			Long fils;
 			Long fille;
 		}
 		final Ids ids = new Ids();
 
 
-		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+		doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique fils = addHabitant(indFils);
@@ -6347,9 +6187,9 @@ debut PF                                                                        
 		}
 		final Ids ids = new Ids();
 
-		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+		doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -6370,7 +6210,6 @@ debut PF                                                                        
 
 
 		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
-		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
 		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
 		assertFalse(TiersHelper.hasParentsAvecEgidEwidDifferents(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
@@ -6416,9 +6255,9 @@ debut PF                                                                        
 		final Ids ids = new Ids();
 
 
-		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+		doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -6439,7 +6278,6 @@ debut PF                                                                        
 
 
 		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
-		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
 		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
 		assertTrue(TiersHelper.hasParentsAvecEgidEwidDifferents(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
@@ -6485,9 +6323,9 @@ debut PF                                                                        
 		final Ids ids = new Ids();
 
 
-		final long idCtb = doInNewTransaction(new TxCallback<Long>() {
+		doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -6508,7 +6346,6 @@ debut PF                                                                        
 
 
 		final PersonnePhysique pere = (PersonnePhysique) tiersDAO.get(ids.pere);
-		final PersonnePhysique mere = (PersonnePhysique) tiersDAO.get(ids.mere);
 		final PersonnePhysique fille = (PersonnePhysique) tiersDAO.get(ids.fille);
 		AdresseGenerique adressePere = adresseService.getAdresseFiscale(pere, TypeAdresseFiscale.DOMICILE, date(2011, 12, 31), false);
 		assertTrue(TiersHelper.hasParentsAvecEgidEwidDifferents(fille, pere, adressePere, date(2011, 12, 31), adresseService, tiersService));
@@ -6562,7 +6399,7 @@ debut PF                                                                        
 
 		final long idMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final PersonnePhysique mere = addHabitant(indMere);
 				ids.mere = mere.getId();
 				final PersonnePhysique pere = addHabitant(indPere);
@@ -6609,45 +6446,36 @@ debut PF                                                                        
 		}
 		final Ids ids = new Ids();
 		// mise en place des données fiscales
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
-				ids.idFor1 = addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, date(2010, 12, 31), MotifFor.INDETERMINE, MockCommune.Bussigny).getId();
-				ids.idFor2 = addForDebiteur(dpi, date(2011, 1, 1), MotifFor.INDETERMINE, date(2011, 9, 30), MotifFor.INDETERMINE, MockCommune.Aubonne).getId();
-				PersonnePhysique jean = addNonHabitant("Jean", "zep", null, Sexe.MASCULIN);
-				PersonnePhysique michel = addNonHabitant("michel", "zep", null, Sexe.MASCULIN);
-				ids.jeanId = jean.getNumero();
-				ids.michelId = michel.getNumero();
-				addRapportPrestationImposable(dpi, jean, date(2009, 1, 1), date(2009, 5, 12), false);
-				addRapportPrestationImposable(dpi, michel, date(2009, 1, 1), date(2011, 9, 30), false);
-				return dpi.getNumero();
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+			ids.idFor1 = addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, date(2010, 12, 31), MotifFor.INDETERMINE, MockCommune.Bussigny).getId();
+			ids.idFor2 = addForDebiteur(dpi, date(2011, 1, 1), MotifFor.INDETERMINE, date(2011, 9, 30), MotifFor.INDETERMINE, MockCommune.Aubonne).getId();
+			PersonnePhysique jean = addNonHabitant("Jean", "zep", null, Sexe.MASCULIN);
+			PersonnePhysique michel = addNonHabitant("michel", "zep", null, Sexe.MASCULIN);
+			ids.jeanId = jean.getNumero();
+			ids.michelId = michel.getNumero();
+			addRapportPrestationImposable(dpi, jean, date(2009, 1, 1), date(2009, 5, 12), false);
+			addRapportPrestationImposable(dpi, michel, date(2009, 1, 1), date(2011, 9, 30), false);
+			return dpi.getNumero();
 
-			}
 		});
 
 		// Reouverture du second for
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				ForFiscal forDebiteur = forFiscalDAO.get(ids.idFor2);
-				tiersService.reouvrirForDebiteur((ForDebiteurPrestationImposable) forDebiteur);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			ForFiscal forDebiteur = forFiscalDAO.get(ids.idFor2);
+			tiersService.reouvrirForDebiteur((ForDebiteurPrestationImposable) forDebiteur);
+			return null;
 		});
 
 
 		// vérification du for et du rapport ouvert
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				Assert.assertNull(dpi.getDernierForDebiteur().getDateFin());
-				final RapportEntreTiers rapportPrestation = dpi.getRapportObjetValidAt(RegDate.get(), TypeRapportEntreTiers.PRESTATION_IMPOSABLE);
-				Assert.assertNotNull(rapportPrestation);
-				Assert.assertEquals(ids.michelId, rapportPrestation.getSujetId());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+			Assert.assertNull(dpi.getDernierForDebiteur().getDateFin());
+			final RapportEntreTiers rapportPrestation = dpi.getRapportObjetValidAt(RegDate.get(), TypeRapportEntreTiers.PRESTATION_IMPOSABLE);
+			Assert.assertNotNull(rapportPrestation);
+			Assert.assertEquals(ids.michelId, rapportPrestation.getSujetId());
+			return null;
 		});
 	}
 
@@ -6668,33 +6496,27 @@ debut PF                                                                        
 		});
 
 		// création du ménage commun
-		final long idMenage = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				return mc.getNumero();
-			}
+		final long idMenage = doInNewTransactionAndSession(transactionStatus -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			return mc.getNumero();
 		});
 
 		// tentative de séparation à la veille du mariage
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateMariage);
-				try {
-					tiersService.closeAppartenanceMenage(couple.getPrincipal(), couple.getMenage(), dateMariage.getOneDayBefore());
-					Assert.fail("La fermeture du rapport d'appartenance ménage aurait dû être refusée");
-				}
-				catch (RapportEntreTiersException e) {
-					Assert.assertEquals(String.format("On ne peut fermer le rapport d'appartenance ménage avant sa date de début (%s)", RegDateHelper.dateToDisplayString(dateMariage)),
-					                    e.getMessage());
-				}
-				return null;
+		doInNewTransactionAndSession(transactionStatus -> {
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateMariage);
+			try {
+				tiersService.closeAppartenanceMenage(couple.getPrincipal(), couple.getMenage(), dateMariage.getOneDayBefore());
+				Assert.fail("La fermeture du rapport d'appartenance ménage aurait dû être refusée");
 			}
+			catch (RapportEntreTiersException e) {
+				Assert.assertEquals(String.format("On ne peut fermer le rapport d'appartenance ménage avant sa date de début (%s)", RegDateHelper.dateToDisplayString(dateMariage)),
+				                    e.getMessage());
+			}
+			return null;
 		});
 	}
 
@@ -6723,15 +6545,12 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, dateDebutForMixteVaudois, MotifFor.ARRIVEE_HS, dateFinResidenceVD, MotifFor.DEPART_HS, MockCommune.Echallens, ModeImposition.MIXTE_137_2);
-				addForPrincipal(pp, dateDebutResidenceHS, MotifFor.DEPART_HS, null, null, MockPays.France, ModeImposition.SOURCE);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateDebutSurchargeCourrier, null, MockRue.Neuchatel.RueDesBeauxArts);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, dateDebutForMixteVaudois, MotifFor.ARRIVEE_HS, dateFinResidenceVD, MotifFor.DEPART_HS, MockCommune.Echallens, ModeImposition.MIXTE_137_2);
+			addForPrincipal(pp, dateDebutResidenceHS, MotifFor.DEPART_HS, null, null, MockPays.France, ModeImposition.SOURCE);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateDebutSurchargeCourrier, null, MockRue.Neuchatel.RueDesBeauxArts);
+			return pp.getNumero();
 		});
 
 		// annulation du for source...
@@ -6763,19 +6582,16 @@ debut PF                                                                        
 
 		// et maintenant, le résultat... l'adresse doit bien avoir été annulée (elle est temporaire et commencer après la date de début
 		// du for que l'on ré-ouvre + passage de non-habitant à habitant)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
-				assertNotNull(adresses);
-				assertEquals(1, adresses.size());
-				final AdresseTiers adresse = adresses.iterator().next();
-				assertNotNull(adresse);
-				assertTrue(adresse.isAnnule());
-				assertNotNull(adresse.getAnnulationUser());     // cet attribut n'était pas rempli avant !
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+			assertNotNull(adresses);
+			assertEquals(1, adresses.size());
+			final AdresseTiers adresse = adresses.iterator().next();
+			assertNotNull(adresse);
+			assertTrue(adresse.isAnnule());
+			assertNotNull(adresse.getAnnulationUser());     // cet attribut n'était pas rempli avant !
+			return null;
 		});
 	}
 
@@ -7091,79 +6907,72 @@ debut PF                                                                        
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				final PersonnePhysique pp2 = tiersService.createNonHabitantFromIndividu(noIndividu2);
-				assertNotNull("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", pp.getOrigine());
-				assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", "Orbe", pp.getOrigine().getLibelle());
-				assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", "VD", pp.getOrigine().getSigleCanton());
-				return pp.getNumero();
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			assertNotNull("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", pp.getOrigine());
+			assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", "Orbe", pp.getOrigine().getLibelle());
+			assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe (VD)", "VD", pp.getOrigine().getSigleCanton());
+			return pp.getNumero();
 		});
 	}
 
 	@Test
 	public void testStatutMenageCommun() throws Exception {
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				{
-					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
-					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), null);
-					assertEquals(StatutMenageCommun.EN_VIGUEUR, tiersService.getStatutMenageCommun(etc.getMenage()));
-				}
-				{
-					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
-					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
-					assertEquals(StatutMenageCommun.TERMINE_SUITE_SEPARATION, tiersService.getStatutMenageCommun(etc.getMenage()));
-				}
-				{
-					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
-					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
-					pp2.setDateDeces(date(2010, 1, 1));
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
-					assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
-				}
-				{
-					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
-					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
-					pp1.setDateDeces(date(2010, 1, 1));
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
-					assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
-				}
-				{
-					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
-					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
-					pp1.setDateDeces(date(2010, 1, 1));
-					pp2.setDateDeces(date(2010, 1, 1));
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
-					assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
-				}
-
-				// Marié seul
-				{
-					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), null);
-					assertEquals(StatutMenageCommun.EN_VIGUEUR, tiersService.getStatutMenageCommun(etc.getMenage()));
-				}
-				{
-					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), date(2010, 1, 1));
-					assertEquals(StatutMenageCommun.TERMINE_SUITE_SEPARATION, tiersService.getStatutMenageCommun(etc.getMenage()));
-				}
-				{
-					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), date(2010, 1, 1));
-					pp1.setDateDeces(date(2010, 1, 1));
-					assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
-				}
-				return null;
+		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			{
+				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), null);
+				assertEquals(StatutMenageCommun.EN_VIGUEUR, tiersService.getStatutMenageCommun(etc.getMenage()));
 			}
+			{
+				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
+				assertEquals(StatutMenageCommun.TERMINE_SUITE_SEPARATION, tiersService.getStatutMenageCommun(etc.getMenage()));
+			}
+			{
+				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+				pp2.setDateDeces(date(2010, 1, 1));
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
+				assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
+			}
+			{
+				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+				pp1.setDateDeces(date(2010, 1, 1));
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
+				assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
+			}
+			{
+				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+				pp1.setDateDeces(date(2010, 1, 1));
+				pp2.setDateDeces(date(2010, 1, 1));
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
+				assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
+			}
+
+			// Marié seul
+			{
+				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), null);
+				assertEquals(StatutMenageCommun.EN_VIGUEUR, tiersService.getStatutMenageCommun(etc.getMenage()));
+			}
+			{
+				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), date(2010, 1, 1));
+				assertEquals(StatutMenageCommun.TERMINE_SUITE_SEPARATION, tiersService.getStatutMenageCommun(etc.getMenage()));
+			}
+			{
+				final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), date(2010, 1, 1));
+				pp1.setDateDeces(date(2010, 1, 1));
+				assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
+			}
+			return null;
 		});
 	}
 
@@ -7178,38 +6987,29 @@ debut PF                                                                        
 	public void testGetDateDecesDepuisDernierForPrincipal_1() throws Exception {
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertEquals(date(2010, 1, 1), dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertEquals(date(2010, 1, 1), dateDeces);
+				return null;
 			});
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertEquals(date(2010, 1, 1), dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertEquals(date(2010, 1, 1), dateDeces);
+				return null;
 			});
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertEquals(date(2010, 1, 1), dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertEquals(date(2010, 1, 1), dateDeces);
+				return null;
 			});
 		}
 	}
@@ -7225,38 +7025,29 @@ debut PF                                                                        
 	public void testGetDateDecesDepuisDernierForPrincipal_2() throws Exception {
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(null, null);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertNull(dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertNull(dateDeces);
+				return null;
 			});
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(null, null);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertNull(dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertNull(dateDeces);
+				return null;
 			});
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(null, null);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertNull(dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertNull(dateDeces);
+				return null;
 			});
 		}
 	}
@@ -7272,38 +7063,29 @@ debut PF                                                                        
 	public void testGetDateDecesDepuisDernierForPrincipal_3() throws Exception {
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(date(2010,1,1), MotifFor.DEPART_HS);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertNull(dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertNull(dateDeces);
+				return null;
 			});
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(date(2010,1,1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertNull(dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertNull(dateDeces);
+				return null;
 			});
 		}
 		{
 			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(date(2010,1,1), MotifFor.DEPART_HC);
-			doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
-					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
-					assertNull(dateDeces);
-					return null;
-				}
+			doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+				final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+				final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+				assertNull(dateDeces);
+				return null;
 			});
 		}
 	}
@@ -7314,20 +7096,17 @@ debut PF                                                                        
 		final Long noElle = 1234568L;
 		final RegDate dateMariage = date(1954,1,1);
 
-		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noLui);
-				final PersonnePhysique elle = addHabitant(noElle);
-				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, dateFermetureFor);
-				addForPrincipal(
-						etc.getMenage(),
-						dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						dateFermetureFor, motifFermeture,
-						MockCommune.Aigle
-				);
-				return lui.getNumero();
-			}
+		return doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noLui);
+			final PersonnePhysique elle = addHabitant(noElle);
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, dateFermetureFor);
+			addForPrincipal(
+					etc.getMenage(),
+					dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+					dateFermetureFor, motifFermeture,
+					MockCommune.Aigle
+			);
+			return lui.getNumero();
 		});
 	}
 
@@ -7338,26 +7117,23 @@ debut PF                                                                        
 		final RegDate dateMariage = date(1954,1,1);
 		final RegDate dateSeparation = date(2005,1,1);
 
-		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noLui);
-				final PersonnePhysique elle = addHabitant(noElle);
-				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation.getOneDayBefore());
-				addForPrincipal(
-						etc.getMenage(),
-						dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Aigle
-				);
-				addForPrincipal(
-						lui,
-						dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						dateFermetureFor, motifFermeture,
-						MockCommune.Aigle
-				);
-				return lui.getNumero();
-			}
+		return doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noLui);
+			final PersonnePhysique elle = addHabitant(noElle);
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation.getOneDayBefore());
+			addForPrincipal(
+					etc.getMenage(),
+					dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+					dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+					MockCommune.Aigle
+			);
+			addForPrincipal(
+					lui,
+					dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+					dateFermetureFor, motifFermeture,
+					MockCommune.Aigle
+			);
+			return lui.getNumero();
 		});
 
 	}
@@ -7368,18 +7144,15 @@ debut PF                                                                        
 		final RegDate dateMajorite = date(1954,1,1);
 
 		// Mise en place du fiscal
-		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noLui);
-				addForPrincipal(
-						lui,
-						dateMajorite, MotifFor.MAJORITE,
-						dateFermetureFor, motifFermeture,
-						MockCommune.Aigle
-				);
-				return lui.getNumero();
-			}
+		return doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noLui);
+			addForPrincipal(
+					lui,
+					dateMajorite, MotifFor.MAJORITE,
+					dateFermetureFor, motifFermeture,
+					MockCommune.Aigle
+			);
+			return lui.getNumero();
 		});
 	}
 
@@ -7409,39 +7182,33 @@ debut PF                                                                        
 			long ppNonHabitant;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique hab = addHabitant(noIndividuHabitant);
-				final PersonnePhysique ancienHab = tiersService.createNonHabitantFromIndividu(noIndividuAncienHabitant);
-				ancienHab.setDateNaissance(dateNaissanceAncienHabitant);
-				final PersonnePhysique nonHab = addNonHabitant("Bienvenu", "Patant", null, Sexe.MASCULIN);
-				final Ids ids = new Ids();
-				ids.ppHabitant = hab.getNumero();
-				ids.ppAncienHabitant = ancienHab.getNumero();
-				ids.ppNonHabitant = nonHab.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique hab = addHabitant(noIndividuHabitant);
+			final PersonnePhysique ancienHab = tiersService.createNonHabitantFromIndividu(noIndividuAncienHabitant);
+			ancienHab.setDateNaissance(dateNaissanceAncienHabitant);
+			final PersonnePhysique nonHab = addNonHabitant("Bienvenu", "Patant", null, Sexe.MASCULIN);
+			final Ids ids1 = new Ids();
+			ids1.ppHabitant = hab.getNumero();
+			ids1.ppAncienHabitant = ancienHab.getNumero();
+			ids1.ppNonHabitant = nonHab.getNumero();
+			return ids1;
 		});
 
 		Assert.assertNull(tiersService.getDateNaissance(null));
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(ids.ppHabitant);
-				Assert.assertEquals(dateNaissanceHabitant, tiersService.getDateNaissance(hab));
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(ids.ppHabitant);
+			Assert.assertEquals(dateNaissanceHabitant, tiersService.getDateNaissance(hab));
 
-				final PersonnePhysique ancienHab = (PersonnePhysique) tiersDAO.get(ids.ppAncienHabitant);
-				Assert.assertEquals(dateNaissanceAncienHabitant, tiersService.getDateNaissance(ancienHab));
+			final PersonnePhysique ancienHab = (PersonnePhysique) tiersDAO.get(ids.ppAncienHabitant);
+			Assert.assertEquals(dateNaissanceAncienHabitant, tiersService.getDateNaissance(ancienHab));
 
-				final PersonnePhysique nonHabitant = (PersonnePhysique) tiersDAO.get(ids.ppNonHabitant);
-				Assert.assertNull(tiersService.getDateNaissance(nonHabitant));
-				nonHabitant.setDateNaissance(dateNaissanceNonHabitant);
-				Assert.assertEquals(dateNaissanceNonHabitant, tiersService.getDateNaissance(nonHabitant));
+			final PersonnePhysique nonHabitant = (PersonnePhysique) tiersDAO.get(ids.ppNonHabitant);
+			Assert.assertNull(tiersService.getDateNaissance(nonHabitant));
+			nonHabitant.setDateNaissance(dateNaissanceNonHabitant);
+			Assert.assertEquals(dateNaissanceNonHabitant, tiersService.getDateNaissance(nonHabitant));
 
-				return null;
-			}
+			return null;
 		});
 	}
 
@@ -7471,28 +7238,22 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
 		});
 
 		// re-calcul du flag habitant
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				try {
-					tiersService.updateHabitantStatus(pp, noIndividu, null, null);
-					Assert.fail();
-				}
-				catch (TiersException e) {
-					Assert.assertEquals("Impossible de déterminer si le domicile du contribuable " + pp.getNumero() + " est vaudois ou pas", e.getMessage());
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			try {
+				tiersService.updateHabitantStatus(pp, noIndividu, null, null);
+				Assert.fail();
 			}
+			catch (TiersException e) {
+				Assert.assertEquals("Impossible de déterminer si le domicile du contribuable " + pp.getNumero() + " est vaudois ou pas", e.getMessage());
+			}
+			return null;
 		});
 	}
 
@@ -7549,474 +7310,433 @@ debut PF                                                                        
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papy = addHabitant(noIndPapy);
-				final PersonnePhysique papa = addHabitant(noIndPapa);
-				final PersonnePhysique maman = addHabitant(noIndMaman);
-				final PersonnePhysique moi = addHabitant(noIndividu);
-				final PersonnePhysique fiston = addHabitant(noIndFiston);
-				final PersonnePhysique fifille = addHabitant(noIndFifille);
-				final PersonnePhysique factrice = addHabitant(noIndFactrice);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique papy = addHabitant(noIndPapy);
+			final PersonnePhysique papa = addHabitant(noIndPapa);
+			final PersonnePhysique maman = addHabitant(noIndMaman);
+			final PersonnePhysique moi = addHabitant(noIndividu);
+			final PersonnePhysique fiston = addHabitant(noIndFiston);
+			final PersonnePhysique fifille = addHabitant(noIndFifille);
+			final PersonnePhysique factrice = addHabitant(noIndFactrice);
 
-				addParente(papa, papy, dateNaissancePapa, null);        // celle-ci devra être annulée et remplacée par une autre avec une date de fin au décès de papy si on démarre de papa
-				addParente(moi, papa, dateNaissance, null);             // celle-ci ne doit pas bouger
+			addParente(papa, papy, dateNaissancePapa, null);        // celle-ci devra être annulée et remplacée par une autre avec une date de fin au décès de papy si on démarre de papa
+			addParente(moi, papa, dateNaissance, null);             // celle-ci ne doit pas bouger
 //				addParente(moi, maman, dateNaissance, null);            // en commentaire -> elle devra être créée
-				addParente(fiston, moi, dateNaissanceFiston, null);     // ne doit pas bouger
+			addParente(fiston, moi, dateNaissanceFiston, null);     // ne doit pas bouger
 //				addParente(fifille, moi, dateNaissanceFille, null);     // en commentaire -> elle ne serait créée que si on démarre de la fille
-				addParente(fiston, factrice, dateNaissanceFiston, null);    // n'apparaît pas dans le civil -> devra être annulée
+			addParente(fiston, factrice, dateNaissanceFiston, null);    // n'apparaît pas dans le civil -> devra être annulée
 
-				final Ids ids = new Ids();
-				ids.ppPapy = papy.getNumero();
-				ids.ppPapa = papa.getNumero();
-				ids.ppMaman = maman.getNumero();
-				ids.ppMoi = moi.getNumero();
-				ids.ppFiston = fiston.getNumero();
-				ids.ppFifille = fifille.getNumero();
-				ids.ppFactrice = factrice.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppPapy = papy.getNumero();
+			ids1.ppPapa = papa.getNumero();
+			ids1.ppMaman = maman.getNumero();
+			ids1.ppMoi = moi.getNumero();
+			ids1.ppFiston = fiston.getNumero();
+			ids1.ppFifille = fifille.getNumero();
+			ids1.ppFactrice = factrice.getNumero();
+			return ids1;
 		});
 
 		// refresh de "moi"
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
+			return null;
 		});
 
 		// vérification de l'impact
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				// papy
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapy);
-					assertNotNull(pp);
+			// papy
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapy);
+				assertNotNull(pp);
 
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
 
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());
 
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppPapy, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppPapa, rapportEnfant.getSujetId());
-					assertEquals(dateNaissancePapa, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());         // n'a pas bougé, c'est normal car on ne vérifie qu'un niveau autour du personnage central
-					assertFalse(rapportEnfant.isAnnule());
-				}
-
-				// papa
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapa);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(1, parents.size());
-
-					final RapportEntreTiers rapportParent = parents.iterator().next();
-					assertNotNull(rapportParent);
-					assertEquals((Long) ids.ppPapy, rapportParent.getObjetId());
-					assertEquals((Long) ids.ppPapa, rapportParent.getSujetId());
-					assertEquals(dateNaissancePapa, rapportParent.getDateDebut());
-					assertNull(rapportParent.getDateFin());         // n'a pas bougé, c'est normal car on ne vérifie qu'un niveau autour du personnage central
-					assertFalse(rapportParent.isAnnule());
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppPapa, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
-					assertEquals(dateNaissance, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());
-				}
-
-				// maman
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMaman);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());                    // nouvelle relation !
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppMaman, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
-					assertEquals(dateNaissance, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());
-				}
-
-				// moi
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMoi);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(2, parents.size());                    // dont une nouvelle relation !
-
-					final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
-					Collections.sort(sortedParents, new Comparator<RapportEntreTiers>() {
-						@Override
-						public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-							return Long.compare(o1.getObjetId(), o2.getObjetId());
-						}
-					});
-					{
-						final RapportEntreTiers rapport = sortedParents.get(0);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppPapa, rapport.getObjetId());
-						assertEquals((Long) ids.ppMoi, rapport.getSujetId());
-						assertEquals(dateNaissance, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
-					{
-						final RapportEntreTiers rapport = sortedParents.get(1);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppMaman, rapport.getObjetId());
-						assertEquals((Long) ids.ppMoi, rapport.getSujetId());
-						assertEquals(dateNaissance, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());                    // pas de nouvelle relation !
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppMoi, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
-					assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());
-				}
-
-				// fiston
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFiston);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(2, parents.size());
-
-					final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
-					Collections.sort(sortedParents, new Comparator<RapportEntreTiers>() {
-						@Override
-						public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-							return Long.compare(o1.getObjetId(), o2.getObjetId());
-						}
-					});
-					{
-						final RapportEntreTiers rapport = sortedParents.get(0);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppMoi, rapport.getObjetId());
-						assertEquals((Long) ids.ppFiston, rapport.getSujetId());
-						assertEquals(dateNaissanceFiston, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
-					{
-						final RapportEntreTiers rapport = sortedParents.get(1);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppFactrice, rapport.getObjetId());
-						assertEquals((Long) ids.ppFiston, rapport.getSujetId());
-						assertEquals(dateNaissanceFiston, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertTrue(rapport.isAnnule());             // la filiation vers la factrice n'est pas dans le civil
-					}
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEmpty(enfants);
-				}
-
-				// fifille
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFifille);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEmpty(enfants);
-				}
-
-				// factrice
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFactrice);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppFactrice, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
-					assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertTrue(rapportEnfant.isAnnule());           // la filiation entre le fiston et la factrice n'est pas dans le civil
-				}
-
-				return null;
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppPapy, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppPapa, rapportEnfant.getSujetId());
+				assertEquals(dateNaissancePapa, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());         // n'a pas bougé, c'est normal car on ne vérifie qu'un niveau autour du personnage central
+				assertFalse(rapportEnfant.isAnnule());
 			}
+
+			// papa
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapa);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(1, parents.size());
+
+				final RapportEntreTiers rapportParent = parents.iterator().next();
+				assertNotNull(rapportParent);
+				assertEquals((Long) ids.ppPapy, rapportParent.getObjetId());
+				assertEquals((Long) ids.ppPapa, rapportParent.getSujetId());
+				assertEquals(dateNaissancePapa, rapportParent.getDateDebut());
+				assertNull(rapportParent.getDateFin());         // n'a pas bougé, c'est normal car on ne vérifie qu'un niveau autour du personnage central
+				assertFalse(rapportParent.isAnnule());
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppPapa, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
+				assertEquals(dateNaissance, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());
+			}
+
+			// maman
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMaman);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());                    // nouvelle relation !
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppMaman, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
+				assertEquals(dateNaissance, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());
+			}
+
+			// moi
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMoi);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(2, parents.size());                    // dont une nouvelle relation !
+
+				final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
+				sortedParents.sort(Comparator.comparingLong(RapportEntreTiers::getObjetId));
+				{
+					final RapportEntreTiers rapport = sortedParents.get(0);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppPapa, rapport.getObjetId());
+					assertEquals((Long) ids.ppMoi, rapport.getSujetId());
+					assertEquals(dateNaissance, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportEntreTiers rapport = sortedParents.get(1);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppMaman, rapport.getObjetId());
+					assertEquals((Long) ids.ppMoi, rapport.getSujetId());
+					assertEquals(dateNaissance, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());                    // pas de nouvelle relation !
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppMoi, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
+				assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());
+			}
+
+			// fiston
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFiston);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(2, parents.size());
+
+				final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
+				sortedParents.sort(Comparator.comparingLong(RapportEntreTiers::getObjetId));
+				{
+					final RapportEntreTiers rapport = sortedParents.get(0);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppMoi, rapport.getObjetId());
+					assertEquals((Long) ids.ppFiston, rapport.getSujetId());
+					assertEquals(dateNaissanceFiston, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportEntreTiers rapport = sortedParents.get(1);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppFactrice, rapport.getObjetId());
+					assertEquals((Long) ids.ppFiston, rapport.getSujetId());
+					assertEquals(dateNaissanceFiston, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertTrue(rapport.isAnnule());             // la filiation vers la factrice n'est pas dans le civil
+				}
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEmpty(enfants);
+			}
+
+			// fifille
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFifille);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEmpty(enfants);
+			}
+
+			// factrice
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFactrice);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppFactrice, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
+				assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertTrue(rapportEnfant.isAnnule());           // la filiation entre le fiston et la factrice n'est pas dans le civil
+			}
+
+			return null;
 		});
 
 		// refresh de "papa"
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				tiersService.refreshParentesDepuisNumeroIndividu(noIndPapa);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			tiersService.refreshParentesDepuisNumeroIndividu(noIndPapa);
+			return null;
 		});
 
 		// vérification de l'impact
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				// papy
+			// papy
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapy);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(2, enfants.size());            // 1 annulé, et l'autre actif, modification en raison de la date de fin
+
+				final List<RapportEntreTiers> sortedEnfants = new ArrayList<>(enfants);
+				sortedEnfants.sort((o1, o2) -> {
+					return NullDateBehavior.EARLIEST.compare(o1.getDateFin(), o2.getDateFin());         // le rapport sans fin (annulé) d'abord
+				});
 				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapy);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(2, enfants.size());            // 1 annulé, et l'autre actif, modification en raison de la date de fin
-
-					final List<RapportEntreTiers> sortedEnfants = new ArrayList<>(enfants);
-					Collections.sort(sortedEnfants, new Comparator<RapportEntreTiers>() {
-						@Override
-						public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-							return NullDateBehavior.EARLIEST.compare(o1.getDateFin(), o2.getDateFin());         // le rapport sans fin (annulé) d'abord
-						}
-					});
-					{
-						final RapportEntreTiers rapport = sortedEnfants.get(0);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppPapy, rapport.getObjetId());
-						assertEquals((Long) ids.ppPapa, rapport.getSujetId());
-						assertEquals(dateNaissancePapa, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertTrue(rapport.isAnnule());
-					}
-					{
-						final RapportEntreTiers rapport = sortedEnfants.get(1);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppPapy, rapport.getObjetId());
-						assertEquals((Long) ids.ppPapa, rapport.getSujetId());
-						assertEquals(dateNaissancePapa, rapport.getDateDebut());
-						assertEquals(dateDecesPapy, rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
+					final RapportEntreTiers rapport = sortedEnfants.get(0);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppPapy, rapport.getObjetId());
+					assertEquals((Long) ids.ppPapa, rapport.getSujetId());
+					assertEquals(dateNaissancePapa, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
 				}
-
-				// papa
 				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapa);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(2, parents.size());        // 1 annulé, et l'autre actif, modification en raison de la date de fin
-
-					final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
-					Collections.sort(sortedParents, new Comparator<RapportEntreTiers>() {
-						@Override
-						public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-							return NullDateBehavior.EARLIEST.compare(o1.getDateFin(), o2.getDateFin());         // le rapport sans fin (annulé) d'abord
-						}
-					});
-					{
-						final RapportEntreTiers rapport = sortedParents.get(0);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppPapy, rapport.getObjetId());
-						assertEquals((Long) ids.ppPapa, rapport.getSujetId());
-						assertEquals(dateNaissancePapa, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertTrue(rapport.isAnnule());
-					}
-					{
-						final RapportEntreTiers rapport = sortedParents.get(1);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppPapy, rapport.getObjetId());
-						assertEquals((Long) ids.ppPapa, rapport.getSujetId());
-						assertEquals(dateNaissancePapa, rapport.getDateDebut());
-						assertEquals(dateDecesPapy, rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppPapa, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
-					assertEquals(dateNaissance, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());
+					final RapportEntreTiers rapport = sortedEnfants.get(1);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppPapy, rapport.getObjetId());
+					assertEquals((Long) ids.ppPapa, rapport.getSujetId());
+					assertEquals(dateNaissancePapa, rapport.getDateDebut());
+					assertEquals(dateDecesPapy, rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
 				}
-
-				// maman
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMaman);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());                    // nouvelle relation !
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppMaman, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
-					assertEquals(dateNaissance, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());
-				}
-
-				// moi
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMoi);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(2, parents.size());                    // dont une nouvelle relation !
-
-					final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
-					Collections.sort(sortedParents, new Comparator<RapportEntreTiers>() {
-						@Override
-						public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-							return Long.compare(o1.getObjetId(), o2.getObjetId());
-						}
-					});
-					{
-						final RapportEntreTiers rapport = sortedParents.get(0);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppPapa, rapport.getObjetId());
-						assertEquals((Long) ids.ppMoi, rapport.getSujetId());
-						assertEquals(dateNaissance, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
-					{
-						final RapportEntreTiers rapport = sortedParents.get(1);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppMaman, rapport.getObjetId());
-						assertEquals((Long) ids.ppMoi, rapport.getSujetId());
-						assertEquals(dateNaissance, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());                    // pas de nouvelle relation !
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppMoi, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
-					assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());
-				}
-
-				// fiston
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFiston);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(2, parents.size());
-
-					final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
-					Collections.sort(sortedParents, new Comparator<RapportEntreTiers>() {
-						@Override
-						public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-							return Long.compare(o1.getObjetId(), o2.getObjetId());
-						}
-					});
-					{
-						final RapportEntreTiers rapport = sortedParents.get(0);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppMoi, rapport.getObjetId());
-						assertEquals((Long) ids.ppFiston, rapport.getSujetId());
-						assertEquals(dateNaissanceFiston, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
-					{
-						final RapportEntreTiers rapport = sortedParents.get(1);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppFactrice, rapport.getObjetId());
-						assertEquals((Long) ids.ppFiston, rapport.getSujetId());
-						assertEquals(dateNaissanceFiston, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertTrue(rapport.isAnnule());
-					}
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEmpty(enfants);
-				}
-
-				// fifille
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFifille);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEmpty(enfants);
-				}
-
-				// factrice
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFactrice);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppFactrice, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
-					assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertTrue(rapportEnfant.isAnnule());
-				}
-
-				return null;
 			}
+
+			// papa
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapa);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(2, parents.size());        // 1 annulé, et l'autre actif, modification en raison de la date de fin
+
+				final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
+				sortedParents.sort((o1, o2) -> {
+					return NullDateBehavior.EARLIEST.compare(o1.getDateFin(), o2.getDateFin());         // le rapport sans fin (annulé) d'abord
+				});
+				{
+					final RapportEntreTiers rapport = sortedParents.get(0);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppPapy, rapport.getObjetId());
+					assertEquals((Long) ids.ppPapa, rapport.getSujetId());
+					assertEquals(dateNaissancePapa, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+				{
+					final RapportEntreTiers rapport = sortedParents.get(1);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppPapy, rapport.getObjetId());
+					assertEquals((Long) ids.ppPapa, rapport.getSujetId());
+					assertEquals(dateNaissancePapa, rapport.getDateDebut());
+					assertEquals(dateDecesPapy, rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppPapa, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
+				assertEquals(dateNaissance, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());
+			}
+
+			// maman
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMaman);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());                    // nouvelle relation !
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppMaman, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
+				assertEquals(dateNaissance, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());
+			}
+
+			// moi
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMoi);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(2, parents.size());                    // dont une nouvelle relation !
+
+				final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
+				sortedParents.sort(Comparator.comparingLong(RapportEntreTiers::getObjetId));
+				{
+					final RapportEntreTiers rapport = sortedParents.get(0);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppPapa, rapport.getObjetId());
+					assertEquals((Long) ids.ppMoi, rapport.getSujetId());
+					assertEquals(dateNaissance, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportEntreTiers rapport = sortedParents.get(1);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppMaman, rapport.getObjetId());
+					assertEquals((Long) ids.ppMoi, rapport.getSujetId());
+					assertEquals(dateNaissance, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());                    // pas de nouvelle relation !
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppMoi, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
+				assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());
+			}
+
+			// fiston
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFiston);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(2, parents.size());
+
+				final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
+				sortedParents.sort(Comparator.comparingLong(RapportEntreTiers::getObjetId));
+				{
+					final RapportEntreTiers rapport = sortedParents.get(0);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppMoi, rapport.getObjetId());
+					assertEquals((Long) ids.ppFiston, rapport.getSujetId());
+					assertEquals(dateNaissanceFiston, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertFalse(rapport.isAnnule());
+				}
+				{
+					final RapportEntreTiers rapport = sortedParents.get(1);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppFactrice, rapport.getObjetId());
+					assertEquals((Long) ids.ppFiston, rapport.getSujetId());
+					assertEquals(dateNaissanceFiston, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertTrue(rapport.isAnnule());
+				}
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEmpty(enfants);
+			}
+
+			// fifille
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFifille);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEmpty(enfants);
+			}
+
+			// factrice
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFactrice);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppFactrice, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
+				assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertTrue(rapportEnfant.isAnnule());
+			}
+
+			return null;
 		});
 	}
 
@@ -8043,117 +7763,96 @@ debut PF                                                                        
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique parent = addHabitant(noIndividuParent);
-				final PersonnePhysique enfant = addHabitant(noIndividuEnfant);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique parent = addHabitant(noIndividuParent);
+			final PersonnePhysique enfant = addHabitant(noIndividuEnfant);
 
-				// le doublon de parenté est ajouté "à la main" car les méthodes officielles ne permettent pas de le faire
-				hibernateTemplate.merge(new Parente(dateNaissanceEnfant, null, parent, enfant));
-				hibernateTemplate.merge(new Parente(dateNaissanceEnfant, null, parent, enfant));        // doublon de parenté
+			// le doublon de parenté est ajouté "à la main" car les méthodes officielles ne permettent pas de le faire
+			hibernateTemplate.merge(new Parente(dateNaissanceEnfant, null, parent, enfant));
+			hibernateTemplate.merge(new Parente(dateNaissanceEnfant, null, parent, enfant));        // doublon de parenté
 
-				final Ids ids = new Ids();
-				ids.idParent = parent.getNumero();
-				ids.idEnfant = enfant.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idParent = parent.getNumero();
+			ids1.idEnfant = enfant.getNumero();
+			return ids1;
 		});
 
 		// vérification de l'existance du doublon de parenté
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
-				final Set<RapportEntreTiers> relParents = enfant.getRapportsSujet();
-				assertNotNull(relParents);
-				assertEquals(2, relParents.size());
-				for (RapportEntreTiers rel : relParents) {
-					assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
-					assertEquals((Long) ids.idEnfant, rel.getSujetId());
-					assertEquals((Long) ids.idParent, rel.getObjetId());
-					assertEquals(dateNaissanceEnfant, rel.getDateDebut());
-					assertNull(rel.getDateFin());
-					assertFalse(rel.isAnnule());
-				}
-				return null;
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+			final Set<RapportEntreTiers> relParents = enfant.getRapportsSujet();
+			assertNotNull(relParents);
+			assertEquals(2, relParents.size());
+			for (RapportEntreTiers rel : relParents) {
+				assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
+				assertEquals((Long) ids.idEnfant, rel.getSujetId());
+				assertEquals((Long) ids.idParent, rel.getObjetId());
+				assertEquals(dateNaissanceEnfant, rel.getDateDebut());
+				assertNull(rel.getDateFin());
+				assertFalse(rel.isAnnule());
 			}
+			return null;
 		});
 
 		// vérification de la bonne récupération des candidats doublons par le DAO
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Pair<Long, Long>> doublons = rapportEntreTiersDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
-				assertNotNull(doublons);
-				assertEquals(1, doublons.size());
+		doInNewTransactionAndSession(status -> {
+			final List<Pair<Long, Long>> doublons = rapportEntreTiersDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
+			assertNotNull(doublons);
+			assertEquals(1, doublons.size());
 
-				final Pair<Long, Long> doublon = doublons.get(0);
-				assertNotNull(doublon);
-				assertEquals((Long) ids.idEnfant, doublon.getLeft());
-				assertEquals((Long) ids.idParent, doublon.getRight());
-				return null;
-			}
+			final Pair<Long, Long> doublon = doublons.get(0);
+			assertNotNull(doublon);
+			assertEquals((Long) ids.idEnfant, doublon.getLeft());
+			assertEquals((Long) ids.idParent, doublon.getRight());
+			return null;
 		});
 
 		// demande de refresh
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				tiersService.refreshParentesDepuisNumeroIndividu(noIndividuEnfant);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			tiersService.refreshParentesDepuisNumeroIndividu(noIndividuEnfant);
+			return null;
 		});
 
 		// vérification que l'un des doublons a bien été éliminé
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
-				final Set<RapportEntreTiers> relParents = enfant.getRapportsSujet();
-				assertNotNull(relParents);
-				assertEquals(2, relParents.size());
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+			final Set<RapportEntreTiers> relParents = enfant.getRapportsSujet();
+			assertNotNull(relParents);
+			assertEquals(2, relParents.size());
 
-				final List<RapportEntreTiers> sortedRelParents = new ArrayList<>(relParents);
-				Collections.sort(sortedRelParents, new Comparator<RapportEntreTiers>() {
-					@Override
-					public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-						return Boolean.compare(o1.isAnnule(), o2.isAnnule());       // annulé à la fin
-					}
-				});
+			final List<RapportEntreTiers> sortedRelParents = new ArrayList<>(relParents);
+			sortedRelParents.sort((o1, o2) -> {
+				return Boolean.compare(o1.isAnnule(), o2.isAnnule());       // annulé à la fin
+			});
 
-				{
-					final RapportEntreTiers rel = sortedRelParents.get(0);
-					assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
-					assertEquals((Long) ids.idEnfant, rel.getSujetId());
-					assertEquals((Long) ids.idParent, rel.getObjetId());
-					assertEquals(dateNaissanceEnfant, rel.getDateDebut());
-					assertNull(rel.getDateFin());
-					assertFalse(rel.isAnnule());
-				}
-				{
-					final RapportEntreTiers rel = sortedRelParents.get(1);
-					assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
-					assertEquals((Long) ids.idEnfant, rel.getSujetId());
-					assertEquals((Long) ids.idParent, rel.getObjetId());
-					assertEquals(dateNaissanceEnfant, rel.getDateDebut());
-					assertNull(rel.getDateFin());
-					assertTrue(rel.isAnnule());
-				}
-				return null;
+			{
+				final RapportEntreTiers rel = sortedRelParents.get(0);
+				assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
+				assertEquals((Long) ids.idEnfant, rel.getSujetId());
+				assertEquals((Long) ids.idParent, rel.getObjetId());
+				assertEquals(dateNaissanceEnfant, rel.getDateDebut());
+				assertNull(rel.getDateFin());
+				assertFalse(rel.isAnnule());
 			}
+			{
+				final RapportEntreTiers rel = sortedRelParents.get(1);
+				assertEquals(TypeRapportEntreTiers.PARENTE, rel.getType());
+				assertEquals((Long) ids.idEnfant, rel.getSujetId());
+				assertEquals((Long) ids.idParent, rel.getObjetId());
+				assertEquals(dateNaissanceEnfant, rel.getDateDebut());
+				assertNull(rel.getDateFin());
+				assertTrue(rel.isAnnule());
+			}
+			return null;
 		});
 
 		// vérification de la bonne récupération des candidats doublons par le DAO
 		// (ici, il n'y en a plus car l'un des deux a été annulé)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Pair<Long, Long>> doublons = rapportEntreTiersDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
-				assertNotNull(doublons);
-				assertEquals(0, doublons.size());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<Pair<Long, Long>> doublons = rapportEntreTiersDAO.getDoublonsCandidats(TypeRapportEntreTiers.PARENTE);
+			assertNotNull(doublons);
+			assertEquals(0, doublons.size());
+			return null;
 		});
 	}
 
@@ -8210,190 +7909,176 @@ debut PF                                                                        
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papy = tiersService.createNonHabitantFromIndividu(noIndPapy);
-				final PersonnePhysique papa = tiersService.createNonHabitantFromIndividu(noIndPapa);
-				final PersonnePhysique maman = tiersService.createNonHabitantFromIndividu(noIndMaman);
-				final PersonnePhysique moi = tiersService.createNonHabitantFromIndividu(noIndividu);
-				final PersonnePhysique fiston = tiersService.createNonHabitantFromIndividu(noIndFiston);
-				final PersonnePhysique fifille = tiersService.createNonHabitantFromIndividu(noIndFifille);
-				final PersonnePhysique factrice = tiersService.createNonHabitantFromIndividu(noIndFactrice);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique papy = tiersService.createNonHabitantFromIndividu(noIndPapy);
+			final PersonnePhysique papa = tiersService.createNonHabitantFromIndividu(noIndPapa);
+			final PersonnePhysique maman = tiersService.createNonHabitantFromIndividu(noIndMaman);
+			final PersonnePhysique moi = tiersService.createNonHabitantFromIndividu(noIndividu);
+			final PersonnePhysique fiston = tiersService.createNonHabitantFromIndividu(noIndFiston);
+			final PersonnePhysique fifille = tiersService.createNonHabitantFromIndividu(noIndFifille);
+			final PersonnePhysique factrice = tiersService.createNonHabitantFromIndividu(noIndFactrice);
 
-				addParente(papa, papy, dateNaissancePapa, null);        // celle-ci aurait pu être annulée et remplacée par une autre avec une date de fin au décès de papy si on démarre de papa
-				addParente(moi, papa, dateNaissance, null);             // celle-ci ne doit pas bouger
+			addParente(papa, papy, dateNaissancePapa, null);        // celle-ci aurait pu être annulée et remplacée par une autre avec une date de fin au décès de papy si on démarre de papa
+			addParente(moi, papa, dateNaissance, null);             // celle-ci ne doit pas bouger
 //				addParente(moi, maman, dateNaissance, null);            // en commentaire -> elle aurait pu être créée
-				addParente(fiston, moi, dateNaissanceFiston, null);     // ne doit pas bouger
+			addParente(fiston, moi, dateNaissanceFiston, null);     // ne doit pas bouger
 //				addParente(fifille, moi, dateNaissanceFille, null);     // en commentaire -> elle ne serait créée que si on démarre de la fille
-				addParente(fiston, factrice, dateNaissanceFiston, null);    // n'apparaît pas dans le civil -> aurait pu être annulée
+			addParente(fiston, factrice, dateNaissanceFiston, null);    // n'apparaît pas dans le civil -> aurait pu être annulée
 
-				final Ids ids = new Ids();
-				ids.ppPapy = papy.getNumero();
-				ids.ppPapa = papa.getNumero();
-				ids.ppMaman = maman.getNumero();
-				ids.ppMoi = moi.getNumero();
-				ids.ppFiston = fiston.getNumero();
-				ids.ppFifille = fifille.getNumero();
-				ids.ppFactrice = factrice.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppPapy = papy.getNumero();
+			ids1.ppPapa = papa.getNumero();
+			ids1.ppMaman = maman.getNumero();
+			ids1.ppMoi = moi.getNumero();
+			ids1.ppFiston = fiston.getNumero();
+			ids1.ppFifille = fifille.getNumero();
+			ids1.ppFactrice = factrice.getNumero();
+			return ids1;
 		});
 
 		// refresh de "moi"
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			tiersService.refreshParentesDepuisNumeroIndividu(noIndividu);
+			return null;
 		});
 
 		// vérification de l'impact
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
+		doInNewTransactionAndSession(status -> {
 
-				// papa
+			// papa
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapa);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(1, parents.size());
+
+				final RapportEntreTiers rapportParent = parents.iterator().next();
+				assertNotNull(rapportParent);
+				assertEquals((Long) ids.ppPapy, rapportParent.getObjetId());
+				assertEquals((Long) ids.ppPapa, rapportParent.getSujetId());
+				assertEquals(dateNaissancePapa, rapportParent.getDateDebut());
+				assertNull(rapportParent.getDateFin());         // n'a pas bougé, c'est normal car on ne vérifie qu'un niveau autour du personnage central
+				assertFalse(rapportParent.isAnnule());
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppPapa, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
+				assertEquals(dateNaissance, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());
+			}
+
+			// maman
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMaman);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(0, enfants.size());                    // pas de nouvelle relation car non-habitant !
+			}
+
+			// moi
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMoi);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(1, parents.size());                    // pas de une nouvelle relation sur les non-habitants !
+
+				final RapportEntreTiers rapport = parents.iterator().next();
+				assertNotNull(rapport);
+				assertEquals((Long) ids.ppPapa, rapport.getObjetId());
+				assertEquals((Long) ids.ppMoi, rapport.getSujetId());
+				assertEquals(dateNaissance, rapport.getDateDebut());
+				assertNull(rapport.getDateFin());
+				assertFalse(rapport.isAnnule());
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());                    // pas de nouvelle relation !
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppMoi, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
+				assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());
+			}
+
+			// fiston
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFiston);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEquals(2, parents.size());
+
+				final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
+				sortedParents.sort(Comparator.comparingLong(RapportEntreTiers::getObjetId));
 				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppPapa);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(1, parents.size());
-
-					final RapportEntreTiers rapportParent = parents.iterator().next();
-					assertNotNull(rapportParent);
-					assertEquals((Long) ids.ppPapy, rapportParent.getObjetId());
-					assertEquals((Long) ids.ppPapa, rapportParent.getSujetId());
-					assertEquals(dateNaissancePapa, rapportParent.getDateDebut());
-					assertNull(rapportParent.getDateFin());         // n'a pas bougé, c'est normal car on ne vérifie qu'un niveau autour du personnage central
-					assertFalse(rapportParent.isAnnule());
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppPapa, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppMoi, rapportEnfant.getSujetId());
-					assertEquals(dateNaissance, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());
-				}
-
-				// maman
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMaman);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(0, enfants.size());                    // pas de nouvelle relation car non-habitant !
-				}
-
-				// moi
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppMoi);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(1, parents.size());                    // pas de une nouvelle relation sur les non-habitants !
-
-					final RapportEntreTiers rapport = parents.iterator().next();
+					final RapportEntreTiers rapport = sortedParents.get(0);
 					assertNotNull(rapport);
-					assertEquals((Long) ids.ppPapa, rapport.getObjetId());
-					assertEquals((Long) ids.ppMoi, rapport.getSujetId());
-					assertEquals(dateNaissance, rapport.getDateDebut());
+					assertEquals((Long) ids.ppMoi, rapport.getObjetId());
+					assertEquals((Long) ids.ppFiston, rapport.getSujetId());
+					assertEquals(dateNaissanceFiston, rapport.getDateDebut());
 					assertNull(rapport.getDateFin());
 					assertFalse(rapport.isAnnule());
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());                    // pas de nouvelle relation !
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppMoi, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
-					assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());
 				}
-
-				// fiston
 				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFiston);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEquals(2, parents.size());
-
-					final List<RapportEntreTiers> sortedParents = new ArrayList<>(parents);
-					Collections.sort(sortedParents, new Comparator<RapportEntreTiers>() {
-						@Override
-						public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-							return Long.compare(o1.getObjetId(), o2.getObjetId());
-						}
-					});
-					{
-						final RapportEntreTiers rapport = sortedParents.get(0);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppMoi, rapport.getObjetId());
-						assertEquals((Long) ids.ppFiston, rapport.getSujetId());
-						assertEquals(dateNaissanceFiston, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertFalse(rapport.isAnnule());
-					}
-					{
-						final RapportEntreTiers rapport = sortedParents.get(1);
-						assertNotNull(rapport);
-						assertEquals((Long) ids.ppFactrice, rapport.getObjetId());
-						assertEquals((Long) ids.ppFiston, rapport.getSujetId());
-						assertEquals(dateNaissanceFiston, rapport.getDateDebut());
-						assertNull(rapport.getDateFin());
-						assertFalse(rapport.isAnnule());             // la filiation vers la factrice n'est pas dans le civil, mais on ne touche à rien sur les non-habitants
-					}
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEmpty(enfants);
+					final RapportEntreTiers rapport = sortedParents.get(1);
+					assertNotNull(rapport);
+					assertEquals((Long) ids.ppFactrice, rapport.getObjetId());
+					assertEquals((Long) ids.ppFiston, rapport.getSujetId());
+					assertEquals(dateNaissanceFiston, rapport.getDateDebut());
+					assertNull(rapport.getDateFin());
+					assertFalse(rapport.isAnnule());             // la filiation vers la factrice n'est pas dans le civil, mais on ne touche à rien sur les non-habitants
 				}
 
-				// fifille
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFifille);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEmpty(enfants);
-				}
-
-				// factrice
-				{
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFactrice);
-					assertNotNull(pp);
-
-					final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
-					assertEmpty(parents);
-
-					final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
-					assertEquals(1, enfants.size());
-
-					final RapportEntreTiers rapportEnfant = enfants.iterator().next();
-					assertNotNull(rapportEnfant);
-					assertEquals((Long) ids.ppFactrice, rapportEnfant.getObjetId());
-					assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
-					assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
-					assertNull(rapportEnfant.getDateFin());
-					assertFalse(rapportEnfant.isAnnule());           // la filiation entre le fiston et la factrice n'est pas dans le civil, mais on ne touche à rien sur les non-habitants
-				}
-
-				return null;
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEmpty(enfants);
 			}
+
+			// fifille
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFifille);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEmpty(enfants);
+			}
+
+			// factrice
+			{
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.ppFactrice);
+				assertNotNull(pp);
+
+				final Set<RapportEntreTiers> parents = pp.getRapportsSujet();
+				assertEmpty(parents);
+
+				final Set<RapportEntreTiers> enfants = pp.getRapportsObjet();
+				assertEquals(1, enfants.size());
+
+				final RapportEntreTiers rapportEnfant = enfants.iterator().next();
+				assertNotNull(rapportEnfant);
+				assertEquals((Long) ids.ppFactrice, rapportEnfant.getObjetId());
+				assertEquals((Long) ids.ppFiston, rapportEnfant.getSujetId());
+				assertEquals(dateNaissanceFiston, rapportEnfant.getDateDebut());
+				assertNull(rapportEnfant.getDateFin());
+				assertFalse(rapportEnfant.isAnnule());           // la filiation entre le fiston et la factrice n'est pas dans le civil, mais on ne touche à rien sur les non-habitants
+			}
+
+			return null;
 		});
 	}
 
@@ -8422,41 +8107,35 @@ debut PF                                                                        
 		}
 
 		// mise en place fiscale avec création des parentés
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique parent = addHabitant(noIndParent);
-				final PersonnePhysique enfant = addHabitant(noIndEnfant);
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique parent = addHabitant(noIndParent);
+			final PersonnePhysique enfant = addHabitant(noIndEnfant);
 
-				final Ids ids = new Ids();
-				ids.idEnfant = enfant.getNumero();
-				ids.idParent = parent.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEnfant = enfant.getNumero();
+			ids1.idParent = parent.getNumero();
+			return ids1;
 		});
 
 		// contrôle des dates de la relation de parenté créée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
-				assertNotNull(enfant);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+			assertNotNull(enfant);
 
-				final Set<RapportEntreTiers> relSujet = enfant.getRapportsSujet();
-				assertNotNull(relSujet);
-				assertEquals(1, relSujet.size());
+			final Set<RapportEntreTiers> relSujet = enfant.getRapportsSujet();
+			assertNotNull(relSujet);
+			assertEquals(1, relSujet.size());
 
-				final RapportEntreTiers parente = relSujet.iterator().next();
-				assertNotNull(parente);
-				assertEquals(TypeRapportEntreTiers.PARENTE, parente.getType());
-				assertEquals((Long) ids.idEnfant, parente.getSujetId());
-				assertEquals((Long) ids.idParent, parente.getObjetId());
-				assertFalse(parente.isAnnule());
-				assertEquals(dateAdoptionEnfant, parente.getDateDebut());
-				assertEquals(dateDesaveuEnfant, parente.getDateFin());
+			final RapportEntreTiers parente = relSujet.iterator().next();
+			assertNotNull(parente);
+			assertEquals(TypeRapportEntreTiers.PARENTE, parente.getType());
+			assertEquals((Long) ids.idEnfant, parente.getSujetId());
+			assertEquals((Long) ids.idParent, parente.getObjetId());
+			assertFalse(parente.isAnnule());
+			assertEquals(dateAdoptionEnfant, parente.getDateDebut());
+			assertEquals(dateDesaveuEnfant, parente.getDateFin());
 
-				return null;
-			}
+			return null;
 		});
 	}
 
@@ -8484,41 +8163,35 @@ debut PF                                                                        
 		}
 
 		// mise en place fiscale avec création des parentés
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique parent = addHabitant(noIndParent);
-				final PersonnePhysique enfant = addHabitant(noIndEnfant);
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique parent = addHabitant(noIndParent);
+			final PersonnePhysique enfant = addHabitant(noIndEnfant);
 
-				final Ids ids = new Ids();
-				ids.idEnfant = enfant.getNumero();
-				ids.idParent = parent.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idEnfant = enfant.getNumero();
+			ids1.idParent = parent.getNumero();
+			return ids1;
 		});
 
 		// contrôle des dates de la relation de parenté créée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
-				assertNotNull(enfant);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique enfant = (PersonnePhysique) tiersDAO.get(ids.idEnfant);
+			assertNotNull(enfant);
 
-				final Set<RapportEntreTiers> relSujet = enfant.getRapportsSujet();
-				assertNotNull(relSujet);
-				assertEquals(1, relSujet.size());
+			final Set<RapportEntreTiers> relSujet = enfant.getRapportsSujet();
+			assertNotNull(relSujet);
+			assertEquals(1, relSujet.size());
 
-				final RapportEntreTiers parente = relSujet.iterator().next();
-				assertNotNull(parente);
-				assertEquals(TypeRapportEntreTiers.PARENTE, parente.getType());
-				assertEquals((Long) ids.idEnfant, parente.getSujetId());
-				assertEquals((Long) ids.idParent, parente.getObjetId());
-				assertFalse(parente.isAnnule());
-				assertEquals(date(dateNaissanceEnfant.year(), dateNaissanceEnfant.month(), 1), parente.getDateDebut());
-				assertEquals(dateDesaveuEnfant, parente.getDateFin());
+			final RapportEntreTiers parente = relSujet.iterator().next();
+			assertNotNull(parente);
+			assertEquals(TypeRapportEntreTiers.PARENTE, parente.getType());
+			assertEquals((Long) ids.idEnfant, parente.getSujetId());
+			assertEquals((Long) ids.idParent, parente.getObjetId());
+			assertFalse(parente.isAnnule());
+			assertEquals(date(dateNaissanceEnfant.year(), dateNaissanceEnfant.month(), 1), parente.getDateDebut());
+			assertEquals(dateDesaveuEnfant, parente.getDateFin());
 
-				return null;
-			}
+			return null;
 		});
 	}
 
@@ -8539,28 +8212,22 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Fujitsu", null, Sexe.MASCULIN);
-				pp.setHabitant(true);
-				pp.setNumeroIndividu(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Fujitsu", null, Sexe.MASCULIN);
+			pp.setHabitant(true);
+			pp.setNumeroIndividu(noIndividu);
+			return pp.getNumero();
 		});
 
-		final ParenteUpdateResult result = doInNewTransactionAndSession(new TransactionCallback<ParenteUpdateResult>() {
-			@Override
-			public ParenteUpdateResult doInTransaction(TransactionStatus status) {
-				// vérification que la personne physique est toujours habitante (des fois qu'on mettrait en place un intercepteur qui recalcule le bousin)
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertTrue(pp.isHabitantVD());
-				assertFalse(pp.isParenteDirty());
+		final ParenteUpdateResult result = doInNewTransactionAndSession(status -> {
+			// vérification que la personne physique est toujours habitante (des fois qu'on mettrait en place un intercepteur qui recalcule le bousin)
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertTrue(pp.isHabitantVD());
+			assertFalse(pp.isParenteDirty());
 
-				// lancement du traitement
-				return tiersService.initParentesDepuisFiliationsCiviles(pp);
-			}
+			// lancement du traitement
+			return tiersService.initParentesDepuisFiliationsCiviles(pp);
 		});
 
 		assertNotNull(result);
@@ -8599,28 +8266,22 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Fujitsu", null, Sexe.MASCULIN);
-				pp.setHabitant(true);
-				pp.setNumeroIndividu(noIndividu);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Fujitsu", null, Sexe.MASCULIN);
+			pp.setHabitant(true);
+			pp.setNumeroIndividu(noIndividu);
+			return pp.getNumero();
 		});
 
-		final ParenteUpdateResult result = doInNewTransactionAndSession(new TransactionCallback<ParenteUpdateResult>() {
-			@Override
-			public ParenteUpdateResult doInTransaction(TransactionStatus status) {
-				// vérification que la personne physique est toujours habitante (des fois qu'on mettrait en place un intercepteur qui recalcule le bousin)
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				assertTrue(pp.isHabitantVD());
-				assertFalse(pp.isParenteDirty());
+		final ParenteUpdateResult result = doInNewTransactionAndSession(status -> {
+			// vérification que la personne physique est toujours habitante (des fois qu'on mettrait en place un intercepteur qui recalcule le bousin)
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			assertTrue(pp.isHabitantVD());
+			assertFalse(pp.isParenteDirty());
 
-				// lancement du traitement
-				return tiersService.refreshParentesSurPersonnePhysique(pp, false);
-			}
+			// lancement du traitement
+			return tiersService.refreshParentesSurPersonnePhysique(pp, false);
 		});
 
 		assertNotNull(result);
@@ -8657,17 +8318,14 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
-				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
-				pp.setBlocageRemboursementAutomatique(true);        // pour partir d'une situation bloquée
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+			pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
+			pp.setBlocageRemboursementAutomatique(true);        // pour partir d'une situation bloquée
+			return pp.getNumero();
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
@@ -8685,7 +8343,7 @@ debut PF                                                                        
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -8708,17 +8366,14 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
-				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH810900000017744845123", null));      // trop long!
-				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+			pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH810900000017744845123", null));      // trop long!
+			pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
+			return pp.getNumero();
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
@@ -8735,7 +8390,7 @@ debut PF                                                                        
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -8758,17 +8413,14 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
-				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
-				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
+			pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
+			pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
+			return pp.getNumero();
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
@@ -8787,7 +8439,7 @@ debut PF                                                                        
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -8810,15 +8462,12 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
-				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
-				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
+			pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
+			pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
+			return pp.getNumero();
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
@@ -8835,7 +8484,7 @@ debut PF                                                                        
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -8858,17 +8507,14 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), null, false);
-				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
-				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), null, false);
+			addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
+			pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
+			pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
+			return pp.getNumero();
 		});
 
 		// vérification que l'ajout d'un for HC après le for lausannois fermé débloque bien la situation
@@ -8885,7 +8531,7 @@ debut PF                                                                        
 		// valeur du flag de blocage de remboursement automatique
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -8910,27 +8556,24 @@ debut PF                                                                        
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
-				final PersonnePhysique mme = addNonHabitant("Philomène", "Dubourg", null, Sexe.FEMININ);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+			final PersonnePhysique mme = addNonHabitant("Philomène", "Dubourg", null, Sexe.FEMININ);
 
-				// il faut un IBAN pour débloquer la situation...
-				m.setCoordonneesFinancieres(new CoordonneesFinancieres("CH6100767000K51392545", null));
-				mme.setCoordonneesFinancieres(new CoordonneesFinancieres("CH250025525510075340X", null));
+			// il faut un IBAN pour débloquer la situation...
+			m.setCoordonneesFinancieres(new CoordonneesFinancieres("CH6100767000K51392545", null));
+			mme.setCoordonneesFinancieres(new CoordonneesFinancieres("CH250025525510075340X", null));
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
-				final MenageCommun menage = couple.getMenage();
-				addForPrincipal(menage, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
-				menage.setBlocageRemboursementAutomatique(false);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+			final MenageCommun menage = couple.getMenage();
+			addForPrincipal(menage, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+			menage.setBlocageRemboursementAutomatique(false);
 
-				final Ids ids = new Ids();
-				ids.ppM = m.getNumero();
-				ids.ppMme = mme.getNumero();
-				ids.mc = menage.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppM = m.getNumero();
+			ids1.ppMme = mme.getNumero();
+			ids1.mc = menage.getNumero();
+			return ids1;
 		});
 
 		// vérification de l'état de départ du flag et départ du couple à l'étranger
@@ -9015,15 +8658,12 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(2007, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2010, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
-				addForPrincipal(lui, date(2010, 6, 1), MotifFor.DEMENAGEMENT_VD, date(2013, 7, 31), MotifFor.DEPART_HC, MockCommune.RomainmotierEnvy);
-				addForPrincipal(lui, date(2013, 8, 1), MotifFor.DEPART_HC, MockCommune.Geneve);
-				return lui.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, date(2007, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2010, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+			addForPrincipal(lui, date(2010, 6, 1), MotifFor.DEMENAGEMENT_VD, date(2013, 7, 31), MotifFor.DEPART_HC, MockCommune.RomainmotierEnvy);
+			addForPrincipal(lui, date(2013, 8, 1), MotifFor.DEPART_HC, MockCommune.Geneve);
+			return lui.getNumero();
 		});
 
 		// recalcul du flag habitant
@@ -9084,15 +8724,12 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(2007, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2010, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
-				addForPrincipal(lui, date(2010, 6, 1), MotifFor.DEMENAGEMENT_VD, date(2013, 7, 31), MotifFor.DEPART_HC, MockCommune.Lausanne);
-				addForPrincipal(lui, date(2013, 8, 1), MotifFor.DEPART_HC, MockCommune.Geneve);
-				return lui.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, date(2007, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2010, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+			addForPrincipal(lui, date(2010, 6, 1), MotifFor.DEMENAGEMENT_VD, date(2013, 7, 31), MotifFor.DEPART_HC, MockCommune.Lausanne);
+			addForPrincipal(lui, date(2013, 8, 1), MotifFor.DEPART_HC, MockCommune.Geneve);
+			return lui.getNumero();
 		});
 
 		// recalcul du flag habitant
@@ -9122,36 +8759,28 @@ debut PF                                                                        
 	@Test
 	public void testMiseAJourDecisionsSimple() throws Exception {
 
-		final long noIndividuLui = 236723537L;
 		final class IdsDecision {
 			public Long idOriginal;
-			Long idNouvel;
 		}
 		final class Ids {
 			long ppM;
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
-				final Ids ids = new Ids();
-				ids.ppM = m.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+			final Ids ids1 = new Ids();
+			ids1.ppM = m.getNumero();
+			return ids1;
 		});
 
 		// mise en place decision
-		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
-			@Override
-			public IdsDecision doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
-				DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
-				final IdsDecision idDec = new IdsDecision();
-				idDec.idOriginal = d.getId();
-				return idDec;
-			}
+		final IdsDecision idsDecision = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
+			DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+			final IdsDecision idDec = new IdsDecision();
+			idDec.idOriginal = d.getId();
+			return idDec;
 		});
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -9183,38 +8812,29 @@ debut PF                                                                        
 	@Test
 	public void testMiseAJourAutoriteDecisions() throws Exception {
 
-		final long noIndividuLui = 236723537L;
 		final class IdsDecision {
 			 Long idOriginal;
 			 Long idNouvel;
 		}
 		final class Ids {
 			long ppM;
-			long ppMme;
-			long mc;
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
-				final Ids ids = new Ids();
-				ids.ppM = m.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+			final Ids ids1 = new Ids();
+			ids1.ppM = m.getNumero();
+			return ids1;
 		});
 
 		// mise en place decision
-		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
-			@Override
-			public IdsDecision doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
-				DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
-				final IdsDecision idDec = new IdsDecision();
-				idDec.idOriginal = d.getId();
-				return idDec;
-			}
+		final IdsDecision idsDecision = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
+			DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+			final IdsDecision idDec = new IdsDecision();
+			idDec.idOriginal = d.getId();
+			return idDec;
 		});
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -9247,38 +8867,29 @@ debut PF                                                                        
 	@Test
 	public void testPremiereMiseAJourDateFinRemarqueDecisions() throws Exception {
 
-		final long noIndividuLui = 236723537L;
 		final class IdsDecision {
 			Long idOriginal;
 			Long idNouvel;
 		}
 		final class Ids {
 			long ppM;
-			long ppMme;
-			long mc;
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
-				final Ids ids = new Ids();
-				ids.ppM = m.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+			final Ids ids1 = new Ids();
+			ids1.ppM = m.getNumero();
+			return ids1;
 		});
 
 		// mise en place decision
-		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
-			@Override
-			public IdsDecision doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
-				DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
-				final IdsDecision idDec = new IdsDecision();
-				idDec.idOriginal = d.getId();
-				return idDec;
-			}
+		final IdsDecision idsDecision = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
+			DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+			final IdsDecision idDec = new IdsDecision();
+			idDec.idOriginal = d.getId();
+			return idDec;
 		});
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -9312,38 +8923,29 @@ debut PF                                                                        
 	@Test
 	public void testMiseAJourDateFinEtRemarqueDecisions() throws Exception {
 
-		final long noIndividuLui = 236723537L;
 		final class IdsDecision {
 			Long idOriginal;
 			Long idNouvel;
 		}
 		final class Ids {
 			long ppM;
-			long ppMme;
-			long mc;
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
-				final Ids ids = new Ids();
-				ids.ppM = m.getNumero();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+			final Ids ids1 = new Ids();
+			ids1.ppM = m.getNumero();
+			return ids1;
 		});
 
 		// mise en place decision
-		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
-			@Override
-			public IdsDecision doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
-				DecisionAci d = addDecisionAci(m,date(2006,11,1),date(2013,12,10),MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,"ma remarque");
-				final IdsDecision idDec = new IdsDecision();
-				idDec.idOriginal = d.getId();
-				return idDec;
-			}
+		final IdsDecision idsDecision = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
+			DecisionAci d = addDecisionAci(m,date(2006,11,1),date(2013,12,10),MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,"ma remarque");
+			final IdsDecision idDec = new IdsDecision();
+			idDec.idOriginal = d.getId();
+			return idDec;
 		});
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -9381,12 +8983,8 @@ debut PF                                                                        
 	@Test
 	public void testinfluenceDecisionsSurExConjoint() throws Exception {
 
-		final long noIndividuLui = 236723537L;
-		final long noIndividuElle = 231923587L;
-		final long noIndividuElleEx = 236736537L;
 		final class IdsDecision {
 			public Long idOriginal;
-			Long idNouvel;
 		}
 		final class Ids {
 			long ppLui;
@@ -9397,39 +8995,33 @@ debut PF                                                                        
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
-				final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
-				final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
-				final int anneeFinAncienCouple = RegDate.get().year() -4;
-				final int anneeDebutNouveauCouple = RegDate.get().year() -3;
-				EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m,mmEx,date(2001,3,7),date(anneeFinAncienCouple,5,1));
-				EnsembleTiersCouple etc = addEnsembleTiersCouple(m,mm,date(anneeDebutNouveauCouple,5,7),null);
-				final MenageCommun mc = etc.getMenage();
-				final MenageCommun mcEx = etcEx.getMenage();
-				final Ids ids = new Ids();
-				ids.ppLui = m.getNumero();
-				ids.ppElle = mm.getNumero();
-				ids.ppElleEx = mmEx.getNumero();
-				ids.menageCommun = mc.getNumero();
-				ids.menageCommunEx = mcEx.getNumero();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+			final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
+			final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
+			final int anneeFinAncienCouple = RegDate.get().year() -4;
+			final int anneeDebutNouveauCouple = RegDate.get().year() -3;
+			EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m,mmEx,date(2001,3,7),date(anneeFinAncienCouple,5,1));
+			EnsembleTiersCouple etc = addEnsembleTiersCouple(m,mm,date(anneeDebutNouveauCouple,5,7),null);
+			final MenageCommun mc = etc.getMenage();
+			final MenageCommun mcEx = etcEx.getMenage();
+			final Ids ids1 = new Ids();
+			ids1.ppLui = m.getNumero();
+			ids1.ppElle = mm.getNumero();
+			ids1.ppElleEx = mmEx.getNumero();
+			ids1.menageCommun = mc.getNumero();
+			ids1.menageCommunEx = mcEx.getNumero();
 
-				return ids;
-			}
+			return ids1;
 		});
 
 		// mise en place decision
-		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
-			@Override
-			public IdsDecision doInTransaction(TransactionStatus status) {
-				final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
-				DecisionAci d = addDecisionAci(personneEx,date(2013,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
-				final IdsDecision idDec = new IdsDecision();
-				idDec.idOriginal = d.getId();
-				return idDec;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+			DecisionAci d = addDecisionAci(personneEx,date(2013,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+			final IdsDecision idDec = new IdsDecision();
+			idDec.idOriginal = d.getId();
+			return idDec;
 		});
 
 
@@ -9456,12 +9048,8 @@ debut PF                                                                        
 	@Test
 	public void testinfluenceDecisionsApresMenageVieuxDeCinqAns() throws Exception {
 
-		final long noIndividuLui = 236723537L;
-		final long noIndividuElle = 231923587L;
-		final long noIndividuElleEx = 236736537L;
 		final class IdsDecision {
 			public Long idOriginal;
-			Long idNouvel;
 		}
 		final class Ids {
 			long ppLui;
@@ -9473,40 +9061,34 @@ debut PF                                                                        
 		final int anneeDebutDecisionAci = RegDate.get().year() -1;
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
-				final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
-				final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
-				final int anneeFinAncienCouple = RegDate.get().year() -6;
-				final int anneeDebutNouveauCouple = RegDate.get().year() -3;
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+			final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
+			final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
+			final int anneeFinAncienCouple = RegDate.get().year() -6;
+			final int anneeDebutNouveauCouple = RegDate.get().year() -3;
 
-				EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m,mmEx,date(2001,3,7),date(anneeFinAncienCouple,5,1));
-				EnsembleTiersCouple etc = addEnsembleTiersCouple(m,mm,date(anneeDebutNouveauCouple,5,7),null);
-				final MenageCommun mc = etc.getMenage();
-				final MenageCommun mcEx = etcEx.getMenage();
-				final Ids ids = new Ids();
-				ids.ppLui = m.getNumero();
-				ids.ppElle = mm.getNumero();
-				ids.ppElleEx = mmEx.getNumero();
-				ids.menageCommun = mc.getNumero();
-				ids.menageCommunEx = mcEx.getNumero();
+			EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m,mmEx,date(2001,3,7),date(anneeFinAncienCouple,5,1));
+			EnsembleTiersCouple etc = addEnsembleTiersCouple(m,mm,date(anneeDebutNouveauCouple,5,7),null);
+			final MenageCommun mc = etc.getMenage();
+			final MenageCommun mcEx = etcEx.getMenage();
+			final Ids ids1 = new Ids();
+			ids1.ppLui = m.getNumero();
+			ids1.ppElle = mm.getNumero();
+			ids1.ppElleEx = mmEx.getNumero();
+			ids1.menageCommun = mc.getNumero();
+			ids1.menageCommunEx = mcEx.getNumero();
 
-				return ids;
-			}
+			return ids1;
 		});
 
 		// mise en place decision
-		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
-			@Override
-			public IdsDecision doInTransaction(TransactionStatus status) {
-				final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
-				DecisionAci d = addDecisionAci(personneEx,date(anneeDebutDecisionAci,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
-				final IdsDecision idDec = new IdsDecision();
-				idDec.idOriginal = d.getId();
-				return idDec;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+			DecisionAci d = addDecisionAci(personneEx,date(anneeDebutDecisionAci,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+			final IdsDecision idDec = new IdsDecision();
+			idDec.idOriginal = d.getId();
+			return idDec;
 		});
 
 
@@ -9538,12 +9120,9 @@ debut PF                                                                        
 	public void testExercicesCommerciauxSansForNiBouclement() throws Exception {
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			return entreprise.getNumero();
 		});
 
 		// vérification du calcul : rien
@@ -9564,13 +9143,10 @@ debut PF                                                                        
 	public void testExercicesCommerciauxSansForMaisAvecBouclements() throws Exception {
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addBouclement(entreprise, date(2000, 12, 1), DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addBouclement(entreprise, date(2000, 12, 1), DayMonth.get(12, 31), 12);
+			return entreprise.getNumero();
 		});
 
 		// vérification du calcul : le premier exercice commercial commence au lendemain de la première date de bouclement connue, et se termine cette année
@@ -9599,15 +9175,12 @@ debut PF                                                                        
 	public void testExercicesCommerciauxAvecForOuvertMaisSansBouclements() throws Exception {
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, date(2000, 1, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2000, 1, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2000, 1, 3), null, MockCommune.Bale);
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, date(2000, 1, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2000, 1, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2000, 1, 3), null, MockCommune.Bale);
+			return entreprise.getNumero();
 		});
 
 		// vérification du calcul : un seul exercice commercial qui couvre l'intervale maximal des fors principaux et se ferme à la fin de cette année (décision arbitraire)
@@ -9633,13 +9206,10 @@ debut PF                                                                        
 	public void testExercicesCommerciauxAvecForsFermesMaisSansBouclements() throws Exception {
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addForPrincipal(entreprise, date(2000, 1, 3), null, date(2006, 12, 5), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Bale);
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addForPrincipal(entreprise, date(2000, 1, 3), null, date(2006, 12, 5), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Bale);
+			return entreprise.getNumero();
 		});
 
 		// vérification du calcul : un seul exercice commercial qui couvre l'intervale maximal des fors principaux et se ferme à la date de fermeture du for
@@ -9665,16 +9235,13 @@ debut PF                                                                        
 	public void testExercicesCommerciauxAvecForOuvertEtBouclements() throws Exception {
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
-				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+			addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
+			return entreprise.getNumero();
 		});
 
 		// vérification du calcul : exercices commerciaux annuels 01.07 -> 30.06 (sauf le premier qui commence au 03.05)
@@ -9709,14 +9276,11 @@ debut PF                                                                        
 	public void testExercicesCommerciauxAvecForsFermesEtBouclements() throws Exception {
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addForPrincipal(entreprise, date(2000, 5, 3), null, date(2006, 12, 5), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Bale);
-				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addForPrincipal(entreprise, date(2000, 5, 3), null, date(2006, 12, 5), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Bale);
+			addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
+			return entreprise.getNumero();
 		});
 
 		// vérification du calcul : exercices commerciaux annuels 01.07 -> 30.06 (sauf le premier qui commence au 03.05, et le dernier qui se termine avec le for)
@@ -9775,13 +9339,10 @@ debut PF                                                                        
 		});
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				addCapitalEntreprise(entreprise, dateDebutSurchargeCapital, dateFinSurchargeCapital, new MontantMonetaire(42L, MontantMonetaire.CHF));
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+			addCapitalEntreprise(entreprise, dateDebutSurchargeCapital, dateFinSurchargeCapital, new MontantMonetaire(42L, MontantMonetaire.CHF));
+			return entreprise.getNumero();
 		});
 
 		// récupération des capitaux d'après le tiers service
@@ -10125,23 +9686,20 @@ debut PF                                                                        
 		final ValueStore values = new ValueStore();
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
-				ForFiscalSecondaire forFiscalSecondaireEtabStable = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+			ForFiscalSecondaire forFiscalSecondaireEtabStable = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE);
 
-				Etablissement etablissement = addEtablissement();
-				addDomicileEtablissement(etablissement, date(2000, 5, 5), null, MockCommune.Bex);
-				ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), null, false);
+			Etablissement etablissement = addEtablissement();
+			addDomicileEtablissement(etablissement, date(2000, 5, 5), null, MockCommune.Bex);
+			ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), null, false);
 
-				values.activiteEconomiqueId = activiteEconomique.getId();
-				values.forFiscalSecondaireEtabStableId = forFiscalSecondaireEtabStable.getId();
-				return entreprise.getNumero();
-			}
+			values.activiteEconomiqueId = activiteEconomique.getId();
+			values.forFiscalSecondaireEtabStableId = forFiscalSecondaireEtabStable.getId();
+			return entreprise.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -10153,13 +9711,13 @@ debut PF                                                                        
 
 				// Fermeture du For fiscal secondaire Etablissement Stable
 				// Contrôles sur l'activité économique (Rapport entre tiers) avant sa clôture
-				assertTrue(activiteEconomique.getDateFin() == null);
+				assertNull(activiteEconomique.getDateFin());
 
 				// Fermeture du For fiscal secondaire (ETABLISSEMENT_STABLE)
 				tiersService.closeForFiscalSecondaire(entreprise, forFiscalSecondaireEtabStable, values.dateFermeture, MotifFor.FIN_EXPLOITATION);
 
 				// Contrôles sur l'activité économique (Rapport entre tiers) après sa clôture
-				assertTrue(activiteEconomique.getDateFin() == values.dateFermeture);
+				assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
 
 
 			}
@@ -10181,23 +9739,20 @@ debut PF                                                                        
 		final ValueStore values = new ValueStore();
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
-				ForFiscalSecondaire forFiscalSecondaireImmPrv = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE);
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+			ForFiscalSecondaire forFiscalSecondaireImmPrv = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE);
 
-				Etablissement etablissement = addEtablissement();
-				addDomicileEtablissement(etablissement, date(2000, 5, 5), null, MockCommune.Echallens);
-				ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), null, false);
+			Etablissement etablissement = addEtablissement();
+			addDomicileEtablissement(etablissement, date(2000, 5, 5), null, MockCommune.Echallens);
+			ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), null, false);
 
-				values.activiteEconomiqueId = activiteEconomique.getId();
-				values.forFiscalSecondaireImmPrvId = forFiscalSecondaireImmPrv.getId();
-				return entreprise.getNumero();
-			}
+			values.activiteEconomiqueId = activiteEconomique.getId();
+			values.forFiscalSecondaireImmPrvId = forFiscalSecondaireImmPrv.getId();
+			return entreprise.getNumero();
 		});
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -10208,13 +9763,13 @@ debut PF                                                                        
 				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
 
 				// Contrôles sur l'activité économique (Rapport entre tiers) avant sa clôture
-				assertTrue(activiteEconomique.getDateFin() == null);
+				assertNull(activiteEconomique.getDateFin());
 
 				// Fermeture du For fiscal secondaire (IMMEUBLE_PRIVE)
 				tiersService.closeForFiscalSecondaire(entreprise, forFiscalSecondaireImmPrv, values.dateFermeture, MotifFor.FIN_EXPLOITATION);
 
 				// Contrôles sur l'activité économique (Rapport entre tiers) après sa clôture
-				assertTrue(activiteEconomique.getDateFin() == null);
+				assertNull(activiteEconomique.getDateFin());
 
 
 			}
@@ -10235,24 +9790,21 @@ debut PF                                                                        
 		final ValuesStore values = new ValuesStore();
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
-				// For fiscal secondaire clos
-				ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+			// For fiscal secondaire clos
+			ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE);
 
-				Etablissement etablissement = addEtablissement();
-				addDomicileEtablissement(etablissement, date(2000, 5, 5), values.dateFermeture, MockCommune.Lausanne);
-				ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), values.dateFermeture, false);
+			Etablissement etablissement = addEtablissement();
+			addDomicileEtablissement(etablissement, date(2000, 5, 5), values.dateFermeture, MockCommune.Lausanne);
+			ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), values.dateFermeture, false);
 
-				values.activiteEconomiqueId = activiteEconomique.getId();
-				values.forFiscalSecondaireId = forFiscalSecondaire.getId();
-				return entreprise.getNumero();
-			}
+			values.activiteEconomiqueId = activiteEconomique.getId();
+			values.forFiscalSecondaireId = forFiscalSecondaire.getId();
+			return entreprise.getNumero();
 		});
 
 
@@ -10260,18 +9812,17 @@ debut PF                                                                        
 
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
 				final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireId);
 				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
 
 				// contrôle sur l'activité économique (Rapport entre tiers) avant la réouverture du for fiscal secondaire
-				assertTrue(activiteEconomique.getDateFin() == values.dateFermeture);
+				assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
 
 				// Réouverture du For fiscal secondaire (ETABLISSEMENT_STABLE)
 				tiersService.updateForSecondaire(forFiscalSecondaire, forFiscalSecondaire.getDateDebut(), forFiscalSecondaire.getMotifOuverture(), null, null, values.numeroOFS);
 
 				// contrôle sur l'activité économique (Rapport entre tiers) après la réouverture du for fiscal secondaire
-				assertTrue(activiteEconomique.getDateFin() == null);
+				assertNull(activiteEconomique.getDateFin());
 			}
 		});
 	}
@@ -10291,24 +9842,21 @@ debut PF                                                                        
 		final ValuesStore values = new ValuesStore();
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
-				// For fiscal secondaire clos
-				ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(entreprise, date(2001, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+			// For fiscal secondaire clos
+			ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(entreprise, date(2001, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE);
 
-				Etablissement etablissement = addEtablissement();
-				addDomicileEtablissement(etablissement, date(2000, 5, 5), values.dateFermeture, MockCommune.Renens);
-				ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), values.dateFermeture, false);
+			Etablissement etablissement = addEtablissement();
+			addDomicileEtablissement(etablissement, date(2000, 5, 5), values.dateFermeture, MockCommune.Renens);
+			ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), values.dateFermeture, false);
 
-				values.activiteEconomiqueId = activiteEconomique.getId();
-				values.forFiscalSecondaireId = forFiscalSecondaire.getId();
-				return entreprise.getNumero();
-			}
+			values.activiteEconomiqueId = activiteEconomique.getId();
+			values.forFiscalSecondaireId = forFiscalSecondaire.getId();
+			return entreprise.getNumero();
 		});
 
 
@@ -10316,18 +9864,17 @@ debut PF                                                                        
 
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
 				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
 				final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireId);
 
 				// Contrôle de l'activité économique (Rapport entre tiers) avant réouverture du for fiscal secondaire (IMMEUBLE_PRIVE)
-				assertTrue(activiteEconomique.getDateFin() == values.dateFermeture);
+				assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
 
 				// Réouverture du For fiscal secondaire
 				tiersService.updateForSecondaire(forFiscalSecondaire, forFiscalSecondaire.getDateDebut(), forFiscalSecondaire.getMotifOuverture(), null, null, values.numeroOFS);
 
 				// Contrôle de l'activité économique après réouverture du for fiscal secondaire => pas de réouverture
-				assertTrue(activiteEconomique.getDateFin() == values.dateFermeture);
+				assertSame(activiteEconomique.getDateFin(), values.dateFermeture);
 			}
 		});
 	}
