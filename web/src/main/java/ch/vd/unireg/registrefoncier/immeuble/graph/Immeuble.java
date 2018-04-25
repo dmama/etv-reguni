@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -41,7 +42,7 @@ public class Immeuble {
 
 		final RegDate today = RegDate.get();
 
-		this.key = ImmeubleGraph.buildKey(immeuble);
+		this.key = buildKey(immeuble);
 		this.id = immeuble.getId();
 		this.egrid = immeuble.getEgrid();
 		this.idRF = immeuble.getIdRF();
@@ -100,6 +101,33 @@ public class Immeuble {
 				.map(montant -> MONTANT_FORMAT.format(montant) + " CHF")
 				.orElse(null);
 
+	}
+
+	/**
+	 * Construit la clé d'identification dans le graphe de l'immeuble spécifié.
+	 *
+	 * @param immeuble un immeuble
+	 * @return la clé d'identification unique de l'immeuble
+	 */
+	public static String buildKey(@NotNull ImmeubleRF immeuble) {
+		final String egrid = immeuble.getEgrid();
+		return egrid == null ? immeuble.getIdRF() : egrid;
+	}
+
+	/**
+	 * Parse la clé spécifiée pour en extraire l'egrid de l'immeuble.
+	 *
+	 * @param key une clé
+	 * @return l'egrid de l'immeuble <b>si</b> la clé est celle d'un immeuble; ou <b>null</b> s'il s'agit d'une autre clé.
+	 */
+	@Nullable
+	public static String parseKey(@NotNull String key) {
+		if (key.startsWith("CH")) {
+			return key;
+		}
+		else {
+			return null;    // pas un immeuble
+		}
 	}
 
 	public String getKey() {

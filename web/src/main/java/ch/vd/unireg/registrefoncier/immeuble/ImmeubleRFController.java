@@ -38,6 +38,8 @@ import ch.vd.unireg.registrefoncier.ServitudeRF;
 import ch.vd.unireg.registrefoncier.TiersRF;
 import ch.vd.unireg.registrefoncier.UsufruitRF;
 import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.immeuble.graph.AyantDroit;
+import ch.vd.unireg.registrefoncier.immeuble.graph.Droit;
 import ch.vd.unireg.registrefoncier.immeuble.graph.Immeuble;
 import ch.vd.unireg.registrefoncier.immeuble.graph.ImmeubleGraph;
 import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
@@ -116,7 +118,7 @@ public class ImmeubleRFController {
 					.filter(AnnulableHelper::nonAnnule)
 					.max(DateRangeComparator::compareRanges)
 					.map(RapprochementRF::getTiersRF)
-					.map(ImmeubleGraph::buildKey)
+					.map(AyantDroit::buildKey)
 					.orElse(null);
 			title = "Immeubles du contribuable n°" + FormatNumeroHelper.numeroCTBToDisplay(ctbId);
 		}
@@ -136,7 +138,7 @@ public class ImmeubleRFController {
 
 			graph.process(droitsPropriete);
 
-			sourceKey = ImmeubleGraph.buildKey(communaute);
+			sourceKey = AyantDroit.buildKey(communaute);
 			title = "Immeubles de la communauté n°" + commId;
 		}
 		else {
@@ -161,7 +163,7 @@ public class ImmeubleRFController {
 
 			graph.process(immeuble, true);
 
-			sourceKey = ImmeubleGraph.buildKey(immeuble);
+			sourceKey = Immeuble.buildKey(immeuble);
 			title = "Propriétaires et propriétés de l'immeuble " + getSituation(immeuble);
 		}
 
@@ -183,9 +185,9 @@ public class ImmeubleRFController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String details(@RequestParam String elementKey, Model model) {
 
-		final Long ayantDroitId = ImmeubleGraph.parseAyantDroitId(elementKey);
-		final String egrid = ImmeubleGraph.parseImmeubleEgrid(elementKey);
-		final Long linkId = ImmeubleGraph.parseLien(elementKey);
+		final Long ayantDroitId = AyantDroit.parseKey(elementKey);
+		final String egrid = Immeuble.parseKey(elementKey);
+		final Long linkId = Droit.parseKey(elementKey);
 
 		if (ayantDroitId != null) {
 			final AyantDroitRF ayantDroit = registreFoncierService.getAyantDroit(ayantDroitId);
