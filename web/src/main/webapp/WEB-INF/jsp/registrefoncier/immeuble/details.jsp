@@ -36,7 +36,7 @@
 	</table>
 </fieldset>
 </c:if>
-<%--@elvariable id="immeuble" type="ch.vd.unireg.registrefoncier.immeuble.graph.ImmeubleGraph$Immeuble"--%>
+<%--@elvariable id="immeuble" type="ch.vd.unireg.registrefoncier.immeuble.graph.Immeuble"--%>
 <c:if test="${type == 'ImmeubleRF'}">
 <fieldset class="information"><legend><span>Caractéristique de l'immeuble sélectionné</span></legend>
 	<table>

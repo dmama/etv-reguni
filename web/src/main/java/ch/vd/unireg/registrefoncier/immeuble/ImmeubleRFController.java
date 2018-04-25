@@ -38,6 +38,7 @@ import ch.vd.unireg.registrefoncier.ServitudeRF;
 import ch.vd.unireg.registrefoncier.TiersRF;
 import ch.vd.unireg.registrefoncier.UsufruitRF;
 import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.immeuble.graph.Immeuble;
 import ch.vd.unireg.registrefoncier.immeuble.graph.ImmeubleGraph;
 import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.unireg.security.Role;
@@ -173,7 +174,7 @@ public class ImmeubleRFController {
 
 	@NotNull
 	private static String getSituation(ImmeubleRF immeuble) {
-		final ImmeubleGraph.Immeuble i = new ImmeubleGraph.Immeuble(immeuble);
+		final Immeuble i = new Immeuble(immeuble);
 		return i.getCommune() + " / " + i.getParcelle();
 	}
 
@@ -239,7 +240,7 @@ public class ImmeubleRFController {
 			final ImmeubleRF immeuble = registreFoncierService.getImmeuble(egrid);
 			if (immeuble != null) {
 				model.addAttribute("type", ImmeubleRF.class.getSimpleName());
-				model.addAttribute("immeuble", new ImmeubleGraph.Immeuble(immeuble));
+				model.addAttribute("immeuble", new Immeuble(immeuble));
 			}
 		}
 		else if (linkId != null) {
