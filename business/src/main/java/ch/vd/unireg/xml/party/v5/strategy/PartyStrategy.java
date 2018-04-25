@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -21,8 +20,10 @@ import ch.vd.unireg.tiers.AdministrationEntreprise;
 import ch.vd.unireg.tiers.AnnuleEtRemplace;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.AssujettissementParSubstitution;
+import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.ConseilLegal;
 import ch.vd.unireg.tiers.ContactImpotSource;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.Curatelle;
 import ch.vd.unireg.tiers.FusionEntreprises;
 import ch.vd.unireg.tiers.Heritage;
@@ -214,9 +215,13 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void initBankAccounts(Party left, Context context, Tiers tiers) {
-		final String numero = tiers.getNumeroCompteBancaire();
-		if (StringUtils.isNotBlank(numero) && context.ibanValidator.isValidIban(numero)) {
-			left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers, context));
+
+		final CoordonneesFinancieres coords = tiers.getCoordonneesFinancieresCourantes();
+		final CompteBancaire compteBancaire = (coords == null ?  null : coords.getCompteBancaire());
+		if (coords != null) {
+			if (context.ibanValidator.isValidIban(compteBancaire.getIban())) {
+				left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers.getNumero(), coords.getTitulaire(), compteBancaire, context));
+			}
 		}
 
 		// [SIFISC-18022] les mandats tiers sont aussi concernés, dès qu'ils ont une coordonnée financière
@@ -224,8 +229,8 @@ public abstract class PartyStrategy<T extends Party> {
 			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.MANDAT) {
 				final Mandat mandat = (Mandat) ret;
 				if (mandat.getTypeMandat() == TypeMandat.TIERS
-						&& mandat.getCoordonneesFinancieres() != null
-						&& context.ibanValidator.isValidIban(mandat.getCoordonneesFinancieres().getIban())) {
+						&& mandat.getCompteBancaire() != null
+						&& context.ibanValidator.isValidIban(mandat.getCompteBancaire().getIban())) {
 
 					// à exposer !
 					left.getBankAccounts().add(BankAccountBuilder.newBankAccount(mandat, context));

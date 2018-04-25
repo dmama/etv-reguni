@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,7 +30,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
@@ -48,6 +48,7 @@ import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.DomicileHisto;
@@ -347,10 +348,13 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		di.setDateLimiteRetour(RegDateHelper.toIndexString(declaration.getDelaiRetourImprime()));
 		di.setDebutExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateDebutExerciceCommercial()));
 		di.setFinExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateFinExerciceCommercial()));
-		if (StringUtils.isNotBlank(pm.getNumeroCompteBancaire()) && ibanValidator.isValidIban(pm.getNumeroCompteBancaire())) {
-			di.setIBAN(IbanHelper.toDisplayString(pm.getNumeroCompteBancaire()));
-			di.setTitulaireCompte(pm.getTitulaireCompteBancaire());
-		}
+		Optional.ofNullable(pm.getCoordonneesFinancieresCourantes())
+				.filter(coords -> coords.getCompteBancaire() != null)
+				.filter(coords -> ibanValidator.isValidIban(coords.getCompteBancaire().getIban()))
+				.ifPresent(coords -> {
+					di.setIBAN(IbanHelper.toDisplayString(coords.getCompteBancaire().getIban()));
+					di.setTitulaireCompte(coords.getTitulaire());
+				});
 		di.setPeriodeFiscale(XmlUtils.regdate2xmlcal(RegDate.get(declaration.getPeriode().getAnnee())));
 	}
 

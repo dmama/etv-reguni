@@ -22,10 +22,7 @@
     <column>NUMERO_TEL_PROF</column>
     <column>NUMERO_TELECOPIE</column>
     <column>ADRESSE_EMAIL</column>
-    <column>NUMERO_COMPTE_BANCAIRE</column>
-    <column>ADRESSE_BIC_SWIFT</column>
     <column>BLOC_REMB_AUTO</column>
-    <column>TITULAIRE_COMPTE_BANCAIRE</column>
     <column>NUMERO_TEL_PORTABLE</column>
     <column>COMPLEMENT_NOM</column>
     <column>NUMERO_CA</column>
@@ -34,100 +31,91 @@
     <column>DISTRICT_FISCAL_ID</column>
     <column>REGION_FISCALE_ID</column>
     <row>
-      <value>2008-01-01</value>
-      <value>12600004</value>
-      <value>MenageCommun</value>
-      <value>0</value>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <null/>
+      <value>2008-01-01</value>             <!-- LOG_MDATE -->
+      <value>12600004</value>               <!-- NUMERO -->
+      <value>MenageCommun</value>           <!-- TIERS_TYPE -->
+      <value>0</value>                      <!-- DEBITEUR_INACTIF -->
+      <none/>                               <!-- NUMERO_INDIVIDU -->
+      <none/>                               <!-- CATEGORIE_IMPOT_SOURCE -->
+      <none/>                               <!-- PERIODICITE_DECOMPTE -->
+      <none/>                               <!-- MODE_COM -->
+      <none/>                               <!-- NH_NOM -->
+      <none/>                               <!-- NH_PRENOM -->
+      <none/>                               <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <none/>                               <!-- NH_DATE_NAISSANCE -->
+      <none/>                               <!-- NH_SEXE -->
+      <none/>                               <!-- NH_NO_OFS_NATIONALITE -->
+      <none/>                               <!-- AC_NOM -->
+      <none/>                               <!-- AC_FORME_JURIDIQUE -->
+      <none/>                               <!-- PERSONNE_CONTACT -->
+      <none/>                               <!-- NUMERO_TEL_PRIVE -->
+      <none/>                               <!-- NUMERO_TEL_PROF -->
+      <none/>                               <!-- NUMERO_TELECOPIE -->
+      <none/>                               <!-- ADRESSE_EMAIL -->
+      <none/>                               <!-- BLOC_REMB_AUTO -->
+      <none/>                               <!-- NUMERO_TEL_PORTABLE -->
+      <none/>                               <!-- COMPLEMENT_NOM -->
+      <none/>                               <!-- NUMERO_CA -->
+      <none/>                               <!-- DATE_DECES -->
+      <null/>                               <!-- PP_HABITANT -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12600003</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>Dupont</value>
-      <value>Maria</value>
-      <null/>
-      <value>19531218</value>
-      <value>FEMININ</value>
-      <value>8231</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
+      <value>2008-01-01</value>             <!-- LOG_MDATE -->
+      <value>12600003</value>               <!-- NUMERO -->
+      <value>PersonnePhysique</value>       <!-- TIERS_TYPE -->
+      <value>0</value>                      <!-- DEBITEUR_INACTIF -->
+      <null/>                               <!-- NUMERO_INDIVIDU -->
+      <null/>                               <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                               <!-- PERIODICITE_DECOMPTE -->
+      <null/>                               <!-- MODE_COM -->
+      <value>Dupont</value>                 <!-- NH_NOM -->
+      <value>Maria</value>                  <!-- NH_PRENOM -->
+      <null/>                               <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <value>19531218</value>               <!-- NH_DATE_NAISSANCE -->
+      <value>FEMININ</value>                <!-- NH_SEXE -->
+      <value>8231</value>                   <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                               <!-- AC_NOM -->
+      <null/>                               <!-- AC_FORME_JURIDIQUE -->
+      <null/>                               <!-- PERSONNE_CONTACT -->
+      <null/>                               <!-- NUMERO_TEL_PRIVE -->
+      <null/>                               <!-- NUMERO_TEL_PROF -->
+      <null/>                               <!-- NUMERO_TELECOPIE -->
+      <null/>                               <!-- ADRESSE_EMAIL -->
+      <value>0</value>                      <!-- BLOC_REMB_AUTO -->
+      <null/>                               <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                               <!-- COMPLEMENT_NOM -->
+      <null/>                               <!-- NUMERO_CA -->
+      <null/>                               <!-- DATE_DECES -->
+      <value>0</value>                      <!-- PP_HABITANT -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12600009</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>Dupont</value>
-      <value>Alain</value>
-      <null/>
-      <value>19770212</value>
-      <value>MASCULIN</value>
-      <value>8201</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
+      <value>2008-01-01</value>             <!-- LOG_MDATE -->
+      <value>12600009</value>               <!-- NUMERO -->
+      <value>PersonnePhysique</value>       <!-- TIERS_TYPE -->
+      <value>0</value>                      <!-- DEBITEUR_INACTIF -->
+      <null/>                               <!-- NUMERO_INDIVIDU -->
+      <null/>                               <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                               <!-- PERIODICITE_DECOMPTE -->
+      <null/>                               <!-- MODE_COM -->
+      <value>Dupont</value>                 <!-- NH_NOM -->
+      <value>Alain</value>                  <!-- NH_PRENOM -->
+      <null/>                               <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <value>19770212</value>               <!-- NH_DATE_NAISSANCE -->
+      <value>MASCULIN</value>               <!-- NH_SEXE -->
+      <value>8201</value>                   <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                               <!-- AC_NOM -->
+      <null/>                               <!-- AC_FORME_JURIDIQUE -->
+      <null/>                               <!-- PERSONNE_CONTACT -->
+      <null/>                               <!-- NUMERO_TEL_PRIVE -->
+      <null/>                               <!-- NUMERO_TEL_PROF -->
+      <null/>                               <!-- NUMERO_TELECOPIE -->
+      <null/>                               <!-- ADRESSE_EMAIL -->
+      <value>0</value>                      <!-- BLOC_REMB_AUTO -->
+      <null/>                               <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                               <!-- COMPLEMENT_NOM -->
+      <null/>                               <!-- NUMERO_CA -->
+      <null/>                               <!-- DATE_DECES -->
+      <value>0</value>                      <!-- PP_HABITANT -->
     </row>
   </table>
   <table name="IDENTIFICATION_PERSONNE">

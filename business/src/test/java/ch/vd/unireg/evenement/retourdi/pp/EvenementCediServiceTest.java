@@ -8,17 +8,19 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.coordfin.CoordonneesFinancieresService;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
-import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.jms.BamMessageSender;
+import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersDAO;
@@ -52,7 +54,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 		service.setPeriodeFiscaleDAO(pfDao);
 		service.setValidationService(getBean(ValidationService.class, "validationService"));
 		service.setBamMessageSender(getBean(BamMessageSender.class, "bamMessageSender"));
-		service.setIbanValidator(getBean(IbanValidator.class, "ibanValidator"));
+		service.setCoordonneesFinancieresService(getBean(CoordonneesFinancieresService.class, "coordonneesFinancieresService"));
 	}
 
 	@Test
@@ -96,6 +98,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTitulaireCompte("Famille devel");
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2008);
+				scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
 				scan.setNoSequenceDI(1);
 				service.onRetourDI(scan, Collections.emptyMap());
 				return null;
@@ -109,10 +112,16 @@ public class EvenementCediServiceTest extends BusinessTest {
 
 				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
-				assertEquals("CFE2145000321457", eric.getNumeroCompteBancaire());
-				assertEquals("Famille devel", eric.getTitulaireCompteBancaire());
 				assertEquals("0215478936", eric.getNumeroTelephonePrive());
 				assertEquals("0789651243", eric.getNumeroTelephonePortable());
+
+				final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
+				assertNotNull(coords);
+				assertEquals("Famille devel", coords.getTitulaire());
+
+				final CompteBancaire compteBancaire = coords.getCompteBancaire();
+				assertNotNull(compteBancaire);
+				assertEquals("CFE2145000321457", compteBancaire.getIban());
 
 				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2008, false);
 				assertNotNull(list);
@@ -169,6 +178,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTitulaireCompte("Famille  devel");
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2008);
+				scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
 				scan.setNoSequenceDI(1);
 				service.onRetourDI(scan, Collections.emptyMap());
 				return null;
@@ -182,10 +192,16 @@ public class EvenementCediServiceTest extends BusinessTest {
 
 				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("Maison: zuzu@gmail.com Boulot: toto@monentreprise.ch", eric.getAdresseCourrierElectronique());
-				assertEquals("CFE2145000321457", eric.getNumeroCompteBancaire());
-				assertEquals("Famille devel", eric.getTitulaireCompteBancaire());
 				assertEquals("Rez: 0215478936 A l'étage tout en h", eric.getNumeroTelephonePrive());
 				assertEquals("Moi 0789651243 Ma copine 0791234567", eric.getNumeroTelephonePortable());
+
+				final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
+				assertNotNull(coords);
+				assertEquals("Famille devel", coords.getTitulaire());
+
+				final CompteBancaire compteBancaire = coords.getCompteBancaire();
+				assertNotNull(compteBancaire);
+				assertEquals("CFE2145000321457", compteBancaire.getIban());
 
 				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2008, false);
 				assertNotNull(list);
@@ -250,7 +266,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 
 				// le numéro présent en base avant réception du nouveau
 				if (StringUtils.isNotBlank(ibanInitial)) {
-					eric.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanInitial, null));
+					eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, ibanInitial, null));
 				}
 
 				return eric.getNumero();
@@ -267,6 +283,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2008);
 				scan.setNoSequenceDI(1);
+				scan.setDateTraitement(RegDate.get(2009, 3, 1).asJavaDate());
 				service.onRetourDI(scan, Collections.emptyMap());
 				return null;
 			}
@@ -278,10 +295,14 @@ public class EvenementCediServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) {
 				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				if ((!replacementExpected && ibanInitial == null) || (replacementExpected && nouvelIban == null)) {
-					assertNull(eric.getNumeroCompteBancaire());
+					assertNull(eric.getCoordonneesFinancieresCourantes());
 				}
 				else {
-					assertEquals(replacementExpected ? nouvelIban : ibanInitial, eric.getNumeroCompteBancaire());
+					final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
+					assertNotNull(coords);
+					final CompteBancaire compteBancaire = coords.getCompteBancaire();
+					assertNotNull(compteBancaire);
+					assertEquals(replacementExpected ? nouvelIban : ibanInitial, compteBancaire.getIban());
 				}
 				return null;
 			}
@@ -333,6 +354,7 @@ public class EvenementCediServiceTest extends BusinessTest {
 				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
 				scan.setPeriodeFiscale(2014);
 				scan.setNoSequenceDI(1);
+				scan.setDateTraitement(RegDate.get(2015, 3, 1).asJavaDate());
 				service.onRetourDI(scan, Collections.emptyMap());
 				return null;
 			}
@@ -345,10 +367,17 @@ public class EvenementCediServiceTest extends BusinessTest {
 
 				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
-				assertEquals("CFE2145000321457", eric.getNumeroCompteBancaire());
-				assertEquals("Famille devel", eric.getTitulaireCompteBancaire());
 				assertEquals("0215478936", eric.getNumeroTelephonePrive());
 				assertEquals("0789651243", eric.getNumeroTelephonePortable());
+
+				final CoordonneesFinancieres coords = eric.getCoordonneesFinancieresCourantes();
+				assertNotNull(coords);
+				assertEquals("Famille devel", coords.getTitulaire());
+
+				final CompteBancaire compteBancaire = coords.getCompteBancaire();
+				assertNotNull(compteBancaire);
+				assertEquals("CFE2145000321457", compteBancaire.getIban());
+
 				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2014, false);
 				assertNotNull(list);
 				assertEquals(1, list.size());

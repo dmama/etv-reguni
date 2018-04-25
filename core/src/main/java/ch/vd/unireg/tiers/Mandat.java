@@ -39,7 +39,7 @@ public class Mandat extends RapportEntreTiers implements MandatOuAssimile {
 	private static final String MANDATAIRE = "mandataire";
 
 	private TypeMandat typeMandat;
-	private CoordonneesFinancieres coordonneesFinancieres;
+	private CompteBancaire compteBancaire;
 	private String personneContact;
 	private String noTelephoneContact;
 	private Boolean withCopy;
@@ -50,12 +50,12 @@ public class Mandat extends RapportEntreTiers implements MandatOuAssimile {
 	}
 
 	@NotNull
-	public static Mandat tiers(RegDate dateDebut, RegDate dateFin, Contribuable mandant, Contribuable mandataire, CoordonneesFinancieres coordonneesFinancieres) {
-		if (coordonneesFinancieres == null) {
+	public static Mandat tiers(RegDate dateDebut, RegDate dateFin, Contribuable mandant, Contribuable mandataire, CompteBancaire compteBancaire) {
+		if (compteBancaire == null) {
 			throw new IllegalArgumentException("Un mandat 'tiers' doit avoir une donnée de coordonnées financières");
 		}
 		final Mandat mandat = new Mandat(dateDebut, dateFin, mandant, mandataire, TypeMandat.TIERS, null, null);
-		mandat.setCoordonneesFinancieres(new CoordonneesFinancieres(coordonneesFinancieres));
+		mandat.setCompteBancaire(new CompteBancaire(compteBancaire));
 		return mandat;
 	}
 
@@ -82,7 +82,7 @@ public class Mandat extends RapportEntreTiers implements MandatOuAssimile {
 	private Mandat(Mandat src) {
 		super(src);
 		this.typeMandat = src.typeMandat;
-		this.coordonneesFinancieres = src.coordonneesFinancieres != null ? new CoordonneesFinancieres(src.getCoordonneesFinancieres()) : null;
+		this.compteBancaire = src.compteBancaire != null ? new CompteBancaire(src.getCompteBancaire()) : null;
 		this.personneContact = src.personneContact;
 		this.noTelephoneContact = src.noTelephoneContact;
 		this.withCopy = src.withCopy;
@@ -105,12 +105,12 @@ public class Mandat extends RapportEntreTiers implements MandatOuAssimile {
 			@AttributeOverride(name = "iban", column = @Column(name = "IBAN_MANDAT", length = LengthConstants.TIERS_NUMCOMPTE)),
 			@AttributeOverride(name = "bicSwift", column = @Column(name = "BIC_SWIFT_MANDAT", length = LengthConstants.TIERS_ADRESSEBICSWIFT))
 	})
-	public CoordonneesFinancieres getCoordonneesFinancieres() {
-		return coordonneesFinancieres;
+	public CompteBancaire getCompteBancaire() {
+		return compteBancaire;
 	}
 
-	public void setCoordonneesFinancieres(CoordonneesFinancieres coordonneesFinancieres) {
-		this.coordonneesFinancieres = coordonneesFinancieres;
+	public void setCompteBancaire(CompteBancaire compteBancaire) {
+		this.compteBancaire = compteBancaire;
 	}
 
 	@Column(name = "PERSONNE_CONTACT_MANDAT", length = LengthConstants.MANDAT_PERSONNE_CONTACT)

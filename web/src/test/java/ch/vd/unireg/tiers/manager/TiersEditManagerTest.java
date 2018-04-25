@@ -18,16 +18,16 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -125,24 +125,6 @@ public class TiersEditManagerTest extends WebTest {
 		Tiers tiers = view.getTiers();
 		AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
 		assertNotNull(autreCommunaute);
-	}
-
-	/**
-	 * Teste la methode save
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testSave() {
-
-		TiersEditView view = tiersEditManager.creePersonne();
-		Tiers tiers = view.getTiers();
-		PersonnePhysique nonHab = (PersonnePhysique) tiers;
-		nonHab.setNom("claude");
-		view.setTiers(nonHab);
-		Tiers tiersSaved = tiersEditManager.save(view);
-		PersonnePhysique nonHabitantSaved = (PersonnePhysique)tiersSaved;
-		assertEquals("claude", nonHabitantSaved.getNom());
-
 	}
 
 	/**
@@ -444,35 +426,6 @@ public class TiersEditManagerTest extends WebTest {
 				return null;
 			}
 		});
-	}
-
-	/**
-	 * SIFISC-2934
-	 */
-	@Test
-	public void testVidageAdresseEmail() throws Exception {
-		final String mail = "toto@titi.com";
-		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
-				pp.setAdresseCourrierElectronique(mail);
-				return pp.getNumero();
-			}
-		});
-
-		final TiersEditView view = tiersEditManager.getView(ppId);
-		assertNotNull(view);
-		assertNotNull(view.getComplement());
-		assertEquals(mail, view.getComplement().getAdresseCourrierElectronique());
-
-		view.getComplement().setAdresseCourrierElectronique("");        // vidé par l'opérateur
-		tiersEditManager.save(view);
-
-		final TiersEditView nouvelleView = tiersEditManager.getView(ppId);
-		assertNotNull(nouvelleView);
-		assertNotNull(nouvelleView.getComplement());
-		assertNull(nouvelleView.getComplement().getAdresseCourrierElectronique());
 	}
 
 	@Test

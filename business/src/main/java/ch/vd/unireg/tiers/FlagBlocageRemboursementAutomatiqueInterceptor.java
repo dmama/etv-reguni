@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.hibernate.CallbackException;
@@ -136,7 +137,12 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 				else {
 					// pas de for vaudois ouvert -> a prori bloqué, mais il y a des exceptions
 					// SIFISC-9993 : si le tiers est une PP qui a un IBAN valide et qui a des PIIS (source uniquement), alors on laisse débloqué
-					if (ctb instanceof PersonnePhysique && tiersService.getDateDeces((PersonnePhysique) ctb) == null && ibanValidator.isValidIban(ctb.getNumeroCompteBancaire())) {
+					boolean ibanValid = Optional.ofNullable(ctb.getCompteBancaireCourant())
+							.map(CompteBancaire::getIban)
+							.map(iban -> ibanValidator.isValidIban(iban))
+							.orElse(false);
+
+					if (ctb instanceof PersonnePhysique && ibanValid && tiersService.getDateDeces((PersonnePhysique) ctb) == null) {
 						Boolean hasSeultSrc = null;
 						try {
 							final List<PeriodeImpositionImpotSource> piis = periodeImpositionImpotSourceService.determine((PersonnePhysique) ctb);

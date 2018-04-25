@@ -625,11 +625,6 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public void fusionne(PersonnePhysique habitant, PersonnePhysique nonHabitant) {
-
-	}
-
-	@Override
 	public String getNomRaisonSociale(Tiers tiers) {
 		return null;
 	}

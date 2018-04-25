@@ -5,10 +5,9 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
-import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.tiers.view.DebiteurEditView;
 import ch.vd.unireg.tiers.view.TiersEditView;
 import ch.vd.unireg.type.PeriodiciteDecompte;
@@ -88,14 +87,6 @@ public interface TiersEditManager {
 	 */
 	@Transactional(readOnly = true)
 	TiersEditView creeOrganisation();
-
-	/**
-	 * Sauvegarde du tiers en base et mise a jour de l'indexeur
-	 *
-	 * @param tiersEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	Tiers save(TiersEditView tiersEditView);
 
 	/**
 	 * Sauvegarde du débiteur IS

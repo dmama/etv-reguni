@@ -12,6 +12,8 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -27,8 +29,6 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Curatelle;
@@ -4056,32 +4056,46 @@ public class AdresseServiceTest extends BusinessTest {
 	 * [UNIREG-1580] Cas du contribuable n°107.147.00
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistanteMaisAvecDateFinNulle() throws Exception {
 
-		loadDatabase("classpath:ch/vd/unireg/adresse/TiersAvecDeuxAdressesFiscalesAvecDatesFinNulles.xml");
+		// un contribuable avec deux adresses courrier sans date de fin
+		final Long id = doWithoutValidation(() -> doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jean", "Sairien", null, Sexe.MASCULIN);
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, RegDate.get(2009, 8, 29), null, MockRue.Geneve.AvenueGuiseppeMotta, new CasePostale(TexteCasePostale.CASE_POSTALE, 368));
+			addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, RegDate.get(2009, 8, 29), null, MockRue.Geneve.AvenueGuiseppeMotta, new CasePostale(TexteCasePostale.CASE_POSTALE, 368));
+			return pp.getNumero();
+		}));
 
 		serviceCivil.setUp(new DefaultMockServiceCivil(false));
 
-		final long id = 10714700L;
-		final Tiers tiers = tiersDAO.get(id);
+		doInNewTransaction(status -> {
+			final Tiers tiers = tiersDAO.get(id);
+			assertNotNull(tiers);
 
-		final AdresseTiers adresse0 = tiers.getAdressesTiersSorted().get(0);
-		assertFalse(adresse0.isAnnule());
-		assertNull(adresse0.getDateFin());
-		final AdresseTiers adresse1 = tiers.getAdressesTiersSorted().get(1);
-		assertFalse(adresse1.isAnnule());
-		assertNull(adresse1.getDateFin());
+			final AdresseTiers adresse0 = tiers.getAdressesTiersSorted().get(0);
+			assertFalse(adresse0.isAnnule());
+			assertNull(adresse0.getDateFin());
+			final AdresseTiers adresse1 = tiers.getAdressesTiersSorted().get(1);
+			assertFalse(adresse1.isAnnule());
+			assertNull(adresse1.getDateFin());
 
-		// Annulation de l'adresse
-		adresseService.annulerAdresse(adresse1);
+			// Annulation de l'adresse
+			adresseService.annulerAdresse(adresse1);
 
-		// Teste des adresses résultantes
-		AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
-		assertNotNull(adressesHisto);
-		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(2009, 8, 29), null, "Genève", SourceType.FISCALE, false, adressesHisto.courrier.get(0));
-		assertTrue(adressesHisto.courrier.get(1).isAnnule());
+			// Teste des adresses résultantes
+			AdressesFiscalesHisto adressesHisto = null;
+			try {
+				adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
+			}
+			catch (AdresseException e) {
+				throw new RuntimeException(e);
+			}
+			assertNotNull(adressesHisto);
+			assertEquals(2, adressesHisto.courrier.size());
+			assertAdresse(date(2009, 8, 29), null, "Genève", SourceType.FISCALE, false, adressesHisto.courrier.get(0));
+			assertTrue(adressesHisto.courrier.get(1).isAnnule());
+			return null;
+		});
 	}
 
 	@Test

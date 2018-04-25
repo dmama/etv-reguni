@@ -6,8 +6,6 @@ import java.util.HashSet;
 import org.junit.Ignore;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
@@ -23,6 +21,8 @@ import ch.vd.unireg.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -830,7 +830,7 @@ public class TestData {
 		pp2.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp2.setBlocageRemboursementAutomatique(false);
 		pp2.setComplementNom("Chopard");
-		pp2.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
+		pp2.addCoordonneesFinancieres(new CoordonneesFinancieres("ERIC MONTAGNY", "CH9308440717427290198", "CCBPFRPPBDX"));
 		pp2.setMouvementsDossier(new HashSet());
 		pp2.setSituationsFamille(new HashSet());
 		pp2.setDebiteurInactif(false);
@@ -856,7 +856,6 @@ public class TestData {
 		pp2.setForsFiscaux(new HashSet());
 		pp2.setRapportsObjet(new HashSet());
 		pp2.setRapportsSujet(new HashSet());
-		pp2.setTitulaireCompteBancaire("ERIC MONTAGNY");
 		pp2 = hibernateTemplate.merge(pp2);
 
 		PersonnePhysique pp3 = new PersonnePhysique();
@@ -974,7 +973,7 @@ public class TestData {
 		PersonnePhysique pp6 = new PersonnePhysique();
 		pp6.setNumero(12900001L);
 		pp6.setBlocageRemboursementAutomatique(false);
-		pp6.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+		pp6.addCoordonneesFinancieres(new CoordonneesFinancieres("Lederet Michel","CH9308440717427290198", null));
 		pp6.setMouvementsDossier(new HashSet());
 		pp6.setSituationsFamille(new HashSet());
 		pp6.setDebiteurInactif(false);
@@ -998,7 +997,6 @@ public class TestData {
 		pp6.setForsFiscaux(new HashSet());
 		pp6.setRapportsObjet(new HashSet());
 		pp6.setRapportsSujet(new HashSet());
-		pp6.setTitulaireCompteBancaire("Lederet Michel");
 		pp6 = hibernateTemplate.merge(pp6);
 
 		PersonnePhysique pp7 = new PersonnePhysique();
@@ -1024,7 +1022,7 @@ public class TestData {
 		pp8.setNumero(34807810L);
 		pp8.setAdresseCourrierElectronique("pascaline@descloux.ch");
 		pp8.setBlocageRemboursementAutomatique(false);
-		pp8.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+		pp8.addCoordonneesFinancieres(new CoordonneesFinancieres("Pascaline Descloux","CH9308440717427290198", null));
 		pp8.setMouvementsDossier(new HashSet());
 		pp8.setSituationsFamille(new HashSet());
 		pp8.setDebiteurInactif(false);
@@ -1042,7 +1040,6 @@ public class TestData {
 		pp8.setForsFiscaux(new HashSet());
 		pp8.setRapportsObjet(new HashSet());
 		pp8.setRapportsSujet(new HashSet());
-		pp8.setTitulaireCompteBancaire("Pascaline Descloux");
 		pp8 = hibernateTemplate.merge(pp8);
 
 		PersonnePhysique pp9 = new PersonnePhysique();
@@ -1106,7 +1103,7 @@ public class TestData {
 		mc1.setNumero(86006202L);
 		mc1.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		mc1.setBlocageRemboursementAutomatique(false);
-		mc1.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
+		mc1.addCoordonneesFinancieres(new CoordonneesFinancieres("ERIC MONTAGNY","CH9308440717427290198", "CCBPFRPPBDX"));
 		mc1.setMouvementsDossier(new HashSet());
 		mc1.setSituationsFamille(new HashSet());
 		mc1.setDebiteurInactif(false);
@@ -1123,7 +1120,6 @@ public class TestData {
 		mc1.setForsFiscaux(new HashSet());
 		mc1.setRapportsObjet(new HashSet());
 		mc1.setRapportsSujet(new HashSet());
-		mc1.setTitulaireCompteBancaire("ERIC MONTAGNY");
 		mc1 = hibernateTemplate.merge(mc1);
 
 		Entreprise e0 = new Entreprise();
@@ -1145,7 +1141,7 @@ public class TestData {
 		pp12.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp12.setBlocageRemboursementAutomatique(false);
 		pp12.setComplementNom("Chopard");
-		pp12.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
+		pp12.addCoordonneesFinancieres(new CoordonneesFinancieres("ERIC MONTAGNY","CH9308440717427290198", "CCBPFRPPBDX"));
 		pp12.setMouvementsDossier(new HashSet());
 		pp12.setSituationsFamille(new HashSet());
 		pp12.setDebiteurInactif(true);
@@ -1171,7 +1167,6 @@ public class TestData {
 		pp12.setForsFiscaux(new HashSet());
 		pp12.setRapportsObjet(new HashSet());
 		pp12.setRapportsSujet(new HashSet());
-		pp12.setTitulaireCompteBancaire("ERIC MONTAGNY");
 		pp12 = hibernateTemplate.merge(pp12);
 
 		PersonnePhysique pp13 = new PersonnePhysique();
@@ -1179,7 +1174,7 @@ public class TestData {
 		pp13.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp13.setBlocageRemboursementAutomatique(false);
 		pp13.setComplementNom("Chopard");
-		pp13.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
+		pp13.addCoordonneesFinancieres(new CoordonneesFinancieres("ERIC MONTAGNY","CH9308440717427290198", "CCBPFRPPBDX"));
 		pp13.setMouvementsDossier(new HashSet());
 		pp13.setSituationsFamille(new HashSet());
 		pp13.setDebiteurInactif(false);
@@ -1205,7 +1200,6 @@ public class TestData {
 		pp13.setForsFiscaux(new HashSet());
 		pp13.setRapportsObjet(new HashSet());
 		pp13.setRapportsSujet(new HashSet());
-		pp13.setTitulaireCompteBancaire("ERIC MONTAGNY");
 		pp13 = hibernateTemplate.merge(pp13);
 
 		AutreCommunaute ac0 = new AutreCommunaute();

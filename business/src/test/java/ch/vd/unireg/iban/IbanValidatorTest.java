@@ -3,9 +3,10 @@ package ch.vd.unireg.iban;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.common.BusinessTest;
+
+import static org.junit.Assert.assertFalse;
 
 public class IbanValidatorTest extends BusinessTest {
 
@@ -18,7 +19,6 @@ public class IbanValidatorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testValidate() throws Exception {
 
 		// ceux-ci sont valides
@@ -86,7 +86,6 @@ public class IbanValidatorTest extends BusinessTest {
 
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testSuppresionControleClearing() throws Exception {
 		// problème de clearing en Suisse
 		try {
@@ -99,9 +98,7 @@ public class IbanValidatorTest extends BusinessTest {
 
 	}
 
-
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testExtractionClearing() {
 
 		final String clearingInvalide = ibanValidator.getClearing("?");
@@ -115,7 +112,6 @@ public class IbanValidatorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	@Ignore(value = "On a décidé de transformer les minuscules en majuscules avant la validation")
 	public void testValidateAvecMinuscule() throws Exception {
 
@@ -126,5 +122,10 @@ public class IbanValidatorTest extends BusinessTest {
 		catch (IbanUpperCaseException e) {
 			// tout va bien
 		}
+	}
+
+	@Test
+	public void testIsValid() {
+		assertFalse(ibanValidator.isValidIban("CH"));
 	}
 }

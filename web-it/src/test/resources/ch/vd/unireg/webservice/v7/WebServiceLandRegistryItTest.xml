@@ -9,13 +9,11 @@
 		<column>LOG_CUSER</column>
 		<column>LOG_MDATE</column>
 		<column>LOG_MUSER</column>
-		<column>ADRESSE_BIC_SWIFT</column>
 		<column>ADRESSE_EMAIL</column>
 		<column>BLOC_REMB_AUTO</column>
 		<column>COMPLEMENT_NOM</column>
 		<column>DEBITEUR_INACTIF</column>
 		<column>INDEX_DIRTY</column>
-		<column>NUMERO_COMPTE_BANCAIRE</column>
 		<column>PP_HABITANT</column>
 		<column>MAJORITE_TRAITEE</column>
 		<column>NH_NOM</column>
@@ -39,13 +37,11 @@
 			<null />                                        <!-- LOG_CUSER -->
 			<value>2008-01-01 00:00:00.0</value>            <!-- LOG_MDATE -->
 			<null />                                        <!-- LOG_MUSER -->
-			<null />                                        <!-- ADRESSE_BIC_SWIFT -->
 			<null />                                        <!-- ADRESSE_EMAIL -->
 			<null />                                        <!-- BLOC_REMB_AUTO -->
 			<value>De Wit Tummers Elisabeth</value>         <!-- COMPLEMENT_NOM -->
 			<value>0</value>                                <!-- DEBITEUR_INACTIF -->
 			<value>0</value>                                <!-- INDEX_DIRTY -->
-			<null />                                        <!-- NUMERO_COMPTE_BANCAIRE -->
 			<value>0</value>                                <!-- PP_HABITANT -->
 			<null />                                        <!-- MAJORITE_TRAITEE -->
 			<value>Tummers-De Wit Wouter</value>            <!-- NH_NOM -->
@@ -68,13 +64,11 @@
 			<null />                                        <!-- LOG_CUSER -->
 			<value>2008-01-01 00:00:00.0</value>            <!-- LOG_MDATE -->
 			<null />                                        <!-- LOG_MUSER -->
-			<null />                                        <!-- ADRESSE_BIC_SWIFT -->
 			<null />                                        <!-- ADRESSE_EMAIL -->
 			<null />                                        <!-- BLOC_REMB_AUTO -->
 			<value>De Wit Tummers Gertrude</value>          <!-- COMPLEMENT_NOM -->
 			<value>0</value>                                <!-- DEBITEUR_INACTIF -->
 			<value>0</value>                                <!-- INDEX_DIRTY -->
-			<null />                                        <!-- NUMERO_COMPTE_BANCAIRE -->
 			<value>0</value>                                <!-- PP_HABITANT -->
 			<null />                                        <!-- MAJORITE_TRAITEE -->
 			<value>De Wit Wouter</value>                    <!-- NH_NOM -->
@@ -97,13 +91,11 @@
 			<null />                                        <!-- LOG_CUSER -->
 			<value>2008-01-01 00:00:00.0</value>            <!-- LOG_MDATE -->
 			<null />                                        <!-- LOG_MUSER -->
-			<null />                                        <!-- ADRESSE_BIC_SWIFT -->
 			<null />                                        <!-- ADRESSE_EMAIL -->
 			<null />                                        <!-- BLOC_REMB_AUTO -->
 			<value>Breu Rodolf</value>                      <!-- COMPLEMENT_NOM -->
 			<value>0</value>                                <!-- DEBITEUR_INACTIF -->
 			<value>0</value>                                <!-- INDEX_DIRTY -->
-			<null />                                        <!-- NUMERO_COMPTE_BANCAIRE -->
 			<value>0</value>                                <!-- PP_HABITANT -->
 			<null />                                        <!-- MAJORITE_TRAITEE -->
 			<value>Breu</value>                             <!-- NH_NOM -->
@@ -126,13 +118,11 @@
 			<null />                                        <!-- LOG_CUSER -->
 			<value>2008-01-01 00:00:00.0</value>            <!-- LOG_MDATE -->
 			<null />                                        <!-- LOG_MUSER -->
-			<null />                                        <!-- ADRESSE_BIC_SWIFT -->
 			<null />                                        <!-- ADRESSE_EMAIL -->
 			<null />                                        <!-- BLOC_REMB_AUTO -->
 			<value>De Wit Tummers Aglaë</value>             <!-- COMPLEMENT_NOM -->
 			<value>0</value>                                <!-- DEBITEUR_INACTIF -->
 			<value>0</value>                                <!-- INDEX_DIRTY -->
-			<null />                                        <!-- NUMERO_COMPTE_BANCAIRE -->
 			<value>0</value>                                <!-- PP_HABITANT -->
 			<null />                                        <!-- MAJORITE_TRAITEE -->
 			<value>De Wit Wouter</value>                    <!-- NH_NOM -->
@@ -155,13 +145,11 @@
 			<null />                                        <!-- LOG_CUSER -->
 			<value>2008-01-01 00:00:00.0</value>            <!-- LOG_MDATE -->
 			<null />                                        <!-- LOG_MUSER -->
-			<null />                                        <!-- ADRESSE_BIC_SWIFT -->
 			<null />                                        <!-- ADRESSE_EMAIL -->
 			<null />                                        <!-- BLOC_REMB_AUTO -->
 			<value>de Noblebois Charles</value>             <!-- COMPLEMENT_NOM -->
 			<value>0</value>                                <!-- DEBITEUR_INACTIF -->
 			<value>0</value>                                <!-- INDEX_DIRTY -->
-			<null />                                        <!-- NUMERO_COMPTE_BANCAIRE -->
 			<value>0</value>                                <!-- PP_HABITANT -->
 			<null />                                        <!-- MAJORITE_TRAITEE -->
 			<value>de Noblebois</value>                     <!-- NH_NOM -->
@@ -184,13 +172,11 @@
 			<null />                                           <!-- LOG_CUSER -->
 			<value>2008-01-01 00:00:00.0</value>               <!-- LOG_MDATE -->
 			<null />                                           <!-- LOG_MUSER -->
-			<null />                                           <!-- ADRESSE_BIC_SWIFT -->
 			<null />                                           <!-- ADRESSE_EMAIL -->
 			<null />                                           <!-- BLOC_REMB_AUTO -->
 			<null />                                           <!-- COMPLEMENT_NOM -->
 			<value>0</value>                                   <!-- DEBITEUR_INACTIF -->
 			<value>0</value>                                   <!-- INDEX_DIRTY -->
-			<value>CH4700767000A09430049</value>               <!-- NUMERO_COMPTE_BANCAIRE -->
 			<null />                                           <!-- PP_HABITANT -->
 			<null />                                           <!-- MAJORITE_TRAITEE -->
 			<null />                                           <!-- NH_NOM -->
@@ -215,13 +201,11 @@
 			<null />                                           <!-- LOG_CUSER -->
 			<value>2008-01-01 00:00:00.0</value>               <!-- LOG_MDATE -->
 			<null />                                           <!-- LOG_MUSER -->
-			<null />                                           <!-- ADRESSE_BIC_SWIFT -->
 			<null />                                           <!-- ADRESSE_EMAIL -->
 			<null />                                           <!-- BLOC_REMB_AUTO -->
 			<null />                                           <!-- COMPLEMENT_NOM -->
 			<value>0</value>                                   <!-- DEBITEUR_INACTIF -->
 			<value>0</value>                                   <!-- INDEX_DIRTY -->
-			<null />                                           <!-- NUMERO_COMPTE_BANCAIRE -->
 			<null />                                           <!-- PP_HABITANT -->
 			<null />                                           <!-- MAJORITE_TRAITEE -->
 			<null />                                           <!-- NH_NOM -->

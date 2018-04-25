@@ -3,6 +3,7 @@ package ch.vd.unireg.declaration.source;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import noNamespace.BVRSTDDocument.BVRSTD;
 import noNamespace.CleRgpDocument;
@@ -48,6 +49,7 @@ import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.ZoneAffranchissementEditique;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.CategorieImpotSource;
@@ -392,7 +394,9 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractLegacyHelpe
 		bvrstd.setVersPourNpaLoc("1014 Lausanne");
 		bvrstd.setLigneReference(noReference);
 		bvrstd.setNoCompte(bvrReponse.getNoAdherent());
-		bvrstd.setIBAN(dpi.getNumeroCompteBancaire());
+		bvrstd.setIBAN(Optional.ofNullable(dpi.getCompteBancaireCourant())
+				               .map(CompteBancaire::getIban)
+				               .orElse(null));
 		try {
 			AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(dpi, null, TypeAdresseFiscale.COURRIER, false);
 			bvrstd.setVerseParLigne1(adresseEnvoi.getLigne1());

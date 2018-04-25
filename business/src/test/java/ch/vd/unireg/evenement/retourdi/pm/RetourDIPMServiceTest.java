@@ -3775,9 +3775,6 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
 			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-			entreprise.setCoordonneesFinancieres(null);
-			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
-
 			return entreprise.getNumero();
 		});
 
@@ -3799,8 +3796,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
 				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(nouvelIban, entreprise.getCoordonneesFinancieres().getIban());
-				Assert.assertEquals("Ma petite entreprise SARL", entreprise.getTitulaireCompteBancaire());
+
+				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+				Assert.assertNotNull(coords);
+				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
 				// remarque -> rien
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -3849,8 +3849,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
 			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
-			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.addCoordonneesFinancieres(new CoordonneesFinancieres(titulaireCompteConnu, ibanConnu, null));
 
 			return entreprise.getNumero();
 		});
@@ -3873,8 +3872,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
 				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(nouvelIban, entreprise.getCoordonneesFinancieres().getIban());
-				Assert.assertEquals("Ma petite entreprise SARL", entreprise.getTitulaireCompteBancaire());
+
+				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+				Assert.assertNotNull(coords);
+				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
 				// remarque -> rien
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -3922,9 +3924,6 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
 			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-			entreprise.setCoordonneesFinancieres(null);
-			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
-
 			return entreprise.getNumero();
 		});
 
@@ -3946,8 +3945,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
 				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(nouvelIban, entreprise.getCoordonneesFinancieres().getIban());
-				Assert.assertEquals("Ma petite entreprise SARL", entreprise.getTitulaireCompteBancaire());
+
+				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+				Assert.assertNotNull(coords);
+				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
 				// remarque -> rien
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -3996,8 +3998,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
 			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
-			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.addCoordonneesFinancieres(new CoordonneesFinancieres(titulaireCompteConnu, ibanConnu, null));
 
 			return entreprise.getNumero();
 		});
@@ -4020,8 +4021,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
 				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(ibanConnu, entreprise.getCoordonneesFinancieres().getIban());
-				Assert.assertEquals(titulaireCompteConnu, entreprise.getTitulaireCompteBancaire());
+
+				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+				Assert.assertNotNull(coords);
+				Assert.assertEquals(titulaireCompteConnu, coords.getTitulaire());
+				Assert.assertEquals(ibanConnu, coords.getCompteBancaire().getIban());
 
 				// remarque -> 1
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -4078,8 +4082,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
 			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
-			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.addCoordonneesFinancieres(new CoordonneesFinancieres(titulaireCompteConnu, ibanConnu, null));
 
 			return entreprise.getNumero();
 		});
@@ -4102,8 +4105,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
 				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(nouvelIban, entreprise.getCoordonneesFinancieres().getIban());
-				Assert.assertEquals("Ma petite entreprise SARL", entreprise.getTitulaireCompteBancaire());
+
+				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+				Assert.assertNotNull(coords);
+				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
 				// remarque -> 0
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -4152,8 +4158,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
 			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
-			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.addCoordonneesFinancieres(new CoordonneesFinancieres(titulaireCompteConnu, ibanConnu, null));
 
 			return entreprise.getNumero();
 		});
@@ -4176,8 +4181,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
 				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(ibanConnu, entreprise.getCoordonneesFinancieres().getIban());
-				Assert.assertEquals(titulaireCompteConnu, entreprise.getTitulaireCompteBancaire());
+
+				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+				Assert.assertNotNull(coords);
+				Assert.assertEquals(titulaireCompteConnu, coords.getTitulaire());
+				Assert.assertEquals(ibanConnu, coords.getCompteBancaire().getIban());
 
 				// remarque -> 0
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -4226,8 +4234,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
 			addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-			entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanConnu, null));
-			entreprise.setTitulaireCompteBancaire(titulaireCompteConnu);
+			entreprise.addCoordonneesFinancieres(new CoordonneesFinancieres(titulaireCompteConnu, ibanConnu, null));
 
 			return entreprise.getNumero();
 		});
@@ -4250,8 +4257,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
 				Assert.assertNotNull(entreprise);
-				Assert.assertEquals(nouvelIban, entreprise.getCoordonneesFinancieres().getIban());
-				Assert.assertEquals(nouveauTitulaireCompte, entreprise.getTitulaireCompteBancaire());
+
+				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+				Assert.assertNotNull(coords);
+				Assert.assertEquals(nouveauTitulaireCompte, coords.getTitulaire());
+				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
 				// remarque -> 0
 				final Set<Remarque> remarques = entreprise.getRemarques();

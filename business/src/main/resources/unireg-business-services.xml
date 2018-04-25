@@ -163,7 +163,7 @@
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
 		<property name="validationService" ref="validationService"/>
 		<property name="bamMessageSender" ref="bamMessageSender"/>
-		<property name="ibanValidator" ref="ibanValidator"/>
+		<property name="coordonneesFinancieresService" ref="coordonneesFinancieresService"/>
 	</bean>
 
 	<!-- Section événement de retour de scan des DI PM -->
@@ -178,8 +178,8 @@
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
 		<property name="assujettissementService" ref="assujettissementService"/>
 		<property name="validationService" ref="validationService"/>
-		<property name="ibanValidator" ref="ibanValidator"/>
 		<property name="tiersSearcher" ref="globalTiersSearcher"/>
+		<property name="coordonneesFinancieresService" ref="coordonneesFinancieresService"/>
 	</bean>
 
 	<bean id="evenementIAMService" class="ch.vd.unireg.evenement.iam.EvenementIAMServiceImpl">

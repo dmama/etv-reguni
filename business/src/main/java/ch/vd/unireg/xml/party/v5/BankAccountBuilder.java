@@ -2,21 +2,22 @@ package ch.vd.unireg.xml.party.v5;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
-import ch.vd.unireg.xml.party.v5.BankAccount;
-import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 
 public class BankAccountBuilder {
 
-	public static BankAccount newBankAccount(Tiers tiers, Context context) {
+	public static BankAccount newBankAccount(long ctbId, String titulaire, @Nullable CompteBancaire compteBancaire, Context context) {
 		final BankAccount c = new BankAccount();
-		c.setOwnerPartyNumber(tiers.getNumero().intValue());
-		c.setOwnerName(tiers.getTitulaireCompteBancaire());
-		fillCoordonneesFinancieres(c, tiers.getCoordonneesFinancieres(), context);
+		c.setOwnerPartyNumber((int) ctbId);
+		c.setOwnerName(titulaire);
+		fillCoordonneesFinancieres(c, compteBancaire, context);
 		return c;
 	}
 
@@ -29,11 +30,11 @@ public class BankAccountBuilder {
 		c.setDateFrom(DataHelper.coreToXMLv2(mandat.getDateDebut()));
 		c.setDateTo(DataHelper.coreToXMLv2(mandat.getDateFin()));
 
-		fillCoordonneesFinancieres(c, mandat.getCoordonneesFinancieres(), context);
+		fillCoordonneesFinancieres(c, mandat.getCompteBancaire(), context);
 		return c;
 	}
 
-	private static void fillCoordonneesFinancieres(BankAccount bankAccount, CoordonneesFinancieres cf, Context context) {
+	private static void fillCoordonneesFinancieres(BankAccount bankAccount, CompteBancaire cf, Context context) {
 		if (cf != null) {
 			bankAccount.setIban(cf.getIban());
 			bankAccount.setClearing(context.ibanValidator.getClearing(cf.getIban()));

@@ -138,7 +138,6 @@ import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.situationfamille.VueSituationFamille;
 import ch.vd.unireg.tache.TacheService;
 import ch.vd.unireg.tiers.Contribuable.FirstForsList;
-import ch.vd.unireg.tiers.dao.RemarqueDAO;
 import ch.vd.unireg.tiers.etats.TransitionEtatEntrepriseService;
 import ch.vd.unireg.tiers.etats.transition.TransitionEtatEntreprise;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
@@ -192,7 +191,6 @@ public class TiersServiceImpl implements TiersService {
 	private TacheService tacheService;
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
-	private RemarqueDAO remarqueDAO;
 	private ValidationService validationService;
 	private ValidationInterceptor validationInterceptor;
 	private HibernateTemplate hibernateTemplate;
@@ -268,11 +266,6 @@ public class TiersServiceImpl implements TiersService {
 
     public void setAdresseService(AdresseService adresseService) {
         this.adresseService = adresseService;
-    }
-
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void setRemarqueDAO(RemarqueDAO remarqueDAO) {
-        this.remarqueDAO = remarqueDAO;
     }
 
     public void setValidationService(ValidationService validationService) {
@@ -3626,44 +3619,7 @@ public class TiersServiceImpl implements TiersService {
         }
     }
 
-    /**
-     * Fusionne un non habitant avec un habitant
-     */
-    @Override
-    public void fusionne(PersonnePhysique habitant, PersonnePhysique nonHabitant) {
-        // Onglet Complements
-        copieComplements(nonHabitant, habitant);
-        copieRemarques(nonHabitant, habitant);
-
-        // Onglet Fiscal
-        final Set<ForFiscal> forsCible = new HashSet<>();
-        for (ForFiscal forFiscalSource : nonHabitant.getForsFiscaux()) {
-            if (forFiscalSource instanceof ForFiscalAutreImpot) {
-                ForFiscalAutreImpot forFiscalCible = copieForFiscalAutreImpot((ForFiscalAutreImpot) forFiscalSource);
-                forsCible.add(forFiscalCible);
-            }
-            if (forFiscalSource instanceof ForFiscalSecondaire) {
-                ForFiscalSecondaire forFiscalCible = copieForFiscalSecondaire((ForFiscalSecondaire) forFiscalSource);
-                forsCible.add(forFiscalCible);
-            }
-            if (forFiscalSource instanceof ForFiscalAutreElementImposable) {
-                ForFiscalAutreElementImposable forFiscalCible = copieForFiscalAutreElementImposable((ForFiscalAutreElementImposable) forFiscalSource);
-                forsCible.add(forFiscalCible);
-            }
-            if (forFiscalSource instanceof ForFiscalPrincipalPP) {
-                ForFiscalPrincipalPP forFiscalCible = copieForFiscalPrincipal((ForFiscalPrincipalPP) forFiscalSource);
-                forsCible.add(forFiscalCible);
-            }
-
-        }
-        habitant.setForsFiscaux(forsCible);
-        resetFlagBlocageRemboursementAutomatiqueSelonFors(habitant);
-
-        //Annulation du nonHabitant
-        annuleTiers(nonHabitant);
-    }
-
-    /**
+	/**
      * [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois, blocage en cas de fermeture de for principal vaudois
      * [SIFISC-12290] Calcul décalé en fin de transaction
      * [SIFISC-21857] Les entreprises sont maintenant également concernées
@@ -3675,89 +3631,7 @@ public class TiersServiceImpl implements TiersService {
         }
     }
 
-    private void copieRemarques(Tiers tiersSource, Tiers tiersCible) {
-
-        final List<Remarque> list = remarqueDAO.getRemarques(tiersSource.getNumero());
-        for (Remarque r : list) {
-            Remarque c = new Remarque();
-            c.setLogCreationDate(r.getLogCreationDate());
-            c.setLogCreationUser(r.getLogCreationUser());
-            c.setTexte(r.getTexte());
-            c.setTiers(tiersCible);
-            remarqueDAO.save(c);
-        }
-    }
-
-    /**
-     * Copie les informations Complements
-     */
-    private void copieComplements(Tiers tiersSource, Tiers tiersCible) {
-        tiersCible.setComplementNom(tiersSource.getComplementNom());
-        tiersCible.setPersonneContact(tiersSource.getPersonneContact());
-        tiersCible.setNumeroTelecopie(tiersSource.getNumeroTelecopie());
-        tiersCible.setNumeroTelephonePortable(tiersSource.getNumeroTelephonePortable());
-        tiersCible.setNumeroTelephonePrive(tiersSource.getNumeroTelephonePrive());
-        tiersCible.setNumeroTelephoneProfessionnel(tiersSource.getNumeroTelephoneProfessionnel());
-        tiersCible.setBlocageRemboursementAutomatique(tiersSource.getBlocageRemboursementAutomatique());
-	    if (tiersSource.getCoordonneesFinancieres() != null) {
-		    tiersCible.setCoordonneesFinancieres(new CoordonneesFinancieres(tiersSource.getCoordonneesFinancieres()));
-	    }
-	    else {
-		    tiersCible.setCoordonneesFinancieres(null);
-	    }
-    }
-
-    private ForFiscalAutreImpot copieForFiscalAutreImpot(ForFiscalAutreImpot forFiscalSource) {
-        ForFiscalAutreImpot forFiscalCible = new ForFiscalAutreImpot();
-        copieForFiscal(forFiscalSource, forFiscalCible);
-        return forFiscalCible;
-    }
-
-    private ForFiscalSecondaire copieForFiscalSecondaire(ForFiscalSecondaire forFiscalSource) {
-        ForFiscalSecondaire forFiscalCible = new ForFiscalSecondaire();
-        copieForFiscal(forFiscalSource, forFiscalCible);
-        copieForFiscalRevenuFortune(forFiscalSource, forFiscalCible);
-        return forFiscalCible;
-    }
-
-    private ForFiscalAutreElementImposable copieForFiscalAutreElementImposable(ForFiscalAutreElementImposable forFiscalSource) {
-        ForFiscalAutreElementImposable forFiscalCible = new ForFiscalAutreElementImposable();
-        copieForFiscal(forFiscalSource, forFiscalCible);
-        copieForFiscalRevenuFortune(forFiscalSource, forFiscalCible);
-        return forFiscalCible;
-    }
-
-    private ForFiscalPrincipalPP copieForFiscalPrincipal(ForFiscalPrincipalPP forFiscalSource) {
-        final ForFiscalPrincipalPP forFiscalCible = new ForFiscalPrincipalPP();
-        copieForFiscal(forFiscalSource, forFiscalCible);
-        copieForFiscalRevenuFortune(forFiscalSource, forFiscalCible);
-        forFiscalCible.setModeImposition(forFiscalSource.getModeImposition());
-        return forFiscalCible;
-    }
-
-    /**
-     * Copie les attributs de ForFiscal
-     */
-    private void copieForFiscal(ForFiscal forFiscalSource, ForFiscal forFiscalCible) {
-        forFiscalCible.setDateDebut(forFiscalSource.getDateDebut());
-        forFiscalCible.setDateFin(forFiscalSource.getDateFin());
-        forFiscalCible.setGenreImpot(forFiscalSource.getGenreImpot());
-        forFiscalCible.setTypeAutoriteFiscale(forFiscalSource.getTypeAutoriteFiscale());
-        forFiscalCible.setNumeroOfsAutoriteFiscale(forFiscalSource.getNumeroOfsAutoriteFiscale());
-        forFiscalCible.setAnnule(forFiscalSource.isAnnule());
-    }
-
-    /**
-     * Copie les attributs de ForFiscalRevenuFortune
-     */
-    private void copieForFiscalRevenuFortune(ForFiscalRevenuFortune forFiscalRevenuFortuneSource,
-                                             ForFiscalRevenuFortune forFiscalRevenuFortuneCible) {
-        forFiscalRevenuFortuneCible.setMotifRattachement(forFiscalRevenuFortuneSource.getMotifRattachement());
-        forFiscalRevenuFortuneCible.setMotifOuverture(forFiscalRevenuFortuneSource.getMotifOuverture());
-        forFiscalRevenuFortuneCible.setMotifFermeture(forFiscalRevenuFortuneSource.getMotifFermeture());
-    }
-
-    @SuppressWarnings({"UnusedDeclaration"})
+	@SuppressWarnings({"UnusedDeclaration"})
     public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
         this.evenementFiscalService = evenementFiscalService;
     }

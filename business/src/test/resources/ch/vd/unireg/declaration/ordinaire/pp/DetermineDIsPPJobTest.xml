@@ -22,10 +22,7 @@
     <column>NUMERO_TEL_PROF</column>
     <column>NUMERO_TELECOPIE</column>
     <column>ADRESSE_EMAIL</column>
-    <column>NUMERO_COMPTE_BANCAIRE</column>
-    <column>ADRESSE_BIC_SWIFT</column>
     <column>BLOC_REMB_AUTO</column>
-    <column>TITULAIRE_COMPTE_BANCAIRE</column>
     <column>NUMERO_TEL_PORTABLE</column>
     <column>COMPLEMENT_NOM</column>
     <column>DATE_DECES</column>
@@ -33,466 +30,424 @@
     <column>IDE_DIRTY</column>
     <column>IDE_DESACTIVE</column>
     <row>
-      <value>2008-01-01</value>
-      <value>12600004</value>
-      <value>MenageCommun</value>
-      <value>0</value>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <null/>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                 <!-- LOG_MDATE -->
+      <value>12600004</value>                   <!-- NUMERO -->
+      <value>MenageCommun</value>               <!-- TIERS_TYPE -->
+      <value>0</value>                          <!-- DEBITEUR_INACTIF -->
+      <none/>                                   <!-- NUMERO_INDIVIDU -->
+      <none/>                                   <!-- CATEGORIE_IMPOT_SOURCE -->
+      <none/>                                   <!-- PERIODICITE_DECOMPTE -->
+      <none/>                                   <!-- MODE_COM -->
+      <none/>                                   <!-- NH_NOM -->
+      <none/>                                   <!-- NH_PRENOM -->
+      <none/>                                   <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <none/>                                   <!-- NH_DATE_NAISSANCE -->
+      <none/>                                   <!-- NH_SEXE -->
+      <none/>                                   <!-- NH_NO_OFS_NATIONALITE -->
+      <none/>                                   <!-- AC_NOM -->
+      <none/>                                   <!-- AC_FORME_JURIDIQUE -->
+      <none/>                                   <!-- PERSONNE_CONTACT -->
+      <none/>                                   <!-- NUMERO_TEL_PRIVE -->
+      <none/>                                   <!-- NUMERO_TEL_PROF -->
+      <none/>                                   <!-- NUMERO_TELECOPIE -->
+      <none/>                                   <!-- ADRESSE_EMAIL -->
+      <none/>                                   <!-- BLOC_REMB_AUTO -->
+      <none/>                                   <!-- NUMERO_TEL_PORTABLE -->
+      <none/>                                   <!-- COMPLEMENT_NOM -->
+      <none/>                                   <!-- DATE_DECES -->
+      <null/>                                   <!-- PP_HABITANT -->
+      <null/>                                   <!-- IDE_DIRTY -->
+      <null/>                                   <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12600003</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>Gomez</value>
-      <value>Mario</value>
-      <null/>
-      <value>19531218</value>
-      <value>MASCULIN</value>
-      <value>8231</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                 <!-- LOG_MDATE -->
+      <value>12600003</value>                   <!-- NUMERO -->
+      <value>PersonnePhysique</value>           <!-- TIERS_TYPE -->
+      <value>0</value>                          <!-- DEBITEUR_INACTIF -->
+      <null/>                                   <!-- NUMERO_INDIVIDU -->
+      <null/>                                   <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                   <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                   <!-- MODE_COM -->
+      <value>Gomez</value>                      <!-- NH_NOM -->
+      <value>Mario</value>                      <!-- NH_PRENOM -->
+      <null/>                                   <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <value>19531218</value>                   <!-- NH_DATE_NAISSANCE -->
+      <value>MASCULIN</value>                   <!-- NH_SEXE -->
+      <value>8231</value>                       <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                   <!-- AC_NOM -->
+      <null/>                                   <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                   <!-- PERSONNE_CONTACT -->
+      <null/>                                   <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                   <!-- NUMERO_TEL_PROF -->
+      <null/>                                   <!-- NUMERO_TELECOPIE -->
+      <null/>                                   <!-- ADRESSE_EMAIL -->
+      <value>0</value>                          <!-- BLOC_REMB_AUTO -->
+      <null/>                                   <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                   <!-- COMPLEMENT_NOM -->
+      <null/>                                   <!-- DATE_DECES -->
+      <value>0</value>                          <!-- PP_HABITANT -->
+      <null/>                                   <!-- IDE_DIRTY -->
+      <null/>                                   <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12600001</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>Pirez</value>
-      <value>Isidor</value>
-      <value>7565789312435</value>
-      <value>19710123</value>
-      <value>MASCULIN</value>
-      <value>8212</value>
-      <null/>
-      <null/>
-      <value><![CDATA[MAURICE DUPONT]]></value>
-      <value>0219663623</value>
-      <value>0219663625</value>
-      <value>0219663629</value>
-      <value>dupont@etat-vaud.ch</value>
-      <value>CH9308440717427290198</value>
-      <value>CCBPFRPPBDX</value>
-      <value>0</value>
-      <value><![CDATA[ERIC MONTAGNY]]></value>
-      <value>0219663999</value>
-      <value>Chopard</value>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                 <!-- LOG_MDATE -->
+      <value>12600001</value>                   <!-- NUMERO -->
+      <value>PersonnePhysique</value>           <!-- TIERS_TYPE -->
+      <value>0</value>                          <!-- DEBITEUR_INACTIF -->
+      <null/>                                   <!-- NUMERO_INDIVIDU -->
+      <null/>                                   <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                   <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                   <!-- MODE_COM -->
+      <value>Pirez</value>                      <!-- NH_NOM -->
+      <value>Isidor</value>                     <!-- NH_PRENOM -->
+      <value>7565789312435</value>              <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <value>19710123</value>                   <!-- NH_DATE_NAISSANCE -->
+      <value>MASCULIN</value>                   <!-- NH_SEXE -->
+      <value>8212</value>                       <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                   <!-- AC_NOM -->
+      <null/>                                   <!-- AC_FORME_JURIDIQUE -->
+      <value><![CDATA[MAURICE DUPONT]]></value> <!-- PERSONNE_CONTACT -->
+      <value>0219663623</value>                 <!-- NUMERO_TEL_PRIVE -->
+      <value>0219663625</value>                 <!-- NUMERO_TEL_PROF -->
+      <value>0219663629</value>                 <!-- NUMERO_TELECOPIE -->
+      <value>dupont@etat-vaud.ch</value>        <!-- ADRESSE_EMAIL -->
+      <value>0</value>                          <!-- BLOC_REMB_AUTO -->
+      <value>0219663999</value>                 <!-- NUMERO_TEL_PORTABLE -->
+      <value>Chopard</value>                    <!-- COMPLEMENT_NOM -->
+      <null/>                                   <!-- DATE_DECES -->
+      <value>0</value>                          <!-- PP_HABITANT -->
+      <null/>                                   <!-- IDE_DIRTY -->
+      <null/>                                   <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>43308102</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <value>320073</value>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <value>1</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                 <!-- LOG_MDATE -->
+      <value>43308102</value>                   <!-- NUMERO -->
+      <value>PersonnePhysique</value>           <!-- TIERS_TYPE -->
+      <value>0</value>                          <!-- DEBITEUR_INACTIF -->
+      <value>320073</value>                     <!-- NUMERO_INDIVIDU -->
+      <none/>                                   <!-- CATEGORIE_IMPOT_SOURCE -->
+      <none/>                                   <!-- PERIODICITE_DECOMPTE -->
+      <none/>                                   <!-- MODE_COM -->
+      <none/>                                   <!-- NH_NOM -->
+      <none/>                                   <!-- NH_PRENOM -->
+      <none/>                                   <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <none/>                                   <!-- NH_DATE_NAISSANCE -->
+      <none/>                                   <!-- NH_SEXE -->
+      <none/>                                   <!-- NH_NO_OFS_NATIONALITE -->
+      <none/>                                   <!-- AC_NOM -->
+      <none/>                                   <!-- AC_FORME_JURIDIQUE -->
+      <none/>                                   <!-- PERSONNE_CONTACT -->
+      <none/>                                   <!-- NUMERO_TEL_PRIVE -->
+      <none/>                                   <!-- NUMERO_TEL_PROF -->
+      <none/>                                   <!-- NUMERO_TELECOPIE -->
+      <none/>                                   <!-- ADRESSE_EMAIL -->
+      <none/>                                   <!-- BLOC_REMB_AUTO -->
+      <none/>                                   <!-- NUMERO_TEL_PORTABLE -->
+      <none/>                                   <!-- COMPLEMENT_NOM -->
+      <none/>                                   <!-- DATE_DECES -->
+      <value>1</value>                          <!-- PP_HABITANT -->
+      <null/>                                   <!-- IDE_DIRTY -->
+      <null/>                                   <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>1678432</value>
-      <value>DebiteurPrestationImposable</value>
-      <value>0</value>
-      <null/>
-      <value>REGULIERS</value>
-      <value>TRIMESTRIEL</value>
-      <value>PAPIER</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[Café du Commerce]]></value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                   <!-- LOG_MDATE -->
+      <value>1678432</value>                      <!-- NUMERO -->
+      <value>DebiteurPrestationImposable</value>  <!-- TIERS_TYPE -->
+      <value>0</value>                            <!-- DEBITEUR_INACTIF -->
+      <null/>                                     <!-- NUMERO_INDIVIDU -->
+      <value>REGULIERS</value>                    <!-- CATEGORIE_IMPOT_SOURCE -->
+      <value>TRIMESTRIEL</value>                  <!-- PERIODICITE_DECOMPTE -->
+      <value>PAPIER</value>                       <!-- MODE_COM -->
+      <null/>                                     <!-- NH_NOM -->
+      <null/>                                     <!-- NH_PRENOM -->
+      <null/>                                     <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                     <!-- NH_DATE_NAISSANCE -->
+      <null/>                                     <!-- NH_SEXE -->
+      <null/>                                     <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                     <!-- AC_NOM -->
+      <null/>                                     <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                     <!-- PERSONNE_CONTACT -->
+      <null/>                                     <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                     <!-- NUMERO_TEL_PROF -->
+      <null/>                                     <!-- NUMERO_TELECOPIE -->
+      <null/>                                     <!-- ADRESSE_EMAIL -->
+      <null/>                                     <!-- BLOC_REMB_AUTO -->
+      <null/>                                     <!-- NUMERO_TEL_PORTABLE -->
+      <value><![CDATA[Café du Commerce]]></value> <!-- COMPLEMENT_NOM -->
+      <null/>                                     <!-- DATE_DECES -->
+      <null/>                                     <!-- PP_HABITANT -->
+      <null/>                                     <!-- IDE_DIRTY -->
+      <null/>                                     <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12900001</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>Lederet</value>
-      <value>Michel</value>
-      <value>7565789312435</value>
-      <value>19520123</value>
-      <value>MASCULIN</value>
-      <value>8100</value>
-      <null/>
-      <null/>
-      <value/>
-      <value>032&apos;897&apos;45&apos;32</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>CH9308440717427290198</value>
-      <null/>
-      <value>0</value>
-      <value><![CDATA[Lederet Michel]]></value>
-      <value>0764537812</value>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>12900001</value>                       <!-- NUMERO -->
+      <value>PersonnePhysique</value>               <!-- TIERS_TYPE -->
+      <value>0</value>                              <!-- DEBITEUR_INACTIF -->
+      <null/>                                       <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <value>Lederet</value>                        <!-- NH_NOM -->
+      <value>Michel</value>                         <!-- NH_PRENOM -->
+      <value>7565789312435</value>                  <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <value>19520123</value>                       <!-- NH_DATE_NAISSANCE -->
+      <value>MASCULIN</value>                       <!-- NH_SEXE -->
+      <value>8100</value>                           <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                       <!-- AC_NOM -->
+      <null/>                                       <!-- AC_FORME_JURIDIQUE -->
+      <value/>                                      <!-- PERSONNE_CONTACT -->
+      <value>032&apos;897&apos;45&apos;32</value>   <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                       <!-- NUMERO_TEL_PROF -->
+      <null/>                                       <!-- NUMERO_TELECOPIE -->
+      <null/>                                       <!-- ADRESSE_EMAIL -->
+      <value>0</value>                              <!-- BLOC_REMB_AUTO -->
+      <value>0764537812</value>                     <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                       <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <value>0</value>                              <!-- PP_HABITANT -->
+      <null/>                                       <!-- IDE_DIRTY -->
+      <null/>                                       <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12300003</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <value>327706</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>12300003</value>                       <!-- NUMERO -->
+      <value>PersonnePhysique</value>               <!-- TIERS_TYPE -->
+      <value>0</value>                              <!-- DEBITEUR_INACTIF -->
+      <value>327706</value>                         <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <null/>                                       <!-- NH_NOM -->
+      <null/>                                       <!-- NH_PRENOM -->
+      <null/>                                       <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                       <!-- NH_DATE_NAISSANCE -->
+      <null/>                                       <!-- NH_SEXE -->
+      <null/>                                       <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                       <!-- AC_NOM -->
+      <null/>                                       <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                       <!-- PERSONNE_CONTACT -->
+      <null/>                                       <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                       <!-- NUMERO_TEL_PROF -->
+      <null/>                                       <!-- NUMERO_TELECOPIE -->
+      <null/>                                       <!-- ADRESSE_EMAIL -->
+      <null/>                                       <!-- BLOC_REMB_AUTO -->
+      <null/>                                       <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                       <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <value>1</value>                              <!-- PP_HABITANT -->
+      <null/>                                       <!-- IDE_DIRTY -->
+      <null/>                                       <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>34807810</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <value>674417</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0213135489</value>
-      <null/>
-      <null/>
-      <value>pascaline@descloux.ch</value>
-      <value>CH9308440717427290198</value>
-      <null/>
-      <value>0</value>
-      <value><![CDATA[Pascaline Descloux]]></value>
-      <value>0792348732</value>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>34807810</value>                       <!-- NUMERO -->
+      <value>PersonnePhysique</value>               <!-- TIERS_TYPE -->
+      <value>0</value>                              <!-- DEBITEUR_INACTIF -->
+      <value>674417</value>                         <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <null/>                                       <!-- NH_NOM -->
+      <null/>                                       <!-- NH_PRENOM -->
+      <null/>                                       <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                       <!-- NH_DATE_NAISSANCE -->
+      <null/>                                       <!-- NH_SEXE -->
+      <null/>                                       <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                       <!-- AC_NOM -->
+      <null/>                                       <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                       <!-- PERSONNE_CONTACT -->
+      <value>0213135489</value>                     <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                       <!-- NUMERO_TEL_PROF -->
+      <null/>                                       <!-- NUMERO_TELECOPIE -->
+      <value>pascaline@descloux.ch</value>          <!-- ADRESSE_EMAIL -->
+      <value>0</value>                              <!-- BLOC_REMB_AUTO -->
+      <value>0792348732</value>                     <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                       <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <value>1</value>                              <!-- PP_HABITANT -->
+      <null/>                                       <!-- IDE_DIRTY -->
+      <null/>                                       <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12300001</value>
-      <value>PersonnePhysique</value>
-      <value>1</value>
-      <value>333905</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>12300001</value>                       <!-- NUMERO -->
+      <value>PersonnePhysique</value>               <!-- TIERS_TYPE -->
+      <value>1</value>                              <!-- DEBITEUR_INACTIF -->
+      <value>333905</value>                         <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <null/>                                       <!-- NH_NOM -->
+      <null/>                                       <!-- NH_PRENOM -->
+      <null/>                                       <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                       <!-- NH_DATE_NAISSANCE -->
+      <null/>                                       <!-- NH_SEXE -->
+      <null/>                                       <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                       <!-- AC_NOM -->
+      <null/>                                       <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                       <!-- PERSONNE_CONTACT -->
+      <null/>                                       <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                       <!-- NUMERO_TEL_PROF -->
+      <null/>                                       <!-- NUMERO_TELECOPIE -->
+      <null/>                                       <!-- ADRESSE_EMAIL -->
+      <null/>                                       <!-- BLOC_REMB_AUTO -->
+      <null/>                                       <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                       <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <value>1</value>                              <!-- PP_HABITANT -->
+      <null/>                                       <!-- IDE_DIRTY -->
+      <null/>                                       <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12300002</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <value>333908</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>12300002</value>                       <!-- NUMERO -->
+      <value>PersonnePhysique</value>               <!-- TIERS_TYPE -->
+      <value>0</value>                              <!-- DEBITEUR_INACTIF -->
+      <value>333908</value>                         <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <null/>                                       <!-- NH_NOM -->
+      <null/>                                       <!-- NH_PRENOM -->
+      <null/>                                       <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                       <!-- NH_DATE_NAISSANCE -->
+      <null/>                                       <!-- NH_SEXE -->
+      <null/>                                       <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                       <!-- AC_NOM -->
+      <null/>                                       <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                       <!-- PERSONNE_CONTACT -->
+      <null/>                                       <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                       <!-- NUMERO_TEL_PROF -->
+      <null/>                                       <!-- NUMERO_TELECOPIE -->
+      <null/>                                       <!-- ADRESSE_EMAIL -->
+      <null/>                                       <!-- BLOC_REMB_AUTO -->
+      <null/>                                       <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                       <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <value>1</value>                              <!-- PP_HABITANT -->
+      <null/>                                       <!-- IDE_DIRTY -->
+      <null/>                                       <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>86006202</value>
-      <value>MenageCommun</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[MAURICE DUPONT]]></value>
-      <value>0219663623</value>
-      <value>0219663625</value>
-      <value>0219663629</value>
-      <value>dupont@etat-vaud.ch</value>
-      <value>CH9308440717427290198</value>
-      <value>CCBPFRPPBDX</value>
-      <value>0</value>
-      <value><![CDATA[ERIC MONTAGNY]]></value>
-      <value>0219663999</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>86006202</value>                       <!-- NUMERO -->
+      <value>MenageCommun</value>                   <!-- TIERS_TYPE -->
+      <value>0</value>                              <!-- DEBITEUR_INACTIF -->
+      <null/>                                       <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <null/>                                       <!-- NH_NOM -->
+      <null/>                                       <!-- NH_PRENOM -->
+      <null/>                                       <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                       <!-- NH_DATE_NAISSANCE -->
+      <null/>                                       <!-- NH_SEXE -->
+      <null/>                                       <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                       <!-- AC_NOM -->
+      <null/>                                       <!-- AC_FORME_JURIDIQUE -->
+      <value><![CDATA[MAURICE DUPONT]]></value>     <!-- PERSONNE_CONTACT -->
+      <value>0219663623</value>                     <!-- NUMERO_TEL_PRIVE -->
+      <value>0219663625</value>                     <!-- NUMERO_TEL_PROF -->
+      <value>0219663629</value>                     <!-- NUMERO_TELECOPIE -->
+      <value>dupont@etat-vaud.ch</value>            <!-- ADRESSE_EMAIL -->
+      <value>0</value>                              <!-- BLOC_REMB_AUTO -->
+      <value>0219663999</value>                     <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                       <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <null/>                                       <!-- PP_HABITANT -->
+      <null/>                                       <!-- IDE_DIRTY -->
+      <null/>                                       <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12700001</value>
-      <value>Entreprise</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <value>0</value>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>12700001</value>                       <!-- NUMERO -->
+      <value>Entreprise</value>                     <!-- TIERS_TYPE -->
+      <value>0</value>                              <!-- DEBITEUR_INACTIF -->
+      <null/>                                       <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <null/>                                       <!-- NH_NOM -->
+      <null/>                                       <!-- NH_PRENOM -->
+      <null/>                                       <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                       <!-- NH_DATE_NAISSANCE -->
+      <null/>                                       <!-- NH_SEXE -->
+      <null/>                                       <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                       <!-- AC_NOM -->
+      <null/>                                       <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                       <!-- PERSONNE_CONTACT -->
+      <null/>                                       <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                       <!-- NUMERO_TEL_PROF -->
+      <null/>                                       <!-- NUMERO_TELECOPIE -->
+      <null/>                                       <!-- ADRESSE_EMAIL -->
+      <null/>                                       <!-- BLOC_REMB_AUTO -->
+      <null/>                                       <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                       <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <null/>                                       <!-- PP_HABITANT -->
+      <value>0</value>                              <!-- IDE_DIRTY -->
+      <value>0</value>                              <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12600002</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>Martinez</value>
-      <value>Conchita</value>
-      <value>7565789312435</value>
-      <value>19700123</value>
-      <value>FEMININ</value>
-      <value>8212</value>
-      <null/>
-      <null/>
-      <value><![CDATA[MAURICE DUPONT]]></value>
-      <value>0219663623</value>
-      <value>0219663625</value>
-      <value>0219663629</value>
-      <value>dupont@etat-vaud.ch</value>
-      <value>CH9308440717427290198</value>
-      <value>CCBPFRPPBDX</value>
-      <value>0</value>
-      <value><![CDATA[ERIC MONTAGNY]]></value>
-      <value>0219663999</value>
-      <value>Chopard</value>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>12600002</value>                       <!-- NUMERO -->
+      <value>PersonnePhysique</value>               <!-- TIERS_TYPE -->
+      <value>0</value>                              <!-- DEBITEUR_INACTIF -->
+      <null/>                                       <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <value>Martinez</value>                       <!-- NH_NOM -->
+      <value>Conchita</value>                       <!-- NH_PRENOM -->
+      <value>7565789312435</value>                  <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <value>19700123</value>                       <!-- NH_DATE_NAISSANCE -->
+      <value>FEMININ</value>                        <!-- NH_SEXE -->
+      <value>8212</value>                           <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                       <!-- AC_NOM -->
+      <null/>                                       <!-- AC_FORME_JURIDIQUE -->
+      <value><![CDATA[MAURICE DUPONT]]></value>     <!-- PERSONNE_CONTACT -->
+      <value>0219663623</value>                     <!-- NUMERO_TEL_PRIVE -->
+      <value>0219663625</value>                     <!-- NUMERO_TEL_PROF -->
+      <value>0219663629</value>                     <!-- NUMERO_TELECOPIE -->
+      <value>dupont@etat-vaud.ch</value>            <!-- ADRESSE_EMAIL -->
+      <value>0</value>                              <!-- BLOC_REMB_AUTO -->
+      <value>0219663999</value>                     <!-- NUMERO_TEL_PORTABLE -->
+      <value>Chopard</value>                        <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <value>0</value>                              <!-- PP_HABITANT -->
+      <null/>                                       <!-- IDE_DIRTY -->
+      <null/>                                       <!-- IDE_DESACTIVE -->
     </row>
     <row>
-      <value>2008-01-01</value>
-      <value>12800001</value>
-      <value>AutreCommunaute</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[Communaute XYZ]]></value>
-      <value>ASS</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>Chopard</value>
-      <none/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>2008-01-01</value>                     <!-- LOG_MDATE -->
+      <value>12800001</value>                       <!-- NUMERO -->
+      <value>AutreCommunaute</value>                <!-- TIERS_TYPE -->
+      <value>0</value>                              <!-- DEBITEUR_INACTIF -->
+      <null/>                                       <!-- NUMERO_INDIVIDU -->
+      <null/>                                       <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                       <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                       <!-- MODE_COM -->
+      <null/>                                       <!-- NH_NOM -->
+      <null/>                                       <!-- NH_PRENOM -->
+      <null/>                                       <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                       <!-- NH_DATE_NAISSANCE -->
+      <null/>                                       <!-- NH_SEXE -->
+      <null/>                                       <!-- NH_NO_OFS_NATIONALITE -->
+      <value><![CDATA[Communaute XYZ]]></value>     <!-- AC_NOM -->
+      <value>ASS</value>                            <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                       <!-- PERSONNE_CONTACT -->
+      <null/>                                       <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                       <!-- NUMERO_TEL_PROF -->
+      <null/>                                       <!-- NUMERO_TELECOPIE -->
+      <null/>                                       <!-- ADRESSE_EMAIL -->
+      <null/>                                       <!-- BLOC_REMB_AUTO -->
+      <value>Chopard</value>                        <!-- NUMERO_TEL_PORTABLE -->
+      <none/>                                       <!-- COMPLEMENT_NOM -->
+      <null/>                                       <!-- DATE_DECES -->
+      <null/>                                       <!-- PP_HABITANT -->
+      <null/>                                       <!-- IDE_DIRTY -->
+      <null/>                                       <!-- IDE_DESACTIVE -->
     </row>
   </table>
   <table name="IDENTIFICATION_PERSONNE">

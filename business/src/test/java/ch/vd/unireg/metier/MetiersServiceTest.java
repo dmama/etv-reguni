@@ -3908,8 +3908,8 @@ public class MetiersServiceTest extends BusinessTest {
 			addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 			addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 
-			lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
-			elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+			lui.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
+			elle.addCoordonneesFinancieres(new CoordonneesFinancieres(null,"CH9308440717427290198", null));
 
 			final Ids ids1 = new Ids();
 			ids1.lui = lui.getNumero();
@@ -4002,8 +4002,8 @@ public class MetiersServiceTest extends BusinessTest {
 			addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 			addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-			lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
-			elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+			lui.addCoordonneesFinancieres(new CoordonneesFinancieres(null,"CH9308440717427290198", null));
+			elle.addCoordonneesFinancieres(new CoordonneesFinancieres(null,"CH9308440717427290198", null));
 
 			final Ids ids1 = new Ids();
 			ids1.lui = lui.getNumero();
@@ -4097,8 +4097,8 @@ public class MetiersServiceTest extends BusinessTest {
 			addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 			addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-			lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
-			elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+			lui.addCoordonneesFinancieres(new CoordonneesFinancieres(null,"CH9308440717427290198", null));
+			elle.addCoordonneesFinancieres(new CoordonneesFinancieres(null,"CH9308440717427290198", null));
 
 			final Ids ids1 = new Ids();
 			ids1.lui = lui.getNumero();

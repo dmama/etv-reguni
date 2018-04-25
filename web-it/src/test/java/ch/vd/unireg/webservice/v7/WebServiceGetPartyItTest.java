@@ -2,6 +2,7 @@ package ch.vd.unireg.webservice.v7;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ import ch.vd.unireg.xml.party.establishment.v2.Establishment;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
+import ch.vd.unireg.xml.party.v5.BankAccount;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 
@@ -115,7 +117,9 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertEquals(NaturalPerson.class, party.getClass());
 			Assert.assertEquals("Allora", ((NaturalPerson) party).getOfficialName());
 			Assert.assertEquals("Cédric", ((NaturalPerson) party).getFirstName());
-			Assert.assertEquals("CH7400243243G15379860", party.getBankAccounts().get(0).getIban());
+			final List<BankAccount> bankAccounts = party.getBankAccounts();
+			Assert.assertEquals(1, bankAccounts.size());
+			Assert.assertEquals("CH7400243243G15379860", bankAccounts.get(0).getIban());
 		}
 		{
 			final Pair<String, Map<String, ?>> params = buildUriAndParams(noTiers, EnumSet.of(PartyPart.BANK_ACCOUNTS));

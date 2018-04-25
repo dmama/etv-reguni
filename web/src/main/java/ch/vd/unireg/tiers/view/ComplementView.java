@@ -1,8 +1,11 @@
 package ch.vd.unireg.tiers.view;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.tiers.CompteBancaire;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 
@@ -28,7 +31,7 @@ public class ComplementView {
 	public ComplementView() {
 	}
 
-	public ComplementView(Tiers tiers, IbanValidator ibanValidator) {
+	public ComplementView(@NotNull Tiers tiers, @NotNull IbanValidator ibanValidator) {
 
 		// nom
 		this.personneContact = tiers.getPersonneContact();
@@ -42,9 +45,15 @@ public class ComplementView {
 		this.adresseCourrierElectronique = tiers.getAdresseCourrierElectronique();
 
 		// compte bancaire
-		final String iban = tiers.getNumeroCompteBancaire();
-		final String ibanValidationMessage = verifierIban(iban, ibanValidator); // [UNIREG-2582]
-		compteBancaire = new CompteBancaireView(null, null, tiers.getNumero(), tiers.getTitulaireCompteBancaire(), null, null, null, iban, ibanValidationMessage, tiers.getAdresseBicSwift());
+		final CoordonneesFinancieres coords = tiers.getCoordonneesFinancieresCourantes();
+		if (coords != null) {
+			final CompteBancaire compteBancaire = coords.getCompteBancaire();
+			final String iban = (compteBancaire == null ? null : compteBancaire.getIban());
+			final String bicSwift = (compteBancaire == null ? null : compteBancaire.getBicSwift());
+			final String ibanValidationMessage = verifierIban(iban, ibanValidator); // [UNIREG-2582]
+			final String titulaire = coords.getTitulaire();
+			this.compteBancaire = new CompteBancaireView(null, null, tiers.getNumero(), titulaire, null, null, null, iban, ibanValidationMessage, bicSwift);
+		}
 
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;

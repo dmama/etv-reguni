@@ -12,7 +12,7 @@ public class MandatairePerceptionView extends MandataireView {
 	public MandatairePerceptionView(Mandat mandat, TiersService tiersService) {
 		super(mandat.getId(), mandat, mandat.getTypeMandat(), getNomRaisonSociale(mandat.getObjetId(), tiersService));
 		this.idMandataire = mandat.getObjetId();
-		this.iban = IbanHelper.normalize(mandat.getCoordonneesFinancieres().getIban());
+		this.iban = IbanHelper.normalize(mandat.getCompteBancaire().getIban());
 	}
 
 	public long getIdMandataire() {

@@ -6,11 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.Mandat;
 import ch.vd.unireg.type.TypeMandat;
 
@@ -37,7 +37,7 @@ public class MandatView {
 		this.dateFin = mandat.getDateFin();
 		this.withCopy = mandat.getWithCopy() != null && mandat.getWithCopy();
 
-		final CoordonneesFinancieres cf = mandat.getCoordonneesFinancieres();
+		final CompteBancaire cf = mandat.getCompteBancaire();
 		if (cf != null) {
 			this.iban = IbanHelper.normalize(cf.getIban());
 		}

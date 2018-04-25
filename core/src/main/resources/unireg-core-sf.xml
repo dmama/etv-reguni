@@ -129,6 +129,7 @@
 		<value>ch.vd.unireg.tiers.Curatelle</value>
 		<value>ch.vd.unireg.tiers.ConseilLegal</value>
 		<value>ch.vd.unireg.tiers.ContactImpotSource</value>
+		<value>ch.vd.unireg.tiers.CoordonneesFinancieres</value>
 		<value>ch.vd.unireg.tiers.AnnuleEtRemplace</value>
 		<value>ch.vd.unireg.tiers.ActiviteEconomique</value>
 		<value>ch.vd.unireg.tiers.Mandat</value>

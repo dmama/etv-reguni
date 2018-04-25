@@ -27,7 +27,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.adresse.AdresseCivileAdapter;
 import ch.vd.unireg.adresse.AdresseDataException;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
@@ -53,16 +52,17 @@ import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.coordfin.CoordonneesFinancieresService;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanHelper;
-import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
@@ -75,7 +75,6 @@ import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.unireg.tache.TacheService;
 import ch.vd.unireg.tiers.Bouclement;
 import ch.vd.unireg.tiers.Contribuable;
-import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.DomicileHisto;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
@@ -127,8 +126,8 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private AssujettissementService assujettissementService;
 	private ValidationService validationService;
-	private IbanValidator ibanValidator;
 	private GlobalTiersSearcher tiersSearcher;
+	private CoordonneesFinancieresService coordonneesFinancieresService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -170,12 +169,12 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		this.validationService = validationService;
 	}
 
-	public void setIbanValidator(IbanValidator ibanValidator) {
-		this.ibanValidator = ibanValidator;
-	}
-
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
 		this.tiersSearcher = tiersSearcher;
+	}
+
+	public void setCoordonneesFinancieresService(CoordonneesFinancieresService coordonneesFinancieresService) {
+		this.coordonneesFinancieresService = coordonneesFinancieresService;
 	}
 
 	/**
@@ -190,7 +189,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		// connait-on ce contribuable entreprise ?
 		final long noCtb = retour.getNoCtb();
 		final Tiers tiers = tiersService.getTiers(noCtb);
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new EsbBusinessException(EsbBusinessCode.CTB_INEXISTANT, "Le contribuable " + FormatNumeroHelper.numeroCTBToDisplay(noCtb) + " n'existe pas ou n'est pas une entreprise.", null);
 		}
 
@@ -713,70 +712,20 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 */
 	private void traiterInformationsBancaires(Entreprise entreprise, int pf, int noSequence, @Nullable String iban, @Nullable String titulaireCompte) {
 
-		// d'abord, on traite l'IBAN
-		final String ibanNormalise = IbanHelper.normalize(iban);
-		final boolean ibanModifie = ibanNormalise != null
-				&& StringUtils.isNotBlank(ibanNormalise)
-				&& !"CH".equalsIgnoreCase(ibanNormalise)
-				&& traiterCompteBancaire(entreprise, pf, noSequence, ibanNormalise);
-
-		// puis on traite le titulaire du compte
-		if (ibanModifie) {
-			if (titulaireCompte != null && StringUtils.isNotBlank(titulaireCompte)) {
-				entreprise.setTitulaireCompteBancaire(titulaireCompte.trim());
-			}
-			else {
-				final String raisonSociale = tiersService.getDerniereRaisonSociale(entreprise);
-				entreprise.setTitulaireCompteBancaire(raisonSociale);
-			}
+		if (StringUtils.isBlank(titulaireCompte)) {
+			titulaireCompte = tiersService.getDerniereRaisonSociale(entreprise);
 		}
-	}
 
-	/**
-	 * Traitement des changements dans le numéro de compte bancaire (IBAN)
-	 * @param entreprise entreprise concernée
-	 * @param pf période fiscale de la déclaration
-	 * @param noSequence numéro de séquence de la déclaration dans sa période fiscale
-	 * @param iban IBAN fourni (sous sa forme normalisée)
-	 * @return <code>true</code> si l'IBAN a été mis à jour, <code>false</code> dans le cas contraire
-	 */
-	private boolean traiterCompteBancaire(Entreprise entreprise, int pf, int noSequence, @NotNull String iban) {
-		final CoordonneesFinancieres coordonneesFinancieres = entreprise.getCoordonneesFinancieres();
-		final String ibanConnu = coordonneesFinancieres != null ? IbanHelper.normalize(coordonneesFinancieres.getIban()) : null;
-		if (ibanConnu == null || !ibanConnu.equalsIgnoreCase(iban)) {
-			final String newIbanValidationError = ibanValidator.getIbanValidationError(iban);
-			boolean accepterNouvelIban = false;
-			if (newIbanValidationError == null) {
-				accepterNouvelIban = true;
-			}
-			else {
-				// ok, le nouveau numéro n'est pas valide...
+		final CoordonneesFinancieresService.UpdateNotifier notifier = (currentIban, newIban) -> {
+			// le nouvel IBAN est invalide et l'IBAN courant a été gardé : on laisse un message
+			tacheService.genereTacheControleDossier(entreprise, Motifs.CHGT_COMPTE_BANCAIRE);
+			addRemarque(entreprise, String.format("Le numéro de compte bancaire (%s) déclaré dans la DI %d/%d est invalide, et n'a donc pas écrasé le numéro valide connu.",
+			                                      newIban, pf, noSequence));
 
-				// si on avait un ancien IBAN valide, on laissera une trace, sinon on prend le nouveau quand-même
-				final String oldIbanValidationError = ibanValidator.getIbanValidationError(ibanConnu);      // non-vide si iban vide
-				if (oldIbanValidationError == null) {
-					// on laisse un message
-					tacheService.genereTacheControleDossier(entreprise, Motifs.CHGT_COMPTE_BANCAIRE);
-					addRemarque(entreprise, String.format("Le numéro de compte bancaire (%s) déclaré dans la DI %d/%d est invalide, et n'a donc pas écrasé le numéro valide connu.",
-					                                      iban, pf, noSequence));
-				}
-				else {
-					accepterNouvelIban = true;
-				}
-			}
+		};
 
-			if (accepterNouvelIban) {
-				// pour rester cohérent avec ce qui est fait pour les PP, on ne touche pas à l'éventuel BIC/SWIFT présent
-				if (coordonneesFinancieres != null) {
-					coordonneesFinancieres.setIban(iban);
-				}
-				else {
-					entreprise.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, null));
-				}
-				return true;
-			}
-		}
-		return false;
+		// on met-à-jour les coordonnées financières
+		coordonneesFinancieresService.updateCoordonneesFinancieres(entreprise, titulaireCompte, iban, RegDate.get(), notifier);
 	}
 
 	/**
@@ -1018,7 +967,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 		// y a-t-il une surcharge d'adresse courrier à la date de référence ?
 		final AdresseTiers surchargeExistante = entreprise.getAdresseActive(TypeAdresseTiers.COURRIER, dateReferenceExistant);
-		if (surchargeExistante != null && surchargeExistante instanceof AdresseFiscale && ((AdresseFiscale) surchargeExistante).isPermanente()) {
+		if (surchargeExistante instanceof AdresseFiscale && ((AdresseFiscale) surchargeExistante).isPermanente()) {
 			// non seulement il y a une surcharge, mais celle-ci est permanente... on ne touche à rien !
 			tacheService.genereTacheControleDossier(entreprise, Motifs.ADRESSE_NON_TRAITEE);
 			addRemarque(entreprise, String.format("L'adresse récupérée dans la DI %d/%d (%s) n'a pas été prise en compte automatiquement en raison de la présence au %s d'une surcharge permanente d'adresse courrier.",

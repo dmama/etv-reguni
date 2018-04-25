@@ -1,12 +1,9 @@
 package ch.vd.unireg.tiers;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -84,16 +81,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	private String adresseCourrierElectronique;
 	private Boolean blocageRemboursementAutomatique = Boolean.TRUE;
 
-	/**
-	 * Numero de compte bancaire ou du compte postal au format international IBAN (longueur maximum 21 pour les comptes suisses)
-	 */
-	private CoordonneesFinancieres coordonneesFinancieres;
-
-	/**
-	 * Titulaire du compte bancaire ou du compte postal
-	 */
-	private String titulaireCompteBancaire;
-
 	private boolean debiteurInactif = false;
 	private Boolean indexDirty;
 
@@ -119,6 +106,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	private Set<ForFiscal> forsFiscaux;
 	private Set<Remarque> remarques;
 	private Set<EtiquetteTiers> etiquettes;
+	private Set<CoordonneesFinancieres> coordonneesFinancieres;
 
 	public Tiers() {
 	}
@@ -222,36 +210,47 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		adresseCourrierElectronique = theAdresseCourrierElectronique;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-			@AttributeOverride(name = "iban", column = @Column(name = "NUMERO_COMPTE_BANCAIRE", length = LengthConstants.TIERS_NUMCOMPTE)),
-			@AttributeOverride(name = "bicSwift", column = @Column(name = "ADRESSE_BIC_SWIFT", length = LengthConstants.TIERS_ADRESSEBICSWIFT))
-	})
-	public CoordonneesFinancieres getCoordonneesFinancieres() {
+	/**
+	 * @return le compte bancaire actuellement valable; ou <i>null</i> si aucun compte bancaire n'est valable actuellement.
+	 */
+	@Transient
+	@Nullable
+	public CompteBancaire getCompteBancaireCourant() {
+		return coordonneesFinancieres == null ? null : coordonneesFinancieres.stream()
+				.filter(c -> c.isValidAt(null))
+				.findAny()
+				.map(CoordonneesFinancieres::getCompteBancaire)
+				.orElse(null);
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "TIERS_ID", nullable = false)
+	public Set<CoordonneesFinancieres> getCoordonneesFinancieres() {
 		return coordonneesFinancieres;
 	}
 
-	public void setCoordonneesFinancieres(CoordonneesFinancieres coordonneesFinancieres) {
+	public void setCoordonneesFinancieres(Set<CoordonneesFinancieres> coordonneesFinancieres) {
 		this.coordonneesFinancieres = coordonneesFinancieres;
 	}
 
+	public void addCoordonneesFinancieres(@NotNull CoordonneesFinancieres coordonnees) {
+		if (this.coordonneesFinancieres == null) {
+			this.coordonneesFinancieres = new HashSet<>();
+		}
+		this.coordonneesFinancieres.add(coordonnees);
+		coordonnees.setTiers(this);
+	}
+
+	/**
+	 * @return les coordonnées financières actuellement valable; ou <i>null</i> si aucune coordonnées financières n'est valable actuellement.
+	 */
 	@Transient
-	public String getNumeroCompteBancaire() {
-		return coordonneesFinancieres != null ? coordonneesFinancieres.getIban() : null;
-	}
-
-	@Transient
-	public String getAdresseBicSwift() {
-		return coordonneesFinancieres != null ? coordonneesFinancieres.getBicSwift() : null;
-	}
-
-	@Column(name = "TITULAIRE_COMPTE_BANCAIRE", length = LengthConstants.TIERS_PERSONNE)
-	public String getTitulaireCompteBancaire() {
-		return titulaireCompteBancaire;
-	}
-
-	public void setTitulaireCompteBancaire(String theTitulaireCompteBancaire) {
-		titulaireCompteBancaire = theTitulaireCompteBancaire;
+	@Nullable
+	public CoordonneesFinancieres getCoordonneesFinancieresCourantes() {
+		return coordonneesFinancieres == null ? null : coordonneesFinancieres.stream()
+				.filter(c -> c.isValidAt(null))
+				.findAny()
+				.orElse(null);
 	}
 
 	@Transient
@@ -946,7 +945,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				&& ComparisonHelper.areEqual(personneContact, obj.personneContact)
 				&& ComparisonHelper.areEqual(rapportsObjet, obj.rapportsObjet)
 				&& ComparisonHelper.areEqual(rapportsSujet, obj.rapportsSujet)
-				&& ComparisonHelper.areEqual(titulaireCompteBancaire, obj.titulaireCompteBancaire)
 				&& ComparisonHelper.areEqual(etiquettes, obj.etiquettes);
 	}
 }

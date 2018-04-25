@@ -9,20 +9,17 @@
     <column>LOG_CUSER</column>
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
-    <column>ADRESSE_BIC_SWIFT</column>
     <column>ADRESSE_EMAIL</column>
     <column>BLOC_REMB_AUTO</column>
     <column>COMPLEMENT_NOM</column>
     <column>DEBITEUR_INACTIF</column>
     <column>INDEX_DIRTY</column>
-    <column>NUMERO_COMPTE_BANCAIRE</column>
     <column>NUMERO_TELECOPIE</column>
     <column>NUMERO_TEL_PORTABLE</column>
     <column>NUMERO_TEL_PRIVE</column>
     <column>NUMERO_TEL_PROF</column>
     <column>OID</column>
     <column>PERSONNE_CONTACT</column>
-    <column>TITULAIRE_COMPTE_BANCAIRE</column>
     <column>AC_FORME_JURIDIQUE</column>
     <column>AC_NOM</column>
     <column>NUMERO_CA</column>
@@ -50,154 +47,145 @@
     <column>MAJORITE_TRAITEE</column>
     <column>DATE_LIMITE_EXCLUSION</column>
     <row>
-      <value>MenageCommun</value>
-      <value>26012004</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-07-16 00:00:00.0]]></value>
-      <value>W#ASIZP1</value>
-      <value><![CDATA[2009-10-03 20:50:13.293]]></value>
-      <value>xbi0bnv</value>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <value>0</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <value><![CDATA[0244451887               ]]></value>
-      <null/>
-      <value>19</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>MenageCommun</value>                         <!-- TIERS_TYPE -->
+      <value>26012004</value>                             <!-- NUMERO -->
+      <null/>                                             <!-- ANNULATION_DATE -->
+      <null/>                                             <!-- ANNULATION_USER -->
+      <value><![CDATA[2008-07-16 00:00:00.0]]></value>    <!-- LOG_CDATE -->
+      <value>W#ASIZP1</value>                             <!-- LOG_CUSER -->
+      <value><![CDATA[2009-10-03 20:50:13.293]]></value>  <!-- LOG_MDATE -->
+      <value>xbi0bnv</value>                              <!-- LOG_MUSER -->
+      <null/>                                             <!-- ADRESSE_EMAIL -->
+      <value>1</value>                                    <!-- BLOC_REMB_AUTO -->
+      <null/>                                             <!-- COMPLEMENT_NOM -->
+      <value>0</value>                                    <!-- DEBITEUR_INACTIF -->
+      <value>0</value>                                    <!-- INDEX_DIRTY -->
+      <null/>                                             <!-- NUMERO_TELECOPIE -->
+      <null/>                                             <!-- NUMERO_TEL_PORTABLE -->
+      <value><![CDATA[0244451887]]></value>               <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                             <!-- NUMERO_TEL_PROF -->
+      <value>19</value>                                   <!-- OID -->
+      <null/>                                             <!-- PERSONNE_CONTACT -->
+      <null/>                                             <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                             <!-- AC_NOM -->
+      <null/>                                             <!-- NUMERO_CA -->
+      <null/>                                             <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                             <!-- MODE_COM -->
+      <null/>                                             <!-- DPI_NOM1 -->
+      <null/>                                             <!-- DPI_NOM2 -->
+      <null/>                                             <!-- PERIODE_DECOMPTE -->
+      <null/>                                             <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                             <!-- SANS_LISTE_RECAP -->
+      <null/>                                             <!-- SANS_RAPPEL -->
+      <null/>                                             <!-- NUMERO_ETABLISSEMENT -->
+      <null/>                                             <!-- ANCIEN_NUMERO_SOURCIER -->
+      <null/>                                             <!-- NH_CAT_ETRANGER -->
+      <null/>                                             <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
+      <null/>                                             <!-- DATE_DECES -->
+      <null/>                                             <!-- NH_DATE_NAISSANCE -->
+      <null/>                                             <!-- PP_HABITANT -->
+      <null/>                                             <!-- NH_NOM -->
+      <null/>                                             <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <null/>                                             <!-- NUMERO_INDIVIDU -->
+      <null/>                                             <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                             <!-- NH_PRENOM -->
+      <null/>                                             <!-- NH_SEXE -->
+      <null/>                                             <!-- MAJORITE_TRAITEE -->
+      <null/>                                             <!-- DATE_LIMITE_EXCLUSION -->
     </row>
     <row>
-      <value>PersonnePhysique</value>
-      <value>10495931</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-10-19 00:00:00.0]]></value>
-      <value>IL08667Z</value>
-      <value><![CDATA[2009-07-25 08:32:57.001]]></value>
-      <value>IL08667Z</value>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <value>0</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
-      <value>782551</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>PersonnePhysique</value>                     <!-- TIERS_TYPE -->
+      <value>10495931</value>                             <!-- NUMERO -->
+      <null/>                                             <!-- ANNULATION_DATE -->
+      <null/>                                             <!-- ANNULATION_USER -->
+      <value><![CDATA[2008-10-19 00:00:00.0]]></value>    <!-- LOG_CDATE -->
+      <value>IL08667Z</value>                             <!-- LOG_CUSER -->
+      <value><![CDATA[2009-07-25 08:32:57.001]]></value>  <!-- LOG_MDATE -->
+      <value>IL08667Z</value>                             <!-- LOG_MUSER -->
+      <null/>                                             <!-- ADRESSE_EMAIL -->
+      <value>1</value>                                    <!-- BLOC_REMB_AUTO -->
+      <null/>                                             <!-- COMPLEMENT_NOM -->
+      <value>0</value>                                    <!-- DEBITEUR_INACTIF -->
+      <value>0</value>                                    <!-- INDEX_DIRTY -->
+      <null/>                                             <!-- NUMERO_TELECOPIE -->
+      <null/>                                             <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                             <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                             <!-- NUMERO_TEL_PROF -->
+      <null/>                                             <!-- OID -->
+      <null/>                                             <!-- PERSONNE_CONTACT -->
+      <null/>                                             <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                             <!-- AC_NOM -->
+      <null/>                                             <!-- NUMERO_CA -->
+      <null/>                                             <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                             <!-- MODE_COM -->
+      <null/>                                             <!-- DPI_NOM1 -->
+      <null/>                                             <!-- DPI_NOM2 -->
+      <null/>                                             <!-- PERIODE_DECOMPTE -->
+      <null/>                                             <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                             <!-- SANS_LISTE_RECAP -->
+      <null/>                                             <!-- SANS_RAPPEL -->
+      <null/>                                             <!-- NUMERO_ETABLISSEMENT -->
+      <null/>                                             <!-- ANCIEN_NUMERO_SOURCIER -->
+      <null/>                                             <!-- NH_CAT_ETRANGER -->
+      <null/>                                             <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
+      <null/>                                             <!-- DATE_DECES -->
+      <null/>                                             <!-- NH_DATE_NAISSANCE -->
+      <value>1</value>                                    <!-- PP_HABITANT -->
+      <null/>                                             <!-- NH_NOM -->
+      <null/>                                             <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <value>782551</value>                               <!-- NUMERO_INDIVIDU -->
+      <null/>                                             <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                             <!-- NH_PRENOM -->
+      <null/>                                             <!-- NH_SEXE -->
+      <null/>                                             <!-- MAJORITE_TRAITEE -->
+      <null/>                                             <!-- DATE_LIMITE_EXCLUSION -->
     </row>
     <row>
-      <value>PersonnePhysique</value>
-      <value>10495932</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-10-19 00:00:00.0]]></value>
-      <value>IL08667Z</value>
-      <value><![CDATA[2009-07-25 08:33:38.217]]></value>
-      <value>IL08667Z</value>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <value>0</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>1</value>
-      <null/>
-      <null/>
-      <value>782552</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
+      <value>PersonnePhysique</value>                     <!-- TIERS_TYPE -->
+      <value>10495932</value>                             <!-- NUMERO -->
+      <null/>                                             <!-- ANNULATION_DATE -->
+      <null/>                                             <!-- ANNULATION_USER -->
+      <value><![CDATA[2008-10-19 00:00:00.0]]></value>    <!-- LOG_CDATE -->
+      <value>IL08667Z</value>                             <!-- LOG_CUSER -->
+      <value><![CDATA[2009-07-25 08:33:38.217]]></value>  <!-- LOG_MDATE -->
+      <value>IL08667Z</value>                             <!-- LOG_MUSER -->
+      <null/>                                             <!-- ADRESSE_EMAIL -->
+      <value>1</value>                                    <!-- BLOC_REMB_AUTO -->
+      <null/>                                             <!-- COMPLEMENT_NOM -->
+      <value>0</value>                                    <!-- DEBITEUR_INACTIF -->
+      <value>0</value>                                    <!-- INDEX_DIRTY -->
+      <null/>                                             <!-- NUMERO_TELECOPIE -->
+      <null/>                                             <!-- NUMERO_TEL_PORTABLE -->
+      <null/>                                             <!-- NUMERO_TEL_PRIVE -->
+      <null/>                                             <!-- NUMERO_TEL_PROF -->
+      <null/>                                             <!-- OID -->
+      <null/>                                             <!-- PERSONNE_CONTACT -->
+      <null/>                                             <!-- AC_FORME_JURIDIQUE -->
+      <null/>                                             <!-- AC_NOM -->
+      <null/>                                             <!-- NUMERO_CA -->
+      <null/>                                             <!-- CATEGORIE_IMPOT_SOURCE -->
+      <null/>                                             <!-- MODE_COM -->
+      <null/>                                             <!-- DPI_NOM1 -->
+      <null/>                                             <!-- DPI_NOM2 -->
+      <null/>                                             <!-- PERIODE_DECOMPTE -->
+      <null/>                                             <!-- PERIODICITE_DECOMPTE -->
+      <null/>                                             <!-- SANS_LISTE_RECAP -->
+      <null/>                                             <!-- SANS_RAPPEL -->
+      <null/>                                             <!-- NUMERO_ETABLISSEMENT -->
+      <null/>                                             <!-- ANCIEN_NUMERO_SOURCIER -->
+      <null/>                                             <!-- NH_CAT_ETRANGER -->
+      <null/>                                             <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
+      <null/>                                             <!-- DATE_DECES -->
+      <null/>                                             <!-- NH_DATE_NAISSANCE -->
+      <value>1</value>                                    <!-- PP_HABITANT -->
+      <null/>                                             <!-- NH_NOM -->
+      <null/>                                             <!-- NH_NUMERO_ASSURE_SOCIAL -->
+      <value>782552</value>                               <!-- NUMERO_INDIVIDU -->
+      <null/>                                             <!-- NH_NO_OFS_NATIONALITE -->
+      <null/>                                             <!-- NH_PRENOM -->
+      <null/>                                             <!-- NH_SEXE -->
+      <null/>                                             <!-- MAJORITE_TRAITEE -->
+      <null/>                                             <!-- DATE_LIMITE_EXCLUSION -->
     </row>
   </table>
   <table name="RAPPORT_ENTRE_TIERS">

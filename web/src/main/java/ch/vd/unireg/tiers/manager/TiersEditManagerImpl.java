@@ -12,31 +12,23 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.adresse.AdresseException;
-import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.declaration.Periodicite;
-import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.interfaces.InterfaceDataException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.Contribuable;
-import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.Remarque;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.dao.RemarqueDAO;
-import ch.vd.unireg.tiers.view.ComplementView;
-import ch.vd.unireg.tiers.view.CompteBancaireView;
 import ch.vd.unireg.tiers.view.DebiteurEditView;
 import ch.vd.unireg.tiers.view.IdentificationPersonneView;
-import ch.vd.unireg.tiers.view.PeriodiciteView;
 import ch.vd.unireg.tiers.view.TiersEditView;
 import ch.vd.unireg.type.ModeCommunication;
 import ch.vd.unireg.type.PeriodeDecompte;
@@ -112,12 +104,11 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 *
 	 * @param numero numéro de tiers du débiteur recherché
 	 * @return un objet DebiteurEditView
-	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public DebiteurEditView getDebiteurEditView(Long numero) throws AdresseException, ServiceInfrastructureException {
+	public DebiteurEditView getDebiteurEditView(Long numero) throws ServiceInfrastructureException {
 		if (numero == null) {
 			return null;
 		}
@@ -338,106 +329,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		AutreCommunaute autreCommunaute = new AutreCommunaute();
 		tiersView.setTiers(autreCommunaute);
 		return tiersView;
-	}
-
-	/**
-	 * Enrichir un objet Tiers en fonction d'un objet TiersEditView
-	 */
-	private Tiers enrichiTiers(TiersEditView tiersView) {
-
-		final Tiers tiers = tiersView.getTiers();
-
-		enrichiComplement(tiers, tiersView.getComplement());
-
-		if (tiers instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitantVD()) {
-				return pp;
-			}
-			else {
-				// MAJ num AVS
-				pp.setNumeroAssureSocial(FormatNumeroHelper.removeSpaceAndDash(pp.getNumeroAssureSocial()));
-
-				// Set Identification Personne View
-				final IdentificationPersonneView idPersonneView = tiersView.getIdentificationPersonne();
-				if (idPersonneView != null) {
-					tiersService.setIdentifiantsPersonne(pp, idPersonneView.getAncienNumAVS(), idPersonneView.getNumRegistreEtranger());
-				}
-
-				return pp;
-			}
-		}
-		else if (tiers instanceof DebiteurPrestationImposable) {
-
-			DebiteurPrestationImposable dpiFromView = (DebiteurPrestationImposable) tiers;
-
-			//Test de la saisie d'une periodicite dans la vue
-			final PeriodiciteView periodicite = tiersView.getPeriodicite();
-			if (periodicite != null) {
-				// L'appel de addperiodicite permet de sauver le tiers et la périodicité
-				final RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpiFromView, periodicite.getPeriodiciteDecompte());
-				final Periodicite periodiciteAjoutee = changePeriodicite(dpiFromView, periodicite.getPeriodiciteDecompte(), periodicite.getPeriodeDecompte(), debutValidite);
-
-				// permet de recuperer l'id dans le cas d'un débiteur nouvellement créé
-				Assert.notNull(periodiciteAjoutee.getId());
-				dpiFromView = periodiciteAjoutee.getDebiteur();
-			}
-
-			if (tiersView.getNumeroCtbAssocie() != null) { //ajout d'un débiteur IS au contribuable
-
-				final Contribuable ctbAss = (Contribuable) getTiersDAO().get(tiersView.getNumeroCtbAssocie());
-
-				//ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ctbAss, dpi);
-				final RapportEntreTiers rapport = tiersService.addContactImpotSource(dpiFromView, ctbAss);
-
-				return tiersDAO.get(rapport.getObjetId());
-			}
-			else {
-				return tiersDAO.save(dpiFromView);
-			}
-		}
-
-		return tiers;
-	}
-
-	private void enrichiComplement(Tiers tiers, ComplementView complement) {
-
-		if (tiers instanceof Entreprise) {
-			// les PMs ne peuvent pas être éditées dans Unireg pour l'instant
-			return;
-		}
-
-		// nom
-		tiers.setPersonneContact(StringUtils.trimToNull(complement.getPersonneContact()));
-		tiers.setComplementNom(StringUtils.trimToNull(complement.getComplementNom()));
-
-		// téléphone
-		tiers.setNumeroTelecopie(StringUtils.trimToNull(complement.getNumeroTelecopie()));
-		tiers.setNumeroTelephonePortable(StringUtils.trimToNull(complement.getNumeroTelephonePortable()));
-		tiers.setNumeroTelephonePrive(StringUtils.trimToNull(complement.getNumeroTelephonePrive()));
-		tiers.setNumeroTelephoneProfessionnel(StringUtils.trimToNull(complement.getNumeroTelephoneProfessionnel()));
-		tiers.setAdresseCourrierElectronique(StringUtils.trimToNull(complement.getAdresseCourrierElectronique()));
-
-		// compte bancaire
-		final CompteBancaireView compteBancaire = complement.getCompteBancaire();
-		if (compteBancaire != null) {
-			tiers.setTitulaireCompteBancaire(StringUtils.trimToNull(compteBancaire.getTitulaireCompteBancaire()));
-
-			final String iban = IbanHelper.normalize(compteBancaire.getIban());
-			final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift()));
-			if (iban != null || bicSwift != null) {
-				tiers.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-			}
-			else {
-				tiers.setCoordonneesFinancieres(null);
-			}
-		}
-	}
-
-	@Override
-	public Tiers save(TiersEditView tiersEditView) {
-		final Tiers tiersEnrichi = enrichiTiers(tiersEditView);
-		return getTiersDAO().save(tiersEnrichi);
 	}
 
 	private Remarque addRemarque(Tiers tiers, String visa, String texteRemarque) {

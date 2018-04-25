@@ -1,6 +1,7 @@
 package ch.vd.unireg.iban;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.common.FormatNumeroHelper;
 
@@ -8,7 +9,8 @@ public class IbanHelper {
 
 	private static final IbanValidator VALIDATOR = new IbanValidator();
 
-	public static String normalize(String iban) {
+	@Nullable
+	public static String normalize(@Nullable String iban) {
 		if (iban == null) {
 			return null;
 		}

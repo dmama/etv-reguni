@@ -128,11 +128,9 @@ drop table RF_MODELE_COMMUNAUTE cascade constraints;
 
 drop table ETIQUETTE_TIERS cascade constraints;
 drop table ETIQUETTE cascade constraints;
-
 drop table DOCUMENT_EFACTURE cascade constraints;
-
+drop table COORDONNEE_FINANCIERE cascade constraints;
 drop table TIERS cascade constraints;
-
 
 drop table MIGRATION_PM_MAPPING cascade constraints;
 

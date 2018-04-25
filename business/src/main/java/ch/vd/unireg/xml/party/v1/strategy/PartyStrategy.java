@@ -4,21 +4,13 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.party.address.v1.Address;
-import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
-import ch.vd.unireg.xml.party.address.v1.AddressType;
-import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
-import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
-import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.unireg.xml.party.v1.PartyPart;
+import ch.vd.unireg.tiers.CompteBancaire;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.Mandat;
 import ch.vd.unireg.tiers.Parente;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -30,9 +22,18 @@ import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ExceptionHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.address.v1.Address;
+import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
+import ch.vd.unireg.xml.party.address.v1.AddressType;
+import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.v1.BankAccountBuilder;
 import ch.vd.unireg.xml.party.v1.ForFiscalComparator;
 import ch.vd.unireg.xml.party.v1.ManagingTaxResidenceBuilder;
+import ch.vd.unireg.xml.party.v1.Party;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.unireg.xml.party.v1.RelationBetweenPartiesBuilder;
 import ch.vd.unireg.xml.party.v1.TaxDeclarationBuilder;
 import ch.vd.unireg.xml.party.v1.TaxResidenceBuilder;
@@ -170,9 +171,13 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void initBankAccounts(Party left, Context context, ch.vd.unireg.tiers.Tiers tiers) {
-		final String numero = tiers.getNumeroCompteBancaire();
-		if (StringUtils.isNotBlank(numero) && context.ibanValidator.isValidIban(numero)) {
-			left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers, context));
+
+		final CoordonneesFinancieres coords = tiers.getCoordonneesFinancieresCourantes();
+		final CompteBancaire compteBancaire = (coords == null ?  null : coords.getCompteBancaire());
+		if (coords != null) {
+			if (context.ibanValidator.isValidIban(compteBancaire.getIban())) {
+				left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers.getNumero(), coords.getTitulaire(), compteBancaire, context));
+			}
 		}
 
 		// [SIFISC-18022] les mandats tiers sont aussi concernés, dès qu'ils ont une coordonnée financière
@@ -180,8 +185,8 @@ public abstract class PartyStrategy<T extends Party> {
 			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.MANDAT) {
 				final Mandat mandat = (Mandat) ret;
 				if (mandat.getTypeMandat() == TypeMandat.TIERS
-						&& mandat.getCoordonneesFinancieres() != null
-						&& context.ibanValidator.isValidIban(mandat.getCoordonneesFinancieres().getIban())) {
+						&& mandat.getCompteBancaire() != null
+						&& context.ibanValidator.isValidIban(mandat.getCompteBancaire().getIban())) {
 
 					// à exposer !
 					left.getBankAccounts().add(BankAccountBuilder.newBankAccount(mandat, context));

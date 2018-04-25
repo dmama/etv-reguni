@@ -26,12 +26,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
@@ -49,6 +43,12 @@ import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -784,11 +784,25 @@ public class MetierServiceImpl implements MetierService {
 		MenageCommun menageCommun = new MenageCommun();
 		// savegarde des complements
 		setComplements(principal, conjoint, menageCommun);
+		setCoordonneesFinancieres(principal, conjoint, menageCommun);
 
 		menageCommun = (MenageCommun) getTiersDAO().save(menageCommun);
 		Audit.info("Création d'un tiers MenageCommun");
 
 		return rattachToMenage(menageCommun, principal, conjoint, dateMariage, remarque, etatCivilFamille, numeroEvenement);
+	}
+
+	private void setCoordonneesFinancieres(@NotNull PersonnePhysique principal, @Nullable PersonnePhysique conjoint, @NotNull MenageCommun menageCommun) {
+
+		final CoordonneesFinancieres coordPrincipal = principal.getCoordonneesFinancieresCourantes();
+		final CoordonneesFinancieres coordConjoint = (conjoint == null ? null : conjoint.getCoordonneesFinancieresCourantes());
+
+		if (coordPrincipal != null) {
+			menageCommun.addCoordonneesFinancieres(coordPrincipal.duplicate());
+		}
+		else if (coordConjoint != null) {
+			menageCommun.addCoordonneesFinancieres(coordConjoint.duplicate());
+		}
 	}
 
 	private void setComplements(PersonnePhysique principal, PersonnePhysique conjoint, MenageCommun menageCommun) {
@@ -834,18 +848,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 		else if (conjoint != null && conjoint.getAdresseCourrierElectronique() != null) {
 			menageCommun.setAdresseCourrierElectronique(conjoint.getAdresseCourrierElectronique());
-		}
-		if (principal.getCoordonneesFinancieres() != null) {
-			menageCommun.setCoordonneesFinancieres(new CoordonneesFinancieres(principal.getCoordonneesFinancieres()));
-		}
-		else if (conjoint != null && conjoint.getCoordonneesFinancieres() != null) {
-			menageCommun.setCoordonneesFinancieres(new CoordonneesFinancieres(conjoint.getCoordonneesFinancieres()));
-		}
-		if (principal.getTitulaireCompteBancaire() != null) {
-			menageCommun.setTitulaireCompteBancaire(principal.getTitulaireCompteBancaire());
-		}
-		else if (conjoint != null && conjoint.getTitulaireCompteBancaire() != null) {
-			menageCommun.setTitulaireCompteBancaire(conjoint.getTitulaireCompteBancaire());
 		}
 	}
 

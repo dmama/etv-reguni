@@ -631,9 +631,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
      * @param action l'action qui à effecuter
      * @param <T>    le type d'objet retourné par l'action
      * @return l'objet retourné par l'action
-     * @throws Exception en case d'exception
      */
-    protected <T> T doWithoutValidation(ExecuteCallback<T> action) throws Exception {
+    protected <T> T doWithoutValidation(ExecuteCallback<T> action) {
 	    return doUnderSwitch(validationInterceptor, false, action);
     }
 
@@ -658,17 +657,22 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Lancement d'une action en l'englobant dans un scope d'initialisation/nettoyage
 	 */
-	protected <T> T doWithInitCleanup(InitCleanupCallback initCleanup, ExecuteCallback<T> action) throws Exception {
-		initCleanup.init();
+	protected <T> T doWithInitCleanup(InitCleanupCallback initCleanup, ExecuteCallback<T> action) {
 		try {
-			return action.execute();
+			initCleanup.init();
+			try {
+				return action.execute();
+			}
+			finally {
+				initCleanup.cleanup();
+			}
 		}
-		finally {
-			initCleanup.cleanup();
+		catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	protected <T> T doUnderSwitch(final Switchable switchable, final boolean switchValue, ExecuteCallback<T> action) throws Exception {
+	protected <T> T doUnderSwitch(final Switchable switchable, final boolean switchValue, ExecuteCallback<T> action) {
 		final InitCleanupCallback initCleanup = new InitCleanupCallback() {
 			private boolean oldSwitchValue;
 

@@ -22,7 +22,6 @@ import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.security.AccessDeniedException;
-import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.manager.AutorisationManager;
@@ -171,13 +170,14 @@ public class ComplementsController {
 		// On met-à-jour les données.
 		final String iban = IbanHelper.normalize(view.getIban());
 		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(view.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			tiers.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-		}
-		else {
-			tiers.setCoordonneesFinancieres(null);
-		}
-		tiers.setTitulaireCompteBancaire(StringUtils.trimToNull(view.getTitulaireCompteBancaire()));
+// FIXME (msi) SIFISC-20035 : implémenter les écrans d'édition des coordonnées bancaires
+//		if (iban != null || bicSwift != null) {
+//			tiers.setCompteBancaire(new CompteBancaire(iban, bicSwift));
+//		}
+//		else {
+//			tiers.setCompteBancaire(null);
+//		}
+//		tiers.setTitulaireCompteBancaire(StringUtils.trimToNull(view.getTitulaireCompteBancaire()));
 
 		return "redirect:/tiers/visu.do?id=" + id;
 	}

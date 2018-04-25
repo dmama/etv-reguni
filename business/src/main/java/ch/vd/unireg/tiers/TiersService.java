@@ -1093,14 +1093,6 @@ public interface TiersService {
     ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, MotifFor motifOuverture,
                                                   RegDate dateFin, MotifFor motifFermeture, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale);
 
-    /**
-     * Fusionne un non habitant avec un habitant
-     *
-     * @param habitant    un habitant
-     * @param nonHabitant un non-habitant
-     */
-    void fusionne(PersonnePhysique habitant, PersonnePhysique nonHabitant);
-
 	/**
 	 * @param tiers un tiers
 	 * @return sur une ligne, le nom ou la raison sociale du tiers à la date demandée

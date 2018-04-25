@@ -28,6 +28,7 @@ import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
 import ch.vd.unireg.tiers.ActiviteEconomique;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.RapportPrestationImposable;
@@ -58,6 +59,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 			results.merge(validateRapports(tiers));
 			results.merge(validateRemarques(tiers));
 			results.merge(validateEtiquettes(tiers));
+			results.merge(validateCoordonneesFinancieres(tiers));
 		}
 
 		return results;
@@ -298,6 +300,27 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 				                      vr,
 				                      "étiquettes non-annulées",
 				                      StringRenderer.DEFAULT);
+			}
+		}
+		return vr;
+	}
+
+	private ValidationResults validateCoordonneesFinancieres(T tiers) {
+		final ValidationResults vr = new ValidationResults();
+		final Set<CoordonneesFinancieres> coordonnees = tiers.getCoordonneesFinancieres();
+		if (coordonnees != null && !coordonnees.isEmpty()) {
+			// chaque coordonnées pour elle-même
+			final ValidationService validationService = getValidationService();
+			coordonnees.stream()
+					.map(validationService::validate)
+					.forEach(vr::merge);
+
+			// puis les chevauchements
+			if (!vr.hasErrors()) {
+				checkNonOverlap(coordonnees,
+				                      c -> true,
+				                      vr,
+				                      "coordonnées financières");
 			}
 		}
 		return vr;

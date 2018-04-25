@@ -5,26 +5,27 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.coordfin.CoordonneesFinancieresService;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
-import ch.vd.unireg.iban.IbanHelper;
-import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.jms.BamMessageHelper;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.tiers.Contribuable;
-import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.validation.ValidationService;
@@ -37,8 +38,8 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private ModeleDocumentDAO modeleDocumentDAO;
 	private ValidationService validationService;
-	private IbanValidator ibanValidator;
 	private BamMessageSender bamMessageSender;
+	private CoordonneesFinancieresService coordonneesFinancieresService;
 
 	@Override
 	public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -87,6 +88,9 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 			LOGGER.warn("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale "
 							+ annee + " avec le numéro de séquence " + noSequenceDI + ". Le contribuables sera quand même mis à jour avce les informations retournées");
 		}
+
+		// on met-à-jour les coordonnées financières
+		updateCoordonneesFinancieres(ctb, scan);
 
 		// On met-à-jour les informations personnelles
 		updateInformationsPersonnelles(ctb, scan);
@@ -158,24 +162,6 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 	 */
 	private void updateInformationsPersonnelles(Contribuable ctb, RetourDI scan) {
 
-		if (StringUtils.isNotBlank(scan.getTitulaireCompte())) {
-			ctb.setTitulaireCompteBancaire(LengthConstants.streamlineField(scan.getTitulaireCompte(), LengthConstants.TIERS_PERSONNE, true));
-		}
-
-		// [SIFISC-8936] Un IBAN vide (ou juste "CH") ne doit jamais être pris en compte
-		if (StringUtils.isNotBlank(scan.getIban()) && !"CH".equals(StringUtils.trim(scan.getIban()))) {
-			final boolean newIbanValid = ibanValidator.isValidIban(scan.getIban());
-			boolean replaceIban = newIbanValid;
-			if (!newIbanValid) {
-				replaceIban = !ibanValidator.isValidIban(ctb.getNumeroCompteBancaire());
-			}
-			if (replaceIban) {
-				// TODO est-il juste de conserver le vieux BIC/SWIFT (ne faudrait-il pas le remettre à 'null' systématiquement) ?
-				ctb.setCoordonneesFinancieres(new CoordonneesFinancieres(LengthConstants.streamlineField(IbanHelper.normalize(scan.getIban()), LengthConstants.TIERS_NUMCOMPTE, false),
-				                                                         ctb.getAdresseBicSwift()));
-			}
-		}
-
 		if (StringUtils.isNotBlank(scan.getNoTelephone())) {
 			ctb.setNumeroTelephonePrive(LengthConstants.streamlineField(scan.getNoTelephone(), LengthConstants.TIERS_NUMTEL, true));
 		}
@@ -187,6 +173,21 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 		if (StringUtils.isNotBlank(scan.getEmail())) {
 			ctb.setAdresseCourrierElectronique(LengthConstants.streamlineField(scan.getEmail(), LengthConstants.TIERS_EMAIL, true));
 		}
+	}
+
+	/**
+	 * [SIFISC-20035] Met-à-jour les coordonnées financières si nécessaire (en gardant l'historique)
+	 *
+	 * @param ctb  le contribuable dont les coordonnées financières doivent être mises-à-jour
+	 * @param scan les données de retour de la DI
+	 */
+	private void updateCoordonneesFinancieres(@NotNull Contribuable ctb, @NotNull RetourDI scan) {
+		final RegDate dateTraitement = RegDateHelper.get(scan.getDateTraitement());
+		if (dateTraitement == null) {
+			throw new IllegalArgumentException("La date de traitement = [" + scan.getDateTraitement() + "] n'est pas valable");
+		}
+		// TODO (msi) vérifier s'il faut générer un tâche de contrôle de dossier en cas d'IBAN invalide comme pour les PMs
+		coordonneesFinancieresService.updateCoordonneesFinancieres(ctb, scan.getTitulaireCompte(), scan.getIban(), dateTraitement, (currentIban, newIban) -> {});
 	}
 
 	/**
@@ -238,7 +239,7 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 		this.bamMessageSender = bamMessageSender;
 	}
 
-	public void setIbanValidator(IbanValidator ibanValidator) {
-		this.ibanValidator = ibanValidator;
+	public void setCoordonneesFinancieresService(CoordonneesFinancieresService coordonneesFinancieresService) {
+		this.coordonneesFinancieresService = coordonneesFinancieresService;
 	}
 }

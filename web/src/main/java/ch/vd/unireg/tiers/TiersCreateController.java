@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -22,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.common.DelegatingValidator;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.LiteralStringHelper;
@@ -33,6 +32,8 @@ import ch.vd.unireg.complements.ComplementsEditCoordonneesFinancieresView;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.AjustementForsSecondairesResult;
 import ch.vd.unireg.metier.MetierServicePM;
@@ -84,7 +85,6 @@ public class TiersCreateController {
 	private static final String MODE_COMMUNICATION_MAP_NAME = "modesCommunication";
 	private static final String PERIODE_DECOMPTE_MAP_NAME = "periodesDecompte";
 	private static final String PERIODICITE_DECOMPTE_MAP_NAME = "periodicitesDecompte";
-	private static final String TYPES_AUTORITES_FISCALES = "typesAutoritesFiscales";
 
 	private SecurityProviderInterface securityProvider;
 	private TiersMapHelper tiersMapHelper;
@@ -538,16 +538,13 @@ public class TiersCreateController {
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
 	}
 
-	private void setComplementCoordFinanciere(Tiers tiers, ComplementsEditCoordonneesFinancieresView cpltCoordFinView) {
-		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
-		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			tiers.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
+	private void setComplementCoordFinanciere(@NotNull Tiers tiers, @NotNull ComplementsEditCoordonneesFinancieresView view) {
+		final String iban = IbanHelper.normalize(view.getIban());
+		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(view.getAdresseBicSwift()));
+		final String titulaire = view.getTitulaireCompteBancaire();
+		if (StringUtils.isNotBlank(titulaire) || StringUtils.isNotBlank(iban) || StringUtils.isNotBlank(bicSwift)) {
+			tiers.addCoordonneesFinancieres(new CoordonneesFinancieres(titulaire, iban, bicSwift));
 		}
-		else {
-			tiers.setCoordonneesFinancieres(null);
-		}
-		tiers.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
 	}
 
 	private void setComplementCommunication(Tiers tiers, ComplementsEditCommunicationsView cpltCommView) {

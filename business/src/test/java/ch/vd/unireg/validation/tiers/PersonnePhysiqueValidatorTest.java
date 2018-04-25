@@ -15,13 +15,14 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalAutreElementImposable;
 import ch.vd.unireg.tiers.ForFiscalAutreImpot;
@@ -1359,5 +1360,28 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			assertEquals("La période de validité de l'héritage [01.06.2017 ; ] ne possède pas des héritiers désignés comme principaux en continu",
 			             erreurs.get(0));
 		}
+	}
+
+	@Test
+	public void testDetectionChevauchementCoordonneesFinancieres() {
+
+		PersonnePhysique hab = new PersonnePhysique(true);
+		hab.setNumeroIndividu(1233L);
+
+		final CoordonneesFinancieres coord1 = new CoordonneesFinancieres();
+		coord1.setDateDebut(RegDate.get(2000, 1, 1));
+		coord1.setDateFin(RegDate.get(2004, 12, 31));
+		coord1.setTitulaire("titulaire1");
+		hab.addCoordonneesFinancieres(coord1);
+
+		final CoordonneesFinancieres coord2 = new CoordonneesFinancieres();
+		coord2.setDateDebut(RegDate.get(2002, 1, 1));
+		coord2.setDateFin(null);
+		coord2.setTitulaire("titulaire2");
+		hab.addCoordonneesFinancieres(coord2);
+
+		final List<String> erreurs = new ArrayList<>();
+		erreurs.add("La période [01.01.2002 ; 31.12.2004] est couverte par plusieurs coordonnées financières.");
+		assertValidation(erreurs, null, validate(hab));
 	}
 }

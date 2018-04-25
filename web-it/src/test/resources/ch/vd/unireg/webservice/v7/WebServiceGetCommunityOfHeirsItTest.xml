@@ -9,13 +9,11 @@
 		<column>LOG_CUSER</column>
 		<column>LOG_MDATE</column>
 		<column>LOG_MUSER</column>
-		<column>ADRESSE_BIC_SWIFT</column>
 		<column>ADRESSE_EMAIL</column>
 		<column>BLOC_REMB_AUTO</column>
 		<column>COMPLEMENT_NOM</column>
 		<column>DEBITEUR_INACTIF</column>
 		<column>INDEX_DIRTY</column>
-		<column>NUMERO_COMPTE_BANCAIRE</column>
 		<column>NUMERO_TELECOPIE</column>
 		<column>NUMERO_TEL_PORTABLE</column>
 		<column>NUMERO_TEL_PRIVE</column>
@@ -23,7 +21,6 @@
 		<column>OID</column>
 		<column>PERSONNE_CONTACT</column>
 		<column>REINDEX_ON</column>
-		<column>TITULAIRE_COMPTE_BANCAIRE</column>
 		<column>DATE_LIMITE_EXCLUSION</column>
 		<column>AC_FORME_JURIDIQUE</column>
 		<column>AC_NOM</column>
@@ -60,178 +57,169 @@
 		<column>NUMERO_ENTREPRISE</column>
 		<column>DATE_DEBUT_PREMIER_EXERCICE</column>
 		<row>
-			<value>PersonnePhysique</value>
-			<value>10035633</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>2008-01-01 00:00:00.0</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>De Wit Tummers Elisabeth</value>
-			<value>0</value>
-			<value>0</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>0</value>
-			<null />
-			<value>Tummers-De Wit Wouter</value>
-			<null />
-			<null />
-			<null />
-			<value>Elisabeth</value>
-			<null />
-			<value>Elisabeth Astrid Mary</value>
-			<null />
-			<null />
-			<null />
+			<value>PersonnePhysique</value>             <!-- TIERS_TYPE -->
+			<value>10035633</value>                     <!-- NUMERO -->
+			<null />                                    <!-- ANNULATION_DATE -->
+			<null />                                    <!-- ANNULATION_USER -->
+			<null />                                    <!-- LOG_CDATE -->
+			<null />                                    <!-- LOG_CUSER -->
+			<value>2008-01-01 00:00:00.0</value>        <!-- LOG_MDATE -->
+			<null />                                    <!-- LOG_MUSER -->
+			<null />                                    <!-- ADRESSE_EMAIL -->
+			<null />                                    <!-- BLOC_REMB_AUTO -->
+			<value>De Wit Tummers Elisabeth</value>     <!-- COMPLEMENT_NOM -->
+			<value>0</value>                            <!-- DEBITEUR_INACTIF -->
+			<value>0</value>                            <!-- INDEX_DIRTY -->
+			<null />                                    <!-- NUMERO_TELECOPIE -->
+			<null />                                    <!-- NUMERO_TEL_PORTABLE -->
+			<null />                                    <!-- NUMERO_TEL_PRIVE -->
+			<null />                                    <!-- NUMERO_TEL_PROF -->
+			<null />                                    <!-- OID -->
+			<null />                                    <!-- PERSONNE_CONTACT -->
+			<null />                                    <!-- REINDEX_ON -->
+			<null />                                    <!-- DATE_LIMITE_EXCLUSION -->
+			<null />                                    <!-- AC_FORME_JURIDIQUE -->
+			<null />                                    <!-- AC_NOM -->
+			<null />                                    <!-- DISTRICT_FISCAL_ID -->
+			<null />                                    <!-- REGION_FISCALE_ID -->
+			<null />                                    <!-- NUMERO_CA -->
+			<null />                                    <!-- CATEGORIE_IMPOT_SOURCE -->
+			<null />                                    <!-- LOGICIEL_ID -->
+			<null />                                    <!-- MODE_COM -->
+			<null />                                    <!-- DPI_NOM1 -->
+			<null />                                    <!-- DPI_NOM2 -->
+			<null />                                    <!-- PERIODE_DECOMPTE -->
+			<null />                                    <!-- PERIODICITE_DECOMPTE -->
+			<null />                                    <!-- SANS_LISTE_RECAP -->
+			<null />                                    <!-- SANS_RAPPEL -->
+			<null />                                    <!-- NUMERO_ETABLISSEMENT -->
+			<null />                                    <!-- ANCIEN_NUMERO_SOURCIER -->
+			<null />                                    <!-- NH_CAT_ETRANGER -->
+			<null />                                    <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
+			<null />                                    <!-- DATE_DECES -->
+			<null />                                    <!-- NH_DATE_NAISSANCE -->
+			<value>0</value>                            <!-- PP_HABITANT -->
+			<null />                                    <!-- MAJORITE_TRAITEE -->
+			<value>Tummers-De Wit Wouter</value>        <!-- NH_NOM -->
+			<null />                                    <!-- NH_NUMERO_ASSURE_SOCIAL -->
+			<null />                                    <!-- NUMERO_INDIVIDU -->
+			<null />                                    <!-- NH_NO_OFS_NATIONALITE -->
+			<value>Elisabeth</value>                    <!-- NH_PRENOM -->
+			<null />                                    <!-- NH_SEXE -->
+			<value>Elisabeth Astrid Mary</value>        <!-- NH_TOUS_PRENOMS -->
+			<null />                                    <!-- DPI_ACI_HC -->
+			<null />                                    <!-- IDE_DIRTY -->
+			<null />                                    <!-- IDE_DESACTIVE -->
 		</row>
 		<row>
-			<value>PersonnePhysique</value>
-			<value>10092818</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>2008-01-01 00:00:00.0</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>De Wit Tummers Gertrude</value>
-			<value>0</value>
-			<value>0</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>0</value>
-			<null />
-			<value>De Wit Wouter</value>
-			<null />
-			<null />
-			<null />
-			<value>Gertrude</value>
-			<null />
-			<value>Gertrude Gudule Gudrun</value>
-			<null />
-			<null />
-			<null />
+			<value>PersonnePhysique</value>               <!-- TIERS_TYPE -->
+			<value>10092818</value>                       <!-- NUMERO -->
+			<null />                                      <!-- ANNULATION_DATE -->
+			<null />                                      <!-- ANNULATION_USER -->
+			<null />                                      <!-- LOG_CDATE -->
+			<null />                                      <!-- LOG_CUSER -->
+			<value>2008-01-01 00:00:00.0</value>          <!-- LOG_MDATE -->
+			<null />                                      <!-- LOG_MUSER -->
+			<null />                                      <!-- ADRESSE_EMAIL -->
+			<null />                                      <!-- BLOC_REMB_AUTO -->
+			<value>De Wit Tummers Gertrude</value>        <!-- COMPLEMENT_NOM -->
+			<value>0</value>                              <!-- DEBITEUR_INACTIF -->
+			<value>0</value>                              <!-- INDEX_DIRTY -->
+			<null />                                      <!-- NUMERO_TELECOPIE -->
+			<null />                                      <!-- NUMERO_TEL_PORTABLE -->
+			<null />                                      <!-- NUMERO_TEL_PRIVE -->
+			<null />                                      <!-- NUMERO_TEL_PROF -->
+			<null />                                      <!-- OID -->
+			<null />                                      <!-- PERSONNE_CONTACT -->
+			<null />                                      <!-- REINDEX_ON -->
+			<null />                                      <!-- DATE_LIMITE_EXCLUSION -->
+			<null />                                      <!-- AC_FORME_JURIDIQUE -->
+			<null />                                      <!-- AC_NOM -->
+			<null />                                      <!-- DISTRICT_FISCAL_ID -->
+			<null />                                      <!-- REGION_FISCALE_ID -->
+			<null />                                      <!-- NUMERO_CA -->
+			<null />                                      <!-- CATEGORIE_IMPOT_SOURCE -->
+			<null />                                      <!-- LOGICIEL_ID -->
+			<null />                                      <!-- MODE_COM -->
+			<null />                                      <!-- DPI_NOM1 -->
+			<null />                                      <!-- DPI_NOM2 -->
+			<null />                                      <!-- PERIODE_DECOMPTE -->
+			<null />                                      <!-- PERIODICITE_DECOMPTE -->
+			<null />                                      <!-- SANS_LISTE_RECAP -->
+			<null />                                      <!-- SANS_RAPPEL -->
+			<null />                                      <!-- NUMERO_ETABLISSEMENT -->
+			<null />                                      <!-- ANCIEN_NUMERO_SOURCIER -->
+			<null />                                      <!-- NH_CAT_ETRANGER -->
+			<null />                                      <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
+			<null />                                      <!-- DATE_DECES -->
+			<null />                                      <!-- NH_DATE_NAISSANCE -->
+			<value>0</value>                              <!-- PP_HABITANT -->
+			<null />                                      <!-- MAJORITE_TRAITEE -->
+			<value>De Wit Wouter</value>                  <!-- NH_NOM -->
+			<null />                                      <!-- NH_NUMERO_ASSURE_SOCIAL -->
+			<null />                                      <!-- NUMERO_INDIVIDU -->
+			<null />                                      <!-- NH_NO_OFS_NATIONALITE -->
+			<value>Gertrude</value>                       <!-- NH_PRENOM -->
+			<null />                                      <!-- NH_SEXE -->
+			<value>Gertrude Gudule Gudrun</value>         <!-- NH_TOUS_PRENOMS -->
+			<null />                                      <!-- DPI_ACI_HC -->
+			<null />                                      <!-- IDE_DIRTY -->
+			<null />                                      <!-- IDE_DESACTIVE -->
 		</row>
 		<row>
-			<value>PersonnePhysique</value>
-			<value>10092819</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>2008-01-01 00:00:00.0</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>De Wit Tummers Aglaë</value>
-			<value>0</value>
-			<value>0</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>0</value>
-			<null />
-			<value>De Wit Wouter</value>
-			<null />
-			<null />
-			<null />
-			<value>Aglaë</value>
-			<null />
-			<value>Aglaë Fleurette Pierre</value>
-			<null />
-			<null />
-			<null />
+			<value>PersonnePhysique</value>               <!-- TIERS_TYPE -->
+			<value>10092819</value>                       <!-- NUMERO -->
+			<null />                                      <!-- ANNULATION_DATE -->
+			<null />                                      <!-- ANNULATION_USER -->
+			<null />                                      <!-- LOG_CDATE -->
+			<null />                                      <!-- LOG_CUSER -->
+			<value>2008-01-01 00:00:00.0</value>          <!-- LOG_MDATE -->
+			<null />                                      <!-- LOG_MUSER -->
+			<null />                                      <!-- ADRESSE_EMAIL -->
+			<null />                                      <!-- BLOC_REMB_AUTO -->
+			<value>De Wit Tummers Aglaë</value>           <!-- COMPLEMENT_NOM -->
+			<value>0</value>                              <!-- DEBITEUR_INACTIF -->
+			<value>0</value>                              <!-- INDEX_DIRTY -->
+			<null />                                      <!-- NUMERO_TELECOPIE -->
+			<null />                                      <!-- NUMERO_TEL_PORTABLE -->
+			<null />                                      <!-- NUMERO_TEL_PRIVE -->
+			<null />                                      <!-- NUMERO_TEL_PROF -->
+			<null />                                      <!-- OID -->
+			<null />                                      <!-- PERSONNE_CONTACT -->
+			<null />                                      <!-- REINDEX_ON -->
+			<null />                                      <!-- DATE_LIMITE_EXCLUSION -->
+			<null />                                      <!-- AC_FORME_JURIDIQUE -->
+			<null />                                      <!-- AC_NOM -->
+			<null />                                      <!-- DISTRICT_FISCAL_ID -->
+			<null />                                      <!-- REGION_FISCALE_ID -->
+			<null />                                      <!-- NUMERO_CA -->
+			<null />                                      <!-- CATEGORIE_IMPOT_SOURCE -->
+			<null />                                      <!-- LOGICIEL_ID -->
+			<null />                                      <!-- MODE_COM -->
+			<null />                                      <!-- DPI_NOM1 -->
+			<null />                                      <!-- DPI_NOM2 -->
+			<null />                                      <!-- PERIODE_DECOMPTE -->
+			<null />                                      <!-- PERIODICITE_DECOMPTE -->
+			<null />                                      <!-- SANS_LISTE_RECAP -->
+			<null />                                      <!-- SANS_RAPPEL -->
+			<null />                                      <!-- NUMERO_ETABLISSEMENT -->
+			<null />                                      <!-- ANCIEN_NUMERO_SOURCIER -->
+			<null />                                      <!-- NH_CAT_ETRANGER -->
+			<null />                                      <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
+			<null />                                      <!-- DATE_DECES -->
+			<null />                                      <!-- NH_DATE_NAISSANCE -->
+			<value>0</value>                              <!-- PP_HABITANT -->
+			<null />                                      <!-- MAJORITE_TRAITEE -->
+			<value>De Wit Wouter</value>                  <!-- NH_NOM -->
+			<null />                                      <!-- NH_NUMERO_ASSURE_SOCIAL -->
+			<null />                                      <!-- NUMERO_INDIVIDU -->
+			<null />                                      <!-- NH_NO_OFS_NATIONALITE -->
+			<value>Aglaë</value>                          <!-- NH_PRENOM -->
+			<null />                                      <!-- NH_SEXE -->
+			<value>Aglaë Fleurette Pierre</value>         <!-- NH_TOUS_PRENOMS -->
+			<null />                                      <!-- DPI_ACI_HC -->
+			<null />                                      <!-- IDE_DIRTY -->
+			<null />                                      <!-- IDE_DESACTIVE -->
 		</row>
 	</table>
 	<table name="RAPPORT_ENTRE_TIERS">

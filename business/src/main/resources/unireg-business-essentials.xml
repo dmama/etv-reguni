@@ -82,7 +82,6 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="adresseService" ref="adresseService" />
-		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="validationService" ref="validationService" />
 		<property name="validationInterceptor" ref="validationInterceptor" />
 		<property name="assujettissementService" ref="assujettissementService" />
@@ -296,6 +295,10 @@
 
 	<bean id="bouclementService" class="ch.vd.unireg.metier.bouclement.BouclementServiceImpl"/>
 
+	<bean id="coordonneesFinancieresService" class="ch.vd.unireg.coordfin.CoordonneesFinancieresServiceImpl">
+		<property name="ibanValidator" ref="ibanValidator"/>
+	</bean>
+
 	<bean id="exerciceCommercialHelper" class="ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper">
 		<constructor-arg ref="tiersService"/>
 	</bean>
@@ -347,6 +350,8 @@
 	<bean id="localisationDateeValidator" abstract="true" class="ch.vd.unireg.validation.tiers.LocalisationDateeValidator" parent="dateRangeEntityValidator">
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 	</bean>
+
+	<bean id="coordonneesFinancieresValidator" class="ch.vd.unireg.validation.complements.CoordonneesFinancieresValidator" parent="dateRangeEntityValidator"/>
 
 	<bean id="forFiscalValidator" class="ch.vd.unireg.validation.fors.ForFiscalValidator" abstract="true" parent="localisationDateeValidator"/>
 	<bean id="forFiscalRevenuFortuneValidator" class="ch.vd.unireg.validation.fors.ForFiscalRevenuFortuneValidator" abstract="true" parent="forFiscalValidator" />

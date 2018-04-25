@@ -233,7 +233,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				eric.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
 				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
 				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
@@ -341,7 +341,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
 				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
 				ch.vd.unireg.tiers.MenageCommun mc = ensemble.getMenage();
-				mc.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				mc.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
 				SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
 				situation.setDateDebut(date(1989, 5, 1));
@@ -1811,7 +1811,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				eric.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
 				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
 				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
@@ -1916,7 +1916,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				eric.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				eric.addCoordonneesFinancieres(new CoordonneesFinancieres(null, "CH9308440717427290198", null));
 
 				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
 				addTutelle(pupille, eric, null, date(2005, 7, 1), null);

@@ -317,6 +317,17 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			associate(session, identifications, tiers, getter, setter);
 		}
 
+		{
+			// on charge les coordonnées financièes en vrac
+			final List<CoordonneesFinancieres> coordonnees = queryObjectsByIds("from CoordonneesFinancieres as a where a.tiers.id in (:ids)", ids, session);
+
+			final TiersIdGetter<CoordonneesFinancieres> getter = entity -> entity.getTiers().getId();
+			final EntitySetSetter<CoordonneesFinancieres> setter = Tiers::setCoordonneesFinancieres;
+
+			// on associe les identifications d'entreprises avec les tiers à la main
+			associate(session, coordonnees, tiers, getter, setter);
+		}
+
 		if (parts != null && parts.contains(Parts.ADRESSES)) {
 
 			// on charge toutes les adresses en vrac

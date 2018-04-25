@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseMandataire;
@@ -59,13 +58,14 @@ import ch.vd.unireg.entreprise.complexe.SearchTiersComponent;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
 import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.Contribuable;
-import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.Mandat;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.Tiers;
@@ -619,7 +619,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 						mandat = Mandat.special(view.getDateDebut(), view.getDateFin(), mandant, mandataire, view.isWithCopy(), view.getCodeGenreImpot());
 						break;
 					case TIERS:
-						mandat = Mandat.tiers(view.getDateDebut(), view.getDateFin(), mandant, mandataire, new CoordonneesFinancieres(IbanHelper.normalize(view.getIban()), null));
+						mandat = Mandat.tiers(view.getDateDebut(), view.getDateFin(), mandant, mandataire, new CompteBancaire(IbanHelper.normalize(view.getIban()), null));
 						break;
 					default:
 						throw new ActionException("Type de mandat invalide (" + view.getTypeMandat() + ") !");
@@ -832,7 +832,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 			final boolean donneesModifiees;
 			if (mandat.getTypeMandat() == TypeMandat.TIERS) {
 				// seuls la date de fin et l'IBAN peuvent être modifiés
-				final String oldIban = mandat.getCoordonneesFinancieres() != null ? IbanHelper.normalize(mandat.getCoordonneesFinancieres().getIban()) : null;
+				final String oldIban = mandat.getCompteBancaire() != null ? IbanHelper.normalize(mandat.getCompteBancaire().getIban()) : null;
 				final String newIban = IbanHelper.normalize(view.getIban());
 				donneesModifiees = !Objects.equals(oldIban, newIban);
 			}
@@ -852,7 +852,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 					copy.setDateFin(view.getDateFin());
 				}
 				if (copy.getTypeMandat() == TypeMandat.TIERS) {
-					copy.setCoordonneesFinancieres(new CoordonneesFinancieres(IbanHelper.normalize(view.getIban()), null));
+					copy.setCompteBancaire(new CompteBancaire(IbanHelper.normalize(view.getIban()), null));
 				}
 				else {
 					copy.setWithCopy(view.isWithCopy());
