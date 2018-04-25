@@ -38,6 +38,7 @@ import ch.vd.unireg.registrefoncier.ServitudeRF;
 import ch.vd.unireg.registrefoncier.TiersRF;
 import ch.vd.unireg.registrefoncier.UsufruitRF;
 import ch.vd.unireg.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.unireg.registrefoncier.immeuble.graph.ImmeubleGraph;
 import ch.vd.unireg.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityCheck;

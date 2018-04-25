@@ -1,4 +1,4 @@
-package ch.vd.unireg.registrefoncier.immeuble;
+package ch.vd.unireg.registrefoncier.immeuble.graph;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
