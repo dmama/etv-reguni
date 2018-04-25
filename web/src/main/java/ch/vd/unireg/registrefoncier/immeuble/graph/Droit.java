@@ -7,20 +7,20 @@ public class Droit {
 	private final Long id;
 	private final String color;
 	private final String style;
-	private final String source;
-	private final String destination;
+	private final String sourceKey;
+	private final String destinationKey;
 	private final String label;
 
-	public Droit(Long id, String source, String destination, String label, String color, String style) {
+	public Droit(Long id, String sourceKey, String destinationKey, String label, String color, String style) {
 		this.id = id;
 		this.color = color;
-		this.source = source;
-		this.destination = destination;
+		this.sourceKey = sourceKey;
+		this.destinationKey = destinationKey;
 		this.label = label;
 		this.style = style;
 	}
 
 	public String toDot() {
-		return source + " -> " + destination + " [id=\"link" + id + "\", label=\"" + label + "\", color=" + color + ", style=" + style + "]";
+		return sourceKey + " -> " + destinationKey + " [id=\"link" + id + "\", label=\"" + label + "\", color=" + color + ", style=" + style + "]";
 	}
 }

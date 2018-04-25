@@ -24,7 +24,10 @@ import ch.vd.unireg.registrefoncier.SituationRF;
 public class Immeuble {
 
 	public static final DecimalFormat MONTANT_FORMAT = new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(new Locale("fr", "CH")));
-	private final String name;
+	/**
+	 * La clé d'identification unique dans le graphe de l'immeuble
+	 */
+	private final String key;
 	private final Long id;
 	private final String egrid;
 	private final String idRF;
@@ -38,7 +41,7 @@ public class Immeuble {
 
 		final RegDate today = RegDate.get();
 
-		this.name = ImmeubleGraph.buildName(immeuble);
+		this.key = ImmeubleGraph.buildKey(immeuble);
 		this.id = immeuble.getId();
 		this.egrid = immeuble.getEgrid();
 		this.idRF = immeuble.getIdRF();
@@ -99,8 +102,8 @@ public class Immeuble {
 
 	}
 
-	public String getName() {
-		return name;
+	public String getKey() {
+		return key;
 	}
 
 	public Long getId() {
@@ -136,7 +139,7 @@ public class Immeuble {
 	}
 
 	public String toDot(boolean showEstimationFiscales) {
-		String s = name + " [shape=record, label=\"" + typeShort + "|" + commune + "/" + parcelle;
+		String s = key + " [shape=record, label=\"" + typeShort + "|" + commune + "/" + parcelle;
 		if (showEstimationFiscales && StringUtils.isNotBlank(estimationFiscale)) {
 			s += "|" + estimationFiscale;
 		}

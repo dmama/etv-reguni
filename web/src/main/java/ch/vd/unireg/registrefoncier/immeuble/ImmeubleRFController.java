@@ -94,7 +94,7 @@ public class ImmeubleRFController {
 		final ImmeubleGraph graph = new ImmeubleGraph();
 
 		final String title;
-		final String sourceElement;
+		final String sourceKey;
 
 		if (ctbId != null) {
 			// on affiche le graphe des droits et immeubles propriété de ce seul contribuable
@@ -112,11 +112,11 @@ public class ImmeubleRFController {
 
 			graph.process(droitsPropriete);
 
-			sourceElement = ctb.getRapprochementsRF().stream()
+			sourceKey = ctb.getRapprochementsRF().stream()
 					.filter(AnnulableHelper::nonAnnule)
 					.max(DateRangeComparator::compareRanges)
 					.map(RapprochementRF::getTiersRF)
-					.map(ImmeubleGraph::buildName)
+					.map(ImmeubleGraph::buildKey)
 					.orElse(null);
 			title = "Immeubles du contribuable n°" + FormatNumeroHelper.numeroCTBToDisplay(ctbId);
 		}
@@ -136,7 +136,7 @@ public class ImmeubleRFController {
 
 			graph.process(droitsPropriete);
 
-			sourceElement = ImmeubleGraph.buildName(communaute);
+			sourceKey = ImmeubleGraph.buildKey(communaute);
 			title = "Immeubles de la communauté n°" + commId;
 		}
 		else {
@@ -161,12 +161,12 @@ public class ImmeubleRFController {
 
 			graph.process(immeuble, true);
 
-			sourceElement = ImmeubleGraph.buildName(immeuble);
+			sourceKey = ImmeubleGraph.buildKey(immeuble);
 			title = "Propriétaires et propriétés de l'immeuble " + getSituation(immeuble);
 		}
 
 		model.addAttribute("dot", graph.toDot(showEstimations));
-		model.addAttribute("selected", sourceElement);
+		model.addAttribute("selected", sourceKey);
 		model.addAttribute("title", title);
 
 		return "registrefoncier/immeuble/graph";

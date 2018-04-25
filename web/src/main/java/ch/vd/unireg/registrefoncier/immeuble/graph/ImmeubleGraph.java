@@ -85,12 +85,12 @@ public class ImmeubleGraph {
 	}
 
 	private boolean isProcessed(@NotNull ImmeubleRF immeuble) {
-		return immeubles.containsKey(buildName(immeuble));
+		return immeubles.containsKey(buildKey(immeuble));
 	}
 
 	private void addProcessed(@NotNull ImmeubleRF immeuble) {
 		final Immeuble i = new Immeuble(immeuble);
-		immeubles.put(i.getName(), i);
+		immeubles.put(i.getKey(), i);
 	}
 
 	private void addDroitPropriete(DroitProprieteRF droit) {
@@ -100,19 +100,19 @@ public class ImmeubleGraph {
 		final CommunauteRF communaute = getCommunaute(droit);
 		if (communaute == null) {
 			// un droit normal
-			final String source = buildName(droit.getAyantDroit());
-			final String destination = buildName(droit.getImmeuble());
+			final String sourceKey = buildKey(droit.getAyantDroit());
+			final String destinationKey = buildKey(droit.getImmeuble());
 
 			addAyantDroit(ayantDroits, droit.getAyantDroit());
-			droits.add(new Droit(droit.getId(), source, destination, label, color, "solid"));
+			droits.add(new Droit(droit.getId(), sourceKey, destinationKey, label, color, "solid"));
 		}
 		else {
 			// en cas de communauté, on crée une copie de l'ayant-droit pour l'associer à la communauté
 			final Communaute comm = (Communaute) addAyantDroit(ayantDroits, communaute);
 			final AyantDroit membre = comm.addMembre(droit.getAyantDroit());
-			final String source = membre.name;
-			final String destination = buildName(droit.getImmeuble());
-			droits.add(new Droit(droit.getId(), source, destination, label, color, "dashed"));
+			final String sourceKey = membre.key;
+			final String destinationKey = buildKey(droit.getImmeuble());
+			droits.add(new Droit(droit.getId(), sourceKey, destinationKey, label, color, "dashed"));
 		}
 	}
 
@@ -153,14 +153,20 @@ public class ImmeubleGraph {
 		return color;
 	}
 
-	public static String buildName(@NotNull AyantDroitRF ayantDroit) {
+	/**
+	 * Construit la clé d'identification dans le graphe de l'ayant-droit spécifié.
+	 *
+	 * @param ayantDroit un ayant-droit
+	 * @return la clé d'identification unique de l'ayant-droit
+	 */
+	public static String buildKey(@NotNull AyantDroitRF ayantDroit) {
 		if (ayantDroit instanceof CommunauteRF) {
 			final CommunauteRF communaute = (CommunauteRF) ayantDroit;
 			return "clusterComm" + communaute.getId();
 		}
 		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
 			final ImmeubleBeneficiaireRF beneficiaire = (ImmeubleBeneficiaireRF) ayantDroit;
-			return buildName(beneficiaire.getImmeuble());
+			return buildKey(beneficiaire.getImmeuble());
 		}
 		else if (ayantDroit instanceof PersonnePhysiqueRF) {
 			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroit;
@@ -217,32 +223,38 @@ public class ImmeubleGraph {
 	}
 
 	private static AyantDroit addAyantDroit(@NotNull Map<String, AyantDroit> ayantDroits, @NotNull AyantDroitRF ayantDroit) {
-		final String name = buildName(ayantDroit);
+		final String key = buildKey(ayantDroit);
 		if (ayantDroit instanceof CommunauteRF) {
 			final CommunauteRF communaute = (CommunauteRF) ayantDroit;
-			return ayantDroits.computeIfAbsent(name, n -> new Communaute(name, "Communauté #" + communaute.getId()));
+			return ayantDroits.computeIfAbsent(key, n -> new Communaute(key, "Communauté #" + communaute.getId()));
 		}
 		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
 			return null;
 		}
 		else if (ayantDroit instanceof PersonnePhysiqueRF) {
 			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroit;
-			return ayantDroits.computeIfAbsent(name, n -> new PersonnePhysique(name, pp.getPrenom() + " " + pp.getNom()));
+			return ayantDroits.computeIfAbsent(key, n -> new PersonnePhysique(key, pp.getPrenom() + " " + pp.getNom()));
 		}
 		else if (ayantDroit instanceof PersonneMoraleRF) {
 			final PersonneMoraleRF pm = (PersonneMoraleRF) ayantDroit;
-			return ayantDroits.computeIfAbsent(name, n -> new PersonneMorale(name, pm.getRaisonSociale()));
+			return ayantDroits.computeIfAbsent(key, n -> new PersonneMorale(key, pm.getRaisonSociale()));
 		}
 		else if (ayantDroit instanceof CollectivitePubliqueRF) {
 			final CollectivitePubliqueRF cp = (CollectivitePubliqueRF) ayantDroit;
-			return ayantDroits.computeIfAbsent(name, n -> new Collectivite(name, cp.getRaisonSociale()));
+			return ayantDroits.computeIfAbsent(key, n -> new Collectivite(key, cp.getRaisonSociale()));
 		}
 		else {
 			throw new IllegalArgumentException();
 		}
 	}
 
-	public static String buildName(@NotNull ImmeubleRF immeuble) {
+	/**
+	 * Construit la clé d'identification dans le graphe de l'immeuble spécifié.
+	 *
+	 * @param immeuble un immeuble
+	 * @return la clé d'identification unique de l'immeuble
+	 */
+	public static String buildKey(@NotNull ImmeubleRF immeuble) {
 		final String egrid = immeuble.getEgrid();
 		return egrid == null ? immeuble.getIdRF() : egrid;
 	}
