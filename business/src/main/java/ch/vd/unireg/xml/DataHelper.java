@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateConstants;
@@ -44,6 +45,7 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.xml.address.AddressBuilder;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 
 /**
  * Cette helper effectue la traduction des classes venant de 'core' en classes 'XML'.
@@ -1019,14 +1021,14 @@ public abstract class DataHelper {
 		return results;
 	}
 
-	public static Set<TiersDAO.Parts> xmlToCoreV5(Set<ch.vd.unireg.xml.party.v5.PartyPart> parts) {
+	public static Set<TiersDAO.Parts> xmlToCoreV5(Set<InternalPartyPart> parts) {
 
 		if (parts == null) {
 			return null;
 		}
 
 		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
-		for (ch.vd.unireg.xml.party.v5.PartyPart p : parts) {
+		for (InternalPartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
 				results.add(TiersDAO.Parts.ADRESSES);
@@ -1167,6 +1169,23 @@ public abstract class DataHelper {
 		return parts.stream()
 				.filter(Objects::nonNull)
 				.collect(Collectors.toCollection(() -> EnumSet.noneOf(clazz)));
+	}
+
+	/**
+	 * Converti les {@link ch.vd.unireg.xml.party.v5.PartyPart} en {@link InternalPartyPart}.
+	 */
+	@NotNull
+	public static Set<InternalPartyPart> toInternalParts(@Nullable Set<ch.vd.unireg.xml.party.v5.PartyPart> source) {
+
+		if (source == null || source.isEmpty()) {
+			return Collections.emptySet();
+		}
+
+		final Set<InternalPartyPart> parts = source.stream()
+				.map(InternalPartyPart::fromPartyV5)
+				.collect(Collectors.toSet());
+
+		return EnumSet.copyOf(parts);   // pour trier les parts
 	}
 
 	public static String salutations2MrMrs(String salutations) {

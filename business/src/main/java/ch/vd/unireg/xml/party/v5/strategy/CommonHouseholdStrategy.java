@@ -18,10 +18,6 @@ import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
-import ch.vd.unireg.xml.party.person.v5.CommonHouseholdStatus;
-import ch.vd.unireg.xml.party.v5.PartyLabel;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
@@ -30,13 +26,17 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
+import ch.vd.unireg.xml.party.person.v5.CommonHouseholdStatus;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.LabelBuilder;
 import ch.vd.unireg.xml.party.v5.PartyBuilder;
+import ch.vd.unireg.xml.party.v5.PartyLabel;
 
 public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 
 	@Override
-	public CommonHousehold newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public CommonHousehold newFrom(Tiers right, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		final CommonHousehold menage = new CommonHousehold();
 		initBase(menage, right, context);
 		initParts(menage, right, parts, context);
@@ -44,7 +44,7 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 	}
 
 	@Override
-	public CommonHousehold clone(CommonHousehold right, @Nullable Set<PartyPart> parts) {
+	public CommonHousehold clone(CommonHousehold right, @Nullable Set<InternalPartyPart> parts) {
 		final CommonHousehold menage = new CommonHousehold();
 		copyBase(menage, right);
 		copyParts(menage, right, parts, CopyMode.EXCLUSIVE);
@@ -52,20 +52,20 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 	}
 
 	@Override
-	protected void initParts(CommonHousehold to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	protected void initParts(CommonHousehold to, Tiers from, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
 		final MenageCommun menage = (MenageCommun) from;
-		if (parts != null && parts.contains(PartyPart.HOUSEHOLD_MEMBERS)) {
+		if (parts != null && parts.contains(InternalPartyPart.HOUSEHOLD_MEMBERS)) {
 			initMembers(to, menage, context);
 		}
 	}
 
 	@Override
-	protected void copyParts(CommonHousehold to, CommonHousehold from, @Nullable Set<PartyPart> parts, CopyMode mode) {
+	protected void copyParts(CommonHousehold to, CommonHousehold from, @Nullable Set<InternalPartyPart> parts, CopyMode mode) {
 		super.copyParts(to, from, parts, mode);
 
-		if (parts != null && parts.contains(PartyPart.HOUSEHOLD_MEMBERS)) {
+		if (parts != null && parts.contains(InternalPartyPart.HOUSEHOLD_MEMBERS)) {
 			to.setMainTaxpayer(from.getMainTaxpayer());
 			to.setSecondaryTaxpayer(from.getSecondaryTaxpayer());
 			to.setStatus(from.getStatus());

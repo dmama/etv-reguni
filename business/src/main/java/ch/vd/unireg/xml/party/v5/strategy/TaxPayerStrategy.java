@@ -10,16 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
-import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.party.agent.v1.Agent;
-import ch.vd.unireg.xml.party.taxpayer.v5.Taxpayer;
-import ch.vd.unireg.xml.party.taxresidence.v4.SimplifiedTaxLiability;
-import ch.vd.unireg.xml.party.taxresidence.v4.TaxationPeriod;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.situationfamille.VueSituationFamille;
@@ -31,9 +25,15 @@ import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ExceptionHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.agent.v1.Agent;
+import ch.vd.unireg.xml.party.taxpayer.v5.Taxpayer;
+import ch.vd.unireg.xml.party.taxresidence.v4.SimplifiedTaxLiability;
+import ch.vd.unireg.xml.party.taxresidence.v4.TaxationPeriod;
 import ch.vd.unireg.xml.party.v5.AgentBuilder;
 import ch.vd.unireg.xml.party.v5.EBillingStatusBuilder;
 import ch.vd.unireg.xml.party.v5.FamilyStatusBuilder;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.SimplifiedTaxLiabilityBuilder;
 import ch.vd.unireg.xml.party.v5.TaxLiabilityBuilder;
 import ch.vd.unireg.xml.party.v5.TaxationPeriodBuilder;
@@ -43,61 +43,61 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 	private static final Logger LOGGER = LoggerFactory.getLogger(TaxPayerStrategy.class);
 
 	@Override
-	protected void initParts(T to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	protected void initParts(T to, Tiers from, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
 		Contribuable ctb = (Contribuable) from;
-		if (parts != null && parts.contains(PartyPart.FAMILY_STATUSES)) {
+		if (parts != null && parts.contains(InternalPartyPart.FAMILY_STATUSES)) {
 			initFamilyStatuses(to, ctb, context);
 		}
 
-		if (parts != null && (parts.contains(PartyPart.TAX_LIABILITIES) || parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES))) {
+		if (parts != null && (parts.contains(InternalPartyPart.TAX_LIABILITIES) || parts.contains(InternalPartyPart.SIMPLIFIED_TAX_LIABILITIES))) {
 			initTaxLiabilities(to, ctb, parts, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.TAXATION_PERIODS)) {
+		if (parts != null && parts.contains(InternalPartyPart.TAXATION_PERIODS)) {
 			initTaxationPeriods(to, ctb, context);
 		}
 
 		// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée
 
-		if (parts != null && parts.contains(PartyPart.EBILLING_STATUSES)) {
+		if (parts != null && parts.contains(InternalPartyPart.EBILLING_STATUSES)) {
 			initEBillingStatuses(to, ctb, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.AGENTS)) {
+		if (parts != null && parts.contains(InternalPartyPart.AGENTS)) {
 			initAgents(to, ctb, context);
 		}
 	}
 
 	@Override
-	protected void copyParts(T to, T from, @Nullable Set<PartyPart> parts, CopyMode mode) {
+	protected void copyParts(T to, T from, @Nullable Set<InternalPartyPart> parts, CopyMode mode) {
 		super.copyParts(to, from, parts, mode);
 
-		if (parts != null && parts.contains(PartyPart.FAMILY_STATUSES)) {
+		if (parts != null && parts.contains(InternalPartyPart.FAMILY_STATUSES)) {
 			copyColl(to.getFamilyStatuses(), from.getFamilyStatuses());
 		}
 
-		if (parts != null && parts.contains(PartyPart.TAX_LIABILITIES)) {
+		if (parts != null && parts.contains(InternalPartyPart.TAX_LIABILITIES)) {
 			copyColl(to.getTaxLiabilities(), from.getTaxLiabilities());
 		}
 
-		if (parts != null && parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES)) {
+		if (parts != null && parts.contains(InternalPartyPart.SIMPLIFIED_TAX_LIABILITIES)) {
 			copyColl(to.getSimplifiedTaxLiabilityVD(), from.getSimplifiedTaxLiabilityVD());
 			copyColl(to.getSimplifiedTaxLiabilityCH(), from.getSimplifiedTaxLiabilityCH());
 		}
 
-		if (parts != null && parts.contains(PartyPart.TAXATION_PERIODS)) {
+		if (parts != null && parts.contains(InternalPartyPart.TAXATION_PERIODS)) {
 			copyColl(to.getTaxationPeriods(), from.getTaxationPeriods());
 		}
 
 		// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 
-		if (parts != null && parts.contains(PartyPart.EBILLING_STATUSES)) {
+		if (parts != null && parts.contains(InternalPartyPart.EBILLING_STATUSES)) {
 			copyColl(to.getEbillingStatuses(), from.getEbillingStatuses());
 		}
 
-		if (parts != null && parts.contains(PartyPart.AGENTS)) {
+		if (parts != null && parts.contains(InternalPartyPart.AGENTS)) {
 			copyColl(to.getAgents(), from.getAgents());
 		}
 	}
@@ -111,7 +111,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		}
 	}
 
-	private static void initTaxLiabilities(Taxpayer left, Contribuable right, Set<PartyPart> parts, Context context) throws ServiceException {
+	private static void initTaxLiabilities(Taxpayer left, Contribuable right, Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		/*
 		 * Note: il est nécessaire de calculer l'assujettissement sur TOUTE la période de validité du contribuable pour obtenir un résultat
 		 * correct avec le collate.
@@ -127,8 +127,8 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 		if (list != null) {
 
-			final boolean wantAssujettissements = parts.contains(PartyPart.TAX_LIABILITIES);
-			final boolean wantAssujettissementsSimplifies = parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES);
+			final boolean wantAssujettissements = parts.contains(InternalPartyPart.TAX_LIABILITIES);
+			final boolean wantAssujettissementsSimplifies = parts.contains(InternalPartyPart.SIMPLIFIED_TAX_LIABILITIES);
 
 			for (ch.vd.unireg.metier.assujettissement.Assujettissement a : list) {
 				if (wantAssujettissements) {

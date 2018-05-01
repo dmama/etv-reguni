@@ -36,9 +36,9 @@ import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
@@ -244,7 +244,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@Nullable
 	@Override
-	public Party getParty(int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Party getParty(int partyNo, @Nullable Set<InternalPartyPart> parts) throws AccessDeniedException, ServiceException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -261,7 +261,7 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@NotNull
 	@Override
-	public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Parties getParties(List<Integer> partyNos, @Nullable Set<InternalPartyPart> parts) throws AccessDeniedException, ServiceException {
 		Throwable t = null;
 		final long time = tracing.start();
 		int resultSize = 0;

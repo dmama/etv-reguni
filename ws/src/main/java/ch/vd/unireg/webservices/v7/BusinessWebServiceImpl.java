@@ -154,10 +154,10 @@ import ch.vd.unireg.xml.party.v5.CommunityOfOwnersBuilder;
 import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.unireg.xml.party.v5.ImmovablePropertyBuilder;
 import ch.vd.unireg.xml.party.v5.ImmovablePropertyInfoBuilder;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyBuilder;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
@@ -706,7 +706,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	private interface PartyFactory<T extends Tiers> {
-		Party buildParty(T tiers, @Nullable Set<PartyPart> parts, Context context) throws ServiceException;
+		Party buildParty(T tiers, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException;
 	}
 
 	private static <T extends Tiers> void addToPartyFactoryMap(Map<Class<? extends Tiers>, PartyFactory<?>> map, Class<T> clazz, PartyFactory<T> factory) {
@@ -727,55 +727,55 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	private static final class NaturalPersonPartyFactory implements PartyFactory<PersonnePhysique> {
 		@Override
-		public Party buildParty(PersonnePhysique pp, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+		public Party buildParty(PersonnePhysique pp, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 			return PartyBuilder.newNaturalPerson(pp, parts, context);
 		}
 	}
 
 	private static final class CommonHouseholdPartyFactory implements PartyFactory<MenageCommun> {
 		@Override
-		public Party buildParty(MenageCommun mc, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+		public Party buildParty(MenageCommun mc, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 			return PartyBuilder.newCommonHousehold(mc, parts, context);
 		}
 	}
 
 	private static final class DebtorPartyFactory implements PartyFactory<DebiteurPrestationImposable> {
 		@Override
-		public Party buildParty(DebiteurPrestationImposable dpi, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+		public Party buildParty(DebiteurPrestationImposable dpi, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 			return PartyBuilder.newDebtor(dpi, parts, context);
 		}
 	}
 
 	private static final class CorporationPartyFactory implements PartyFactory<Entreprise> {
 		@Override
-		public Party buildParty(Entreprise pm, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+		public Party buildParty(Entreprise pm, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 			return PartyBuilder.newCorporation(pm, parts, context);
 		}
 	}
 
 	private static final class AdministrativeAuthorityPartyFactory implements PartyFactory<CollectiviteAdministrative> {
 		@Override
-		public Party buildParty(CollectiviteAdministrative ca, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+		public Party buildParty(CollectiviteAdministrative ca, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 			return PartyBuilder.newAdministrativeAuthority(ca, parts, context);
 		}
 	}
 
 	private static final class OtherCommunityPartyFactory implements PartyFactory<AutreCommunaute> {
 		@Override
-		public Party buildParty(AutreCommunaute ac, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+		public Party buildParty(AutreCommunaute ac, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 			return PartyBuilder.newOtherCommunity(ac, parts, context);
 		}
 	}
 
 	private static final class EstablishmentPartyFactory implements PartyFactory<Etablissement> {
 		@Override
-		public Party buildParty(Etablissement etb, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+		public Party buildParty(Etablissement etb, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 			return PartyBuilder.newEstablishment(etb, parts, context);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends Tiers> Party buildParty(Tiers tiers, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	private static <T extends Tiers> Party buildParty(Tiers tiers, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		if (tiers == null) {
 			return null;
 		}
@@ -790,7 +790,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public Party getParty(final int partyNo, @Nullable final Set<PartyPart> parts) throws ServiceException {
+	public Party getParty(final int partyNo, @Nullable final Set<InternalPartyPart> parts) throws ServiceException {
 		try {
 			return doInTransaction(true, new TxCallback<Party>() {
 				@Override
@@ -812,7 +812,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@NotNull
-	private static Set<TiersDAO.Parts> toCoreAvecForsFiscaux(@Nullable Set<PartyPart> parts) {
+	private static Set<TiersDAO.Parts> toCoreAvecForsFiscaux(@Nullable Set<InternalPartyPart> parts) {
 		Set<TiersDAO.Parts> set = ch.vd.unireg.xml.DataHelper.xmlToCoreV5(parts);
 		if (set == null) {
 			set = EnumSet.noneOf(TiersDAO.Parts.class);
@@ -823,7 +823,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@NotNull
-	private List<Entry> resolvePartyBatch(@NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
+	private List<Entry> resolvePartyBatch(@NotNull List<Integer> ids, @Nullable Set<InternalPartyPart> parts) {
 
 		final List<Entry> entries = new ArrayList<>(ids.size());
 
@@ -896,7 +896,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@NotNull
 	@Override
-	public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> parts) {
+	public Parties getParties(List<Integer> partyNos, @Nullable Set<InternalPartyPart> parts) {
 
 		// on enlève les doublons sur les numéros de tiers (et les éventuels <i>null</i>)
 		final Set<Integer> nos = new HashSet<>(partyNos);

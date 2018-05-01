@@ -59,8 +59,8 @@ import ch.vd.unireg.xml.party.person.v5.ParentFullName;
 import ch.vd.unireg.xml.party.person.v5.ResidencyPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.LandRightBuilder;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.ResidencyPeriodBuilder;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.unireg.xml.party.v5.WithholdingTaxationPeriodBuilder;
@@ -73,7 +73,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	private static final String CH_ZAR = "CH.ZAR";
 
 	@Override
-	public NaturalPerson newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public NaturalPerson newFrom(Tiers right, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		final NaturalPerson pp = new NaturalPerson();
 		initBase(pp, right, context);
 		initParts(pp, right, parts, context);
@@ -81,7 +81,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	}
 
 	@Override
-	public NaturalPerson clone(NaturalPerson right, @Nullable Set<PartyPart> parts) {
+	public NaturalPerson clone(NaturalPerson right, @Nullable Set<InternalPartyPart> parts) {
 		final NaturalPerson pp = new NaturalPerson();
 		copyBase(pp, right);
 		copyParts(pp, right, parts, CopyMode.EXCLUSIVE);
@@ -239,32 +239,32 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	}
 
 	@Override
-	protected void initParts(NaturalPerson to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	protected void initParts(NaturalPerson to, Tiers from, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
 		final PersonnePhysique pp = (PersonnePhysique) from;
-		if (parts != null && parts.contains(PartyPart.WITHHOLDING_TAXATION_PERIODS)) {
+		if (parts != null && parts.contains(InternalPartyPart.WITHHOLDING_TAXATION_PERIODS)) {
 			initWithholdingTaxationPeriods(to, pp, context);
 		}
-		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
+		if (parts != null && parts.contains(InternalPartyPart.RESIDENCY_PERIODS)) {
 			initResidencyPeriods(to, pp, context);
 		}
-		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
+		if (parts != null && (parts.contains(InternalPartyPart.LAND_RIGHTS) || parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
 			initLandRights(to, pp, parts, context);
 		}
 	}
 
 	@Override
-	protected void copyParts(NaturalPerson to, NaturalPerson from, @Nullable Set<PartyPart> parts, CopyMode mode) {
+	protected void copyParts(NaturalPerson to, NaturalPerson from, @Nullable Set<InternalPartyPart> parts, CopyMode mode) {
 		super.copyParts(to, from, parts, mode);
 
-		if (parts != null && parts.contains(PartyPart.WITHHOLDING_TAXATION_PERIODS)) {
+		if (parts != null && parts.contains(InternalPartyPart.WITHHOLDING_TAXATION_PERIODS)) {
 			copyColl(to.getWithholdingTaxationPeriods(), from.getWithholdingTaxationPeriods());
 		}
-		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
+		if (parts != null && parts.contains(InternalPartyPart.RESIDENCY_PERIODS)) {
 			copyColl(to.getResidencyPeriods(), from.getResidencyPeriods());
 		}
-		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
+		if (parts != null && (parts.contains(InternalPartyPart.LAND_RIGHTS) || parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
 			copyLandRights(to, from, parts, mode);
 		}
 	}
@@ -323,10 +323,10 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				.forEach(residencyPeriods::add);
 	}
 
-	private void initLandRights(NaturalPerson to, PersonnePhysique pp, @NotNull Set<PartyPart> parts, Context context) {
+	private void initLandRights(NaturalPerson to, PersonnePhysique pp, @NotNull Set<InternalPartyPart> parts, Context context) {
 
-		final boolean includeVirtualTransitive = parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS);
-		final boolean includeVirtualInheritance = parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS);
+		final boolean includeVirtualTransitive = parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS);
+		final boolean includeVirtualInheritance = parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS);
 		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp, includeVirtualTransitive, includeVirtualInheritance);
 
 		// [SIFISC-24999] si la personne physique possède des héritiers, on l'indique sur les droits de propriété
@@ -371,9 +371,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")
-	private static void copyLandRights(NaturalPerson to, NaturalPerson from, Set<PartyPart> parts, CopyMode mode) {
+	private static void copyLandRights(NaturalPerson to, NaturalPerson from, Set<InternalPartyPart> parts, CopyMode mode) {
 
-		if (!parts.contains(PartyPart.LAND_RIGHTS) && !parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && !parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+		if (!parts.contains(InternalPartyPart.LAND_RIGHTS) && !parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) && !parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
 			throw new IllegalArgumentException("Au moins un des parts LAND_RIGHTS, VIRTUAL_LAND_RIGHTS ou VIRTUAL_INHERITANCE_LAND_RIGHTS doit être spécifiée.");
 		}
 
@@ -382,17 +382,17 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		// du mode de copie, il est donc nécessaire de compléter ou de filtrer les droits.
 		if (mode == CopyMode.ADDITIVE) {
 			if (to.getLandRights() == null || to.getLandRights().isEmpty()
-					|| (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
+					|| (parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
 				// la collection de destination est vide (ou la source contient tous les droits), on copie tout
 				copyColl(to.getLandRights(), from.getLandRights());
 			}
-			else if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS)) {
+			else if (parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS)) {
 				// la collection de destination n'est pas vide, on ajoute uniquement les droits virtuels transitifs
 				to.getLandRights().addAll(from.getLandRights().stream()
 						                          .filter(VirtualTransitiveLandRight.class::isInstance)
 						                          .collect(Collectors.toList()));
 			}
-			else if (parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+			else if (parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
 				// la collection de destination n'est pas vide, on ajoute uniquement les droits virtuels hérités
 				to.getLandRights().addAll(from.getLandRights().stream()
 						                          .filter(VirtualInheritedLandRight.class::isInstance)
@@ -404,7 +404,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		}
 		else {
 			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
-			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+			if (parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
 				// on veut tous les droits, on copie tout
 				copyColl(to.getLandRights(), from.getLandRights());
 			}
@@ -423,9 +423,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		}
 	}
 
-	private static boolean rightMatchesPart(LandRight right, Set<PartyPart> parts) {
+	private static boolean rightMatchesPart(LandRight right, Set<InternalPartyPart> parts) {
 		return right instanceof RealLandRight
-				|| (right instanceof VirtualTransitiveLandRight && parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))
-				|| (right instanceof VirtualInheritedLandRight && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+				|| (right instanceof VirtualTransitiveLandRight && parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS))
+				|| (right instanceof VirtualInheritedLandRight && parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
 	}
 }

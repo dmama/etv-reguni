@@ -117,8 +117,8 @@ import ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v4.OrdinaryResident;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.Party;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 import static ch.vd.unireg.webservices.v7.BusinessWebServiceTest.assertFoundEntry;
@@ -398,17 +398,17 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Pair<List<Integer>, Set<PartyPart>> getLastCallParametersToGetParties(Map<String, List<Object[]>> calls) {
+	private static Pair<List<Integer>, Set<InternalPartyPart>> getLastCallParametersToGetParties(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getParties");
 		assertEquals(2, lastCall.length); // la méthode getParties possède deux paramètres
-		return Pair.of((List<Integer>) lastCall[0], (Set<PartyPart>) lastCall[1]);
+		return Pair.of((List<Integer>) lastCall[0], (Set<InternalPartyPart>) lastCall[1]);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Pair<Integer, Set<PartyPart>> getLastCallParametersToGetParty(Map<String, List<Object[]>> calls) {
+	private static Pair<Integer, Set<InternalPartyPart>> getLastCallParametersToGetParty(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getParty");
 		assertEquals(2, lastCall.length); // la méthode getParty possède deux paramètres
-		return Pair.of((Integer) lastCall[0], (Set<PartyPart>) lastCall[1]);
+		return Pair.of((Integer) lastCall[0], (Set<InternalPartyPart>) lastCall[1]);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -539,24 +539,24 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// ajout des adresses
 		{
-			assertAddressPart(cache.getParty(partyNo, EnumSet.of(PartyPart.ADDRESSES)));
+			assertAddressPart(cache.getParty(partyNo, EnumSet.of(InternalPartyPart.ADDRESSES)));
 			assertNoPart(cache.getParty(partyNo, null)); // on vérifie que le tiers sans part fonctionne toujours bien
 
 			final GetPartyValue value = getCacheValue(partyNo);
 			assertNotNull(value);
-			assertEquals(EnumSet.of(PartyPart.ADDRESSES), value.getParts());
+			assertEquals(EnumSet.of(InternalPartyPart.ADDRESSES), value.getParts());
 		}
 
 		// ajout des fors
 		{
-			assertTaxResidenceAndAddressePart(cache.getParty(partyNo, EnumSet.of(PartyPart.TAX_RESIDENCES, PartyPart.ADDRESSES)));
-			assertTaxResidencePart(cache.getParty(partyNo, EnumSet.of(PartyPart.TAX_RESIDENCES))); // on vérifie que le tiers avec seulement les fors est correct
+			assertTaxResidenceAndAddressePart(cache.getParty(partyNo, EnumSet.of(InternalPartyPart.TAX_RESIDENCES, InternalPartyPart.ADDRESSES)));
+			assertTaxResidencePart(cache.getParty(partyNo, EnumSet.of(InternalPartyPart.TAX_RESIDENCES))); // on vérifie que le tiers avec seulement les fors est correct
 			assertNoPart(cache.getParty(partyNo, null)); // on vérifie que le tiers sans part fonctionne toujours bien
-			assertAddressPart(cache.getParty(partyNo, EnumSet.of(PartyPart.ADDRESSES))); // on vérifie que le tiers avec adresse fonctionne toujours bien
+			assertAddressPart(cache.getParty(partyNo, EnumSet.of(InternalPartyPart.ADDRESSES))); // on vérifie que le tiers avec adresse fonctionne toujours bien
 
 			final GetPartyValue value = getCacheValue(partyNo);
 			assertNotNull(value);
-			assertEquals(EnumSet.of(PartyPart.TAX_RESIDENCES, PartyPart.ADDRESSES), value.getParts());
+			assertEquals(EnumSet.of(InternalPartyPart.TAX_RESIDENCES, InternalPartyPart.ADDRESSES), value.getParts());
 		}
 	}
 
@@ -565,12 +565,12 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	public void testGetPartyAllParts() throws Exception {
 
 		// on demande tour-à-tour les parties et on vérifie que 1) on les reçoit bien; et 2) qu'on ne reçoit qu'elles.
-		for (PartyPart p : PartyPart.values()) {
+		for (InternalPartyPart p : InternalPartyPart.values()) {
 			assertOnlyPart(p, cache.getParty(ids.eric.intValue(), EnumSet.of(p)));
 		}
 
 		// maintenant que le cache est chaud, on recommence la manipulation pour vérifier que cela fonctionne toujours
-		for (PartyPart p : PartyPart.values()) {
+		for (InternalPartyPart p : InternalPartyPart.values()) {
 			assertOnlyPart(p, cache.getParty(ids.eric.intValue(), EnumSet.of(p)));
 		}
 	}
@@ -627,7 +627,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	public void testEvictPartyCommonHousehold() throws Exception {
 
 		// On charge le cache avec le ménage commun et ses adresses
-		final CommonHousehold menageAvant = (CommonHousehold) cache.getParty(ids.menage.intValue(), EnumSet.of(PartyPart.ADDRESSES));
+		final CommonHousehold menageAvant = (CommonHousehold) cache.getParty(ids.menage.intValue(), EnumSet.of(InternalPartyPart.ADDRESSES));
 		assertNotNull(menageAvant);
 
 		// On vérifie l'adresse d'envoi
@@ -670,7 +670,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		// Cette modification va provoquer l'éviction de madame du cache, et par transitivité l'éviction du ménage commun. Si ce n'était pas le cas, les données (périmées) du ménage commun seraient encore dans le cache.
 		// On vérifie donc que l'adresse d'envoi du ménage commun est bien mise-à-jour.
 
-		final CommonHousehold menageApres = (CommonHousehold) cache.getParty(ids.menage.intValue(), EnumSet.of(PartyPart.ADDRESSES));
+		final CommonHousehold menageApres = (CommonHousehold) cache.getParty(ids.menage.intValue(), EnumSet.of(InternalPartyPart.ADDRESSES));
 		assertNotNull(menageApres);
 
 		// On vérifie l'adresse d'envoi
@@ -715,7 +715,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertNull(getCacheValue(1233455)); // null -> on ne cache pas la réponse pour un tiers inexistant !
 
 		// Essai une seconde fois avec parts
-		assertNull(cache.getParty(1233455, EnumSet.of(PartyPart.ADDRESSES)));
+		assertNull(cache.getParty(1233455, EnumSet.of(InternalPartyPart.ADDRESSES)));
 		assertNull(getCacheValue(1233455));
 	}
 
@@ -729,7 +729,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 1. on demande le tiers avec les fors fiscaux virtuels
 		{
-			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
+			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(InternalPartyPart.VIRTUAL_TAX_RESIDENCES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getMainTaxResidences());
 			assertEquals(1, tiers.getMainTaxResidences().size());
@@ -741,14 +741,14 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande le tiers *sans* les fors fiscaux virtuels
 		{
-			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
+			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(InternalPartyPart.TAX_RESIDENCES));
 			assertNotNull(tiers);
 			assertEmpty(tiers.getMainTaxResidences());
 		}
 
 		// 3. on demande de nouveau le tiers avec les fors fiscaux virtuels => le résultat doit être identique à la demande du point 1.
 		{
-			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
+			final Party tiers = cache.getParty(ids.monsieur.intValue(), EnumSet.of(InternalPartyPart.VIRTUAL_TAX_RESIDENCES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getMainTaxResidences());
 			assertEquals(1, tiers.getMainTaxResidences().size());
@@ -769,7 +769,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 1. on demande le tiers avec les déclarations et leurs états
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -790,7 +790,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande les déclarations *sans* les états
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -803,7 +803,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3. on demande de nouveau les déclarations avec leurs états => le résultat doit être identique à la demande du point 1.
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -833,7 +833,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertEquals(0, getNumberOfCalls(calls));
 
 		// parts to ask for
-		final Set<PartyPart> parts = EnumSet.of(PartyPart.TAX_RESIDENCES, PartyPart.EBILLING_STATUSES, PartyPart.ADDRESSES);
+		final Set<InternalPartyPart> parts = EnumSet.of(InternalPartyPart.TAX_RESIDENCES, InternalPartyPart.EBILLING_STATUSES, InternalPartyPart.ADDRESSES);
 
 		// 1er appel
 		{
@@ -846,7 +846,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(1, party.getResidenceAddresses().size());
 
 			assertEquals(1, getNumberOfCallsToGetParty(calls));
-			final Pair<Integer, Set<PartyPart>> lastCall = getLastCallParametersToGetParty(calls);
+			final Pair<Integer, Set<InternalPartyPart>> lastCall = getLastCallParametersToGetParty(calls);
 			assertEquals((Integer) ids.eric.intValue(), lastCall.getLeft());
 			assertEquals(parts, lastCall.getRight());
 		}
@@ -862,9 +862,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(1, party.getResidenceAddresses().size());
 
 			assertEquals(2, getNumberOfCallsToGetParty(calls));
-			final Pair<Integer, Set<PartyPart>> lastCall = getLastCallParametersToGetParty(calls);
+			final Pair<Integer, Set<InternalPartyPart>> lastCall = getLastCallParametersToGetParty(calls);
 			assertEquals((Integer) ids.eric.intValue(), lastCall.getLeft());
-			assertEquals(EnumSet.of(PartyPart.EBILLING_STATUSES), lastCall.getRight());
+			assertEquals(EnumSet.of(InternalPartyPart.EBILLING_STATUSES), lastCall.getRight());
 		}
 
 		// 3ème appel
@@ -878,9 +878,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(1, party.getResidenceAddresses().size());
 
 			assertEquals(3, getNumberOfCallsToGetParty(calls));
-			final Pair<Integer, Set<PartyPart>> lastCall = getLastCallParametersToGetParty(calls);
+			final Pair<Integer, Set<InternalPartyPart>> lastCall = getLastCallParametersToGetParty(calls);
 			assertEquals((Integer) ids.eric.intValue(), lastCall.getLeft());
-			assertEquals(EnumSet.of(PartyPart.EBILLING_STATUSES), lastCall.getRight());
+			assertEquals(EnumSet.of(InternalPartyPart.EBILLING_STATUSES), lastCall.getRight());
 		}
 	}
 
@@ -893,7 +893,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 1. on demande le tiers avec les déclarations et les états
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -919,7 +919,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande maintenant les déclarations, leurs états et leurs délais
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_STATUSES, InternalPartyPart.TAX_DECLARATIONS_DEADLINES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -944,7 +944,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3. et finalement on ne demande plus que les délais
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_DEADLINES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -964,7 +964,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 4. on demande à nouveau le tout
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_STATUSES, InternalPartyPart.TAX_DECLARATIONS_DEADLINES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -997,7 +997,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 1. on demande le tiers avec les déclarations et les états
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1023,7 +1023,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande maintenant les déclarations, leurs états et leurs délais (+ efacture, non-cachable)
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES, PartyPart.EBILLING_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_STATUSES, InternalPartyPart.TAX_DECLARATIONS_DEADLINES, InternalPartyPart.EBILLING_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1053,7 +1053,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 3. et finalement on ne demande plus que les délais
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_DEADLINES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1074,7 +1074,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 4. on demande à nouveau le tout
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES, PartyPart.EBILLING_STATUSES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_DECLARATIONS, InternalPartyPart.TAX_DECLARATIONS_STATUSES, InternalPartyPart.TAX_DECLARATIONS_DEADLINES, InternalPartyPart.EBILLING_STATUSES));
 			assertNotNull(tiers);
 			assertNotNull(tiers.getTaxDeclarations());
 			assertEquals(1, tiers.getTaxDeclarations().size());
@@ -1114,7 +1114,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 1. on demande le tiers avec les assujettissements
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_LIABILITIES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_LIABILITIES));
 			assertNotNull(tiers);
 			assertEquals(NaturalPerson.class, tiers.getClass());
 
@@ -1134,7 +1134,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. même appel -> rien ne doit avoir changé
 		{
-			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_LIABILITIES));
+			final Party tiers = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_LIABILITIES));
 			assertNotNull(tiers);
 			assertEquals(NaturalPerson.class, tiers.getClass());
 
@@ -1253,11 +1253,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		cache.setTarget(new MockBusinessWebService(implementation) {
 			@NotNull
 			@Override
-			public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+			public Parties getParties(List<Integer> partyNos, @Nullable Set<InternalPartyPart> parts) throws AccessDeniedException, ServiceException {
 				try {
 					// les deux appels doivent prendre du temps
 					Thread.sleep(100);
-					if (parts != null && parts.contains(PartyPart.PARENTS)) {
+					if (parts != null && parts.contains(InternalPartyPart.PARENTS)) {
 						// le second appel doit prendre beaucoup de temps pour bien tester la méthode 'cacheParties'
 						Thread.sleep(1000);
 					}
@@ -1277,8 +1277,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		final ExecutorService executor = Executors.newFixedThreadPool(2);
 		try {
 			// on lance deux appels en parallèle
-			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS)), executor);
-			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS, PartyPart.PARENTS)), executor);
+			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(InternalPartyPart.VIRTUAL_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS)), executor);
+			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(InternalPartyPart.VIRTUAL_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS, InternalPartyPart.PARENTS)), executor);
 
 
 			// on vérifique que les données retournées sont correctes
@@ -1307,7 +1307,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// on fait un appel synchrone supplémentaire pour vérifier que le cache est toujours cohérent
 		{
-			final Parties parties = getParties(idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS));
+			final Parties parties = getParties(idEric, EnumSet.of(InternalPartyPart.VIRTUAL_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS));
 			assertNotNull(parties);
 			assertEquals(1, parties.getEntries().size());
 			final NaturalPerson eric = (NaturalPerson) parties.getEntries().get(0).getParty();
@@ -1335,7 +1335,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertEquals(ids.immeuble1.longValue(), landRight1.getImmovablePropertyId());
 	}
 
-	private Parties pushPrincipalAndGetParties(@NotNull String principal, int oid, @NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
+	private Parties pushPrincipalAndGetParties(@NotNull String principal, int oid, @NotNull List<Integer> ids, @Nullable Set<InternalPartyPart> parts) {
 		AuthenticationHelper.pushPrincipal(principal, oid);
 		try {
 			return getParties(ids, parts);
@@ -1345,7 +1345,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		}
 	}
 
-	private Parties getParties(@NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
+	private Parties getParties(@NotNull List<Integer> ids, @Nullable Set<InternalPartyPart> parts) {
 		try {
 			return cache.getParties(ids, parts);
 		}
@@ -1364,7 +1364,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertEquals(0, getNumberOfCalls(calls));
 
 		// parts to ask for
-		final EnumSet<PartyPart> parts = EnumSet.of(PartyPart.TAX_RESIDENCES, PartyPart.EBILLING_STATUSES, PartyPart.ADDRESSES);
+		final EnumSet<InternalPartyPart> parts = EnumSet.of(InternalPartyPart.TAX_RESIDENCES, InternalPartyPart.EBILLING_STATUSES, InternalPartyPart.ADDRESSES);
 
 		// parties to ask those parts on
 		final List<Integer> partyNos = Arrays.asList(ids.menage.intValue(), ids.eric.intValue());
@@ -1376,7 +1376,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(2, parties.getEntries().size());
 
 			assertEquals(1, getNumberOfCallsToGetParties(calls));
-			final Pair<List<Integer>, Set<PartyPart>> lastCall = getLastCallParametersToGetParties(calls);
+			final Pair<List<Integer>, Set<InternalPartyPart>> lastCall = getLastCallParametersToGetParties(calls);
 			assertEquals(partyNos, lastCall.getLeft());
 			assertEquals(parts, lastCall.getRight());
 
@@ -1420,7 +1420,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(2, parties.getEntries().size());
 
 			assertEquals(2, getNumberOfCallsToGetParties(calls));
-			final Pair<List<Integer>, Set<PartyPart>> lastCall = getLastCallParametersToGetParties(calls);
+			final Pair<List<Integer>, Set<InternalPartyPart>> lastCall = getLastCallParametersToGetParties(calls);
 			assertEquals(partyNos, lastCall.getLeft());
 			assertEquals(parts, lastCall.getRight());
 
@@ -1464,7 +1464,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(2, parties.getEntries().size());
 
 			assertEquals(3, getNumberOfCallsToGetParties(calls));
-			final Pair<List<Integer>, Set<PartyPart>> lastCall = getLastCallParametersToGetParties(calls);
+			final Pair<List<Integer>, Set<InternalPartyPart>> lastCall = getLastCallParametersToGetParties(calls);
 			assertEquals(partyNos, lastCall.getLeft());
 			assertEquals(parts, lastCall.getRight());
 
@@ -1503,8 +1503,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// appel sans la part non-gérée -> là le cache intervient sans problème
 		{
-			final Set<PartyPart> cachedParts = EnumSet.copyOf(parts);
-			cachedParts.remove(PartyPart.EBILLING_STATUSES);
+			final Set<InternalPartyPart> cachedParts = EnumSet.copyOf(parts);
+			cachedParts.remove(InternalPartyPart.EBILLING_STATUSES);
 
 			final Parties parties = cache.getParties(partyNos, cachedParts);
 			assertNotNull(parties);
@@ -1682,7 +1682,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 1. on demande le tiers une première fois
 		{
-			final Party party = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
+			final Party party = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_RESIDENCES));
 			assertNotNull(party);
 			assertEquals(new Date(1983, 4, 13), party.getActivityStartDate());
 			assertNull(party.getActivityEndDate());
@@ -1690,7 +1690,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// 2. on demande le tiers une seconde fois
 		{
-			final Party party = cache.getParty(ids.eric.intValue(), EnumSet.of(PartyPart.TAX_RESIDENCES));
+			final Party party = cache.getParty(ids.eric.intValue(), EnumSet.of(InternalPartyPart.TAX_RESIDENCES));
 			assertNotNull(party);
 			assertEquals(new Date(1983, 4, 13), party.getActivityStartDate()); // [SIFISC-5508] cette date était nulle avant la correction du bug
 			assertNull(party.getActivityEndDate());
@@ -1744,15 +1744,15 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		// classe de tâche en parallèle...
 		final class Task implements Callable<Object> {
 
-			private final Set<PartyPart> parts = buildRandomPartSet();
+			private final Set<InternalPartyPart> parts = buildRandomPartSet();
 
 			/**
 			 * Construction d'un ensemble de parts prises au hasard
 			 */
-			private Set<PartyPart> buildRandomPartSet() {
-				final PartyPart[] all = PartyPart.values();
+			private Set<InternalPartyPart> buildRandomPartSet() {
+				final InternalPartyPart[] all = InternalPartyPart.values();
 				final int nb = 3;
-				final Set<PartyPart> set = EnumSet.noneOf(PartyPart.class);
+				final Set<InternalPartyPart> set = EnumSet.noneOf(InternalPartyPart.class);
 				for (int i = 0; i < nb ; ++ i) {
 					final int index = rnd.nextInt(all.length);
 					set.add(all[index]);
@@ -1848,15 +1848,15 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		// classe de tâche en parallèle...
 		final class Task implements Callable<Object> {
 
-			private final Set<PartyPart> parts = buildRandomPartSet();
+			private final Set<InternalPartyPart> parts = buildRandomPartSet();
 
 			/**
 			 * Construction d'un ensemble de parts prises au hasard
 			 */
-			private Set<PartyPart> buildRandomPartSet() {
-				final PartyPart[] all = PartyPart.values();
+			private Set<InternalPartyPart> buildRandomPartSet() {
+				final InternalPartyPart[] all = InternalPartyPart.values();
 				final int nb = 3;
-				final Set<PartyPart> set = EnumSet.noneOf(PartyPart.class);
+				final Set<InternalPartyPart> set = EnumSet.noneOf(InternalPartyPart.class);
 				for (int i = 0; i < nb ; ++ i) {
 					final int index = rnd.nextInt(all.length);
 					set.add(all[index]);
@@ -2034,44 +2034,44 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	/**
 	 * Assert que la partie spécifiée et uniquement celle-ci est renseignée sur le tiers.
 	 */
-	private static void assertOnlyPart(PartyPart p, Party tiers) {
+	private static void assertOnlyPart(InternalPartyPart p, Party tiers) {
 
-		boolean checkAddresses = PartyPart.ADDRESSES == p;
-		boolean checkTaxLiabilities = PartyPart.TAX_LIABILITIES == p;
-		boolean checkSimplifiedTaxLiabilities = PartyPart.SIMPLIFIED_TAX_LIABILITIES == p;
-		boolean checkHouseholdMembers = PartyPart.HOUSEHOLD_MEMBERS == p;
-		boolean checkBankAccounts = PartyPart.BANK_ACCOUNTS == p;
-		boolean checkTaxDeclarations = PartyPart.TAX_DECLARATIONS == p;
-		boolean checkTaxDeclarationsStatuses = PartyPart.TAX_DECLARATIONS_STATUSES == p;
-		boolean checkTaxDeclarationsDeadlines = PartyPart.TAX_DECLARATIONS_DEADLINES == p;
-		boolean checkTaxResidences = PartyPart.TAX_RESIDENCES == p;
-		boolean checkVirtualTaxResidences = PartyPart.VIRTUAL_TAX_RESIDENCES == p;
-		boolean checkManagingTaxResidences = PartyPart.MANAGING_TAX_RESIDENCES == p;
-		boolean checkTaxationPeriods = PartyPart.TAXATION_PERIODS == p;
-		boolean checkRelationsBetweenParties = PartyPart.RELATIONS_BETWEEN_PARTIES == p;
-		boolean checkFamilyStatuses = PartyPart.FAMILY_STATUSES == p;
-		boolean checkCapitals = PartyPart.CAPITALS == p;
-		boolean checkTaxLightenings = PartyPart.TAX_LIGHTENINGS == p;
-		boolean checkLegalForms = PartyPart.LEGAL_FORMS == p;
-		boolean checkTaxSystems = PartyPart.TAX_SYSTEMS == p;
-		boolean checkLegalSeats = PartyPart.LEGAL_SEATS == p;
-		boolean checkDebtorPeriodicities = PartyPart.DEBTOR_PERIODICITIES == p;
-		boolean checkImmovableProperties = PartyPart.IMMOVABLE_PROPERTIES == p;		// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
-		boolean checkChildren = PartyPart.CHILDREN == p;
-		boolean checkParents = PartyPart.PARENTS == p;
-		boolean checkWithholdingTaxDeclarationPeriods = PartyPart.WITHHOLDING_TAXATION_PERIODS == p;
-		boolean checkEbillingStatuses = PartyPart.EBILLING_STATUSES == p;
-		boolean checkCorporationStatuses = PartyPart.CORPORATION_STATUSES == p;
-		boolean checkBusinessYears = PartyPart.BUSINESS_YEARS == p;
-		boolean checkCorporationFlags = PartyPart.CORPORATION_FLAGS == p;
-		boolean checkAgents = PartyPart.AGENTS == p;
-		boolean checkLabels = PartyPart.LABELS == p;
-		boolean checkLandRights = PartyPart.LAND_RIGHTS == p;
-		boolean checkVirtualLandRights = PartyPart.VIRTUAL_LAND_RIGHTS == p;
-		boolean checkResidencyPeriods = PartyPart.RESIDENCY_PERIODS == p;
-		boolean checkLandTaxLightenings = PartyPart.LAND_TAX_LIGHTENINGS == p;
-		boolean checkInheritanceRelationships = PartyPart.INHERITANCE_RELATIONSHIPS == p;
-		boolean checkVirtualInheritedLandRights = PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS == p;
+		boolean checkAddresses = InternalPartyPart.ADDRESSES == p;
+		boolean checkTaxLiabilities = InternalPartyPart.TAX_LIABILITIES == p;
+		boolean checkSimplifiedTaxLiabilities = InternalPartyPart.SIMPLIFIED_TAX_LIABILITIES == p;
+		boolean checkHouseholdMembers = InternalPartyPart.HOUSEHOLD_MEMBERS == p;
+		boolean checkBankAccounts = InternalPartyPart.BANK_ACCOUNTS == p;
+		boolean checkTaxDeclarations = InternalPartyPart.TAX_DECLARATIONS == p;
+		boolean checkTaxDeclarationsStatuses = InternalPartyPart.TAX_DECLARATIONS_STATUSES == p;
+		boolean checkTaxDeclarationsDeadlines = InternalPartyPart.TAX_DECLARATIONS_DEADLINES == p;
+		boolean checkTaxResidences = InternalPartyPart.TAX_RESIDENCES == p;
+		boolean checkVirtualTaxResidences = InternalPartyPart.VIRTUAL_TAX_RESIDENCES == p;
+		boolean checkManagingTaxResidences = InternalPartyPart.MANAGING_TAX_RESIDENCES == p;
+		boolean checkTaxationPeriods = InternalPartyPart.TAXATION_PERIODS == p;
+		boolean checkRelationsBetweenParties = InternalPartyPart.RELATIONS_BETWEEN_PARTIES == p;
+		boolean checkFamilyStatuses = InternalPartyPart.FAMILY_STATUSES == p;
+		boolean checkCapitals = InternalPartyPart.CAPITALS == p;
+		boolean checkTaxLightenings = InternalPartyPart.TAX_LIGHTENINGS == p;
+		boolean checkLegalForms = InternalPartyPart.LEGAL_FORMS == p;
+		boolean checkTaxSystems = InternalPartyPart.TAX_SYSTEMS == p;
+		boolean checkLegalSeats = InternalPartyPart.LEGAL_SEATS == p;
+		boolean checkDebtorPeriodicities = InternalPartyPart.DEBTOR_PERIODICITIES == p;
+		boolean checkImmovableProperties = InternalPartyPart.IMMOVABLE_PROPERTIES == p;		// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
+		boolean checkChildren = InternalPartyPart.CHILDREN == p;
+		boolean checkParents = InternalPartyPart.PARENTS == p;
+		boolean checkWithholdingTaxDeclarationPeriods = InternalPartyPart.WITHHOLDING_TAXATION_PERIODS == p;
+		boolean checkEbillingStatuses = InternalPartyPart.EBILLING_STATUSES == p;
+		boolean checkCorporationStatuses = InternalPartyPart.CORPORATION_STATUSES == p;
+		boolean checkBusinessYears = InternalPartyPart.BUSINESS_YEARS == p;
+		boolean checkCorporationFlags = InternalPartyPart.CORPORATION_FLAGS == p;
+		boolean checkAgents = InternalPartyPart.AGENTS == p;
+		boolean checkLabels = InternalPartyPart.LABELS == p;
+		boolean checkLandRights = InternalPartyPart.LAND_RIGHTS == p;
+		boolean checkVirtualLandRights = InternalPartyPart.VIRTUAL_LAND_RIGHTS == p;
+		boolean checkResidencyPeriods = InternalPartyPart.RESIDENCY_PERIODS == p;
+		boolean checkLandTaxLightenings = InternalPartyPart.LAND_TAX_LIGHTENINGS == p;
+		boolean checkInheritanceRelationships = InternalPartyPart.INHERITANCE_RELATIONSHIPS == p;
+		boolean checkVirtualInheritedLandRights = InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS == p;
 
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals

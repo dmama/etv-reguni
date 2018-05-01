@@ -61,6 +61,7 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.search.party.v7.SearchResult;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
@@ -71,6 +72,7 @@ import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
@@ -289,7 +291,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getParty(final int partyNo, final String user, final Set<PartyPart> parts) {
+	public Response getParty(final int partyNo, final String user, final Set<ch.vd.unireg.xml.party.v5.PartyPart> parts) {
 		final Supplier<String> params = () -> {
 			// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
 			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(parts);
@@ -297,7 +299,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		};
 		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final Party party = target.getParty(partyNo, parts);
+				final Set<InternalPartyPart> internalParts = DataHelper.toInternalParts(parts);
+				final Party party = target.getParty(partyNo, internalParts);
 				if (party == null) {
 					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le tiers n'existe pas."));
 				}
@@ -327,7 +330,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getParties(final String user, final List<Integer> partyNos, final Set<PartyPart> parts) {
+	public Response getParties(final String user, final List<Integer> partyNos, final Set<ch.vd.unireg.xml.party.v5.PartyPart> parts) {
 		final Supplier<String> params = () -> {
 			// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
 			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(parts);
@@ -335,7 +338,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		};
 		return execute(user, params, READ_ACCESS_LOG, () -> {
 			try {
-				final Parties parties = target.getParties(partyNos, parts);
+				final Set<InternalPartyPart> internalParts = DataHelper.toInternalParts(parts);
+				final Parties parties = target.getParties(partyNos, internalParts);
 				final int nbItems = countParties(parties.getEntries());
 				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {

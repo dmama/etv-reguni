@@ -6,20 +6,20 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
-import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.IdentificationEntreprise;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
+import ch.vd.unireg.xml.party.v5.UidNumberList;
 
 public class OtherCommunityStrategy extends TaxPayerStrategy<OtherCommunity> {
 
 	@Override
-	public OtherCommunity newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public OtherCommunity newFrom(Tiers right, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		final OtherCommunity communaute = new OtherCommunity();
 		initBase(communaute, right, context);
 		initParts(communaute, right, parts, context);
@@ -27,7 +27,7 @@ public class OtherCommunityStrategy extends TaxPayerStrategy<OtherCommunity> {
 	}
 
 	@Override
-	public OtherCommunity clone(OtherCommunity right, @Nullable Set<PartyPart> parts) {
+	public OtherCommunity clone(OtherCommunity right, @Nullable Set<InternalPartyPart> parts) {
 		final OtherCommunity communaute = new OtherCommunity();
 		copyBase(communaute, right);
 		copyParts(communaute, right, parts, CopyMode.EXCLUSIVE);

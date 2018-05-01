@@ -213,11 +213,11 @@ import ch.vd.unireg.xml.party.taxresidence.v4.TaxationPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriodType;
 import ch.vd.unireg.xml.party.v5.AdministrativeAuthorityLink;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.NaturalPersonSubtype;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyLabel;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
@@ -1639,7 +1639,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getMailAddresses().size());
 		Assert.assertEquals(0, partySans.getResidenceAddresses().size());
 
-		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.ADDRESSES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.ADDRESSES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getRepresentationAddresses());
 		Assert.assertNotNull(partyAvec.getDebtProsecutionAddressesOfOtherParty());
@@ -1873,7 +1873,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
 		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
 
-		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.TAX_RESIDENCES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.TAX_RESIDENCES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getMainTaxResidences());
 		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
@@ -1951,7 +1951,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
 		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
 
-		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.VIRTUAL_TAX_RESIDENCES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.VIRTUAL_TAX_RESIDENCES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getMainTaxResidences());
 		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
@@ -2025,7 +2025,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
 		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
 
-		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.MANAGING_TAX_RESIDENCES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.MANAGING_TAX_RESIDENCES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getMainTaxResidences());
 		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
@@ -2095,7 +2095,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNull(mcSans.getMainTaxpayer());
 		Assert.assertNull(mcSans.getSecondaryTaxpayer());
 
-		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(PartyPart.HOUSEHOLD_MEMBERS));
+		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(InternalPartyPart.HOUSEHOLD_MEMBERS));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
 
@@ -2172,7 +2172,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpSans.getTaxLiabilities());
 		Assert.assertEquals(0, tpSans.getTaxLiabilities().size());
 
-		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(PartyPart.TAX_LIABILITIES));
+		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(InternalPartyPart.TAX_LIABILITIES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
 
@@ -2241,7 +2241,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpSans.getTaxationPeriods());
 		Assert.assertEquals(0, tpSans.getTaxationPeriods().size());
 
-		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(PartyPart.TAXATION_PERIODS));
+		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(InternalPartyPart.TAXATION_PERIODS));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
 
@@ -2317,7 +2317,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpSans.getWithholdingTaxationPeriods());
 		Assert.assertEquals(0, tpSans.getWithholdingTaxationPeriods().size());
 
-		final Party partyAvec = service.getParty(ids.lui, EnumSet.of(PartyPart.WITHHOLDING_TAXATION_PERIODS));
+		final Party partyAvec = service.getParty(ids.lui, EnumSet.of(InternalPartyPart.WITHHOLDING_TAXATION_PERIODS));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 
@@ -2456,7 +2456,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(partySans.getRelationsBetweenParties());
 		Assert.assertEquals(0, partySans.getRelationsBetweenParties().size());
 
-		final Party partyAvec = service.getParty(ids.lui, EnumSet.of(PartyPart.RELATIONS_BETWEEN_PARTIES));
+		final Party partyAvec = service.getParty(ids.lui, EnumSet.of(InternalPartyPart.RELATIONS_BETWEEN_PARTIES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
 		Assert.assertEquals(2, partyAvec.getRelationsBetweenParties().size());
@@ -2528,7 +2528,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpSans.getFamilyStatuses());
 		Assert.assertEquals(0, tpSans.getFamilyStatuses().size());
 
-		final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.FAMILY_STATUSES));
+		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.FAMILY_STATUSES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 
@@ -2621,7 +2621,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getTaxDeclarations().size());
 
 		{
-			final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS));
+			final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.TAX_DECLARATIONS));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertNotNull(partyAvec.getTaxDeclarations());
 			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
@@ -2641,7 +2641,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		{
-			final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS_DEADLINES));
+			final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.TAX_DECLARATIONS_DEADLINES));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertNotNull(partyAvec.getTaxDeclarations());
 			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
@@ -2669,7 +2669,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		{
-			final Party partyAvec = service.getParty(ppId, EnumSet.of(PartyPart.TAX_DECLARATIONS_STATUSES));
+			final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.TAX_DECLARATIONS_STATUSES));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertNotNull(partyAvec.getTaxDeclarations());
 			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
@@ -2727,7 +2727,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(dpiSans.getPeriodicities());
 		Assert.assertEquals(0, dpiSans.getPeriodicities().size());
 
-		final Party partyAvec = service.getParty(dpiId, EnumSet.of(PartyPart.DEBTOR_PERIODICITIES));
+		final Party partyAvec = service.getParty(dpiId, EnumSet.of(InternalPartyPart.DEBTOR_PERIODICITIES));
 		Assert.assertNotNull(partyAvec);
 		Assert.assertEquals(Debtor.class, partyAvec.getClass());
 
@@ -2804,7 +2804,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(0, partySans.getRelationsBetweenParties().size());
 
 		{
-			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(PartyPart.PARENTS));
+			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(InternalPartyPart.PARENTS));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 
@@ -2821,7 +2821,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(rel.getCancellationDate());
 		}
 		{
-			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(PartyPart.CHILDREN));
+			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(InternalPartyPart.CHILDREN));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 			Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
@@ -2836,7 +2836,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(rel.getCancellationDate());
 		}
 		{
-			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(PartyPart.CHILDREN, PartyPart.PARENTS));
+			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(InternalPartyPart.CHILDREN, InternalPartyPart.PARENTS));
 			Assert.assertNotNull(partyAvec);
 			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
 			Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
@@ -2960,7 +2960,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Party party = service.getParty(ids.pp, EnumSet.allOf(PartyPart.class));
+		final Party party = service.getParty(ids.pp, EnumSet.allOf(InternalPartyPart.class));
 		Assert.assertNotNull(party);
 
 		{
@@ -3280,7 +3280,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Party party = service.getParty(ids.dpi, EnumSet.allOf(PartyPart.class));
+		final Party party = service.getParty(ids.dpi, EnumSet.allOf(InternalPartyPart.class));
 		Assert.assertNotNull(party);
 		{
 			Assert.assertEquals(Debtor.class, party.getClass());
@@ -3433,7 +3433,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 		assertValidInteger(idpm);
 
-		final Set<PartyPart> parts = EnumSet.allOf(PartyPart.class);
+		final Set<InternalPartyPart> parts = EnumSet.allOf(InternalPartyPart.class);
 		final Party party = service.getParty((int) idpm, parts);
 		Assert.assertNotNull(party);
 		{
@@ -3822,7 +3822,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Parties parties = service.getParties(Arrays.asList(ids.pp, ids.dpi), EnumSet.allOf(PartyPart.class));
+		final Parties parties = service.getParties(Arrays.asList(ids.pp, ids.dpi), EnumSet.allOf(InternalPartyPart.class));
 		Assert.assertNotNull(parties);
 		Assert.assertNotNull(parties.getEntries());
 		Assert.assertEquals(2, parties.getEntries().size());
@@ -4201,7 +4201,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final Parties parties = service.getParties(Arrays.asList(ids.ppHabitant, ids.ppNonHabitant), EnumSet.of(PartyPart.WITHHOLDING_TAXATION_PERIODS));
+		final Parties parties = service.getParties(Arrays.asList(ids.ppHabitant, ids.ppNonHabitant), EnumSet.of(InternalPartyPart.WITHHOLDING_TAXATION_PERIODS));
 		Assert.assertNotNull(parties);
 		Assert.assertNotNull(parties.getEntries());
 		Assert.assertEquals(2, parties.getEntries().size());
@@ -4498,7 +4498,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// interrogation
-		final Parties parties = service.getParties(Arrays.asList(ids.prn, ids.cjt, ids.mc), EnumSet.of(PartyPart.LABELS));
+		final Parties parties = service.getParties(Arrays.asList(ids.prn, ids.cjt, ids.mc), EnumSet.of(InternalPartyPart.LABELS));
 		final Map<Integer, Party> mapParties = parties.getEntries().stream()
 				.collect(Collectors.toMap(Entry::getPartyNo, Entry::getParty));
 		Assert.assertEquals(3, mapParties.size());
@@ -4674,7 +4674,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// on demande les rapports-entre-tiers
-		final Party party = service.getParty(ids.decede.intValue(), Collections.singleton(PartyPart.RELATIONS_BETWEEN_PARTIES));
+		final Party party = service.getParty(ids.decede.intValue(), Collections.singleton(InternalPartyPart.RELATIONS_BETWEEN_PARTIES));
 		Assert.assertNotNull(party);
 
 		// on doit bien recevoir tous les rapports-entre-tiers *sauf* les parentés et les relations d'héritages
@@ -4716,7 +4716,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// on demande les relations d'héritage : on ne reçoit qu'elles
-		final Party party = service.getParty(ids.decede.intValue(), Collections.singleton(PartyPart.INHERITANCE_RELATIONSHIPS));
+		final Party party = service.getParty(ids.decede.intValue(), Collections.singleton(InternalPartyPart.INHERITANCE_RELATIONSHIPS));
 		Assert.assertNotNull(party);
 
 		final List<RelationBetweenParties> relations = party.getRelationsBetweenParties();

@@ -15,21 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.party.address.v3.Address;
-import ch.vd.unireg.xml.party.address.v3.AddressOtherParty;
-import ch.vd.unireg.xml.party.address.v3.AddressType;
-import ch.vd.unireg.xml.party.relation.v4.Child;
-import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
-import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
-import ch.vd.unireg.xml.party.relation.v4.Parent;
-import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatus;
-import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
-import ch.vd.unireg.xml.party.v5.Party;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.AdministrationEntreprise;
@@ -59,10 +44,25 @@ import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ExceptionHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.address.v3.Address;
+import ch.vd.unireg.xml.party.address.v3.AddressOtherParty;
+import ch.vd.unireg.xml.party.address.v3.AddressType;
+import ch.vd.unireg.xml.party.relation.v4.Child;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
+import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatus;
+import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
 import ch.vd.unireg.xml.party.v5.BankAccountBuilder;
 import ch.vd.unireg.xml.party.v5.ForFiscalComparator;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.LabelBuilder;
 import ch.vd.unireg.xml.party.v5.ManagingTaxResidenceBuilder;
+import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.RelationBetweenPartiesBuilder;
 import ch.vd.unireg.xml.party.v5.TaxDeclarationBuilder;
 import ch.vd.unireg.xml.party.v5.TaxResidenceBuilder;
@@ -80,7 +80,7 @@ public abstract class PartyStrategy<T extends Party> {
 	 * @return un nouveau tiers
 	 * @throws ServiceException en cas de problème
 	 */
-	public abstract T newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException;
+	public abstract T newFrom(Tiers right, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException;
 
 	/**
 	 * Retourne une copie du tiers spécifié en copiant uniquement les parts spécifiées.
@@ -89,7 +89,7 @@ public abstract class PartyStrategy<T extends Party> {
 	 * @param parts les parts à copier
 	 * @return une nouvelle instance du tiers
 	 */
-	public abstract T clone(T tiers, @Nullable Set<PartyPart> parts);
+	public abstract T clone(T tiers, @Nullable Set<InternalPartyPart> parts);
 
 	/**
 	 * Ajoute les parts d'un tiers sur un autre.
@@ -98,7 +98,7 @@ public abstract class PartyStrategy<T extends Party> {
 	 * @param from  le tiers à partir duquel les parts seront copiées
 	 * @param parts les parts à copier
 	 */
-	public final void copyParts(T to, T from, @Nullable Set<PartyPart> parts) {
+	public final void copyParts(T to, T from, @Nullable Set<InternalPartyPart> parts) {
 		copyParts(to, from, parts, CopyMode.ADDITIVE);
 	}
 
@@ -131,74 +131,74 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 
-	protected void initParts(T left, Tiers tiers, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	protected void initParts(T left, Tiers tiers, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 
-		if (parts != null && parts.contains(PartyPart.BANK_ACCOUNTS)) {
+		if (parts != null && parts.contains(InternalPartyPart.BANK_ACCOUNTS)) {
 			initBankAccounts(left, context, tiers);
 		}
 
-		if (parts != null && parts.contains(PartyPart.ADDRESSES)) {
+		if (parts != null && parts.contains(InternalPartyPart.ADDRESSES)) {
 			initAddresses(left, tiers, context);
 		}
 
-		if (parts != null && (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES) ||
-				parts.contains(PartyPart.CHILDREN) ||
-				parts.contains(PartyPart.PARENTS) ||
-				parts.contains(PartyPart.INHERITANCE_RELATIONSHIPS))) {
+		if (parts != null && (parts.contains(InternalPartyPart.RELATIONS_BETWEEN_PARTIES) ||
+				parts.contains(InternalPartyPart.CHILDREN) ||
+				parts.contains(InternalPartyPart.PARENTS) ||
+				parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS))) {
 			initRelationsBetweenParties(left, tiers, parts, context);
 		}
 
-		if (parts != null && (parts.contains(PartyPart.TAX_RESIDENCES) || parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES))) {
+		if (parts != null && (parts.contains(InternalPartyPart.TAX_RESIDENCES) || parts.contains(InternalPartyPart.VIRTUAL_TAX_RESIDENCES))) {
 			initTaxResidences(left, tiers, parts, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.MANAGING_TAX_RESIDENCES)) {
+		if (parts != null && parts.contains(InternalPartyPart.MANAGING_TAX_RESIDENCES)) {
 			initManagingTaxResidences(left, tiers, context);
 		}
 
-		if (parts != null && (parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES))) {
+		if (parts != null && (parts.contains(InternalPartyPart.TAX_DECLARATIONS) || parts.contains(InternalPartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(InternalPartyPart.TAX_DECLARATIONS_DEADLINES))) {
 			initTaxDeclarations(left, tiers, parts);
 		}
 
-		if (parts != null && parts.contains(PartyPart.LABELS)) {
+		if (parts != null && parts.contains(InternalPartyPart.LABELS)) {
 			initLabels(left, tiers, context);
 		}
 	}
 
-	protected void copyParts(T to, T from, @Nullable Set<PartyPart> parts, CopyMode mode) {
+	protected void copyParts(T to, T from, @Nullable Set<InternalPartyPart> parts, CopyMode mode) {
 
 		if (parts == null) {
 			return;
 		}
 
-		if (parts.contains(PartyPart.BANK_ACCOUNTS)) {
+		if (parts.contains(InternalPartyPart.BANK_ACCOUNTS)) {
 			copyBankAccounts(to, from);
 		}
 
-		if (parts.contains(PartyPart.ADDRESSES)) {
+		if (parts.contains(InternalPartyPart.ADDRESSES)) {
 			copyAddresses(to, from);
 		}
 
-		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES) ||
-				parts.contains(PartyPart.CHILDREN) ||
-				parts.contains(PartyPart.PARENTS) ||
-				parts.contains(PartyPart.INHERITANCE_RELATIONSHIPS)) { // [SIFISC-2588]
+		if (parts.contains(InternalPartyPart.RELATIONS_BETWEEN_PARTIES) ||
+				parts.contains(InternalPartyPart.CHILDREN) ||
+				parts.contains(InternalPartyPart.PARENTS) ||
+				parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS)) { // [SIFISC-2588]
 			copyRelationsBetweenParties(to, from, parts, mode);
 		}
 
-		if ((parts.contains(PartyPart.TAX_RESIDENCES) || parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES))) {
+		if ((parts.contains(InternalPartyPart.TAX_RESIDENCES) || parts.contains(InternalPartyPart.VIRTUAL_TAX_RESIDENCES))) {
 			copyTaxResidences(to, from, parts, mode);
 		}
 
-		if (parts.contains(PartyPart.MANAGING_TAX_RESIDENCES)) {
+		if (parts.contains(InternalPartyPart.MANAGING_TAX_RESIDENCES)) {
 			copyManagingTaxResidences(to, from);
 		}
 
-		if ((parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES))) {
+		if ((parts.contains(InternalPartyPart.TAX_DECLARATIONS) || parts.contains(InternalPartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(InternalPartyPart.TAX_DECLARATIONS_DEADLINES))) {
 			copyTaxDeclarations(to, from, parts, mode);
 		}
 
-		if (parts.contains(PartyPart.LABELS)) {
+		if (parts.contains(InternalPartyPart.LABELS)) {
 			copyLabels(to, from);
 		}
 	}
@@ -289,7 +289,7 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private interface PartRelatedRelationFactory<T extends RapportEntreTiers> extends RelationFactory<T> {
-		boolean isExposed(Tiers source, @Nullable Set<PartyPart> parts);
+		boolean isExposed(Tiers source, @Nullable Set<InternalPartyPart> parts);
 	}
 
 	/**
@@ -297,8 +297,8 @@ public abstract class PartyStrategy<T extends Party> {
 	 */
 	private static final RelationFactory<Parente> CHILD_FACTORY = new PartRelatedRelationFactory<Parente>() {
 		@Override
-		public boolean isExposed(Tiers source, @Nullable Set<PartyPart> parts) {
-			return parts != null && parts.contains(PartyPart.CHILDREN) && source instanceof PersonnePhysique;
+		public boolean isExposed(Tiers source, @Nullable Set<InternalPartyPart> parts) {
+			return parts != null && parts.contains(InternalPartyPart.CHILDREN) && source instanceof PersonnePhysique;
 		}
 
 		@Override
@@ -312,8 +312,8 @@ public abstract class PartyStrategy<T extends Party> {
 	 */
 	private static final RelationFactory<Parente> PARENT_FACTORY = new PartRelatedRelationFactory<Parente>() {
 		@Override
-		public boolean isExposed(Tiers source, @Nullable Set<PartyPart> parts) {
-			return parts != null && parts.contains(PartyPart.PARENTS) && source instanceof PersonnePhysique;
+		public boolean isExposed(Tiers source, @Nullable Set<InternalPartyPart> parts) {
+			return parts != null && parts.contains(InternalPartyPart.PARENTS) && source instanceof PersonnePhysique;
 		}
 
 		@Override
@@ -327,8 +327,8 @@ public abstract class PartyStrategy<T extends Party> {
 	 */
 	private static final RelationFactory<Heritage> INHERITANCE_TO_FACTORY = new PartRelatedRelationFactory<Heritage>() {
 		@Override
-		public boolean isExposed(Tiers source, @Nullable Set<PartyPart> parts) {
-			return parts != null && parts.contains(PartyPart.INHERITANCE_RELATIONSHIPS) && source instanceof PersonnePhysique;
+		public boolean isExposed(Tiers source, @Nullable Set<InternalPartyPart> parts) {
+			return parts != null && parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS) && source instanceof PersonnePhysique;
 		}
 
 		@Override
@@ -342,8 +342,8 @@ public abstract class PartyStrategy<T extends Party> {
 	 */
 	private static final RelationFactory<Heritage> INHERITANCE_FROM_FACTORY = new PartRelatedRelationFactory<Heritage>() {
 		@Override
-		public boolean isExposed(Tiers source, @Nullable Set<PartyPart> parts) {
-			return parts != null && parts.contains(PartyPart.INHERITANCE_RELATIONSHIPS) && source instanceof PersonnePhysique;
+		public boolean isExposed(Tiers source, @Nullable Set<InternalPartyPart> parts) {
+			return parts != null && parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS) && source instanceof PersonnePhysique;
 		}
 
 		@Override
@@ -511,9 +511,9 @@ public abstract class PartyStrategy<T extends Party> {
 		return factory.build(rapport, otherId);
 	}
 
-	private static void initRelationsBetweenParties(Party party, final Tiers right, Set<PartyPart> parts, Context context) {
+	private static void initRelationsBetweenParties(Party party, final Tiers right, Set<InternalPartyPart> parts, Context context) {
 
-		final boolean all = parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES);
+		final boolean all = parts.contains(InternalPartyPart.RELATIONS_BETWEEN_PARTIES);
 
 		// on passe d'abord en revue toutes les factories pour savoir si une au moins aurait quelque chose à sortir
 		final Set<RapportEntreTiersKey> activeKeys = new HashSet<>(RELATION_FACTORIES.size());
@@ -563,12 +563,12 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 	}
 
-	private static void copyRelationsBetweenParties(Party to, Party from, Set<PartyPart> parts, CopyMode mode) {
+	private static void copyRelationsBetweenParties(Party to, Party from, Set<InternalPartyPart> parts, CopyMode mode) {
 
-		final boolean wantRelations = parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES);
-		final boolean wantChildren = parts.contains(PartyPart.CHILDREN);
-		final boolean wantParents = parts.contains(PartyPart.PARENTS);
-		final boolean wantHeirs = parts.contains(PartyPart.INHERITANCE_RELATIONSHIPS);
+		final boolean wantRelations = parts.contains(InternalPartyPart.RELATIONS_BETWEEN_PARTIES);
+		final boolean wantChildren = parts.contains(InternalPartyPart.CHILDREN);
+		final boolean wantParents = parts.contains(InternalPartyPart.PARENTS);
+		final boolean wantHeirs = parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS);
 
 		if (mode == CopyMode.ADDITIVE) {
 			if ((wantRelations && wantChildren && wantParents && wantHeirs)
@@ -632,7 +632,7 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 	}
 
-	private static void initTaxResidences(Party party, Tiers right, final Set<PartyPart> parts, Context context) {
+	private static void initTaxResidences(Party party, Tiers right, final Set<InternalPartyPart> parts, Context context) {
 
 		// le calcul de ces dates nécessite d'accéder aux fors fiscaux, initialisé ici pour des raisons de performances.
 		party.setActivityStartDate(DataHelper.coreToXMLv2(right.getDateDebutActivite()));
@@ -649,7 +649,7 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 
 		// [UNIREG-1291] ajout des fors fiscaux virtuels
-		if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES)) {
+		if (parts.contains(InternalPartyPart.VIRTUAL_TAX_RESIDENCES)) {
 			final List<ch.vd.unireg.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(right, false, context.hibernateTemplate);
 			for (ch.vd.unireg.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
 				party.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, true));
@@ -658,7 +658,7 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 	}
 
-	private static void copyTaxResidences(Party to, Party from, Set<PartyPart> parts, CopyMode mode) {
+	private static void copyTaxResidences(Party to, Party from, Set<InternalPartyPart> parts, CopyMode mode) {
 
 		// [SIFISC-5508] n'oublions pas de copier les dates de début/fin d'activité.
 		to.setActivityStartDate(from.getActivityStartDate());
@@ -670,13 +670,13 @@ public abstract class PartyStrategy<T extends Party> {
 		 * du mode de copie, il est donc nécessaire de compléter ou de filtrer les fors fiscaux.
 		 */
 		if (mode == CopyMode.ADDITIVE) {
-			if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES) || to.getMainTaxResidences() == null || to.getMainTaxResidences().isEmpty()) {
+			if (parts.contains(InternalPartyPart.VIRTUAL_TAX_RESIDENCES) || to.getMainTaxResidences() == null || to.getMainTaxResidences().isEmpty()) {
 				copyColl(to.getMainTaxResidences(), from.getMainTaxResidences());
 			}
 		}
 		else {
 			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
-			if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES)) {
+			if (parts.contains(InternalPartyPart.VIRTUAL_TAX_RESIDENCES)) {
 				copyColl(to.getMainTaxResidences(), from.getMainTaxResidences());
 			}
 			else {
@@ -708,7 +708,7 @@ public abstract class PartyStrategy<T extends Party> {
 		copyColl(to.getManagingTaxResidences(), from.getManagingTaxResidences());
 	}
 
-	private static void initTaxDeclarations(Party tiers, final Tiers right, Set<PartyPart> parts) {
+	private static void initTaxDeclarations(Party tiers, final Tiers right, Set<InternalPartyPart> parts) {
 		for (ch.vd.unireg.declaration.Declaration declaration : right.getDeclarationsTriees()) {
 			if (declaration instanceof ch.vd.unireg.declaration.DeclarationImpotSource) {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newWithholdingTaxDeclaration((ch.vd.unireg.declaration.DeclarationImpotSource) declaration, parts));
@@ -725,11 +725,11 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 	}
 
-	private static void copyTaxDeclarations(Party to, Party from, Set<PartyPart> parts, CopyMode mode) {
+	private static void copyTaxDeclarations(Party to, Party from, Set<InternalPartyPart> parts, CopyMode mode) {
 		if (mode == CopyMode.ADDITIVE) {
 			// en mode additif, on complète les déclarations si le 'from' contains les états des déclarations (et implicitement les déclarations
 			// elles-mêmes), ou si le 'to' ne contient aucune déclaration. Dans tous les autres, cas, on ne fait rien car on n'ajouterait rien si on le faisait.
-			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) || to.getTaxDeclarations() == null || to.getTaxDeclarations().isEmpty()) {
+			if (parts.contains(InternalPartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(InternalPartyPart.TAX_DECLARATIONS_DEADLINES) || to.getTaxDeclarations() == null || to.getTaxDeclarations().isEmpty()) {
 
 				// si la collection des déclarations est déjà remplie dans la destination, c'est qu'on veut ajouter une information
 				// (délais et/ou états) à une collection déjà présente (sinon, on peut recopier sans crainte...)
@@ -743,14 +743,14 @@ public abstract class PartyStrategy<T extends Party> {
 						final TaxDeclaration fromDeclaration = fromById.get(toDeclaration.getId());
 
 						// recopie des délais si demandés
-						if (parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
+						if (parts.contains(InternalPartyPart.TAX_DECLARATIONS_DEADLINES)) {
 							final List<TaxDeclarationDeadline> deadlines = toDeclaration.getDeadlines();
 							deadlines.clear();
 							deadlines.addAll(fromDeclaration.getDeadlines());
 						}
 
 						// recopie des états si demandés
-						if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
+						if (parts.contains(InternalPartyPart.TAX_DECLARATIONS_STATUSES)) {
 							final List<TaxDeclarationStatus> statuses = toDeclaration.getStatuses();
 							statuses.clear();
 							statuses.addAll(fromDeclaration.getStatuses());
@@ -762,7 +762,7 @@ public abstract class PartyStrategy<T extends Party> {
 		else {
 			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
 
-			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
+			if (parts.contains(InternalPartyPart.TAX_DECLARATIONS_STATUSES) && parts.contains(InternalPartyPart.TAX_DECLARATIONS_DEADLINES)) {
 				// on veut les déclarations et leurs états/délais => on copie tout
 				copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
 			}
@@ -771,10 +771,10 @@ public abstract class PartyStrategy<T extends Party> {
 				if (from.getTaxDeclarations() != null && !from.getTaxDeclarations().isEmpty()) {
 					deepCopyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
 					for (TaxDeclaration d : to.getTaxDeclarations()) {
-						if (!parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
+						if (!parts.contains(InternalPartyPart.TAX_DECLARATIONS_STATUSES)) {
 							d.getStatuses().clear();
 						}
-						if (!parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
+						if (!parts.contains(InternalPartyPart.TAX_DECLARATIONS_DEADLINES)) {
 							d.getDeadlines().clear();
 						}
 					}

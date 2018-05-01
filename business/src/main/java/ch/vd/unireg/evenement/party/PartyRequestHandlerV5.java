@@ -8,11 +8,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.unireg.xml.common.v2.UserLogin;
-import ch.vd.unireg.xml.event.party.party.v5.PartyRequest;
-import ch.vd.unireg.xml.event.party.party.v5.PartyResponse;
-import ch.vd.unireg.xml.party.v5.Party;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
@@ -47,7 +42,13 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v2.UserLogin;
+import ch.vd.unireg.xml.event.party.party.v5.PartyRequest;
+import ch.vd.unireg.xml.event.party.party.v5.PartyResponse;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
+import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyBuilder;
+import ch.vd.unireg.xml.party.v5.PartyPart;
 
 public class PartyRequestHandlerV5 implements RequestHandlerV2<PartyRequest> {
 
@@ -175,7 +176,7 @@ public class PartyRequestHandlerV5 implements RequestHandlerV2<PartyRequest> {
 		response.setPartyNumber(request.getPartyNumber());
 		try {
 			final Party data;
-			final Set<PartyPart> parts = DataHelper.toSet(PartyPart.class, request.getParts());
+			final Set<InternalPartyPart> parts = DataHelper.toInternalParts(DataHelper.toSet(PartyPart.class, request.getParts()));
 			if (tiers instanceof ch.vd.unireg.tiers.PersonnePhysique) {
 				final ch.vd.unireg.tiers.PersonnePhysique personne = (ch.vd.unireg.tiers.PersonnePhysique) tiers;
 				data = PartyBuilder.newNaturalPerson(personne, parts, context);

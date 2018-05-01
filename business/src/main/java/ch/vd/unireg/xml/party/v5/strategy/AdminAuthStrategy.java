@@ -6,21 +6,21 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.party.adminauth.v5.AdministrativeAuthority;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.ExceptionHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.adminauth.v5.AdministrativeAuthority;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 
 public class AdminAuthStrategy extends TaxPayerStrategy<AdministrativeAuthority> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdminAuthStrategy.class);
 
 	@Override
-	public AdministrativeAuthority newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public AdministrativeAuthority newFrom(Tiers right, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		final AdministrativeAuthority aa = new AdministrativeAuthority();
 		initBase(aa, right, context);
 		initParts(aa, right, parts, context);
@@ -28,7 +28,7 @@ public class AdminAuthStrategy extends TaxPayerStrategy<AdministrativeAuthority>
 	}
 
 	@Override
-	public AdministrativeAuthority clone(AdministrativeAuthority right, @Nullable Set<PartyPart> parts) {
+	public AdministrativeAuthority clone(AdministrativeAuthority right, @Nullable Set<InternalPartyPart> parts) {
 		final AdministrativeAuthority aa = new AdministrativeAuthority();
 		copyBase(aa, right);
 		copyParts(aa, right, parts, CopyMode.EXCLUSIVE);

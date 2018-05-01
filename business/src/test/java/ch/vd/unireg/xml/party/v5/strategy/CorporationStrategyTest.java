@@ -48,7 +48,7 @@ import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory;
-import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 
 import static ch.vd.unireg.xml.DataHelper.xmlToCore;
 import static ch.vd.unireg.xml.party.v5.LandRightBuilderTest.assertCaseIdentifier;
@@ -182,7 +182,7 @@ public class CorporationStrategyTest extends BusinessTest {
 			return null;
 		});
 
-		final Corporation absorbante = newFrom(ids.absorbee, PartyPart.LAND_RIGHTS);
+		final Corporation absorbante = newFrom(ids.absorbee, InternalPartyPart.LAND_RIGHTS);
 		final List<LandRight> landRights = absorbante.getLandRights();
 		assertNotNull(landRights);
 		assertEquals(2, landRights.size());
@@ -213,11 +213,11 @@ public class CorporationStrategyTest extends BusinessTest {
 		assertEquals(dateFusion, xmlToCore(landRight1.getDateInheritedTo())); // <-- renseignée sur les usufruits pour les personnes morales
 	}
 
-	private Corporation newFrom(long id, PartyPart... parts) throws Exception {
+	private Corporation newFrom(long id, InternalPartyPart... parts) throws Exception {
 		return doInNewTransaction(status -> {
 			final Entreprise pm = hibernateTemplate.get(Entreprise.class, id);
 			try {
-				final Set<PartyPart> p = (parts == null || parts.length == 0 ? null : new HashSet<>(Arrays.asList(parts)));
+				final Set<InternalPartyPart> p = (parts == null || parts.length == 0 ? null : new HashSet<>(Arrays.asList(parts)));
 				return strategy.newFrom(pm, p, context);
 			}
 			catch (ServiceException e) {
@@ -322,7 +322,7 @@ public class CorporationStrategyTest extends BusinessTest {
 
 				final Corporation corp = new Corporation();
 				strategy.initBase(corp, entreprise, context);
-				strategy.initParts(corp, entreprise, EnumSet.of(PartyPart.LEGAL_FORMS), context);
+				strategy.initParts(corp, entreprise, EnumSet.of(InternalPartyPart.LEGAL_FORMS), context);
 
 				// vérifions les formes légales
 				final List<LegalForm> legalForms = corp.getLegalForms();
