@@ -7,19 +7,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.xml.party.establishment.v2.Establishment;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.establishment.v2.Establishment;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 
 public class EstablishmentStrategy extends TaxPayerStrategy<Establishment> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EstablishmentStrategy.class);
 
 	@Override
-	public Establishment newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public Establishment newFrom(Tiers right, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		final Establishment e = new Establishment();
 		initBase(e, right, context);
 		initParts(e, right, parts, context);
@@ -27,7 +27,7 @@ public class EstablishmentStrategy extends TaxPayerStrategy<Establishment> {
 	}
 
 	@Override
-	public Establishment clone(Establishment right, @Nullable Set<PartyPart> parts) {
+	public Establishment clone(Establishment right, @Nullable Set<InternalPartyPart> parts) {
 		final Establishment e = new Establishment();
 		copyBase(e, right);
 		copyParts(e, right, parts, CopyMode.EXCLUSIVE);

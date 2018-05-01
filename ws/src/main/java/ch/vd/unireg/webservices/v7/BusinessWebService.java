@@ -31,9 +31,9 @@ import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
@@ -164,7 +164,7 @@ public interface BusinessWebService {
 	 * @throws ServiceException      en cas de problème à la constitution de l'entité à exporter
 	 */
 	@Nullable
-	Party getParty(int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException;
+	Party getParty(int partyNo, @Nullable Set<InternalPartyPart> parts) throws AccessDeniedException, ServiceException;
 
 	/**
 	 * Récupère les informations sur les tiers demandés
@@ -176,7 +176,7 @@ public interface BusinessWebService {
 	 * @throws ServiceException      en cas de problème à la constitution de l'entité à exporter
 	 */
 	@NotNull
-	Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException;
+	Parties getParties(List<Integer> partyNos, @Nullable Set<InternalPartyPart> parts) throws AccessDeniedException, ServiceException;
 
 	/**
 	 * @param deceasedId le numéro de contribuable du décédé

@@ -9,13 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.OrdinaryTaxDeclaration;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.PartnershipForm;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatus;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.WithholdingTaxDeclaration;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
@@ -30,6 +23,12 @@ import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.OrdinaryTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.PartnershipForm;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatus;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.WithholdingTaxDeclaration;
 
 public class TaxDeclarationBuilder {
 
@@ -40,7 +39,7 @@ public class TaxDeclarationBuilder {
 	                                                                            TypeEtatDocumentFiscal.RAPPELE,
 	                                                                            TypeEtatDocumentFiscal.SUSPENDU);
 
-	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
+	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(DeclarationImpotOrdinairePP declaration, @Nullable Set<InternalPartyPart> parts) {
 
 		final OrdinaryTaxDeclaration d = new OrdinaryTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
@@ -67,7 +66,7 @@ public class TaxDeclarationBuilder {
 		return d;
 	}
 
-	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(DeclarationImpotOrdinairePM declaration, @Nullable Set<PartyPart> parts) {
+	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(DeclarationImpotOrdinairePM declaration, @Nullable Set<InternalPartyPart> parts) {
 		final OrdinaryTaxDeclaration d = new OrdinaryTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
 		fillTaxDeclarationParts(d, declaration, parts);
@@ -76,7 +75,7 @@ public class TaxDeclarationBuilder {
 		return d;
 	}
 
-	public static WithholdingTaxDeclaration newWithholdingTaxDeclaration(DeclarationImpotSource declaration, @Nullable Set<PartyPart> parts) {
+	public static WithholdingTaxDeclaration newWithholdingTaxDeclaration(DeclarationImpotSource declaration, @Nullable Set<InternalPartyPart> parts) {
 		final WithholdingTaxDeclaration d = new WithholdingTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
 		fillTaxDeclarationParts(d, declaration, parts);
@@ -85,7 +84,7 @@ public class TaxDeclarationBuilder {
 		return d;
 	}
 
-	public static PartnershipForm newPartnershipForm(QuestionnaireSNC declaration, @Nullable Set<PartyPart> parts) {
+	public static PartnershipForm newPartnershipForm(QuestionnaireSNC declaration, @Nullable Set<InternalPartyPart> parts) {
 		final PartnershipForm f = new PartnershipForm();
 		fillTaxDeclarationBase(f, declaration);
 		fillTaxDeclarationParts(f, declaration, parts);
@@ -100,8 +99,8 @@ public class TaxDeclarationBuilder {
 		d.setTaxPeriod(TaxPeriodBuilder.newTaxPeriod(declaration.getPeriode()));
 	}
 
-	private static void fillTaxDeclarationParts(TaxDeclaration d, Declaration declaration, Set<PartyPart> parts) {
-		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
+	private static void fillTaxDeclarationParts(TaxDeclaration d, Declaration declaration, Set<InternalPartyPart> parts) {
+		if (parts != null && parts.contains(InternalPartyPart.TAX_DECLARATIONS_STATUSES)) {
 			for (EtatDeclaration etat : declaration.getEtatsDeclarationSorted()) {
 				// on n'expose pas les états qui ne sont pas connus par cette version de la XSD
 				if (ETATS_EXPOSES.contains(etat.getEtat())) {
@@ -109,7 +108,7 @@ public class TaxDeclarationBuilder {
 				}
 			}
 		}
-		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
+		if (parts != null && parts.contains(InternalPartyPart.TAX_DECLARATIONS_DEADLINES)) {
 			for (DelaiDeclaration delai : declaration.getDelaisDeclarationSorted()) {
 				// TODO c'est sans doute le moment d'exposer les autres aussi...
 				if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {

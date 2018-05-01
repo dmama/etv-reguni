@@ -63,9 +63,9 @@ import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
@@ -168,7 +168,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@Nullable
 	@Override
-	public Party getParty(final int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+	public Party getParty(final int partyNo, @Nullable Set<InternalPartyPart> parts) throws AccessDeniedException, ServiceException {
 		final GetPartyKey key = new GetPartyKey(partyNo);
 		try {
 			final Party party;
@@ -202,10 +202,10 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@NotNull
 	@Override
-	public Parties getParties(List<Integer> partyNos, @Nullable Set<PartyPart> nullableParts) throws AccessDeniedException, ServiceException {
+	public Parties getParties(List<Integer> partyNos, @Nullable Set<InternalPartyPart> nullableParts) throws AccessDeniedException, ServiceException {
 
 		final Parties parties;
-		final Set<PartyPart> parts = ensureNotNull(nullableParts);
+		final Set<InternalPartyPart> parts = ensureNotNull(nullableParts);
 
 		// récupération de tout ce qui peut l'être directement dans le cache
 		final List<Party> cachedEntries = getCachedParties(partyNos, parts);
@@ -257,8 +257,8 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	@NotNull
-	private static Set<PartyPart> ensureNotNull(@Nullable Set<PartyPart> nullableParts) {
-		final Set<PartyPart> parts = EnumSet.noneOf(PartyPart.class);
+	private static Set<InternalPartyPart> ensureNotNull(@Nullable Set<InternalPartyPart> nullableParts) {
+		final Set<InternalPartyPart> parts = EnumSet.noneOf(InternalPartyPart.class);
 		if (nullableParts != null) {
 			nullableParts.remove(null);
 			parts.addAll(nullableParts);
@@ -267,7 +267,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	@Nullable
-	private List<Party> getCachedParties(List<Integer> partyNos, Set<PartyPart> parts) {
+	private List<Party> getCachedParties(List<Integer> partyNos, Set<InternalPartyPart> parts) {
 		final List<Party> cached = new ArrayList<>(partyNos.size());
 		for (Integer id : partyNos) {
 			final GetPartyKey key = new GetPartyKey(id);
@@ -282,7 +282,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 				continue;
 			}
 
-			final Set<PartyPart> delta = value.getMissingParts(parts);
+			final Set<InternalPartyPart> delta = value.getMissingParts(parts);
 			if (delta != null && !delta.isEmpty()) {
 				continue;
 			}
@@ -293,7 +293,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		return cached.isEmpty() ? null : cached;
 	}
 
-	private void cacheParties(Parties parties, Set<PartyPart> parts) {
+	private void cacheParties(Parties parties, Set<InternalPartyPart> parts) {
 		for (Entry item : parties.getEntries()) {
 			// on ne s'intéresse pas aux erreurs...
 			final Party party = item.getParty();

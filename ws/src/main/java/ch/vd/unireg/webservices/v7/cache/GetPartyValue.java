@@ -7,33 +7,33 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.xml.party.v5.Party;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.cache.CacheValueWithParts;
 import ch.vd.unireg.cache.CompletePartsCallbackWithException;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
+import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyBuilder;
 
 /**
  * Container d'une valeur mise en cache pour un tiers sorti d'un GetParty
  */
-final class GetPartyValue extends CacheValueWithParts<Party, PartyPart> implements Serializable {
+final class GetPartyValue extends CacheValueWithParts<Party, InternalPartyPart> implements Serializable {
 
 	private static final long serialVersionUID = 2622109544331991998L;
 
 	/**
 	 * Ensemble des <i>parts</i> qui ne sont pas gérées par le cache
 	 */
-	private static final Set<PartyPart> NON_CACHED_PARTS = EnumSet.of(PartyPart.EBILLING_STATUSES);
+	private static final Set<InternalPartyPart> NON_CACHED_PARTS = EnumSet.of(InternalPartyPart.EBILLING_STATUSES);
 
 	/**
 	 * Classe interne qui permet de regrouper ensemble de <i>parts</i> et tiers dans une seule structure
 	 * afin d'être construite en une seule fois dans le constructeur de {@link GetPartyValue}
 	 */
 	private static final class PartsAndValue {
-		public final Set<PartyPart> parts;
+		public final Set<InternalPartyPart> parts;
 		public final Party value;
 
-		public PartsAndValue(Set<PartyPart> parts, Party value) {
+		public PartsAndValue(Set<InternalPartyPart> parts, Party value) {
 			this.parts = parts;
 			this.value = value;
 		}
@@ -45,29 +45,29 @@ final class GetPartyValue extends CacheValueWithParts<Party, PartyPart> implemen
 	 * @param value la valeur du tiers en entrée
 	 * @return les données d'entrée éventuellement tronquées à la partie gérable par le cache
 	 */
-	private static PartsAndValue buildPartsAndValue(Set<PartyPart> parts, Party value) {
-		final Set<PartyPart> allowedParts = getCacheablePartsIn(parts);
+	private static PartsAndValue buildPartsAndValue(Set<InternalPartyPart> parts, Party value) {
+		final Set<InternalPartyPart> allowedParts = getCacheablePartsIn(parts);
 		final Party valueForCache = PartyBuilder.clone(value, allowedParts);
 		return new PartsAndValue(allowedParts, valueForCache);
 	}
 
-	public GetPartyValue(Set<PartyPart> parts, Party value) {
+	public GetPartyValue(Set<InternalPartyPart> parts, Party value) {
 		this(buildPartsAndValue(parts, value));
 	}
 
 	private GetPartyValue(PartsAndValue partsAndValue) {
-		super(PartyPart.class, partsAndValue.parts, partsAndValue.value);
+		super(InternalPartyPart.class, partsAndValue.parts, partsAndValue.value);
 	}
 
 	@Override
-	public synchronized void addParts(Set<PartyPart> newParts, Party newValue) {
+	public synchronized void addParts(Set<InternalPartyPart> newParts, Party newValue) {
 		final PartsAndValue limited = buildPartsAndValue(newParts, newValue);
 		super.addParts(limited.parts, limited.value);
 	}
 
 	@Override
-	public synchronized Party getValueForPartsAndCompleteIfNeeded(Set<PartyPart> parts, CompletePartsCallbackWithException<Party, PartyPart> callback) throws Exception {
-		final Set<PartyPart> notAllowedParts = getNonCacheablePartsIn(parts);
+	public synchronized Party getValueForPartsAndCompleteIfNeeded(Set<InternalPartyPart> parts, CompletePartsCallbackWithException<Party, InternalPartyPart> callback) throws Exception {
+		final Set<InternalPartyPart> notAllowedParts = getNonCacheablePartsIn(parts);
 		if (notAllowedParts.isEmpty() || isNull()) {
 			return super.getValueForPartsAndCompleteIfNeeded(parts, callback);
 		}
@@ -75,23 +75,23 @@ final class GetPartyValue extends CacheValueWithParts<Party, PartyPart> implemen
 		// dans le cas où une ou plusieurs <i>parts</i> demandées ne sont pas gérées par le cache, il y a forcément des "missingParts"
 		// et celles-ci ne seront pas récupérables par un appel à <i>getValueForParts</i> mais directement depuis la <i>deltaValue</i>
 
-		final Set<PartyPart> delta = getMissingParts(parts);
+		final Set<InternalPartyPart> delta = getMissingParts(parts);
 		final Party deltaValue = callback.getDeltaValue(delta);
 		addParts(delta, deltaValue);
 
-		final Set<PartyPart> allowedParts = getCacheablePartsIn(parts);
+		final Set<InternalPartyPart> allowedParts = getCacheablePartsIn(parts);
 		final Party fromCache = getValueForParts(allowedParts);
 		copyParts(notAllowedParts, deltaValue, fromCache);
 		return fromCache;
 	}
 
 	@Override
-	protected void copyParts(Set<PartyPart> parts, Party from, Party to) {
+	protected void copyParts(Set<InternalPartyPart> parts, Party from, Party to) {
 		PartyBuilder.copyParts(to, from, parts);
 	}
 
 	@Override
-	protected Party restrictTo(Party tiers, Set<PartyPart> parts) {
+	protected Party restrictTo(Party tiers, Set<InternalPartyPart> parts) {
 		return tiers == null ? null : PartyBuilder.clone(tiers, parts);
 	}
 
@@ -101,8 +101,8 @@ final class GetPartyValue extends CacheValueWithParts<Party, PartyPart> implemen
 	 * @return ensemble (peut-être vide, mais pas <code>null</code>) des <i>parts</i> demandées non-gérées par le cache
 	 */
 	@NotNull
-	private static Set<PartyPart> getNonCacheablePartsIn(@Nullable Set<PartyPart> askedForParts) {
-		final Set<PartyPart> askedForNonCacheableParts = EnumSet.noneOf(PartyPart.class);
+	private static Set<InternalPartyPart> getNonCacheablePartsIn(@Nullable Set<InternalPartyPart> askedForParts) {
+		final Set<InternalPartyPart> askedForNonCacheableParts = EnumSet.noneOf(InternalPartyPart.class);
 		if (askedForParts != null) {
 			askedForNonCacheableParts.addAll(askedForParts);
 			askedForNonCacheableParts.retainAll(NON_CACHED_PARTS);
@@ -116,8 +116,8 @@ final class GetPartyValue extends CacheValueWithParts<Party, PartyPart> implemen
 	 * @return ensemble (peut-être vide, mais pas <code>null</code>) des <i>parts</i> demandées gérées par le cache
 	 */
 	@NotNull
-	private static Set<PartyPart> getCacheablePartsIn(@Nullable Set<PartyPart> askedForParts) {
-		final Set<PartyPart> askedForNonCacheableParts = EnumSet.noneOf(PartyPart.class);
+	private static Set<InternalPartyPart> getCacheablePartsIn(@Nullable Set<InternalPartyPart> askedForParts) {
+		final Set<InternalPartyPart> askedForNonCacheableParts = EnumSet.noneOf(InternalPartyPart.class);
 		if (askedForParts != null) {
 			askedForNonCacheableParts.addAll(askedForParts);
 			askedForNonCacheableParts.removeAll(NON_CACHED_PARTS);

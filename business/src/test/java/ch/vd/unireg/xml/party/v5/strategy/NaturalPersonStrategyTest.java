@@ -40,7 +40,7 @@ import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
 import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v4.WelfareAdvocate;
-import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 
 import static ch.vd.unireg.xml.DataHelper.xmlToCore;
 import static ch.vd.unireg.xml.party.v5.LandRightBuilderTest.assertCaseIdentifier;
@@ -98,19 +98,19 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		assertEmpty(newFrom(ids.heritier2).getRelationsBetweenParties());
 
 		// on demande la part -> on reçoit les relations
-		final NaturalPerson decede = newFrom(ids.decede, PartyPart.INHERITANCE_RELATIONSHIPS);
+		final NaturalPerson decede = newFrom(ids.decede, InternalPartyPart.INHERITANCE_RELATIONSHIPS);
 		final List<RelationBetweenParties> relationsDecedes = decede.getRelationsBetweenParties();
 		assertEquals(2, relationsDecedes.size());
 		relationsDecedes.sort(Comparator.comparing(RelationBetweenParties::getOtherPartyNumber));
 		assertInheritanceTo(ids.heritier1.intValue(), dateDeces, null, true, relationsDecedes.get(0));
 		assertInheritanceTo(ids.heritier2.intValue(), dateDeces, null, false, relationsDecedes.get(1));
 
-		final NaturalPerson heritier1 = newFrom(ids.heritier1, PartyPart.INHERITANCE_RELATIONSHIPS);
+		final NaturalPerson heritier1 = newFrom(ids.heritier1, InternalPartyPart.INHERITANCE_RELATIONSHIPS);
 		final List<RelationBetweenParties> relationsHeritier1 = heritier1.getRelationsBetweenParties();
 		assertEquals(1, relationsHeritier1.size());
 		assertInheritanceFrom(ids.decede.intValue(), dateDeces, null, true, relationsHeritier1.get(0));
 
-		final NaturalPerson heritier2 = newFrom(ids.heritier2, PartyPart.INHERITANCE_RELATIONSHIPS);
+		final NaturalPerson heritier2 = newFrom(ids.heritier2, InternalPartyPart.INHERITANCE_RELATIONSHIPS);
 		final List<RelationBetweenParties> relationsHeritier2 = heritier2.getRelationsBetweenParties();
 		assertEquals(1, relationsHeritier2.size());
 		assertInheritanceFrom(ids.decede.intValue(), dateDeces, null, false, relationsHeritier2.get(0));
@@ -161,19 +161,19 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		assertEmpty(strategy.clone(heritier2, Collections.emptySet()).getRelationsBetweenParties());
 
 		// on demande la part -> on reçoit les relations
-		final NaturalPerson cloneDecede = strategy.clone(decede, Collections.singleton(PartyPart.INHERITANCE_RELATIONSHIPS));
+		final NaturalPerson cloneDecede = strategy.clone(decede, Collections.singleton(InternalPartyPart.INHERITANCE_RELATIONSHIPS));
 		final List<RelationBetweenParties> relationsDecedes = cloneDecede.getRelationsBetweenParties();
 		assertEquals(2, relationsDecedes.size());
 		relationsDecedes.sort(Comparator.comparing(RelationBetweenParties::getOtherPartyNumber));
 		assertInheritanceTo(idHeritier1.intValue(), dateDeces, null, true, relationsDecedes.get(0));
 		assertInheritanceTo(idHeritier2.intValue(), dateDeces, null, false, relationsDecedes.get(1));
 
-		final NaturalPerson cloneHeritier1 = strategy.clone(heritier1, Collections.singleton(PartyPart.INHERITANCE_RELATIONSHIPS));
+		final NaturalPerson cloneHeritier1 = strategy.clone(heritier1, Collections.singleton(InternalPartyPart.INHERITANCE_RELATIONSHIPS));
 		final List<RelationBetweenParties> relationsHeritier1 = cloneHeritier1.getRelationsBetweenParties();
 		assertEquals(1, relationsHeritier1.size());
 		assertInheritanceFrom(idDecede.intValue(), dateDeces, null, true, relationsHeritier1.get(0));
 
-		final NaturalPerson cloneHeritier2 = strategy.clone(heritier2, Collections.singleton(PartyPart.INHERITANCE_RELATIONSHIPS));
+		final NaturalPerson cloneHeritier2 = strategy.clone(heritier2, Collections.singleton(InternalPartyPart.INHERITANCE_RELATIONSHIPS));
 		final List<RelationBetweenParties> relationsHeritier2 = cloneHeritier2.getRelationsBetweenParties();
 		assertEquals(1, relationsHeritier2.size());
 		assertInheritanceFrom(idDecede.intValue(), dateDeces, null, false, relationsHeritier2.get(0));
@@ -228,7 +228,7 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 			return null;
 		});
 
-		final NaturalPerson decede = newFrom(ids.decede, PartyPart.LAND_RIGHTS);
+		final NaturalPerson decede = newFrom(ids.decede, InternalPartyPart.LAND_RIGHTS);
 		final List<LandRight> landRights = decede.getLandRights();
 		assertNotNull(landRights);
 		assertEquals(2, landRights.size());
@@ -259,11 +259,11 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		assertNull(xmlToCore(landRight1.getDateInheritedTo())); // <-- jamais renseignée sur les usufruits pour les personnes physiques
 	}
 
-	private NaturalPerson newFrom(long id, PartyPart... parts) throws Exception {
+	private NaturalPerson newFrom(long id, InternalPartyPart... parts) throws Exception {
 		return doInNewTransaction(status -> {
 			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
 			try {
-				final Set<PartyPart> p = (parts == null || parts.length == 0 ? null : new HashSet<>(Arrays.asList(parts)));
+				final Set<InternalPartyPart> p = (parts == null || parts.length == 0 ? null : new HashSet<>(Arrays.asList(parts)));
 				return strategy.newFrom(pp, p, context);
 			}
 			catch (ServiceException e) {

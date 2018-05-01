@@ -70,9 +70,9 @@ import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.v5.BusinessYearBuilder;
 import ch.vd.unireg.xml.party.v5.CorporationFlagBuilder;
 import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.LandRightBuilder;
 import ch.vd.unireg.xml.party.v5.LandTaxLighteningBuilder;
-import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.TaxLighteningBuilder;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 
@@ -80,7 +80,7 @@ import ch.vd.unireg.xml.party.v5.UidNumberList;
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	@Override
-	public Corporation newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public Corporation newFrom(Tiers right, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		final Corporation corp = new Corporation();
 		initBase(corp, right, context);
 		initParts(corp, right, parts, context);
@@ -115,50 +115,50 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@Override
-	protected void initParts(Corporation to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	protected void initParts(Corporation to, Tiers from, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
 		final Entreprise entreprise = (Entreprise) from;
 
-		if (parts != null && parts.contains(PartyPart.CAPITALS)) {
+		if (parts != null && parts.contains(InternalPartyPart.CAPITALS)) {
 			to.getCapitals().addAll(extractCapitaux(entreprise, context));
 		}
 
-		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
+		if (parts != null && parts.contains(InternalPartyPart.CORPORATION_STATUSES)) {
 			to.getCorporationStatuses().addAll(extractEtats(entreprise.getEtatsNonAnnulesTries()));
 		}
 
-		if (parts != null && parts.contains(PartyPart.LEGAL_FORMS)) {
+		if (parts != null && parts.contains(InternalPartyPart.LEGAL_FORMS)) {
 			to.getLegalForms().addAll(extractFormesJuridiques(entreprise, context));
 		}
 
-		if (parts != null && parts.contains(PartyPart.TAX_SYSTEMS)) {
+		if (parts != null && parts.contains(InternalPartyPart.TAX_SYSTEMS)) {
 			final List<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscauxNonAnnulesTries();
 			to.getTaxSystemsVD().addAll(extractRegimesFiscaux(regimesFiscaux, RegimeFiscal.Portee.VD));
 			to.getTaxSystemsCH().addAll(extractRegimesFiscaux(regimesFiscaux, RegimeFiscal.Portee.CH));
 		}
 
-		if (parts != null && parts.contains(PartyPart.LEGAL_SEATS)) {
+		if (parts != null && parts.contains(InternalPartyPart.LEGAL_SEATS)) {
 			to.getLegalSeats().addAll(extractSieges(entreprise, context));
 		}
 
-		if (parts != null && parts.contains(PartyPart.TAX_LIGHTENINGS)) {
+		if (parts != null && parts.contains(InternalPartyPart.TAX_LIGHTENINGS)) {
 			initAllegementsFiscaux(to, entreprise);
 		}
 
-		if (parts != null && parts.contains(PartyPart.BUSINESS_YEARS)) {
+		if (parts != null && parts.contains(InternalPartyPart.BUSINESS_YEARS)) {
 			initExercicesCommerciaux(to, entreprise, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.CORPORATION_FLAGS)) {
+		if (parts != null && parts.contains(InternalPartyPart.CORPORATION_FLAGS)) {
 			initFlags(to, entreprise);
 		}
 
-		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
+		if (parts != null && (parts.contains(InternalPartyPart.LAND_RIGHTS) || parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
 			initLandRights(to, entreprise, parts, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.LAND_TAX_LIGHTENINGS)) {
+		if (parts != null && parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS)) {
 			initLandTaxLightenings(to, entreprise);
 		}
 	}
@@ -360,7 +360,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@Override
-	public Corporation clone(Corporation right, @Nullable Set<PartyPart> parts) {
+	public Corporation clone(Corporation right, @Nullable Set<InternalPartyPart> parts) {
 		final Corporation pm = new Corporation();
 		copyBase(pm, right);
 		copyParts(pm, right, parts, CopyMode.EXCLUSIVE);
@@ -375,57 +375,57 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@Override
-	protected void copyParts(Corporation to, Corporation from, @Nullable Set<PartyPart> parts, CopyMode mode) {
+	protected void copyParts(Corporation to, Corporation from, @Nullable Set<InternalPartyPart> parts, CopyMode mode) {
 		super.copyParts(to, from, parts, mode);
 
-		if (parts != null && parts.contains(PartyPart.LEGAL_SEATS)) {
+		if (parts != null && parts.contains(InternalPartyPart.LEGAL_SEATS)) {
 			copyColl(to.getLegalSeats(), from.getLegalSeats());
 		}
 
-		if (parts != null && parts.contains(PartyPart.LEGAL_FORMS)) {
+		if (parts != null && parts.contains(InternalPartyPart.LEGAL_FORMS)) {
 			copyColl(to.getLegalForms(), from.getLegalForms());
 		}
 
-		if (parts != null && parts.contains(PartyPart.CAPITALS)) {
+		if (parts != null && parts.contains(InternalPartyPart.CAPITALS)) {
 			copyColl(to.getCapitals(), from.getCapitals());
 		}
 
-		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
+		if (parts != null && parts.contains(InternalPartyPart.CORPORATION_STATUSES)) {
 			copyColl(to.getCorporationStatuses(), from.getCorporationStatuses());
 		}
 
-		if (parts != null && parts.contains(PartyPart.TAX_SYSTEMS)) {
+		if (parts != null && parts.contains(InternalPartyPart.TAX_SYSTEMS)) {
 			copyColl(to.getTaxSystemsVD(), from.getTaxSystemsVD());
 			copyColl(to.getTaxSystemsCH(), from.getTaxSystemsCH());
 		}
 
-		if (parts != null && parts.contains(PartyPart.TAX_LIGHTENINGS)) {
+		if (parts != null && parts.contains(InternalPartyPart.TAX_LIGHTENINGS)) {
 			copyColl(to.getTaxLightenings(), from.getTaxLightenings());
 		}
 
-		if (parts != null && parts.contains(PartyPart.BUSINESS_YEARS)) {
+		if (parts != null && parts.contains(InternalPartyPart.BUSINESS_YEARS)) {
 			copyColl(to.getBusinessYears(), from.getBusinessYears());
 		}
 
-		if (parts != null && parts.contains(PartyPart.CORPORATION_FLAGS)) {
+		if (parts != null && parts.contains(InternalPartyPart.CORPORATION_FLAGS)) {
 			copyColl(to.getCorporationFlags(), from.getCorporationFlags());
 		}
 
-		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
+		if (parts != null && (parts.contains(InternalPartyPart.LAND_RIGHTS) || parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
 			copyLandRights(to, from, parts, mode);
 		}
 
-		if (parts != null && parts.contains(PartyPart.LAND_TAX_LIGHTENINGS)) {
+		if (parts != null && parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS)) {
 			copyColl(to.getIfoncExemptions(), from.getIfoncExemptions());
 			copyColl(to.getIciAbatements(), from.getIciAbatements());
 			copyColl(to.getIciAbatementRequests(), from.getIciAbatementRequests());
 		}
 	}
 
-	private void initLandRights(Corporation to, Entreprise entreprise, @NotNull Set<PartyPart> parts, Context context) {
+	private void initLandRights(Corporation to, Entreprise entreprise, @NotNull Set<InternalPartyPart> parts, Context context) {
 
-		final boolean includeVirtualTransitive = parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS);
-		final boolean includeVirtualInheritance = parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS);
+		final boolean includeVirtualTransitive = parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS);
+		final boolean includeVirtualInheritance = parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS);
 		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise, includeVirtualTransitive, includeVirtualInheritance);
 
 		// [SIFISC-24999] si l'entreprise est absorbée dans une autre entreprise, on l'indique sur les droits de propriété
@@ -470,9 +470,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")
-	private static void copyLandRights(Corporation to, Corporation from, Set<PartyPart> parts, CopyMode mode) {
+	private static void copyLandRights(Corporation to, Corporation from, Set<InternalPartyPart> parts, CopyMode mode) {
 
-		if (!parts.contains(PartyPart.LAND_RIGHTS) && !parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && !parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+		if (!parts.contains(InternalPartyPart.LAND_RIGHTS) && !parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) && !parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
 			throw new IllegalArgumentException("Au moins un des parts LAND_RIGHTS, VIRTUAL_LAND_RIGHTS ou VIRTUAL_INHERITANCE_LAND_RIGHTS doit être spécifiée.");
 		}
 
@@ -481,18 +481,18 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		// du mode de copie, il est donc nécessaire de compléter ou de filtrer les droits.
 		if (mode == CopyMode.ADDITIVE) {
 			if (to.getLandRights() == null || to.getLandRights().isEmpty()
-					|| (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
+					|| (parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
 				// la collection de destination est vide (ou la source contient tous les droits), on copie tout
 				copyColl(to.getLandRights(), from.getLandRights());
 			}
-			else if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS)) {
+			else if (parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS)) {
 				// la collection de destination n'est pas vide, on ajoute uniquement les droits virtuels transitifs
 				to.getLandRights().addAll(from.getLandRights().stream()
 						                          .filter(VirtualTransitiveLandRight.class::isInstance)
 						                          .collect(Collectors.toList()));
 			}
 			else
-				if (parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+				if (parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
 				// la collection de destination n'est pas vide, on ajoute uniquement les droits virtuels hérités
 				to.getLandRights().addAll(from.getLandRights().stream()
 						                          .filter(VirtualInheritedLandRight.class::isInstance)
@@ -504,7 +504,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 		else {
 			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
-			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+			if (parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
 				// on veut tous les droits, on copie tout
 				copyColl(to.getLandRights(), from.getLandRights());
 			}
@@ -523,10 +523,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 	}
 
-	private static boolean rightMatchesPart(LandRight right, Set<PartyPart> parts) {
+	private static boolean rightMatchesPart(LandRight right, Set<InternalPartyPart> parts) {
 		return right instanceof RealLandRight
-				|| (right instanceof VirtualTransitiveLandRight && parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))
-				|| (right instanceof VirtualInheritedLandRight && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+				|| (right instanceof VirtualTransitiveLandRight && parts.contains(InternalPartyPart.VIRTUAL_LAND_RIGHTS))
+				|| (right instanceof VirtualInheritedLandRight && parts.contains(InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
 	}
 
 	void initLandTaxLightenings(Corporation to, Entreprise entreprise) {

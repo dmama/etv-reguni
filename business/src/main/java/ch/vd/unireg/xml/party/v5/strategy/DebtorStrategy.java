@@ -4,9 +4,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.xml.party.debtor.v5.Debtor;
-import ch.vd.unireg.xml.party.v5.PartyPart;
-import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.BusinessHelper;
@@ -14,12 +11,15 @@ import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.debtor.v5.Debtor;
 import ch.vd.unireg.xml.party.v5.DebtorPeriodicityBuilder;
+import ch.vd.unireg.xml.party.v5.InternalPartyPart;
+import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
 
 public class DebtorStrategy extends PartyStrategy<Debtor> {
 
 	@Override
-	public Debtor newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	public Debtor newFrom(Tiers right, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		final Debtor debiteur = new Debtor();
 		initBase(debiteur, right, context);
 		initParts(debiteur, right, parts, context);
@@ -27,7 +27,7 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 	}
 
 	@Override
-	public Debtor clone(Debtor right, @Nullable Set<PartyPart> parts) {
+	public Debtor clone(Debtor right, @Nullable Set<InternalPartyPart> parts) {
 		Debtor debiteur = new Debtor();
 		copyBase(debiteur, right);
 		copyParts(debiteur, right, parts, CopyMode.EXCLUSIVE);
@@ -66,20 +66,20 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 	}
 
 	@Override
-	protected void initParts(Debtor to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
+	protected void initParts(Debtor to, Tiers from, @Nullable Set<InternalPartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
 		final DebiteurPrestationImposable debiteur =(DebiteurPrestationImposable) from;
-		if (parts != null && parts.contains(PartyPart.DEBTOR_PERIODICITIES)) {
+		if (parts != null && parts.contains(InternalPartyPart.DEBTOR_PERIODICITIES)) {
 			initPeriodicities(to, debiteur);
 		}
 	}
 
 	@Override
-	protected void copyParts(Debtor to, Debtor from, @Nullable Set<PartyPart> parts, CopyMode mode) {
+	protected void copyParts(Debtor to, Debtor from, @Nullable Set<InternalPartyPart> parts, CopyMode mode) {
 		super.copyParts(to, from, parts, mode);
 
-		if (parts != null && parts.contains(PartyPart.DEBTOR_PERIODICITIES)) {
+		if (parts != null && parts.contains(InternalPartyPart.DEBTOR_PERIODICITIES)) {
 			copyColl(to.getPeriodicities(), from.getPeriodicities());
 		}
 	}
