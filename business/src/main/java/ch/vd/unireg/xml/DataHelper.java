@@ -46,6 +46,7 @@ import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.FormulePolitesse;
 import ch.vd.unireg.xml.address.AddressBuilder;
 import ch.vd.unireg.xml.party.v5.InternalPartyPart;
+import ch.vd.unireg.xml.party.v5.PartyPart;
 
 /**
  * Cette helper effectue la traduction des classes venant de 'core' en classes 'XML'.
@@ -1101,12 +1102,11 @@ public abstract class DataHelper {
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:
 			case RESIDENCY_PERIODS:
-				// rien à faire
-				break;
-			case LAND_RIGHTS:
-			case VIRTUAL_LAND_RIGHTS:
 			case LAND_TAX_LIGHTENINGS:
-			case VIRTUAL_INHERITANCE_LAND_RIGHTS:
+			case REAL_LAND_RIGHTS:
+			case VIRTUAL_TRANSITIVE_LAND_RIGHTS:
+			case VIRTUAL_INHERITED_REAL_LAND_RIGHTS:
+			case VIRTUAL_INHERITED_VIRTUAL_LAND_RIGHTS:
 				// rien à faire
 				break;
 			default:
@@ -1183,7 +1183,24 @@ public abstract class DataHelper {
 
 		final Set<InternalPartyPart> parts = source.stream()
 				.map(InternalPartyPart::fromPartyV5)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
+
+		// [SIFISC-28888] Cas spécial des combinaisons sur les droits
+		if (source.contains(PartyPart.LAND_RIGHTS)) {
+			parts.add(InternalPartyPart.REAL_LAND_RIGHTS);
+		}
+		if (source.contains(PartyPart.VIRTUAL_LAND_RIGHTS)) {
+			parts.add(InternalPartyPart.REAL_LAND_RIGHTS);
+			parts.add(InternalPartyPart.VIRTUAL_TRANSITIVE_LAND_RIGHTS);
+		}
+		if (source.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+			parts.add(InternalPartyPart.REAL_LAND_RIGHTS);
+			parts.add(InternalPartyPart.VIRTUAL_INHERITED_REAL_LAND_RIGHTS);
+		}
+		if (source.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && source.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+			parts.add(InternalPartyPart.VIRTUAL_INHERITED_VIRTUAL_LAND_RIGHTS);
+		}
 
 		return EnumSet.copyOf(parts);   // pour trier les parts
 	}

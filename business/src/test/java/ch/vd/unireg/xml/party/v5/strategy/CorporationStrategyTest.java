@@ -38,12 +38,17 @@ import ch.vd.unireg.type.TypeRapprochementRF;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v2.Date;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
+import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
@@ -182,7 +187,7 @@ public class CorporationStrategyTest extends BusinessTest {
 			return null;
 		});
 
-		final Corporation absorbante = newFrom(ids.absorbee, InternalPartyPart.LAND_RIGHTS);
+		final Corporation absorbante = newFrom(ids.absorbee, InternalPartyPart.REAL_LAND_RIGHTS);
 		final List<LandRight> landRights = absorbante.getLandRights();
 		assertNotNull(landRights);
 		assertEquals(2, landRights.size());
@@ -211,6 +216,46 @@ public class CorporationStrategyTest extends BusinessTest {
 		assertCaseIdentifier(61, "2000/1/1", landRight1.getCaseIdentifier());
 		assertEquals(ids.ppe, landRight1.getImmovablePropertyId());
 		assertEquals(dateFusion, xmlToCore(landRight1.getDateInheritedTo())); // <-- renseignée sur les usufruits pour les personnes morales
+	}
+
+	/**
+	 * [SIFISC-28888] Ce test vérifie que la méthode 'clone' ne retourne pas de droits virtuels d'héritage sur droits virtuels transitifs
+	 *                lorsqu'on ne demande que la part VIRTUAL_INHERITED_REAL_LAND_RIGHTS.
+	 */
+	@Test
+	public void testCloneLandRightsWithVirtualInheritanceAndTransitiveRights() {
+
+		// un droit de propriété défunt -> immeuble1
+		final LandOwnershipRight reference0 = new LandOwnershipRight(new Date(1990, 2, 12), null, "Achat", null, new CaseIdentifier(12, 2000, 23, null, 0, null, 0, null),
+		                                                             null, 123456789L, new Share(1, 1), OwnershipType.SOLE_OWNERSHIP, 0L, null, 0, 222L, new Date(2000, 1, 1), 0, null);
+		// un droit virtuel défunt -> immeuble1 -> immeuble2
+		final VirtualLandOwnershipRight reference1 = new VirtualLandOwnershipRight(new Date(1990, 2, 12), null, "Achat", null, new CaseIdentifier(12, 2000, 23, null, 0, null, 0, null),
+		                                                                           null, 444848484L, null, null, 0, new Date(2000, 1, 1), 0, null);
+
+		final Corporation from = new Corporation();
+		// un droit virtuel d'héritage sur le droit réel défunt -> immeuble1
+		from.getLandRights().add(new VirtualInheritedLandRight(new Date(2000, 1, 1), null, "Achat", null, new CaseIdentifier(12, 2000, 23, null, 0, null, 0, null),
+		                                                       null, 123456789L, 34343434L, false, null, reference0, null));
+		// un droit virtuel d'héritage sur un droit virtuel transitif défunt -> immeuble1 -> immeuble2
+		from.getLandRights().add(new VirtualInheritedLandRight(new Date(2000, 1, 1), null, "Achat", null, new CaseIdentifier(12, 2000, 23, null, 0, null, 0, null),
+		                                                       null, 444848484L, 34343434L, false, null, reference1, null));
+		final Corporation to = strategy.clone(from, EnumSet.of(InternalPartyPart.VIRTUAL_INHERITED_REAL_LAND_RIGHTS));
+
+		// on ne devrait avoir que le droit virtuel d'héritage sur le droit réel
+		final List<LandRight> toLandRights = to.getLandRights();
+		assertNotNull(toLandRights);
+		assertEquals(1, toLandRights.size());
+
+		final VirtualInheritedLandRight toLandRight0 = (VirtualInheritedLandRight) toLandRights.get(0);
+		assertNotNull(toLandRight0);
+		assertEquals(new Date(2000, 1, 1), toLandRight0.getDateFrom());
+		assertNull(toLandRight0.getDateTo());
+		assertEquals(123456789L, toLandRight0.getImmovablePropertyId());
+		assertEquals(34343434L, toLandRight0.getInheritedFromId());
+
+		final LandOwnershipRight toReference0 = (LandOwnershipRight) toLandRight0.getReference();
+		assertNotNull(toReference0);
+		assertEquals(222L, toReference0.getId());
 	}
 
 	private Corporation newFrom(long id, InternalPartyPart... parts) throws Exception {

@@ -102,6 +102,7 @@ import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
@@ -141,6 +142,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	private static class Ids {
 		public Long eric;
 		public Long debiteur;
+		public Long heritier1;
+		public Long heritier2;
+		public Long aieulEric;
 
 		public Long monsieur;
 		public Long madame;
@@ -149,6 +153,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		public Long immeuble0;
 		public Long immeuble1;
 		public Long immeuble2;
+		public Long immeuble3;
 
 		public Long batiment0;
 		public Long batiment1;
@@ -197,6 +202,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		final int noIndividuJunior = 222222;
 		final RegDate dateNaissance = date(1965, 4, 13);
 		final RegDate dateNaissanceJunior = date(2002, 3, 7);
+		final RegDate dateHeritage = date(2010, 1, 1);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -232,10 +238,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
 				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
 
+				final PersonnePhysique aieulEric = addNonHabitant("Aïeul", "Bolomey", date(1904, 3, 11), Sexe.MASCULIN);
+				addHeritage(eric, aieulEric, RegDate.get(1977, 8, 1), null, true);
+
 				final PersonnePhysique heritier1 = addNonHabitant("Germaine", "Heritier", date(1987, 7, 23), Sexe.FEMININ);
-				addHeritage(heritier1, eric, date(2010, 1, 1), null, true);
+				addHeritage(heritier1, eric, dateHeritage, null, true);
 				final PersonnePhysique heritier2 = addNonHabitant("Adelaïde", "Heritier", date(1987, 7, 23), Sexe.FEMININ);
-				addHeritage(heritier2, eric, date(2010, 1, 1), null, false);
+				addHeritage(heritier2, eric, dateHeritage, null, false);
 
 				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
 				situation.setDateDebut(date(1989, 5, 1));
@@ -251,6 +260,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				addHeritage(eric, defunt, date(1980, 1, 1), null, true);
 
 				ids.eric = eric.getNumero();
+				ids.heritier1 = heritier1.getNumero();
+				ids.heritier2 = heritier2.getNumero();
+				ids.aieulEric = aieulEric.getNumero();
 
 				// le père et l'enfant
 				final PersonnePhysique papa = addHabitant(noIndividuPapa);
@@ -280,9 +292,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
 				final ProprieteParEtageRF immeuble1 = addProprieteParEtageRF("3893882", "other egrid", new Fraction(1, 3), laSarraz, 579, 11, null, null);
 				final BienFondsRF immeuble2 = addBienFondsRF("93352512", "trois egrid", laSarraz, 12);
+				final BienFondsRF immeuble3 = addBienFondsRF("347837", "quatre egrid", laSarraz, 13);
 				ids.immeuble0 = immeuble0.getId();
 				ids.immeuble1 = immeuble1.getId();
 				ids.immeuble2 = immeuble2.getId();
+				ids.immeuble3 = immeuble3.getId();
 
 				final BatimentRF batiment0 = addBatimentRF("3838");
 				final BatimentRF batiment1 = addBatimentRF("8482");
@@ -298,13 +312,21 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				ids.communaute1 = communaute1.getId();
 				ids.communaute2 = communaute2.getId();
 
-				// un droit de propriété
-				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 216451157465L, null);
+				// Eric possède un immeuble qui possède lui-même un immeuble
+				final PersonnePhysiqueRF ericRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 216451157465L, null);
 				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
-				                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
+				                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, ericRF, immeuble0, null);
 				addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(1, 34), date(2010, 1, 1), date(2010, 1, 1), null, null,
 				                  "Constitution PPE", new IdentifiantAffaireRF(28, 2010, 208, 1), "02828289", "1");
-				addRapprochementRF(eric, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+				addRapprochementRF(eric, ericRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+
+				// L'aïeul d'Eric possèdait un immeuble qui possèdait lui-même un immeuble
+				final PersonnePhysiqueRF aieulEricRF = addPersonnePhysiqueRF("Aïeul", "Bolomey", date(1904, 3, 11), "289218921", 3722L, null);
+				addDroitPersonnePhysiqueRF(RegDate.get(1940, 3, 1), RegDate.get(1940, 2, 2), date(1980, 1, 1), date(1980, 1, 1), "Achat", "Succession", "476218937", "1",
+				                           new IdentifiantAffaireRF(3, 1940, 1, 1), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, aieulEricRF, immeuble2, null);
+				addDroitPropriete(immeuble2, immeuble3, GenrePropriete.FONDS_DOMINANT, new Fraction(1, 34), RegDate.get(1940, 3, 1), RegDate.get(1940, 2, 2), null, null,
+				                  "Achat", new IdentifiantAffaireRF(3, 1940, 1, 1), "2783771", "1");
+				addRapprochementRF(aieulEric, aieulEricRF, RegDate.get(1940, 1, 1), null, TypeRapprochementRF.MANUEL);
 
 				return null;
 			}
@@ -756,6 +778,81 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			final TaxResidence ffp = tiers.getMainTaxResidences().get(0);
 			assertEquals(new Date(1989, 5, 1), ffp.getDateFrom());
 			assertNull(ffp.getDateTo());
+		}
+	}
+
+	/**
+	 * [SIFISC-28888] Vérifie que le cache fonctionne correctement lorsque les droits de propriétés d'un contribuable qui hérite d'un défunt sont demandés successivements :
+	 * <ul>
+	 *     <li>avec les droits virtuels transitifs et d'héritage; puis</li>
+	 *     <li>avec seulement les droits virtuels d'héritage</li>
+	 * </ul>
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetPartyVirtualTransitiveAndInheritanceLandRights() throws Exception {
+
+		// 1. on demande l'héritier avec les droits virtuels transitifs et d'héritage
+		{
+			final NaturalPerson pp = (NaturalPerson) cache.getParty(ids.heritier1.intValue(), EnumSet.of(InternalPartyPart.VIRTUAL_TRANSITIVE_LAND_RIGHTS,
+			                                                                                             InternalPartyPart.VIRTUAL_INHERITED_REAL_LAND_RIGHTS,
+			                                                                                             InternalPartyPart.VIRTUAL_INHERITED_VIRTUAL_LAND_RIGHTS));
+			assertNotNull(pp);
+			final List<LandRight> landRights = pp.getLandRights();
+			assertNotNull(landRights);
+			assertEquals(2, landRights.size());
+
+			// le droit virtuel d'héritage sur le droit de propriété réel
+			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+			assertNotNull(landRight0);
+			assertEquals(new Date(2010, 1, 1), landRight0.getDateFrom());
+			assertNull(landRight0.getDateTo());
+			assertEquals(ids.eric.longValue(), landRight0.getInheritedFromId());
+			assertEquals(ids.immeuble0.longValue(), landRight0.getImmovablePropertyId());
+
+			final LandOwnershipRight reference0 = (LandOwnershipRight) landRight0.getReference();
+			assertNotNull(reference0);
+			assertEquals(new Date(2004, 4, 12), reference0.getDateFrom());
+			assertNull(reference0.getDateTo());
+			assertEquals(ids.immeuble0.longValue(), reference0.getImmovablePropertyId());
+
+			// le droit virtuel d'héritage sur le droit virtuel transitif
+			final VirtualInheritedLandRight landRight1 = (VirtualInheritedLandRight) landRights.get(1);
+			assertNotNull(landRight1);
+			assertEquals(new Date(2010, 1, 1), landRight1.getDateFrom());
+			assertNull(landRight1.getDateTo());
+			assertEquals(ids.eric.longValue(), landRight1.getInheritedFromId());
+			assertEquals(ids.immeuble1.longValue(), landRight1.getImmovablePropertyId());
+
+			final VirtualTransitiveLandRight reference1 = (VirtualTransitiveLandRight) landRight1.getReference();
+			assertNotNull(reference1);
+			assertEquals(new Date(2010, 1, 1), reference1.getDateFrom());
+			assertNull(reference1.getDateTo());
+			assertEquals(ids.immeuble1.longValue(), reference1.getImmovablePropertyId());
+		}
+
+		// 2. on demande le tiers *sans* les droits virtuels transitifs : on ne devrait recevoir que le droit demandé
+		{
+			final NaturalPerson pp = (NaturalPerson) cache.getParty(ids.heritier1.intValue(), EnumSet.of(InternalPartyPart.VIRTUAL_TRANSITIVE_LAND_RIGHTS,
+			                                                                                             InternalPartyPart.VIRTUAL_INHERITED_REAL_LAND_RIGHTS));
+			assertNotNull(pp);
+			final List<LandRight> landRights = pp.getLandRights();
+			assertNotNull(landRights);
+			assertEquals(1, landRights.size());
+
+			// le droit virtuel d'héritage sur le droit de propriété réel
+			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+			assertNotNull(landRight0);
+			assertEquals(new Date(2010, 1, 1), landRight0.getDateFrom());
+			assertNull(landRight0.getDateTo());
+			assertEquals(ids.eric.longValue(), landRight0.getInheritedFromId());
+			assertEquals(ids.immeuble0.longValue(), landRight0.getImmovablePropertyId());
+
+			final LandOwnershipRight reference0 = (LandOwnershipRight) landRight0.getReference();
+			assertNotNull(reference0);
+			assertEquals(new Date(2004, 4, 12), reference0.getDateFrom());
+			assertNull(reference0.getDateTo());
+			assertEquals(ids.immeuble0.longValue(), reference0.getImmovablePropertyId());
 		}
 	}
 
@@ -1277,9 +1374,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		final ExecutorService executor = Executors.newFixedThreadPool(2);
 		try {
 			// on lance deux appels en parallèle
-			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(InternalPartyPart.VIRTUAL_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS)), executor);
-			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(InternalPartyPart.VIRTUAL_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS, InternalPartyPart.PARENTS)), executor);
-
+			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(InternalPartyPart.REAL_LAND_RIGHTS, InternalPartyPart.VIRTUAL_TRANSITIVE_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS)), executor);
+			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> pushPrincipalAndGetParties(getDefaultOperateurName(), 22, idEric, EnumSet.of(InternalPartyPart.REAL_LAND_RIGHTS, InternalPartyPart.VIRTUAL_TRANSITIVE_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS, InternalPartyPart.PARENTS)), executor);
 
 			// on vérifique que les données retournées sont correctes
 
@@ -1307,7 +1403,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// on fait un appel synchrone supplémentaire pour vérifier que le cache est toujours cohérent
 		{
-			final Parties parties = getParties(idEric, EnumSet.of(InternalPartyPart.VIRTUAL_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS));
+			final Parties parties = getParties(idEric, EnumSet.of(InternalPartyPart.REAL_LAND_RIGHTS, InternalPartyPart.VIRTUAL_TRANSITIVE_LAND_RIGHTS, InternalPartyPart.HOUSEHOLD_MEMBERS));
 			assertNotNull(parties);
 			assertEquals(1, parties.getEntries().size());
 			final NaturalPerson eric = (NaturalPerson) parties.getEntries().get(0).getParty();
@@ -2066,18 +2162,20 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkCorporationFlags = InternalPartyPart.CORPORATION_FLAGS == p;
 		boolean checkAgents = InternalPartyPart.AGENTS == p;
 		boolean checkLabels = InternalPartyPart.LABELS == p;
-		boolean checkLandRights = InternalPartyPart.LAND_RIGHTS == p;
-		boolean checkVirtualLandRights = InternalPartyPart.VIRTUAL_LAND_RIGHTS == p;
+		boolean checkRealLandRights = InternalPartyPart.REAL_LAND_RIGHTS == p;
+		boolean checkVirtualTransitiveLandRights = InternalPartyPart.VIRTUAL_TRANSITIVE_LAND_RIGHTS == p;
+		boolean checkVirtualInheritedRealLandRights = InternalPartyPart.VIRTUAL_INHERITED_REAL_LAND_RIGHTS == p;
+		boolean checkVirtualInheritedVirtuelLandRights = InternalPartyPart.VIRTUAL_INHERITED_VIRTUAL_LAND_RIGHTS == p;
 		boolean checkResidencyPeriods = InternalPartyPart.RESIDENCY_PERIODS == p;
 		boolean checkLandTaxLightenings = InternalPartyPart.LAND_TAX_LIGHTENINGS == p;
 		boolean checkInheritanceRelationships = InternalPartyPart.INHERITANCE_RELATIONSHIPS == p;
-		boolean checkVirtualInheritedLandRights = InternalPartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS == p;
 
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
 				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
-				              || checkLandRights || checkVirtualLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships || checkVirtualInheritedLandRights, "La partie [" + p + "] est inconnue");
+				              || checkRealLandRights || checkVirtualTransitiveLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships || checkVirtualInheritedRealLandRights || checkVirtualInheritedVirtuelLandRights,
+		              "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses" + "(" + p + ")");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses" + "(" + p + ")");
@@ -2117,7 +2215,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsCH(), "taxSystemsCH" + "(" + p + ")");
 			assertNullOrNotNull(checkLegalSeats, pm.getLegalSeats(), "legalSeats" + "(" + p + ")");
 			assertNullOrNotNull(checkBusinessYears, pm.getBusinessYears(), "businessYears" + "(" + p + ")");
-			assertNullOrNotNull(checkLandRights || checkVirtualLandRights || checkVirtualInheritedLandRights, pm.getLandRights(), "landRights" + "(" + p + ")");
+			assertNullOrNotNull(checkRealLandRights || checkVirtualTransitiveLandRights || checkVirtualInheritedRealLandRights, pm.getLandRights(), "landRights" + "(" + p + ")");
 			assertNullOrNotNull(checkLandTaxLightenings, pm.getIfoncExemptions(), "ifoncExemptions" + "(" + p + ")");
 			assertNullOrNotNull(checkLandTaxLightenings, pm.getIciAbatements(), "iciAbatements" + "(" + p + ")");
 		}
@@ -2126,7 +2224,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			final NaturalPerson np = (NaturalPerson) tiers;
 			assertNullOrNotNull(checkWithholdingTaxDeclarationPeriods, np.getWithholdingTaxationPeriods(), "withholdingTaxDelarationPeriods" + "(" + p + ")");
 			assertNullOrNotNull(checkResidencyPeriods, np.getResidencyPeriods(), "residencyPeriods" + "(" + p + ")");
-			assertNullOrNotNull(checkLandRights || checkVirtualLandRights || checkVirtualInheritedLandRights, np.getLandRights(), "landRights" + "(" + p + ")");
+			assertNullOrNotNull(checkRealLandRights || checkVirtualTransitiveLandRights || checkVirtualInheritedRealLandRights || checkVirtualInheritedVirtuelLandRights, np.getLandRights(), "landRights" + "(" + p + ")");
 		}
 	}
 
