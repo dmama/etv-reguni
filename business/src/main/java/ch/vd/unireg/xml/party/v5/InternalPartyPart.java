@@ -1,9 +1,23 @@
 package ch.vd.unireg.xml.party.v5;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Représentation interne des parts possibles sur un tiers.
+ * [SIFISC-28888] Représentation interne des parts possibles sur un tiers. Cet enum est une vue <i>à plat</i> de l'enum {@link PartyPart} avec la correspondance suivante :
+ *
+ * <pre>
+ *  PartyPart                         | -                                   |  VIRTUAL_LAND_RIGHTS                    |
+ * -----------------------------------+-------------------------------------+-----------------------------------------+
+ *   -                                | -                                   |  REAL_LAND_RIGHTS                       |
+ *                                    |                                     |  VIRTUAL_TRANSITIVE_LAND_RIGHTS         |
+ * -----------------------------------+-------------------------------------+-----------------------------------------+
+ *   VIRTUAL_INHERITANCE_LAND_RIGHTS  | REAL_LAND_RIGHTS                    |  REAL_LAND_RIGHTS                       |
+ *                                    | VIRTUAL_INHERITED_REAL_LAND_RIGHTS  |  VIRTUAL_TRANSITIVE_LAND_RIGHTS         |
+ *                                    |                                     |  VIRTUAL_INHERITED_REAL_LAND_RIGHTS     |
+ *                                    |                                     |  VIRTUAL_INHERITED_VIRTUAL_LAND_RIGHTS  |
+ * -----------------------------------+-------------------------------------+-----------------------------------------+
+ * </pre>
  */
 public enum InternalPartyPart {
 	ADDRESSES,
@@ -36,13 +50,27 @@ public enum InternalPartyPart {
 	EBILLING_STATUSES,
 	AGENTS,
 	LABELS,
-	LAND_RIGHTS,
+	/**
+	 * Les droits réels du tiers.
+	 */
+	REAL_LAND_RIGHTS,
+	/**
+	 * Les droits virtuels qui correspondent aux droits d'immeubles sur d'autres immeubles.
+	 */
+	VIRTUAL_TRANSITIVE_LAND_RIGHTS,
+	/**
+	 * Les droits virtuels qui correspondent aux droits <i>réels</i> hérités d'un défunt.
+	 */
+	VIRTUAL_INHERITED_REAL_LAND_RIGHTS,
+	/**
+	 * Les droits virtuels qui correspondent aux droits <i>virtuels</i> hérités d'un défunt.
+	 */
+	VIRTUAL_INHERITED_VIRTUAL_LAND_RIGHTS,
 	RESIDENCY_PERIODS,
 	LAND_TAX_LIGHTENINGS,
-	VIRTUAL_LAND_RIGHTS,
-	INHERITANCE_RELATIONSHIPS,
-	VIRTUAL_INHERITANCE_LAND_RIGHTS;
+	INHERITANCE_RELATIONSHIPS;
 
+	@Nullable
 	public static InternalPartyPart fromPartyV5(@NotNull ch.vd.unireg.xml.party.v5.PartyPart part) {
 		switch (part) {
 		case ADDRESSES:
@@ -106,17 +134,20 @@ public enum InternalPartyPart {
 		case LABELS:
 			return LABELS;
 		case LAND_RIGHTS:
-			return LAND_RIGHTS;
+			// [SIFISC-28888] doit être interprété en combinaison avec VIRTUAL_LAND_RIGHTS et VIRTUAL_INHERITANCE_LAND_RIGHTS
+			return null;
+		case VIRTUAL_LAND_RIGHTS:
+			// [SIFISC-28888] doit être interprété en combinaison avec REAL_LAND_RIGHTS et VIRTUAL_INHERITANCE_LAND_RIGHTS
+			return null;
+		case VIRTUAL_INHERITANCE_LAND_RIGHTS:
+			// [SIFISC-28888] doit être interprété en combinaison avec REAL_LAND_RIGHTS et VIRTUAL_LAND_RIGHTS
+			return null;
 		case RESIDENCY_PERIODS:
 			return RESIDENCY_PERIODS;
 		case LAND_TAX_LIGHTENINGS:
 			return LAND_TAX_LIGHTENINGS;
-		case VIRTUAL_LAND_RIGHTS:
-			return VIRTUAL_LAND_RIGHTS;
 		case INHERITANCE_RELATIONSHIPS:
 			return INHERITANCE_RELATIONSHIPS;
-		case VIRTUAL_INHERITANCE_LAND_RIGHTS:
-			return VIRTUAL_INHERITANCE_LAND_RIGHTS;
 		default:
 			throw new IllegalArgumentException("Part inconnue = [" + part + "]");
 		}

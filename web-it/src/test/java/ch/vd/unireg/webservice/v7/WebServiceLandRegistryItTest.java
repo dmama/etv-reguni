@@ -193,6 +193,104 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 	}
 
 	/**
+	 * [SIFISC-28888] Ce test vérifie que les appels successifs suivants retournent bien des données cohérentes :
+	 * <ul>
+	 *     <li>getParty(10092818) : part=VIRTUAL_LAND_RIGHTS + VIRTUAL_INHERITANCE_LAND_RIGHTS => tous les droits virtuels hérités (sur droits réels + sur droits virtuels)</li>
+	 *     <li>getParty(10092818) : part=VIRTUAL_INHERITANCE_LAND_RIGHTS => seulement les droits virtuels sur droits réels</li>
+	 * </ul>
+	 * Situation en base :
+	 * <pre>
+	 *                        copropriété (1/4)      +-------------------------+
+	 *                     +------------------------>| Immeuble 0 (bien-fonds) | 264310664
+	 *     +-------- -+    |                         +-------------------------+
+	 *     |    PP    |----+                              ^                 ^
+	 *     | 10035633 |                                   | ppe (20/100)    :
+	 *     |          |----+                              |                 :
+	 *     +--------- +    |  individuelle (1/1)      +------------------+  :
+	 *          ^          +------------------------->| Immeuble 1 (ppe) |  : 357426403
+	 *          |                                     +------------------+  :
+	 *          |                                              ^            :
+	 *          | héritent de                                  :            :
+	 *          +---------------+                              :            :
+	 *          |               |                              :            :
+	 *     +----------+    +----------+  droit virtuel hérité  :            :
+	 *     |    PP    |    |    PP    |........................+            :
+	 *     | 10093333 |    | 10092818 |  droit virtuel hérité               :
+	 *     |          |    |          |.....................................+
+	 *     +----------+    +----------+
+	 * </pre>
+	 */
+	@Test
+	public void testGetPPVirtualLandRightsCombinations() throws Exception {
+
+		final int noHeritier = 10092818;    // Gertrude De Wit Tummers
+		final int noDecede = 10035633;      // Elisabeth Tummers-De Wit Wouter
+
+		// on demande tous les droits virtuels
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(noHeritier, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			assertNotNull(resp);
+			assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			assertNotNull(party);
+			assertEquals(NaturalPerson.class, party.getClass());
+
+			final NaturalPerson naturalPerson = (NaturalPerson) party;
+			assertEquals("De Wit Wouter", naturalPerson.getOfficialName());
+			assertEquals("Gertrude", naturalPerson.getFirstName());
+
+			final List<LandRight> landRights = naturalPerson.getLandRights();
+			assertEquals(3, landRights.size());
+
+			// le droit virtuel hérité du droit réel sur l'immeuble 0
+			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+			assertVirtualInheritedRight(noHeritier, noDecede, RegDate.get(2017, 11, 1), null, "Succession", null, 264310664, true, landRight0);
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noDecede, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
+
+			// le droit virtuel hérité du droit réel sur l'immeuble 1
+			final VirtualInheritedLandRight landRight1 = (VirtualInheritedLandRight) landRights.get(1);
+			assertVirtualInheritedRight(noHeritier, noDecede, RegDate.get(2017, 11, 1), null, "Succession", null, 357426403, true, landRight1);
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SOLE_OWNERSHIP, 1, 1, noDecede, null, 357426403, (LandOwnershipRight) landRight1.getReference());
+
+			// le droit virtuel hérité du droit virtuel transitif de l'immeuble 1 sur l'immeuble 0
+			final VirtualInheritedLandRight landRight2 = (VirtualInheritedLandRight) landRights.get(2);
+			assertVirtualInheritedRight(noHeritier, noDecede, RegDate.get(2017, 11, 1), null, "Succession", null, 264310664, true, landRight2);
+			assertVirtualLandOwnershipRight(RegDate.get(1996, 4, 16), null, "Constitution de PPE", null, 10035633, null, 264310664, (VirtualLandOwnershipRight) landRight2.getReference());
+		}
+
+		// on recommence en demandant seulement les droits virtuels d'héritage *sans* les droits virtuels transitifs
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(noHeritier, EnumSet.of(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			assertNotNull(resp);
+			assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			assertNotNull(party);
+			assertEquals(NaturalPerson.class, party.getClass());
+
+			final NaturalPerson naturalPerson = (NaturalPerson) party;
+			assertEquals("De Wit Wouter", naturalPerson.getOfficialName());
+			assertEquals("Gertrude", naturalPerson.getFirstName());
+
+			final List<LandRight> landRights = naturalPerson.getLandRights();
+			assertEquals(2, landRights.size()); // <--- avant correction du SIFISC-28888, on recevait quand même le droit virtuel hérité du droit virtuel transitif de l'immeuble 1 sur l'immeuble 0
+
+			// le droit virtuel hérité du droit réel sur l'immeuble 0
+			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+			assertVirtualInheritedRight(noHeritier, noDecede, RegDate.get(2017, 11, 1), null, "Succession", null, 264310664, true, landRight0);
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noDecede, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
+
+			// le droit virtuel hérité du droit réel sur l'immeuble 1
+			final VirtualInheritedLandRight landRight1 = (VirtualInheritedLandRight) landRights.get(1);
+			assertVirtualInheritedRight(noHeritier, noDecede, RegDate.get(2017, 11, 1), null, "Succession", null, 357426403, true, landRight1);
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SOLE_OWNERSHIP, 1, 1, noDecede, null, 357426403, (LandOwnershipRight) landRight1.getReference());
+		}
+	}
+
+	/**
 	 * <pre>
 	 *                       copropriété (1/4)      +-------------------------+
 	 *                    +------------------------>| Immeuble 0 (bien-fonds) | 264310664
@@ -267,6 +365,102 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 264310664, false, landRight0);
 			assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noAbsorbee, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
 
+			final VirtualInheritedLandRight landRight1 = (VirtualInheritedLandRight) landRights.get(1);
+			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 357426402, false, landRight1);
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Transfert", null, OwnershipType.SOLE_OWNERSHIP, 1, 1, noAbsorbee, null, 357426402, (LandOwnershipRight) landRight1.getReference());
+		}
+	}
+
+	/**
+	 * [SIFISC-28888] Ce test vérifie que les appels successifs suivants retournent bien des données cohérentes :
+	 * <ul>
+	 *     <li>getParty(666) : part=VIRTUAL_LAND_RIGHTS + VIRTUAL_INHERITANCE_LAND_RIGHTS => tous les droits virtuels hérités (sur droits réels + sur droits virtuels)</li>
+	 *     <li>getParty(666) : part=VIRTUAL_INHERITANCE_LAND_RIGHTS => seulement les droits virtuels sur droits réels</li>
+	 * </ul>
+	 * Situation en base :
+	 * <pre>
+	 *                       copropriété (1/4)      +-------------------------+
+	 *                    +------------------------>| Immeuble 0 (bien-fonds) | 264310664
+	 *     +---------+    |                         +-------------------------+
+	 *     |    PM   |----+                              ^                 ^
+	 *     |  21550  |                                   | ppe (20/100)    :
+	 *     |         |----+                              |                 :
+	 *     +---------+    |  individuelle (1/1)      +------------------+  :
+	 *          ^         +------------------------->| Immeuble 1 (ppe) |  : 357601681
+	 *          |                                    +------------------+  :
+	 *          |                                            ^             :
+	 *          | absorbe par fusion                         :             :
+	 *          |                                            :             :
+	 *     +----------+      droit virtuel hérité            :             :
+	 *     |    PM    |......................................+             :
+	 *     |   666    |      droit virtuel hérité                          :
+	 *     |          |....................................................+
+	 *     +----------+
+	 * </pre>
+	 */
+	@Test
+	public void testGetPMVirtualLandRightsCombinations() throws Exception {
+
+		final int noAbsorbante = 666;
+		final int noAbsorbee = 21550; // BIGS Architecture et Entreprise Générale S.A.
+		final RegDate dateFusion = RegDate.get(2017, 11, 1);
+
+		// on demande tous les droits virtuels
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(noAbsorbante, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			assertNotNull(resp);
+			assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			assertNotNull(party);
+			assertEquals(Corporation.class, party.getClass());
+
+			final Corporation corporation = (Corporation) party;
+			assertEquals("Frigos de Bressonnaz S.A. en liquidation", corporation.getName());
+
+			final List<LandRight> landRights = corporation.getLandRights();
+			assertEquals(3, landRights.size());
+
+			// le droit virtuel hérité du droit réel sur l'immeuble 0
+			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 264310664, false, landRight0);
+			assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noAbsorbee, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
+
+			// le droit virtuel hérité du droit réel sur l'immeuble 1
+			final VirtualInheritedLandRight landRight1 = (VirtualInheritedLandRight) landRights.get(1);
+			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 357426402, false, landRight1);
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Transfert", null, OwnershipType.SOLE_OWNERSHIP, 1, 1, noAbsorbee, null, 357426402, (LandOwnershipRight) landRight1.getReference());
+
+			// le droit virtuel hérité du droit virtuel transitif de l'immeuble 1 sur l'immeuble 0
+			final VirtualInheritedLandRight landRight2 = (VirtualInheritedLandRight) landRights.get(2);
+			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 264310664, false, landRight2);
+			assertVirtualLandOwnershipRight(RegDate.get(1996, 4, 16), null, "Constitution de PPE", null, 21550, null, 264310664, (VirtualLandOwnershipRight) landRight2.getReference());
+		}
+
+		// on recommence en demandant seulement les droits virtuels d'héritage *sans* les droits virtuels transitifs
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(noAbsorbante, EnumSet.of(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			assertNotNull(resp);
+			assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			assertNotNull(party);
+			assertEquals(Corporation.class, party.getClass());
+
+			final Corporation corporation = (Corporation) party;
+			assertEquals("Frigos de Bressonnaz S.A. en liquidation", corporation.getName());
+
+			final List<LandRight> landRights = corporation.getLandRights();
+			assertEquals(2, landRights.size()); // <--- avant correction du SIFISC-28888, on recevait quand même le droit virtuel hérité du droit virtuel transitif de l'immeuble 1 sur l'immeuble 0
+
+			// le droit virtuel hérité du droit réel sur l'immeuble 0
+			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 264310664, false, landRight0);
+			assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noAbsorbee, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
+
+			// le droit virtuel hérité du droit réel sur l'immeuble 1
 			final VirtualInheritedLandRight landRight1 = (VirtualInheritedLandRight) landRights.get(1);
 			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 357426402, false, landRight1);
 			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Transfert", null, OwnershipType.SOLE_OWNERSHIP, 1, 1, noAbsorbee, null, 357426402, (LandOwnershipRight) landRight1.getReference());
