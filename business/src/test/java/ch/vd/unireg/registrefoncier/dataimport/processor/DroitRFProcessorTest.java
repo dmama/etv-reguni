@@ -1904,10 +1904,10 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(6, droits.size());
 			droits.sort(new DroitRFRangeMetierComparator());
 
-			// le droit de la première communauté doit être fermé au 22.11.2016
-			final DroitProprieteCommunauteRF droit0 = (DroitProprieteCommunauteRF) droits.get(0);
+			// le droit d'Andrès doit être fermé au 22.11.2016
+			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
 			assertNotNull(droit0);
-			assertEquals("8af806fc40347c370141502e2d5d1516", droit0.getMasterIdRF());
+			assertEquals("8af806fc40347c370141502e2d5e1518", droit0.getMasterIdRF());
 			assertEquals("8af806fc40347c370141502e2d5d1513", droit0.getVersionIdRF());
 			assertEquals(dateImportInitial, droit0.getDateDebut());
 			assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
@@ -1915,15 +1915,16 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(dateAchat, droit0.getDateFinMetier());
 			assertEquals("Succession", droit0.getMotifDebut());
 			assertEquals("Vente", droit0.getMotifFin());
-			assertEquals(idRFCommunaute1, droit0.getAyantDroit().getIdRF());
+			assertEquals(idRFAndres, droit0.getAyantDroit().getIdRF());
 			assertEquals(idImmeubleRF, droit0.getImmeuble().getIdRF());
+			assertEquals(idRFCommunaute1, droit0.getCommunaute().getIdRF());
 			assertEquals(new Fraction(1, 1), droit0.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit0.getRegime());
 
-			// le droit d'Andrès doit être fermé au 22.11.2016
+			// le droit d'Odette doit être fermé au 22.11.2016
 			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
 			assertNotNull(droit1);
-			assertEquals("8af806fc40347c370141502e2d5e1518", droit1.getMasterIdRF());
+			assertEquals("8af806fc40347c370141502e6cef151d", droit1.getMasterIdRF());
 			assertEquals("8af806fc40347c370141502e2d5d1513", droit1.getVersionIdRF());
 			assertEquals(dateImportInitial, droit1.getDateDebut());
 			assertEquals(dateSecondImport.getOneDayBefore(), droit1.getDateFin());
@@ -1931,16 +1932,16 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(dateAchat, droit1.getDateFinMetier());
 			assertEquals("Succession", droit1.getMotifDebut());
 			assertEquals("Vente", droit1.getMotifFin());
-			assertEquals(idRFAndres, droit1.getAyantDroit().getIdRF());
+			assertEquals(idRFOdette, droit1.getAyantDroit().getIdRF());
 			assertEquals(idImmeubleRF, droit1.getImmeuble().getIdRF());
 			assertEquals(idRFCommunaute1, droit1.getCommunaute().getIdRF());
 			assertEquals(new Fraction(1, 1), droit1.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit1.getRegime());
 
-			// le droit d'Odette doit être fermé au 22.11.2016
-			final DroitProprietePersonnePhysiqueRF droit2 = (DroitProprietePersonnePhysiqueRF) droits.get(2);
+			// le droit de la première communauté doit être fermé au 22.11.2016
+			final DroitProprieteCommunauteRF droit2 = (DroitProprieteCommunauteRF) droits.get(2);
 			assertNotNull(droit2);
-			assertEquals("8af806fc40347c370141502e6cef151d", droit2.getMasterIdRF());
+			assertEquals("8af806fc40347c370141502e2d5d1516", droit2.getMasterIdRF());
 			assertEquals("8af806fc40347c370141502e2d5d1513", droit2.getVersionIdRF());
 			assertEquals(dateImportInitial, droit2.getDateDebut());
 			assertEquals(dateSecondImport.getOneDayBefore(), droit2.getDateFin());
@@ -1948,16 +1949,15 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(dateAchat, droit2.getDateFinMetier());
 			assertEquals("Succession", droit2.getMotifDebut());
 			assertEquals("Vente", droit2.getMotifFin());
-			assertEquals(idRFOdette, droit2.getAyantDroit().getIdRF());
+			assertEquals(idRFCommunaute1, droit2.getAyantDroit().getIdRF());
 			assertEquals(idImmeubleRF, droit2.getImmeuble().getIdRF());
-			assertEquals(idRFCommunaute1, droit2.getCommunaute().getIdRF());
 			assertEquals(new Fraction(1, 1), droit2.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit2.getRegime());
 
-			// le droit de la seconde communauté doit être ouvert au 22.11.2016
-			final DroitProprieteCommunauteRF droit3 = (DroitProprieteCommunauteRF) droits.get(3);
+			// le nouveau droit d'Odette doit être ouvert au 22.11.2016
+			final DroitProprietePersonnePhysiqueRF droit3 = (DroitProprietePersonnePhysiqueRF) droits.get(3);
 			assertNotNull(droit3);
-			assertEquals("8af8064d58e34c5a0159cf79c9b71925", droit3.getMasterIdRF());
+			assertEquals("8af8064d58e34c5a0159cf79eaf2192d", droit3.getMasterIdRF());
 			assertEquals("8af8064d58e34c5a0159cf79c9b71922", droit3.getVersionIdRF());
 			assertEquals(dateSecondImport, droit3.getDateDebut());
 			assertNull(droit3.getDateFin());
@@ -1965,15 +1965,16 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertNull(droit3.getDateFinMetier());
 			assertEquals("Achat", droit3.getMotifDebut());
 			assertNull(droit3.getMotifFin());
-			assertEquals(idRFCommunaute2, droit3.getAyantDroit().getIdRF());
+			assertEquals(idRFOdette, droit3.getAyantDroit().getIdRF());
+			assertEquals(idRFCommunaute2, droit3.getCommunaute().getIdRF());
 			assertEquals(idImmeubleRF, droit3.getImmeuble().getIdRF());
 			assertEquals(new Fraction(1, 1), droit3.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit3.getRegime());
 
-			// le nouveau droit d'Odette doit être ouvert au 22.11.2016
+			// le droit de Carlos doit être ouvert au 22.11.2016
 			final DroitProprietePersonnePhysiqueRF droit4 = (DroitProprietePersonnePhysiqueRF) droits.get(4);
 			assertNotNull(droit4);
-			assertEquals("8af8064d58e34c5a0159cf79eaf2192d", droit4.getMasterIdRF());
+			assertEquals("8af8064d58e34c5a0159cf79c9b71927", droit4.getMasterIdRF());
 			assertEquals("8af8064d58e34c5a0159cf79c9b71922", droit4.getVersionIdRF());
 			assertEquals(dateSecondImport, droit4.getDateDebut());
 			assertNull(droit4.getDateFin());
@@ -1981,16 +1982,16 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertNull(droit4.getDateFinMetier());
 			assertEquals("Achat", droit4.getMotifDebut());
 			assertNull(droit4.getMotifFin());
-			assertEquals(idRFOdette, droit4.getAyantDroit().getIdRF());
+			assertEquals(idRFCarlos, droit4.getAyantDroit().getIdRF());
 			assertEquals(idRFCommunaute2, droit4.getCommunaute().getIdRF());
 			assertEquals(idImmeubleRF, droit4.getImmeuble().getIdRF());
 			assertEquals(new Fraction(1, 1), droit4.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit4.getRegime());
 
-			// le droit de Carlos doit être ouvert au 22.11.2016
-			final DroitProprietePersonnePhysiqueRF droit5 = (DroitProprietePersonnePhysiqueRF) droits.get(5);
+			// le droit de la seconde communauté doit être ouvert au 22.11.2016
+			final DroitProprieteCommunauteRF droit5 = (DroitProprieteCommunauteRF) droits.get(5);
 			assertNotNull(droit5);
-			assertEquals("8af8064d58e34c5a0159cf79c9b71927", droit5.getMasterIdRF());
+			assertEquals("8af8064d58e34c5a0159cf79c9b71925", droit5.getMasterIdRF());
 			assertEquals("8af8064d58e34c5a0159cf79c9b71922", droit5.getVersionIdRF());
 			assertEquals(dateSecondImport, droit5.getDateDebut());
 			assertNull(droit5.getDateFin());
@@ -1998,8 +1999,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertNull(droit5.getDateFinMetier());
 			assertEquals("Achat", droit5.getMotifDebut());
 			assertNull(droit5.getMotifFin());
-			assertEquals(idRFCarlos, droit5.getAyantDroit().getIdRF());
-			assertEquals(idRFCommunaute2, droit5.getCommunaute().getIdRF());
+			assertEquals(idRFCommunaute2, droit5.getAyantDroit().getIdRF());
 			assertEquals(idImmeubleRF, droit5.getImmeuble().getIdRF());
 			assertEquals(new Fraction(1, 1), droit5.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit5.getRegime());
@@ -2242,10 +2242,10 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(6, droits.size());
 			droits.sort(new DroitRFRangeMetierComparator());
 
-			// le droit de la première communauté est inchangé
-			final DroitProprieteCommunauteRF droit0 = (DroitProprieteCommunauteRF) droits.get(0);
+			// le droit d'Andrès est inchangé
+			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
 			assertNotNull(droit0);
-			assertEquals("8af806fc40347c370141502e2d5d1516", droit0.getMasterIdRF());
+			assertEquals("8af806fc40347c370141502e2d5e1518", droit0.getMasterIdRF());
 			assertEquals("8af806fc40347c370141502e2d5d1513", droit0.getVersionIdRF());
 			assertEquals(dateImportInitial, droit0.getDateDebut());
 			assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
@@ -2253,15 +2253,16 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(dateAchat, droit0.getDateFinMetier());
 			assertEquals("Succession", droit0.getMotifDebut());
 			assertEquals("Vente", droit0.getMotifFin());
-			assertEquals(idRFCommunaute1, droit0.getAyantDroit().getIdRF());
+			assertEquals(idRFAndres, droit0.getAyantDroit().getIdRF());
 			assertEquals(idImmeubleRF, droit0.getImmeuble().getIdRF());
+			assertEquals(idRFCommunaute1, droit0.getCommunaute().getIdRF());
 			assertEquals(new Fraction(1, 1), droit0.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit0.getRegime());
 
-			// le droit d'Andrès est inchangé
+			// le droit d'Odette est inchangé
 			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
 			assertNotNull(droit1);
-			assertEquals("8af806fc40347c370141502e2d5e1518", droit1.getMasterIdRF());
+			assertEquals("8af806fc40347c370141502e6cef151d", droit1.getMasterIdRF());
 			assertEquals("8af806fc40347c370141502e2d5d1513", droit1.getVersionIdRF());
 			assertEquals(dateImportInitial, droit1.getDateDebut());
 			assertEquals(dateSecondImport.getOneDayBefore(), droit1.getDateFin());
@@ -2269,16 +2270,16 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(dateAchat, droit1.getDateFinMetier());
 			assertEquals("Succession", droit1.getMotifDebut());
 			assertEquals("Vente", droit1.getMotifFin());
-			assertEquals(idRFAndres, droit1.getAyantDroit().getIdRF());
+			assertEquals(idRFOdette, droit1.getAyantDroit().getIdRF());
 			assertEquals(idImmeubleRF, droit1.getImmeuble().getIdRF());
 			assertEquals(idRFCommunaute1, droit1.getCommunaute().getIdRF());
 			assertEquals(new Fraction(1, 1), droit1.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit1.getRegime());
 
-			// le droit d'Odette est inchangé
-			final DroitProprietePersonnePhysiqueRF droit2 = (DroitProprietePersonnePhysiqueRF) droits.get(2);
+			// le droit de la première communauté est inchangé
+			final DroitProprieteCommunauteRF droit2 = (DroitProprieteCommunauteRF) droits.get(2);
 			assertNotNull(droit2);
-			assertEquals("8af806fc40347c370141502e6cef151d", droit2.getMasterIdRF());
+			assertEquals("8af806fc40347c370141502e2d5d1516", droit2.getMasterIdRF());
 			assertEquals("8af806fc40347c370141502e2d5d1513", droit2.getVersionIdRF());
 			assertEquals(dateImportInitial, droit2.getDateDebut());
 			assertEquals(dateSecondImport.getOneDayBefore(), droit2.getDateFin());
@@ -2286,16 +2287,15 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(dateAchat, droit2.getDateFinMetier());
 			assertEquals("Succession", droit2.getMotifDebut());
 			assertEquals("Vente", droit2.getMotifFin());
-			assertEquals(idRFOdette, droit2.getAyantDroit().getIdRF());
+			assertEquals(idRFCommunaute1, droit2.getAyantDroit().getIdRF());
 			assertEquals(idImmeubleRF, droit2.getImmeuble().getIdRF());
-			assertEquals(idRFCommunaute1, droit2.getCommunaute().getIdRF());
 			assertEquals(new Fraction(1, 1), droit2.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit2.getRegime());
 
-			// le droit de la seconde communauté est inchangé
-			final DroitProprieteCommunauteRF droit3 = (DroitProprieteCommunauteRF) droits.get(3);
+			// la raison d'acquisition "Achat" du droit d'Odette doit être annulée mais le reste du droit doit être inchangé
+			final DroitProprietePersonnePhysiqueRF droit3 = (DroitProprietePersonnePhysiqueRF) droits.get(3);
 			assertNotNull(droit3);
-			assertEquals("8af8064d58e34c5a0159cf79c9b71925", droit3.getMasterIdRF());
+			assertEquals("8af8064d58e34c5a0159cf79eaf2192d", droit3.getMasterIdRF());
 			assertEquals("8af8064d58e34c5a0159cf79c9b71922", droit3.getVersionIdRF());
 			assertEquals(dateSecondImport, droit3.getDateDebut());
 			assertNull(droit3.getDateFin());
@@ -2303,29 +2303,13 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertNull(droit3.getDateFinMetier());
 			assertEquals("Achat", droit3.getMotifDebut());
 			assertNull(droit3.getMotifFin());
-			assertEquals(idRFCommunaute2, droit3.getAyantDroit().getIdRF());
+			assertEquals(idRFOdette, droit3.getAyantDroit().getIdRF());
+			assertEquals(idRFCommunaute2, droit3.getCommunaute().getIdRF());
 			assertEquals(idImmeubleRF, droit3.getImmeuble().getIdRF());
 			assertEquals(new Fraction(1, 1), droit3.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit3.getRegime());
 
-			// la raison d'acquisition "Achat" du droit d'Odette doit être annulée mais le reste du droit doit être inchangé
-			final DroitProprietePersonnePhysiqueRF droit4 = (DroitProprietePersonnePhysiqueRF) droits.get(4);
-			assertNotNull(droit4);
-			assertEquals("8af8064d58e34c5a0159cf79eaf2192d", droit4.getMasterIdRF());
-			assertEquals("8af8064d58e34c5a0159cf79c9b71922", droit4.getVersionIdRF());
-			assertEquals(dateSecondImport, droit4.getDateDebut());
-			assertNull(droit4.getDateFin());
-			assertEquals(dateAchat, droit4.getDateDebutMetier());
-			assertNull(droit4.getDateFinMetier());
-			assertEquals("Achat", droit4.getMotifDebut());
-			assertNull(droit4.getMotifFin());
-			assertEquals(idRFOdette, droit4.getAyantDroit().getIdRF());
-			assertEquals(idRFCommunaute2, droit4.getCommunaute().getIdRF());
-			assertEquals(idImmeubleRF, droit4.getImmeuble().getIdRF());
-			assertEquals(new Fraction(1, 1), droit4.getPart());
-			assertEquals(GenrePropriete.COMMUNE, droit4.getRegime());
-
-			final List<RaisonAcquisitionRF> raisonsAcquisitionOdette = new ArrayList<>(droit4.getRaisonsAcquisition());
+			final List<RaisonAcquisitionRF> raisonsAcquisitionOdette = new ArrayList<>(droit3.getRaisonsAcquisition());
 			assertEquals(2, raisonsAcquisitionOdette.size());
 			raisonsAcquisitionOdette.sort(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition));
 			final RaisonAcquisitionRF raison0 = raisonsAcquisitionOdette.get(0);
@@ -2340,9 +2324,26 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals("Achat", raison1.getMotifAcquisition());
 
 			// le droit de Carlos est inchangé
-			final DroitProprietePersonnePhysiqueRF droit5 = (DroitProprietePersonnePhysiqueRF) droits.get(5);
+			final DroitProprietePersonnePhysiqueRF droit4 = (DroitProprietePersonnePhysiqueRF) droits.get(4);
+			assertNotNull(droit4);
+			assertEquals("8af8064d58e34c5a0159cf79c9b71927", droit4.getMasterIdRF());
+			assertEquals("8af8064d58e34c5a0159cf79c9b71922", droit4.getVersionIdRF());
+			assertEquals(dateSecondImport, droit4.getDateDebut());
+			assertNull(droit4.getDateFin());
+			assertEquals(dateAchat, droit4.getDateDebutMetier());
+			assertNull(droit4.getDateFinMetier());
+			assertEquals("Achat", droit4.getMotifDebut());
+			assertNull(droit4.getMotifFin());
+			assertEquals(idRFCarlos, droit4.getAyantDroit().getIdRF());
+			assertEquals(idRFCommunaute2, droit4.getCommunaute().getIdRF());
+			assertEquals(idImmeubleRF, droit4.getImmeuble().getIdRF());
+			assertEquals(new Fraction(1, 1), droit4.getPart());
+			assertEquals(GenrePropriete.COMMUNE, droit4.getRegime());
+
+			// le droit de la seconde communauté est inchangé
+			final DroitProprieteCommunauteRF droit5 = (DroitProprieteCommunauteRF) droits.get(5);
 			assertNotNull(droit5);
-			assertEquals("8af8064d58e34c5a0159cf79c9b71927", droit5.getMasterIdRF());
+			assertEquals("8af8064d58e34c5a0159cf79c9b71925", droit5.getMasterIdRF());
 			assertEquals("8af8064d58e34c5a0159cf79c9b71922", droit5.getVersionIdRF());
 			assertEquals(dateSecondImport, droit5.getDateDebut());
 			assertNull(droit5.getDateFin());
@@ -2350,8 +2351,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertNull(droit5.getDateFinMetier());
 			assertEquals("Achat", droit5.getMotifDebut());
 			assertNull(droit5.getMotifFin());
-			assertEquals(idRFCarlos, droit5.getAyantDroit().getIdRF());
-			assertEquals(idRFCommunaute2, droit5.getCommunaute().getIdRF());
+			assertEquals(idRFCommunaute2, droit5.getAyantDroit().getIdRF());
 			assertEquals(idImmeubleRF, droit5.getImmeuble().getIdRF());
 			assertEquals(new Fraction(1, 1), droit5.getPart());
 			assertEquals(GenrePropriete.COMMUNE, droit5.getRegime());

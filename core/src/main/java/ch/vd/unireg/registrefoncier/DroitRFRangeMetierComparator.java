@@ -1,7 +1,9 @@
 package ch.vd.unireg.registrefoncier;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -23,11 +25,7 @@ public class DroitRFRangeMetierComparator implements Comparator<DroitRF> {
 		if (c != 0) {
 			return c;
 		}
-		c = compareStatus(o1, o2);
-		if (c != 0) {
-			return c;
-		}
-		c = o1.getTypeDroit().compareTo(o2.getTypeDroit());
+		c = compareTypeDroit(o1, o2);
 		if (c != 0) {
 			return c;
 		}
@@ -42,18 +40,58 @@ public class DroitRFRangeMetierComparator implements Comparator<DroitRF> {
 		return c;
 	}
 
-	private static int compareStatus(DroitRF o1, DroitRF o2) {
-		final boolean o1Virtuel = o1 instanceof DroitVirtuelRF;
-		final boolean o2Virtuel = o2 instanceof DroitVirtuelRF;
+	private static final Map<Class<? extends DroitRF>, Integer> statusRanking = new HashMap<>();
+	static {
+		int rank = 0;
+		// ordre d'apparition des droits selon leurs types
+		statusRanking.put(DroitProprietePersonnePhysiqueRF.class, rank++);
+		statusRanking.put(DroitProprietePersonneMoraleRF.class, rank++);
+		statusRanking.put(DroitProprieteCommunauteRF.class, rank++);
+		statusRanking.put(DroitProprieteImmeubleRF.class, rank++);
+		statusRanking.put(UsufruitRF.class, rank++);
+		statusRanking.put(DroitHabitationRF.class, rank++);
+		statusRanking.put(DroitProprieteVirtuelRF.class, rank++);
+		statusRanking.put(UsufruitVirtuelRF.class, rank++);
+		statusRanking.put(DroitVirtuelHeriteRF.class, rank);
+	}
 
-		if (o1Virtuel == o2Virtuel) {
-			return 0;
-		}
-		else if (o1Virtuel) {
-			return 1;   // les droits virtuels à la fin
+	private static int compareTypeDroit(DroitRF o1, DroitRF o2) {
+		final Class<? extends DroitRF> class1 = o1.getClass();
+		final Class<? extends DroitRF> class2 = o2.getClass();
+		if (class1 == class2) {
+			// les classes sont identiques
+			if (o1 instanceof DroitVirtuelHeriteRF) {
+				// pour les droits virtuels hérités, on les trie ensuite en fonction de leurs droits de référence
+				return compareTypeDroit(((DroitVirtuelHeriteRF) o1).getReference(), ((DroitVirtuelHeriteRF) o2).getReference());
+			}
+			else if (o1 instanceof DroitVirtuelTransitifRF) {
+				// pour les droits virtuels transitifs, on les trie ensuite en fonction de leurs chemins
+				final List<DroitRF> chemin1 = ((DroitVirtuelTransitifRF) o1).getChemin();
+				final List<DroitRF> chemin2 = ((DroitVirtuelTransitifRF) o2).getChemin();
+				int c = Integer.compare(chemin1.size(), chemin2.size());
+				if (c != 0) {
+					// le chemin le plus court en premier
+					return c;
+				}
+				for (int i = 0; i < chemin1.size(); i++) {
+					final DroitRF c1 = chemin1.get(i);
+					final DroitRF c2 = chemin2.get(i);
+					c = compareTypeDroit(c1, c2);
+					if (c != 0) {
+						return c;
+					}
+				}
+				// les chemins sont identiques
+				return 0;
+			}
+			else {
+				// pour les autres droits, on les considère identiques au niveau de leurs types
+				return 0;
+			}
 		}
 		else {
-			return -1;
+			// les classes sont différentes, on trie selon les classes
+			return Integer.compare(statusRanking.get(class1), statusRanking.get(class2));
 		}
 	}
 
