@@ -147,62 +147,33 @@
 			<null />                                        <!-- IDE_DESACTIVE -->
 		</row>
 		<row>
-			<value>PersonnePhysique</value>
-			<value>12345678</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>2008-01-01 00:00:00.0</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>de Noblebois Charles</value>
-			<value>0</value>
-			<value>0</value>
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<null />
-			<value>0</value>
-			<null />
-			<value>de Noblebois</value>
-			<null />
-			<null />
-			<null />
-			<value>Charles</value>
-			<null />
-			<value>Charles Edouard</value>
-			<null />
-			<null />
-			<null />
+			<value>PersonnePhysique</value>                 <!-- TIERS_TYPE -->
+			<value>12345678</value>                         <!-- NUMERO -->
+			<null />                                        <!-- ANNULATION_DATE -->
+			<null />                                        <!-- ANNULATION_USER -->
+			<null />                                        <!-- LOG_CDATE -->
+			<null />                                        <!-- LOG_CUSER -->
+			<value>2008-01-01 00:00:00.0</value>            <!-- LOG_MDATE -->
+			<null />                                        <!-- LOG_MUSER -->
+			<null />                                        <!-- ADRESSE_BIC_SWIFT -->
+			<null />                                        <!-- ADRESSE_EMAIL -->
+			<null />                                        <!-- BLOC_REMB_AUTO -->
+			<value>de Noblebois Charles</value>             <!-- COMPLEMENT_NOM -->
+			<value>0</value>                                <!-- DEBITEUR_INACTIF -->
+			<value>0</value>                                <!-- INDEX_DIRTY -->
+			<null />                                        <!-- NUMERO_COMPTE_BANCAIRE -->
+			<value>0</value>                                <!-- PP_HABITANT -->
+			<null />                                        <!-- MAJORITE_TRAITEE -->
+			<value>de Noblebois</value>                     <!-- NH_NOM -->
+			<null />                                        <!-- NH_NUMERO_ASSURE_SOCIAL -->
+			<null />                                        <!-- NUMERO_INDIVIDU -->
+			<null />                                        <!-- NH_NO_OFS_NATIONALITE -->
+			<value>Charles</value>                          <!-- NH_PRENOM -->
+			<null />                                        <!-- NH_SEXE -->
+			<value>Charles Edouard</value>                  <!-- NH_TOUS_PRENOMS -->
+			<null />                                        <!-- DPI_ACI_HC -->
+			<null />                                        <!-- IDE_DIRTY -->
+			<null />                                        <!-- IDE_DESACTIVE -->
 		</row>
 		<row>
 			<value>Entreprise</value>                          <!-- TIERS_TYPE -->
