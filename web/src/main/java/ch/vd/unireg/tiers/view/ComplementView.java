@@ -1,12 +1,12 @@
 package ch.vd.unireg.tiers.view;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.iban.IbanValidator;
-import ch.vd.unireg.tiers.CompteBancaire;
-import ch.vd.unireg.tiers.CoordonneesFinancieres;
-import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 
 /**
@@ -14,24 +14,17 @@ import ch.vd.unireg.tiers.Tiers;
  */
 public class ComplementView {
 
-	private String personneContact;
-	private String complementNom;
-	private String numeroTelephonePrive;
-	private String numeroTelephonePortable;
-	private String numeroTelephoneProfessionnel;
-	private String numeroTelecopie;
-	private String adresseCourrierElectronique;
+	private final String personneContact;
+	private final String complementNom;
+	private final String numeroTelephonePrive;
+	private final String numeroTelephonePortable;
+	private final String numeroTelephoneProfessionnel;
+	private final String numeroTelecopie;
+	private final String adresseCourrierElectronique;
+	private final List<CoordonneesFinancieresView> coordonneesFinancieres;
+	private final Boolean blocageRemboursementAutomatique;
 
-	private CompteBancaireView compteBancaire = new CompteBancaireView();
-
-	private Boolean blocageRemboursementAutomatique;
-
-	private Long ancienNumeroSourcier;
-
-	public ComplementView() {
-	}
-
-	public ComplementView(@NotNull Tiers tiers, @NotNull IbanValidator ibanValidator) {
+	public ComplementView(@NotNull Tiers tiers, boolean coordonneesHisto, @NotNull IbanValidator ibanValidator) {
 
 		// nom
 		this.personneContact = tiers.getPersonneContact();
@@ -44,119 +37,49 @@ public class ComplementView {
 		this.numeroTelephoneProfessionnel = tiers.getNumeroTelephoneProfessionnel();
 		this.adresseCourrierElectronique = tiers.getAdresseCourrierElectronique();
 
-		// compte bancaire
-		final CoordonneesFinancieres coords = tiers.getCoordonneesFinancieresCourantes();
-		if (coords != null) {
-			final CompteBancaire compteBancaire = coords.getCompteBancaire();
-			final String iban = (compteBancaire == null ? null : compteBancaire.getIban());
-			final String bicSwift = (compteBancaire == null ? null : compteBancaire.getBicSwift());
-			final String ibanValidationMessage = verifierIban(iban, ibanValidator); // [UNIREG-2582]
-			final String titulaire = coords.getTitulaire();
-			this.compteBancaire = new CompteBancaireView(null, null, tiers.getNumero(), titulaire, null, null, null, iban, ibanValidationMessage, bicSwift);
-		}
-
-		if (tiers instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			this.ancienNumeroSourcier = pp.getAncienNumeroSourcier();
-		}
+		// coordonnées financières
+		this.coordonneesFinancieres = tiers.getCoordonneesFinancieres().stream()
+				.filter(c -> c.isValidAt(null) || coordonneesHisto)
+				.sorted(new AnnulableHelper.AnnulableDateRangeComparator<>(true))
+				.map(c -> new CoordonneesFinancieresView(c, ibanValidator))
+				.collect(Collectors.toList());
 
 		this.blocageRemboursementAutomatique = tiers.getBlocageRemboursementAutomatique();
-	}
-
-	/**
-	 * Permet renseigner la view sur le fait que l'iban du tiers associé est valide ou pas
-	 *
-	 * @param iban          l'iban à vérifier
-	 * @param ibanValidator le validator d'iban
-	 * @return <code>null</code> si l'IBAN est valide, explication textuelle de l'erreur sinon
-	 */
-	private static String verifierIban(String iban, IbanValidator ibanValidator) {
-		if (StringUtils.isNotBlank(iban)) {
-			return ibanValidator.getIbanValidationError(iban);
-		}
-		return null;
 	}
 
 	public String getPersonneContact() {
 		return personneContact;
 	}
 
-	public void setPersonneContact(String personneContact) {
-		this.personneContact = personneContact;
-	}
-
 	public String getComplementNom() {
 		return complementNom;
-	}
-
-	public void setComplementNom(String complementNom) {
-		this.complementNom = complementNom;
 	}
 
 	public String getNumeroTelephonePrive() {
 		return numeroTelephonePrive;
 	}
 
-	public void setNumeroTelephonePrive(String numeroTelephonePrive) {
-		this.numeroTelephonePrive = numeroTelephonePrive;
-	}
-
 	public String getNumeroTelephonePortable() {
 		return numeroTelephonePortable;
-	}
-
-	public void setNumeroTelephonePortable(String numeroTelephonePortable) {
-		this.numeroTelephonePortable = numeroTelephonePortable;
 	}
 
 	public String getNumeroTelephoneProfessionnel() {
 		return numeroTelephoneProfessionnel;
 	}
 
-	public void setNumeroTelephoneProfessionnel(String numeroTelephoneProfessionnel) {
-		this.numeroTelephoneProfessionnel = numeroTelephoneProfessionnel;
-	}
-
 	public String getNumeroTelecopie() {
 		return numeroTelecopie;
-	}
-
-	public void setNumeroTelecopie(String numeroTelecopie) {
-		this.numeroTelecopie = numeroTelecopie;
 	}
 
 	public String getAdresseCourrierElectronique() {
 		return adresseCourrierElectronique;
 	}
 
-	public void setAdresseCourrierElectronique(String adresseCourrierElectronique) {
-		this.adresseCourrierElectronique = adresseCourrierElectronique;
-	}
-
-	/**
-	 * @return le compte bancaire du tiers courant.
-	 */
-	public CompteBancaireView getCompteBancaire() {
-		return compteBancaire;
-	}
-
-	public void setCompteBancaire(CompteBancaireView compteBancaire) {
-		this.compteBancaire = compteBancaire;
+	public List<CoordonneesFinancieresView> getCoordonneesFinancieres() {
+		return coordonneesFinancieres;
 	}
 
 	public Boolean getBlocageRemboursementAutomatique() {
 		return blocageRemboursementAutomatique;
-	}
-
-	public void setBlocageRemboursementAutomatique(Boolean blocageRemboursementAutomatique) {
-		this.blocageRemboursementAutomatique = blocageRemboursementAutomatique;
-	}
-
-	public Long getAncienNumeroSourcier() {
-		return ancienNumeroSourcier;
-	}
-
-	public void setAncienNumeroSourcier(Long ancienNumeroSourcier) {
-		this.ancienNumeroSourcier = ancienNumeroSourcier;
 	}
 }

@@ -106,6 +106,7 @@ import ch.vd.unireg.tiers.ConseilLegal;
 import ch.vd.unireg.tiers.ContactImpotSource;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.Curatelle;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.DecisionAci;
@@ -209,6 +210,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		// à compléter...
 		childToParentRelationships.put(AdresseTiers.class, Tiers.class);
+		childToParentRelationships.put(CoordonneesFinancieres.class, Tiers.class);
 		childToParentRelationships.put(Declaration.class, Tiers.class);
 		childToParentRelationships.put(ForFiscal.class, Tiers.class);
 		childToParentRelationships.put(Remarque.class, Tiers.class);

@@ -28,7 +28,7 @@ import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.LiteralStringHelper;
 import ch.vd.unireg.common.NumeroIDEHelper;
 import ch.vd.unireg.complements.ComplementsEditCommunicationsView;
-import ch.vd.unireg.complements.ComplementsEditCoordonneesFinancieresView;
+import ch.vd.unireg.complements.CoordonneesFinancieresEditView;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidator;
@@ -538,7 +538,7 @@ public class TiersCreateController {
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
 	}
 
-	private void setComplementCoordFinanciere(@NotNull Tiers tiers, @NotNull ComplementsEditCoordonneesFinancieresView view) {
+	private void setComplementCoordFinanciere(@NotNull Tiers tiers, @NotNull CoordonneesFinancieresEditView view) {
 		final String iban = IbanHelper.normalize(view.getIban());
 		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(view.getAdresseBicSwift()));
 		final String titulaire = view.getTitulaireCompteBancaire();

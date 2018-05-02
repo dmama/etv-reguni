@@ -5,14 +5,14 @@
 <c:set var="lengthnumcompte" value="<%=LengthConstants.TIERS_NUMCOMPTE%>" scope="request" />
 <c:set var="lengthpersonne" value="<%=LengthConstants.TIERS_PERSONNE%>" scope="request" />
 <c:set var="lengthbic" value="<%=LengthConstants.TIERS_ADRESSEBICSWIFT%>" scope="request" />
-<%--@elvariable id="editCoords" type="ch.vd.unireg.complements.CoordonneesFinancieresEditView"--%>
+<%--@elvariable id="addCoords" type="ch.vd.unireg.complements.CoordonneesFinancieresEditView"--%>
 <%--@elvariable id="mode" type="java.lang.String"--%>
 <%--@elvariable id="tiersId" type="java.lang.Long"--%>
 <unireg:setAuth var="autorisations" tiersId="${tiersId}"/>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
-		<fmt:message key="title.edition.complements.coordfinancieres" />
+		<fmt:message key="title.ajout.complements.coordfinancieres" />
 	</tiles:put>
 
 	<tiles:put name="fichierAide">
@@ -23,9 +23,8 @@
 
 	<tiles:put name="body">
 
-		<form:form method="post" name="theForm" commandName="editCoords" action="edit.do">
+		<form:form method="post" name="theForm" commandName="addCoords">
 			<form:hidden path="id"/>
-			<form:hidden path="dateDebut"/>
 
 			<fieldset>
 				<legend><span><fmt:message key="label.complement.coordFinancieres" /></span></legend>
@@ -33,8 +32,11 @@
 				<table>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="30%"><fmt:message key="label.date.debut"/>&nbsp;:</td>
-						<td width="70%">
-							<unireg:regdate regdate="${editCoords.dateDebut}"/>
+ 						<td width="70%">
+							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+								<jsp:param name="path" value="dateDebut" />
+								<jsp:param name="id" value="dateDebut" />
+							</jsp:include>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >

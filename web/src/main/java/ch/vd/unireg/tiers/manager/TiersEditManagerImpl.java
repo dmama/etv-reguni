@@ -66,7 +66,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 
 		setTiersGeneralView(tiersEditView, tiers);
-		tiersEditView.setComplement(buildComplement(tiers));
+		tiersEditView.setComplement(buildComplement(tiers, false));
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
@@ -118,7 +118,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			throw new TiersNotFoundException(numero);
 		}
 		Assert.isInstanceOf(DebiteurPrestationImposable.class, tiers);
-		return new DebiteurEditView((DebiteurPrestationImposable) tiers, ibanValidator);
+		return new DebiteurEditView((DebiteurPrestationImposable) tiers);
 	}
 
 	@Override
@@ -218,7 +218,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 
 		setTiersGeneralView(tiersEditView, tiers);
-		tiersEditView.setComplement(buildComplement(tiers));
+		tiersEditView.setComplement(buildComplement(tiers, false));
 
 		if( oldTiers != null) {
 			BeanUtils.simpleMerge(tiers, oldTiers);

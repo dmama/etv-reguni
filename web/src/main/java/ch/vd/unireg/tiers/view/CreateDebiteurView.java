@@ -1,7 +1,7 @@
 package ch.vd.unireg.tiers.view;
 
 import ch.vd.unireg.complements.ComplementsEditCommunicationsView;
-import ch.vd.unireg.complements.ComplementsEditCoordonneesFinancieresView;
+import ch.vd.unireg.complements.CoordonneesFinancieresEditView;
 
 public class CreateDebiteurView {
 
@@ -9,7 +9,7 @@ public class CreateDebiteurView {
 	private Long idCtbAssocie;
 	private final DebiteurFiscalView fiscal = new DebiteurFiscalView();
 	private final ComplementsEditCommunicationsView complementCommunication = new ComplementsEditCommunicationsView();
-	private final ComplementsEditCoordonneesFinancieresView complementCoordFinanciere = new ComplementsEditCoordonneesFinancieresView();
+	private final CoordonneesFinancieresEditView complementCoordFinanciere = new CoordonneesFinancieresEditView();
 
 	public Long getId() {
 		return id;
@@ -35,7 +35,7 @@ public class CreateDebiteurView {
 		return complementCommunication;
 	}
 
-	public ComplementsEditCoordonneesFinancieresView getComplementCoordFinanciere() {
+	public CoordonneesFinancieresEditView getComplementCoordFinanciere() {
 		return complementCoordFinanciere;
 	}
 }

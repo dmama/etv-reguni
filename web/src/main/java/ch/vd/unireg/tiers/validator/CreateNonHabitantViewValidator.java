@@ -4,7 +4,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.unireg.complements.ComplementsEditCommunicationsValidator;
-import ch.vd.unireg.complements.ComplementsEditCoordonneesFinancieresValidator;
+import ch.vd.unireg.complements.EditCoordonneesFinancieresValidator;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.tiers.view.CreateNonHabitantView;
 
@@ -12,12 +12,12 @@ public class CreateNonHabitantViewValidator implements Validator {
 
 	private final NonHabitantCivilViewValidator civilViewValidator;
 	private final ComplementsEditCommunicationsValidator cpltCommViewValidator;
-	private final ComplementsEditCoordonneesFinancieresValidator cpltCoordFinViewValidator;
+	private final EditCoordonneesFinancieresValidator cpltCoordFinViewValidator;
 
 	public CreateNonHabitantViewValidator(IbanValidator ibanValidator) {
 		this.civilViewValidator = new NonHabitantCivilViewValidator();
 		this.cpltCommViewValidator = new ComplementsEditCommunicationsValidator();
-		this.cpltCoordFinViewValidator = new ComplementsEditCoordonneesFinancieresValidator(ibanValidator);
+		this.cpltCoordFinViewValidator = new EditCoordonneesFinancieresValidator(ibanValidator);
 	}
 
 	@Override

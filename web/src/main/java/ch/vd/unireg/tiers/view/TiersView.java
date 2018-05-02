@@ -55,7 +55,7 @@ public class TiersView {
 
 	private TiersGeneralView tiersGeneral;
 
-	private ComplementView complement = new ComplementView();
+	private ComplementView complement;
 
 	// deprecated : car il ne s'agit pas d'une vue (risque de lazy init exception)
 	@Deprecated

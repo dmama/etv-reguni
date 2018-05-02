@@ -725,7 +725,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		};
 
 		// on met-à-jour les coordonnées financières
-		coordonneesFinancieresService.updateCoordonneesFinancieres(entreprise, titulaireCompte, iban, RegDate.get(), notifier);
+		coordonneesFinancieresService.detectAndUpdateCoordonneesFinancieres(entreprise, titulaireCompte, iban, RegDate.get(), notifier);
 	}
 
 	/**

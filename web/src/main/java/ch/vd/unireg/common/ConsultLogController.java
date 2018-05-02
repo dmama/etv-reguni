@@ -34,6 +34,7 @@ import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.PrincipalCommunauteRF;
 import ch.vd.unireg.reqdes.UniteTraitement;
 import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.DecisionAci;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.DonneeCivileEntreprise;
@@ -63,6 +64,7 @@ public class ConsultLogController {
 		AdresseTiers(AdresseTiers.class),
 		AllegementFiscal(AllegementFiscal.class),
 		AutreDocumentFiscal(AutreDocumentFiscal.class),
+		CoordonneesFinancieres(CoordonneesFinancieres.class),
 		DecisionAci(DecisionAci.class),
 		DelaiDeclaration(DelaiDeclaration.class),
 		DI(DeclarationImpotOrdinaire.class),

@@ -28,6 +28,7 @@ import ch.vd.unireg.tiers.DecisionAci;
 import ch.vd.unireg.tiers.DecisionAciView;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.HistoFlag;
 import ch.vd.unireg.tiers.HistoFlags;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -68,7 +69,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 
 		setTiersGeneralView(tiersVisuView, tiers);
-		tiersVisuView.setComplement(buildComplement(tiers));
+		tiersVisuView.setComplement(buildComplement(tiers, histoFlags.hasHistoFlag(HistoFlag.COORDONNEES_FINANCIERES)));
 
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;

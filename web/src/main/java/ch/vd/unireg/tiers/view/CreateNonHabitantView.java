@@ -1,13 +1,13 @@
 package ch.vd.unireg.tiers.view;
 
 import ch.vd.unireg.complements.ComplementsEditCommunicationsView;
-import ch.vd.unireg.complements.ComplementsEditCoordonneesFinancieresView;
+import ch.vd.unireg.complements.CoordonneesFinancieresEditView;
 
 public class CreateNonHabitantView {
 
 	private final NonHabitantCivilView civil = new NonHabitantCivilView();
 	private final ComplementsEditCommunicationsView complementCommunication = new ComplementsEditCommunicationsView();
-	private final ComplementsEditCoordonneesFinancieresView complementCoordFinanciere = new ComplementsEditCoordonneesFinancieresView();
+	private final CoordonneesFinancieresEditView complementCoordFinanciere = new CoordonneesFinancieresEditView();
 
 	public NonHabitantCivilView getCivil() {
 		return civil;
@@ -17,7 +17,7 @@ public class CreateNonHabitantView {
 		return complementCommunication;
 	}
 
-	public ComplementsEditCoordonneesFinancieresView getComplementCoordFinanciere() {
+	public CoordonneesFinancieresEditView getComplementCoordFinanciere() {
 		return complementCoordFinanciere;
 	}
 }

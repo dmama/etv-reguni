@@ -5,27 +5,44 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidationException;
 import ch.vd.unireg.iban.IbanValidator;
 
-public class ComplementsEditCoordonneesFinancieresValidator implements Validator {
+public class EditCoordonneesFinancieresValidator implements Validator {
 
 	private final IbanValidator ibanValidator;
 
-	public ComplementsEditCoordonneesFinancieresValidator(IbanValidator ibanValidator) {
+	public EditCoordonneesFinancieresValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
 	}
 
 	@Override
 	public boolean supports(Class clazz) {
-		return ComplementsEditCoordonneesFinancieresView.class.equals(clazz);
+		return CoordonneesFinancieresEditView.class.equals(clazz);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
-		final ComplementsEditCoordonneesFinancieresView view = (ComplementsEditCoordonneesFinancieresView) obj;
+		final CoordonneesFinancieresEditView view = (CoordonneesFinancieresEditView) obj;
+
+		// validation de la plage de validité
+		final RegDate dateDebut = view.getDateDebut();
+		if (dateDebut != null && dateDebut.isAfter(RegDate.get())) {
+			errors.rejectValue("dateDebut", "error.date.debut.future");
+		}
+
+		final RegDate dateFin = view.getDateFin();
+		if (dateFin != null) {
+			if (dateFin.isAfter(RegDate.get())) {
+				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
+			}
+			if (dateDebut != null && dateFin.isBefore(dateDebut)) {
+				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
+			}
+		}
 
 		final String iban = view.getIban();
 		if (StringUtils.isNotBlank(iban)) {

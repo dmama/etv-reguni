@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.Periodicite;
-import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.ModeCommunication;
@@ -24,17 +23,15 @@ public class DebiteurEditView {
 	private final PeriodiciteDecompte periodiciteActive;        // Attention, ce n'est pas réellement la périodicité active, mais peut représenter la dernière périodicité couverte par des LR
 	private final RegDate dateDebutPeriodiciteActive;
 	private PeriodeDecompte periodeDecompte;
-	private final ComplementView complement;
 	private Long logicielId;
 	private boolean sansLREmises;
 
 	public DebiteurEditView() {
-		this.complement = new ComplementView();
 		this.periodiciteActive = null;
 		this.dateDebutPeriodiciteActive = null;
 	}
 
-	public DebiteurEditView(DebiteurPrestationImposable dpi, IbanValidator ibanValidator) {
+	public DebiteurEditView(DebiteurPrestationImposable dpi) {
 		this.id = dpi.getNumero();
 		this.idCtbAssocie = dpi.getContribuableId();
 		this.categorieImpotSource = dpi.getCategorieImpotSource();
@@ -51,7 +48,6 @@ public class DebiteurEditView {
 		final Periodicite periodiciteActive = dpi.getPeriodiciteAt(getDateReferencePourPeriodiciteActive(dpi));
 		this.periodiciteActive = periodiciteActive != null ? periodiciteActive.getPeriodiciteDecompte() : null;
 		this.dateDebutPeriodiciteActive = periodiciteActive != null ? periodiciteActive.getDateDebut() : null;
-		this.complement = new ComplementView(dpi, ibanValidator);
 	}
 
 	private static RegDate getDateReferencePourPeriodiciteActive(DebiteurPrestationImposable dpi) {
@@ -109,10 +105,6 @@ public class DebiteurEditView {
 
 	public void setPeriodeDecompte(PeriodeDecompte periodeDecompte) {
 		this.periodeDecompte = periodeDecompte;
-	}
-
-	public ComplementView getComplement() {
-		return complement;
 	}
 
 	public Long getLogicielId() {

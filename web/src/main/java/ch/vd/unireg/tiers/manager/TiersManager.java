@@ -995,8 +995,8 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setSituationsFamille(situationsFamilleView);
 	}
 
-	protected ComplementView buildComplement(Tiers tiers) {
-		return new ComplementView(tiers, ibanValidator);
+	protected ComplementView buildComplement(Tiers tiers, boolean coordonneesHisto) {
+		return new ComplementView(tiers, coordonneesHisto, ibanValidator);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

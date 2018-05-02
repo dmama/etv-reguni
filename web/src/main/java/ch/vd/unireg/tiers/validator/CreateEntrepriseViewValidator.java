@@ -4,7 +4,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.unireg.complements.ComplementsEditCommunicationsValidator;
-import ch.vd.unireg.complements.ComplementsEditCoordonneesFinancieresValidator;
+import ch.vd.unireg.complements.EditCoordonneesFinancieresValidator;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.tiers.view.CreateEntrepriseView;
 
@@ -12,12 +12,12 @@ public class CreateEntrepriseViewValidator implements Validator {
 
 	private final EntrepriseCivilViewValidator civilViewValidator;
 	private final ComplementsEditCommunicationsValidator cpltCommViewValidator;
-	private final ComplementsEditCoordonneesFinancieresValidator cpltCoordFinViewValidator;
+	private final EditCoordonneesFinancieresValidator cpltCoordFinViewValidator;
 
 	public CreateEntrepriseViewValidator(IbanValidator ibanValidator) {
 		this.civilViewValidator = new EntrepriseCivilViewValidator();
 		this.cpltCommViewValidator = new ComplementsEditCommunicationsValidator();
-		this.cpltCoordFinViewValidator = new ComplementsEditCoordonneesFinancieresValidator(ibanValidator);
+		this.cpltCoordFinViewValidator = new EditCoordonneesFinancieresValidator(ibanValidator);
 	}
 
 	@Override

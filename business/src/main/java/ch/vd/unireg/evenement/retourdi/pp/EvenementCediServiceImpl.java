@@ -187,7 +187,7 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 			throw new IllegalArgumentException("La date de traitement = [" + scan.getDateTraitement() + "] n'est pas valable");
 		}
 		// TODO (msi) vérifier s'il faut générer un tâche de contrôle de dossier en cas d'IBAN invalide comme pour les PMs
-		coordonneesFinancieresService.updateCoordonneesFinancieres(ctb, scan.getTitulaireCompte(), scan.getIban(), dateTraitement, (currentIban, newIban) -> {});
+		coordonneesFinancieresService.detectAndUpdateCoordonneesFinancieres(ctb, scan.getTitulaireCompte(), scan.getIban(), dateTraitement, (currentIban, newIban) -> {});
 	}
 
 	/**

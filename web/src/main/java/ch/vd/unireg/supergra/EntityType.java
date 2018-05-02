@@ -4,6 +4,7 @@ import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.documentfiscal.DocumentFiscal;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.DonneeCivileEntreprise;
 
 /**
@@ -14,6 +15,7 @@ public enum EntityType {
 	Tiers(ch.vd.unireg.tiers.Tiers.class, "tiers", "le tiers", "du tiers"),
 	ForFiscal(ch.vd.unireg.tiers.ForFiscal.class, "for fiscal", "le for fiscal", "du for fiscal"),
 	AdresseTiers(ch.vd.unireg.adresse.AdresseTiers.class, "adresse", "l'adresse", "de l'adresse"),
+	CoordonneesFinancieres(CoordonneesFinancieres.class, "coordonnées financières", "les coordonnées financières", "des coordonnées financières"),
 	DocumentFiscal(DocumentFiscal.class, "document fiscal", "le document fiscal", "du document fiscal"),
 	EtatDocument(EtatDocumentFiscal.class, "état du document", "l'état du document", "de l'état du document"),
 	DelaiDocument(DelaiDocumentFiscal.class, "délai du document", "le délai du document", "du délai du document"),

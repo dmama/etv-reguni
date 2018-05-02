@@ -38,6 +38,11 @@ public class TiersVisuView extends TiersView {
 	}
 
 	@SuppressWarnings("unused")
+	public boolean isCoordonneesHisto() {
+		return hasHistoFlag(HistoFlag.COORDONNEES_FINANCIERES);
+	}
+
+	@SuppressWarnings("unused")
 	public boolean isRapportsEntreTiersHisto() {
 		return hasHistoFlag(HistoFlag.RAPPORTS_ENTRE_TIERS);
 	}

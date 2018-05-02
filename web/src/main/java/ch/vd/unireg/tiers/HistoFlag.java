@@ -13,6 +13,7 @@ public enum HistoFlag {
 	ADRESSES("adressesHisto"),
 	ADRESSES_CIVILES("adressesHistoCiviles"),
 	ADRESSES_CIVILES_CONJOINT("adressesHistoCivilesConjoint"),
+	COORDONNEES_FINANCIERES("coordonneesHisto"),
 	RAISONS_SOCIALES("raisonsSocialesHisto"),
 	NOMS_ADDITIONNELS("nomsAdditionnelsHisto"),
 	SIEGES("siegesHisto"),

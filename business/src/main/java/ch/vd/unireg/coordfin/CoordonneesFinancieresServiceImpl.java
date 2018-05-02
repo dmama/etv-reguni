@@ -2,25 +2,133 @@ package ch.vd.unireg.coordfin;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.LengthConstants;
+import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.CoordonneesFinancieres;
+import ch.vd.unireg.tiers.Tiers;
 
 public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieresService {
 
+	private HibernateTemplate hibernateTemplate;
 	private IbanValidator ibanValidator;
 
 	@Override
-	public void updateCoordonneesFinancieres(@NotNull Contribuable ctb, @Nullable String titulaire, @Nullable String iban, @NotNull RegDate dateValeur, @NotNull UpdateNotifier notifier) {
+	public void addCoordonneesFinancieres(Tiers tiers, @NotNull RegDate dateDebut, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) {
+
+		// normalisation des données
+		titulaire = StringUtils.trimToNull(titulaire);
+		iban = IbanHelper.normalize(iban);
+		bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(bicSwift));
+
+		// validation des données d'entrée
+		if (StringUtils.isBlank(titulaire) && StringUtils.isBlank(iban) && StringUtils.isBlank(bicSwift)) {
+			throw new IllegalArgumentException("Tous les éléments sont vides");
+		}
+		if (StringUtils.isNotBlank(iban) && !ibanValidator.isValidIban(iban)) {
+			throw new IllegalArgumentException("L'iban spécifié [" + iban + "] n'est pas valide");
+		}
+
+		final Set<CoordonneesFinancieres> coordonnees = tiers.getCoordonneesFinancieres();
+
+		// on ferme les coordonnées précédentes
+		if (coordonnees != null) {
+			coordonnees.stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(c -> c.getDateFin() == null)
+					.forEach(c -> c.setDateFin(dateDebut.getOneDayBefore()));
+		}
+
+		// on ajoute les nouvelles coordonnées
+		final CoordonneesFinancieres nouvelles = new CoordonneesFinancieres();
+		nouvelles.setDateDebut(dateDebut);
+		nouvelles.setTitulaire(titulaire);
+		nouvelles.setCompteBancaire(new CompteBancaire(iban, bicSwift));
+		tiers.addCoordonneesFinancieres(nouvelles);
+	}
+
+	@Override
+	public void updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) {
+
+		// normalisation des données
+		titulaire = StringUtils.trimToNull(titulaire);
+		iban = IbanHelper.normalize(iban);
+		bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(bicSwift));
+
+		// validation des données d'entrée
+		if (StringUtils.isBlank(titulaire) && StringUtils.isBlank(iban) && StringUtils.isBlank(bicSwift)) {
+			throw new IllegalArgumentException("Tous les éléments sont vides");
+		}
+		if (StringUtils.isNotBlank(iban) && !ibanValidator.isValidIban(iban)) {
+			throw new IllegalArgumentException("L'iban spécifié [" + iban + "] n'est pas valide");
+		}
+
+		final CoordonneesFinancieres coordonnees = hibernateTemplate.get(CoordonneesFinancieres.class, id);
+		if (coordonnees == null) {
+			throw new ObjectNotFoundException("Les coordonnées avec l'id=[" + id + "] n'existent pas");
+		}
+
+		final Tiers tiers = coordonnees.getTiers();
+
+		if (isFermetureSeulement(dateFin, titulaire, iban, bicSwift, coordonnees)) {
+			// on ferme les coordonnées
+			coordonnees.setDateFin(dateFin);
+		}
+		else {
+			// on annule les coordonnées courantes
+			coordonnees.setAnnule(true);
+
+			// on ajoute une copie avec les valeurs modifiées
+			final CoordonneesFinancieres nouvelles = new CoordonneesFinancieres();
+			nouvelles.setDateDebut(coordonnees.getDateDebut());
+			nouvelles.setDateFin(dateFin);
+			nouvelles.setTitulaire(titulaire);
+			nouvelles.setCompteBancaire(new CompteBancaire(iban, bicSwift));
+			tiers.addCoordonneesFinancieres(nouvelles);
+		}
+	}
+
+	/**
+	 * @return <i>vrai</i> si la seule modification correspond au renseignement de la date de fin; <i>false</i> autrement.
+	 */
+	private static boolean isFermetureSeulement(@Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift, @NotNull CoordonneesFinancieres coordonnees) {
+		final CompteBancaire compteBancaire = coordonnees.getCompteBancaire();
+		return dateFin != null && coordonnees.getDateFin() == null &&
+				Objects.equals(titulaire, coordonnees.getTitulaire()) &&
+				Objects.equals(iban, compteBancaire == null ? null : compteBancaire.getIban()) &&
+				Objects.equals(bicSwift, compteBancaire == null ? null : compteBancaire.getBicSwift());
+	}
+
+	@Override
+	public void cancelCoordonneesFinancieres(long id) {
+
+		final CoordonneesFinancieres coordonnees = hibernateTemplate.get(CoordonneesFinancieres.class, id);
+		if (coordonnees == null) {
+			throw new ObjectNotFoundException("Les coordonnées avec l'id=[" + id + "] n'existent pas");
+		}
+
+		if (coordonnees.isAnnule()) {
+			throw new IllegalArgumentException("Les coordonnées avec l'id=[" + id + "] sont déjà annulées");
+		}
+
+		coordonnees.setAnnule(true);
+	}
+
+	@Override
+	public void detectAndUpdateCoordonneesFinancieres(@NotNull Contribuable ctb, @Nullable String titulaire, @Nullable String iban, @NotNull RegDate dateValeur, @NotNull UpdateNotifier notifier) {
 
 		final CoordonneesFinancieres currentCoords = ctb.getCoordonneesFinancieresCourantes();
 
@@ -94,6 +202,10 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 			newCoords.setCompteBancaire(new CompteBancaire(LengthConstants.streamlineField(newIban, LengthConstants.TIERS_NUMCOMPTE, false), newBicSwift));
 			ctb.addCoordonneesFinancieres(newCoords);
 		}
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
