@@ -8,6 +8,7 @@
 	    </li>
 	</tiles:put>
 	<tiles:put name="body">
+		<%--@elvariable id="command" type="ch.vd.unireg.acces.parUtilisateur.view.RecapPersonneUtilisateurView"--%>
 	<form:form method="post" id="formEditRestriction"  name="theForm" action="sauver-restriction.do">
 		<form:hidden path="noIndividuOperateur"/>
 		<form:hidden path="noDossier"/>
@@ -17,10 +18,9 @@
 			<jsp:param name="titleKey" value="title.droits.operateur" />
 			<jsp:param name="path" value="utilisateur" />
 		</jsp:include>
-		<jsp:include page="../../general/pp.jsp">
-			<jsp:param name="page" value="acces" />
-			<jsp:param name="path" value="dossier" />
-		</jsp:include>
+		<c:set var="titre"><fmt:message key="label.caracteristiques.dossier"/></c:set>
+		<unireg:bandeauTiers numero="${command.dossier.numero}" titre="${titre}" cssClass="informations"
+		                     showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 		<jsp:include page="restriction.jsp" />
 		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='ajouter-restriction.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}';" />
 		<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver" />" />

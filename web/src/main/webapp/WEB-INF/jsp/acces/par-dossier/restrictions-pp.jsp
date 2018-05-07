@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
+<%--@elvariable id="command" type="ch.vd.unireg.acces.parDossier.view.DossierEditRestrictionView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.droits.acces.dossier" /></tiles:put>
   	<tiles:put name="fichierAide">
@@ -10,10 +11,9 @@
 	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
-		<jsp:include page="../../general/pp.jsp">
-			<jsp:param name="page" value="acces" />
-			<jsp:param name="path" value="dossier" />
-		</jsp:include>
+		<c:set var="titre"><fmt:message key="label.caracteristiques.dossier"/></c:set>
+		<unireg:bandeauTiers numero="${command.dossier.numero}" titre="${titre}" cssClass="information"
+		                     showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 		<!-- Fin Caracteristiques generales -->
 		<!-- Debut Liste des restrictions -->
 		<fieldset>

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="command" type="ch.vd.unireg.annulation.deces.view.AnnulationDecesRecapView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
   	<c:choose>
@@ -22,10 +23,9 @@
 
 	  	<form:form method="post" id="formRecapAnnulationDeces"  name="formRecapAnnulationDeces">
 			<form:hidden path="personne.numero" />
-			<jsp:include page="../../general/pp.jsp">
-				<jsp:param name="page" value="annulationDeces" />
-				<jsp:param name="path" value="personne" />
-			</jsp:include>
+		    <c:set var="titre"><fmt:message key="label.caracteristiques.personne"/></c:set>
+		    <unireg:bandeauTiers numero="${command.personne.numero}" titre="${titre}" cssClass="information"
+		                         showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 			<fieldset class="information">
 				<legend><span>
 			<c:choose>

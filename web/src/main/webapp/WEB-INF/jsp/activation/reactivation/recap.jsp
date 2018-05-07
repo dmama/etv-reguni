@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="reactivationCommand" type="ch.vd.unireg.activation.view.TiersReactivationRecapView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
   		<fmt:message key="title.recapitulatif.reactivation" />
@@ -8,11 +9,8 @@
   	<tiles:put name="body">
 	  	<form:form method="post" id="formRecapReactivation"  name="formRecapReactivation" commandName="reactivationCommand" action="reactivate.do?population=${population}">
 		    <form:hidden path="tiers.numero"/>
-			<jsp:include page="../../general/tiers.jsp">
-				<jsp:param name="commandName" value="reactivationCommand"/>
-				<jsp:param name="page" value="activation" />
-				<jsp:param name="path" value="tiers" />
-			</jsp:include>
+		    <c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
+		    <unireg:bandeauTiers numero="${reactivationCommand.tiers.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 			<jsp:include page="rapport.jsp" />
 			<!-- Debut Boutons -->
 			<unireg:RetourButton link="list.do?mode=REACTIVATION&population=${population}" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>

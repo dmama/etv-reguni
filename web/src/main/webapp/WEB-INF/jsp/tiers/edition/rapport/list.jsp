@@ -26,10 +26,8 @@
 				<unireg:nextRowClass reset="1"/>
 				<!-- Debut Caracteristiques generales -->
 				<c:if test="${command.tiers.numero != null}">
-					<jsp:include page="../../../general/tiers.jsp">
-						<jsp:param name="page" value="edit" />
-						<jsp:param name="path" value="tiersGeneral" />		
-					</jsp:include>
+					<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
+					<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 				</c:if>
 				<!-- Fin Caracteristiques generales -->
 			<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>

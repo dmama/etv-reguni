@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <c:set var="id" value="${param.id}" />
 
+<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.TiersEditView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<c:if test="${command.tiers != null}">
 		<tiles:put name="title">
@@ -24,10 +25,8 @@
 				<unireg:nextRowClass reset="1"/>
 				<!-- Debut Caracteristiques generales -->
 				<c:if test="${command.tiers.numero != null}">
-					<jsp:include page="../../../general/tiers.jsp">
-						<jsp:param name="page" value="edit" />
-						<jsp:param name="path" value="tiersGeneral" />		
-					</jsp:include>
+					<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
+					<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 				</c:if>
 				<!-- Fin Caracteristiques generales -->
 

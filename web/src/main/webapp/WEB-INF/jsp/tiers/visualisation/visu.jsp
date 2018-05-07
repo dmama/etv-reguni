@@ -54,11 +54,8 @@
 			</authz:authorize>
 
 			<!-- Debut Caracteristiques generales -->
-			<jsp:include page="../../general/tiers.jsp">
-				<jsp:param name="page" value="visu" />
-				<jsp:param name="path" value="tiersGeneral" />
-				<jsp:param name="idBandeau" value="bandeauTiers" />
-			</jsp:include>
+			<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
+			<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="true" urlRetour="${urlRetour}" id="bandeauTiers"/>
 			<!-- Fin Caracteristiques generales -->
 		</c:if>
 

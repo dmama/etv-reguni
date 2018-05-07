@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
+<%--@elvariable id="command" type="ch.vd.unireg.mouvement.view.MouvementListView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.edition.mouvement.contribuable" /></tiles:put>
   	<tiles:put name="fichierAide">
@@ -10,10 +11,8 @@
 	<tiles:put name="body">
 	<unireg:nextRowClass reset="1"/>
 	<!-- Debut Caracteristiques generales -->
-	<jsp:include page="../general/contribuable.jsp">
-		<jsp:param name="page" value="mouvement" />
-		<jsp:param name="path" value="contribuable" />
-	</jsp:include>
+	<c:set var="titre"><fmt:message key="caracteristiques.contribuable"/></c:set>
+	<unireg:bandeauTiers numero="${command.contribuable.numero}" titre="${titre}" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>
 	<!-- Fin Caracteristiques generales -->
 	<!-- Debut Liste de DIs -->
 	<jsp:include page="mouvements-contribuable.jsp"/>

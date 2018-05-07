@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <c:set var="tiers" value="${param.tiers}" />
 <c:set var="tiersLie" value="${param.tiersLie}" />
+<%--@elvariable id="rapportAddView" type="ch.vd.unireg.rapport.view.RapportView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.recapitulatif.rapport.entre.tiers" /></tiles:put>
 
@@ -16,11 +17,8 @@
 			<td id="td_tiers_gauche">
 				<div id="div_tiers">
 					<%-- Premier tiers --%>
-					<jsp:include page="../../../general/tiers.jsp" >
-						<jsp:param name="commandName" value="rapportAddView" />
-						<jsp:param name="page" value="rapport" />
-						<jsp:param name="path" value="tiers" />
-					</jsp:include>
+					<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
+					<unireg:bandeauTiers numero="${rapportAddView.tiers.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 				</div>
 			</td>
 			<td>
@@ -38,11 +36,8 @@
 			<td id="td_tiers_droite">
 				<div id="div_tiers_lie">
 					<%-- Second tiers --%>
-					<jsp:include page="../../../general/tiers.jsp" >
-						<jsp:param name="commandName" value="rapportAddView" />
-						<jsp:param name="page" value="rapport" />
-						<jsp:param name="path" value="tiersLie" />
-					</jsp:include>
+					<c:set var="titre"><fmt:message key="caracteristiques.tiers.lie"/></c:set>
+					<unireg:bandeauTiers numero="${rapportAddView.tiersLie.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 				</div>
 			</td>
 		</tr>		

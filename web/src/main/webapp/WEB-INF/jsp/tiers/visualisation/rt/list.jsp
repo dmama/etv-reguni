@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
+<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.RapportsPrestationView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title"><fmt:message key="title.liste.complete.rapports.prestation.debiteur" /></tiles:put>
@@ -7,13 +8,10 @@
 	<tiles:put name="body">
 
 		<!-- Debut Caracteristiques generales -->
-		<jsp:include page="../../../general/tiers.jsp">
-			<jsp:param name="page" value="visu" />
-			<jsp:param name="path" value="tiersGeneral" />		
-		</jsp:include>
+		<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
+		<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="true" urlRetour="${urlRetour}"/>
 		<!-- Fin Caracteristiques generales -->
 
-		<%--@elvariable id="command" type="ch.vd.unireg.tiers.view.RapportsPrestationView"--%>
 		<c:if test="${command.editionAllowed}">
 			<unireg:linkTo name="Ajouter" action="/rapports-prestation/search-sourcier.do" params="{numeroDebiteur:${command.idDpi}}" link_class="add" title="Ajouter rapport de travail"/>
 		</c:if>
