@@ -1509,7 +1509,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description>le titre affiché dans le bandeau (défaut='Caractéristiques du tiers')</description>
+			<description>le titre affiché dans le bandeau (ou le nom de la propriété qui sera résolue automatiquement, e.g. 'caracteristiques.tiers' => 'Caractéristiques du tiers')</description>
 			<name>titre</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

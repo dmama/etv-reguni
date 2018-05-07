@@ -14,8 +14,7 @@
 	    <%--@elvariable id="recap" type="ch.vd.unireg.deces.view.DecesRecapView"--%>
 
 	    <!-- Bandeau -->
-	    <c:set var="titre"><fmt:message key="label.caracteristiques.personne"/></c:set>
-	    <unireg:bandeauTiers numero="${recap.tiersId}" titre="${titre}" cssClass="information"
+	    <unireg:bandeauTiers numero="${recap.tiersId}" titre="label.caracteristiques.personne" cssClass="information"
 	                         showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
 	    <!-- Formulaire -->

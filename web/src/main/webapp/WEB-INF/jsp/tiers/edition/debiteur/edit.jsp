@@ -16,8 +16,7 @@
 			<!-- Debut affichage du tiers -->
 			<unireg:nextRowClass reset="1"/>
 			<!-- Debut Caracteristiques generales -->
-			<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
-			<unireg:bandeauTiers numero="${command.id}" titre="${titre}" showValidation="true" showEvenementsCivils="false" showLinks="false"/>
+			<unireg:bandeauTiers numero="${command.id}" showValidation="true" showEvenementsCivils="false" showLinks="false"/>
 			<!-- Fin Caracteristiques generales -->
 
 			<jsp:include page="../fiscal/debiteur.jsp"/>

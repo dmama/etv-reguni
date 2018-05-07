@@ -9,8 +9,7 @@
   	<tiles:put name="body">
 	  	<form:form method="post" id="formRecapReactivation"  name="formRecapReactivation" commandName="reactivationCommand" action="reactivate.do?population=${population}">
 		    <form:hidden path="tiers.numero"/>
-		    <c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
-		    <unireg:bandeauTiers numero="${reactivationCommand.tiers.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
+		    <unireg:bandeauTiers numero="${reactivationCommand.tiers.numero}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 			<jsp:include page="rapport.jsp" />
 			<!-- Debut Boutons -->
 			<unireg:RetourButton link="list.do?mode=REACTIVATION&population=${population}" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>

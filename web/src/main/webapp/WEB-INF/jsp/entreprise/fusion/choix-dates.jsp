@@ -10,10 +10,7 @@
 	</tiles:put>
 
 	<tiles:put name="body">
-		<c:set var="titre">
-			<fmt:message key="label.caracteristiques.fusion.entreprise.absorbante"/>
-		</c:set>
-		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseAbsorbante}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" titre="${titre}"/>
+		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseAbsorbante}" titre="label.caracteristiques.fusion.entreprise.absorbante" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
 		<unireg:nextRowClass reset="0"/>
 
 		<form:form method="post" id="recapDatesFusion" name="recapDatesFusion" action="choix-dates.do" commandName="actionCommand">

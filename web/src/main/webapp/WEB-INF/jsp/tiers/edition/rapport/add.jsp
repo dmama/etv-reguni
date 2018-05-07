@@ -17,8 +17,7 @@
 			<td id="td_tiers_gauche">
 				<div id="div_tiers">
 					<%-- Premier tiers --%>
-					<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
-					<unireg:bandeauTiers numero="${rapportAddView.tiers.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
+					<unireg:bandeauTiers numero="${rapportAddView.tiers.numero}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 				</div>
 			</td>
 			<td>
@@ -36,8 +35,7 @@
 			<td id="td_tiers_droite">
 				<div id="div_tiers_lie">
 					<%-- Second tiers --%>
-					<c:set var="titre"><fmt:message key="caracteristiques.tiers.lie"/></c:set>
-					<unireg:bandeauTiers numero="${rapportAddView.tiersLie.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
+					<unireg:bandeauTiers numero="${rapportAddView.tiersLie.numero}" titre="caracteristiques.tiers.lie" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 				</div>
 			</td>
 		</tr>		

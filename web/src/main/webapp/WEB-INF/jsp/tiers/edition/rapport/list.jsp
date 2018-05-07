@@ -26,8 +26,7 @@
 				<unireg:nextRowClass reset="1"/>
 				<!-- Debut Caracteristiques generales -->
 				<c:if test="${command.tiers.numero != null}">
-					<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
-					<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
+					<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" showValidation="true" showEvenementsCivils="true" showLinks="false" urlRetour="${urlRetour}"/>
 				</c:if>
 				<!-- Fin Caracteristiques generales -->
 			<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>

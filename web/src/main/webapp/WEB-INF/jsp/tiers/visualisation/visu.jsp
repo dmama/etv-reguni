@@ -54,8 +54,7 @@
 			</authz:authorize>
 
 			<!-- Debut Caracteristiques generales -->
-			<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
-			<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="true" urlRetour="${urlRetour}" id="bandeauTiers"/>
+			<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" showValidation="true" showEvenementsCivils="true" showLinks="true" urlRetour="${urlRetour}" id="bandeauTiers"/>
 			<!-- Fin Caracteristiques generales -->
 		</c:if>
 

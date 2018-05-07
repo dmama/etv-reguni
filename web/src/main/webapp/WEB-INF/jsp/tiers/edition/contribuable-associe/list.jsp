@@ -18,8 +18,7 @@
 	    <%--@elvariable id="parametresApp" type="ch.vd.unireg.param.view.ParamApplicationView"--%>
 
 	    <!-- Caractéristiques générales -->
-	    <c:set var="titre"><fmt:message key="caracteristiques.debiteur.is"/></c:set>
-	    <unireg:bandeauTiers numero="${command.numeroDpi}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+	    <unireg:bandeauTiers numero="${command.numeroDpi}" titre="caracteristiques.debiteur.is" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
 	    <!-- Formulaire de recherche -->
 	    <form:form method="get" id="formRechercheTiers" action="list.do" >

@@ -16,8 +16,7 @@
 		<unireg:nextRowClass reset="1"/>
 
 		<!-- Debut Caracteristiques generales -->
-		<c:set var="titre"><fmt:message key="caracteristiques.debiteur.is"/></c:set>
-		<unireg:bandeauTiers numero="${addListeCommand.idDebiteur}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+		<unireg:bandeauTiers numero="${addListeCommand.idDebiteur}" titre="caracteristiques.debiteur.is" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 		<!-- Fin Caracteristiques generales -->
 
 		<!-- Debut LR -->

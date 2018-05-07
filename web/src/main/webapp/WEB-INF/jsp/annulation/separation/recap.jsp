@@ -19,13 +19,11 @@
 
 	    <div style="display: inline-block; width: 100%">
 		    <div style="width: 48%; float: left;">
-			    <c:set var="titreCaracteristiques"><fmt:message key="label.caracteristiques.premierePersonne"/></c:set>
-			    <unireg:bandeauTiers numero="${idContribuablePrincipal}" showComplements="true" showValidation="true" showLinks="false" showAvatar="false" titre="${titreCaracteristiques}"/>
+			    <unireg:bandeauTiers numero="${idContribuablePrincipal}" showComplements="true" showValidation="true" showLinks="false" showAvatar="false" titre="label.caracteristiques.premierePersonne"/>
 		    </div>
 		    <c:if test="${idContribuableConjoint != null}">
 			    <div style="width: 50%; padding-left: 1ex; float: right;">
-				    <c:set var="titreCaracteristiques"><fmt:message key="label.caracteristiques.secondePersonne"/></c:set>
-				    <unireg:bandeauTiers numero="${idContribuableConjoint}" showComplements="true" showValidation="true" showLinks="false" showAvatar="false" titre="${titreCaracteristiques}"/>
+				    <unireg:bandeauTiers numero="${idContribuableConjoint}" showComplements="true" showValidation="true" showLinks="false" showAvatar="false" titre="label.caracteristiques.secondePersonne"/>
 			    </div>
 		    </c:if>
 	    </div>

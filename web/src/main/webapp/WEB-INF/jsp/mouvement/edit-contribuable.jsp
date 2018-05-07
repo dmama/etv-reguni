@@ -11,8 +11,7 @@
 	<tiles:put name="body">
 	<unireg:nextRowClass reset="1"/>
 	<!-- Debut Caracteristiques generales -->
-	<c:set var="titre"><fmt:message key="caracteristiques.contribuable"/></c:set>
-	<unireg:bandeauTiers numero="${command.contribuable.numero}" titre="${titre}" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>
+	<unireg:bandeauTiers numero="${command.contribuable.numero}" titre="caracteristiques.contribuable" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>
 	<!-- Fin Caracteristiques generales -->
 	<!-- Debut Liste de DIs -->
 	<jsp:include page="mouvements-contribuable.jsp"/>

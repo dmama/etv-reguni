@@ -19,8 +19,7 @@
 		<tr>
 			<td id="td_tiers_gauche">
 				<!-- Caracteristiques debiteur -->
-				<c:set var="titre"><fmt:message key="caracteristiques.debiteur.is"/></c:set>
-				<unireg:bandeauTiers numero="${rapportAddView.debiteur.numero}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+				<unireg:bandeauTiers numero="${rapportAddView.debiteur.numero}" titre="caracteristiques.debiteur.is" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 			</td>
 			<td>
 				<%-- Flèche du sens du rapport  --%>
@@ -36,8 +35,7 @@
 			</td>
 			<td id="td_tiers_droite">
 				<!-- Caracteristiques sourcier -->
-				<c:set var="titre"><fmt:message key="label.caracteristiques.sourcier"/></c:set>
-				<unireg:bandeauTiers numero="${rapportAddView.sourcier.numero}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+				<unireg:bandeauTiers numero="${rapportAddView.sourcier.numero}" titre="label.caracteristiques.sourcier" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 			</td>
 		</tr>		
 		<tr>

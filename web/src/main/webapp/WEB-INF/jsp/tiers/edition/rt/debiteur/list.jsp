@@ -12,8 +12,7 @@
 		<unireg:nextRowClass reset="1"/>
 
 	    <%--@elvariable id="debiteurCriteriaView" type="ch.vd.unireg.rt.view.DebiteurListView"--%>
-	    <c:set var="titre"><fmt:message key="label.caracteristiques.sourcier"/></c:set>
-	    <unireg:bandeauTiers numero="${debiteurCriteriaView.numeroSourcier}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+	    <unireg:bandeauTiers numero="${debiteurCriteriaView.numeroSourcier}" titre="label.caracteristiques.sourcier" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
 	    <form:form method="get" id="formRechercheTiers" commandName="debiteurCriteriaView">
 		    <form:hidden path="numeroSourcier"/>

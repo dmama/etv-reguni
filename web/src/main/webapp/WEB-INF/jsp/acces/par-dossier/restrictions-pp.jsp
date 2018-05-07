@@ -11,8 +11,7 @@
 	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
-		<c:set var="titre"><fmt:message key="label.caracteristiques.dossier"/></c:set>
-		<unireg:bandeauTiers numero="${command.dossier.numero}" titre="${titre}" cssClass="information"
+		<unireg:bandeauTiers numero="${command.dossier.numero}" titre="label.caracteristiques.dossier" cssClass="information"
 		                     showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 		<!-- Fin Caracteristiques generales -->
 		<!-- Debut Liste des restrictions -->

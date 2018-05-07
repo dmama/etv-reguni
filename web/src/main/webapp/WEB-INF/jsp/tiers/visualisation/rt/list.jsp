@@ -8,8 +8,7 @@
 	<tiles:put name="body">
 
 		<!-- Debut Caracteristiques generales -->
-		<c:set var="titre"><fmt:message key="caracteristiques.tiers"/></c:set>
-		<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="true" urlRetour="${urlRetour}"/>
+		<unireg:bandeauTiers numero="${command.tiersGeneral.numero}" showValidation="true" showEvenementsCivils="true" showLinks="true" urlRetour="${urlRetour}"/>
 		<!-- Fin Caracteristiques generales -->
 
 		<c:if test="${command.editionAllowed}">

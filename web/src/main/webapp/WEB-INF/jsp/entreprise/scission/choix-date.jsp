@@ -14,10 +14,7 @@
 	</tiles:put>
 
 	<tiles:put name="body">
-		<c:set var="titre">
-			<fmt:message key="label.caracteristiques.scission.entreprise.scindee"/>
-		</c:set>
-		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseScindee}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" titre="${titre}"/>
+		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseScindee}" titre="label.caracteristiques.scission.entreprise.scindee" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" />
 		<unireg:nextRowClass reset="0"/>
 
 		<form:form method="post" id="recapDateScission" name="recapDateScission" action="choix-date.do" commandName="actionCommand">

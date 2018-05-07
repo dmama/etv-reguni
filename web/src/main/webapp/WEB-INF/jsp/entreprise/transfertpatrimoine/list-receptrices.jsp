@@ -13,10 +13,7 @@
 
   	<tiles:put name="body">
 
-	    <c:set var="titreEmettrice">
-		    <fmt:message key="label.caracteristiques.transfert.patrimoine.emettrice"/>
-	    </c:set>
-	    <unireg:bandeauTiers numero="${transfert.idEntrepriseEmettrice}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" titre="${titreEmettrice}"/>
+	    <unireg:bandeauTiers numero="${transfert.idEntrepriseEmettrice}" titre="label.caracteristiques.transfert.patrimoine.emettrice" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" />
 
 	    <fieldset>
 		    <unireg:nextRowClass reset="0"/>

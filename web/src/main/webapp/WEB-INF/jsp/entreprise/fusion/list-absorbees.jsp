@@ -9,10 +9,7 @@
 
   	<tiles:put name="body">
 
-	    <c:set var="titreAbsorbante">
-		    <fmt:message key="label.caracteristiques.fusion.entreprise.absorbante"/>
-	    </c:set>
-	    <unireg:bandeauTiers numero="${fusion.idEntrepriseAbsorbante}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" titre="${titreAbsorbante}"/>
+	    <unireg:bandeauTiers numero="${fusion.idEntrepriseAbsorbante}" titre="label.caracteristiques.fusion.entreprise.absorbante" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
 
 	    <fieldset>
 		    <unireg:nextRowClass reset="0"/>

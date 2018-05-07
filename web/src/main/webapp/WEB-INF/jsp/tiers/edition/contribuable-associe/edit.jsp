@@ -18,12 +18,10 @@
 
 		<form:form method="post" id="formRecapContactIS" name="formRecapContactIS" commandName="recap">
 			<!-- Caractéristiques générales du débiteur -->
-			<c:set var="titre"><fmt:message key="caracteristiques.debiteur.is"/></c:set>
-			<unireg:bandeauTiers numero="${recap.numeroDpi}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+			<unireg:bandeauTiers numero="${recap.numeroDpi}" titre="caracteristiques.debiteur.is" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
 			<!-- Caractéristiques générales du contribuable -->
-			<c:set var="titre"><fmt:message key="caracteristiques.contribuable"/></c:set>
-			<unireg:bandeauTiers numero="${recap.numeroContribuable}" titre="${titre}" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>
+			<unireg:bandeauTiers numero="${recap.numeroContribuable}" titre="caracteristiques.contribuable" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>
 
 			<!-- Debut Boutons -->
 			<unireg:RetourButton link="list.do?numeroDpi=${recap.numeroDpi}"/>

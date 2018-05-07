@@ -12,8 +12,7 @@
 	<form:form method="post" id="formEditMvt" name="theForm" commandName="nouveauMouvement">
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
-		<c:set var="titre"><fmt:message key="caracteristiques.contribuable"/></c:set>
-		<unireg:bandeauTiers numero="${nouveauMouvement.contribuable.numero}" titre="${titre}" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>
+		<unireg:bandeauTiers numero="${nouveauMouvement.contribuable.numero}" titre="caracteristiques.contribuable" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>
 		<!-- Fin Caracteristiques generales -->
 		<!-- Debut Mouvement dossier -->
 		<jsp:include page="mouvement.jsp"/>

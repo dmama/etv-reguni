@@ -132,8 +132,6 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="fourreNeutreService" ref="fourreNeutreService" />
-
-
 	</bean>
 
 	<bean id="jspTagAdresseMandataire" class="ch.vd.unireg.taglibs.JspTagAdresseMandataire">

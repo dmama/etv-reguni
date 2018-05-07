@@ -3,7 +3,6 @@ package ch.vd.unireg.taglibs;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -14,17 +13,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.servlet.tags.RequestContextAwareTag;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.activation.ActivationDesactivationHelper;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseService;
@@ -39,6 +37,7 @@ import ch.vd.unireg.entreprise.complexe.FusionEntreprisesHelper;
 import ch.vd.unireg.entreprise.complexe.ScissionEntrepriseHelper;
 import ch.vd.unireg.entreprise.complexe.TransfertPatrimoineHelper;
 import ch.vd.unireg.fourreNeutre.FourreNeutreService;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
 import ch.vd.unireg.security.SecurityProviderInterface;
@@ -62,12 +61,11 @@ import ch.vd.unireg.type.PeriodeDecompte;
 import ch.vd.unireg.type.PeriodiciteDecompte;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEtatEntreprise;
-import ch.vd.unireg.utils.WebContextUtils;
 
 /**
  * Affiche les informations générales d'un tiers (nom, prénom, type d'assujettissement, adresse, image, ...).
  */
-public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceAware {
+public class JspTagBandeauTiers extends RequestContextAwareTag {
 
 	private static final long serialVersionUID = 7545284534993448401L;
 
@@ -76,7 +74,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	/*
 	 * Ces membres sont statiques pour permettre l'injection par Spring des beans accessibles par toutes les instances de ce tag
 	 */
-	private static MessageSource messageSource;
 	private static TiersDAO tiersDAO;
 	private static TiersService tiersService;
 	private static AdresseService adresseService;
@@ -85,7 +82,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static AvatarService avatarService;
 	private static FourreNeutreService fourreNeutreService;
 
-
+	private MessageSource messageSource;
 	public static final List<Action> actions;
 
 	static {
@@ -143,7 +140,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private TypeAdresseFiscale typeAdresse = TypeAdresseFiscale.COURRIER;
 
 	@Override
-	public int doStartTag() throws JspTagException {
+	public int doStartTagInternal() throws JspTagException {
+
+		messageSource = getRequestContext().getMessageSource();
 		try {
 			JspWriter out = pageContext.getOut();
 			final String html = buidHtlm();
@@ -209,11 +208,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		this.typeAdresse = typeAdresse;
 	}
 
-	@Override
-	public void setMessageSource(MessageSource messageSource) {
-		JspTagBandeauTiers.messageSource = messageSource;
-	}
-
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		JspTagBandeauTiers.tiersDAO = tiersDAO;
 	}
@@ -269,8 +263,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
 				}
 
-				if (titre == null) {
-					titre = message("caracteristiques.tiers");
+				if (StringUtils.isBlank(titre)) {
+					titre = "caracteristiques.tiers";
 				}
 
 				if (cssClass == null) {
@@ -283,7 +277,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					s.append(" id=\"").append(id).append("\"");
 				}
 				s.append(">\n");
-				s.append("<legend><span>").append(HtmlUtils.htmlEscape(titre)).append("</span></legend>\n");
+				s.append("<legend><span>").append(HtmlUtils.htmlEscape(message(titre))).append("</span></legend>\n");
 				s.append(buildDebugInfo(tiers));
 
 				if (showAvatar || showLinks) {
@@ -634,8 +628,13 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return ++rowcount % 2 == 0 ? "even" : "odd";
 	}
 
-	private static String message(String key) {
-		return messageSource.getMessage(key, null, WebContextUtils.getDefaultLocale());
+	private String message(String key) {
+		if (StringUtils.isNotBlank(key)) {
+			return messageSource.getMessage(key, null, getRequestContext().getLocale());
+		}
+		else {
+			return key;
+		}
 	}
 
 	private String url(String relative) {

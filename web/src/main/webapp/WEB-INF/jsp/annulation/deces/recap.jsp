@@ -23,8 +23,7 @@
 
 	  	<form:form method="post" id="formRecapAnnulationDeces"  name="formRecapAnnulationDeces">
 			<form:hidden path="personne.numero" />
-		    <c:set var="titre"><fmt:message key="label.caracteristiques.personne"/></c:set>
-		    <unireg:bandeauTiers numero="${command.personne.numero}" titre="${titre}" cssClass="information"
+		    <unireg:bandeauTiers numero="${command.personne.numero}" titre="label.caracteristiques.personne" cssClass="information"
 		                         showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 			<fieldset class="information">
 				<legend><span>

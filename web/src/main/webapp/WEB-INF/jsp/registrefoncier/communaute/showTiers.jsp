@@ -23,10 +23,8 @@
   	</tiles:put>
   	<tiles:put name="body">
 
-	    <c:set var="titre"><fmt:message key="label.caracteristiques.proprietaire"/></c:set>
-
 	    <%--@elvariable id="tiers" type="ch.vd.unireg.registrefoncier.communaute.TiersWithCommunauteView"--%>
-	    <unireg:bandeauTiers numero="${tiers.ctbId}" titre="${titre}"
+	    <unireg:bandeauTiers numero="${tiers.ctbId}" titre="label.caracteristiques.proprietaire"
 	                         showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 
 	    <fieldset>
