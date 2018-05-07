@@ -33,10 +33,7 @@
 			    </table>
 		    </fieldset>
 
-		    <c:set var="retourButtonName">
-			    <fmt:message key="label.bouton.retour" />
-		    </c:set>
-		    <unireg:buttonTo name="${retourButtonName}" action="/identification/gestion-messages/edit.do" confirm="Voulez-vous vraiment quitter cette page sans sauver ?" method="get" params="{id:${messageData.id},source:'${source}'}"/>
+		    <unireg:buttonTo name="label.bouton.retour" action="/identification/gestion-messages/edit.do" confirm="Voulez-vous vraiment quitter cette page sans sauver ?" method="get" params="{id:${messageData.id},source:'${source}'}"/>
 		    &nbsp;
 		    <input type="button" name="nonIdentifier" value="<fmt:message key="label.bouton.identification.valider" />" onClick="IdentificationCtb.confirmerImpossibleAIdentifier();" />
 

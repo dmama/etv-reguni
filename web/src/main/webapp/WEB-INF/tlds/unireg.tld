@@ -779,7 +779,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description>Le texte du bouton.</description>
+			<description>Le texte du bouton (ou le nom de la propriété qui sera résolue automatiquement, e.g. 'label.bouton.retour').</description>
 			<name>name</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -803,7 +803,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description>Un texte de confirmation avant exécution.</description>
+			<description>Un texte de confirmation avant exécution (ou le nom de la propriété qui sera résolue automatiquement, e.g. 'message.confirm.quit').</description>
 			<name>confirm</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

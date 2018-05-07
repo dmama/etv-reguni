@@ -91,10 +91,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td colspan="2">
 				<c:if test="${messageData.documentUrl != null}">
-                    <c:set var="voirMessageName">
-                        <fmt:message key="label.bouton.identification.visualiser" />
-                    </c:set>
-                    <unireg:buttonTo name="${voirMessageName}" action="/identification/gestion-messages/voirmessage.do" method="get" params="{id:${messageData.id}}"/>
+                    <unireg:buttonTo name="label.bouton.identification.visualiser" action="/identification/gestion-messages/voirmessage.do" method="get" params="{id:${messageData.id}}"/>
 				</c:if>
 				&nbsp;
 			</td>

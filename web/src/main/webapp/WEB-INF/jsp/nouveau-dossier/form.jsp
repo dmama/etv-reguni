@@ -49,10 +49,7 @@
 			<div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher" onClick="recherche();" /></div>
 		</td>
 		<td width="25%">
-			<c:set var="labelEffacer">
-				<fmt:message key="label.bouton.effacer"/>
-			</c:set>
-			<div class="navigation-action"><unireg:buttonTo name="${labelEffacer}" action="/tache/list-nouveau-dossier.do" params="{effacer:true}" method="get"/></div>
+			<div class="navigation-action"><unireg:buttonTo name="label.bouton.effacer" action="/tache/list-nouveau-dossier.do" params="{effacer:true}" method="get"/></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

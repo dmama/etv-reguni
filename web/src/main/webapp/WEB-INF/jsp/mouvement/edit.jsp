@@ -19,13 +19,12 @@
 		<jsp:include page="mouvement.jsp"/>
 		<!-- Fin Mouvement dossier -->
 		<!-- Debut Boutons -->
-		<c:set var="labelRetour"><fmt:message key="label.bouton.retour"/></c:set>
 		<c:choose>
 			<c:when test="${nouveauMouvement.idTache != null}">
-				<unireg:buttonTo name="${labelRetour}" action="/tache/list.do" method="get"/>
+				<unireg:buttonTo name="label.bouton.retour" action="/tache/list.do" method="get"/>
 			</c:when>
 			<c:otherwise>
-				<unireg:buttonTo name="${labelRetour}" action="/tiers/visu.do" params="{id:${nouveauMouvement.contribuable.numero}}" method="get"/>
+				<unireg:buttonTo name="label.bouton.retour" action="/tiers/visu.do" params="{id:${nouveauMouvement.contribuable.numero}}" method="get"/>
 			</c:otherwise>
 		</c:choose>
 		<input type="submit" name="sauverMvt" value="<fmt:message key="label.bouton.sauver" />" />

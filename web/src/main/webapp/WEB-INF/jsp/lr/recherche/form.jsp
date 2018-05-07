@@ -56,8 +56,7 @@
 		</td>
 		<td width="25%">
 			<div class="navigation-action">
-				<c:set var="effacerName"><fmt:message key="label.bouton.effacer"/></c:set>
-				<unireg:buttonTo name="${effacerName}" action="/lr/list.do?effacer=true" method="get"/>
+				<unireg:buttonTo name="label.bouton.effacer" action="/lr/list.do?effacer=true" method="get"/>
 			</div>
 		</td>
 		<td width="25%">&nbsp;</td>

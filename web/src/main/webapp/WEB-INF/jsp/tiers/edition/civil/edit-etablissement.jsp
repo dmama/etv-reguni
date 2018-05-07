@@ -26,14 +26,7 @@
 				<jsp:param name="nombreElementsTable" value="${nombreElementsTable}"/>
 			</jsp:include>
 
-			<c:set var="confirmationMessageSauvegarde">
-				<fmt:message key="label.demande.confirmation.sauvegarde"/>
-			</c:set>
-
-			<c:set var="libelleBoutonRetour">
-				<fmt:message key="label.bouton.retour"/>
-			</c:set>
-			<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="${libelleBoutonRetour}"/>
+			<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="label.bouton.retour"/>
 
 		</c:if>
 		<c:if test="${!autorisations.donneesCiviles}">

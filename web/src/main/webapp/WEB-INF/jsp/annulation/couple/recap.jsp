@@ -29,9 +29,8 @@
 
 	    <!-- Debut Boutons -->
 	    <unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
-	    <c:set var="NomBoutonAnnuler"><fmt:message key="label.bouton.annuler.menage"/></c:set>
 	    <c:set var="dateDebutMenage"><unireg:regdate regdate="${dateMenageCommun}"/></c:set>
-	    <unireg:buttonTo name="${NomBoutonAnnuler}" action="/annulation/couple/commit.do" params="{numeroCple:${idMenage},date:'${dateDebutMenage}'}" method="post" confirm="Voulez-vous vraiment annuler la mise en ménage commun de ces deux personnes ?"/>
+	    <unireg:buttonTo name="label.bouton.annuler.menage" action="/annulation/couple/commit.do" params="{numeroCple:${idMenage},date:'${dateDebutMenage}'}" method="post" confirm="Voulez-vous vraiment annuler la mise en ménage commun de ces deux personnes ?"/>
 	    <!-- Fin Boutons -->
 
 	</tiles:put>

@@ -130,10 +130,7 @@
 			</div>
 
 			<div id="buttons">
-				<c:set var="libelleBoutonRetour">
-					<fmt:message key="label.bouton.retour"/>
-				</c:set>
-				<unireg:buttonTo method="get" action="/tiers/list.do" name="${libelleBoutonRetour}"/>
+				<unireg:buttonTo method="get" action="/tiers/list.do" name="label.bouton.retour"/>
 				<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onclick="return confirmMessage == null || confirm(confirmMessage);"/>
 			</div>
 

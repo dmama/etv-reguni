@@ -53,9 +53,6 @@
 			</c:if>
 
 		</fieldset>
-		<c:set var="libelleBoutonRetour">
-			<fmt:message key="label.bouton.retour"/>
-		</c:set>
-		<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="${libelleBoutonRetour}"/>
+		<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="label.bouton.retour"/>
 	</tiles:put>
 </tiles:insert>

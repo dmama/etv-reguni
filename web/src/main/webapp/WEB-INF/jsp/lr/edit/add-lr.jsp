@@ -48,8 +48,7 @@
 		<!-- Fin LR -->
 
 		<!-- Debut Boutons -->
-		<c:set var="RetourName"><fmt:message key="label.bouton.retour"/></c:set>
-		<unireg:buttonTo name="${RetourName}" action="/lr/edit-debiteur.do" params="{numero:${addListeCommand.idDebiteur}}" method="get" confirm="Voulez-vous vraiment quitter cette page sans sauver ?"/>
+		<unireg:buttonTo name="label.bouton.retour" action="/lr/edit-debiteur.do" params="{numero:${addListeCommand.idDebiteur}}" method="get" confirm="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 		<c:set var="ImprimerName"><fmt:message key="label.bouton.imprimer"/></c:set>
 		<c:choose>
 			<c:when test="${addListeCommand.imprimable}">

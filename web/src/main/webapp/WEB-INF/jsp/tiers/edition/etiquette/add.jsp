@@ -63,14 +63,11 @@
 
 			</fieldset>
 
-			<c:set var="libelleBoutonRetour">
-				<fmt:message key="label.bouton.retour"/>
-			</c:set>
 			<table border="0">
 				<tr>
 					<td width="25%">&nbsp;</td>
 					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.ajouter"/>"></td>
-					<td width="25%"><unireg:buttonTo method="get" action="/etiquette/edit-list.do" params="{tiersId:${addCommand.tiersId}}" name="${libelleBoutonRetour}"/></td>
+					<td width="25%"><unireg:buttonTo method="get" action="/etiquette/edit-list.do" params="{tiersId:${addCommand.tiersId}}" name="label.bouton.retour"/></td>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>

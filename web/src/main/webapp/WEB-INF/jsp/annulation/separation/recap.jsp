@@ -53,9 +53,8 @@
 	    <!-- Debut Boutons -->
 	    <unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 	    <c:if test="${dateSeparation != null}">
-		    <c:set var="NomBoutonSauver"><fmt:message key="label.bouton.sauver"/></c:set>
 		    <c:set var="dateSeparationString"><unireg:regdate regdate="${dateSeparation}"/></c:set>
-		    <unireg:buttonTo name="${NomBoutonSauver}" action="/annulation/separation/commit.do" params="{numeroCple:${idMenage},date:'${dateSeparationString}'}" method="post" confirm="Voulez-vous vraiment annuler la séparation de ces deux personnes ?"/>
+		    <unireg:buttonTo name="label.bouton.sauver" action="/annulation/separation/commit.do" params="{numeroCple:${idMenage},date:'${dateSeparationString}'}" method="post" confirm="Voulez-vous vraiment annuler la séparation de ces deux personnes ?"/>
 	    </c:if>
 		<!-- Fin Boutons -->
 

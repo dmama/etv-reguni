@@ -89,13 +89,10 @@
 		<!-- Fin LR -->
 
 		<!-- Debut Boutons -->
-		<c:set var="RetourName"><fmt:message key="label.bouton.retour"/></c:set>
-		<unireg:buttonTo name="${RetourName}" action="/lr/edit-debiteur.do" params="{numero:${lr.idDebiteur}}" method="get"/>
-		<c:set var="DuplicataName"><fmt:message key="label.bouton.imprimer.duplicata"/></c:set>
-		<unireg:buttonTo name="${DuplicataName}" action="/lr/duplicata.do" params="{idListe:${lr.idListe}}" method="post" confirm="Voulez-vous vraiment imprimer un duplicata de cette liste recapitulative ?"/>
+		<unireg:buttonTo name="label.bouton.retour" action="/lr/edit-debiteur.do" params="{numero:${lr.idDebiteur}}" method="get"/>
+		<unireg:buttonTo name="label.bouton.imprimer.duplicata" action="/lr/duplicata.do" params="{idListe:${lr.idListe}}" method="post" confirm="Voulez-vous vraiment imprimer un duplicata de cette liste recapitulative ?"/>
 		<c:if test="${lr.annulable}">
-			<c:set var="AnnulerName"><fmt:message key="label.bouton.annuler.liste"/></c:set>
-			<unireg:buttonTo name="${AnnulerName}" action="/lr/annuler.do" params="{idListe:${lr.idListe}}" method="post" confirm="Voulez-vous vraiment annuler cette liste recapitulative ?"/>
+			<unireg:buttonTo name="label.bouton.annuler.liste" action="/lr/annuler.do" params="{idListe:${lr.idListe}}" method="post" confirm="Voulez-vous vraiment annuler cette liste recapitulative ?"/>
 		</c:if>
 		<!-- Fin Boutons -->
 

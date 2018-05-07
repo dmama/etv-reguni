@@ -272,13 +272,7 @@
 					}
 				</script>
 
-				<c:set var="libelleBoutonRetour">
-					<fmt:message key="label.bouton.retour"/>
-				</c:set>
-				<c:set var="confirmationMessageRetour">
-					<fmt:message key="message.confirm.quit"/>
-				</c:set>
-				<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="${libelleBoutonRetour}" confirm="${confirmationMessageRetour}"/>
+				<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="label.bouton.retour" confirm="message.confirm.quit"/>
 				<input type="button" name="save" value="<fmt:message key='label.bouton.sauver'/>" onclick="editCivilNonHabitant.onSave($('#editForm'))"/>
 
 			</form:form>

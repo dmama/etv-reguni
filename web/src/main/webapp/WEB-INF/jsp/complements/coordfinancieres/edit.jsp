@@ -83,10 +83,7 @@
 
 			<!-- Debut Boutons -->
 			<div style="margin-top: 1em;">
-				<c:set var="libelleBoutonRetour">
-					<fmt:message key="label.bouton.retour"/>
-				</c:set>
-				<unireg:buttonTo method="get" action="/complements/coordfinancieres/list.do" params="{tiersId:${tiersId}}" name="${libelleBoutonRetour}"/>
+				<unireg:buttonTo method="get" action="/complements/coordfinancieres/list.do" params="{tiersId:${tiersId}}" name="label.bouton.retour"/>
 				<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver"/>" tabindex="5"/>
 			</div>
 			<!-- Fin Boutons -->

@@ -102,8 +102,7 @@
 							<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>
 						</td>
 						<td width="25%">
-							<c:set var="nomBoutonEffacer"><fmt:message key="label.bouton.effacer"/></c:set>
-							<div class="navigation-action"><unireg:buttonTo name="${nomBoutonEffacer}" action="/annonceIDE/find.do" params="" method="get"/></div>
+							<div class="navigation-action"><unireg:buttonTo name="label.bouton.effacer" action="/annonceIDE/find.do" params="" method="get"/></div>
 						</td>
 						<td width="25%">&nbsp;</td>
 					</tr>

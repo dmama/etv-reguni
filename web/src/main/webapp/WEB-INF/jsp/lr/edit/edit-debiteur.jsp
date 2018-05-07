@@ -64,8 +64,7 @@
 		<!-- Fin Liste de LRs -->
 
 		<!-- Debut Bouton -->
-		<c:set var="RetourLabel"><fmt:message key="label.bouton.retour" /></c:set>
-		<unireg:buttonTo name="${RetourLabel}" action="/tiers/visu.do?id=${idDebiteur}" method="get"/>
+		<unireg:buttonTo name="label.bouton.retour" action="/tiers/visu.do?id=${idDebiteur}" method="get"/>
 		<!-- Fin Bouton -->
 	</tiles:put>
 </tiles:insert>

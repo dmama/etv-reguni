@@ -157,20 +157,14 @@
 			    <!-- Bouton de passage en expertise -->
 			    <c:if test="${!hideSoumissionExpertise}">
 				    <authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_CELLULE_BO', 'ROLE_MW_IDENT_CTB_ADMIN', 'ROLE_NCS_IDENT_CTB_CELLULE_BO', 'ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO')">
-					    <c:set var="expertiserButtonName">
-						    <fmt:message key="label.bouton.expertiser" />
-					    </c:set>
-					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/soumettre-expertise.do" method="post" name="${expertiserButtonName}" confirm="Voulez-vous soumettre à expertise le message ?" params="{id:${messageData.id},source:'${source}'}"/>
+					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/soumettre-expertise.do" method="post" name="label.bouton.expertiser" confirm="Voulez-vous soumettre à expertise le message ?" params="{id:${messageData.id},source:'${source}'}"/>
 				    </authz:authorize>
 			    </c:if>
 
 			    <!-- Bouton de non-identification -->
 			    <c:if test="${!hideNonIdentifiable}">
 				    <authz:authorize access="hasAnyRole('ROLE_MW_IDENT_CTB_GEST_BO', 'ROLE_MW_IDENT_CTB_ADMIN')">
-					    <c:set var="nonIdentifiableButtonName">
-						    <fmt:message key="label.bouton.identification.impossible" />
-					    </c:set>
-					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/non-identifie.do" name="${nonIdentifiableButtonName}" method="get" params="{id:${messageData.id},source:'${source}'}"/>
+					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/non-identifie.do" name="label.bouton.identification.impossible" method="get" params="{id:${messageData.id},source:'${source}'}"/>
 				    </authz:authorize>
 			    </c:if>
 

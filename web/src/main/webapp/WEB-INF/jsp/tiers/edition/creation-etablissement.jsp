@@ -277,13 +277,7 @@
 			<!-- Fin onglets -->
 
 			<!-- Debut Boutons -->
-			<c:set var="libelleBoutonRetour">
-				<fmt:message key="label.bouton.retour"/>
-			</c:set>
-			<c:set var="confirmationMessageRetour">
-				<fmt:message key="message.confirm.quit"/>
-			</c:set>
-			<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${ctbAssocie}}" name="${libelleBoutonRetour}" confirm="${confirmationMessageRetour}"/>
+			<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${ctbAssocie}}" name="label.bouton.retour" confirm="message.confirm.quit"/>
 
 			<c:set var="confirmationMessageSauvegarde">
 				<fmt:message key="label.demande.confirmation.sauvegarde"/>

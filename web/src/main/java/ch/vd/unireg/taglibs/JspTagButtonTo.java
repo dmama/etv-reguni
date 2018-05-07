@@ -4,19 +4,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.web.servlet.tags.RequestContextAwareTag;
 import org.springframework.web.util.HtmlUtils;
 
 /**
  * Button qui navigue vers ou qui poste un formulaire sur autre URL.
  */
 @SuppressWarnings("UnusedDeclaration")
-public class JspTagButtonTo extends BodyTagSupport {
+public class JspTagButtonTo extends RequestContextAwareTag {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JspTagButtonTo.class);
 
@@ -34,12 +35,14 @@ public class JspTagButtonTo extends BodyTagSupport {
 	private boolean disabled = false;
 
 	private String contextPath;
+	private MessageSource messageSource;
 
 	@Override
-	public int doStartTag() throws JspException {
+	public int doStartTagInternal() throws JspException {
 
 		final HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
 		contextPath = request.getContextPath();
+		messageSource = getRequestContext().getMessageSource();
 
 		// TODO (msi) : hériter de RequestContextAwareTag (voir MessageTag) et ajouter une propriété nameKey pour résoudre automatiquement le nom
 		//              du bouton à partir d'une propriété
@@ -132,7 +135,7 @@ public class JspTagButtonTo extends BodyTagSupport {
 		final StringBuilder onclickScript = new StringBuilder();
 
 		if (StringUtils.isNotBlank(confirm)) {
-			String s = StringEscapeUtils.escapeEcmaScript(confirm);
+			String s = StringEscapeUtils.escapeEcmaScript(resolveCode(confirm));
 			s = s.replaceAll("\\\\n", "\\n"); // on un-escape les retours de lignes, parce qu'ils sont bien pratiques
 			final String confirmScript = "if (!confirm('" + s + "')) return false;";
 			onclickScript.append(confirmScript);
@@ -154,7 +157,7 @@ public class JspTagButtonTo extends BodyTagSupport {
 		if (!visible) {
 			sb.append(" style=\"display:none;\"");
 		}
-		sb.append(" type=\"button\" value=\"").append(HtmlUtils.htmlEscape(name)).append("\" class=\"").append(button_class).append("\"");
+		sb.append(" type=\"button\" value=\"").append(HtmlUtils.htmlEscape(resolveCode(this.name))).append("\" class=\"").append(button_class).append("\"");
 		if (StringUtils.isNotBlank(title)) {
 			sb.append(" title=\"").append(HtmlUtils.htmlEscape((title))).append("\"");
 		}
@@ -165,6 +168,17 @@ public class JspTagButtonTo extends BodyTagSupport {
 		sb.append("/>");
 
 		return sb.toString();
+	}
+
+	private String resolveCode(String code) {
+		final String resolvedName;
+		if (StringUtils.isNotBlank(code)) {
+			resolvedName = messageSource.getMessage(code, null, getRequestContext().getLocale());
+		}
+		else {
+			resolvedName = code;
+		}
+		return resolvedName;
 	}
 }
 
