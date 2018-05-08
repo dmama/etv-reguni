@@ -19,12 +19,12 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.document.ListeDroitsAccesRapport;
 import ch.vd.unireg.hibernate.HibernateCallback;
@@ -126,12 +126,16 @@ public class ListeDroitsAccesJob extends JobDefinition {
 					final Contribuable porteurAssujettissement = findPorteurAssujettissement(da.getTiers(), dateValeur);
 					final Contribuable ctb = porteurAssujettissement != null ? porteurAssujettissement : da.getTiers();
 					final Integer oid = tiersService.getOfficeImpotIdAt(ctb, dateValeur);
-					Operateur operateur = securiteService.getOperateur(da.getNoIndividuOperateur());
+					final String visa = da.getVisaOperateur();
+					if (visa == null) {
+						throw new IllegalArgumentException("Le visa du droit n°" + da.getId() + " est nul.");
+					}
+					Operateur operateur = securiteService.getOperateur(visa);
 					if (operateur == null) {
 						//SIFISC-26187 Pas d'opérateur trouvé, on créé un opérateur fantome pour l'affichage du message d'erreur dans le rapport
-						final String msgErreur = String.format("Individu %d  non retourné par host-interfaces",da.getNoIndividuOperateur());
+						final String msgErreur = String.format("Opérateur %s non trouvé dans host-interfaces", visa);
 						operateur = new Operateur();
-						operateur.setCode("");
+						operateur.setCode(visa);
 						operateur.setNom("");
 						operateur.setPrenom(msgErreur);
 

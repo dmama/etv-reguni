@@ -3857,6 +3857,7 @@
 		<column>DATE_FIN</column>
 		<column>NIVEAU</column>
 		<column>NUMERO_IND_OPER</column>
+		<column>VISA_OPERATEUR</column>
 		<column>TYPE</column>
 		<column>TIERS_ID</column>
 		<row>
@@ -3871,6 +3872,7 @@
 			<null />
 			<value>ECRITURE</value>
 			<value>1</value>
+			<value>zaiptf</value>
 			<value>AUTORISATION</value>
 			<value>10149508</value>
 		</row>

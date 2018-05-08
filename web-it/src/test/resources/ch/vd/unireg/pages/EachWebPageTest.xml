@@ -1783,6 +1783,7 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>NUMERO_IND_OPER</column>
+    <column>VISA_OPERATEUR</column>
     <column>TYPE</column>
     <column>NIVEAU</column>
     <column>TIERS_ID</column>
@@ -1796,6 +1797,7 @@
       <value>20071025</value>
       <null/>
       <value>582380</value>
+      <value>zai123</value>
       <value>INTERDICTION</value>
       <value>ECRITURE</value>
       <value>12300002</value>

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
+<%--@elvariable id="command" type="ch.vd.unireg.acces.parUtilisateur.view.UtilisateurEditRestrictionView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.droits.acces.utilisateur" /></tiles:put>
   	<tiles:put name="fichierAide">
@@ -10,7 +11,7 @@
 	<tiles:put name="body">
 
 	<form:form  action="annuler-restriction.do" id="formEditRestriction"  name="theForm" commandName="command">
-		<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
+		<input type="hidden" value="${command.utilisateur.visaOperateur}" name="visaOperateur"/>
 		<input type="hidden" value="false" name="annuleTout" id="annuleTout"/>
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
@@ -81,7 +82,7 @@
 			<table border="0">
 			<tr>
 				<td>
-					<a href="ajouter-restriction.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}"
+					<a href="ajouter-restriction.do?visaOperateur=${command.utilisateur.visaOperateur}"
 					class="add" title="Ajouter"><fmt:message key="label.bouton.ajouter" /></a>
 
 				<c:if test="${not empty command.restrictions}">
@@ -195,7 +196,7 @@
 		<form:form action="exporter-restrictions.do" method="post" id="formExporter"  name="formExporter">
 		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../par-utilisateur.do';" />
 		<c:if test="${not empty command.restrictions && command.nbDroitsNonAnnules > 0}">
-			<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
+			<input type="hidden" value="${command.utilisateur.visaOperateur}" name="visaOperateur"/>
 			<input type="submit" value="<fmt:message key="label.bouton.exporter"/>" name="exporter"/>
 		</c:if>
 		<!-- Fin Bouton -->

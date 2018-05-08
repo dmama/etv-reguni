@@ -72,7 +72,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique marcel = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
-				addDroitAcces(TEST_OP_NO_IND, marcel, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, date(1950, 1, 1), null);
+				addDroitAcces(TEST_OP_NAME, marcel, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, date(1950, 1, 1), null);
 				return null;
 			}
 		});
@@ -119,8 +119,8 @@ public class SecurityProviderCacheTest extends SecurityTest {
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
 				ids.mc = ensemble.getMenage().getNumero();
 
-				addDroitAcces(111, a, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
-				addDroitAcces(333, b, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
+				addDroitAcces("X", a, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
+				addDroitAcces("Z", b, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
 				return null;
 			}
 		});
@@ -140,7 +140,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique a = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.b);
-				addDroitAcces(111, a, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(1990, 1, 1), null);
+				addDroitAcces("X", a, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(1990, 1, 1), null);
 				return null;
 			}
 		});
@@ -220,7 +220,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique prot = addHabitant(noIndProtege);
 				addForPrincipal(prot, date(2012, 5, 12), MotifFor.INDETERMINE, MockCommune.Lausanne);
-				addDroitAcces(1, prot, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2013, 1, 1), null);
+				addDroitAcces("zai1", prot, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2013, 1, 1), null);
 
 				final PersonnePhysique nonProt = addHabitant(noIndNonProtege);
 				addForPrincipal(nonProt, date(2012, 3, 1), MotifFor.INDETERMINE, MockCommune.Bex);

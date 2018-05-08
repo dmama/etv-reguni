@@ -1,5 +1,6 @@
 package ch.vd.unireg.acces.parDossier.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -16,7 +17,7 @@ public class DroitAccesEditValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		final DroitAccesView droitAccesView = (DroitAccesView) obj;
-		if (droitAccesView.getNumeroUtilisateur() == null) {
+		if (StringUtils.isBlank(droitAccesView.getVisaOperateur())) {
 			errors.rejectValue("utilisateur", "error.utilisateur.vide");
 		}
 	}

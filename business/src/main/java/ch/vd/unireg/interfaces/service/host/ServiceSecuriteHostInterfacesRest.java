@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.infrastructure.model.rest.ListeCollectiviteAdministrative;
 import ch.vd.securite.model.rest.ListeOperateurs;
@@ -13,11 +14,11 @@ import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
-import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClient;
-import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.security.IfoSecProfil;
+import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClient;
+import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientException;
 
 public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService {
 
@@ -142,10 +143,10 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Operateur getOperateur(String visa) {
+	public Operateur getOperateur(@NotNull String visa) {
 		try {
 			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
-			final ch.vd.securite.model.rest.Operateur operateur = client.getOperateur(visa);
+			final ch.vd.securite.model.rest.Operateur operateur = client.getOperateurTous(visa);
 			return Operateur.get(operateur);
 		}
 		catch (Exception e) {

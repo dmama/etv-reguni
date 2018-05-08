@@ -2,6 +2,8 @@ package ch.vd.unireg.interfaces.service;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
@@ -56,5 +58,5 @@ public interface ServiceSecuriteService {
 	 *            le visa de l'opérateur (zaixxx, ...)
 	 * @return un opérateur ou <b>null</b> si l'opérateur n'est pas trouvé.
 	 */
-	Operateur getOperateur(String visa);
+	Operateur getOperateur(@NotNull String visa);
 }

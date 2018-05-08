@@ -5,40 +5,48 @@ import ch.vd.unireg.type.TypeOperation;
 public class SelectUtilisateursView {
 
 	private String utilisateurReference;
-	private Long numeroUtilisateurReference;
 	private String utilisateurDestination;
-	private Long numeroUtilisateurDestination;
+	private String visaUtilisateurReference;
+	private String visaUtilisateurDestination;
 	private TypeOperation typeOperation;
 
 	public String getUtilisateurReference() {
 		return utilisateurReference;
 	}
+
 	public void setUtilisateurReference(String utilisateurReference) {
 		this.utilisateurReference = utilisateurReference;
 	}
-	public Long getNumeroUtilisateurReference() {
-		return numeroUtilisateurReference;
-	}
-	public void setNumeroUtilisateurReference(Long numeroUtilisateurReference) {
-		this.numeroUtilisateurReference = numeroUtilisateurReference;
-	}
+
 	public String getUtilisateurDestination() {
 		return utilisateurDestination;
 	}
+
 	public void setUtilisateurDestination(String utilisateurDestination) {
 		this.utilisateurDestination = utilisateurDestination;
 	}
-	public Long getNumeroUtilisateurDestination() {
-		return numeroUtilisateurDestination;
+
+	public String getVisaUtilisateurReference() {
+		return visaUtilisateurReference;
 	}
-	public void setNumeroUtilisateurDestination(Long numeroUtilisateurDestination) {
-		this.numeroUtilisateurDestination = numeroUtilisateurDestination;
+
+	public void setVisaUtilisateurReference(String visaUtilisateurReference) {
+		this.visaUtilisateurReference = visaUtilisateurReference;
 	}
+
+	public String getVisaUtilisateurDestination() {
+		return visaUtilisateurDestination;
+	}
+
+	public void setVisaUtilisateurDestination(String visaUtilisateurDestination) {
+		this.visaUtilisateurDestination = visaUtilisateurDestination;
+	}
+
 	public TypeOperation getTypeOperation() {
 		return typeOperation;
 	}
+
 	public void setTypeOperation(TypeOperation typeOperation) {
 		this.typeOperation = typeOperation;
 	}
-
 }

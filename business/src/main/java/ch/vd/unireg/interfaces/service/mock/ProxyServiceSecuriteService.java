@@ -2,6 +2,8 @@ package ch.vd.unireg.interfaces.service.mock;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -41,7 +43,7 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 	}
 
 	@Override
-	public Operateur getOperateur(String visa) {
+	public Operateur getOperateur(@NotNull String visa) {
 		return target.getOperateur(visa);
 	}
 }

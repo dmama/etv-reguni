@@ -21,8 +21,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 	private DroitAccesDAO droitAccesDAO;
 	private TiersDAO tiersDAO;
 
-	private static final long noIndOperateurSource = 1L;
-	private static final long noIndOperateurDestination = 2L;
+	private static final String noIndOperateurSource = "zai111";
+	private static final String noIndOperateurDestination = "zai222";
 
 	private RegDate aujourdhui = RegDate.get();
 	private RegDate demain = aujourdhui.getOneDayAfter();
@@ -48,13 +48,13 @@ public class DroitAccesServiceTest extends BusinessTest {
 		return (PersonnePhysique) tiersDAO.save(nonhabitant);
 	}
 
-	private DroitAcces createDroitAcces(RegDate dateDebut, RegDate dateFin, Niveau niveau, TypeDroitAcces type, long noIndOperateur, PersonnePhysique dossier) {
+	private DroitAcces createDroitAcces(RegDate dateDebut, RegDate dateFin, Niveau niveau, TypeDroitAcces type, String visaOperateur, PersonnePhysique dossier) {
 		final DroitAcces da = new DroitAcces();
 		da.setDateDebut(dateDebut);
 		da.setDateFin(dateFin);
 		da.setNiveau(niveau);
 		da.setType(type);
-		da.setNoIndividuOperateur(noIndOperateur);
+		da.setVisaOperateur(visaOperateur);
 		da.setTiers(dossier);
 		return droitAccesDAO.save(da);
 	}
@@ -360,16 +360,16 @@ public class DroitAccesServiceTest extends BusinessTest {
 		assertAvecDroit(noIndOperateurDestination, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
 	}
 
-	private void assertSansDroit(long noIndOperateur, long dossier, RegDate date) {
-		final DroitAcces da = droitAccesDAO.getDroitAcces(noIndOperateur, dossier, date);
+	private void assertSansDroit(String visaOperateur, long dossier, RegDate date) {
+		final DroitAcces da = droitAccesDAO.getDroitAcces(visaOperateur, dossier, date);
 		if (da != null) {
 			Assert.assertNotNull(da.getDateFin());
 			Assert.assertTrue(da.getDateFin().isBefore(date) || da.getDateDebut().isAfter(date));
 		}
 	}
 
-	private void assertAvecDroit(long noIndOperateur, long dossier, RegDate date, TypeDroitAcces type, Niveau niveau) {
-		final DroitAcces da = droitAccesDAO.getDroitAcces(noIndOperateur, dossier, date);
+	private void assertAvecDroit(String visaOperateur, long dossier, RegDate date, TypeDroitAcces type, Niveau niveau) {
+		final DroitAcces da = droitAccesDAO.getDroitAcces(visaOperateur, dossier, date);
 		Assert.assertNotNull(da);
 		Assert.assertEquals(type, da.getType());
 		Assert.assertEquals(niveau, da.getNiveau());

@@ -27,8 +27,6 @@ public class DroitAccesView implements Serializable, Annulable {
 
 	private String utilisateur;
 
-	private Long numeroUtilisateur;
-
 	private boolean ajoutEffectue;
 
 	//
@@ -95,14 +93,6 @@ public class DroitAccesView implements Serializable, Annulable {
 		this.utilisateur = utilisateur;
 	}
 
-	public Long getNumeroUtilisateur() {
-		return numeroUtilisateur;
-	}
-
-	public void setNumeroUtilisateur(Long numeroUtilisateur) {
-		this.numeroUtilisateur = numeroUtilisateur;
-	}
-
 	public TypeDroitAcces getType() {
 		return type;
 	}
@@ -155,7 +145,6 @@ public class DroitAccesView implements Serializable, Annulable {
 	public void resetOperateur() {
 		setVisaOperateur(null);
 		setUtilisateur(null);
-		setNumeroUtilisateur(null);
 	}
 
 	public boolean isAjoutEffectue() {

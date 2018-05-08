@@ -89,6 +89,7 @@
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
     <column>NUMERO_IND_OPER</column>
+    <column>VISA_OPERATEUR</column>
     <column>TYPE</column>
     <column>NIVEAU</column>
     <column>TIERS_ID</column>
@@ -98,6 +99,7 @@
       <value>20000101</value>
       <null/>
       <value>1</value>  		<!-- Francis Perroset -->
+      <value>zaiptf</value>  		<!-- Francis Perroset -->
 	  <value>AUTORISATION</value>
 	  <value>ECRITURE</value>
 	  <value>10149508</value>		<!-- Pascal Broulis -->
@@ -108,6 +110,7 @@
       <value>20000101</value>
       <null/>
       <value>272819</value>  		<!-- Daniel Di Lallo -->
+      <value>zciddo</value>  		<!-- Daniel Di Lallo -->
 	  <value>INTERDICTION</value>
 	  <value>LECTURE</value>
 	  <value>12300002</value>		<!-- Laurent Schmid -->

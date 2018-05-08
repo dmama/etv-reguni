@@ -4,19 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.acces.parDossier.view.DossierEditRestrictionView;
 import ch.vd.unireg.acces.parDossier.view.DroitAccesView;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.general.view.TiersGeneralView;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
@@ -61,9 +62,6 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 
 	/**
 	 * Alimente la vue du controller
-	 * @param numeroTiers
-	 * @return
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -77,40 +75,27 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 		final Set<DroitAcces> droitsAccesAppliques = tiers.getDroitsAccesAppliques();
 		final List<DroitAccesView> droitsAccesView =  new ArrayList<>(droitsAccesAppliques.size());
 		for (DroitAcces droitAcces : droitsAccesAppliques) {
+			final String visa = droitAcces.getVisaOperateur();
 			final DroitAccesView droitAccesView = new DroitAccesView();
 			droitAccesView.setId(droitAcces.getId());
 			droitAccesView.setAnnule(droitAcces.isAnnule());
 			droitAccesView.setType(droitAcces.getType());
-			final Operateur operator = serviceSecuriteService.getOperateur(droitAcces.getNoIndividuOperateur());
-			String prenomNom = "";
-			if (operator != null) {
-				if (operator.getPrenom() != null) {
-					prenomNom = operator.getPrenom();
-				}
-				if (operator.getNom() != null) {
-					prenomNom = prenomNom + ' ' + operator.getNom();
-				}
-				droitAccesView.setPrenomNom(prenomNom);
-				droitAccesView.setVisaOperateur(operator.getCode());
-
-				String officeImpot;
-				try {
-					final List<CollectiviteAdministrativeUtilisateur> collectivitesAdministratives = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
-					final StringRenderer<CollectiviteAdministrative> nomsCourts = CollectiviteAdministrative::getNomCourt;
-					officeImpot = CollectionsUtils.toString(collectivitesAdministratives, nomsCourts, ", ", null);
-				}
-				catch (ServiceSecuriteException e) {
-					officeImpot = null;
-					LOGGER.warn("Exception reçue à la réception des collectivités de l'utilisateur " + operator.getCode(), e);
-				}
-				if (officeImpot != null) {
-					droitAccesView.setOfficeImpot(officeImpot);
-				}
+			droitAccesView.setVisaOperateur(visa);
+			if (visa == null) {
+				// Opérateur inconnu, on affiche un texte dans le nom prenom
+				droitAccesView.setPrenomNom("Opérateur inconnu");
 			}
-			else{
-				//SIFISC-26187 Pas d'opérateur trouvé, on affiche un texte dans le nom prenom
-				final String msgErreur = String.format("Individu %d  non retourné par host-interfaces",droitAcces.getNoIndividuOperateur());
-				droitAccesView.setPrenomNom(msgErreur);
+			else {
+				final Operateur operator = serviceSecuriteService.getOperateur(visa);
+				if (operator != null) {
+					droitAccesView.setPrenomNom(buildPrenomNom(operator));
+					droitAccesView.setOfficeImpot(buildOfficeImpot(visa));
+				}
+				else {
+					//SIFISC-26187 Pas d'opérateur trouvé, on affiche un texte dans le nom prenom
+					final String msgErreur = String.format("Opérateur %s non trouvé dans host-interfaces", visa);
+					droitAccesView.setPrenomNom(msgErreur);
+				}
 			}
 
 			droitAccesView.setNiveau(droitAcces.getNiveau());
@@ -124,24 +109,48 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 		return dossierEditRestrictionView;
 	}
 
+	@Nullable
+	private String buildOfficeImpot(String visa) {
+		String officeImpot;
+		try {
+			final List<CollectiviteAdministrativeUtilisateur> collectivitesAdministratives = serviceSecuriteService.getCollectivitesUtilisateur(visa);
+			final StringRenderer<CollectiviteAdministrative> nomsCourts = CollectiviteAdministrative::getNomCourt;
+			officeImpot = CollectionsUtils.toString(collectivitesAdministratives, nomsCourts, ", ", null);
+		}
+		catch (ServiceSecuriteException e) {
+			officeImpot = null;
+			LOGGER.warn("Exception reçue à la réception des collectivités de l'utilisateur " + visa, e);
+		}
+		return officeImpot;
+	}
+
+	private static String buildPrenomNom(Operateur operator) {
+		String prenomNom = "";
+		if (operator.getPrenom() != null) {
+			prenomNom = operator.getPrenom();
+		}
+		if (operator.getNom() != null) {
+			prenomNom = prenomNom + ' ' + operator.getNom();
+		}
+		return prenomNom;
+	}
+
 	/**
 	 * Persiste un droit d'acces
-	 * @param droitAccesView
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(DroitAccesView droitAccesView) throws DroitAccesException {
-		final long operateurId = droitAccesView.getNumeroUtilisateur();
+		final String visaOperateur = droitAccesView.getVisaOperateur();
 		final long tiersId = droitAccesView.getNumero();
 		final TypeDroitAcces type = droitAccesView.getType();
 		final Niveau niveau = (droitAccesView.isLectureSeule() ? Niveau.LECTURE : Niveau.ECRITURE);
 
-		droitAccesService.ajouteDroitAcces(operateurId, tiersId, type, niveau);
+		droitAccesService.ajouteDroitAcces(visaOperateur, tiersId, type, niveau);
 	}
 
 	/**
 	 * Annule une restriction
-	 * @param idRestriction
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)

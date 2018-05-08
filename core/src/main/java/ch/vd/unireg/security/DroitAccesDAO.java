@@ -3,6 +3,8 @@ package ch.vd.unireg.security;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.pagination.ParamPagination;
@@ -19,24 +21,24 @@ public interface DroitAccesDAO extends GenericDAO<DroitAcces, Long> {
 	/**
 	 * @return le droit d'accès courant entre l'opérateur et le tiers spécifié; ou <b>null</b> si aucun n'accès n'est défini.
 	 */
-	DroitAcces getDroitAcces(long operateurId, long tiersId, RegDate date);
+	DroitAcces getDroitAcces(@NotNull String visaOperateur, long tiersId, RegDate date);
 
 	/**
 	 * Renvoie la liste des droits d'acces d'un utilisateur
 	 */
-	List<DroitAcces> getDroitsAcces(long noIndividuOperateur);
+	List<DroitAcces> getDroitsAcces(@NotNull String visaOperateur);
 
 	/**
 	 * Renvoie la liste des droits d'acces d'un utilisateur paginée
 	 */
-	List<DroitAcces> getDroitsAcces(long noIndividuOperateur, ParamPagination paramPagination);
+	List<DroitAcces> getDroitsAcces(@NotNull String visaOperateur, ParamPagination paramPagination);
 
 	/**
 	 * Renvoie la liste des ids des  droits d'acces d'un utilisateur
 	 *
 	 * @return la liste des ids des droits d'accès
 	 */
-	List<Long> getIdsDroitsAcces(long noIndividuOperateur);
+	List<Long> getIdsDroitsAcces(@NotNull String visaOperateur);
 
 	/**
 	 * @return la liste de tous les droits d'accès existant sur le tiers spécifié.
@@ -62,5 +64,24 @@ public interface DroitAccesDAO extends GenericDAO<DroitAcces, Long> {
 	 */
 	Set<Long> getContribuablesControles();
 
-	Integer getDroitAccesCount(long noIndividuOperateur);
+	Integer getDroitAccesCount(@NotNull String visaOperateur);
+
+	/**
+	 * @return la liste des ids des opérateurs qui n'ont pas de visa associé.
+	 */
+	List<Long> getOperatorsIdsToMigrate();
+
+	/**
+	 * Renseigne le visa de l'opérateur spécifié sur tous les droits d'accès qui correspondent.
+	 *
+	 * @param noOperateur   le numéro technique de l'opérateur
+	 * @param visaOperateur le visa de l'opérateur
+	 */
+	void updateVisa(long noOperateur, @NotNull String visaOperateur);
+
+	/**
+	 * Annule tous les droits d'accès de l'opérateur spécifié.
+	 * @param noOperateur l'id d'un opérateur
+	 */
+	void cancelOperateur(Long noOperateur);
 }

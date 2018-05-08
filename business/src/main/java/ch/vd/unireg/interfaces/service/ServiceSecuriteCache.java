@@ -7,6 +7,7 @@ import java.util.Set;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -389,7 +390,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	}
 
 	@Override
-	public Operateur getOperateur(String visa) {
+	public Operateur getOperateur(@NotNull String visa) {
 		final Operateur resultat;
 
 		final KeyGetOperateurByVisa key = new KeyGetOperateurByVisa(visa);

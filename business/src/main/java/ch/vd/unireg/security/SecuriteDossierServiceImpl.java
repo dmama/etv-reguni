@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +88,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Niveau getAcces(String visaOperateur, long tiersId) {
+	public Niveau getAcces(@NotNull String visaOperateur, long tiersId) {
 
 		final Tiers tiers = tiersDAO.get(tiersId, true); // ne pas flusher la session automatiquement
 		if (tiers == null) {
@@ -108,7 +110,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Niveau> getAcces(String visa, List<Long> ids) {
+	public List<Niveau> getAcces(@NotNull String visa, List<Long> ids) {
 
 		final Operateur operateur = serviceSecurite.getOperateur(visa);
 		if (operateur == null) {
@@ -409,7 +411,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 			if (d.isAnnule()) {
 				continue;
 			}
-			if (d.getNoIndividuOperateur() == operateur.getIndividuNoTechnique()) {
+			if (StringUtils.equalsIgnoreCase(d.getVisaOperateur(), operateur.getCode())) {
 				switch (d.getType()) {
 				case AUTORISATION:
 					switch (d.getNiveau()) {

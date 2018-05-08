@@ -453,19 +453,19 @@ public class EachWebPageTest extends WebitTest {
 	// Page des droits d'accès pour un utilisateur
 	@Test
 	public void testAccesRestrictionsUtilisateur() throws Exception {
-		assertPage("/acces/par-utilisateur/restrictions.do?noIndividuOperateur=582380", "Droits d'accès de l'utilisateur");
+		assertPage("/acces/par-utilisateur/restrictions.do?visaOperateur=zciddo", "Droits d'accès de l'utilisateur");
 	}
 
 	// Page de recherche d'un dossier pour un utilisateur
 	@Test
 	public void testAccesListPersonneUtilisateur() throws Exception {
-		assertPage("/acces/par-utilisateur/ajouter-restriction.do?noIndividuOperateur=582380", "Accès par utilisateur - Recherche d'une personne physique ou d'une entreprise");
+		assertPage("/acces/par-utilisateur/ajouter-restriction.do?visaOperateur=zciddo", "Accès par utilisateur - Recherche d'une personne physique ou d'une entreprise");
 	}
 
 	// Page de récapitulation de droit d'accès par dossier
 	@Test
 	public void testAccesRecapDossierUtilisateur() throws Exception {
-		assertPage("/acces/par-utilisateur/recap.do?numero=12300002&noIndividuOperateur=582380", "Création d'un droit d'accès");
+		assertPage("/acces/par-utilisateur/recap.do?numero=12300002&visaOperateur=zciddo", "Création d'un droit d'accès");
 	}
 
 	// Page de Copie / Transfert de droit d'accès
@@ -477,13 +477,13 @@ public class EachWebPageTest extends WebitTest {
 	// Page de de confirmation de Copie de droit d'accès
 	@Test
 	public void testAccesConfirmCopie() throws Exception {
-		assertPage("/acces/copie-transfert/confirm.do?noOperateurReference=582380&noOperateurDestination=860474&typeOperation=COPIE", "Confirmation de la copie des droits d'accès");
+		assertPage("/acces/copie-transfert/confirm.do?visaOperateurReference=zciddo&visaOperateurDestination=zsimsn&typeOperation=COPIE", "Confirmation de la copie des droits d'accès");
 	}
 
 	// Page de de confirmation de transfert de droit d'accès
 	@Test
 	public void testAccesConfirmTransfert() throws Exception {
-		assertPage("/acces/copie-transfert/confirm.do?noOperateurReference=582380&noOperateurDestination=860474&typeOperation=TRANSFERT", "Confirmation du transfert des droits d'accès");
+		assertPage("/acces/copie-transfert/confirm.do?visaOperateurReference=zciddo&visaOperateurDestination=zsimsn&typeOperation=TRANSFERT", "Confirmation du transfert des droits d'accès");
 	}
 
 	/*----------------------

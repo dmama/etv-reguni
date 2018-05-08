@@ -3,9 +3,11 @@ package ch.vd.unireg.general.manager;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.unireg.general.view.UtilisateurView;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
-import ch.vd.unireg.general.view.UtilisateurView;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 
@@ -22,11 +24,11 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 	}
 
 	@Override
-	public UtilisateurView get(long noIndividuOperateur) {
+	public UtilisateurView get(@NotNull String visaOperateur) {
 
-		Operateur operateur = serviceSecuriteService.getOperateur(noIndividuOperateur);
+		Operateur operateur = serviceSecuriteService.getOperateur(visaOperateur);
 		UtilisateurView utilisateurView = new UtilisateurView();
-		utilisateurView.setNumeroIndividu(noIndividuOperateur);
+		utilisateurView.setVisaOperateur(visaOperateur);
 		String prenomNom = "";
 		if (operateur != null) {
 			if (operateur.getPrenom() != null) {
@@ -36,7 +38,6 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 				prenomNom = prenomNom + ' ' + operateur.getNom();
 			}
 			utilisateurView.setPrenomNom(prenomNom);
-			utilisateurView.setVisaOperateur(operateur.getCode());
 			List<CollectiviteAdministrativeUtilisateur> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operateur.getCode());
 			Iterator<CollectiviteAdministrativeUtilisateur> itCollectiviteAdministrative = collectivitesAdministrative.iterator();
 			String officeImpot = null;

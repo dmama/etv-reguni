@@ -6,11 +6,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.batchtemplate.BatchCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.AuthenticationInterface;
+import ch.vd.unireg.common.ParallelBatchTransactionTemplate;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
@@ -23,11 +41,15 @@ import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.TypeDroitAcces;
 
-public class DroitAccesServiceImpl implements DroitAccesService {
+public class DroitAccesServiceImpl implements DroitAccesService, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DroitAccesServiceImpl.class);
 
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
 	private ServiceSecuriteService serviceSecuriteService;
+	private PlatformTransactionManager transactionManager;
+	private ApplicationContext applicationContext;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -41,17 +63,21 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		this.serviceSecuriteService = serviceSecuriteService;
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public DroitAcces ajouteDroitAcces(long operateurId, long tiersId, TypeDroitAcces type, Niveau niveau) throws DroitAccesException {
+	public DroitAcces ajouteDroitAcces(@NotNull String visaOperateur, long tiersId, TypeDroitAcces type, Niveau niveau) throws DroitAccesException {
 
 		final RegDate aujourdhui = RegDate.get();
 
-		final DroitAcces da = droitAccesDAO.getDroitAcces(operateurId, tiersId, aujourdhui);
+		final DroitAcces da = droitAccesDAO.getDroitAcces(visaOperateur, tiersId, aujourdhui);
 		if (da != null && !da.isAnnule()) {
-			throw new DroitAccesException("Un droit d'accès existe déjà entre l'opérateur n°" + operateurId + " et le tiers n°" + tiersId);
+			throw new DroitAccesException("Un droit d'accès existe déjà entre l'opérateur n°" + visaOperateur + " et le tiers n°" + tiersId);
 		}
 
 		final Tiers tiers = tiersDAO.get(tiersId);
@@ -59,7 +85,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 			throw new DroitAccesException("Le tiers n°" + tiersId + " n'existe pas.");
 		}
 		checkTiers(tiers);
-		return ajouteDroitAcces(operateurId, (Contribuable) tiers, type, niveau, aujourdhui, null);
+		return ajouteDroitAcces(visaOperateur, (Contribuable) tiers, type, niveau, aujourdhui, null);
 	}
 
 	/**
@@ -166,13 +192,13 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	 * Crée une nouvelle instance de DroitAcces non-annulée
 	 * @return la nouvelle instance déjà sauvegardée
 	 */
-	private DroitAcces ajouteDroitAcces(long operateurId, Contribuable ctb, TypeDroitAcces type, Niveau niveau, RegDate dateDebut, RegDate dateFin) {
+	private DroitAcces ajouteDroitAcces(@NotNull String visaOperateur, Contribuable ctb, TypeDroitAcces type, Niveau niveau, RegDate dateDebut, RegDate dateFin) {
 		final DroitAcces droitAcces = new DroitAcces();
 		droitAcces.setDateDebut(dateDebut);
 		droitAcces.setDateFin(dateFin);
 		droitAcces.setNiveau(niveau);
 		droitAcces.setType(type);
-		droitAcces.setNoIndividuOperateur(operateurId);
+		droitAcces.setVisaOperateur(visaOperateur);
 		droitAcces.setTiers(ctb);
 		return droitAccesDAO.save(droitAcces);
 	}
@@ -190,7 +216,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		if (aAjouter.isAnnule()) {
 			throw new IllegalArgumentException();
 		}
-		return aAjouter.getNoIndividuOperateur() == existant.getNoIndividuOperateur() &&
+		return  StringUtils.equalsIgnoreCase(aAjouter.getVisaOperateur(), existant.getVisaOperateur()) &&
 				adapteExistant(aAjouter.getType(), aAjouter.getNiveau(), aAjouter, existant, aujourdhui);
 	}
 
@@ -225,14 +251,14 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 				else {
 					Operateur operateur;
 					try {
-						operateur = serviceSecuriteService.getOperateur(existant.getNoIndividuOperateur());
+						operateur = serviceSecuriteService.getOperateur(existant.getVisaOperateur());
 					}
 					catch (ServiceSecuriteException e) {
 						operateur = null;
 					}
 					final String nomOperateur = operateur != null ? String.format("%s %s", operateur.getPrenom(), operateur.getNom()) : "?";
 					final String visaOperateur = operateur != null ? operateur.getCode() : "?";
-					final String msg = String.format("Impossible d'ajouter le droit d'accès à l'opérateur '%s' (%s/%d).", nomOperateur, visaOperateur, existant.getNoIndividuOperateur());
+					final String msg = String.format("Impossible d'ajouter le droit d'accès à l'opérateur '%s' (%s).", nomOperateur, visaOperateur);
 					throw new DroitAccesConflitException(msg, new DroitAccesConflit(existant.getTiers().getNumero(),
 					                                                                existant.getType(), existant.getNiveau(),
 					                                                                type, niveau));
@@ -264,20 +290,20 @@ public class DroitAccesServiceImpl implements DroitAccesService {
     }
 
     @Override
-    public void annuleToutLesDroitAcces(long noIndividuOperateur) {
-        for (DroitAcces da : droitAccesDAO.getDroitsAcces(noIndividuOperateur)) {
+    public void annuleToutLesDroitAcces(@NotNull String visaOperateur) {
+        for (DroitAcces da : droitAccesDAO.getDroitsAcces(visaOperateur)) {
             annuleDroitAcces(da);
         }
     }
 
 	@Override
-	public List<DroitAccesConflit> copieDroitsAcces(long operateurSourceId, long operateurTargetId) {
-		return copie(operateurSourceId, operateurTargetId, false);
+	public List<DroitAccesConflit> copieDroitsAcces(@NotNull String visaOperateurSource, @NotNull String visaOperateurTarget) {
+		return copie(visaOperateurSource, visaOperateurTarget, false);
 	}
 
 	@Override
-	public List<DroitAccesConflit> transfereDroitsAcces(long operateurSourceId, long operateurTargetId) {
-		return copie(operateurSourceId, operateurTargetId, true);
+	public List<DroitAccesConflit> transfereDroitsAcces(@NotNull String visaOperateurSource, @NotNull String visaOperateurTarget) {
+		return copie(visaOperateurSource, visaOperateurTarget, true);
 	}
 
 	/**
@@ -306,10 +332,10 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		}
 	}
 
-	private List<DroitAccesConflit> copie(final long operateurSourceId, final long operateurTargetId, final boolean fermeSource) {
+	private List<DroitAccesConflit> copie(final String visaOperateurSource, final String visaOperateurTarget, final boolean fermeSource) {
 
-		final List<DroitAcces> source = droitAccesDAO.getDroitsAcces(operateurSourceId);
-		final List<DroitAcces> target = droitAccesDAO.getDroitsAcces(operateurTargetId);
+		final List<DroitAcces> source = droitAccesDAO.getDroitsAcces(visaOperateurSource);
+		final List<DroitAcces> target = droitAccesDAO.getDroitsAcces(visaOperateurTarget);
 		final RegDate dateReference = RegDate.get();
 
 		final List<DroitAccesConflit> conflits = new LinkedList<>();
@@ -322,7 +348,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 
 				@Override
 				public void fillDestinationContext(DroitAcces droit) {
-					droit.setNoIndividuOperateur(operateurTargetId);
+					droit.setVisaOperateur(visaOperateurTarget);
 				}
 
 				@Override
@@ -339,4 +365,45 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		}
 		return conflits.isEmpty() ? Collections.emptyList() : conflits;
 	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		// au démarrage de l'application, on renseigne les visas des opérateurs si nécessaire (migration)
+		// TODO (msi) supprimer cette méthode quand les visas auront été générés en production
+		if (event.getApplicationContext() == this.applicationContext) {
+			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
+			try {
+				final TransactionTemplate template = new TransactionTemplate(transactionManager);
+				final List<Long> ids = template.execute(status -> droitAccesDAO.getOperatorsIdsToMigrate());
+
+				final ParallelBatchTransactionTemplate<Long> t = new ParallelBatchTransactionTemplate<>(ids, 20, 8, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
+				t.execute(new BatchCallback<Long>() {
+					@Override
+					public boolean doInTransaction(List<Long> batch) {
+						for (Long id : batch) {
+							final Operateur operateur = serviceSecuriteService.getOperateur(id);
+							if (operateur == null) {
+								LOGGER.warn("L'opérateur n°" + id + " n'existe pas dans Host-Interfaces. Ses droits seront annulés.");
+								droitAccesDAO.cancelOperateur(id);
+							}
+							else {
+								LOGGER.info("Mémorisation du visa [" + operateur.getCode() + "] pour l'opérateur n°" + id + ".");
+								droitAccesDAO.updateVisa(operateur.getIndividuNoTechnique(), operateur.getCode());
+							}
+						}
+						return true;
+					}
+				}, null);
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
+		}
+	}
 }
+

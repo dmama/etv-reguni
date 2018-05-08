@@ -309,8 +309,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique protege = addNonHabitant("Jürg", "Bunker", date(1975, 4, 23), Sexe.MASCULIN);
 				final PersonnePhysique conjointDeProtege = addNonHabitant("Adelheid", "Bunker", date(1974, 7, 31), Sexe.FEMININ);
 				final EnsembleTiersCouple coupleProtege = addEnsembleTiersCouple(protege, conjointDeProtege, date(2010, 6, 3), null);
-				addDroitAcces(noIndividuActeur, protege, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2010, 1, 1), null);
-				addDroitAcces(noIndividuVoyeur, protege, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2010, 1, 1), null);
+				addDroitAcces(visaActeur, protege, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2010, 1, 1), null);
+				addDroitAcces(visaVoyeur, protege, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2010, 1, 1), null);
 
 				final PersonnePhysique normal = addNonHabitant("Emile", "Gardavou", date(1962, 7, 4), Sexe.MASCULIN);
 				final EnsembleTiersCouple coupleNormal = addEnsembleTiersCouple(normal, null, date(1987, 6, 5), null);
@@ -3429,7 +3429,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final DroitAcces da = new DroitAcces();
 				da.setDateDebut(date(2000, 1, 1));
 				da.setNiveau(Niveau.LECTURE);
-				da.setNoIndividuOperateur(798455L);
+				da.setVisaOperateur("zai455");
 				da.setType(TypeDroitAcces.AUTORISATION);
 				da.setTiers(ppProtege);
 				hibernateTemplate.merge(da);

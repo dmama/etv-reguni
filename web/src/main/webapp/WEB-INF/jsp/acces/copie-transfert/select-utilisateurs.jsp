@@ -15,20 +15,20 @@
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.utilisateur.reference" />&nbsp;:</td>
 					<td width="75%">
-						<div id="utilisateurs">
+						<div id="utilisateursReference">
 							<form:input path="utilisateurReference" id="utilisateurReference" />
 							<span class="mandatory">*</span>
 							<form:errors path="utilisateurReference" cssClass="error"/>
-							<form:hidden path="numeroUtilisateurReference" id="numeroUtilisateurReference"  />
+							<form:hidden path="visaUtilisateurReference" id="visaUtilisateurReference"  />
 							<script>
 								$(function() {
 									Autocomplete.security('user', '#utilisateurReference', false, function(item) {
 										if (item) {
-											$('#numeroUtilisateurReference').val(item.id2); // le numéro technique
+											$('#visaUtilisateurReference').val(item.id1); // le visa de l'opérateur
 										}
 										else {
 											$('#utilisateurReference').val(null);
-											$('#numeroUtilisateurReference').val(null);
+											$('#visaUtilisateurReference').val(null);
 										}
 									});
 								});
@@ -39,20 +39,20 @@
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.utilisateur.destination" />&nbsp;:</td>
 					<td width="75%">
-						<div id="utilisateurs">
+						<div id="utilisateursDestination">
 							<form:input path="utilisateurDestination" id="utilisateurDestination" />
 							<span class="mandatory">*</span>
 							<form:errors path="utilisateurDestination" cssClass="error"/>
-							<form:hidden path="numeroUtilisateurDestination" id="numeroUtilisateurDestination"  />
+							<form:hidden path="visaUtilisateurDestination" id="visaUtilisateurDestination"  />
 							<script>
 								$(function() {
 									Autocomplete.security('user', '#utilisateurDestination', false, function(item) {
 										if (item) {
-											$('#numeroUtilisateurDestination').val(item.id2); // le numéro technique
+											$('#visaUtilisateurDestination').val(item.id1); // le visa de l'opérateur
 										}
 										else {
 											$('#utilisateurDestination').val(null);
-											$('#numeroUtilisateurDestination').val(null);
+											$('#visaUtilisateurDestination').val(null);
 										}
 									});
 								});

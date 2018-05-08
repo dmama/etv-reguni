@@ -3,19 +3,22 @@ package ch.vd.unireg.acces.parUtilisateur.view;
 public class SelectUtilisateurView {
 
 	private String utilisateur;
-	private Long numeroUtilisateur;
+	private String visaOperateur;
 
 	public String getUtilisateur() {
 		return utilisateur;
 	}
+
 	public void setUtilisateur(String utilisateur) {
 		this.utilisateur = utilisateur;
 	}
-	public Long getNumeroUtilisateur() {
-		return numeroUtilisateur;
+
+	public String getVisaOperateur() {
+		return visaOperateur;
 	}
-	public void setNumeroUtilisateur(Long numeroUtilisateur) {
-		this.numeroUtilisateur = numeroUtilisateur;
+
+	public void setVisaOperateur(String visaOperateur) {
+		this.visaOperateur = visaOperateur;
 	}
 
 }

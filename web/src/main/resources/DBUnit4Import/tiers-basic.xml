@@ -11140,24 +11140,24 @@
     <column>DATE_FIN</column>
     <column>NIVEAU</column>
     <column>NUMERO_IND_OPER</column>
+    <column>VISA_OPERATEUR</column>
     <column>TYPE</column>
     <column>TIERS_ID</column>
     <row>
-      <value>1</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-02-01 00:00:00.0]]></value>
-      <value>Testeur</value>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <value>Testeur</value>
-      <value>20071025</value>
-      <null/>
-      <value>ECRITURE</value>
-      <value>116918</value>
-      <value>INTERDICTION</value>
-      <value>12300002</value>
-      <null/>
-      <null/>
+      <value>1</value>                                    <!-- ID -->
+      <null/>                                             <!-- ANNULATION_DATE -->
+      <null/>                                             <!-- ANNULATION_USER -->
+      <value><![CDATA[2008-02-01 00:00:00.0]]></value>    <!-- LOG_CDATE -->
+      <value>Testeur</value>                              <!-- LOG_CUSER -->
+      <value><![CDATA[2008-01-01 00:00:00.0]]></value>    <!-- LOG_MDATE -->
+      <value>Testeur</value>                              <!-- LOG_MUSER -->
+      <value>20071025</value>                             <!-- DATE_DEBUT -->
+      <null/>                                             <!-- DATE_FIN -->
+      <value>ECRITURE</value>                             <!-- NIVEAU -->
+      <value>116918</value>                               <!-- NUMERO_IND_OPER -->
+      <value>zai123</value>                               <!-- VISA_OPERATEUR -->
+      <value>INTERDICTION</value>                         <!-- TYPE -->
+      <value>12300002</value>                             <!-- TIERS_ID -->
     </row>
   </table>
   <table name="DOCUMENT_FISCAL">

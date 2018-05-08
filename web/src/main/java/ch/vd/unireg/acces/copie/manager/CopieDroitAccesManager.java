@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.unireg.acces.copie.view.ConfirmCopieView;
 import ch.vd.unireg.acces.copie.view.ConfirmedDataView;
 import ch.vd.unireg.adresse.AdresseException;
-import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.security.DroitAccesConflitAvecDonneesContribuable;
 
@@ -15,13 +14,9 @@ public interface CopieDroitAccesManager {
 
 	/**
 	 * Alimente le frombacking du controller
-	 * @param noOperateurReference
-	 * @param noOperateurDestination
-	 * @return
-	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	ConfirmCopieView get(long noOperateurReference, long noOperateurDestination, ParamPagination pagination) throws AdresseException;
+	ConfirmCopieView get(String visaOperateurReference, String visaOperateurDestination, ParamPagination pagination) throws AdresseException;
 
 	/**
 	 * Copie les droits d'un utilisateur vers un autre

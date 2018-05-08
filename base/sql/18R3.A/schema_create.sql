@@ -48,7 +48,23 @@ create table DELAI_DOCUMENT_FISCAL (DELAI_TYPE nvarchar2(31) not null, id number
 
 create table DOC_INDEX (DOC_TYPE nvarchar2(50) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DESCRIPTION nvarchar2(255), FILE_EXT nvarchar2(255) not null, FILE_NAME nvarchar2(255) not null, FILE_SIZE number(19,0) not null, NOM nvarchar2(100) not null, SUB_PATH nvarchar2(255) not null, NB_TIERS number(10,0), primary key (id));
 
-create table DROIT_ACCES (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0), NIVEAU nvarchar2(255) not null, NUMERO_IND_OPER number(19,0) not null, TYPE nvarchar2(255) not null, TIERS_ID number(19,0) not null, primary key (id));
+create table DROIT_ACCES (
+	id              number(19, 0)  not null,
+	ANNULATION_DATE timestamp,
+	ANNULATION_USER nvarchar2(65),
+	LOG_CDATE       timestamp,
+	LOG_CUSER       nvarchar2(65),
+	LOG_MDATE       timestamp,
+	LOG_MUSER       nvarchar2(65),
+	DATE_DEBUT      number(10, 0)  not null,
+	DATE_FIN        number(10, 0),
+	NIVEAU          nvarchar2(255) not null,
+	NUMERO_IND_OPER number(19, 0),
+	VISA_OPERATEUR  NVARCHAR2(25),
+	TYPE            nvarchar2(255) not null,
+	TIERS_ID        number(19, 0)  not null,
+	primary key (id)
+);
 
 create table ETAT_DOCUMENT_FISCAL (ETAT_TYPE nvarchar2(31), TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_OBTENTION number(10,0) not null, DATE_ENVOI_COURRIER number(10,0), EMOLUMENT NUMBER(8,0), SOURCE nvarchar2(255), CLE_ARCHIVAGE nvarchar2(40), CLE_DOCUMENT nvarchar2(256), DOCUMENT_FISCAL_ID number(19,0) not null, primary key (id));
 
@@ -242,7 +258,7 @@ alter table DELAI_DOCUMENT_FISCAL add constraint FK_DEL_DOCFISC_DOCFISC_ID forei
 
 create index IDX_DA_TIERS_ID on DROIT_ACCES (TIERS_ID);
 
-create index IDX_NUMERO_IND_OPER on DROIT_ACCES (NUMERO_IND_OPER);
+create index IDX_VISA_OPERATEUR on DROIT_ACCES (VISA_OPERATEUR);
 
 alter table DROIT_ACCES add constraint FK_DA_TRS_ID foreign key (TIERS_ID) references TIERS;
 

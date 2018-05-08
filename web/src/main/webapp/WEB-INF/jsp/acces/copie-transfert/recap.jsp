@@ -47,8 +47,8 @@
 	</form:form>
 
 	<form:form action="${action}" commandName="validationData" method="post">
-		<input type="hidden" name="noOperateurReference" value="${noOperateurReference}"/>
-		<input type="hidden" name="noOperateurDestination" value="${noOperateurDestination}"/>
+		<input type="hidden" name="visaOperateurReference" value="${visaOperateurReference}"/>
+		<input type="hidden" name="visaOperateurDestination" value="${visaOperateurDestination}"/>
 		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../copie-transfert.do';" />
 		<input type="submit" name="valider" value="${labelBouton}"/>
 	</form:form>

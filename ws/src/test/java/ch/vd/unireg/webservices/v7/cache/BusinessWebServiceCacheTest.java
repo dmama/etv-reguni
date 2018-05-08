@@ -1712,7 +1712,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Constantin", "Dugenou", null, Sexe.MASCULIN);
-				addDroitAcces(1232L, pp, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2014, 1, 1), null);
+				addDroitAcces("zai1232", pp, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2014, 1, 1), null);
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 
 				final Ids ids = new Ids();

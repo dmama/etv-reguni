@@ -85,9 +85,9 @@ public class DroitAccesController {
 	private static final String LIST = "list";
 	private static final String COMMAND = "command";
 	private static final String NUMERO = "numero";
-	private static final String NO_INDIVIDU_OPERATEUR = "noIndividuOperateur";
-	private static final String NO_OPERATEUR_REFERENCE = "noOperateurReference";
-	private static final String NO_OPERATEUR_DESTINATION = "noOperateurDestination";
+	private static final String VISA_OPERATEUR = "visaOperateur";
+	private static final String VISA_OPERATEUR_REFERENCE = "visaOperateurReference";
+	private static final String VISA_OPERATEUR_DESTINATION = "visaOperateurDestination";
 	private static final String TYPE_OPERATION = "typeOperation";
 	private static final String WITH_CONFLICTS = "withConflicts";
 	private static final String CONFLICTS = "conflicts";
@@ -289,7 +289,7 @@ public class DroitAccesController {
 		if (bindingResult.hasErrors()) {
 			return accesParUtilisateur(model, view);
 		}
-		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d", NO_INDIVIDU_OPERATEUR, view.getNumeroUtilisateur());
+		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%s", VISA_OPERATEUR, view.getVisaOperateur());
 	}
 
 	@RequestMapping(value = "/par-utilisateur/restrictions.do", method = RequestMethod.GET)
@@ -297,10 +297,10 @@ public class DroitAccesController {
 	public String getRestrictionsUtilisateur(HttpServletRequest request,
 	                                         HttpSession session,
 	                                         Model model,
-	                                         @RequestParam(value = NO_INDIVIDU_OPERATEUR) long noIndividuOperateur,
+	                                         @RequestParam(value = VISA_OPERATEUR) String visaOperateur,
 											 @RequestParam(value = WITH_CONFLICTS, required = false, defaultValue = "false") boolean withConflicts) throws Exception {
 		final WebParamPagination pagination = new WebParamPagination(request, "restriction", 25, "id", true);
-		final UtilisateurEditRestrictionView view = utilisateurEditManager.get(noIndividuOperateur, pagination);
+		final UtilisateurEditRestrictionView view = utilisateurEditManager.get(visaOperateur, pagination);
 		model.addAttribute(COMMAND, view);
 		if (withConflicts) {
 			model.addAttribute(CONFLICTS, session.getAttribute(CONFLICTS_NAME));
@@ -314,12 +314,12 @@ public class DroitAccesController {
 
 	@RequestMapping(value = "/par-utilisateur/annuler-restriction.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
-	public String onPostAnnulerRestriction(@RequestParam(value = NO_INDIVIDU_OPERATEUR) Long noIndividuOperateur,
+	public String onPostAnnulerRestriction(@RequestParam(value = VISA_OPERATEUR) String visaOperateur,
 	                                       @RequestParam(value = "aAnnuler", required = false) List<Long> restrictionsAAnnuler,
 	                                       @RequestParam(value = "annuleTout", required = false, defaultValue = "false") boolean annuleTout) {
 		try {
 			if (annuleTout) {
-				utilisateurEditManager.annulerToutesLesRestrictions(noIndividuOperateur);
+				utilisateurEditManager.annulerToutesLesRestrictions(visaOperateur);
 			}
 			else {
 				utilisateurEditManager.annulerRestrictions(restrictionsAAnnuler);
@@ -328,15 +328,15 @@ public class DroitAccesController {
 		catch (DroitAccesException e) {
 			throw new ActionException(e.getMessage(), e);
 		}
-		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d", NO_INDIVIDU_OPERATEUR, noIndividuOperateur);
+		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%s", VISA_OPERATEUR, visaOperateur);
 	}
 
 	@RequestMapping(value = "/par-utilisateur/exporter-restrictions.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_LEC, Role.SEC_DOS_ECR}, accessDeniedMessage = READ_REQUIRED)
-	public String onPostExporter(@RequestParam(value = NO_INDIVIDU_OPERATEUR) long noIndividuOperateur) {
-		final ExtractionJob job = utilisateurEditManager.exportListeDroitsAcces(noIndividuOperateur);
+	public String onPostExporter(@RequestParam(value = VISA_OPERATEUR) String visaOperateur) {
+		final ExtractionJob job = utilisateurEditManager.exportListeDroitsAcces(visaOperateur);
 		Flash.message(String.format("Demande d'export enregistrée (%s)", job.getDescription()));
-		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d", NO_INDIVIDU_OPERATEUR, noIndividuOperateur);
+		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%s", VISA_OPERATEUR, visaOperateur);
 	}
 
 	@RequestMapping(value = "/par-utilisateur/exporter-conflits.do", method = RequestMethod.GET)
@@ -387,12 +387,12 @@ public class DroitAccesController {
 	@RequestMapping(value = "/par-utilisateur/ajouter-restriction.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
 	public String getAjouterAccesUtilisateur(Model model, HttpSession session,
-	                                         @RequestParam(value = NO_INDIVIDU_OPERATEUR) long noIndividuOperateur) {
+	                                         @RequestParam(value = VISA_OPERATEUR) String visaOperateur) {
 		final UtilisateurListPersonneView bean = (UtilisateurListPersonneView) session.getAttribute(UTILISATEUR_CRITERIA_NAME);
-		return accesParUtilisateur(model, noIndividuOperateur, bean, false);
+		return accesParUtilisateur(model, visaOperateur, bean, false);
 	}
 
-	private String accesParUtilisateur(Model model, long noIndividuOperateur, UtilisateurListPersonneView bean, boolean error) {
+	private String accesParUtilisateur(Model model, String visaOperateur, UtilisateurListPersonneView bean, boolean error) {
 		if (bean == null) {
 			bean = new UtilisateurListPersonneView();
 			bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
@@ -419,8 +419,8 @@ public class DroitAccesController {
 			}
 		}
 
-		bean.setNoIndividuOperateur(noIndividuOperateur);
-		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
+		bean.setVisaOperateur(visaOperateur);
+		final UtilisateurView utilisateurView = utilisateurManager.get(visaOperateur);
 		bean.setUtilisateurView(utilisateurView);
 
 		model.addAttribute(COMMAND, bean);
@@ -442,28 +442,28 @@ public class DroitAccesController {
 			session.removeAttribute(UTILISATEUR_CRITERIA_NAME);
 		}
 		else if (bindingResult.hasErrors()) {
-			return accesParUtilisateur(model, view.getNoIndividuOperateur(), view, true);
+			return accesParUtilisateur(model, view.getVisaOperateur(), view, true);
 		}
 		else {
 			session.setAttribute(UTILISATEUR_CRITERIA_NAME, view);
 		}
-		return String.format("redirect:/acces/par-utilisateur/ajouter-restriction.do?%s=%d", NO_INDIVIDU_OPERATEUR, view.getNoIndividuOperateur());
+		return String.format("redirect:/acces/par-utilisateur/ajouter-restriction.do?%s=%s", VISA_OPERATEUR, view.getVisaOperateur());
 	}
 
 	@RequestMapping(value = "/par-utilisateur/restriction/reset-search.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_LEC, Role.SEC_DOS_ECR}, accessDeniedMessage = READ_REQUIRED)
-	public String resetCriteriaParUtilisateur(HttpSession session, @RequestParam(NO_INDIVIDU_OPERATEUR) long noIndividuOperateur) {
+	public String resetCriteriaParUtilisateur(HttpSession session, @RequestParam(VISA_OPERATEUR) String visaOperateur) {
 		session.removeAttribute(UTILISATEUR_CRITERIA_NAME);
-		return String.format("redirect:/acces/par-utilisateur/ajouter-restriction.do?%s=%d", NO_INDIVIDU_OPERATEUR, noIndividuOperateur);
+		return String.format("redirect:/acces/par-utilisateur/ajouter-restriction.do?%s=%s", VISA_OPERATEUR, visaOperateur);
 	}
 
 	@RequestMapping(value = "/par-utilisateur/recap.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
 	public String recapitulationNouvelAccesUtilisateur(Model model,
 	                                                   @RequestParam(value = NUMERO) long noCtb,
-	                                                   @RequestParam(value = NO_INDIVIDU_OPERATEUR) long noIndividuOperateur) throws Exception {
+	                                                   @RequestParam(value = VISA_OPERATEUR) String visaOperateur) throws Exception {
 
-		final RecapPersonneUtilisateurView view = utilisateurEditManager.get(noCtb, noIndividuOperateur);
+		final RecapPersonneUtilisateurView view = utilisateurEditManager.get(noCtb, visaOperateur);
 		model.addAttribute(COMMAND, view);
 		model.addAttribute(TYPE_DROIT_ACCES_NOM_MAP_NAME, tiersMapHelper.getDroitAcces());
 		return "acces/par-utilisateur/recap";
@@ -480,7 +480,7 @@ public class DroitAccesController {
 			throw new ActionException(e.getMessage());
 		}
 
-		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d", NO_INDIVIDU_OPERATEUR, view.getNoIndividuOperateur());
+		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%s", VISA_OPERATEUR, view.getVisaOperateur());
 	}
 
 	@RequestMapping(value = "/copie-transfert.do", method = RequestMethod.GET)
@@ -507,9 +507,9 @@ public class DroitAccesController {
 			return getCopieTransfert(model, view);
 		}
 
-		return String.format("redirect:/acces/copie-transfert/confirm.do?%s=%d&%s=%d&%s=%s",
-		                     NO_OPERATEUR_REFERENCE, view.getNumeroUtilisateurReference(),
-		                     NO_OPERATEUR_DESTINATION, view.getNumeroUtilisateurDestination(),
+		return String.format("redirect:/acces/copie-transfert/confirm.do?%s=%s&%s=%s&%s=%s",
+		                     VISA_OPERATEUR_REFERENCE, view.getVisaUtilisateurReference(),
+		                     VISA_OPERATEUR_DESTINATION, view.getVisaUtilisateurDestination(),
 		                     TYPE_OPERATION, view.getTypeOperation());
 	}
 
@@ -517,15 +517,15 @@ public class DroitAccesController {
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
 	public String getConfirmCopieTransfert(Model model,
 	                                       HttpServletRequest request,
-	                                       @RequestParam(value = NO_OPERATEUR_REFERENCE) long noOperateurReference,
-	                                       @RequestParam(value = NO_OPERATEUR_DESTINATION) long noOperateurDestination,
+	                                       @RequestParam(value = VISA_OPERATEUR_REFERENCE) String visaOperateurReference,
+	                                       @RequestParam(value = VISA_OPERATEUR_DESTINATION) String visaOperateurDestination,
 	                                       @RequestParam(value = TYPE_OPERATION) TypeOperation typeOperation) throws Exception {
 
 		final WebParamPagination pagination = new WebParamPagination(request, "restriction", 25, "id", true);
-		final ConfirmCopieView view = copieManager.get(noOperateurReference, noOperateurDestination, pagination);
+		final ConfirmCopieView view = copieManager.get(visaOperateurReference, visaOperateurDestination, pagination);
 		model.addAttribute(COMMAND, view);
-		model.addAttribute(NO_OPERATEUR_REFERENCE, noOperateurReference);
-		model.addAttribute(NO_OPERATEUR_DESTINATION, noOperateurDestination);
+		model.addAttribute(VISA_OPERATEUR_REFERENCE, visaOperateurReference);
+		model.addAttribute(VISA_OPERATEUR_DESTINATION, visaOperateurDestination);
 		model.addAttribute(TYPE_OPERATION, typeOperation);
 		return "acces/copie-transfert/recap";
 	}
@@ -566,6 +566,6 @@ public class DroitAccesController {
 		else {
 			conflictUrlPart = StringUtils.EMPTY;
 		}
-		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%d%s", NO_INDIVIDU_OPERATEUR, view.getNoOperateurDestination(), conflictUrlPart);
+		return String.format("redirect:/acces/par-utilisateur/restrictions.do?%s=%s%s", VISA_OPERATEUR, view.getVisaOperateurDestination(), conflictUrlPart);
 	}
 }

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
@@ -48,7 +50,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	@Override
-	public Operateur getOperateur(String visa) {
+	public Operateur getOperateur(@NotNull String visa) {
 		return operatorsByVisa.get(visa);
 	}
 

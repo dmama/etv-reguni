@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.service;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -71,7 +72,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public Operateur getOperateur(final String visa) {
+	public Operateur getOperateur(@NotNull final String visa) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();

@@ -26,16 +26,16 @@
 						<form:input path="utilisateur" id="utilisateur" />
 						<span class="mandatory">*</span>
 						<form:errors path="utilisateur" cssClass="error"/>
-						<form:hidden path="numeroUtilisateur" id="numeroUtilisateur"  />
+						<form:hidden path="visaOperateur" id="visaOperateur"  />
 						<script>
 							$(function() {
 								Autocomplete.security('user', '#utilisateur', false, function(item) {
 									if (item) {
-										$('#numeroUtilisateur').val(item.id2); // le numéro technique
+										$('#visaOperateur').val(item.id1); // le visa de l'opérateur
 									}
 									else {
 										$('#utilisateur').val(null);
-										$('#numeroUtilisateur').val(null);
+										$('#visaOperateur').val(null);
 									}
 								});
 							});

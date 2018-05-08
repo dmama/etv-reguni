@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="command" type="ch.vd.unireg.acces.parUtilisateur.view.UtilisateurListPersonneView"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title">
@@ -29,7 +30,7 @@
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="acces" />
 					<jsp:param name="prefixeEffacer" value="/acces/par-utilisateur/restriction"/>
-					<jsp:param name="paramsEffacer" value="noIndividuOperateur:${command.noIndividuOperateur}"/>
+					<jsp:param name="paramsEffacer" value="visaOperateur:${command.visaOperateur}"/>
 				</jsp:include>
 			</fieldset>
 		</form:form>
@@ -41,7 +42,7 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.dossiers.trouves" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-				<a href="recap.do?numero=${row.numero}&noIndividuOperateur=${command.noIndividuOperateur}"><unireg:numCTB numero="${row.numero}" /></a>
+				<a href="recap.do?numero=${row.numero}&visaOperateur=${command.visaOperateur}"><unireg:numCTB numero="${row.numero}" /></a>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.nom.raison" >
 				<c:out value="${row.nom1}" />
@@ -55,7 +56,7 @@
 		<!-- Debut Bouton -->
 		<table border="0">
 		<tr><td>
-			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='restrictions.do?noIndividuOperateur=${command.utilisateurView.numeroIndividu}';" />
+			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='restrictions.do?visaOperateur=${command.utilisateurView.visaOperateur}';" />
 		</td></tr>
 		</table>
 		<!-- Fin Bouton -->

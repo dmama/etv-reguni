@@ -1,10 +1,10 @@
 package ch.vd.unireg.acces.parUtilisateur.manager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,15 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.unireg.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.unireg.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -35,6 +31,9 @@ import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.general.manager.UtilisateurManager;
 import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.general.view.UtilisateurView;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.security.DroitAccesDAO;
 import ch.vd.unireg.security.DroitAccesException;
 import ch.vd.unireg.security.DroitAccesService;
@@ -86,8 +85,6 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 
 	/**
 	 * Annule une liste de Restrictions
-	 *
-	 * @param listIdRestriction
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -99,23 +96,21 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerToutesLesRestrictions(Long noIndividuOperateur) {
-		droitAccesService.annuleToutLesDroitAcces(noIndividuOperateur);
+	public void annulerToutesLesRestrictions(String visaOperateur) {
+		droitAccesService.annuleToutLesDroitAcces(visaOperateur);
 	}
 
 	/**
 	 * Alimente la vue du controller
-	 * @return
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public UtilisateurEditRestrictionView get(long noIndividuOperateur, WebParamPagination pagination) throws ServiceInfrastructureException, AdresseException {
-		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
+	public UtilisateurEditRestrictionView get(@NotNull String visaOperateur, WebParamPagination pagination) throws ServiceInfrastructureException, AdresseException {
+		final UtilisateurView utilisateurView = utilisateurManager.get(visaOperateur);
 		final UtilisateurEditRestrictionView utilisateurEditRestrictionView = new UtilisateurEditRestrictionView();
 		utilisateurEditRestrictionView.setUtilisateur(utilisateurView);
 		final List<DroitAccesUtilisateurView> views = new ArrayList<>();
-		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noIndividuOperateur, pagination);
+		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(visaOperateur, pagination);
 		for (DroitAcces droitAcces : restrictions) {
 			try {
 				final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
@@ -128,7 +123,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 			}
 		}
 		utilisateurEditRestrictionView.setRestrictions(views);
-		utilisateurEditRestrictionView.setSize(droitAccesDAO.getDroitAccesCount(noIndividuOperateur));
+		utilisateurEditRestrictionView.setSize(droitAccesDAO.getDroitAccesCount(visaOperateur));
 		return utilisateurEditRestrictionView;
 
 	}
@@ -137,19 +132,13 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 
 	/**
 	 * Alimente la vue RecapPersonneUtilisateurView
-	 *
-	 * @param numeroTiers
-	 * @param noIndividuOperateur
-	 * @return
-	 * @throws ServiceInfrastructureException
-	 * @throws AdressesResolutionException
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public RecapPersonneUtilisateurView get(Long numeroTiers, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException {
+	public RecapPersonneUtilisateurView get(Long numeroTiers, String visaOperateur) throws ServiceInfrastructureException {
 		final RecapPersonneUtilisateurView recapPersonneUtilisateurView = new RecapPersonneUtilisateurView();
 
-		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
+		final UtilisateurView utilisateurView = utilisateurManager.get(visaOperateur);
 		recapPersonneUtilisateurView.setUtilisateur(utilisateurView);
 
 		final Tiers tiers = tiersService.getTiers(numeroTiers);
@@ -158,31 +147,30 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 
 		recapPersonneUtilisateurView.setType(TypeDroitAcces.INTERDICTION);
 		recapPersonneUtilisateurView.setNoDossier(numeroTiers);
-		recapPersonneUtilisateurView.setNoIndividuOperateur(noIndividuOperateur);
+		recapPersonneUtilisateurView.setVisaOperateur(visaOperateur);
 
 		return recapPersonneUtilisateurView;
 	}
 
 	/**
 	 * Persiste le DroitAcces
-	 * @param recapPersonneUtilisateurView
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(RecapPersonneUtilisateurView recapPersonneUtilisateurView) throws DroitAccesException {
 
-		final long operateurId = recapPersonneUtilisateurView.getNoIndividuOperateur();
+		final String visaOperateur = recapPersonneUtilisateurView.getVisaOperateur();
 		final long tiersId = recapPersonneUtilisateurView.getNoDossier();
 		final TypeDroitAcces type = recapPersonneUtilisateurView.getType();
 		final Niveau niveau = (recapPersonneUtilisateurView.isLectureSeule() ? Niveau.LECTURE : Niveau.ECRITURE);
 
-		droitAccesService.ajouteDroitAcces(operateurId, tiersId, type, niveau);
+		droitAccesService.ajouteDroitAcces(visaOperateur, tiersId, type, niveau);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public ExtractionJob exportListeDroitsAcces(Long operateurId) {
-		final UtilisateurView utilisateurView = utilisateurManager.get(operateurId);
+	public ExtractionJob exportListeDroitsAcces(String visaOperateur) {
+		final UtilisateurView utilisateurView = utilisateurManager.get(visaOperateur);
 		final DroitsAccesExtractor extractor = new DroitsAccesExtractor(utilisateurView);
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		return extractionService.postExtractionQuery(visa, extractor);
@@ -212,7 +200,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		public List<Long> buildElementList() {
 			getStatusManager().setMessage("Recherche des droits d'accès pour l'utilisateur...");
 			try {
-				return droitAccesDAO.getIdsDroitsAcces(utilisateurView.getNumeroIndividu());
+				return droitAccesDAO.getIdsDroitsAcces(utilisateurView.getVisaOperateur());
 			}
 			finally {
 				getStatusManager().setMessage("Extraction des droits d'accès...", 0);
@@ -253,7 +241,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		}
 
 		@Override
-		public TemporaryFile getExtractionContent(DroitsAccesExtractionResult rapportFinal) throws IOException {
+		public TemporaryFile getExtractionContent(DroitsAccesExtractionResult rapportFinal) {
 			return buildCsv(rapportFinal.acces);
 		}
 

@@ -15,7 +15,7 @@ public class RecapPersonneUtilisateurView {
 	/*
 	 * IN-OUT -> pour construire le rendu ET récupérer les informations postées
 	 */
-	private long noIndividuOperateur;
+	private String visaOperateur;
 	private long noDossier;
 	private TypeDroitAcces type;
 	private boolean lectureSeule;
@@ -28,12 +28,12 @@ public class RecapPersonneUtilisateurView {
 		this.utilisateur = utilisateur;
 	}
 
-	public long getNoIndividuOperateur() {
-		return noIndividuOperateur;
+	public String getVisaOperateur() {
+		return visaOperateur;
 	}
 
-	public void setNoIndividuOperateur(long noIndividuOperateur) {
-		this.noIndividuOperateur = noIndividuOperateur;
+	public void setVisaOperateur(String visaOperateur) {
+		this.visaOperateur = visaOperateur;
 	}
 
 	public TiersGeneralView getDossier() {

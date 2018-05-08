@@ -1,5 +1,6 @@
 package ch.vd.unireg.acces.parUtilisateur.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -16,7 +17,7 @@ public class SelectUtilisateurValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		SelectUtilisateurView selectUtilisateurView = (SelectUtilisateurView) obj;
-		if(selectUtilisateurView.getNumeroUtilisateur() == null) {
+		if(StringUtils.isBlank(selectUtilisateurView.getVisaOperateur())) {
 			errors.rejectValue("utilisateur", "error.utilisateur.vide");
 		}
 	}

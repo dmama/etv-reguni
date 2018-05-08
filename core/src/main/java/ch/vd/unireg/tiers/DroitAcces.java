@@ -47,7 +47,9 @@ import ch.vd.unireg.type.TypeDroitAcces;
 public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<DroitAcces> {
 
 	private Long id;
-	private long noIndividuOperateur;
+	// TODO (msi) supprimer cette propriété quand les visas auront été généré en production
+	private Long noIndividuOperateur;
+	private String visaOperateur;
 	private TypeDroitAcces type;
 	private Niveau niveau;
 	private Contribuable tiers;
@@ -59,6 +61,7 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 	private DroitAcces(DroitAcces right) {
 		super(right);
 		this.noIndividuOperateur = right.noIndividuOperateur;
+		this.visaOperateur = right.visaOperateur;
 		this.type = right.type;
 		this.niveau = right.niveau;
 		this.tiers = right.tiers;
@@ -80,14 +83,24 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 		this.id = id;
 	}
 
-	@Column(name = "NUMERO_IND_OPER", nullable = false)
+	@Column(name = "NUMERO_IND_OPER")
 	@Index(name = "IDX_NUMERO_IND_OPER")
-	public long getNoIndividuOperateur() {
+	public Long getNoIndividuOperateur() {
 		return noIndividuOperateur;
 	}
 
-	public void setNoIndividuOperateur(long noIndividuOperateur) {
+	public void setNoIndividuOperateur(Long noIndividuOperateur) {
 		this.noIndividuOperateur = noIndividuOperateur;
+	}
+
+	@Column(name = "VISA_OPERATEUR", length = 25)
+	@Index(name = "IDX_VISA_OPERATEUR")
+	public String getVisaOperateur() {
+		return visaOperateur;
+	}
+
+	public void setVisaOperateur(String visaOperateur) {
+		this.visaOperateur = (visaOperateur == null ? null : visaOperateur.toLowerCase());  // le visa est toujours stocké en minuscules
 	}
 
 	@Column(name = "TYPE", nullable = false)
@@ -128,7 +141,7 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 				"id=" + id +
 				", dateDebut=" + RegDateHelper.dateToDisplayString(getDateDebut()) +
 				", dateFin=" + RegDateHelper.dateToDisplayString(getDateFin()) +
-				", noIndividuOperateur=" + noIndividuOperateur +
+				", visaOperateur=" + visaOperateur +
 				", type=" + type +
 				", niveau=" + niveau +
 				", tiers=" + tiers +

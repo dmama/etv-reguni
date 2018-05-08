@@ -5,17 +5,17 @@ import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
 public class UtilisateurListPersonneView extends TiersCriteriaView {
 
-	private static final long serialVersionUID = 6799591065529941434L;
+	private static final long serialVersionUID = -6250274145751850365L;
 
-	private long noIndividuOperateur;
+	private String visaOperateur;
 	private UtilisateurView utilisateurView;
 
-	public long getNoIndividuOperateur() {
-		return noIndividuOperateur;
+	public String getVisaOperateur() {
+		return visaOperateur;
 	}
 
-	public void setNoIndividuOperateur(long noIndividuOperateur) {
-		this.noIndividuOperateur = noIndividuOperateur;
+	public void setVisaOperateur(String visaOperateur) {
+		this.visaOperateur = visaOperateur;
 	}
 
 	public UtilisateurView getUtilisateurView() {

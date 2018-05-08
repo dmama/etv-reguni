@@ -2,6 +2,8 @@ package ch.vd.unireg.security;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.Niveau;
@@ -55,7 +57,7 @@ public interface SecuriteDossierService {
 	 * @return <b>null</b> si l'opérateur ne possède aucun droit d'accès au dossier; <b>LECTURE</b> si l'opérateur possède un droit d'accès
 	 *         en lecture seulement; et <b>ECRITURE</b> si l'opérateur possède un droit d'accès complet au dossier.
 	 */
-	Niveau getAcces(String visaOperateur, long tiersId);
+	Niveau getAcces(@NotNull String visaOperateur, long tiersId);
 
 	/**
 	 * Retourne les droits d'accès à une liste de dossiers particuliers pour un opérateur particulier.
@@ -72,5 +74,5 @@ public interface SecuriteDossierService {
 	 *         <b>LECTURE</b> si l'opérateur possède un droit d'accès en lecture seulement; et <b>ECRITURE</b> si l'opérateur possède un
 	 *         droit d'accès complet au dossier.
 	 */
-	List<Niveau> getAcces(String visa, List<Long> ids);
+	List<Niveau> getAcces(@NotNull String visa, List<Long> ids);
 }

@@ -2,22 +2,22 @@ package ch.vd.unireg.acces.copie.view;
 
 public class ConfirmedDataView {
 
-	private long noOperateurReference;
-	private long noOperateurDestination;
+	private String visaOperateurReference;
+	private String visaOperateurDestination;
 
-	public long getNoOperateurReference() {
-		return noOperateurReference;
+	public String getVisaOperateurReference() {
+		return visaOperateurReference;
 	}
 
-	public void setNoOperateurReference(long noOperateurReference) {
-		this.noOperateurReference = noOperateurReference;
+	public void setVisaOperateurReference(String visaOperateurReference) {
+		this.visaOperateurReference = visaOperateurReference;
 	}
 
-	public long getNoOperateurDestination() {
-		return noOperateurDestination;
+	public String getVisaOperateurDestination() {
+		return visaOperateurDestination;
 	}
 
-	public void setNoOperateurDestination(long noOperateurDestination) {
-		this.noOperateurDestination = noOperateurDestination;
+	public void setVisaOperateurDestination(String visaOperateurDestination) {
+		this.visaOperateurDestination = visaOperateurDestination;
 	}
 }

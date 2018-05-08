@@ -106,7 +106,7 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
 				ids.jojo = jojo.getId();
 
-				addDroitAcces(TEST_OP_NO_IND, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces(TEST_OP_NAME, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
 				return null;
 			}
 		});
@@ -151,15 +151,15 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
 				ids.jojo = jojo.getId();
 
-				addDroitAcces(2222, jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(3333, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(4444, jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(1980, 1, 1), RegDate.get(2112, 1, 1));
-				addDroitAcces(5555, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(1980, 1, 1), RegDate.get(2112, 1, 1));
-				addDroitAcces(6666, jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(1980, 1, 1), RegDate.get(1984, 1, 1));
-				addDroitAcces(7777, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(1980, 1, 1), RegDate.get(1984, 1, 1));
-				DroitAcces da = addDroitAcces(8888, jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(1980, 1, 1), null); // annulée
+				addDroitAcces("op2", jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op3", jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op4", jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(1980, 1, 1), RegDate.get(2112, 1, 1));
+				addDroitAcces("op5", jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(1980, 1, 1), RegDate.get(2112, 1, 1));
+				addDroitAcces("op6", jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(1980, 1, 1), RegDate.get(1984, 1, 1));
+				addDroitAcces("op7", jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(1980, 1, 1), RegDate.get(1984, 1, 1));
+				DroitAcces da = addDroitAcces("op8", jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(1980, 1, 1), null); // annulée
 				da.setAnnule(true);
-				da = addDroitAcces(9999, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(1980, 1, 1), null); // annulée
+				da = addDroitAcces("op9", jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(1980, 1, 1), null); // annulée
 				da.setAnnule(true);
 				return null;
 			}
@@ -234,11 +234,11 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
 				ids.jojo = jojo.getId();
 
-				addDroitAcces(TEST_OP_NO_IND, jojo, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(2222, jojo, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(3333, jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(5555, jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(1974, 1, 1), RegDate.get(1975, 1, 1)); // échue
-				DroitAcces da = addDroitAcces(6666, jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(1974, 1, 1), null); // annulée
+				addDroitAcces(TEST_OP_NAME, jojo, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op2", jojo, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op3", jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op5", jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(1974, 1, 1), RegDate.get(1975, 1, 1)); // échue
+				DroitAcces da = addDroitAcces("op6", jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(1974, 1, 1), null); // annulée
 				da.setAnnule(true);
 				return null;
 			}
@@ -298,10 +298,10 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
 				ids.jojo = jojo.getId();
 
-				addDroitAcces(TEST_OP_NO_IND, jojo, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(2222, jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(3333, jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(4444, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces(TEST_OP_NAME, jojo, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op2", jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op3", jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op4", jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
 				return null;
 			}
 		});
@@ -358,14 +358,14 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 				PersonnePhysique jojo = addNonHabitant("Jojo", "Leproux", RegDate.get(1954, 3, 31), Sexe.MASCULIN);
 				ids.jojo = jojo.getId();
 
-				addDroitAcces(TEST_OP_NO_IND, jojo, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(2222, jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(3333, jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(4444, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces(TEST_OP_NAME, jojo, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op2", jojo, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op3", jojo, TypeDroitAcces.INTERDICTION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("op4", jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
 
 				// direction ACI
-				addDroitAcces(10002, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(10003, jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("dirAci3", jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("dirAci4", jojo, TypeDroitAcces.INTERDICTION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
 				return null;
 			}
 		});
@@ -421,11 +421,11 @@ public class SecuriteDossierServiceTest extends SecurityTest {
 				PersonnePhysique anouchka = addNonHabitant("Anouchka", "Rossier", RegDate.get(1969, 10, 20), Sexe.FEMININ);
 				ids.anouchka = anouchka.getId();
 
-				addDroitAcces(442451, anouchka, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(50824, anouchka, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(52038, anouchka, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(47017, anouchka, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
-				addDroitAcces(52771, anouchka, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("zaiamx", anouchka, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("zaiduj", anouchka, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("zaipwy", anouchka, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("zaiadu", anouchka, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
+				addDroitAcces("zaiyrz", anouchka, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, RegDate.get(2000, 1, 1), null);
 				return null;
 			}
 		});

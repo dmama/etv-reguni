@@ -15,12 +15,12 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.security.DroitAccesDAO;
 import ch.vd.unireg.tiers.DroitAcces;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -255,8 +255,8 @@ public class CoupleManagerImplTest extends BusinessTest {
 			long menage;
 		}
 
-		final long operateurAvecDroitFerme = 1;
-		final long operateurAvecDroitOuvert = 2;
+		final String operateurAvecDroitFerme = "zai1";
+		final String operateurAvecDroitOuvert = "zai2";
 
 		final Ids ids = doInNewTransactionAndSession(new TxCallback<Ids>() {
 			@Override

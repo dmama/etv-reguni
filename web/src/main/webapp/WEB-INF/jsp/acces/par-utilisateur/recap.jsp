@@ -10,7 +10,7 @@
 	<tiles:put name="body">
 		<%--@elvariable id="command" type="ch.vd.unireg.acces.parUtilisateur.view.RecapPersonneUtilisateurView"--%>
 	<form:form method="post" id="formEditRestriction"  name="theForm" action="sauver-restriction.do">
-		<form:hidden path="noIndividuOperateur"/>
+		<form:hidden path="visaOperateur"/>
 		<form:hidden path="noDossier"/>
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
@@ -21,7 +21,7 @@
 		<unireg:bandeauTiers numero="${command.dossier.numero}" titre="label.caracteristiques.dossier" cssClass="informations"
 		                     showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
 		<jsp:include page="restriction.jsp" />
-		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='ajouter-restriction.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}';" />
+		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='ajouter-restriction.do?visaOperateur=${command.utilisateur.visaOperateur}';" />
 		<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver" />" />
 	</form:form>
 	</tiles:put>

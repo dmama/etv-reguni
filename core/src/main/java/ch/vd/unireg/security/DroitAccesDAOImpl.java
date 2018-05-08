@@ -1,5 +1,6 @@
 package ch.vd.unireg.security;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -8,9 +9,12 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.support.DataAccessUtils;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.tiers.DroitAcces;
@@ -22,12 +26,11 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public DroitAcces getDroitAcces(long operateurId, long tiersId, RegDate date) {
-		final String query = "from DroitAcces da where da.tiers.id = :tiersId and da.noIndividuOperateur = :operId and da.annulationDate is null and da.dateDebut <= :dateRef and (da.dateFin is null or da.dateFin >= :dateRef) order by da.dateDebut desc";
+	public DroitAcces getDroitAcces(@NotNull String visaOperateur, long tiersId, RegDate date) {
+		final String query = "from DroitAcces da where da.tiers.id = :tiersId and da.visaOperateur = :visaOper and da.annulationDate is null and da.dateDebut <= :dateRef and (da.dateFin is null or da.dateFin >= :dateRef) order by da.dateDebut desc";
 		final List<DroitAcces> list = find(query,
 		                                   buildNamedParameters(Pair.of("tiersId", tiersId),
-		                                                        Pair.of("operId", operateurId),
+		                                                        Pair.of("visaOper", visaOperateur),
 		                                                        Pair.of("dateRef", date)),
 		                                   null);
 		if (list.isEmpty()) {
@@ -38,29 +41,22 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 		}
 	}
 
-	/**
-	 * Renvoie la liste des droits d'acces d'un utilisateur
-	 * @param noIndividuOperateur
-	 * @return
-	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<DroitAcces> getDroitsAcces(long noIndividuOperateur) {
-		return getDroitsAcces(noIndividuOperateur, null);
+	public List<DroitAcces> getDroitsAcces(@NotNull String visaOperateur) {
+		return getDroitsAcces(visaOperateur, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<DroitAcces> getDroitsAcces(final long noIndividuOperateur, final ParamPagination paramPagination) {
-		final String query = "from DroitAcces da where da.noIndividuOperateur = :operId order by da.annulationDate desc, da.dateDebut desc, da.id";
+	public List<DroitAcces> getDroitsAcces(@NotNull String visaOperateur, ParamPagination paramPagination) {
+		final String query = "from DroitAcces da where da.visaOperateur = :visaOper order by da.annulationDate desc, da.dateDebut desc, da.id";
 		final List<DroitAcces> list;
 		if (paramPagination == null) {
-			list = find(query, buildNamedParameters(Pair.of("operId", noIndividuOperateur)), null);
+			list = find(query, buildNamedParameters(Pair.of("visaOper", visaOperateur)), null);
 		}
 		else {
 			final Session session = getCurrentSession();
 			final Query q = session.createQuery(query);
-			q.setLong("operId", noIndividuOperateur);
+			q.setString("visaOper", visaOperateur);
 			q.setFirstResult(paramPagination.getSqlFirstResult());
 			q.setMaxResults(paramPagination.getSqlMaxResults());
 			list = q.list();
@@ -69,17 +65,49 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 	}
 
 	@Override
-	public Integer getDroitAccesCount(long noIndividuOperateur) {
-		return DataAccessUtils.intResult(find("select count(*) from DroitAcces da where da.noIndividuOperateur = :operId",
-		                                      buildNamedParameters(Pair.of("operId", noIndividuOperateur)),
+	public Integer getDroitAccesCount(@NotNull String visaOperateur) {
+		return DataAccessUtils.intResult(find("select count(*) from DroitAcces da where da.visaOperateur = :visaOperateur",
+		                                      buildNamedParameters(Pair.of("visaOperateur", visaOperateur)),
 		                                      null));
+	}
+
+	@Override
+	public List<Long> getOperatorsIdsToMigrate() {
+
+		final Query query = getCurrentSession().createQuery("select distinct noIndividuOperateur from DroitAcces where visaOperateur is null order by noIndividuOperateur asc");
+		final List list = query.list();
+
+		final List<Long> ids = new ArrayList<>(list.size());
+		for (Object o : list) {
+			if (o != null) {    // les nouveaux droits d'accès n'ont pas de numéro d'individu
+				ids.add(((Number) o).longValue());
+			}
+		}
+		return ids;
+	}
+
+	@Override
+	public void updateVisa(long noOperateur, @NotNull String visaOperateur) {
+		final Query query = getCurrentSession().createQuery("update DroitAcces set visaOperateur = :visa where noIndividuOperateur = :no");
+		query.setParameter("visa", visaOperateur.toLowerCase());    // le visa est toujours stocké en minuscules
+		query.setParameter("no", noOperateur);
+		query.executeUpdate();
+	}
+
+	@Override
+	public void cancelOperateur(Long noOperateur) {
+		final Query query = getCurrentSession().createQuery("update DroitAcces set annulationDate = :now, annulationUser = :user where annulationDate is null and noIndividuOperateur = :no");
+		query.setParameter("now", DateHelper.getCurrentDate());
+		query.setParameter("user", AuthenticationHelper.getCurrentPrincipal());
+		query.setParameter("no", noOperateur);
+		query.executeUpdate();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Long> getIdsDroitsAcces(long noIndividuOperateur) {
-		final String query = " select da.id from DroitAcces da where da.noIndividuOperateur = :operId";
-		return find(query, buildNamedParameters(Pair.of("operId", noIndividuOperateur)), null);
+	public List<Long> getIdsDroitsAcces(@NotNull String visaOperateur) {
+		final String query = " select da.id from DroitAcces da where da.visaOperateur = :visaOperateur";
+		return find(query, buildNamedParameters(Pair.of("visaOperateur", visaOperateur)), null);
 	}
 
 	/**

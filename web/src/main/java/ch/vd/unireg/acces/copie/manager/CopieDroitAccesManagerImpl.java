@@ -9,19 +9,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.acces.copie.view.ConfirmCopieView;
 import ch.vd.unireg.acces.copie.view.ConfirmedDataView;
 import ch.vd.unireg.acces.parUtilisateur.view.BaseDroitAccesDossierView;
 import ch.vd.unireg.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.adresse.AdressesResolutionException;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.general.manager.UtilisateurManager;
 import ch.vd.unireg.general.view.UtilisateurView;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.security.DroitAccesConflit;
 import ch.vd.unireg.security.DroitAccesConflitAvecDonneesContribuable;
 import ch.vd.unireg.security.DroitAccesDAO;
@@ -61,25 +60,18 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 		this.adresseService = adresseService;
 	}
 
-	/**
-	 * Alimente le frombacking du controller
-	 * @param noOperateurReference
-	 * @param noOperateurDestination
-	 * @return
-	 * @throws AdressesResolutionException
-	 */
 	@Override
 	@Transactional(readOnly = true)
-	public ConfirmCopieView get(long noOperateurReference, long noOperateurDestination, ParamPagination pagination) throws AdresseException {
+	public ConfirmCopieView get(String visaOperateurReference, String visaOperateurDestination, ParamPagination pagination) throws AdresseException {
 		final ConfirmCopieView confirmCopieView = new ConfirmCopieView();
-		final UtilisateurView utilisateurReferenceView = utilisateurManager.get(noOperateurReference);
+		final UtilisateurView utilisateurReferenceView = utilisateurManager.get(visaOperateurReference);
 		confirmCopieView.setUtilisateurReferenceView(utilisateurReferenceView);
-		final UtilisateurView utilisateurDestinationView = utilisateurManager.get(noOperateurDestination);
+		final UtilisateurView utilisateurDestinationView = utilisateurManager.get(visaOperateurDestination);
 		confirmCopieView.setUtilisateurDestinationView(utilisateurDestinationView);
-		confirmCopieView.setSize(droitAccesDAO.getDroitAccesCount(noOperateurReference));
+		confirmCopieView.setSize(droitAccesDAO.getDroitAccesCount(visaOperateurReference));
 
 		final List<DroitAccesUtilisateurView> views = new ArrayList<>();
-		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noOperateurReference, pagination);
+		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(visaOperateurReference, pagination);
 		for (DroitAcces droitAcces : restrictions) {
 			try {
 				final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
@@ -101,7 +93,7 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public List<DroitAccesConflitAvecDonneesContribuable> copie(ConfirmedDataView view) throws AdresseException {
-		final List<DroitAccesConflit> conflits = droitAccesService.copieDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
+		final List<DroitAccesConflit> conflits = droitAccesService.copieDroitsAcces(view.getVisaOperateurReference(), view.getVisaOperateurDestination());
 		return addDonneesContribuable(conflits);
 	}
 
@@ -111,7 +103,7 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public List<DroitAccesConflitAvecDonneesContribuable> transfert(ConfirmedDataView view) throws AdresseException {
-		final List<DroitAccesConflit> conflits = droitAccesService.transfereDroitsAcces(view.getNoOperateurReference(), view.getNoOperateurDestination());
+		final List<DroitAccesConflit> conflits = droitAccesService.transfereDroitsAcces(view.getVisaOperateurReference(), view.getVisaOperateurDestination());
 		return addDonneesContribuable(conflits);
 	}
 
