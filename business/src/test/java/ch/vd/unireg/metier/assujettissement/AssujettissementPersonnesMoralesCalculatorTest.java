@@ -1,11 +1,11 @@
 package ch.vd.unireg.metier.assujettissement;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +21,9 @@ import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @SuppressWarnings({"JavaDoc", "deprecation"})
 public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 	
@@ -32,46 +35,32 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		calculator = new AssujettissementPersonnesMoralesCalculator(tiersService, regimeFiscalService);
 	}
 
-	@Nullable
+	@NotNull
 	private static List<Assujettissement> determine(AssujettissementCalculator<? super Entreprise> calculator,
 	                                                Entreprise entreprise,
 	                                                @Nullable Set<Integer> noOfsCommunes) throws AssujettissementException {
 		if (entreprise.isAnnule()) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		final ForsParType fpt = entreprise.getForsParType(true);
 		if (fpt == null || fpt.isEmpty()) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		return calculator.determine(entreprise, fpt, noOfsCommunes);
 	}
 
-	@Nullable
-	private List<Assujettissement> determinePourCommunes(Entreprise entreprise, int... noOfsCommunes) throws AssujettissementException {
-		final Set<Integer> set = new HashSet<>(noOfsCommunes.length);
-		for (int noOfs : noOfsCommunes) {
-			set.add(noOfs);
-		}
-		return determine(calculator, entreprise, set);
-	}
-
-	@Nullable
+	@NotNull
 	private List<Assujettissement> determine(Entreprise entreprise) throws AssujettissementException {
 		return determine(calculator, entreprise, null);
-	}
-
-	@Nullable
-	private List<Assujettissement> determine(Entreprise entreprise, int annee) throws AssujettissementException {
-		return determine(AssujettissementHelper.yearLimiting(calculator, annee), entreprise, null);
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSansForNiBouclement() throws Exception {
 		final Entreprise e = addEntrepriseInconnueAuCivil();
-		Assert.assertNull(determine(e));        // aucun assujettissement si pas de for
+		assertEmpty(determine(e));        // aucun assujettissement si pas de for
 	}
 
 	@Test
@@ -79,7 +68,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 	public void testSansForAvecBouclement() throws Exception {
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(6, 30), 12);        // bouclements tous les 30.06 depuis 30.06.2013
-		Assert.assertNull(determine(e));        // aucun assujettissement si pas de for
+		assertEmpty(determine(e));        // aucun assujettissement si pas de for
 	}
 
 	@Test
@@ -92,8 +81,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2013, 1, 1), null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -107,8 +96,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2013, 4, 21), null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -122,8 +111,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(6, 30), 12);    // bouclements tous les 30.06 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2013, 1, 15), null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -139,8 +128,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(12, 31), 12);    // bouclements tous les 31.12 depuis le 31.12.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2013, 1, 15), null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -156,8 +145,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 7, 1), DayMonth.get(3, 31), 12);    // bouclements tous les 31.03 depuis le 31.03.2015
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2013, 1, 15), null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -171,8 +160,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013 (= un exercice commercial est partiellement hors zone de fors)
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2014, 4, 21), null, MotifAssujettissement.ARRIVEE_HS, null, assujettissements.get(0));
 	}
 
@@ -186,8 +175,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2014 (= un exercice commercial est partiellement hors zone de fors)
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2014, 4, 21), null, MotifAssujettissement.ARRIVEE_HS, null, assujettissements.get(0));
 	}
 
@@ -206,8 +195,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013 (= un exercice commercial est partiellement hors zone de fors)
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreation, dateDepart, MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HS, assujettissements.get(0));
 	}
 
@@ -221,8 +210,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2014 (= un exercice commercial est partiellement hors zone de fors)
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2014, 4, 1), null, MotifAssujettissement.ARRIVEE_HC, null, assujettissements.get(0));
 	}
 
@@ -236,8 +225,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2014, 4, 1), null, MotifAssujettissement.ARRIVEE_HC, null, assujettissements.get(0));
 	}
 
@@ -255,8 +244,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertHorsCanton(date(2013, 4, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, assujettissements.get(0));
 	}
 
@@ -274,8 +263,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertHorsCanton(date(2013, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, assujettissements.get(0));
 	}
 
@@ -293,8 +282,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertHorsCanton(date(2013, 4, 1), null, MotifAssujettissement.DEBUT_EXPLOITATION, null, assujettissements.get(0));
 	}
 
@@ -312,8 +301,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertHorsCanton(date(2013, 1, 1), null, MotifAssujettissement.DEBUT_EXPLOITATION, null, assujettissements.get(0));
 	}
 
@@ -331,8 +320,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertHorsSuisse(dateAchat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, assujettissements.get(0));
 	}
 
@@ -350,8 +339,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertHorsSuisse(dateAchat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, assujettissements.get(0));
 	}
 
@@ -369,8 +358,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertHorsSuisse(dateDebutExploitation, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, assujettissements.get(0));
 	}
 
@@ -388,8 +377,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertHorsSuisse(dateDebutExploitation, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, assujettissements.get(0));
 	}
 
@@ -409,8 +398,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertHorsCanton(date(2013, 4, 1), date(2014, 3, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.ARRIVEE_HC, assujettissements.get(0));
 		assertOrdinaire(date(2014, 4, 1), null, MotifAssujettissement.ARRIVEE_HC, null, assujettissements.get(1));
 	}
@@ -431,8 +420,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertHorsCanton(date(2013, 4, 1), date(2014, 3, 31), MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.ARRIVEE_HC, assujettissements.get(0));
 		assertOrdinaire(date(2014, 4, 1), null, MotifAssujettissement.ARRIVEE_HC, null, assujettissements.get(1));
 	}
@@ -454,8 +443,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertHorsSuisse(dateAchat, dateArriveeSiege.getOneDayBefore(), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.ARRIVEE_HS, assujettissements.get(0));
 		assertOrdinaire(dateArriveeSiege, null, MotifAssujettissement.ARRIVEE_HS, null, assujettissements.get(1));
 	}
@@ -476,8 +465,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertHorsSuisse(dateDebutExploitation, dateArriveeSiege.getOneDayBefore(), MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.ARRIVEE_HS, assujettissements.get(0));
 		assertOrdinaire(dateArriveeSiege, null, MotifAssujettissement.ARRIVEE_HS, null, assujettissements.get(1));
 	}
@@ -500,8 +489,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, date(2014, 9, 30), MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HC, assujettissements.get(0));
 		assertHorsCanton(date(2014, 10, 1), null, MotifAssujettissement.DEPART_HC, null, assujettissements.get(1));
 	}
@@ -524,8 +513,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, date(2014, 9, 30), MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HC, assujettissements.get(0));
 		assertHorsCanton(date(2014, 10, 1), null, MotifAssujettissement.DEPART_HC, null, assujettissements.get(1));
 	}
@@ -548,8 +537,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, dateDepartSiege, MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HS, assujettissements.get(0));
 		assertHorsSuisse(dateDepartSiege.getOneDayAfter(), null, MotifAssujettissement.DEPART_HS, null, assujettissements.get(1));
 	}
@@ -572,8 +561,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, dateDepartSiege, MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HS, assujettissements.get(0));
 		assertHorsSuisse(dateDepartSiege.getOneDayAfter(), null, MotifAssujettissement.DEPART_HS, null, assujettissements.get(1));
 	}
@@ -602,8 +591,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, date(2014, 6, 30), MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HC, assujettissements.get(0));
 		assertOrdinaire(date(2014, 10, 1), null, MotifAssujettissement.ARRIVEE_HC, null, assujettissements.get(1));
 	}
@@ -632,8 +621,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -660,8 +649,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);         // bouclements tous les 30.09 mois depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -692,8 +681,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(3, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(3, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, date(2014, 6, 30), MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HC, assujettissements.get(0));
 		assertHorsCanton(date(2014, 7, 1), date(2014, 9, 30), MotifAssujettissement.DEPART_HC, MotifAssujettissement.ARRIVEE_HC, assujettissements.get(1));
 		assertOrdinaire(date(2014, 10, 1), null, MotifAssujettissement.ARRIVEE_HC, null, assujettissements.get(2));
@@ -723,8 +712,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, dateDepartSiege, MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HS, assujettissements.get(0));
 		assertOrdinaire(dateRetourSiege, null, MotifAssujettissement.ARRIVEE_HS, null, assujettissements.get(1));
 	}
@@ -753,8 +742,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, dateDepartSiege, MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HS, assujettissements.get(0));
 		assertOrdinaire(dateRetourSiege, null, MotifAssujettissement.ARRIVEE_HS, null, assujettissements.get(1));
 	}
@@ -782,8 +771,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);         // bouclements tous les 30.09 mois depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, dateDepartSiege, MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HS, assujettissements.get(0));
 		assertOrdinaire(dateRetourSiege, null, MotifAssujettissement.ARRIVEE_HS, null, assujettissements.get(1));
 	}
@@ -815,8 +804,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(3, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(3, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, dateDepartSiege, MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HS, assujettissements.get(0));
 		assertHorsSuisse(dateDepartSiege.getOneDayAfter(), dateFinForSecondaire, MotifAssujettissement.DEPART_HS, MotifAssujettissement.VENTE_IMMOBILIER, assujettissements.get(1));
 		assertOrdinaire(dateRetourSiege, null, MotifAssujettissement.ARRIVEE_HS, null, assujettissements.get(2));
@@ -840,8 +829,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreation, null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -859,7 +848,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	@Test
@@ -878,8 +867,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 9, 1), DayMonth.get(9, 30), 12);      // bouclements tous les 30.09 depuis le 30.09.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreation, date(2014, 9, 30), MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.FAILLITE, assujettissements.get(0));
 
 	}
@@ -900,8 +889,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 9, 1), DayMonth.get(9, 30), 12);      // bouclements tous les 30.09 depuis le 30.09.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreation, dateLiquidation, MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.FUSION_ENTREPRISES, assujettissements.get(0));
 	}
 
@@ -927,8 +916,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addForPrincipal(e, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.BourgEnLavaux, GenreImpot.BENEFICE_CAPITAL);
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreation, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, assujettissements.get(0));
 	}
 
@@ -942,7 +931,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	@Test
@@ -955,7 +944,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	@Test
@@ -968,7 +957,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(6, 30), 12);    // bouclements tous les 30.06 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	@Test
@@ -983,7 +972,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(12, 31), 12);    // bouclements tous les 31.12 depuis le 31.12.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	@Test
@@ -998,7 +987,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 7, 1), DayMonth.get(3, 31), 12);    // bouclements tous les 31.03 depuis le 31.03.2015
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	@Test
@@ -1015,7 +1004,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	@Test
@@ -1034,7 +1023,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	@Test
@@ -1055,7 +1044,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 	/**
@@ -1087,8 +1076,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);         // bouclements tous les 30.09 mois depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -1122,8 +1111,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);         // bouclements tous les 30.09 mois depuis le 30.09.2014
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(2, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
 		assertOrdinaire(dateCreationEntreprise, date(2014, 3, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.EXONERATION, assujettissements.get(0));
 		assertOrdinaire(date(2014, 10, 1), null, MotifAssujettissement.EXONERATION, null, assujettissements.get(1));
 	}
@@ -1140,8 +1129,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2013, 4, 21), null, MotifAssujettissement.INDETERMINE, null, assujettissements.get(0));
 	}
 
@@ -1157,8 +1146,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2014, 1, 1), null, MotifAssujettissement.EXONERATION, null, assujettissements.get(0));
 	}
 
@@ -1174,8 +1163,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2014, 1, 1), null, MotifAssujettissement.EXONERATION, null, assujettissements.get(0));
 	}
 
@@ -1191,8 +1180,8 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNotNull(assujettissements);
-		Assert.assertEquals(1, assujettissements.size());
+		assertNotNull(assujettissements);
+		assertEquals(1, assujettissements.size());
 		assertOrdinaire(date(2013, 4, 21), date(2013, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.EXONERATION, assujettissements.get(0));
 	}
 
@@ -1208,7 +1197,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
-		Assert.assertNull(assujettissements);
+		assertEmpty(assujettissements);
 	}
 
 }

@@ -1,13 +1,13 @@
 package ch.vd.unireg.metier.assujettissement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -38,7 +38,6 @@ import ch.vd.unireg.validation.fors.ForFiscalValidator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 // Pour générer des screenshots des assujettissements :
 //  - activer les annotations ci-dessous
@@ -66,23 +65,23 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 	}
 
-	@Nullable
+	@NotNull
 	private static List<Assujettissement> determine(AssujettissementCalculator<? super ContribuableImpositionPersonnesPhysiques> calculator,
 	                                                ContribuableImpositionPersonnesPhysiques ctb,
 	                                                @Nullable Set<Integer> noOfsCommunes) throws AssujettissementException {
 		if (ctb.isAnnule()) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		final ForsParType fpt = ctb.getForsParType(true);
 		if (fpt == null || fpt.isEmpty()) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		return calculator.determine(ctb, fpt, noOfsCommunes);
 	}
 
-	@Nullable
+	@NotNull
 	private List<Assujettissement> determinePourCommunes(ContribuableImpositionPersonnesPhysiques ctb, int... noOfsCommunes) throws AssujettissementException {
 		final Set<Integer> set = new HashSet<>(noOfsCommunes.length);
 		for (int noOfs : noOfsCommunes) {
@@ -91,17 +90,17 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		return determine(calculator, ctb, set);
 	}
 
-	@Nullable
+	@NotNull
 	private List<Assujettissement> determine(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
 		return determine(calculator, ctb, null);
 	}
 
-	@Nullable
+	@NotNull
 	private List<Assujettissement> determine(ContribuableImpositionPersonnesPhysiques ctb, int annee) throws AssujettissementException {
 		return determine(AssujettissementHelper.yearLimiting(calculator, annee), ctb, null);
 	}
 	
-	@Nullable
+	@NotNull
 	private List<Assujettissement> determine(ContribuableImpositionPersonnesPhysiques ctb, DateRange range, boolean collate) throws AssujettissementException {
 		final AssujettissementCalculator<ContribuableImpositionPersonnesPhysiques> calc;
 		if (collate) {
@@ -3823,10 +3822,6 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertOrdinaire(date(2012, 1, 1), null, MotifAssujettissement.ARRIVEE_HC, null, liste.get(2)); // [SIFISC-7312] la date de début était calculée à tort au 1er janvier 2011.
 	}
 
-	private static Set<Integer> buildSetFromArray(Integer... ints) {
-		return new HashSet<>(Arrays.asList(ints));
-	}
-
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10603987&print=true&title=${methodName}&description=${docDescription}")
 	@WebScreenshotDoc(
 			description = "Le motif d'ouverture 'décès' du second for ne provoque pas le fractionnement du premier for car on suppose qu'un ménage-commun existait avant le décès et " +
@@ -4227,11 +4222,11 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {
 		final PersonnePhysique ctb = createContribuableSansFor();
 		final List<Assujettissement> listeLausanneSansFor = determinePourCommunes(ctb, MockCommune.Lausanne.getNoOFS());
-		assertNull(listeLausanneSansFor);
+		assertEmpty(listeLausanneSansFor);
 
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 		final List<Assujettissement> listeLausanneAvecForARenens = determinePourCommunes(ctb, MockCommune.Lausanne.getNoOFS());
-		assertNull(listeLausanneAvecForARenens);
+		assertEmpty(listeLausanneAvecForARenens);
 	}
 
 	@Test
