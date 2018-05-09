@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -57,17 +56,14 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
 	private final List<PublicationBusiness> publicationsBusiness = new ArrayList<>();
-	@NotNull
 	private final MockDonneesRegistreIDE donneesRegistreIDE;
-	@NotNull
 	private final MockDonneesRC donneesRC;
-	@NotNull
 	private final MockDonneesREE donneesREE;
 	private final NavigableMap<RegDate, Long> ideRemplacePar = new TreeMap<>();
 	private final NavigableMap<RegDate, Long> ideEnRemplacementDe = new TreeMap<>();
 	private final List<Adresse> adresses = new ArrayList<>();
 
-	public MockSiteOrganisation(long numeroSite, @NotNull MockDonneesRegistreIDE donneesRegistreIDE, @NotNull MockDonneesRC donneesRC, @NotNull MockDonneesREE donneesREE) {
+	public MockSiteOrganisation(long numeroSite, MockDonneesRegistreIDE donneesRegistreIDE, MockDonneesRC donneesRC, MockDonneesREE donneesREE) {
 		this.numeroSite = numeroSite;
 		this.donneesRegistreIDE = donneesRegistreIDE;
 		this.donneesRC = donneesRC;
@@ -186,7 +182,6 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		return MockOrganisationHelper.getHisto(rc);
 	}
 
-	@NotNull
 	@Override
 	public MockDonneesRegistreIDE getDonneesRegistreIDE() {
 		return donneesRegistreIDE;
@@ -212,13 +207,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		return OrganisationHelper.valueForDate(getNom(), date);
 	}
 
-	@NotNull
 	@Override
 	public MockDonneesRC getDonneesRC() {
 		return donneesRC;
 	}
 
-	@NotNull
 	@Override
 	public MockDonneesREE getDonneesREE() {
 		return donneesREE;
