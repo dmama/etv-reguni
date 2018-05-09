@@ -16,9 +16,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.AllegementFiscal;
 import ch.vd.unireg.tiers.AllegementFiscalCantonCommune;
 import ch.vd.unireg.tiers.AllegementFiscalCommune;
@@ -297,7 +297,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Quelquechose", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 				return bruno.getNumero();
 			}
 		});
@@ -348,7 +348,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Quelquechose", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, date(1990, 4, 22), MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
 				addForPrincipal(bruno, date(1990, 4, 23), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens);
-				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, date(1999, 6, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, date(1999, 6, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 				return bruno.getNumero();
 			}
 		});
@@ -405,7 +405,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Propriétaire", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Renens);
-				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(bruno, date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 				return bruno.getNumero();
 			}
 		});
@@ -512,7 +512,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				addForAutreImpot(bruno, date(1983, 4, 6), null, MockCommune.Vaulion.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, GenreImpot.CHIENS);
+				addForAutreImpot(bruno, date(1983, 4, 6), null, MockCommune.Vaulion, GenreImpot.CHIENS);
 				addForAutreElementImposable(bruno, date(1992, 4, 6), null, MockCommune.Vaulion, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.PRESTATION_PREVOYANCE);
 				return bruno.getNumero();
 			}
@@ -575,8 +575,8 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, veilleDateFutur, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				addForPrincipal(bruno, dateFutur, MotifFor.DEMENAGEMENT_VD, MockCommune.Croy);
-				addForSecondaire(bruno, dateFutur, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForAutreImpot(bruno, dateFutur, null, MockCommune.Croy.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, GenreImpot.CHIENS);
+				addForSecondaire(bruno, dateFutur, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+				addForAutreImpot(bruno, dateFutur, null, MockCommune.Croy, GenreImpot.CHIENS);
 				addForAutreElementImposable(bruno, dateFutur, null, MockCommune.Croy, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.PRESTATION_PREVOYANCE);
 				return bruno.getNumero();
 			}
@@ -805,7 +805,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
 				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Cully);
-				addForSecondaire(bruno, date(1984, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(bruno, date(1984, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cully, MotifRattachement.IMMEUBLE_PRIVE);
 				return bruno.getNumero();
 			}
 		});

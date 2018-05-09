@@ -108,6 +108,7 @@ import ch.vd.unireg.tiers.ForFiscalAutreElementImposable;
 import ch.vd.unireg.tiers.ForFiscalAutreImpot;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.unireg.tiers.IdentificationEntreprise;
 import ch.vd.unireg.tiers.IdentificationPersonne;
@@ -1020,7 +1021,75 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return ffp;
     }
 
-    protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate debut, MotifFor motifOuverture, @Nullable RegDate fin, @Nullable MotifFor motifFermeture, MockCommune commune) {
+	/**
+	 * Ajoute un for fiscal secondaire ouvert.
+	 */
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, Commune commune, MotifRattachement motif) {
+		return addForSecondaire(tiers, ouverture, motifOuverture, commune, motif, GenreImpot.REVENU_FORTUNE);
+	}
+
+	/**
+	 * Ajoute un for fiscal secondaire ouvert.
+	 */
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, Commune commune, MotifRattachement motif, GenreImpot genreImpot) {
+		if (!commune.getSigleCanton().equals("VD")) {
+			throw new IllegalArgumentException();
+		}
+		ForFiscalSecondaire f = new ForFiscalSecondaire();
+		f.setDateDebut(ouverture);
+		f.setMotifOuverture(motifOuverture);
+		f.setGenreImpot(genreImpot);
+		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
+		f.setMotifRattachement(motif);
+		f = tiersDAO.addAndSave(tiers, f);
+		return f;
+	}
+
+	/**
+	 * Ajoute un for fiscal secondaire fermé.
+	 */
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
+	                                               MotifFor motifFermeture, Commune commune, MotifRattachement motif) {
+		return addForSecondaire(tiers, ouverture, motifOuverture, fermeture, motifFermeture, commune, motif, GenreImpot.REVENU_FORTUNE);
+	}
+
+	/**
+	 * Ajoute un for fiscal secondaire fermé.
+	 */
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
+	                                               MotifFor motifFermeture, Commune commune, MotifRattachement motif, GenreImpot genreImpot) {
+		if (!commune.getSigleCanton().equals("VD")) {
+			throw new IllegalArgumentException();
+		}
+		ForFiscalSecondaire f = new ForFiscalSecondaire();
+		f.setDateDebut(ouverture);
+		f.setMotifOuverture(motifOuverture);
+		f.setDateFin(fermeture);
+		f.setMotifFermeture(motifFermeture);
+		f.setGenreImpot(genreImpot);
+		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
+		f.setMotifRattachement(motif);
+		f = tiersDAO.addAndSave(tiers, f);
+		return f;
+	}
+
+	protected ForFiscalAutreImpot addForAutreImpot(Contribuable tiers, RegDate ouverture, @Nullable RegDate fermeture, Commune commune, GenreImpot genre) {
+		if (!commune.getSigleCanton().equals("VD")) {
+			throw new IllegalArgumentException();
+		}
+		ForFiscalAutreImpot f = new ForFiscalAutreImpot();
+		f.setDateDebut(ouverture);
+		f.setDateFin(fermeture);
+		f.setGenreImpot(genre);
+		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
+		f = tiersDAO.addAndSave(tiers, f);
+		return f;
+	}
+
+	protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate debut, MotifFor motifOuverture, @Nullable RegDate fin, @Nullable MotifFor motifFermeture, MockCommune commune) {
         ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
         f.setDateDebut(debut);
 	    f.setMotifOuverture(motifOuverture);

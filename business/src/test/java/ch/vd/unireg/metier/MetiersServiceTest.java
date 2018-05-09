@@ -121,7 +121,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
 				addForPrincipal(fabrice, date(2001, 1, 6), MotifFor.ARRIVEE_HC, date(2004, 8, 15), MotifFor.DEPART_HC, MockCommune.Cossonay);
 				addForPrincipal(fabrice, date(2004, 8, 16), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-				addForSecondaire(fabrice, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens.getNoOFS(),
+				addForSecondaire(fabrice, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Renens,
 				                 MotifRattachement.ACTIVITE_INDEPENDANTE);
 				ids.fabrice = fabrice.getNumero();
 				return null;
@@ -2603,7 +2603,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
 				addForPrincipal(m, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(),
+				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens,
 				                 MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique mme = addHabitant(noIndividuMadame);
@@ -2795,11 +2795,11 @@ public class MetiersServiceTest extends BusinessTest {
 
 			final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
 			addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-			addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
 			addForPrincipal(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-			addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final Ids ids1 = new Ids();
 			ids1.m = m.getNumero();
@@ -2879,11 +2879,11 @@ public class MetiersServiceTest extends BusinessTest {
 
 			final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
 			addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-			addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
 			addForPrincipal(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-			addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final Ids ids1 = new Ids();
 			ids1.m = m.getNumero();
@@ -2979,11 +2979,11 @@ public class MetiersServiceTest extends BusinessTest {
 
 			final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
 			addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-			addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
 			addForPrincipal(mme, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockPays.RoyaumeUni);
-			addForSecondaire(mme, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForSecondaire(mme, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 			final Ids ids1 = new Ids();
 			ids1.m = m.getNumero();
@@ -3080,11 +3080,11 @@ public class MetiersServiceTest extends BusinessTest {
 
 			final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
 			addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-			addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
 			addForPrincipal(mme, dateDebut.addMonths(1), MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-			addForSecondaire(mme, dateDebut.addMonths(1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(mme, dateDebut.addMonths(1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final Ids ids1 = new Ids();
 			ids1.m = m.getNumero();

@@ -1383,7 +1383,7 @@ public class TiersServiceTest extends BusinessTest {
 				forPrincipal.setTiers(eric);
 
 				ForFiscalSecondaire forFiscalSecondaire =
-						addForSecondaire(eric, date(1990, 4, 13), MotifFor.ACHAT_IMMOBILIER, date(2008, 2, 28), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne.getNoOFS(),
+						addForSecondaire(eric, date(1990, 4, 13), MotifFor.ACHAT_IMMOBILIER, date(2008, 2, 28), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne,
 						                 MotifRattachement.IMMEUBLE_PRIVE);
 				id.forSecondaire = forFiscalSecondaire.getId();
 				forFiscalSecondaire.setTiers(eric);
@@ -1898,7 +1898,7 @@ public class TiersServiceTest extends BusinessTest {
 		{
 			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 			addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-			addForSecondaire(c, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForSecondaire(c, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 			assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
 			assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getForGestionActif(c, date(2000, 1, 1)));
@@ -1915,7 +1915,7 @@ public class TiersServiceTest extends BusinessTest {
 		{
 			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 			addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-			addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Lausanne.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Lausanne,MotifRattachement.IMMEUBLE_PRIVE);
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 			assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
 			assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getForGestionActif(c, date(2000, 1, 1)));
@@ -1952,8 +1952,8 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec deux fors secondaires
 		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,date(2002, 12, 31),MotifFor.VENTE_IMMOBILIER,MockCommune.Lausanne.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,date(2002, 12, 31),MotifFor.VENTE_IMMOBILIER,MockCommune.Lausanne,MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		assertForGestion(date(2003, 1, 1), null, MockCommune.Echallens.getNoOFS(), tiersService.getDernierForGestionConnu(c, null));
@@ -1979,8 +1979,8 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec deux fors secondaires se recoupant
 		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,date(2007, 12, 31),MotifFor.VENTE_IMMOBILIER,MockCommune.Lausanne.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,date(2007, 12, 31),MotifFor.VENTE_IMMOBILIER,MockCommune.Lausanne,MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		assertForGestion(date(2003, 1, 1), null, MockCommune.Echallens.getNoOFS(), tiersService.getDernierForGestionConnu(c, null));
@@ -2006,7 +2006,7 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec un for principal ouvert et un for secondaire ouvert
 		PersonnePhysique c =addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.ARRIVEE_HC, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Moudon.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Moudon,MotifRattachement.IMMEUBLE_PRIVE);
 
 
 
@@ -2031,7 +2031,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.ARRIVEE_HC, date(2004, 12, 31),MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 		addForPrincipal(c, date(2005, 1, 1), MotifFor.DEPART_HS, null,null, MockPays.Colombie);
-		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Moudon.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Moudon,MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 		assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
@@ -2054,7 +2054,7 @@ public class TiersServiceTest extends BusinessTest {
 		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.ARRIVEE_HC, null,null, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,date(2004, 12, 31),MotifFor.VENTE_IMMOBILIER,MockCommune.Moudon.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER,date(2004, 12, 31),MotifFor.VENTE_IMMOBILIER,MockCommune.Moudon,MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 		assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
@@ -2076,7 +2076,7 @@ public class TiersServiceTest extends BusinessTest {
 		PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		c.setNom("Duvoisin");
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HC, null,null, MockCommune.Neuchatel, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER, null,null,MockCommune.Moudon.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2000,1,1),MotifFor.ACHAT_IMMOBILIER, null,null,MockCommune.Moudon,MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 		assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
@@ -2379,7 +2379,7 @@ For principal	       Mode imposition: ORDINAIRE           |                     
 		addForPrincipal(c, dateDebutForAvecDepartHC, MotifFor.ARRIVEE_HS, dateFinForHC, MotifFor.DEPART_HC, MockCommune.Moudon, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 
 
-		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens,MotifRattachement.IMMEUBLE_PRIVE);
 		//Le for avec Départ Hors Suisse est for de gestion
 		assertForGestion(dateDebutForAvecDepartHS, dateFinForAvecDepartHS, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
 
@@ -2419,7 +2419,7 @@ For principal	         Mode imposition: ORDINAIRE         |                     
 		final RegDate dateFinForHC = date(2014, 10, 1);
 		addForPrincipal(c, dateDebutForAvecDepartHC, MotifFor.ARRIVEE_HS, dateFinForHC, MotifFor.DEPART_HC, MockCommune.Moudon, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 
-		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens,MotifRattachement.IMMEUBLE_PRIVE);
 		//Le for avec Départ Hors Suisse est for de gestion
 		assertForGestion(dateDebutForAvecDepartHS, dateFinForAvecDepartHS, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
 
@@ -2465,7 +2465,7 @@ For principal	        Mode imposition: ORDINAIRE          |                     
 		addForPrincipal(c, dateDebutHS, MotifFor.DEPART_HS, dateFinHS, MotifFor.ARRIVEE_HS,MockPays.Allemagne);
 		addForPrincipal(c, dateDebutForAvecDepartHC, MotifFor.ARRIVEE_HS, dateFinForHC, MotifFor.DEPART_HC, MockCommune.Moudon, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 
-		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens,MotifRattachement.IMMEUBLE_PRIVE);
 		//Le for secondaire  est for de gestion
 		assertForGestion(dateDebutForSecondaire, dateFinForSecondaire, MockCommune.Echallens.getNoOFS(), tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
 		assertForGestion(dateDebutForSecondaire, dateFinForSecondaire, MockCommune.Echallens.getNoOFS(), tiersService.getDernierForGestionConnu(c, null));
@@ -2515,7 +2515,7 @@ debut PF                                                                        
 		addForPrincipal(c, dateDebutHS, MotifFor.DEPART_HS, dateFinHS, MotifFor.ARRIVEE_HS,MockPays.Japon);
 		addForPrincipal(c, dateDebutForAvecDepartHC, MotifFor.ARRIVEE_HS, dateFinForAvecDepartHC, MotifFor.DEPART_HC, MockCommune.Moudon, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
 
-		addForSecondaire(c, dateDebutForAvecDepartHS,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c, dateDebutForAvecDepartHS,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens,MotifRattachement.IMMEUBLE_PRIVE);
 		//Le for avec départ HC  est for de gestion
 		assertForGestion(dateDebutForAvecDepartHC, dateFinForAvecDepartHC, MockCommune.Moudon.getNoOFS(), tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
 
@@ -2550,7 +2550,7 @@ debut PF                                                                        
 				ModeImposition.ORDINAIRE);
 		final RegDate dateDebutForSecondaire = date(2001, 2, 1);
 		final RegDate dateFinForSecondaire = date(2014, 3, 20);
-		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens,MotifRattachement.IMMEUBLE_PRIVE);
 		//Le for secondaire  est for de gestion
 		assertForGestion(dateDebutForSecondaire, dateFinForSecondaire, MockCommune.Echallens.getNoOFS(), tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
 	}
@@ -2583,7 +2583,7 @@ debut PF                                                                        
 				ModeImposition.MIXTE_137_2);
 		final RegDate dateDebutForSecondaire = date(2001, 1, 1);
 		final RegDate dateFinForSecondaire = date(2014, 3, 20);
-		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,dateFinForSecondaire,MotifFor.VENTE_IMMOBILIER,MockCommune.Echallens,MotifRattachement.IMMEUBLE_PRIVE);
 		//Le for depart HC  est for de gestion
 		assertForGestion(dateDebutForAvecDepartHC, dateFinForAvecDepartHC, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
 	}
@@ -2616,7 +2616,7 @@ debut PF                                                                        
 		addForPrincipal(c, dateFinForAvecDepartHC.addDays(1), MotifFor.DEPART_HC, null,null, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		final RegDate dateDebutForSecondaire = date(2005, 3, 20);
-		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Echallens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,dateDebutForSecondaire,MotifFor.ACHAT_IMMOBILIER,null,null,MockCommune.Echallens,MotifRattachement.IMMEUBLE_PRIVE);
 		//Le for secondaire  est for de gestion
 		assertForGestion(dateDebutForSecondaire, null, MockCommune.Echallens.getNoOFS(), tiersService.getDernierForGestionConnu(c, date(2014, 1, 1)));
 	}
@@ -2631,8 +2631,8 @@ debut PF                                                                        
 		addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HC, null, null, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 
-		addForSecondaire(c, date(2002, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2003, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c, date(2002, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2003, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny,MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -2663,8 +2663,8 @@ debut PF                                                                        
 		addForPrincipal(c, date(2001, 1, 1), MotifFor.DEPART_HC, date(2001, 1, 1), MotifFor.DEPART_HS, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		addForPrincipal(c, date(2001, 1, 2), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-		addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2003, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c, date(2002, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2003, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny,MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c, date(2002, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 		assertNull(tiersService.getForGestionActif(c, date(1989, 12, 31)));
@@ -2702,8 +2702,8 @@ debut PF                                                                        
 			addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HC, date(2001, 1, 1), MotifFor.DEPART_HS, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE);
 			addForPrincipal(c, date(2001, 1, 2), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-			addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER, date(2003, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Renens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
-			addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Bex.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER, date(2003, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Renens,MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Bex,MotifRattachement.IMMEUBLE_PRIVE);
 
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 			assertNull(tiersService.getForGestionActif(c, date(1989, 12, 31)));
@@ -2734,8 +2734,8 @@ debut PF                                                                        
 			addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HC, date(2001, 1, 1), MotifFor.DEPART_HS, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE);
 			addForPrincipal(c, date(2001, 1, 2), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-			addForSecondaire(c,date(2000, 1, 1),MotifFor.DEBUT_EXPLOITATION, date(2003, 12, 31), MotifFor.FIN_EXPLOITATION,MockCommune.Bex.getNoOFS(),MotifRattachement.ACTIVITE_INDEPENDANTE);
-			addForSecondaire(c,date(2000, 1, 1),MotifFor.DEBUT_EXPLOITATION,null, null,MockCommune.Aubonne.getNoOFS(),MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForSecondaire(c,date(2000, 1, 1),MotifFor.DEBUT_EXPLOITATION, date(2003, 12, 31), MotifFor.FIN_EXPLOITATION,MockCommune.Bex,MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForSecondaire(c,date(2000, 1, 1),MotifFor.DEBUT_EXPLOITATION,null, null,MockCommune.Aubonne,MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 			assertNull(tiersService.getForGestionActif(c, date(1989, 12, 31)));
@@ -2764,8 +2764,8 @@ debut PF                                                                        
 			addForPrincipal(c, date(2000, 1, 1), MotifFor.DEPART_HC, date(2001, 1, 1), MotifFor.DEPART_HS, MockCommune.Neuchatel, MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE);
 			addForPrincipal(c, date(2001, 1, 2), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-			addForSecondaire(c,date(2000, 1, 1),MotifFor.DEBUT_EXPLOITATION, date(2003, 12, 31), MotifFor.FIN_EXPLOITATION,MockCommune.Aubonne.getNoOFS(),MotifRattachement.ACTIVITE_INDEPENDANTE);
-			addForSecondaire(c,date(2000, 1, 1),MotifFor.DEBUT_EXPLOITATION,null, null,MockCommune.Bex.getNoOFS(),MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForSecondaire(c,date(2000, 1, 1),MotifFor.DEBUT_EXPLOITATION, date(2003, 12, 31), MotifFor.FIN_EXPLOITATION,MockCommune.Aubonne,MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForSecondaire(c,date(2000, 1, 1),MotifFor.DEBUT_EXPLOITATION,null, null,MockCommune.Bex,MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 			assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
@@ -2846,7 +2846,7 @@ debut PF                                                                        
 		// Contribuable avec un for secondaire
 		PersonnePhysique c4 = addNonHabitant("Ronald","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c4, date(2000, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-		addForSecondaire(c4, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c4, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getDernierForGestionConnu(c4, date(1997, 3, 3)));
 		assertNull(tiersService.getDernierForGestionConnu(c4, date(1999, 12, 31)));
@@ -2856,8 +2856,8 @@ debut PF                                                                        
 		// Contribuable avec deux fors secondaires
 		PersonnePhysique c5 = addNonHabitant("Eymeric","trump",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c5, date(2000, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-		addForSecondaire(c5,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2002, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Lausanne.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c5, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c5,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2002, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Lausanne,MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c5, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getDernierForGestionConnu(c5, date(1997, 3, 3)));
 		assertNull(tiersService.getDernierForGestionConnu(c5, date(1999, 12, 31)));
@@ -2870,7 +2870,7 @@ debut PF                                                                        
 		PersonnePhysique c6 = addNonHabitant("Saul","Goodman",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c6, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
-		addForSecondaire(c6,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c6,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Bussigny,MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getDernierForGestionConnu(c6, date(1999, 12, 31)));
 		assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c6, date(2000, 1, 1)));
 		assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c6, date(2022, 2, 7)));
@@ -2881,7 +2881,7 @@ debut PF                                                                        
 		addForPrincipal(c7, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2004, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
 		addForPrincipal(c7, date(2005, 1, 1), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
-		addForSecondaire(c7,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c7,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Bussigny,MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getDernierForGestionConnu(c7, date(1999, 12, 31)));
 		assertForGestion(date(2000, 1, 1), date(2004, 12, 31), MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c7, date(2000, 1, 1)));
 		assertForGestion(date(2000, 1, 1), date(2004, 12, 31), MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c7, date(2004, 12, 31)));
@@ -2893,7 +2893,7 @@ debut PF                                                                        
 		PersonnePhysique c8 = addNonHabitant("Melchior","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
 		addForPrincipal(c8, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE);
-		addForSecondaire(c8,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2004, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c8,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2004, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny,MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getDernierForGestionConnu(c8, date(1999, 12, 31)));
 		assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c8, date(2000, 1, 1)));
 		assertForGestion(date(2000, 1, 1), null, MockCommune.Lausanne.getNoOFS(), tiersService.getDernierForGestionConnu(c8, date(2012, 7, 8)));
@@ -4429,7 +4429,7 @@ debut PF                                                                        
 			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 			addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
 			addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HC, MockCommune.Renens);
-			addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 			pp.setBlocageRemboursementAutomatique(false);
 			return pp.getNumero();
 		});
@@ -4468,7 +4468,7 @@ debut PF                                                                        
 			final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 			addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 			addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-			addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
+			addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne,
 			                 MotifRattachement.IMMEUBLE_PRIVE);
 			pp.setBlocageRemboursementAutomatique(false);
 			return pp.getNumero();
@@ -5300,7 +5300,7 @@ debut PF                                                                        
 				ids.fils = fils.getId();
 				addParente(fils, mere, dateNaissance, null);
 				addForPrincipal(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny);
-				addForSecondaire(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(fils, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2000, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
 			}
 		});
@@ -9691,7 +9691,7 @@ debut PF                                                                        
 			addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
-			ForFiscalSecondaire forFiscalSecondaireEtabStable = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE);
+			ForFiscalSecondaire forFiscalSecondaireEtabStable = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.REVENU_FORTUNE);
 
 			Etablissement etablissement = addEtablissement();
 			addDomicileEtablissement(etablissement, date(2000, 5, 5), null, MockCommune.Bex);
@@ -9744,7 +9744,7 @@ debut PF                                                                        
 			addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
-			ForFiscalSecondaire forFiscalSecondaireImmPrv = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE);
+			ForFiscalSecondaire forFiscalSecondaireImmPrv = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
 
 			Etablissement etablissement = addEtablissement();
 			addDomicileEtablissement(etablissement, date(2000, 5, 5), null, MockCommune.Echallens);
@@ -9796,7 +9796,8 @@ debut PF                                                                        
 			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
 			// For fiscal secondaire clos
-			ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE);
+			ForFiscalSecondaire forFiscalSecondaire =
+					addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.REVENU_FORTUNE);
 
 			Etablissement etablissement = addEtablissement();
 			addDomicileEtablissement(etablissement, date(2000, 5, 5), values.dateFermeture, MockCommune.Lausanne);
@@ -9848,7 +9849,8 @@ debut PF                                                                        
 			addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
 			// For fiscal secondaire clos
-			ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(entreprise, date(2001, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE);
+			ForFiscalSecondaire forFiscalSecondaire =
+					addForSecondaire(entreprise, date(2001, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
 
 			Etablissement etablissement = addEtablissement();
 			addDomicileEtablissement(etablissement, date(2000, 5, 5), values.dateFermeture, MockCommune.Renens);

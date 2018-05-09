@@ -5,14 +5,14 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.CategorieEtranger;
 import ch.vd.unireg.type.MotifFor;
@@ -242,7 +242,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2010, 12, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2010, 12, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2010, 12, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

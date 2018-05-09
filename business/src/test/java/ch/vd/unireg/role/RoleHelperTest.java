@@ -59,12 +59,12 @@ public class RoleHelperTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Mélusine", "Chapuis", dateNaissance, Sexe.FEMININ);
 				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateArriveeVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
 				addForPrincipal(pp, dateArriveeVD, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final RegDate dateFondation = date(2000, 6, 1);
 				final RegDate dateRadiation = date(2014, 10, 4);
@@ -148,12 +148,12 @@ public class RoleHelperTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Mélusine", "Chapuis", dateNaissance, Sexe.FEMININ);
 				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateArriveeVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
 				addForPrincipal(pp, dateArriveeVD, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final RegDate dateFondation = date(2000, 6, 1);
 				final RegDate dateRadiation = date(2014, 10, 4);
@@ -259,12 +259,12 @@ public class RoleHelperTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Mélusine", "Chapuis", dateNaissance, Sexe.FEMININ);
 				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateArriveeVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
 				addForPrincipal(pp, dateArriveeVD, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final RegDate dateFondation = date(2000, 6, 1);
 				final RegDate dateRadiation = date(2014, 10, 4);

@@ -5,13 +5,13 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -60,7 +60,7 @@ public abstract class MetierTest extends BusinessTest {
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, dateNomination.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		// le for principal d'un diplomate suisse reste en suisse (= sa commune d'origine) malgré le fait qu'il soit basé à l'étranger
 		addForPrincipal(paul, dateNomination, MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
-		addForSecondaire(paul, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -154,7 +154,7 @@ public abstract class MetierTest extends BusinessTest {
 		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-		                 MockCommune.Fraction.LAbbaye.getNoOFS(),
+		                 MockCommune.Fraction.LAbbaye,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
@@ -162,7 +162,7 @@ public abstract class MetierTest extends BusinessTest {
 
 		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, null);
 		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		return ensemble;
 	}
@@ -171,7 +171,7 @@ public abstract class MetierTest extends BusinessTest {
 
 		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
-		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
 		addForPrincipal(marie, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
@@ -180,7 +180,7 @@ public abstract class MetierTest extends BusinessTest {
 		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(),
 				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.ACHAT_IMMOBILIER, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		return ensemble;
 	}
@@ -189,7 +189,7 @@ public abstract class MetierTest extends BusinessTest {
 
 		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
-		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(),
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
@@ -197,7 +197,7 @@ public abstract class MetierTest extends BusinessTest {
 
 		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, null);
 		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
-		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		return ensemble;
 	}
@@ -206,7 +206,7 @@ public abstract class MetierTest extends BusinessTest {
 
 		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Neuchatel);
-		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
 		addForPrincipal(marie, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Neuchatel);
@@ -215,7 +215,7 @@ public abstract class MetierTest extends BusinessTest {
 		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(),
 				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Neuchatel);
 		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.ACHAT_IMMOBILIER, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		return ensemble;
 	}
@@ -224,7 +224,7 @@ public abstract class MetierTest extends BusinessTest {
 
 		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
-		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(),
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
@@ -232,7 +232,7 @@ public abstract class MetierTest extends BusinessTest {
 
 		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, null);
 		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
-		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		return ensemble;
 	}
@@ -241,7 +241,7 @@ public abstract class MetierTest extends BusinessTest {
 
 		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Allemagne);
-		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
 		addForPrincipal(marie, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Allemagne);
@@ -250,7 +250,7 @@ public abstract class MetierTest extends BusinessTest {
 		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(),
 				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Allemagne);
 		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.ACHAT_IMMOBILIER, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 		return ensemble;
 	}
@@ -265,7 +265,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
+		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
@@ -274,7 +274,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, dateVente, null, MockCommune.Neuchatel);
-		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -301,7 +301,7 @@ public abstract class MetierTest extends BusinessTest {
 						PersonnePhysique paul = createContribuableSansFor(noTiers);
 						addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
 						addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.MIXTE_137_1);
-						addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+						addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees, MotifRattachement.IMMEUBLE_PRIVE);
 						return paul;
 					}
 				});
@@ -348,7 +348,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
-		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -360,7 +360,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), null, dateDepart, MotifFor.DEPART_HS, MockCommune.Neuchatel);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
-		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -380,7 +380,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1983, 4, 13), null, dateDepart, MotifFor.DEPART_HS, MockCommune.Neuchatel);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Espagne);
-		addForSecondaire(paul, date(2000, 7, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(paul, date(2000, 7, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return paul;
 	}
 
@@ -391,7 +391,7 @@ public abstract class MetierTest extends BusinessTest {
 	protected PersonnePhysique createHorsSuisseAvecAchatEtVenteImmeuble(@Nullable Long noTiers, RegDate dateAchat, RegDate dateVente) throws Exception {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
-		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
+		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
@@ -410,7 +410,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(1980, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
 		for (DateRange periode : periodes) {
-			addForSecondaire(paul, periode.getDateDebut(), MotifFor.ACHAT_IMMOBILIER, periode.getDateFin(), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
+			addForSecondaire(paul, periode.getDateDebut(), MotifFor.ACHAT_IMMOBILIER, periode.getDateFin(), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne,
 					MotifRattachement.IMMEUBLE_PRIVE);
 		}
 		return paul;
@@ -427,7 +427,7 @@ public abstract class MetierTest extends BusinessTest {
 				addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockPays.Espagne, ModeImposition.MIXTE_137_1);    // TODO (msi) corriger le mode d'imposition en mixte 146 quand la spéc sera validée + ajout les fors AutreElementImposable.
 				addForPrincipal(paul, dateVente.getOneDayAfter(), MotifFor.VENTE_IMMOBILIER, MockPays.Espagne, ModeImposition.SOURCE);
 
-				addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				return paul;
 			}
 		});
@@ -441,7 +441,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique ctb = createContribuableSansFor(noTiers);
 		addForPrincipal(ctb, date(1976, 1, 7), MotifFor.ARRIVEE_HS, date(1997, 3, 7), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(1997, 3, 8), MotifFor.DEPART_HS, dateVente, null, MockPays.France);
-		addForSecondaire(ctb, date(2007, 3, 9), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2007, 3, 9), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return ctb;
 	}
 
@@ -453,7 +453,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -470,7 +470,7 @@ public abstract class MetierTest extends BusinessTest {
 		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 		addForPrincipal(paul, dateArriveeHS, MotifFor.ARRIVEE_HS, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Zurich);
-		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -479,7 +479,7 @@ public abstract class MetierTest extends BusinessTest {
 		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Zurich);
 		addForPrincipal(paul, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Danemark);
-		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -504,7 +504,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique ctb = createContribuableSansFor(noTiers);
 		addForPrincipal(ctb, dateAchat, MotifFor.INDETERMINE, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
 		addForPrincipal(ctb, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Leysin);
-		addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 		return ctb;
 	}
 
@@ -516,7 +516,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -535,7 +535,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.France);
-		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -547,7 +547,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.France);
-		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -573,7 +573,7 @@ public abstract class MetierTest extends BusinessTest {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -600,7 +600,7 @@ public abstract class MetierTest extends BusinessTest {
 						PersonnePhysique paul = createContribuableSansFor(noTiers);
 						addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel, ModeImposition.MIXTE_137_1);
 						addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
-						addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+						addForSecondaire(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.LesClees, MotifRattachement.IMMEUBLE_PRIVE);
 						return paul;
 					}
 				});
@@ -646,7 +646,7 @@ public abstract class MetierTest extends BusinessTest {
 				PersonnePhysique paul = createContribuableSansFor(noTiers);
 				addForPrincipal(paul, date(1993, 5, 1), null, achatImmeuble.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel, ModeImposition.SOURCE);
 				addForPrincipal(paul, achatImmeuble, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel, ModeImposition.MIXTE_137_1);
-				addForSecondaire(paul, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(paul, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				return paul;
 			}
 		});
@@ -660,7 +660,7 @@ public abstract class MetierTest extends BusinessTest {
 				PersonnePhysique paul = createContribuableSansFor(noTiers);
 				addForPrincipal(paul, date(1993, 5, 1), null, date(2007, 6, 30), MotifFor.CHGT_MODE_IMPOSITION, MockPays.France, ModeImposition.SOURCE);
 				addForPrincipal(paul, dateAchat, MotifFor.CHGT_MODE_IMPOSITION, MockPays.France, ModeImposition.MIXTE_137_1);
-				addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				return paul;
 			}
 		});
@@ -712,7 +712,7 @@ public abstract class MetierTest extends BusinessTest {
 	protected PersonnePhysique createDecesHorsCantonAvecImmeuble(@Nullable Long noTiers, RegDate dateAchat, RegDate dateDeces) throws Exception {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Neuchatel);
-		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -722,7 +722,7 @@ public abstract class MetierTest extends BusinessTest {
 	protected PersonnePhysique createDecesHorsSuisseAvecImmeuble(RegDate dateAchat, RegDate dateDeces) throws Exception {
 		PersonnePhysique paul = createContribuableSansFor();
 		addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockPays.Danemark);
-		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -736,7 +736,7 @@ public abstract class MetierTest extends BusinessTest {
 	protected PersonnePhysique createDecesHorsCantonActiviteIndependante(@Nullable Long noTiers, RegDate debutExploitation, RegDate dateDeces) throws Exception {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, debutExploitation, MotifFor.DEBUT_EXPLOITATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Neuchatel);
-		addForSecondaire(paul, debutExploitation, MotifFor.DEBUT_EXPLOITATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Leysin.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(paul, debutExploitation, MotifFor.DEBUT_EXPLOITATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Leysin, MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return paul;
 	}
 
@@ -759,7 +759,7 @@ public abstract class MetierTest extends BusinessTest {
 	protected PersonnePhysique createHorsCantonAvecImmeuble(@Nullable Long noTiers, RegDate dateAchat) throws Exception {
 		PersonnePhysique paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Neuchatel);
-		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -770,7 +770,7 @@ public abstract class MetierTest extends BusinessTest {
 	protected PersonnePhysique createVenteImmeubleHorsCanton(@Nullable Long noTiers, RegDate dateVente) throws Exception {
 		PersonnePhysique ctb = createContribuableSansFor(noTiers);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Neuchatel);
-		addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 		return ctb;
 	}
 
@@ -781,7 +781,7 @@ public abstract class MetierTest extends BusinessTest {
 	protected PersonnePhysique createFinActiviteHorsCanton(@Nullable Long noTiers, RegDate dateFin) throws Exception {
 		PersonnePhysique ctb = createContribuableSansFor(noTiers);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Neuchatel);
-		addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return ctb;
 	}
 
@@ -947,7 +947,7 @@ public abstract class MetierTest extends BusinessTest {
 				addForPrincipal(paul, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 5, 27), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
 				addForPrincipal(paul, date(2003, 5, 28), MotifFor.INDETERMINE, date(2003, 8, 30), MotifFor.DEMENAGEMENT_VD, MockPays.France, ModeImposition.MIXTE_137_1);
 				addForPrincipal(paul, date(2003, 8, 31), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
-				addForSecondaire(paul, date(2003, 5, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(paul, date(2003, 5, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				return paul;
 			}
 		});
@@ -963,7 +963,7 @@ public abstract class MetierTest extends BusinessTest {
 				// le motif de fermeture est incorrect, il devrait être ARRIVEE_HC
 				addForPrincipal(paul, date(2003, 9, 9), MotifFor.INDETERMINE, date(2004, 7, 26), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel, ModeImposition.MIXTE_137_1);
 				addForPrincipal(paul, date(2004, 7, 27), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
-				addForSecondaire(paul, date(2003, 9, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(paul, date(2003, 9, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				return paul;
 			}
 		});
@@ -977,7 +977,7 @@ public abstract class MetierTest extends BusinessTest {
 				PersonnePhysique paul = createContribuableSansFor(10015452L);
 				addForPrincipal(paul, date(2004, 5, 6), MotifFor.INDETERMINE, date(2006, 7, 31), MotifFor.DEMENAGEMENT_VD, MockPays.Espagne, ModeImposition.MIXTE_137_1);
 				addForPrincipal(paul, date(2006, 8, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
-				addForSecondaire(paul, date(2004, 5, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(paul, date(2004, 5, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 				return paul;
 			}
 		});

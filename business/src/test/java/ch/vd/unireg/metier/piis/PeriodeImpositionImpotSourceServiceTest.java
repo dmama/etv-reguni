@@ -571,14 +571,14 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppMixte1 = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppMixte2 = pp.getNumero();
 				}
 				return ids;
@@ -672,7 +672,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
 					ids.ppOrdinaire = pp.getNumero();
 				}
@@ -680,7 +680,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
 					ids.ppDepense = pp.getNumero();
 				}
@@ -688,7 +688,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
 					ids.ppIndigent = pp.getNumero();
 				}
@@ -785,21 +785,21 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppOrdinaire = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppDepense = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppIndigent = pp.getNumero();
 				}
 				return ids;
@@ -1078,35 +1078,35 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppOrdinaire = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppMixte1 = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppMixte2 = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppDepense = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppIndigent = pp.getNumero();
 				}
 				return ids;
@@ -1205,7 +1205,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
 					ids.ppOrdinaire = pp.getNumero();
 				}
@@ -1213,7 +1213,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
 					ids.ppMixte1 = pp.getNumero();
 				}
@@ -1221,7 +1221,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
 					ids.ppMixte2 = pp.getNumero();
 				}
@@ -1229,7 +1229,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.DEPENSE);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
 					ids.ppDepense = pp.getNumero();
 				}
@@ -1237,7 +1237,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, date(lastYear, 1, 1), MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HS, MockCommune.Aigle, ModeImposition.INDIGENT);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HS, null, null, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, date(lastYear, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, date(lastYear, 1, 1), depart, false);
 					ids.ppIndigent = pp.getNumero();
 				}
@@ -1796,7 +1796,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1876,28 +1876,28 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppOrdinaire = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppMixte2 = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppDepense = pp.getNumero();
 				}
 				{
 					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppIndigent = pp.getNumero();
 				}
 				return ids;
@@ -1984,7 +1984,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Alastair M1", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 				addRapportPrestationImposable(dpi, pp, arrivee, null, false);
 				return pp.getNumero();
 			}
@@ -2066,7 +2066,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ORD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
 					ids.ppOrdinaire = pp.getNumero();
 				}
@@ -2074,7 +2074,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair M2", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.MIXTE_137_2);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
 					ids.ppMixte2 = pp.getNumero();
 				}
@@ -2082,7 +2082,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair ICCD", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.DEPENSE);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
 					ids.ppDepense = pp.getNumero();
 				}
@@ -2090,7 +2090,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Alastair IND", "O'Malley", date(1978, 5, 2), Sexe.MASCULIN);
 					addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
 					addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Aigle, ModeImposition.INDIGENT);
-					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 					addRapportPrestationImposable(dpi, pp, arrivee, null, false);
 					ids.ppIndigent = pp.getNumero();
 				}
@@ -2183,7 +2183,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 						final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
 						addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
 						addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
-						addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+						addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 						ids.ppOrd = pp.getNumero();
 					}
 					return ids;
@@ -2270,7 +2270,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					final PersonnePhysique pp = addNonHabitant("Iain", "Kentucky", date(1980, 5, 3), Sexe.MASCULIN);
 					addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, depart, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
 					addForPrincipal(pp, depart.getOneDayAfter(), MotifFor.DEPART_HC, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Bern, ModeImposition.ORDINAIRE);
-					addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					addForSecondaire(pp, depart.getOneDayAfter(), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 					ids.ppOrd = pp.getNumero();
 				}
 				return ids;
@@ -2496,7 +2496,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
 				addForPrincipal(pp, date(year, 1, 1), MotifFor.INDETERMINE, achat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
 				addForPrincipal(pp, achat, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2552,7 +2552,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
 				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockPays.Danemark);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, achat, null, false);
@@ -2623,7 +2623,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
 				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockPays.Danemark);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2653,7 +2653,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
 				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, achat, null, false);
@@ -2724,7 +2724,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Iain", "McGregor", date(1987, 6, 23), Sexe.MASCULIN);
 				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2754,7 +2754,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
 				addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, date(year, 12, 31), MotifFor.DEPART_HS, MockCommune.Bex, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2798,7 +2798,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
 				addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), vente, false);
@@ -2845,7 +2845,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
 				addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockPays.Allemagne, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2875,7 +2875,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
 				addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Geneve, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(year, 1, 1), vente, false);
@@ -2922,7 +2922,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Patrick", "McCallum", date(1974, 9, 13), Sexe.MASCULIN);
 				addForPrincipal(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(year, 12, 31), MotifFor.INDETERMINE, MockCommune.Geneve, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(year, 1, 1), MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

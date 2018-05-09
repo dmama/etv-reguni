@@ -855,7 +855,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 
 				final PersonnePhysique pphysique = addNonHabitant("Inconnu", "Aubataillon", date(dateNaissance.year()), Sexe.MASCULIN);
 				addForPrincipal(pphysique, dateAchatPrecedent, null, MockPays.France);
-				addForSecondaire(pphysique, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pphysique, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
 				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
@@ -5463,7 +5463,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(ctb, null, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateAchatPrecedent, MotifFor.INDETERMINE, MockCommune.Geneve);
-				addForSecondaire(mc, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);          // on ne devrait pas créer de nouveau for secondaire
+				addForSecondaire(mc, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);          // on ne devrait pas créer de nouveau for secondaire
 
 				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
 				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
@@ -5605,7 +5605,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(ctb, null, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateDebutExploitation, MotifFor.INDETERMINE, MockCommune.Geneve);
-				addForSecondaire(mc, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);          // on devrait créer un nouveau for secondaire car le motif de rattachement est différent !
+				addForSecondaire(mc, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges, MotifRattachement.ACTIVITE_INDEPENDANTE);          // on devrait créer un nouveau for secondaire car le motif de rattachement est différent !
 
 				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
 				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);

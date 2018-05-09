@@ -6,12 +6,9 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.fiscact.periodic.v1.PeriodicFiscalActivityRequest;
-import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -19,6 +16,9 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.fiscact.periodic.v1.PeriodicFiscalActivityRequest;
+import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
 
 public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 
@@ -227,7 +227,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockPays.Allemagne);
-				addForSecondaire(pp, date(2003, 5, 31), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 12), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2003, 5, 31), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 12), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -268,7 +268,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Albert", "Frontignac", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 12, 31), MotifFor.MAJORITE, date(2010, 1, 1), MotifFor.VEUVAGE_DECES, MockCommune.Chur);
-				addForSecondaire(pp, date(2003, 5, 31), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 12), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2003, 5, 31), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 12), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

@@ -1370,7 +1370,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 					addRegimeFiscalVD(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addRegimeFiscalCH(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(entreprise2, dateDebut, null, MockCommune.Geneve);
-					addForSecondaire(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+					addForSecondaire(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
 					final Ids ids = new Ids();
 					ids.entreprise1 = entreprise1.getNumero();
@@ -1859,7 +1859,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			public Integer doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero().intValue();
 			}
 		});
@@ -1937,7 +1937,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateArrivee, null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero().intValue();
 			}
 		});
@@ -2011,7 +2011,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			public Integer doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero().intValue();
 			}
 		});
@@ -3425,7 +3425,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				addRegimeFiscalVD(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2000, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Geneve);
-				addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
 				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);
 				return entreprise.getNumero();

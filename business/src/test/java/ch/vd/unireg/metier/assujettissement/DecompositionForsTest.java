@@ -12,7 +12,6 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
-import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -40,7 +39,7 @@ public class DecompositionForsTest extends MetierTest {
 		final PersonnePhysique ctb = createContribuableSansFor();
 		final ForFiscalPrincipal ffp2002 = addForPrincipal(ctb, dateAchat, MotifFor.INDETERMINE, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
 		final ForFiscalPrincipal ffp2003 = addForPrincipal(ctb, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Leysin);
-		final ForFiscalSecondaire ffs = addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		final ForFiscalSecondaire ffs = addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 
 		// 2002
 		{
@@ -126,7 +125,7 @@ public class DecompositionForsTest extends MetierTest {
 
 		final PersonnePhysique ctb = createContribuableSansFor();
 		final ForFiscalPrincipal ffp = addForPrincipal(ctb, date(2010, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aigle);
-		addForAutreImpot(ctb, date(2011, 4, 1), date(2011, 4, 1), MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, GenreImpot.CHIENS);
+		addForAutreImpot(ctb, date(2011, 4, 1), date(2011, 4, 1), MockCommune.Aigle, GenreImpot.CHIENS);
 
 		// 2010
 		{

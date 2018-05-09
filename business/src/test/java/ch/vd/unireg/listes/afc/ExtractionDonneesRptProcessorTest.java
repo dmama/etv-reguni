@@ -6,15 +6,15 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.MotifAssujettissement;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -728,7 +728,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -774,7 +774,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -811,7 +811,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -857,7 +857,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -890,7 +890,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -936,7 +936,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2219,7 +2219,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2271,7 +2271,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2304,7 +2304,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2356,7 +2356,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final RegDate dateOuverture = date(2004, 2, 1);
 				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2407,7 +2407,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final RegDate dateOuverture = date(2004, 2, 1);
 				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2438,7 +2438,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final RegDate dateOuverture = date(2004, 2, 1);
 				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

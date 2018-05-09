@@ -66,7 +66,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addBouclement(entreprise, dateDebut.addYears(1), DayMonth.get(6, 30), 12);      // tous les 30.06 depuis 2010
 			addForPrincipal(entreprise, dateDebut, null, MockCommune.Geneve);
-			addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFermetureForVaudois, MotifFor.FIN_EXPLOITATION, MockCommune.Leysin.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFermetureForVaudois, MotifFor.FIN_EXPLOITATION, MockCommune.Leysin, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 			return entreprise.getNumero();
 		});
 

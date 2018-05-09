@@ -24,6 +24,11 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
+import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.WebTestSpring3;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -31,11 +36,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.common.AnnulableHelper;
-import ch.vd.unireg.common.WebTestSpring3;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
-import ch.vd.unireg.declaration.ModeleDocument;
-import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
@@ -1054,7 +1054,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 				forPrincipal.setTiers(eric);
 
 				ForFiscalSecondaire forSecondaire = addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER,
-				                                                     MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				                                                     MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				forSecondaire.setTiers(eric);
 				return null;
 			}
@@ -1347,7 +1347,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 				ids.tiers = pp.getNumero();
 				addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
 				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, date(2005, 10, 31),
-				                                                 MotifFor.MAJORITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				                                                 MotifFor.MAJORITE, MockCommune.ChateauDoex, MotifRattachement.IMMEUBLE_PRIVE);
 				ids.ffs = ffs.getId();
 				return null;
 			}
@@ -1406,7 +1406,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
 				ids.tiers = pp.getNumero();
 				addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
-				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex, MotifRattachement.IMMEUBLE_PRIVE);
 				ids.ffs = ffs.getId();
 				return null;
 			}
@@ -1748,10 +1748,10 @@ public class ForsControllerTest extends WebTestSpring3 {
 				ffpAnnule.setAnnule(true);
 
 				addForPrincipal(pp, date(2003, 5, 8), null, MockCommune.Geneve);
-				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2006, 4, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2006, 4, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 7, 14), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 7, 14), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final Ids ids = new Ids();
 				ids.idCtb = pp.getNumero();
@@ -1891,10 +1891,10 @@ public class ForsControllerTest extends WebTestSpring3 {
 				ffpAnnule.setAnnule(true);
 
 				addForPrincipal(pp, date(2003, 5, 8), null, MockCommune.Geneve);
-				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2006, 4, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2006, 4, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
-				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 7, 14), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2003, 5, 8), MotifFor.ACHAT_IMMOBILIER, date(2005, 7, 14), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final Ids ids = new Ids();
 				ids.idCtb = pp.getNumero();

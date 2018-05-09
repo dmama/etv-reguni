@@ -491,7 +491,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 			addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
 			addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.BENEFICE_CAPITAL);
-			addForSecondaire(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.LaSarraz.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE);
+			addForSecondaire(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, MockCommune.LaSarraz, MotifRattachement.ETABLISSEMENT_STABLE);
 
 			return entreprise.getNumero();
 		});

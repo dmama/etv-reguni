@@ -412,7 +412,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -614,7 +614,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, datePrononceFaillite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -793,7 +793,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, datePrononceFaillite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -1049,7 +1049,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreation, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreation, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -1199,7 +1199,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreation, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreation, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -1447,7 +1447,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(absorbante, dateDebutAbsorbante, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(absorbante, dateDebutAbsorbante, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				absorbante.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(absorbante, dateDebutAbsorbante, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -1695,7 +1695,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(absorbante, dateDebutAbsorbante, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(absorbante, dateDebutAbsorbante, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				absorbante.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(absorbante, dateDebutAbsorbante, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -1998,7 +1998,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -2145,7 +2145,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, dateFinActivite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -2312,7 +2312,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, dateFinActivite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -2497,7 +2497,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(scindee, dateDebutScindee, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(scindee, dateDebutScindee, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				scindee.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(scindee, dateDebutScindee, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -2719,7 +2719,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(scindee, dateDebutScindee, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(scindee, dateDebutScindee, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				scindee.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(scindee, dateDebutScindee, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -2993,7 +2993,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(emettrice, dateDebutEmettrice, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(emettrice, dateDebutEmettrice, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				emettrice.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(emettrice, dateDebutEmettrice, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
@@ -3214,7 +3214,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(emettrice, dateDebutEmettrice, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(emettrice, dateDebutEmettrice, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
-				addForSecondaire(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				emettrice.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(emettrice, dateDebutEmettrice, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);

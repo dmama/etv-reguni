@@ -3,8 +3,8 @@ package ch.vd.unireg.declaration.ordinaire.pp;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.MotifFor;
@@ -39,7 +39,7 @@ public class ListeNoteTest extends BusinessTest {
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		assertFalse(processor.isForSecondaireRecouvert(paul, for1));
@@ -57,12 +57,12 @@ public class ListeNoteTest extends BusinessTest {
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 		ForFiscalSecondaire for2 = addForSecondaire(paul, date(2007, 3, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		ForFiscalSecondaire for3 = addForSecondaire(paul, date(2009, 7, 20), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 20),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		assertFalse(processor.isForSecondaireRecouvert(paul, for1));
@@ -81,9 +81,9 @@ public class ListeNoteTest extends BusinessTest {
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 		ForFiscalSecondaire for2 = addForSecondaire(paul, date(2009, 3, 25), MotifFor.ACHAT_IMMOBILIER, date(2009, 7, 25),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		assertTrue( processor.isForSecondaireRecouvert(paul, for1));
@@ -102,9 +102,9 @@ public class ListeNoteTest extends BusinessTest {
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 		ForFiscalSecondaire for2 = addForSecondaire(paul, date(2008, 12, 25), MotifFor.ACHAT_IMMOBILIER, null,
-				null, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				null, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		assertTrue( processor.isForSecondaireRecouvert(paul, for1));
@@ -123,9 +123,9 @@ public class ListeNoteTest extends BusinessTest {
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 		ForFiscalSecondaire for2 = addForSecondaire(paul, date(2009, 3, 26), MotifFor.ACHAT_IMMOBILIER,date(2009, 10, 30),
-				MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		assertFalse( processor.isForSecondaireRecouvert(paul, for1));

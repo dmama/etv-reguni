@@ -12,6 +12,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.data.DataEventService;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.unireg.evenement.civil.interne.depart.DepartEchTranslationStrategy;
 import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -26,11 +31,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.data.DataEventService;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.unireg.evenement.civil.interne.depart.DepartEchTranslationStrategy;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -433,7 +433,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
 				addForPrincipal(luis, arrivee, MotifFor.INDETERMINE, MockPays.Espagne);
-				addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully, MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
 			}
 		});
@@ -491,7 +491,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
 				addForPrincipal(luis, arrivee, MotifFor.INDETERMINE, MockPays.Espagne);
-				addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully, MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
 			}
 		});
@@ -1232,7 +1232,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1298,7 +1298,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1679,7 +1679,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Bussigny, ModeImposition.DEPENSE);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

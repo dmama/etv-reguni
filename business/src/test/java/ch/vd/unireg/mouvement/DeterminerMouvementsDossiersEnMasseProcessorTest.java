@@ -10,12 +10,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
@@ -432,7 +432,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 		addForPrincipal(ctb, dateDepartHC.addYears(-1), MotifFor.ARRIVEE_HS, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(ctb, dateDepartHC.addDays(1), MotifFor.DEPART_HC, MockCommune.Bern);
-		addForSecondaire(ctb, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<>();

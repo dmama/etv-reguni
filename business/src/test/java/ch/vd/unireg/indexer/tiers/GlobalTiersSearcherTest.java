@@ -20,6 +20,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.common.Fuse;
+import ch.vd.unireg.indexer.EmptySearchCriteriaException;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
@@ -29,9 +32,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.common.Fuse;
-import ch.vd.unireg.indexer.EmptySearchCriteriaException;
 import ch.vd.unireg.parametrage.ParametreEnum;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -1119,12 +1119,12 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 				final PersonnePhysique ramon = addNonHabitant("Ramon", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
 				ramon.setDebiteurInactif(true);
 				addForPrincipal(ramon, date(1980,1,1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
-				addForSecondaire(ramon, date(1980, 1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(ramon, date(1980, 1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 				ids.ramon = ramon.getId();
 
 				final PersonnePhysique julien = addNonHabitant("Julien", "Zarrate", date(1930, 3, 2), Sexe.MASCULIN);
 				addForPrincipal(julien, date(1980,1,1), MotifFor.ACHAT_IMMOBILIER, MockPays.Espagne);
-				addForSecondaire(julien, date(1980, 1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(julien, date(1980, 1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 				ids.julien = julien.getId();
 				return null;
 			}

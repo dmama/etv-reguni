@@ -150,7 +150,7 @@ public class LegacyEditiqueHelperTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Albertine", "Zweisteinen", date(1956, 3, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bale);
-				addForSecondaire(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateVenteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateVenteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(pf);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);

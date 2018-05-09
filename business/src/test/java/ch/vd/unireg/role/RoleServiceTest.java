@@ -672,7 +672,7 @@ public class RoleServiceTest extends BusinessTest {
 		final PersonnePhysique louis = addNonHabitant("Louis", "Coller", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(louis, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 9, 30), MotifFor.DEPART_HC, communeResidence);
 		addForPrincipal(louis, date(2007, 10, 1), MotifFor.DEPART_HC, MockCommune.Bern);
-		addForSecondaire(louis, date(2001, 3, 2), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(louis, date(2001, 3, 2), MotifFor.ACHAT_IMMOBILIER, communeImmeuble, MotifRattachement.IMMEUBLE_PRIVE);
 		return louis;
 	}
 
@@ -683,7 +683,7 @@ public class RoleServiceTest extends BusinessTest {
 		final PersonnePhysique louis = addNonHabitant("Albert", "Coller", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(louis, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 9, 30), MotifFor.DEPART_HS, communeResidence);
 		addForPrincipal(louis, date(2007, 10, 1), MotifFor.DEPART_HS, MockPays.PaysInconnu);
-		addForSecondaire(louis, date(2001, 3, 2), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(louis, date(2001, 3, 2), MotifFor.ACHAT_IMMOBILIER, communeImmeuble, MotifRattachement.IMMEUBLE_PRIVE);
 		return louis;
 	}
 
@@ -851,7 +851,7 @@ public class RoleServiceTest extends BusinessTest {
 	private PersonnePhysique newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune commune) {
 		final PersonnePhysique tyler = addNonHabitant("Tyler", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(tyler, date(2005, 11, 3), null, MockCommune.Bern);
-		addForSecondaire(tyler, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, date(2007, 8, 30), MotifFor.FIN_EXPLOITATION, commune.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(tyler, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, date(2007, 8, 30), MotifFor.FIN_EXPLOITATION, commune, MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return tyler;
 	}
 
@@ -920,7 +920,7 @@ public class RoleServiceTest extends BusinessTest {
 	 */
 	private PersonnePhysique newCtbOrdinaireAvecDemenagementEnGardantImmeuble(MockCommune avant, MockCommune apres, MockCommune communeImmeuble) {
 		final PersonnePhysique ctb = newCtbOrdinaireAvecDemenagement(avant, apres);
-		addForSecondaire(ctb, date(2005, 6, 12), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 12), MotifFor.ACHAT_IMMOBILIER, communeImmeuble, MotifRattachement.IMMEUBLE_PRIVE);
 		return ctb;
 	}
 
@@ -945,7 +945,7 @@ public class RoleServiceTest extends BusinessTest {
 				PersonnePhysique pp = addNonHabitant("Rodolf", "Piedbor", date(1953,12,18), Sexe.MASCULIN);
 				addForPrincipal(pp, date(1971,12,18), MotifFor.MAJORITE, MockCommune.Lausanne);
 				// le for secondaire n'est pas couvert par le for principal
-				addForSecondaire(pp, date(1920,1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(1920,1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -959,15 +959,15 @@ public class RoleServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
 		addForPrincipal(pp, date(1988, 9, 12), MotifFor.MAJORITE, date(2007, 6, 11), MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(pp, date(2007, 6, 12), MotifFor.DEPART_HC, MockCommune.Bern);
-		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(pp, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(pp, date(2004, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.RomainmotierEnvy, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2004, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 		return pp;
 	}
 
 	private ForFiscalSecondaire addImmeuble(final Contribuable ctb, MockCommune commune, RegDate debut, RegDate fin) {
 		MotifFor motifFermeture = (fin == null ? null : MotifFor.VENTE_IMMOBILIER);
-		return addForSecondaire(ctb, debut, MotifFor.ACHAT_IMMOBILIER, fin, motifFermeture, commune.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		return addForSecondaire(ctb, debut, MotifFor.ACHAT_IMMOBILIER, fin, motifFermeture, commune, MotifRattachement.IMMEUBLE_PRIVE);
 	}
 
 	private static <T> void assertNextIs(final Iterator<T> iter, T expected) {
@@ -1127,7 +1127,7 @@ public class RoleServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1175,7 +1175,7 @@ public class RoleServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateAchat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bussigny, ModeImposition.SOURCE);
 				addForPrincipal(pp, dateAchat, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bussigny, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1307,13 +1307,13 @@ public class RoleServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, dateChangementModeImposition.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Fraction.LeSentier, ModeImposition.SOURCE);
 				addForPrincipal(pp, dateChangementModeImposition, MotifFor.CHGT_MODE_IMPOSITION, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LeSentier, ModeImposition.MIXTE_137_1);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Fraction.LeSentier, ModeImposition.ORDINAIRE);
 				addForPrincipal(mc, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Fraction.LePont, ModeImposition.ORDINAIRE);
-				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final Ids ids = new Ids();
 				ids.ppId = pp.getNumero();
@@ -1375,9 +1375,9 @@ public class RoleServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Alberto", "Tamburini", null, Sexe.MASCULIN);
 				addForPrincipal(pp, dateAchat, null, MockPays.Allemagne);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente1, MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente2, MotifFor.VENTE_IMMOBILIER, MockCommune.Prilly.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.VufflensLaVille.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente1, MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente2, MotifFor.VENTE_IMMOBILIER, MockCommune.Prilly, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.VufflensLaVille, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1424,12 +1424,12 @@ public class RoleServiceTest extends BusinessTest {
 		final Ids ids = doInNewTransactionAndSession(status -> {
 			final PersonnePhysique pp = addNonHabitant("Tanguy", "Laverdure", date(1987, 5, 2), Sexe.MASCULIN);
 			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.France);
-			addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
 			final MenageCommun mc = couple.getMenage();
 			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.France);
-			addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+			addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 			final Ids result = new Ids();
 			result.pp = pp.getNumero();
@@ -1484,7 +1484,7 @@ public class RoleServiceTest extends BusinessTest {
 				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
 				addForPrincipal(pm, dateAchat, null, MockCommune.Bern);
-				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				return pm.getNumero();
 			}
 		});
@@ -1527,7 +1527,7 @@ public class RoleServiceTest extends BusinessTest {
 				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
 				addForPrincipal(pm, dateAchat, null, MockCommune.Bern);
-				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				return pm.getNumero();
 			}
 		});
@@ -1566,7 +1566,7 @@ public class RoleServiceTest extends BusinessTest {
 				addIdentificationEntreprise(pm, ide);
 				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
 				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				return pm.getNumero();
 			}
 		});
@@ -1613,7 +1613,7 @@ public class RoleServiceTest extends BusinessTest {
 				addIdentificationEntreprise(pm, ide);
 				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
 				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				return pm.getNumero();
 			}
 		});

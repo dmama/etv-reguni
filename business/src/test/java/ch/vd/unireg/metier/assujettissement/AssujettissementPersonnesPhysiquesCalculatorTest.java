@@ -2915,7 +2915,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(paul, date(2008, 7, 7), MotifFor.ARRIVEE_HS, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
 		addForPrincipal(paul, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey, ModeImposition.MIXTE_137_2);
 
-		addForSecondaire(paul, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		// 2002
 		{
@@ -3039,7 +3039,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(paul, date(2002, 6, 5), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(2007, 7, 1), MotifFor.DEMENAGEMENT_VD, MockPays.Albanie);
 
-		addForSecondaire(paul, date(2002, 6, 5), MotifFor.ACHAT_IMMOBILIER, date(2002, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2002, 6, 5), MotifFor.ACHAT_IMMOBILIER, date(2002, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		// 2001
 		{
@@ -3218,7 +3218,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(paul, date(1995, 11, 2), MotifFor.ARRIVEE_HS, date(1997, 3, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(1997, 3, 3), MotifFor.DEMENAGEMENT_VD, date(2004, 12, 31), MotifFor.DEPART_HC, MockPays.Albanie);
 		addForPrincipal(paul, date(2005, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Neuchatel);
-		addForSecondaire(paul, date(2004, 3, 2), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2004, 3, 2), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> list = determine(paul);
 		assertNotNull(list);
@@ -3265,7 +3265,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(paul, date(2004, 7, 12), MotifFor.ARRIVEE_HC, date(2006, 11, 15), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(2006, 11, 16), MotifFor.DEMENAGEMENT_VD, MockPays.Albanie);
 
-		addForSecondaire(paul, date(2004, 6, 15), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2004, 6, 15), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> list = determine(paul);
 		assertNotNull(list);
@@ -3308,7 +3308,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(17907715L);
 		addForPrincipal(ctb, date(1993, 1, 6), MotifFor.INDETERMINE, date(2008, 2, 29), MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2008, 3, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
-		addForSecondaire(ctb, date(2009, 8, 31), MotifFor.ACHAT_IMMOBILIER, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Renens.getNoOFS(),
+		addForSecondaire(ctb, date(2009, 8, 31), MotifFor.ACHAT_IMMOBILIER, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Renens,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> list = determine(ctb);
@@ -3328,13 +3328,13 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final MenageCommun ctb = ensemble.getMenage();
 
 		addForPrincipal(ctb, date(2010, 5, 12), MotifFor.INDETERMINE, date(2010, 6, 14), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2010, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2010, 6, 14), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
+		addForSecondaire(ctb, date(2010, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2010, 6, 14), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 
 		addForPrincipal(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges);
 		addForSecondaire(ctb, date(2010, 7, 8), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2011, 6, 6), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-		                 MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		                 MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
@@ -3351,7 +3351,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(30928601L);
 		addForPrincipal(ctb, date(1976, 1, 7), MotifFor.INDETERMINE, date(1980, 1, 6), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
 		addForPrincipal(ctb, date(1980, 12, 30), MotifFor.INDETERMINE, MockPays.PaysInconnu);
-		addForSecondaire(ctb, date(1980, 12, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(1980, 12, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
@@ -3367,7 +3367,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final PersonnePhysique ctb = createContribuableSansFor(10003677L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges);
-		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges.getNoOFS(),
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
@@ -3384,7 +3384,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final MenageCommun ctb = createMenageSansFor(10003679L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges);
-		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
@@ -3401,7 +3401,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final PersonnePhysique ctb = createContribuableSansFor(10003680L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges.getNoOFS(),
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
@@ -3418,7 +3418,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final MenageCommun ctb = createMenageSansFor(10003681L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
@@ -3435,7 +3435,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final PersonnePhysique ctb = createContribuableSansFor(10003682L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
@@ -3451,7 +3451,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final MenageCommun ctb = createMenageSansFor(10003683L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
-		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
@@ -3467,7 +3467,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final PersonnePhysique ctb = createContribuableSansFor(10003685L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges,MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
@@ -3483,7 +3483,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final MenageCommun ctb = createMenageSansFor(10003684L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges,MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
@@ -3500,7 +3500,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(10010236L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne.getNoOFS(),
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertEmpty(determine(ctb));
@@ -3516,7 +3516,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final MenageCommun ctb = createMenageSansFor(10003578L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne.getNoOFS(),
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne,
 		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertEmpty(determine(ctb));
@@ -3532,7 +3532,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(10000032L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertEmpty(determine(ctb));
 	}
@@ -3547,7 +3547,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final MenageCommun ctb = createMenageSansFor(10000033L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertEmpty(determine(ctb));
 	}
@@ -3561,7 +3561,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final PersonnePhysique ctb = createContribuableSansFor(10000034L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 
 		assertEmpty(determine(ctb));
@@ -3576,7 +3576,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final MenageCommun ctb = createMenageSansFor(10000035L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 
 		assertEmpty(determine(ctb));
@@ -3591,7 +3591,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final PersonnePhysique ctb = createContribuableSansFor(10000036L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 
@@ -3610,7 +3610,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final MenageCommun ctb = createMenageSansFor(10000037L, date(2003, 7, 11), date(2003, 8, 1), date(2003, 10, 23), null).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 
@@ -3630,7 +3630,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(10000038L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
 
 		final List<Assujettissement> list = determine(ctb);
@@ -3648,7 +3648,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final MenageCommun ctb = createMenageSansFor(10000039L, date(2003, 7, 11), date(2003, 8, 1), date(2003, 10, 23), null).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 		addForPrincipal(ctb, date(2003, 10, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
 
@@ -3668,8 +3668,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(30928601L);
 		addForPrincipal(ctb, date(2007, 3, 7), MotifFor.INDETERMINE, date(2007, 5, 30), MotifFor.INDETERMINE, MockCommune.Neuchatel);
 		addForPrincipal(ctb, date(2007, 9, 12), MotifFor.INDETERMINE, MockCommune.Geneve);
-		addForSecondaire(ctb, date(2007, 3, 7), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2007, 9, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 11, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2007, 3, 7), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2007, 9, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 11, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
@@ -3686,7 +3686,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(10010236L);
 		addForPrincipal(ctb, date(2004, 1, 29), MotifFor.INDETERMINE, date(2004, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2004, 2, 1), MotifFor.ARRIVEE_HC, MockCommune.Nyon, ModeImposition.MIXTE_137_2);
-		addForSecondaire(ctb, date(2004, 1, 29), MotifFor.ACHAT_IMMOBILIER, MockCommune.Nyon.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2004, 1, 29), MotifFor.ACHAT_IMMOBILIER, MockCommune.Nyon, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size()); // [SIFISC-7281] pas de fractionnement de l'assujettissement lors de l'arrivée hors-canton de sourcier mixte 137 al 2.
@@ -3752,7 +3752,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(ctb, date(2005, 10, 27), MotifFor.INDETERMINE, date(2007, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
 		addForPrincipal(ctb, date(2007, 2, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
-		addForSecondaire(ctb, date(2005, 10, 27), MotifFor.DEBUT_EXPLOITATION, date(2011, 3, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(ctb, date(2005, 10, 27), MotifFor.DEBUT_EXPLOITATION, date(2011, 3, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(3, liste.size());
@@ -3771,7 +3771,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(41010811L);
 		addForPrincipal(ctb, date(1991, 1, 6), MotifFor.ARRIVEE_HS, date(1997, 12, 26), MotifFor.DEPART_HS, MockCommune.YverdonLesBains);
 		addForPrincipal(ctb, date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
-		addForSecondaire(ctb, date(1997, 12, 27), MotifFor.ACHAT_IMMOBILIER, date(1997, 12, 27), MotifFor.VENTE_IMMOBILIER, MockCommune.YverdonLesBains.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(1997, 12, 27), MotifFor.ACHAT_IMMOBILIER, date(1997, 12, 27), MotifFor.VENTE_IMMOBILIER, MockCommune.YverdonLesBains, MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(1997, 12, 28), MotifFor.ARRIVEE_HS, MockCommune.YverdonLesBains);
 
 		final List<Assujettissement> liste = determine(ctb);
@@ -4107,7 +4107,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor(10763698L);
 		addForPrincipal(ctb, date(2010, 10, 20), MotifFor.ACHAT_IMMOBILIER, date(2012, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
 		addForPrincipal(ctb, date(2013, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern);
-		addForSecondaire(ctb, date(2010, 10, 20), MotifFor.ACHAT_IMMOBILIER, date(2012, 5, 8), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2010, 10, 20), MotifFor.ACHAT_IMMOBILIER, date(2012, 5, 8), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
@@ -4234,9 +4234,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 	public void testDeterminePourCommuneHorsCantonImmeuble() throws Exception {
 		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> listeLausanne = determinePourCommunes(ctb, MockCommune.Lausanne.getNoOFS());
 		assertEquals(1, listeLausanne.size());
@@ -4257,9 +4257,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> listeLausanne = determinePourCommunes(ctb, MockCommune.Lausanne.getNoOFS());
 		assertEquals(1, listeLausanne.size());
@@ -4284,9 +4284,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> listeAubonne = determinePourCommunes(ctb, MockCommune.Aubonne.getNoOFS());
 		assertEquals(1, listeAubonne.size());
@@ -4330,7 +4330,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		// trou ici : pas de for principal entre le 29.5.2008 et le 6.7.2008
 		addForPrincipal(ctb, date(2008, 7, 7), MotifFor.ARRIVEE_HS, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
 		addForPrincipal(ctb, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
-		addForSecondaire(ctb, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> listePrilly = determinePourCommunes(ctb, MockCommune.Prilly.getNoOFS());
 		assertEquals(1, listePrilly.size());
@@ -4360,7 +4360,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2007, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 7, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2007, 8, 1), MotifFor.INDETERMINE, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
-		addForSecondaire(ctb, date(2007, 9, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2007, 9, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = determinePourCommunes(ctb, MockCommune.Aubonne.getNoOFS());
 		assertEquals(1, liste.size());
@@ -4380,7 +4380,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 		addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Moudon);
-		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 		{
 			// du point de vue d'Echallens, le contribuable est hors-canton à partir du 1er janvier 2001, année de l'achat de son immeuble.
@@ -4410,7 +4410,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(1980, 1, 1), MotifFor.MAJORITE, depart, MotifFor.DEPART_HC, MockCommune.Moudon);
 		addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 		{
 			// du point de vue d'Echallens, le contribuable est hors-canton à partir du 1er janvier 2001, année de l'achat de son immeuble.
@@ -4451,7 +4451,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActivePourVaudoisImmeuble() throws Exception {
 		final PersonnePhysique ctb = createUnForSimple();
-		addForSecondaire(ctb, date(2007, 4, 12), MotifFor.ACHAT_IMMOBILIER, date(2008, 6, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2007, 4, 12), MotifFor.ACHAT_IMMOBILIER, date(2008, 6, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 		for (int annee = 2006 ; annee < 2010 ; ++ annee) {
 			final List<Assujettissement> assujettissements = determine(ctb, annee);
@@ -4659,7 +4659,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arriveeHSversHC.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(pp, arriveeHSversHC, MotifFor.ARRIVEE_HS, arriveeHCversVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
 		addForPrincipal(pp, arriveeHCversVD, MotifFor.ARRIVEE_HC, MockCommune.Grandson);
-		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> ass = determine(pp, annee);
 		assertNotNull(ass);
@@ -4688,7 +4688,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(pp, arriveeHSversHC, MotifFor.ARRIVEE_HS, achat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bern, ModeImposition.SOURCE);
 		addForPrincipal(pp, achat, MotifFor.CHGT_MODE_IMPOSITION, arriveeHCversVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
 		addForPrincipal(pp, arriveeHCversVD, MotifFor.ARRIVEE_HC, MockCommune.Grandson);
-		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> ass = determine(pp, annee);
 		assertNotNull(ass);
@@ -4716,7 +4716,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(pp, arriveeHSversHC, MotifFor.ARRIVEE_HS, achat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Bern, ModeImposition.SOURCE);
 		addForPrincipal(pp, achat, MotifFor.CHGT_MODE_IMPOSITION, arriveeHCversVD.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
 		addForPrincipal(pp, arriveeHCversVD, MotifFor.ARRIVEE_HC, MockCommune.Grandson);
-		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> ass = determine(pp, annee);
 		assertNotNull(ass);
@@ -4817,7 +4817,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(pp, achat, null, arriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
 		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
 
 		final List<Assujettissement> ass = determine(pp);
 		assertNotNull(ass);
@@ -4845,7 +4845,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(pp, achat, null, arriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
 		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
 
 		final List<Assujettissement> ass = determine(pp);
 		assertNotNull(ass);
@@ -4871,7 +4871,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		addForPrincipal(pp, achat, null, arriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
 		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
-		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
 
 		final List<Assujettissement> ass = determine(pp);
 		assertNotNull(ass);

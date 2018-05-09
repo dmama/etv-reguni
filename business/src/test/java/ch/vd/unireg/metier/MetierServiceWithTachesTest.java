@@ -118,16 +118,16 @@ public class MetierServiceWithTachesTest extends BusinessTest {
 			addForPrincipal(madame, RegDate.get(2007, 1, 1), MotifFor.ARRIVEE_HC, datePremierMariage.getOneDayBefore(), motifMariage, MockCommune.Lausanne);
 			addForPrincipal(madame, dateDivorce, motifDivorce, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
 			addForPrincipal(madame, dateDemenagement, MotifFor.DEMENAGEMENT_VD, dateSecondMariage.getOneDayBefore(), motifMariage, MockCommune.Lausanne);
-			addForSecondaire(madame, dateDivorce, motifDivorce, dateSecondMariage.getOneDayBefore(), motifMariage, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(madame, dateDivorce, motifDivorce, dateSecondMariage.getOneDayBefore(), motifMariage, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, datePremierMariage, dateDivorce.getOneDayBefore());
 			final MenageCommun menage = ensemble.getMenage();
 			addAppartenanceMenage(menage, monsieur, dateSecondMariage, null, false);
 			addAppartenanceMenage(menage, madame, dateSecondMariage, null, false);
 			addForPrincipal(menage, datePremierMariage, motifMariage, dateDivorce.getOneDayBefore(), motifDivorce, MockCommune.Bussigny);
-			addForSecondaire(menage, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateDivorce.getOneDayBefore(), motifDivorce, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(menage, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateDivorce.getOneDayBefore(), motifDivorce, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 			addForPrincipal(menage, dateSecondMariage, motifMariage, MockCommune.Bussigny);
-			addForSecondaire(menage, dateSecondMariage, motifMariage, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(menage, dateSecondMariage, motifMariage, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 			final SituationFamilleMenageCommun situation = addSituation(menage, dateSecondMariage, null, 0, TarifImpotSource.NORMAL, EtatCivil.MARIE);
 			situation.setContribuablePrincipalId(monsieur.getId());

@@ -359,7 +359,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final PersonnePhysique elle = addHabitant(noElle);
 			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
 			addForPrincipal(etc.getMenage(), date(2017, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
-			addForSecondaire(etc.getMenage(), date(2017, 6, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(etc.getMenage(), date(2017, 6, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 			return null;
 		});
 
@@ -509,7 +509,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final PersonnePhysique elle = addHabitant(noElle);
 			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
 			addForPrincipal(etc.getMenage(), date(2017, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
-			addForSecondaire(etc.getMenage(), date(2017, 6, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(etc.getMenage(), date(2017, 6, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 			ids.monsieur = lui.getNumero();
 			ids.madame = elle.getNumero();
 			ids.menage = etc.getMenage().getNumero();
@@ -1631,7 +1631,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ignacio, ursule, dateMariage, null);
 				final MenageCommun menage = ensemble.getMenage();
 				addForPrincipal(menage, dateAchat, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-				addForSecondaire(menage, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Vaulion.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(menage, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Vaulion, MotifRattachement.IMMEUBLE_PRIVE);
 				return menage.getNumero();
 			});
 
@@ -2884,7 +2884,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final MenageCommun mc = couple.getMenage();
 
 			addForPrincipal(mc, dateAchat, null, null, null, MockPays.EtatsUnis, MotifRattachement.DIPLOMATE_ETRANGER);
-			addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
 
 			return mc.getNumero();
 		});
@@ -4276,7 +4276,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
 			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-			addForSecondaire(pp, dateDepart.addDays(-10), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(pp, dateDepart.addDays(-10), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex, MotifRattachement.IMMEUBLE_PRIVE);
 			return pp.getNumero();
 		});
 

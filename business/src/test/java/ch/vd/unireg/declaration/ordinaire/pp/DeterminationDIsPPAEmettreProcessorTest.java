@@ -12,12 +12,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.MultipleSwitch;
@@ -29,6 +23,12 @@ import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor.ExistenceResults;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
@@ -129,13 +129,13 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// Un tiers avec un for principal hors canton, et avec un immeuble dans le canton
 		PersonnePhysique geo = addNonHabitant("Geo", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(geo, date(1968, 11, 3), null, MockCommune.Neuchatel);
-		addForSecondaire(geo, date(2003, 3, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(geo, date(2003, 3, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		// [UNIREG-465] Un tiers avec un for principal hors canton, et avec un immeuble dans le canton qui a été vendu en cours d'année
 		PersonnePhysique johnny = addNonHabitant("Johnny", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(johnny, date(2005, 11, 3), null, MockCommune.Bern);
 		addForSecondaire(johnny, date(2005, 11, 3), MotifFor.ACHAT_IMMOBILIER, date(2007, 8, 30), MotifFor.VENTE_IMMOBILIER,
-				MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		// [UNIREG-465][UNIREG-1742] Un tiers avec un for principal hors canton, et avec une activité indépendente dans le canton qui a été stoppé en cours d'année
 		Contribuable tyler = createHorsCantonAvecFinActiviteIndependante(date(2007, 8, 30));
@@ -277,8 +277,8 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		// Un tiers sans for principal ou ni for secondaire mais avec un autre type de for
 		PersonnePhysique samuel = addNonHabitant("Samuel", "Ragnar", date(1988, 10, 2), Sexe.MASCULIN);
-		addForAutreImpot(samuel, date(1968, 11, 3), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				GenreImpot.SUCCESSION);
+		addForAutreImpot(samuel, date(1968, 11, 3), null, MockCommune.Lausanne,
+		                 GenreImpot.SUCCESSION);
 		assertZeroDeclaration(service.determineDetailsEnvoi(samuel, 2007, r), r);
 
 		// Un tiers avec un for principal hors canton
@@ -328,7 +328,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		{
 			PersonnePhysique ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
 			addForPrincipal(ramon, date(1968, 11, 3), null, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
-			addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 			assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ramon, 2007, r));
 		}
 	}
@@ -431,7 +431,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// contribuable hors canton ayant une activité indépendante dans le canton
 		PersonnePhysique jean = addNonHabitant("Jean", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jean, date(1968, 11, 3), null, MockCommune.Neuchatel);
-		addForSecondaire(jean, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
+		addForSecondaire(jean, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne,
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
 		assertDetails(CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jean, 2007, r));
@@ -439,17 +439,17 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// contribuable hors canton ayant une activité indépendante dans le canton, ainsi qu'un autre type de for
 		PersonnePhysique jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jacques, date(1968, 11, 3), null, MockCommune.Neuchatel);
-		addForSecondaire(jacques, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
+		addForSecondaire(jacques, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne,
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
-		addForAutreImpot(jacques, date(1968, 11, 3), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				GenreImpot.DONATION);
+		addForAutreImpot(jacques, date(1968, 11, 3), null, MockCommune.Lausanne,
+		                 GenreImpot.DONATION);
 		addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
 		assertDetails(CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jacques, 2007, r));
 
 		// contribuable hors Suisse ayant une activité indépendante dans le canton
 		PersonnePhysique mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(mitt, date(1968, 11, 3), null, MockPays.Danemark);
-		addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
+		addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne,
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.Danemark);
 		assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(mitt, 2007, r));
@@ -457,7 +457,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors canton
 		PersonnePhysique georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(georges, date(1968, 11, 3), null, MockCommune.Neuchatel);
-		addForSecondaire(georges, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
+		addForSecondaire(georges, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		addAdresseSuisse(georges, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
 		assertDetails(CategorieEnvoiDIPP.HC_IMMEUBLE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(georges,
@@ -466,7 +466,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse
 		PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jacky, date(1968, 11, 3), null, MockPays.Danemark);
-		addForSecondaire(jacky, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
+		addForSecondaire(jacky, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.Danemark);
 		assertZeroDeclaration(service.determineDetailsEnvoi(jacky, 2007, r), r);
@@ -526,7 +526,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(1998, 4, 13), null, MockCommune.Bern);
 		addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER,
-				MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 		// [UNIREG-1742] pas de déclaration envoyée pour les contribuables domiciliés dans un autre canton dont le rattachement
@@ -545,7 +545,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique salvatore = addNonHabitant("Salvatore", "Adamo", date(1965, 4, 13), Sexe.MASCULIN);
 			addForPrincipal(salvatore, date(1998, 4, 13), null, MockPays.Albanie);
 			addForSecondaire(salvatore, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER,
-					MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2000, r), r); // [UNIREG-1742] pas de DI, même la première année
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2001, r), r); // pas de DI
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2002, r), r); // pas de DI
@@ -561,7 +561,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique greg = addNonHabitant("Grégoire", "Wriztjk", date(1965, 4, 13), Sexe.MASCULIN);
 			addForPrincipal(greg, date(1998, 4, 13), MotifFor.MAJORITE, date(2007, 7, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 			addForPrincipal(greg, date(2007, 7, 2), MotifFor.DEPART_HS, MockPays.Espagne);
-			addForSecondaire(greg, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(greg, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2005, 1, 1), date(2005, 12, 31), service.determineDetailsEnvoi(greg, 2005, r));
 			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2006, 1, 1), date(2006, 12, 31), service.determineDetailsEnvoi(greg, 2006, r));
 			// [UNIREG-1742] rattrapage de la DI qui aurait dû être émise automatiquement lors du départ
@@ -623,7 +623,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	private PersonnePhysique createHorsSuisseAvecVenteImmeuble(RegDate dateVente) {
 		PersonnePhysique alfred = addNonHabitant("Alfred", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(alfred, date(2005, 11, 3), null, MockPays.France);
-		addForSecondaire(alfred, date(2005, 11, 3), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(alfred, date(2005, 11, 3), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 		return alfred;
 	}
 
@@ -633,7 +633,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	private PersonnePhysique createHorsSuisseAvecFinActiviteIndependante(RegDate dateFin) {
 		PersonnePhysique armand = addNonHabitant("Armand", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(armand, date(2005, 11, 3), null, MockPays.Danemark);
-		addForSecondaire(armand, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(armand, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return armand;
 	}
 
@@ -644,7 +644,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		PersonnePhysique armand = addNonHabitant("Armand", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(armand, date(2005, 11, 3), null, MockPays.Danemark);
 		for (DateRange r : ranges) {
-			addForSecondaire(armand, r.getDateDebut(), MotifFor.DEBUT_EXPLOITATION, r.getDateFin(), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
+			addForSecondaire(armand, r.getDateDebut(), MotifFor.DEBUT_EXPLOITATION, r.getDateFin(), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne,
 					MotifRattachement.ACTIVITE_INDEPENDANTE);
 		}
 		return armand;
@@ -665,7 +665,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	private PersonnePhysique createHorsCantonAvecFinActiviteIndependante(RegDate dateFin) {
 		PersonnePhysique tyler = addNonHabitant("Tyler", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(tyler, date(2005, 11, 3), null, MockCommune.Bern);
-		addForSecondaire(tyler, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(tyler, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return tyler;
 	}
 
@@ -865,7 +865,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2005, 1, 1), null, date(2007, 2, 28), null, MockPays.Danemark);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-			addForSecondaire(ctb, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForSecondaire(ctb, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007, r));
 		}
 
@@ -907,7 +907,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HC, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-			addForSecondaire(ctb, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
+			addForSecondaire(ctb, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
 					MotifRattachement.IMMEUBLE_PRIVE);
 			assertDetails(CategorieEnvoiDIPP.HC_IMMEUBLE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
 			                                                                                                                  2007, r));
@@ -918,7 +918,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HC, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-			addForSecondaire(ctb, date(2007, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
+			addForSecondaire(ctb, date(2007, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne,
 					MotifRattachement.IMMEUBLE_PRIVE);
 			assertDetails(CategorieEnvoiDIPP.HC_IMMEUBLE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
 			                                                                                                                  2007, r));
@@ -962,7 +962,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		{
 			PersonnePhysique ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Bern);
-			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(),
+			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay,
 					MotifRattachement.IMMEUBLE_PRIVE);
 			assertDetails(CategorieEnvoiDIPP.HC_IMMEUBLE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
 			                                                                                                                  2007, r));
@@ -973,7 +973,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Bern);
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2007, 3, 4), MotifFor.FIN_EXPLOITATION,
-					MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+					MockCommune.Cossonay, MotifRattachement.ACTIVITE_INDEPENDANTE);
 			// [UNIREG-1742] pas de déclaration envoyée pour les contribuables domiciliés dans un autre canton dont le rattachement
 			// économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
 			assertZeroDeclaration(service.determineDetailsEnvoi(ctb, 2007, r), r);
@@ -984,7 +984,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), null, MockPays.Danemark);
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2007, 3, 4), MotifFor.FIN_EXPLOITATION,
-					MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+					MockCommune.Cossonay, MotifRattachement.ACTIVITE_INDEPENDANTE);
 			// [UNIREG-1742] rattrapage de la DI
 			assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 3, 4), service.determineDetailsEnvoi(ctb, 2007, r));
 		}
@@ -994,7 +994,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			PersonnePhysique ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Bern);
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2007, 3, 4), MotifFor.VENTE_IMMOBILIER,
-					MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+					MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 			// [UNIREG-1742] pas de déclaration envoyée pour les contribuables domiciliés dans un autre canton dont le rattachement
 			// économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
 			assertZeroDeclaration(service.determineDetailsEnvoi(ctb, 2007, r), r);
@@ -1627,8 +1627,8 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 				addPeriodeFiscale(annee);
 				final PersonnePhysique pp = addNonHabitant("Francis", "Rouge", date(1974, 7, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, achat, null, MockCommune.Bern);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
-				addForSecondaire(pp, vente.addDays(-10), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+				addForSecondaire(pp, vente.addDays(-10), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
 				pp.setOfficeImpotId(MockOfficeImpot.OID_GRANDSON.getNoColAdm());
 				return pp.getNumero();
 			});

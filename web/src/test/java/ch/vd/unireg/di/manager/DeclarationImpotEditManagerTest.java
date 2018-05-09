@@ -11,9 +11,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -27,6 +24,9 @@ import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalService;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -238,7 +238,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
 		addForPrincipal(paul, date(1995, 3, 15), MotifFor.MAJORITE, date(2008, 2, 10), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(2008, 2, 11), MotifFor.DEPART_HS, MockPays.France);
-		addForSecondaire(paul, date(1998, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(),
+		addForSecondaire(paul, date(1998, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		// assujetti sur toute l'année 2007
@@ -293,7 +293,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2007, 3, 15), MotifFor.ARRIVEE_HC, date(2008, 2, 10), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(2008, 2, 11), MotifFor.DEPART_HS, MockPays.France);
-		addForSecondaire(paul, date(2007, 10, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(),
+		addForSecondaire(paul, date(2007, 10, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<PeriodeImposition> ranges = manager.calculateRangesProchainesDIs(paul);
@@ -328,7 +328,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		// le contribuable part hors-Suisse au début de l'année, et garde un immeuble dans le canton
 		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2007, 10, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Neuchatel);
-		addForSecondaire(paul, date(2007, 10, 1), MotifFor.ACHAT_IMMOBILIER, date(2009, 1, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2007, 10, 1), MotifFor.ACHAT_IMMOBILIER, date(2009, 1, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<PeriodeImposition> ranges = manager.calculateRangesProchainesDIs(paul);
 		assertNotNull(ranges);
@@ -666,7 +666,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 				final PersonnePhysique pp = addNonHabitant("Annette", "Lebeurre", date(1978, 12, 3), Sexe.FEMININ);
 				addForPrincipal(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, MockCommune.Zurich);
-				addForSecondaire(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Cully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Cully, MotifRattachement.IMMEUBLE_PRIVE);
 				ids.ppId = pp.getNumero();
 
 				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);

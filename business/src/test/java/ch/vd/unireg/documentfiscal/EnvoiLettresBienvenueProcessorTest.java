@@ -124,7 +124,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addForSecondaire(entreprise, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				return entreprise.getNumero();
 			}
@@ -660,7 +660,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				return entreprise.getNumero();
 			}
@@ -720,7 +720,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				return entreprise.getNumero();
 			}
@@ -780,8 +780,8 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, null, MockCommune.Neuchatel);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				return entreprise.getNumero();
 			}
@@ -841,7 +841,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				return entreprise.getNumero();
 			}
@@ -901,7 +901,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				return entreprise.getNumero();
 			}
@@ -961,8 +961,8 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				return entreprise.getNumero();
 			}
@@ -1023,8 +1023,8 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
-				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				return entreprise.getNumero();
 			}
@@ -1115,7 +1115,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateAchat, null, MockCommune.Conthey, GenreImpot.BENEFICE_CAPITAL);
-				addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				return e.getNumero();
 			}
 		});

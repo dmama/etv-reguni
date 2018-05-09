@@ -131,7 +131,6 @@ import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.FlagEntreprise;
 import ch.vd.unireg.tiers.ForDebiteurPrestationImposable;
 import ch.vd.unireg.tiers.ForFiscal;
-import ch.vd.unireg.tiers.ForFiscalAutreImpot;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
@@ -1389,13 +1388,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute un for fiscal secondaire ouvert.
 	 */
-	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, Integer noOFS, MotifRattachement motif) {
-		return addForSecondaire(tiers, ouverture, motifOuverture, noOFS, motif, GenreImpot.REVENU_FORTUNE);
-	}
-
-	/**
-	 * Ajoute un for fiscal secondaire ouvert.
-	 */
 	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, Integer noOFS, MotifRattachement motif, GenreImpot genreImpot) {
 		ForFiscalSecondaire f = new ForFiscalSecondaire();
 		f.setDateDebut(ouverture);
@@ -1412,14 +1404,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Ajoute un for fiscal secondaire fermé.
 	 */
 	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
-	                                               MotifFor motifFermeture, Integer noOFS, MotifRattachement motif) {
-		return addForSecondaire(tiers, ouverture, motifOuverture, fermeture, motifFermeture, noOFS, motif, GenreImpot.REVENU_FORTUNE);
-	}
-
-	/**
-	 * Ajoute un for fiscal secondaire fermé.
-	 */
-	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
 	                                               MotifFor motifFermeture, Integer noOFS, MotifRattachement motif, GenreImpot genreImpot) {
 		ForFiscalSecondaire f = new ForFiscalSecondaire();
 		f.setDateDebut(ouverture);
@@ -1430,18 +1414,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(motif);
-		f = tiersDAO.addAndSave(tiers, f);
-		return f;
-	}
-
-	protected ForFiscalAutreImpot addForAutreImpot(Contribuable tiers, RegDate ouverture, @Nullable RegDate fermeture, Integer noOFS,
-			TypeAutoriteFiscale type, GenreImpot genre) {
-		ForFiscalAutreImpot f = new ForFiscalAutreImpot();
-		f.setDateDebut(ouverture);
-		f.setDateFin(fermeture);
-		f.setGenreImpot(genre);
-		f.setTypeAutoriteFiscale(type);
-		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f = tiersDAO.addAndSave(tiers, f);
 		return f;
 	}

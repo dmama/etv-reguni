@@ -1112,7 +1112,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		addForPrincipal(pp, date(2006, 1, 26), MotifFor.INDETERMINE, date(2009, 7, 11), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 		addForPrincipal(pp, date(2009, 7, 12), MotifFor.ARRIVEE_HS, date(2009, 12, 27), MotifFor.DEPART_HC, MockCommune.Bussigny);
 		addForPrincipal(pp, date(2009, 12, 28), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-		addForSecondaire(pp, date(2006, 1, 26), MotifFor.ACHAT_IMMOBILIER, date(2010, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2006, 1, 26), MotifFor.ACHAT_IMMOBILIER, date(2010, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		final ModeleDocument modeleHC2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
@@ -1132,7 +1132,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		addForPrincipal(pp, date(2006, 1, 26), MotifFor.INDETERMINE, date(2009, 7, 11), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 		addForPrincipal(pp, date(2009, 7, 12), MotifFor.ARRIVEE_HS, date(2009, 12, 27), MotifFor.DEPART_HC, MockCommune.Bussigny);
 		addForPrincipal(pp, date(2009, 12, 28), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-		addForSecondaire(pp, date(2006, 1, 26), MotifFor.ACHAT_IMMOBILIER, date(2010, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2006, 1, 26), MotifFor.ACHAT_IMMOBILIER, date(2010, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		final ModeleDocument modeleHS2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);

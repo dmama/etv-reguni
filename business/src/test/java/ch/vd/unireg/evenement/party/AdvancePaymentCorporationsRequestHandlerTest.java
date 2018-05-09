@@ -6,9 +6,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.security.MockSecurityProvider;
 import ch.vd.unireg.security.Role;
@@ -396,7 +396,7 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addForPrincipal(e, dateDebut, null, MockCommune.Sierre);
-				addForSecondaire(e, date(2015, 6, 21), MotifFor.ACHAT_IMMOBILIER, date(2015, 12, 3), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(e, date(2015, 6, 21), MotifFor.ACHAT_IMMOBILIER, date(2015, 12, 3), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
 				return e.getNumero();
 			}

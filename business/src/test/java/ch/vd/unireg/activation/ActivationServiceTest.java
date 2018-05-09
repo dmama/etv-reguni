@@ -172,8 +172,8 @@ public class ActivationServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Momo", "Bizuth", date(1980, 5, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(1998, 5, 12), MotifFor.MAJORITE, date(2000, 12, 3), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
 				addForPrincipal(pp, date(2000, 12, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForSecondaire(pp, date(2002, 1, 16), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2004, 8, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2002, 1, 16), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2004, 8, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 				for (int pf = 2003 ; pf <= RegDate.get().year() ; ++ pf) {
 					addPeriodeFiscale(pf);
@@ -395,8 +395,8 @@ public class ActivationServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Fée", "Nixe", date(1956, 3, 12), Sexe.FEMININ);
 				addForPrincipal(pp, date(2000, 4, 1), MotifFor.ARRIVEE_HS, dateDesactivation, MotifFor.ANNULATION, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.CheseauxSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.CheseauxSurLausanne, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.VENTE_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -878,9 +878,9 @@ public class ActivationServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
 				addForPrincipal(pp, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(1990, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				addForPrincipal(pp, date(1991, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDesactivation, MotifFor.ANNULATION, MockCommune.Lausanne);
-				addForSecondaire(pp, date(1991, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation.addMonths(-1), MotifFor.ANNULATION, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(1991, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation.addMonths(-1), MotifFor.ANNULATION, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

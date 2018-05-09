@@ -79,7 +79,7 @@ public class ProduireStatsCtbsProcessorTest extends BusinessTest {
 			addRegimeFiscalCH(assujettiePlusTard, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addRegimeFiscalVD(assujettiePlusTard, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(assujettiePlusTard, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
-			addForSecondaire(assujettiePlusTard, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+			addForSecondaire(assujettiePlusTard, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Grandson, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 
 			final Ids res = new Ids();
 			res.idAssujettie = assujettie.getNumero();

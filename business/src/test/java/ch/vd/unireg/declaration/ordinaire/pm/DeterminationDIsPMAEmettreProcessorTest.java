@@ -15,15 +15,15 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -129,7 +129,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRegimeFiscalVD(renardLico, RegDate.get(1997, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(renardLico, RegDate.get(1997, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(renardLico, date(1997, 4, 5), null, MockCommune.Chur);
-		addForSecondaire(renardLico, date(1997, 4, 5), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+		addForSecondaire(renardLico, date(1997, 4, 5), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 
 		// Une entreprise avec un for secondaire actif sur VD il y a quelques temps
 		final Entreprise tralalaTsointsoin = addEntrepriseInconnueAuCivil();
@@ -139,7 +139,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRegimeFiscalVD(tralalaTsointsoin, RegDate.get(2003, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(tralalaTsointsoin, RegDate.get(2003, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(tralalaTsointsoin, date(2003, 4, 5), null, MockCommune.Chur);
-		addForSecondaire(tralalaTsointsoin, date(2003, 4, 5), MotifFor.ACHAT_IMMOBILIER, date(2008, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+		addForSecondaire(tralalaTsointsoin, date(2003, 4, 5), MotifFor.ACHAT_IMMOBILIER, date(2008, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 
 		/*
 		 * Contribuables devant être ignorés

@@ -13,6 +13,11 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.adresse.AdresseTiers;
+import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -22,11 +27,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.adresse.AdresseTiers;
-import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.AppartenanceMenage;
@@ -1960,7 +1960,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				PersonnePhysique nonHabitant = addNonHabitant("Béatrice", "Duval", dateNaissanceBea, Sexe.FEMININ);
 				addForPrincipal(nonHabitant, dateArrivee.addYears(-1), MotifFor.INDETERMINE, MockCommune.Bern);
-				addForSecondaire(nonHabitant, dateArrivee.addYears(-1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(nonHabitant, dateArrivee.addYears(-1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 				return nonHabitant.getNumero();
 			}
 
@@ -2379,7 +2379,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique habitant = addNonHabitant("Mohamed", "Pouly", date(1950, 1, 1), Sexe.MASCULIN);
 				addForPrincipal(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
 			}
 		});

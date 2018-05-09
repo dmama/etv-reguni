@@ -7,12 +7,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscal;
@@ -211,7 +211,7 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				final MenageCommun mc = ensemble.getMenage();
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 				return mc.getNumero();
 			}
 		});
@@ -302,7 +302,7 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				final MenageCommun mc = ensemble.getMenage();
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateSeparation.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateSeparation.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle, MotifRattachement.IMMEUBLE_PRIVE);
 				return mc.getNumero();
 			}
 		});

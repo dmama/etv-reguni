@@ -10,6 +10,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
@@ -21,9 +24,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
@@ -505,7 +505,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				final MenageCommun mc = couple.getMenage();
 
 				addForPrincipal(mc, dateAchat, MotifFor.INDETERMINE, MockCommune.Sierre);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final Ids ids = new Ids();
 				ids.m = m.getNumero();
@@ -616,7 +616,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateAchat.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne, ModeImposition.SOURCE);
 				addForPrincipal(mc, dateAchat, MotifFor.CHGT_MODE_IMPOSITION, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
 				addForPrincipal(mc, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 				return survivant.getNumero();
 			}
 		});

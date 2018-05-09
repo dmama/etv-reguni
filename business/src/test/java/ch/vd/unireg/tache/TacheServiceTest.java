@@ -21,20 +21,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
-import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.BusinessTestingConstants;
@@ -51,6 +37,20 @@ import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.MetierService;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
@@ -1058,7 +1058,7 @@ public class TacheServiceTest extends BusinessTest {
 				addDeclarationImpot(pp, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
 				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
-				final ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, date(2006, 6, 11), MotifFor.FIN_EXPLOITATION, MockCommune.Fraction.LeLieu.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+				final ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, date(2006, 6, 11), MotifFor.FIN_EXPLOITATION, MockCommune.Fraction.LeLieu, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				tacheService.genereTacheDepuisFermetureForSecondaire(pp, forFiscalSecondaire);
 				return pp.getNumero();
@@ -1223,7 +1223,7 @@ public class TacheServiceTest extends BusinessTest {
 				addDeclarationImpot(raoul, periode2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
 
 				// début d'exploitation au 1er mai 1990
-				addForSecondaire(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
+				addForSecondaire(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne,
 						MotifRattachement.ACTIVITE_INDEPENDANTE);
 				return null;
 			}
@@ -1640,7 +1640,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				ids.menageId = menage.getNumero();
 
-				addForSecondaire(menage, dateMariage, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(),
+				addForSecondaire(menage, dateMariage, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne,
 						MotifRattachement.IMMEUBLE_PRIVE);
 
 				// Ajoute les déclarations qui vont bien
@@ -1935,7 +1935,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique simon = addHabitant(100000);
 				ids.simonId = simon.getNumero();
 				addForPrincipal(simon, date(1981, 1, 1), MotifFor.MAJORITE, MockPays.Danemark);
-				addForSecondaire(simon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(simon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 
 				for (int i = 2003; i < RegDate.get().year(); ++i) {
 					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
@@ -2677,7 +2677,7 @@ public class TacheServiceTest extends BusinessTest {
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 5, 1), null);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, date(1995, 1, 10), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(mc, date(1995, 1, 10), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mc, date(1995, 1, 10), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 
 				ids.idLui = lui.getNumero();
 				ids.idElle = elle.getNumero();
@@ -2922,7 +2922,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable hors-Suisse avec un immeuble dans le canton
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Albanie);
-		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
 
 		// (précondition) La déclaration d'impôt est optionnelle
 		final List<PeriodeImposition> periodes = periodeImpositionService.determine(pp, 2005);
@@ -2949,7 +2949,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable hors-Canton qui commence une activité indépendante à Renens et l'arrête la même année
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Geneve);
-		addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Renens, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 		// (précondition) La déclaration d'impôt est remplacée par une note à l'administration fiscale de l'autre canton
 		final List<PeriodeImposition> periodes = periodeImpositionService.determine(pp, 2005);
@@ -3572,7 +3572,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Jean-Louis", "Ruedi", date(1954, 11, 23), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneeAvantAvant, 1, 7), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 				final ForFiscalSecondaire ffs =
-						addForSecondaire(pp, date(anneeAvantAvant, 1, 7), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+						addForSecondaire(pp, date(anneeAvantAvant, 1, 7), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				final PeriodeFiscale periode1 = pfDAO.getPeriodeFiscaleByYear(anneeAvantAvant);
 				final ModeleDocument modele1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode1);
@@ -3918,7 +3918,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 5, 1), MotifFor.DEPART_HC, MockCommune.Orbe);
 				addForPrincipal(pp, date(2008, 5, 2), MotifFor.DEPART_HC, date(2009, 2, 28), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 				addForPrincipal(pp, date(2009, 3, 1), MotifFor.ARRIVEE_HC, MockCommune.Orbe);
-				addForSecondaire(pp, date(2008, 5, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Orbe.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2008, 5, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Orbe, MotifRattachement.IMMEUBLE_PRIVE);
 
 				// déclaration 2005-2007 (rien de spécial)
 				for (int annee = 2005; annee < 2008; annee++) {
@@ -4030,7 +4030,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				addForPrincipal(pp, RegDate.get(anneeDerniere, 1, 1), MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Albanie);
-				addForSecondaire(pp, RegDate.get(anneeDerniere, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, RegDate.get(anneeDerniere, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeDerniere);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
@@ -5022,7 +5022,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, aujourdhui, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, aujourdhui, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -5069,7 +5069,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockPays.RoyaumeUni);
-				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, aujourdhui, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, aujourdhui, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				// on crée déjà la DI de l'an dernier
 				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
@@ -5122,7 +5122,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, aujourdhui, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, aujourdhui, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				// on crée déjà la DI de l'an dernier
 				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
@@ -5175,7 +5175,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HC, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
 				addForPrincipal(pp, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern);
-				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				// on crée déjà les DIs 2007 et 2008
 				final PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
@@ -5235,7 +5235,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
-				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, aujourdhui, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, aujourdhui, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				// on crée déjà la DI de l'an dernier
 				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
@@ -5477,7 +5477,7 @@ public class TacheServiceTest extends BusinessTest {
 		{
 			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(pp, date(1968, 1, 1), MotifFor.MAJORITE, MockCommune.Morges, ModeImposition.SOURCE);
-			final ForFiscalSecondaire ffs = addForSecondaire(pp, date(1990, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			final ForFiscalSecondaire ffs = addForSecondaire(pp, date(1990, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne, MotifRattachement.IMMEUBLE_PRIVE);
 			ffs.setAnnule(true);
 			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
 			assertNotNull(officeImpot);
@@ -5505,7 +5505,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Galinette", "Sandré", null, Sexe.FEMININ);
 				addForPrincipal(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
-				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ACTIVITE_INDEPENDANTE);
 				return pp.getNumero();
 			}
 		});
@@ -5735,7 +5735,7 @@ public class TacheServiceTest extends BusinessTest {
 					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.EXO_90F);
 					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.EXO_90F);
 					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
-					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
 					return pm.getNumero();
 				}
@@ -5832,7 +5832,7 @@ public class TacheServiceTest extends BusinessTest {
 					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.EXO_90F);
 					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.EXO_90F);
 					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Zurich);
-					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
 					return pm.getNumero();
 				}
@@ -5914,7 +5914,7 @@ public class TacheServiceTest extends BusinessTest {
 					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ART90A);
 					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ART90A);
 					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
-					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
 					return pm.getNumero();
 				}

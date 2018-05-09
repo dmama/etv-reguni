@@ -683,7 +683,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 			public void execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique ctb = createContribuableSansFor(null);
 				addForPrincipal(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Neuchatel);
-				addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
 				assertNotNull(ctb);
 
 				// 2007
@@ -1283,8 +1283,8 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", date(1967, 3, 25), Sexe.FEMININ);
 				addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, MockCommune.Geneve);
-				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2010, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2010, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1321,7 +1321,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 				final PersonnePhysique pp = addNonHabitant("Mélina", "Dostoïevskaïa", null, Sexe.FEMININ);
 				addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Sierre);
 				addForPrincipal(pp, date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern);
-				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

@@ -18,6 +18,17 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.common.WebserviceTest;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationEmise;
+import ch.vd.unireg.declaration.EtatDeclarationRetournee;
+import ch.vd.unireg.declaration.ModeleDocument;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -30,26 +41,28 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
-import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
-import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
-import ch.vd.unireg.webservices.party3.BatchParty;
-import ch.vd.unireg.webservices.party3.BatchPartyEntry;
-import ch.vd.unireg.webservices.party3.ExtendDeadlineCode;
-import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
-import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
-import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.party3.GetPartyRequest;
-import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
-import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
-import ch.vd.unireg.webservices.party3.OrdinaryTaxDeclarationKey;
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.PartyWebService;
-import ch.vd.unireg.webservices.party3.SearchPartyRequest;
-import ch.vd.unireg.webservices.party3.SearchPartyResponse;
-import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
-import ch.vd.unireg.webservices.party3.WebServiceException;
+import ch.vd.unireg.tiers.CollectiviteAdministrative;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.EnsembleTiersCouple;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.CategorieIdentifiant;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.ModeCommunication;
+import ch.vd.unireg.type.ModeImposition;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.MotifRattachement;
+import ch.vd.unireg.type.PeriodiciteDecompte;
+import ch.vd.unireg.type.Sexe;
+import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypePermis;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -87,39 +100,6 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.common.WebserviceTest;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.unireg.declaration.DelaiDeclaration;
-import ch.vd.unireg.declaration.EtatDeclaration;
-import ch.vd.unireg.declaration.EtatDeclarationEmise;
-import ch.vd.unireg.declaration.EtatDeclarationRetournee;
-import ch.vd.unireg.declaration.ModeleDocument;
-import ch.vd.unireg.declaration.PeriodeFiscale;
-import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.unireg.tiers.CollectiviteAdministrative;
-import ch.vd.unireg.tiers.DebiteurPrestationImposable;
-import ch.vd.unireg.tiers.EnsembleTiersCouple;
-import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.type.CategorieEtranger;
-import ch.vd.unireg.type.CategorieIdentifiant;
-import ch.vd.unireg.type.CategorieImpotSource;
-import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
-import ch.vd.unireg.type.ModeCommunication;
-import ch.vd.unireg.type.ModeImposition;
-import ch.vd.unireg.type.MotifFor;
-import ch.vd.unireg.type.MotifRattachement;
-import ch.vd.unireg.type.PeriodiciteDecompte;
-import ch.vd.unireg.type.Sexe;
-import ch.vd.unireg.type.TypeAdresseCivil;
-import ch.vd.unireg.type.TypeAdresseTiers;
-import ch.vd.unireg.type.TypeContribuable;
-import ch.vd.unireg.type.TypeDocument;
-import ch.vd.unireg.type.TypeEtatDocumentFiscal;
-import ch.vd.unireg.type.TypePermis;
-import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -552,7 +532,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 				addForPrincipal(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
 				addForSecondaire(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.unireg.type.MotifFor.VENTE_IMMOBILIER,
-						MockCommune.Aigle.getNoOFS(), ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
+						MockCommune.Aigle, ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
@@ -660,7 +640,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
 				addForPrincipal(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
 				addForSecondaire(pp, debutAnnee, ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, venteImmeuble, ch.vd.unireg.type.MotifFor.VENTE_IMMOBILIER,
-						MockCommune.Aigle.getNoOFS(), ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
+						MockCommune.Aigle, ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
 				return pp;
 			}
 
@@ -864,7 +844,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final ch.vd.unireg.tiers.PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), ch.vd.unireg.type.Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), ch.vd.unireg.type.MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, ch.vd.unireg.type.MotifRattachement.IMMEUBLE_PRIVE);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(ch.vd.unireg.type.TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
@@ -924,7 +904,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
@@ -1005,7 +985,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
@@ -1052,7 +1032,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(),
+				addForSecondaire(pp, date(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny,
 						MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE);
@@ -1319,7 +1299,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Félix", "Sympa", date(1977, 3, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Morges);
-				addForSecondaire(pp, date(2011, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2011, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens, MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1900,7 +1880,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
@@ -1976,7 +1956,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
@@ -2059,7 +2039,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
@@ -2143,7 +2123,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
@@ -2231,7 +2211,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny, MotifRattachement.IMMEUBLE_PRIVE);
 
 				// 2008 : échue
 				final DeclarationImpotOrdinaire di2008 = addDI(pp, 2008);
