@@ -1,13 +1,14 @@
 package ch.vd.unireg.metier.assujettissement;
 
 import java.io.FileWriter;
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
@@ -23,8 +24,11 @@ import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
 import ch.vd.unireg.scheduler.JobParamInteger;
+import ch.vd.unireg.scheduler.JobParamMultiSelectEnum;
 import ch.vd.unireg.scheduler.JobParamString;
 import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TypeTiers;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -37,6 +41,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 	public static final String FILENAME = "FILENAME";
 	public static final String NB_THREADS = "NB_THREADS";
+	public static final String POPULATION = "POPULATION";
 
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
@@ -57,7 +62,14 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		param1.setName(NB_THREADS);
 		param1.setMandatory(true);
 		param1.setType(new JobParamInteger());
-		addParameterDefinition(param1, 4);
+		addParameterDefinition(param1, 8);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("Population");
+		param2.setName(POPULATION);
+		param2.setMandatory(true);
+		param2.setType(new JobParamMultiSelectEnum(TypeTiers.class));
+		addParameterDefinition(param2, Arrays.asList(TypeTiers.values()));
 	}
 
 	@Override
@@ -72,15 +84,17 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 		final String filename = getStringValue(params, FILENAME);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
+		final List<TypeTiers> typesTiers = getMultiSelectEnumValue(params, POPULATION, TypeTiers.class);
 
 		// Chargement des ids des contribuables à processer
-		statusManager.setMessage("Chargement des ids de tous les contribuables...");
-		final List<Long> ids = getCtbIds(statusManager);
+		statusManager.setMessage("Chargement des ids des tiers à analyser...");
+		final List<Long> ids = getTiersIds(typesTiers, statusManager);
 
 		try (FileWriter file = new FileWriter(filename)) {
 			processAll(ids, nbThreads, file, statusManager);
 		}
 
+		statusManager.setMessage("Terminé");
 		Audit.success("Le batch de dump des assujettissements est terminé");
 	}
 
@@ -93,14 +107,11 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		template.execute(new BatchCallback<Long>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch) throws Exception {
-
 				statusManager.setMessage("Traitement du lot [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				for (Long id : batch) {
 					String line;
 					try {
-						final StringBuilder sb = new StringBuilder();
-						sb.append(id).append(';').append(process(id)).append('\n');
-						line = sb.toString();
+						line = String.valueOf(id) + ';' + process(id) + '\n';
 					}
 					catch (Exception e) {
 						line = "exception:" + e.getMessage() + '\n';
@@ -112,11 +123,16 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		}, progressMonitor);
 	}
 
-	private String process(Long id) throws IOException {
-		final Contribuable ctb = hibernateTemplate.get(Contribuable.class, id);
-		if (ctb == null) {
-			return "contribuable not found";
+	private String process(Long id) {
+		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
+		if (tiers == null) {
+			return "tiers not found";
 		}
+		if (!(tiers instanceof Contribuable)) {
+			// par définition, seuls les contribuables sont assujettis
+			return "non-assujetti";
+		}
+		final Contribuable ctb = (Contribuable) tiers;
 
 		// on force l'initialisation des fors fiscaux, pour faciliter la lecture des performances avec JProfiler
 		ctb.getForsFiscaux().size();
@@ -140,19 +156,27 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		return sb.toString();
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Long> getCtbIds(final StatusManager statusManager) {
+	private List<Long> getTiersIds(@NotNull List<TypeTiers> typesTiers, final StatusManager statusManager) {
+
+		if (typesTiers.isEmpty()) {
+			throw new IllegalArgumentException("La liste des types de tiers est vide.");
+		}
+
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				status.setRollbackOnly();
-				final List<Long> ids = hibernateTemplate.find("select cont.numero from Contribuable as cont order by cont.numero asc", null);
-				statusManager.setMessage(String.format("%d contribuables trouvés", ids.size()));
-				return ids;
-			}
+
+		final List<Long> ids = template.execute(status -> {
+			//noinspection unchecked
+			final Map<String, Object> params = new HashMap<>();
+			params.put("classes", typesTiers.stream()
+					.map(TypeTiers::getConcreteTiersClass)
+					.map(Class::getSimpleName)
+					.collect(Collectors.toList()));
+			return hibernateTemplate.find("select t.numero from Tiers t where t.class in (:classes) order by t.numero asc", params, null);
 		});
+
+		statusManager.setMessage(String.format("%d tiers trouvés", ids.size()));
+		return ids;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
