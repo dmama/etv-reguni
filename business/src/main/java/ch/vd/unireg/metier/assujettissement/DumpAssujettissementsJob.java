@@ -23,6 +23,7 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
+import ch.vd.unireg.scheduler.JobParamFile;
 import ch.vd.unireg.scheduler.JobParamInteger;
 import ch.vd.unireg.scheduler.JobParamMultiSelectEnum;
 import ch.vd.unireg.scheduler.JobParamString;
@@ -42,6 +43,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	public static final String FILENAME = "FILENAME";
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String POPULATION = "POPULATION";
+	public static final String FILE_IDS = "FILE_IDS";
 
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
@@ -67,9 +69,16 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		final JobParam param2 = new JobParam();
 		param2.setDescription("Population");
 		param2.setName(POPULATION);
-		param2.setMandatory(true);
+		param2.setMandatory(false);
 		param2.setType(new JobParamMultiSelectEnum(TypeTiers.class));
 		addParameterDefinition(param2, Arrays.asList(TypeTiers.values()));
+
+		final JobParam param = new JobParam();
+		param.setDescription("Ids des tiers (fichier CSV)");
+		param.setName(FILE_IDS);
+		param.setMandatory(false);
+		param.setType(new JobParamFile());
+		addParameterDefinition(param, null);
 	}
 
 	@Override
@@ -85,10 +94,21 @@ public class DumpAssujettissementsJob extends JobDefinition {
 		final String filename = getStringValue(params, FILENAME);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final List<TypeTiers> typesTiers = getMultiSelectEnumValue(params, POPULATION, TypeTiers.class);
+		final byte[] idsFile = getFileContent(params, FILE_IDS);
+
+		if (typesTiers.isEmpty() && idsFile == null) {
+			throw new RuntimeException("Une population ou des ids des tiers doivent être spécifiés.");
+		}
 
 		// Chargement des ids des contribuables à processer
 		statusManager.setMessage("Chargement des ids des tiers à analyser...");
-		final List<Long> ids = getTiersIds(typesTiers, statusManager);
+		final List<Long> ids;
+		if (idsFile == null) {
+			ids = getTiersIds(typesTiers, statusManager);
+		}
+		else {
+			ids = extractIdsFromCSV(idsFile);
+		}
 
 		try (FileWriter file = new FileWriter(filename)) {
 			processAll(ids, nbThreads, file, statusManager);
