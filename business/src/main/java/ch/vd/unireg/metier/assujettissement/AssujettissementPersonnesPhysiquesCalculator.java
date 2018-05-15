@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -656,7 +657,10 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		if (debut != null) {
 			final LimitesAssujettissement limites = LimitesAssujettissement.determine(debut, debut, fractions);
-			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().getDate();
+			final RegDate dernierFractionnement = Optional.ofNullable(limites)
+					.map(LimitesAssujettissement::getLeft)
+					.map(Fraction::getDate)
+					.orElse(null);
 
 			if (casParticuliers.isMenageCommun() && casParticuliers.hasMariage(debut.year())) {
 				// en cas de mariage, le ménage commun est assumé assujetti depuis le début de l'année (ou depuis le dernier fractionnement)
@@ -671,8 +675,14 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		if (fin != null) {
 			final LimitesAssujettissement limites = LimitesAssujettissement.determine(fin, fin, fractions);
-			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().getDate();
-			final RegDate prochainFractionnement = limites == null ? null : limites.getRight() == null ? null : limites.getRight().getDate();
+			final RegDate dernierFractionnement = Optional.ofNullable(limites)
+					.map(LimitesAssujettissement::getLeft)
+					.map(Fraction::getDate)
+					.orElse(null);
+			final RegDate prochainFractionnement = Optional.ofNullable(limites)
+					.map(LimitesAssujettissement::getRight)
+					.map(Fraction::getDate)
+					.orElse(null);
 
 			final boolean finDejaFractionnee = (prochainFractionnement != null && fin == prochainFractionnement.getOneDayBefore());
 			if (!finDejaFractionnee) {
@@ -1239,6 +1249,9 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		/**
 		 * Cette méthode fusionne une donnée d'assujettissement <i>domicile</i> avec une donnée d'assujettissement <i>économique</i>.
 		 *
+		 * <b>Note :</b> l'algorithme est ainsi fait que cette méthode ne doit tenir compte de l'assujettissement économique que dans la période de validité
+		 *               de l'assujettissement domicile.
+		 *
 		 * @param eco une donnée d'assujettissement économique
 		 * @return une liste de données d'assujettissement résultante qui doivent remplacer l'assujettissement courant; ou <b>null</b> s'il n'y a rien à faire.
 		 */
@@ -1256,7 +1269,8 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 			final List<Data> list;
 			if (eco.debut.isBeforeOrEqual(this.debut) && RegDateHelper.isAfterOrEqual(eco.fin, this.fin, NullDateBehavior.LATEST)) {
-				// eco dépasse des deux côtés de this -> pas besoin de découper quoique ce soit
+				// eco dépasse des deux côtés de this -> pas besoin de découper quoique ce soit (on va simplement mettre-à-jour this)
+				// FIXME (msi) cet algorithme est mal foutu, il vaut mieux toujours retourner une liste
 				list = null;
 			}
 			else {
@@ -1474,6 +1488,10 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 	/**
 	 * Fusionne les assujettissements économiques aux assujettissement domicile en appliquant les régles métier. Le résultat est stocké dans la liste des assujettissements domicile.
+	 *
+	 * <b>Note :</b> par définition, la période de validité des assujettissements pour motif de rattachement domicile couvre toute la période de validité
+	 *               des assujettissements pour motif de rattachement économique. C'est uniquement lorsqu'un assujettissement pour motif de rattachement domicile
+	 *               est de type 'non-assujettissement' qu'un assujettissement pour motif de rattachement économique peut être significatif.
 	 *
 	 * @param domicile   les assujettissements pour motif de rattachement domicile
 	 * @param economique les assujettissements pour motif de rattachement économique
