@@ -1183,7 +1183,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		/**
 		 * Collections des motifs d'ouverture de for qui ne donnent normalement pas lieu à un début d'assujettissement
 		 * ou qui doivent, le cas échéant, laisser la priorité au motif d'ouverture du for "économique" - si existant à la même date - dans la méthode
-		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
+		 * {@link #mergeMotif(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) mergeMotif}
 		 */
 		@SuppressWarnings({"deprecation"})
 		private static final Set<MotifAssujettissement> DEBUT_ASSUJETTISSEMENT = EnumSet.of(MotifAssujettissement.INDETERMINE,
@@ -1195,7 +1195,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		/**
 		 * Collections des motifs de fermeture de for qui ne donnent normalement pas lieu à une fin d'assujettissement
 		 * ou qui doivent, le cas échéant, laisser la priorité au motif de fermeture du for "économique" - si existant à la même date - dans la méthode
-		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
+		 * {@link #mergeMotif(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) mergeMotif}
 		 */
 		@SuppressWarnings({"deprecation"})
 		private static final Set<MotifAssujettissement> FIN_ASSUJETTISSEMENT = EnumSet.of(MotifAssujettissement.INDETERMINE,
@@ -1250,64 +1250,94 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		 * Cette méthode fusionne une donnée d'assujettissement <i>domicile</i> avec une donnée d'assujettissement <i>économique</i>.
 		 *
 		 * <b>Note :</b> l'algorithme est ainsi fait que cette méthode ne doit tenir compte de l'assujettissement économique que dans la période de validité
-		 *               de l'assujettissement domicile.
+		 * de l'assujettissement domicile.
 		 *
-		 * @param eco une donnée d'assujettissement économique
+		 * @param domicile une donnée d'assujettissement domicile
+		 * @param eco      une donnée d'assujettissement économique
 		 * @return une liste de données d'assujettissement résultante qui doivent remplacer l'assujettissement courant; ou <b>null</b> s'il n'y a rien à faire.
 		 */
-		public List<Data> merge(Data eco) {
+		@Nullable
+		public static List<Data> merge(@NotNull Data domicile, @NotNull Data eco) {
 
-			if (type != Type.NonAssujetti) {
-				// l'assujettissement 'this' (qui est forcéement de type domicile) est différent de non-assujetti : quelque soit la valeur de 'eco', il prime sur ce dernier et il n'y a rien à faire.
+			if (domicile.type != Type.NonAssujetti) {
+				// l'assujettissement domicile est différent de non-assujetti : quelque soit la valeur de 'eco',
+				// il prime sur ce dernier et il n'y a rien à faire.
 				return null;
 			}
 
-			if (!DateRangeHelper.intersect(this, eco)) {
+			if (!DateRangeHelper.intersect(domicile, eco)) {
 				// pas d'intersection -> rien à faire
 				return null;
 			}
 
 			final List<Data> list;
-			if (eco.debut.isBeforeOrEqual(this.debut) && RegDateHelper.isAfterOrEqual(eco.fin, this.fin, NullDateBehavior.LATEST)) {
-				// eco dépasse des deux côtés de this -> pas besoin de découper quoique ce soit (on va simplement mettre-à-jour this)
-				// FIXME (msi) cet algorithme est mal foutu, il vaut mieux toujours retourner une liste
-				list = null;
+
+			if (eco.debut.isBeforeOrEqual(domicile.debut) && RegDateHelper.isAfterOrEqual(eco.fin, domicile.fin, NullDateBehavior.LATEST)) {
+				// l'assujettissement économique dépasse des deux côtés de domicile -> pas besoin d'adapter les plages de validité
+				final Data mergedEco = new Data(domicile);
+
+				// si les motifs de début/fin manquent, on profite de ceux du for économique pour les renseigner
+				mergedEco.motifDebut = mergeMotif(mergedEco.debut, mergedEco.motifDebut, eco.debut, eco.motifDebut, DEBUT_ASSUJETTISSEMENT);
+				mergedEco.motifFin = mergeMotif(mergedEco.fin, mergedEco.motifFin, eco.fin, eco.motifFin, FIN_ASSUJETTISSEMENT);
+
+				// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
+				mergedEco.type = getAType(mergedEco.typeAut);
+
+				list = Collections.singletonList(mergedEco);
 			}
 			else {
-				list = new ArrayList<>(3);
-				list.add(this);
-				if (eco.debut.isAfter(this.debut)) {
+				// l'assujettissement économique ne couvre que partielle le non-assujettissement : on découpe à gauche et à droite si nécessaire
+
+				final Data domicileLeft;   // le non-assujettissement qui reste à gauche
+				final Data mergedEco = new Data(domicile);
+				final Data domicileRight;  // le non-assujettissement qui reste à droite
+
+
+				if (eco.debut.isAfter(domicile.debut)) {
 					// on découpe à gauche
-					Data left = new Data(this);
-					left.fin = eco.debut.getOneDayBefore();
-					left.motifFin = eco.motifDebut;
-					list.add(0, left);
+					domicileLeft = new Data(domicile);
+					domicileLeft.fin = eco.debut.getOneDayBefore();
+					domicileLeft.motifFin = eco.motifDebut;
 
 					// on décale la date de début
-					this.debut = eco.debut;
-					this.motifDebut = eco.motifDebut;
+					mergedEco.debut = eco.debut;
+					mergedEco.motifDebut = eco.motifDebut;
+				}
+				else {
+					domicileLeft = null;
 				}
 
-				if (!RegDateHelper.isAfterOrEqual(eco.fin, this.fin, NullDateBehavior.LATEST)) {
+
+				if (!RegDateHelper.isAfterOrEqual(eco.fin, domicile.fin, NullDateBehavior.LATEST)) {
 					// on découpe à droite
-					Data right = new Data(this);
-					right.debut = eco.fin.getOneDayAfter();
-					right.motifDebut = eco.motifFin;
-					list.add(right);
+					domicileRight = new Data(domicile);
+					domicileRight.debut = eco.fin.getOneDayAfter();
+					domicileRight.motifDebut = eco.motifFin;
 
 					// on décale la date de fin
-					this.fin = eco.fin;
-					this.motifFin = eco.motifFin;
+					mergedEco.fin = eco.fin;
+					mergedEco.motifFin = eco.motifFin;
+				}
+				else {
+					domicileRight = null;
 				}
 
+				// si les motifs de début/fin manquent, on profite de ceux du for économique pour les renseigner
+				mergedEco.motifDebut = mergeMotif(mergedEco.debut, mergedEco.motifDebut, eco.debut, eco.motifDebut, DEBUT_ASSUJETTISSEMENT);
+				mergedEco.motifFin = mergeMotif(mergedEco.fin, mergedEco.motifFin, eco.fin, eco.motifFin, FIN_ASSUJETTISSEMENT);
+
+				// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
+				mergedEco.type = getAType(mergedEco.typeAut);
+
+				list = new ArrayList<>(3);
+				if (domicileLeft != null) {
+					list.add(domicileLeft);
+				}
+				list.add(mergedEco);
+				if (domicileRight != null) {
+					list.add(domicileRight);
+				}
 			}
-
-			// si les motifs de début/fin manquent, on profite de ceux du for économique pour les renseigner
-			this.motifDebut = merge(this.debut, this.motifDebut, eco.debut, eco.motifDebut, DEBUT_ASSUJETTISSEMENT);
-			this.motifFin = merge(this.fin, this.motifFin, eco.fin, eco.motifFin, FIN_ASSUJETTISSEMENT);
-
-			// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
-			this.type = getAType(this.typeAut);
 
 			return list;
 		}
@@ -1322,7 +1352,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		 * @param motifsDomicileNonPrioritaires la liste des motifs de fors "Domicile" pour lesquels le motif "Econonique" prend la priorité
 		 * @return le motid de début/fin d'assujettissement résultant.
 		 */
-		private static MotifAssujettissement merge(RegDate dateDomicile, MotifAssujettissement motifDomicile, RegDate dateEco, MotifAssujettissement motifEco, Set<MotifAssujettissement> motifsDomicileNonPrioritaires) {
+		private static MotifAssujettissement mergeMotif(RegDate dateDomicile, MotifAssujettissement motifDomicile, RegDate dateEco, MotifAssujettissement motifEco, Set<MotifAssujettissement> motifsDomicileNonPrioritaires) {
 			if (dateDomicile == dateEco && motifEco != null && (motifDomicile == null || motifsDomicileNonPrioritaires.contains(motifDomicile))) {
 				return motifEco;
 			}
@@ -1501,7 +1531,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		for (int i = 0; i < domicile.size(); i++) {
 			for (Data e : economique) {
 				final Data d = domicile.get(i);
-				final List<Data> sub = d.merge(e);
+				final List<Data> sub = Data.merge(d, e);
 				if (sub != null) {
 					domicile.set(i, sub.get(0));
 					for (int j = 1; j < sub.size(); ++j) {
