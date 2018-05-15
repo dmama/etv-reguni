@@ -2,15 +2,22 @@ package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
 import ch.vd.unireg.metier.common.Fraction;
 import ch.vd.unireg.metier.common.Fractionnements;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
 
 public abstract class FractionnementsAssujettissementPP extends Fractionnements<ForFiscalPrincipalPP> {
 
-	protected FractionnementsAssujettissementPP(List<ForFiscalPrincipalPP> principaux) {
+	protected FractionnementsAssujettissementPP(@NotNull List<ForFiscalPrincipalPP> principaux) {
 		super(principaux);
+	}
+
+	public FractionnementsAssujettissementPP(@NotNull List<ForFiscalPrincipalPP> principaux, @NotNull List<ForFiscalSecondaire> secondaires) {
+		super(principaux, secondaires);
 	}
 
 	protected static void checkMotifSurFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, Fraction fraction) {

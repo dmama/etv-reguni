@@ -3271,7 +3271,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(list);
 		assertEquals(4, list.size());
 		assertSourcierPur(date(2004, 1, 1), date(2004, 6, 14), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-		assertHorsSuisse(date(2004, 6, 15), date(2004, 7, 10), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.DEPART_HC, list.get(1));
+		assertHorsSuisse(date(2004, 6, 15), date(2004, 7, 10), MotifAssujettissement.DEPART_HC, MotifAssujettissement.DEPART_HC, list.get(1));
 		assertOrdinaire(date(2004, 7, 11), date(2006, 11, 15), MotifAssujettissement.DEPART_HC, MotifAssujettissement.DEPART_HS, list.get(2));
 		assertHorsSuisse(date(2006, 11, 16), null, MotifAssujettissement.DEMENAGEMENT_VD, null, list.get(3));
 	}
@@ -4880,7 +4880,69 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertHorsCanton(achat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, ass.get(0));
 	}
 
-//
+	/**
+	 * [SIFISC-17170] Cas d'un ordinaire (111.424.14) avec immeuble qui part HC, vend son immeuble l'année suivante puis
+	 * part hors-Suisse dans la même année que la vente de l'immeuble : son assujettissement HC doit subsister jusqu'à
+	 * son départ HS car il possède encore son immeuble cette année-là.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testOrdinaireDepartHCPuisVenteImmeublePuisDepartHSDansMemeAnnee() throws Exception {
+
+		final RegDate arrivee = date(2013, 1, 22);
+		final RegDate achat = date(2013, 2, 7);
+		final RegDate departHC = date(2014, 10, 2);
+		final RegDate vente = date(2015, 6, 23);
+		final RegDate departHS = date(2015, 7, 31);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, departHC, MotifFor.DEPART_HC, MockCommune.Cossonay);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, departHS, MotifFor.DEPART_HS, MockCommune.Geneve);
+		addForPrincipal(pp, departHS.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.France);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+
+		final List<Assujettissement> assujettissements = determine(pp);
+		assertNotNull(assujettissements);
+		assertEquals(2, assujettissements.size());
+
+		assertOrdinaire(date(2013, 1, 1), date(2013, 12, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HC, assujettissements.get(0));
+		assertHorsCanton(date(2014, 1, 1), departHS, MotifAssujettissement.DEPART_HC, MotifAssujettissement.DEPART_HS, assujettissements.get(1));
+	}
+
+	/**
+	 * [SIFISC-17170] Cas fictif d'un ordinaire avec immeuble qui part HC, vend son immeuble l'année suivante puis
+	 * part hors-Suisse dans la même année que la vente de l'immeuble, puis enfin achète un nouvel immeuble toujours
+	 * dans la même année : il doit être assujetti HC jusqu'à son départ HS pour le premier immeuble, puis assujetti HS
+	 * pour le second immeuble.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testOrdinaireDepartHCPuisVenteImmeublePuisDepartHSDansMemeAnneePuisAchatAutreImmeuble() throws Exception {
+
+		final RegDate arrivee = date(2013, 1, 22);
+		final RegDate achat1 = date(2013, 2, 7);
+		final RegDate departHC = date(2014, 10, 2);
+		final RegDate vente1 = date(2015, 6, 23);
+		final RegDate departHS = date(2015, 7, 31);
+		final RegDate achat2 = date(2015, 10, 11);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, departHC, MotifFor.DEPART_HC, MockCommune.Cossonay);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, departHS, MotifFor.DEPART_HS, MockCommune.Geneve);
+		addForPrincipal(pp, departHS.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.France);
+		addForSecondaire(pp, achat1, MotifFor.ACHAT_IMMOBILIER, vente1, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+		addForSecondaire(pp, achat2, MotifFor.ACHAT_IMMOBILIER, MockCommune.Vaulion, MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+
+		final List<Assujettissement> assujettissements = determine(pp);
+		assertNotNull(assujettissements);
+		assertEquals(3, assujettissements.size());
+
+		assertOrdinaire(date(2013, 1, 1), date(2013, 12, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HC, assujettissements.get(0));
+		assertHorsCanton(date(2014, 1, 1), departHS, MotifAssujettissement.DEPART_HC, MotifAssujettissement.DEPART_HS, assujettissements.get(1));
+		assertHorsSuisse(achat2, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, assujettissements.get(2));
+	}
+
+	//
 //	@Test
 //	public void testPasseAuRoleDansLAnneeEtLeReste() throws Exception {
 //

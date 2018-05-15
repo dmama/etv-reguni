@@ -2,10 +2,13 @@ package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
 import ch.vd.unireg.metier.common.Fraction;
 import ch.vd.unireg.metier.common.FractionSimple;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.type.MotifFor;
 
 public class FractionnementsSource extends FractionnementsAssujettissementPP {
@@ -15,7 +18,7 @@ public class FractionnementsSource extends FractionnementsAssujettissementPP {
 	}
 
 	@Override
-	protected Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+	protected Fraction isFractionOuverture(@NotNull ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires) {
 		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
 		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 
@@ -37,7 +40,7 @@ public class FractionnementsSource extends FractionnementsAssujettissementPP {
 	}
 
 	@Override
-	protected Fraction isFractionFermeture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+	protected Fraction isFractionFermeture(@NotNull ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires) {
 		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 		final ForFiscalPrincipalPP next = forPrincipal.getNext();
 
