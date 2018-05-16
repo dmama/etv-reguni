@@ -45,7 +45,7 @@
 
 	<tiles:put name="body">
 		<div class="about">
-			<div>Unireg est le registre des contribuables de l'Etat de Vaud. Copyright (c) 2009-2017, Etat-de-Vaud.</div>
+			<div>Unireg est le registre des contribuables de l'Etat de Vaud. Copyright (c) 2009-2018, Etat-de-Vaud.</div>
 			<div>
 				<fieldset>
 					<table>
@@ -84,6 +84,12 @@
 				<h4>Spécifications :</h4>
 				<ul>
 					<li>Gabrielle Servoz</li>
+					<li>Christophe Ollivier</li>
+				</ul>
+
+				<h4>Gestionnaire d'application :</h4>
+				<ul>
+					<li>Baba Issa Ngom</li>
 				</ul>
 
 				<h4>Développement :</h4>
@@ -91,7 +97,6 @@
 					<li>Baba Issa Ngom</li>
 					<li>Euan Mateo</li>
 					<li>Manuel Siggen</li>
-					<li>Raphaël Marmier</li>
 				</ul>
 
 				<h4>Assurance qualité :</h4>
@@ -106,7 +111,6 @@
 					<li>Annie Ourliac</li>
 					<li>Boris Mayencourt</li>
 					<li>Christophe Friederich</li>
-					<li>Christophe Ollivier</li>
 					<li>Claudio Parnenzini</li>
 					<li>Céline Grand</li>
 					<li>David Dublancher</li>
@@ -124,6 +128,7 @@
 					<li>Martin Croteau</li>
 					<li>Mickaël Zanoli</li>
 					<li>Pavel Blanco</li>
+					<li>Raphaël Marmier</li>
 					<li>Smita Roy</li>
 					<li>Thierry Declercq</li>
 				</ul>
