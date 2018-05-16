@@ -1,15 +1,8 @@
 package ch.vd.unireg.evenement.organisation.interne.formejuridique;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
@@ -19,6 +12,11 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
@@ -29,8 +27,6 @@ import ch.vd.unireg.type.FormeJuridiqueEntreprise;
  * @author Raphaël Marmier, 2015-10-15
  */
 public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ChangementFormeJuridiqueStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -43,10 +39,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -66,74 +59,57 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 			final FormeLegale formeLegaleApres = organisation.getFormeLegale(dateApres);
 
 			if (formeLegaleAvant == null || formeLegaleApres == null) {
-				LOGGER.info("Il manque une des deux ou les deux formes juridiques (avant: {}, après: {}). Impossible de déterminer un éventuellement changement.", formeLegaleAvant, formeLegaleApres);
+				Audit.warn(event.getId(), String.format("Il manque une des deux ou les deux formes juridiques (avant: %s, après: %s). Impossible de déterminer un éventuellement changement.", formeLegaleAvant, formeLegaleApres));
 				return null;
 			}
 			if (formeLegaleAvant != formeLegaleApres) { // Ce que l'on fait si la forme juridique est nulle est défini dans la stratégie idoine.
 
-				/*
-					On prend comme point de départ le type de régime fiscal du régime de portée VD de l'entreprise à la veille, s'il existe.
-				 */
+				// On prend comme point de départ le type de régime fiscal du régime de portée VD de l'entreprise à la veille, s'il existe.
 				final TypeRegimeFiscal typeRegimeFiscalVDAvant = context.getRegimeFiscalService().getTypeRegimeFiscalVD(entreprise, dateAvant);
 
 				if (typeRegimeFiscalVDAvant == null) {
-					return new TraitementManuel(event, organisation, null, context, options,
-					                            String.format(
-							                            "La forme juridique passe de %s à %s. Cependant, on ne trouve pas en date du %s de régime fiscal de portée VD sur l'entreprise n°%s correspondante. Impossible de statuer. Veuillez traiter manuellement.",
-							                            formeLegaleAvant, formeLegaleApres, RegDateHelper.dateToDisplayString(dateAvant), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()))
-					);
+					final String message = String.format("La forme juridique passe de %s à %s. Cependant, on ne trouve pas en date du %s " +
+							                                     "de régime fiscal de portée VD sur l'entreprise n°%s correspondante. Impossible de statuer. Veuillez traiter manuellement.",
+					                                     formeLegaleAvant, formeLegaleApres, RegDateHelper.dateToDisplayString(dateAvant), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
+					Audit.info(event.getId(), message);
+					return new TraitementManuel(event, organisation, null, context, options, message);
 				}
 
-				/*
-					Le type de régime fiscal à l'arrivée est déterminé exclusivement par le type par défaut en fonction de la forme juridique civile.
-				 */
+				// Le type de régime fiscal à l'arrivée est déterminé exclusivement par le type par défaut en fonction de la forme juridique civile.
 				final TypeRegimeFiscal typeRegimeFiscalParDefautApres = context.getRegimeFiscalService().getTypeRegimeFiscalParDefaut(FormeJuridiqueEntreprise.fromCode(formeLegaleApres.getCode()));
 
-				/*
-					Pas de changement de régime. Annoncer comme neutre.
-				 */
+				// Pas de changement de régime. Annoncer comme neutre.
 				if (typeRegimeFiscalVDAvant.getCode().equals(typeRegimeFiscalParDefautApres.getCode())) {
 					final String message = String.format("La forme juridique passe de %s à %s. Le régime fiscal VD reste %s.", formeLegaleAvant, formeLegaleApres, typeRegimeFiscalParDefautApres.getLibelleAvecCode());
-					LOGGER.info(message);
+					Audit.info(event.getId(), message);
 					return new ChangementNeutreFormeJuridique(event, organisation, entreprise, context, options);
 				}
 
-				/*
-					Le type de régime fiscal par défaut au départ permettra de savoir si la valeur de départ a été ajustée
-				 */
+				// Le type de régime fiscal par défaut au départ permettra de savoir si la valeur de départ a été ajustée
 				final TypeRegimeFiscal typeRegimeFiscalParDefautAvant = context.getRegimeFiscalService().getTypeRegimeFiscalParDefaut(FormeJuridiqueEntreprise.fromCode(formeLegaleAvant.getCode()));
 
-				/*
-					A-t-on fonctionné en mode automatique lors du réglage du précédent régime. Ca ne compte pas si on est resté en type indéterminé. On doit avoir un vrai régime.
-				 */
+				// A-t-on fonctionné en mode automatique lors du réglage du précédent régime. Ca ne compte pas si on est resté en type indéterminé. On doit avoir un vrai régime.
 				final boolean wasAuto = ComparisonHelper.areEqual(typeRegimeFiscalVDAvant.getCode(), typeRegimeFiscalParDefautAvant.getCode()) && typeRegimeFiscalParDefautAvant.getCategorie() != CategorieEntreprise.INDET;
 
-				/*
-					Le régime fiscal avait été attribué automatiquement. Si c'est bon une fois, c'est bon deux fois, avec au bout du chemin un type indéterminé si la nouvelle forme juridique devait être exotique.
-					Ca va aussi si le type par défaut du futur régime est indéterminé, car cela provoquera l'intervention d'un opérateur.
-				 */
+				// Le régime fiscal avait été attribué automatiquement. Si c'est bon une fois, c'est bon deux fois, avec au bout du chemin un type indéterminé si la nouvelle forme juridique devait être exotique.
+				// Ca va aussi si le type par défaut du futur régime est indéterminé, car cela provoquera l'intervention d'un opérateur.
 				if (wasAuto || typeRegimeFiscalParDefautApres.isIndetermine()) {
 					final String message = String.format("La forme juridique passe de %s à %s. Le régime fiscal VD passe de %s à %s.",
 					                                     formeLegaleAvant, formeLegaleApres, typeRegimeFiscalVDAvant.getLibelleAvecCode(), typeRegimeFiscalParDefautApres.getLibelleAvecCode());
-					LOGGER.info(message);
+					Audit.info(event.getId(), message);
 					return new ChangementRegimeFiscalParDefaut(event, organisation, entreprise, context, options);
 				}
 
-				/*
-					Changement de régime fiscal avec intervention manuelle. (L'ancien régime avait été attribué à la main)
-				 */
+				// Changement de régime fiscal avec intervention manuelle. (L'ancien régime avait été attribué à la main)
 				final String message = String.format(
 						"La forme juridique passe de %s à %s. Le régime fiscal VD passerait de %s à %s. Comme le précédent régime fiscal avait été attribué à la main, le nouveau est réglé comme indéterminé.",
 						formeLegaleAvant, formeLegaleApres, typeRegimeFiscalVDAvant.getLibelleAvecCode(), typeRegimeFiscalParDefautApres.getLibelleAvecCode());
-				LOGGER.info(message);
+				Audit.info(event.getId(), message);
 				return new ChangementRegimeFiscalIndetermine(event, organisation, entreprise, context, options);
 
 			}
-			LOGGER.info("La forme juridique n'a pas changée (avant: {}, après: {}). Le régime fiscal ne change pas.", formeLegaleAvant, formeLegaleApres);
-			return null;
 		}
 
-		LOGGER.info("La forme juridique n'a pas changée. (Pas de site au civil avant.)");
 		return null;
 	}
 }

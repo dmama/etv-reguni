@@ -3,18 +3,10 @@ package ch.vd.unireg.evenement.organisation.interne.creation;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -23,16 +15,19 @@ import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.MessageSuiviPreExecution;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
  * @author Raphaël Marmier, 2015-09-02
  */
 public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
-
-	private static final String MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE = "Création automatique non prise en charge.";
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(CreateOrganisationStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -45,14 +40,11 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
 	 * pertinente.
-	 *
+	 * <p>
 	 * Spécifications:
-	 *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 1.1 - 23.09.2015
+	 * - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 1.1 - 23.09.2015
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -83,10 +75,8 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 			final FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);
 
-			/*
-			    Traitement manuel pour les organisations qui n'existent qu'au REE (ou autre registre non utile à la fiscalité).
-			    Si la forme juridique est présente dans les données RCEnt, ne pas s'occuper des entreprises individuelles et les sociétés simples qui sont ignorées plus loin (SIFISC-25308).
-			  */
+			// Traitement manuel pour les organisations qui n'existent qu'au REE (ou autre registre non utile à la fiscalité).
+			// Si la forme juridique est présente dans les données RCEnt, ne pas s'occuper des entreprises individuelles et les sociétés simples qui sont ignorées plus loin (SIFISC-25308).
 			if (organisation.getNumeroIDE(dateEvenement) == null && formeLegale != FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE && formeLegale != FormeLegale.N_0302_SOCIETE_SIMPLE) {
 				final String message;
 
@@ -102,22 +92,18 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					message = String.format("L'organisation %s (civil: n°%d), domiciliée à %s, n'existe pas à l'IDE ni au RC. Pas de création automatique.",
 					                        organisation.getNom(dateEvenement), numeroOrganisation, communeDomicile.getNomOfficielAvecCanton());
 				}
-				LOGGER.info(message);
+				Audit.info(event.getId(), message);
 				return new TraitementManuel(event, organisation, null, context, options, message);
 			}
 
-			/*
-			    S'assurer qu'on a bien une forme juridique à ce stade.
-			  */
+			// S'assurer qu'on a bien une forme juridique à ce stade.
 			if (formeLegale == null) {
 				final String message = String.format("L'organisation n°%d n'a pas de forme juridique (legalForm). Pas de création.", numeroOrganisation);
-				LOGGER.info(message);
+				Audit.info(event.getId(), message);
 				return null;
 			}
 
-			/*
-				Organisations à ignorer
-			 */
+			// Organisations à ignorer
 			if (formeLegale == FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE) {
 				return handleRaisonIndividuelle(event, organisation, context, options);
 			}
@@ -128,55 +114,47 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 			InformationDeDateEtDeCreation info;
 
-			/*
-				Organisations VD
-			 */
+			// Organisations VD
 			if (organisation.hasSitePrincipalVD(dateEvenement)) {
 
-				/*
-					 SIFISC-19723 Pour éviter les doublons lors de la mauvaise identification d'association/fondation créées à la main par l'ACI et simultanément enregistrée par SiTi,
-					 pas de création automatique des association/fondation, sauf lorsque l'inscription provient du RC, qui dans ce cas est nécessairement l'institution émettrice.
-					 SIFISC-21588 et SIFISC-19660: le traitement manuel s'impose car on ne peut établir automatiquement si l'association doit être créée ou non.
-				*/
+				// SIFISC-19723 Pour éviter les doublons lors de la mauvaise identification d'association/fondation créées à la main par l'ACI et simultanément enregistrée par SiTi,
+				// pas de création automatique des association/fondation, sauf lorsque l'inscription provient du RC, qui dans ce cas est nécessairement l'institution émettrice.
+				// SIFISC-21588 et SIFISC-19660: le traitement manuel s'impose car on ne peut établir automatiquement si l'association doit être créée ou non.
 				if (organisation.isAssociationFondation(dateEvenement) && !organisation.isInscriteAuRC(dateEvenement)) {
 					final String message = String.format("Pas de création automatique de l'association/fondation n°%d [%s] non inscrite au RC (risque de création de doublon). " +
 							                                     "Veuillez vérifier et le cas échéant créer le tiers associé à la main.",
 					                                     numeroOrganisation, organisation.getNom(dateEvenement));
-					LOGGER.info(message);
+					Audit.info(event.getId(), message);
 					return new TraitementManuel(event, organisation, null, context, options, message);
 				}
 
 				final String message = String.format("Création du tiers entreprise pour l'organisation vaudoise n°%s.", numeroOrganisation);
-				LOGGER.info(message);
+				Audit.info(event.getId(), message);
 				info = extraireInformationDeDateEtDeCreation(event, organisation);
 				return new CreateEntrepriseVD(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 			}
-			/*
-				Organisations hors VD avec présence VD
-			 */
+			// Organisations hors VD avec présence VD
 			else if (organisation.hasSiteVD(dateEvenement)) {
 				final List<SiteOrganisation> succursalesRCVD = organisation.getSuccursalesRCVD(dateEvenement);
 				// On ne crée l'entreprise que si elle a une présence vaudoise concrétisée par une succursale au RC VD active. Ceci pour éviter les établissements REE.
 				if (succursalesRCVD.isEmpty()){
 					final String message = String.format("L'organisation n°%d n'a pas de succursale active au RC Vaud (inscrite et non radiée). Pas de création.", numeroOrganisation);
-					LOGGER.info(message);
+					Audit.info(event.getId(), message);
 					return new MessageSuiviPreExecution(event, organisation, null, context, options, message);
 				}
 				final String message = String.format("Création du tiers entreprise pour l'organisation non-vaudoise n°%s avec succursale vaudoise active.", numeroOrganisation);
-				LOGGER.info(message);
+				Audit.info(event.getId(), message);
 				info = extraireInformationDeDateEtDeCreation(event, organisation);
 				return new CreateEntrepriseHorsVD(event, organisation, null, context, options, info.isCreation(), succursalesRCVD);
 			}
-			/*
-				Organisations strictement hors VD
-			 */
+			// Organisations strictement hors VD
 			final String message = String.format("L'organisation n°%d n'a pas de présence sur Vaud. Pas de création.", numeroOrganisation);
-			LOGGER.info(message);
+			Audit.info(event.getId(), message);
 			return new MessageSuiviPreExecution(event, organisation, null, context, options, message);
 		}
 		catch (EvenementOrganisationException e) {
 			final String message = String.format("Une erreur est survenue lors de l'analyse de l'événement RCEnt: %s", e.getMessage());
-			LOGGER.info(message);
+			Audit.info(event.getId(), message);
 			return new TraitementManuel(event, organisation, null, context, options, message);
 		}
 	}
@@ -185,7 +163,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 	private EvenementOrganisationInterne handleRaisonIndividuelle(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options)
 			throws EvenementOrganisationException {
 		final String message = String.format("L'organisation n°%d est une entreprise individuelle %s. Pas de création.", organisation.getNumeroOrganisation(), getQualificatifLieu(organisation, event.getDateEvenement()));
-		LOGGER.info(message);
+		Audit.info(event.getId(), message);
 		return new MessageSuiviPreExecution(event, organisation, null, context, options, message);
 	}
 
@@ -198,7 +176,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 	private EvenementOrganisationInterne handleSocieteSimple(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options)
 			throws EvenementOrganisationException {
 		final String message = String.format("L'organisation n°%d est une société simple %s. Pas de création.", organisation.getNumeroOrganisation(), getQualificatifLieu(organisation, event.getDateEvenement()));
-		LOGGER.info(message);
+		Audit.info(event.getId(), message);
 		return new MessageSuiviPreExecution(event, organisation, null, context, options, message);
 	}
 
@@ -208,7 +186,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		final String message = String.format(
 				"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s, en date du %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
 				sitePrincipal.getNumeroSite(), organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement), RegDateHelper.dateToDisplayString(dateEvenement));
-		LOGGER.info(message);
+		Audit.info(event.getId(), message);
 		return new TraitementManuel(event, organisation, null, context, options, message);
 	}
 

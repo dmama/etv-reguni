@@ -1,13 +1,8 @@
 package ch.vd.unireg.evenement.organisation.interne.information;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -15,6 +10,9 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 import static ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
@@ -25,8 +23,6 @@ import static ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplement
  * @author Raphaël Marmier, 2015-11-02.
  */
 public class ModificationStatutsStrategy extends AbstractOrganisationStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ModificationStatutsStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -39,10 +35,7 @@ public class ModificationStatutsStrategy extends AbstractOrganisationStrategy {
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -68,11 +61,10 @@ public class ModificationStatutsStrategy extends AbstractOrganisationStrategy {
 				statutsApres = statutsApresDateRanged.getPayload();
 			}
 			if (!ComparisonHelper.areEqual(statutsAvant, statutsApres)) {
-				LOGGER.info("Modification des statuts de l'entreprise -> Propagation.");
+				Audit.info(event.getId(), "Modification des statuts de l'entreprise -> Propagation.");
 				return new InformationComplementaire(event, organisation, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_STATUTS);
 			}
 		}
-		LOGGER.info("Pas de modification des statuts de l'entreprise.");
 		return null;
 	}
 }

@@ -1,9 +1,5 @@
 package ch.vd.unireg.evenement.organisation.engine.processor;
 
-/**
- * @author Raphaël Marmier, 2015-07-27
- */
-
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

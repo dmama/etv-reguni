@@ -1,15 +1,8 @@
 package ch.vd.unireg.evenement.organisation.interne.reinscription;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -18,6 +11,11 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -26,8 +24,6 @@ import ch.vd.unireg.tiers.Entreprise;
  * @author Raphaël Marmier, 2015-11-11.
  */
 public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReinscriptionStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -40,10 +36,7 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -60,8 +53,9 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 
 		if (sitePrincipalAvantRange == null) {
 			if (isExisting(organisation, dateApres)) {
-				return new TraitementManuel(event, organisation, entreprise, context, options,
-				                            String.format("Site principal introuvable sur organisation n°%s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+				final String message = String.format("Site principal introuvable sur organisation n°%s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant));
+				Audit.info(event.getId(), message);
+				return new TraitementManuel(event, organisation, entreprise, context, options, message);
 			}
 		} else {
 			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
@@ -74,15 +68,14 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 			final StatusInscriptionRC statusInscriptionApres = rcApres != null ? rcApres.getStatus() : null;
 
 			if (statusInscriptionAvant == StatusInscriptionRC.RADIE && (statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION)) {
-				LOGGER.info(String.format("Réinscription au RC de l'entreprise n°%s (civil: %d).%s",
-				                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-				                          organisation.getNumeroOrganisation(),
-				                          dateRadiationRCApres != null ? " Cependant, l'ancienne date de radiation persiste dans RCEnt: " + RegDateHelper.dateToDisplayString(dateRadiationRCApres) + "." : ""
-				));
+				final String message = String.format("Réinscription au RC de l'entreprise n°%s (civil: %d).%s",
+				                                    FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+				                                    organisation.getNumeroOrganisation(),
+				                                    dateRadiationRCApres != null ? " Cependant, l'ancienne date de radiation persiste dans RCEnt: " + RegDateHelper.dateToDisplayString(dateRadiationRCApres) + "." : "");
+				Audit.info(event.getId(), message);
 				return new Reinscription(event, organisation, entreprise, context, options);
 			}
 		}
-		LOGGER.info("Pas de réinscription au RC de l'entreprise.");
 		return null;
 	}
 }

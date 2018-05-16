@@ -1,12 +1,7 @@
 package ch.vd.unireg.evenement.organisation.interne.doublon;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -15,6 +10,9 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -23,8 +21,6 @@ import ch.vd.unireg.tiers.Entreprise;
  * @author Raphaël Marmier, 2015-11-05.
  */
 public class DoublonEntrepriseRemplaceeParStrategy extends AbstractOrganisationStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DoublonEntrepriseRemplaceeParStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -37,10 +33,7 @@ public class DoublonEntrepriseRemplaceeParStrategy extends AbstractOrganisationS
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event        un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -80,11 +73,10 @@ public class DoublonEntrepriseRemplaceeParStrategy extends AbstractOrganisationS
 			                                     organisation.getNumeroOrganisation(),
 			                                     entrepriseRemplacante == null ? "non encore connue d'Unireg" : "n°" + FormatNumeroHelper.numeroCTBToDisplay(entrepriseRemplacante.getNumero()),
 			                                     noOrganisationRemplacante);
-			LOGGER.info(message);
+			Audit.info(event.getId(), message);
 			return new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis: " + message);
 		}
 
-		LOGGER.info("Pas de doublon, l'organisation n'est pas remplacée.");
 		return null;
 	}
 }

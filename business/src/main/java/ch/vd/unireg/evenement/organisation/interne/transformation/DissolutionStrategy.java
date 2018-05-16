@@ -1,13 +1,7 @@
 package ch.vd.unireg.evenement.organisation.interne.transformation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
-import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
+import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -15,6 +9,10 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -23,8 +21,6 @@ import ch.vd.unireg.tiers.Entreprise;
  * @author Raphaël Marmier, 2016-02-18.
  */
 public class DissolutionStrategy extends AbstractOrganisationStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DissolutionStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -37,10 +33,7 @@ public class DissolutionStrategy extends AbstractOrganisationStrategy {
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -60,12 +53,12 @@ public class DissolutionStrategy extends AbstractOrganisationStrategy {
 			case FAILLITE:
 			case TRANSFORMATION:
 			case CARENCE_DANS_ORGANISATION:
+				Audit.info(event.getId(), "Dissolution de l'entreprise détectée");
 				return new Dissolution(event, organisation, entreprise, context, options);
 			default:
 				return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de dissolution inconnu: %s", raisonDeDissolution));
 			}
 		}
-		LOGGER.info("Pas de dissolution.");
 		return null;
 	}
 }

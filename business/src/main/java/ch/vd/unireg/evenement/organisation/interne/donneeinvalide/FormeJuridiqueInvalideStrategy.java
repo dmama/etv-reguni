@@ -3,12 +3,8 @@ package ch.vd.unireg.evenement.organisation.interne.donneeinvalide;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -17,6 +13,8 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -25,8 +23,6 @@ import ch.vd.unireg.tiers.Entreprise;
  * @author Raphaël Marmier, 2016-04-12.
  */
 public class FormeJuridiqueInvalideStrategy extends AbstractOrganisationStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(FormeJuridiqueInvalideStrategy.class);
 
 	private static final Set<FormeLegale> FORMES_LEGALES_INVALIDES = EnumSet.of(
 																				FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC,
@@ -49,10 +45,7 @@ public class FormeJuridiqueInvalideStrategy extends AbstractOrganisationStrategy
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -60,7 +53,7 @@ public class FormeJuridiqueInvalideStrategy extends AbstractOrganisationStrategy
 
 		final FormeLegale formeLegale = organisation.getFormeLegale(dateApres);
 		if (formeLegale == null) {
-			LOGGER.info("La forme juridique (LegalForm) est absente des données civiles.");
+			Audit.info(event.getId(), "La forme juridique (LegalForm) est absente des données civiles.");
 			return null;
 		}
 
@@ -77,10 +70,10 @@ public class FormeJuridiqueInvalideStrategy extends AbstractOrganisationStrategy
 				                        organisation.getNom(dateApres),
 				                        FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
 			}
+			Audit.info(event.getId(), message);
 			return new TraitementManuel(event, organisation, entreprise, context, options, message);
 		}
 
-		LOGGER.info(String.format("La forme juridique est valide (%s).", formeLegale));
 		return null;
 	}
 }

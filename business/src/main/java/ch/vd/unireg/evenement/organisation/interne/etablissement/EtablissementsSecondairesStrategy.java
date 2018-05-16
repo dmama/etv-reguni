@@ -4,14 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
@@ -22,6 +15,10 @@ import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.MessageWarningPreExectution;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 
@@ -31,8 +28,6 @@ import ch.vd.unireg.tiers.Etablissement;
  * @author Raphaël Marmier, 2016-02-26.
  */
 public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(EtablissementsSecondairesStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -45,10 +40,7 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -70,38 +62,33 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 			// FIXME: Cela pose la question de savoir si on ne devrait pas utiliser Unireg comme "avant" dans ces cas là?
 			return new MessageWarningPreExectution(event, organisation, null, context, options,
 			                                       String.format("L'organisation n°%d est déjà connue d'Unireg, mais nouvelle au civil. Veuillez vérifier la transition entre les données du registre " +
-					                                             "fiscal et du registre civil, notamment les établissements secondaires.", organisation.getNumeroOrganisation()));
-		} else {
+					                                                     "fiscal et du registre civil, notamment les établissements secondaires.", organisation.getNumeroOrganisation()));
+		}
+		else {
 
-			List<SiteOrganisation> sitesVDAvant = uniquementSitesActifs(organisation.getSitesSecondaires(dateAvant), dateAvant);
-			List<SiteOrganisation> sitesVDApres = uniquementSitesActifs(organisation.getSitesSecondaires(dateApres), dateApres);
+			final List<SiteOrganisation> sitesVDAvant = uniquementSitesActifs(organisation.getSitesSecondaires(dateAvant), dateAvant);
+			final List<SiteOrganisation> sitesVDApres = uniquementSitesActifs(organisation.getSitesSecondaires(dateApres), dateApres);
 
-			try {
-				determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
-			} catch (EvenementOrganisationException e) {
-				return new TraitementManuel(event, organisation, entreprise, context, options,
-				                            String.format("Erreur lors de la determination des changements d'établissements secondaires de l'entreprise n°%s (civil: %d): %s",
-				                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation(), e.getMessage())
-				);
-			}
+			determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
 
 			try {
 				List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(sitesVDAvant, sitesVDApres, dateApres, context);
 
 				if (!etablissementsAFermer.isEmpty() || !sitesACreer.isEmpty() || !demenagements.isEmpty()) {
-					LOGGER.info(String.format("Modification des établissements secondaires de l'entreprise %s (civil: %d).",
-					                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation()));
+					final String message = String.format("Modification des établissements secondaires de l'entreprise %s (civil: %d).",
+					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation());
+					Audit.info(event.getId(), message);
 					return new EtablissementsSecondaires(event, organisation, entreprise, context, options, etablissementsAFermer, sitesACreer, demenagements);
 				}
-			} catch (EvenementOrganisationException e) {
-				return new TraitementManuel(event, organisation, entreprise, context, options,
-				                            String.format("Erreur lors de la determination des changements de domicile des établissements secondaires de l'entreprise n°%s (civil: %d): %s",
-				                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation(), e.getMessage())
-				);
+			}
+			catch (EvenementOrganisationException e) {
+				final String message = String.format("Erreur lors de la determination des changements de domicile des établissements secondaires de l'entreprise n°%s (civil: %d): %s",
+				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation(), e.getMessage());
+				Audit.error(event.getId(), message);
+				return new TraitementManuel(event, organisation, entreprise, context, options, message);
 			}
 		}
 
-		LOGGER.info("Pas de modification des établissements secondaires");
 		return null;
 	}
 
@@ -117,8 +104,7 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		return filtre;
 	}
 
-	protected void determineChangementsEtablissements(List<SiteOrganisation> sitesAvant, List<SiteOrganisation> sitesApres, List<Etablissement> etablissementsAFermer, List<SiteOrganisation> siteACreer, EvenementOrganisationContext context) throws
-			EvenementOrganisationException {
+	protected void determineChangementsEtablissements(List<SiteOrganisation> sitesAvant, List<SiteOrganisation> sitesApres, List<Etablissement> etablissementsAFermer, List<SiteOrganisation> siteACreer, EvenementOrganisationContext context) {
 
 		// Determiner les sites qui ont disparus
 		for (SiteOrganisation ancienSite : sitesAvant) {
@@ -151,8 +137,7 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		}
 	}
 
-	protected List<EtablissementsSecondaires.Demenagement> determineChangementsDomiciles(List<SiteOrganisation> sitesAvant, List<SiteOrganisation> sitesApres, RegDate date, EvenementOrganisationContext context) throws
-			EvenementOrganisationException {
+	protected List<EtablissementsSecondaires.Demenagement> determineChangementsDomiciles(List<SiteOrganisation> sitesAvant, List<SiteOrganisation> sitesApres, RegDate date, EvenementOrganisationContext context) {
 
 		final List<EtablissementsSecondaires.Demenagement> demenagements = new ArrayList<>();
 

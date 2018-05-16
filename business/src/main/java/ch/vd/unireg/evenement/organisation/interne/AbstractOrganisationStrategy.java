@@ -2,17 +2,17 @@ package ch.vd.unireg.evenement.organisation.interne;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.creation.CreateEntreprise;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementOrganisation;
@@ -50,15 +50,12 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
 	 * pertinente.
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public abstract EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
-	                                                   final Organisation organisation,
-	                                                   Entreprise entreprise) throws EvenementOrganisationException;
+	                                                            final Organisation organisation,
+	                                                            Entreprise entreprise) throws EvenementOrganisationException;
 
 
 	/**

@@ -3,12 +3,8 @@ package ch.vd.unireg.evenement.organisation.interne.doublon;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -18,6 +14,8 @@ import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 
@@ -27,8 +25,6 @@ import ch.vd.unireg.tiers.Etablissement;
  * @author Raphaël Marmier, 2015-11-05.
  */
 public class DoublonEtablissementStrategy extends AbstractOrganisationStrategy {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DoublonEtablissementStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -41,10 +37,7 @@ public class DoublonEtablissementStrategy extends AbstractOrganisationStrategy {
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event   un événement organisation reçu de RCEnt
-	 * @param organisation
-	 * @return
-	 * @throws EvenementOrganisationException
+	 * @param event un événement organisation reçu de RCEnt
 	 */
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
@@ -57,7 +50,7 @@ public class DoublonEtablissementStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		List<EvenementOrganisationInterne> doublons = new ArrayList<>();
+		final List<EvenementOrganisationInterne> doublons = new ArrayList<>();
 
 		for (SiteOrganisation site : organisation.getDonneesSites()) {
 			final Long remplaceParAvant = site.getIdeRemplacePar(dateAvant);
@@ -95,14 +88,13 @@ public class DoublonEtablissementStrategy extends AbstractOrganisationStrategy {
 
 		if (!doublons.isEmpty()) {
 			if (doublons.size() == 1) {
-				LOGGER.info("Un doublon d'établissement détecté.");
+				Audit.info(event.getId(), "Un doublon d'établissement détecté.");
 				return doublons.get(0);
 			} else {
-				LOGGER.info(String.format("%d doublons d'établissement détectés.", doublons.size()));
+				Audit.info(event.getId(), String.format("%d doublons d'établissement détectés.", doublons.size()));
 				return new EvenementOrganisationInterneComposite(event, organisation, entreprise, context, options, doublons);
 			}
 		}
-		LOGGER.info("Pas de doublon d'établissement.");
 		return null;
 	}
 }

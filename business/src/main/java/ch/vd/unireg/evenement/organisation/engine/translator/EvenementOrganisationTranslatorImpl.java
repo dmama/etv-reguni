@@ -449,20 +449,19 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 
 		// SIFISC-19332 - SIFISC-19471 - Ne vérifier la présence antérieur d'une entreprise que si on a quelque chose à faire avec l'entité.
-		/*
-			Validation au début du traitement effectif.
-		 */
+		//Validation au début du traitement effectif.
 		evenements.add(new ValideurDebutDeTraitement(event, organisation, entreprise, context, options));
 
-		/* Pas de véritable traitement à exécuter. Indexation seulement. Le status sera TRAITE. */
 		if (resultatEvaluationStrategies.size() == 0) {
-			LOGGER.info("Pas de changement ni d'événement fiscal. L'entité sera simplement réindexée (si connue).");
+			// Pas de véritable traitement à exécuter. Indexation seulement. Le status sera TRAITE.
+			Audit.info(event.getId(), "Pas de changement détecté. L'entité sera simplement réindexée (si connue).");
 			evenements.add(new IndexationPure(event, organisation, entreprise, context, options));
 
-		/* Il y a des traitements à exécuter. Indexation obligatoire pour toute entité connue d'Unireg. Le status sera laissé inchangé. */
-		} else {
+		}
+		else {
+			// Il y a des traitements à exécuter. Indexation obligatoire pour toute entité connue d'Unireg. Le status sera laissé inchangé.
 			evenements.addAll(resultatEvaluationStrategies);
-			LOGGER.info("L'entité sera (re)indexée.");
+			Audit.info(event.getId(), "L'entité sera (re)indexée.");
 			evenements.add(new Indexation(event, organisation, entreprise, context, options));
 		}
 
