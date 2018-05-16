@@ -10,8 +10,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.HibernateEntity;
@@ -125,21 +123,30 @@ public class MessageIdentificationIndexerHibernateInterceptor implements Modific
 	 * doit forcer la ré-indexation de l'entité
 	 */
 	private void indexModifiedEntities() {
-		if (isEnabled()) {
-			final Set<Long> ids = getModifiedEntities();
-			if (!ids.isEmpty()) {
-				final TransactionTemplate template = new TransactionTemplate(transactionManager);
-				template.setReadOnly(true);
-				template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-				template.execute(new TransactionCallbackWithoutResult() {
-					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus status) {
-						for (Long id : ids) {
-							indexer.reindex(id);
-						}
-					}
-				});
-			}
+
+		if (!isEnabled()) {
+			// rien à faire
+			return;
+		}
+
+		final Set<Long> ids = getModifiedEntities();
+		if (ids.isEmpty()) {
+			// rien à faire
+			return;
+		}
+
+		setEnabled(false);  // on désactive l'intercepteur pour éviter de s'intercepter soi-même
+		try {
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setReadOnly(true);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			template.execute(status -> {
+				ids.forEach(indexer::reindex);
+				return null;
+			});
+		}
+		finally {
+			setEnabled(true);
 		}
 	}
 
