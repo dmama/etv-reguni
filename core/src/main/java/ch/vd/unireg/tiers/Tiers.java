@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -843,25 +842,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Transient
 	public RegDate getDateDesactivation() {
 		return null;
-	}
-
-	/**
-	 * Vérifie l'activité du tiers pour une date donnée.
-	 * <p>
-	 * Un tiers est dit <i>actif</i> à une date donnée si:
-	 *
-	 * <pre>
-	 * date = [dateDebutActivite, dateFinActivite]
-	 * </pre>
-	 *
-	 * @param date
-	 *            la date donnée, ou null pour vérifier si le tiers est actif.
-	 * @return vrai si le tiers est actif, faux autrement
-	 */
-	@Deprecated
-	public boolean isActif(Date date) {
-		return !isAnnule()
-				&& RegDateHelper.isBetween(RegDateHelper.get(date), getDateDebutActivite(), getDateFinActivite(), NullDateBehavior.LATEST);
 	}
 
 	/**
