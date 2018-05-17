@@ -32,7 +32,9 @@ public enum MotifFor {
 
 	DEPART_HC("Départ hors-canton"),
 
-	@Deprecated
+	/**
+	 * Motif indéterminé. Valeur utilisée pour les fors migrés, à ne pas utiliser pour de nouveau fors.
+	 */
 	INDETERMINE("Indéterminé"),
 
 	SEJOUR_SAISONNIER("Début de séjour saisonnier", "Fin de séjour saisonnier"),
