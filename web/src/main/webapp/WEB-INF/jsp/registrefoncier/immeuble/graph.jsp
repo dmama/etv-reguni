@@ -29,6 +29,7 @@
 
 		<p style="text-align: center; color:red;">Attention: cette page est une aide pour les développeurs de Unireg. Il ne s'agit en aucune manière d'une page officielle, et aucun support n'est prévu.</p>
 
+		<div id="error"></div>
 		<div id="info"></div>
 		<div id="dot" style="display: none">${dot}</div>
 		<div id="graph" style="text-align: center;"></div>
@@ -63,11 +64,22 @@
 					.attr("class", "tooltip")
 					.style("opacity", 0);
 
+				// on ajoute des liens de navigation sur les éléments 'text' des noeuds
+				nodes.each(function() {
+					var node = d3.select(this);
+					var nodeData = node.datum();
+					node.selectAll('text').each(function() {
+						var text = this;
+						text.outerHTML = '<a xlink:href="<c:url value="/registrefoncier/immeuble/graph.do"/>?elementKey=' + nodeData.key + '" style="cursor: pointer">' + text.outerHTML + '</a>';
+					})
+				});
 
 				nodes
+					// on ajoute la possibilité de sélectionner un noeud et de mettre en gras ses relations directes
 					.on("click", function (node) {
 						selectNode(node.key);
 					})
+					// on ajoute la possibilité de survoler un noeud avec la souris et d'afficher ses informations détaillées
 					.on("mouseover", function (d) {
 						showTooltip(tooltipDiv, d.key);
 					})
@@ -76,9 +88,11 @@
 					});
 
 				edges
+				// on ajoute la possibilité de sélectionner un lien et de mettre en gras ses relations directes
 					.on("click", function (edge) {
 						selectEdge(edge);
 					})
+					// on ajoute la possibilité de survoler un lien avec la souris et d'afficher ses informations détaillées
 					.on("mouseover", function (d) {
 						showTooltip(tooltipDiv, d.attributes.id);
 					})
@@ -91,8 +105,7 @@
 					// var height = chartDiv.clientHeight;
 
 					// Use the extracted size to set the size of an SVG element.
-					svg
-						.attr("width", width);
+					svg.attr("width", width);
 					// .attr("height", height);
 				}
 
@@ -151,8 +164,8 @@
 				}
 			}
 			catch (error) {
-				$('#info').html("<br><span style='font-weight: bold'>Nous sommes désolés, votre navigateur ne semble pas supporter cette page.</span> Si vous utilisez Internet Explorer, essayez avec Firefox." +
-					"<br><br><span class='error'>Erreur = " + error + "</span>");
+				$('#error').html("<br><span style='font-weight: bold'>Nous sommes désolés, votre navigateur ne semble pas supporter cette page.</span> Si vous utilisez Internet Explorer, essayez avec Firefox." +
+					"<br><br><span class='error'>Erreur = " + error.message + "</span>");
 			}
 
 		</script>

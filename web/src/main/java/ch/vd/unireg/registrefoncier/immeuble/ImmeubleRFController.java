@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -90,6 +91,7 @@ public class ImmeubleRFController {
 	                       @RequestParam(required = false) Long id,
 	                       @RequestParam(required = false) Long ctbId,
 	                       @RequestParam(required = false) Long commId,
+	                       @RequestParam(required = false) String elementKey,
 	                       @RequestParam(required = false, defaultValue = "false") boolean showEstimations,
 	                       Model model) {
 
@@ -97,6 +99,11 @@ public class ImmeubleRFController {
 
 		final String title;
 		final String sourceKey;
+
+		// on résoud les ids à partir de la clé de l'élément d3 si possible
+		egrid = (egrid == null ? resolveEgrid(elementKey) : egrid);
+		ctbId = (ctbId == null ? resolveCtbId(elementKey) : ctbId);
+		commId = (commId == null ? resolveCommunauteId(elementKey) : ctbId);
 
 		if (ctbId != null) {
 			// on affiche le graphe des droits et immeubles propriété de ce seul contribuable
@@ -172,6 +179,86 @@ public class ImmeubleRFController {
 		model.addAttribute("title", title);
 
 		return "registrefoncier/immeuble/graph";
+	}
+
+	/**
+	 * Analyse la clé de l'élément spécifié et retourne l'id de l'immeuble correspond s'il existe.
+	 */
+	@Nullable
+	private static String resolveEgrid(@Nullable String elementKey) {
+		if (StringUtils.isBlank(elementKey)) {
+			return null;
+		}
+
+		return Immeuble.parseKey(elementKey);
+	}
+
+	/**
+	 * Analyse la clé de l'élément spécifié et retourne l'id de contribuable correspond s'il existe.
+	 */
+	@Nullable
+	private Long resolveCtbId(@Nullable String elementKey) {
+
+		if (StringUtils.isBlank(elementKey)) {
+			return null;
+		}
+
+		final Long ayantDroitId = AyantDroit.parseKey(elementKey);
+		if (ayantDroitId == null) {
+			// pas un ayant-droit
+			return null;
+		}
+
+		final AyantDroitRF ayantDroit = registreFoncierService.getAyantDroit(ayantDroitId);
+		if (ayantDroit == null) {
+			// l'ayant-droit n'existe pas
+			return null;
+		}
+
+		if (!(ayantDroit instanceof TiersRF)) {
+			// l'ayant-droit n'est pas un tiers
+			return null;
+		}
+
+		final TiersRF tiers = (TiersRF) ayantDroit;
+		final Contribuable contribuable = tiers.getCtbRapproche();
+		if (contribuable == null) {
+			// le tiers n'est pas rapproché
+			return null;
+		}
+
+		return contribuable.getNumero();
+	}
+
+	/**
+	 * Analyse la clé de l'élément spécifié et retourne l'id de la communauté corresponde s'elle existe.
+	 */
+	@Nullable
+	private Long resolveCommunauteId(@Nullable String elementKey) {
+
+		if (StringUtils.isBlank(elementKey)) {
+			return null;
+		}
+
+		final Long ayantDroitId = AyantDroit.parseKey(elementKey);
+		if (ayantDroitId == null) {
+			// pas un ayant-droit
+			return null;
+		}
+
+		final AyantDroitRF ayantDroit = registreFoncierService.getAyantDroit(ayantDroitId);
+		if (ayantDroit == null) {
+			// l'ayant-droit n'existe pas
+			return null;
+		}
+
+		if (!(ayantDroit instanceof CommunauteRF)) {
+			// l'ayant-droit n'est pas une communauté
+			return null;
+		}
+
+		final CommunauteRF communaute = (CommunauteRF) ayantDroit;
+		return communaute.getId();
 	}
 
 	@NotNull
