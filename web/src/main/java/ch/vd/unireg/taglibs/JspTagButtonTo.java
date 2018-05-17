@@ -44,9 +44,6 @@ public class JspTagButtonTo extends RequestContextAwareTag {
 		contextPath = request.getContextPath();
 		messageSource = getRequestContext().getMessageSource();
 
-		// TODO (msi) : hériter de RequestContextAwareTag (voir MessageTag) et ajouter une propriété nameKey pour résoudre automatiquement le nom
-		//              du bouton à partir d'une propriété
-
 		try {
 			final JspWriter out = pageContext.getOut();
 			out.print(buildHtml());

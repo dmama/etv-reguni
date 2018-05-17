@@ -840,7 +840,7 @@
 		<tag-class>ch.vd.unireg.taglibs.JspTagLinkTo</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
-			<description>Le texte du button.</description>
+			<description>Le texte du lien (ou le nom de la propriété qui sera résolue automatiquement, e.g. 'label.tiers.a.annuler').</description>
 			<name>name</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>

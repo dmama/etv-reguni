@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,17 +16,18 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.web.servlet.tags.RequestContextAwareTag;
 import org.springframework.web.util.HtmlUtils;
 
 /**
  * Button qui navigue vers ou qui poste un formulaire sur autre URL.
  */
-@SuppressWarnings("UnusedDeclaration")
-public class JspTagLinkTo extends BodyTagSupport {
+public class JspTagLinkTo extends RequestContextAwareTag {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JspTagLinkTo.class);
 
-	private static final long serialVersionUID = 4115565970912710828L;
+	private static final long serialVersionUID = -8876431425915581399L;
 
 	private String name;
 	private String action;
@@ -38,12 +38,14 @@ public class JspTagLinkTo extends BodyTagSupport {
 	private String link_class = "link_to";
 
 	private String contextPath;
+	private MessageSource messageSource;
 
 	@Override
-	public int doStartTag() throws JspException {
+	public int doStartTagInternal() throws JspException {
 
 		final HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
 		contextPath = request.getContextPath();
+		messageSource = getRequestContext().getMessageSource();
 
 		try {
 			final JspWriter out = pageContext.getOut();
@@ -56,40 +58,20 @@ public class JspTagLinkTo extends BodyTagSupport {
 		}
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getAction() {
-		return action;
 	}
 
 	public void setAction(String action) {
 		this.action = action;
 	}
 
-	public String getParams() {
-		return params;
-	}
-
 	public void setParams(String params) {
 		this.params = params;
 	}
 
-	public String getMethod() {
-		return method;
-	}
-
 	public void setMethod(String method) {
 		this.method = method;
-	}
-
-	public String getConfirm() {
-		return confirm;
 	}
 
 	public void setConfirm(String confirm) {
@@ -100,19 +82,17 @@ public class JspTagLinkTo extends BodyTagSupport {
 		this.title = title;
 	}
 
-	public String getLink_class() {
-		return link_class;
-	}
-
 	public void setLink_class(String link_class) {
 		this.link_class = link_class;
 	}
 
-	public String buildHtml() {
+	private String buildHtml() {
 
 		String confirmScript = null;
 		if (StringUtils.isNotBlank(confirm)) {
-			confirmScript = "if (!confirm('" + StringEscapeUtils.escapeEcmaScript(confirm) + "')) return false;";
+			String s = StringEscapeUtils.escapeEcmaScript(resolveCode(confirm));
+			s = s.replaceAll("\\\\n", "\\n"); // on un-escape les retours de lignes, parce qu'ils sont bien pratiques
+			confirmScript = "if (!confirm('" + s + "')) return false;";
 		}
 
 		final String url;
@@ -147,11 +127,22 @@ public class JspTagLinkTo extends BodyTagSupport {
 			sb.append("&nbsp;"); // compatibilité IE8
 		}
 		else {
-			sb.append(HtmlUtils.htmlEscape(name));
+			sb.append(HtmlUtils.htmlEscape(resolveCode(name)));
 		}
 		sb.append("</a>");
 
 		return sb.toString();
+	}
+
+	private String resolveCode(String code) {
+		final String resolvedName;
+		if (StringUtils.isNotBlank(code)) {
+			resolvedName = messageSource.getMessage(code, null, getRequestContext().getLocale());
+		}
+		else {
+			resolvedName = code;
+		}
+		return resolvedName;
 	}
 
 	/**
@@ -227,7 +218,7 @@ public class JspTagLinkTo extends BodyTagSupport {
 		JsonFactory jfactory = new JsonFactory();
 		try {
 			final Map<String, String> map = new HashMap<>();
-			JsonParser jParser = jfactory.createJsonParser(params);
+			JsonParser jParser = jfactory.createParser(params);
 			jParser.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 			jParser.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 			while (jParser.nextToken() != JsonToken.END_OBJECT) {
