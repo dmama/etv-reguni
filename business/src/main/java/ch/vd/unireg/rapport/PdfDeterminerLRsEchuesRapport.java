@@ -9,7 +9,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -22,7 +21,9 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 
 	public void write(final DeterminerLRsEchuesResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -53,10 +54,10 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		{
 			if (results.isInterrompu()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(new float[] {70f, 30f}, table -> {
+			addTableSimple(new float[]{70f, 30f}, table -> {
 				table.addLigne("Nombre de débiteurs analysés :", String.valueOf(results.getNbDebiteursAnalyses()));
 				table.addLigne("Nombre de débiteurs ignorés :", String.valueOf(results.ignores.size()));
 				table.addLigne("Nombre de listes échues :", String.valueOf(results.lrEchues.size()));

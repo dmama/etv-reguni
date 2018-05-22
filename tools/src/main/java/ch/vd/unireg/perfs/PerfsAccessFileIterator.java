@@ -5,9 +5,10 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import ch.vd.unireg.perfs.PerfsAccessFile.Call;
+
+import static java.lang.System.currentTimeMillis;
 
 /**
  * Itérateur qui permet de récupérer les ids des contribuables à processer en respectant les temps d'accès défini dans le fichier.
@@ -41,10 +42,12 @@ public class PerfsAccessFileIterator {
 	 * Construit un itérateur qui itère sur tous les appels du fichier de manière rotative tant que targetCount n'est pas atteint.
 	 */
 	public PerfsAccessFileIterator(PerfsAccessFile file, int targetCount) {
-		this.startTime = System.currentTimeMillis();
+		this.startTime = currentTimeMillis();
 		this.calls = file.getCalls();
 		this.targetCount = targetCount;
-		Assert.isTrue(!calls.isEmpty() || targetCount == 0);
+		if (calls.isEmpty() && targetCount != 0) {
+			throw new IllegalArgumentException();
+		}
 
 		this.i = -1;
 		this.count = -1;

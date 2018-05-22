@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -24,7 +23,9 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 
 	public void write(final RapprochementTiersRFResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -48,10 +49,10 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 		{
 			if (results.isInterrompu()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(new float[] {.6f, .4f}, table -> {
+			addTableSimple(new float[]{.6f, .4f}, table -> {
 				table.addLigne("Nombre de tiers RF inspectés :", String.valueOf(results.getNbDossiersInspectes()));
 				table.addLigne("Nombre de rapprochements opérés :", String.valueOf(results.getNbIdentifications()));
 				table.addLigne("Nombre d'identifications échouées :", String.valueOf(results.getNbNonIdentifications()));

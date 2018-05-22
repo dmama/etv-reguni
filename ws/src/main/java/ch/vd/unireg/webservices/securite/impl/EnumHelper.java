@@ -1,6 +1,5 @@
 package ch.vd.unireg.webservices.securite.impl;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.webservices.securite.NiveauAutorisation;
 
 /**
@@ -16,7 +15,9 @@ public class EnumHelper {
 		}
 
 		final NiveauAutorisation value = NiveauAutorisation.fromValue(niveau.name());
-		Assert.notNull(value);
+		if (value == null) {
+			throw new IllegalArgumentException();
+		}
 		return value;
 	}
 }

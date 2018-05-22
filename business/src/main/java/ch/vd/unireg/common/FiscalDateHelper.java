@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.type.DayMonth;
 
@@ -82,7 +81,9 @@ public abstract class FiscalDateHelper {
 	public static boolean isMajeurAt(Individu individu, RegDate date) {
 
 		final RegDate naissance = individu.getDateNaissance();
-		Assert.notNull(naissance, "L'individu " + individu.getNoTechnique() + " n'a pas de date de naissance");
+		if (naissance == null) {
+			throw new IllegalArgumentException("L'individu " + individu.getNoTechnique() + " n'a pas de date de naissance");
+		}
 		return isMajeur(date, naissance);
 	}
 

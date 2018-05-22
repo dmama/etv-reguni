@@ -4,11 +4,11 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Objects;
 
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.LengthConstants;
 
 /**
@@ -60,7 +60,9 @@ public class QuittanceLR extends EvenementExterne {
 	@Transient
 	public Long getTiersId() {
 		if (tiersId != null && tiers != null) {
-			Assert.isEqual(tiers.getNumero(), tiersId);
+			if (!Objects.equals(tiers.getNumero(), tiersId)) {
+				throw new IllegalArgumentException();
+			}
 		}
 		if (tiers != null) {
 			return tiers.getNumero();
@@ -72,7 +74,9 @@ public class QuittanceLR extends EvenementExterne {
 
 	public void setTiersId(Long tiersId) {
 		if (tiers != null) {
-			Assert.isEqual(tiers.getNumero(), tiersId);
+			if (!Objects.equals(tiers.getNumero(), tiersId)) {
+				throw new IllegalArgumentException();
+			}
 		}
 		this.tiersId = tiersId;
 	}

@@ -7,13 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
@@ -49,7 +48,9 @@ public class IdentificationTooltipController {
 			final AdresseGenerique adresseGenerique = adresseService.getDerniereAdresseVaudoise(tiers, TypeAdresseFiscale.DOMICILE);
 			if (adresseGenerique != null) {
 				final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(tiers, adresseGenerique.getDateDebut(), TypeAdresseFiscale.DOMICILE, false);
-				Assert.notNull(adresseEnvoi);
+				if (adresseEnvoi == null) {
+					throw new IllegalArgumentException();
+				}
 
 				final String complements = adresseEnvoi.getComplement();
 				final String rue = (adresseEnvoi.getRueEtNumero() == null ? null : adresseEnvoi.getRueEtNumero().getRueEtNumero());

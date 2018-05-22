@@ -7,12 +7,11 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 
 /*
@@ -40,7 +39,9 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 	 */
 	public AdresseTiersCivileAdapter(Adresse adresse, AdresseCivile adresseCivileSurchargee, Source source, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
 		super(service);
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException();
+		}
 		this.adresse = adresse;
 		this.adresseCivileSurcharge = adresseCivileSurchargee;
 		this.source = source;

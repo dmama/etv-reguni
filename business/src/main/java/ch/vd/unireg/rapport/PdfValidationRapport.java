@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.tiers.TypeTiers;
@@ -20,7 +19,9 @@ public class PdfValidationRapport extends PdfRapport {
 
 	public void write(final ValidationJobResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager statusManager) throws Exception {
 
-		Assert.notNull(statusManager);
+		if (statusManager == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -50,7 +51,7 @@ public class PdfValidationRapport extends PdfRapport {
 		{
 			if (results.interrompu) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			addTableSimple(2, table -> {

@@ -25,7 +25,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.InstantHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.AgeTrackingBlockingQueueMixer;
 import ch.vd.unireg.common.Aged;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
@@ -210,7 +209,9 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationService;
 	 * @param mode le mode de traitement
 	 */
 	private void internalPost(Long noOrganisation, EvenementOrganisationProcessingMode mode) {
-		Assert.isTrue(lock.isHeldByCurrentThread());
+		if (!lock.isHeldByCurrentThread()) {
+			throw new IllegalStateException();
+		}
 
 		if (noOrganisation == null) {
 			throw new NullPointerException("noOrganisation");
@@ -221,7 +222,9 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationService;
 		final boolean wasPriority = priorityQueue.remove(elt);
 		final boolean wasImmediate = immediateQueue.remove(elt);
 		final boolean wasNowhere = !wasBulk && !wasPriority && !wasImmediate;
-		Assert.isTrue((wasBulk ? 1 : 0) + (wasPriority ? 1 : 0) + (wasImmediate ? 1 : 0) <= 1);
+		if ((wasBulk ? 1 : 0) + (wasPriority ? 1 : 0) + (wasImmediate ? 1 : 0) > 1) {
+			throw new IllegalArgumentException();
+		}
 
 		final BlockingQueue<DelayedOrganisation> postingQueue;
 		switch (mode) {

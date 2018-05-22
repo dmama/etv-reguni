@@ -10,12 +10,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.FusionDeCommunesResults;
 
@@ -32,7 +31,9 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 
 	public void write(final FusionDeCommunesResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfMajoriteRapport document = new PdfMajoriteRapport();
@@ -60,7 +61,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		{
 			if (results.interrompu) {
 				document.addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						                    + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			document.addTableSimple(new float[]{70, 30}, table -> {

@@ -13,7 +13,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
 import ch.vd.unireg.load.BasicLoadMonitor;
@@ -147,7 +146,9 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 	@Override
     @NotNull
 	public List<EvenementOrganisation> saveIncomingEvent(final List<EvenementOrganisation> events) {
-		Assert.isTrue(!events.isEmpty());
+		if(events.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

@@ -2,16 +2,16 @@ package ch.vd.unireg.norentes.civil.changement.identification;
 
 import java.util.List;
 
-import org.springframework.util.Assert;
+import org.junit.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.norentes.common.EvenementCivilScenario;
@@ -21,6 +21,7 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeEvenementCivil;
+
 
 public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends EvenementCivilScenario {
 
@@ -86,30 +87,30 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 		globalIndexer.sync();
 		{
 			final PersonnePhysique momo = tiersDAO.getPPByNumeroIndividu(noIndMomo);
-			Assert.isTrue(!momo.isHabitantVD(), "Maurice devrait être non-habitant");
+			Assert.assertTrue("Maurice devrait être non-habitant", !momo.isHabitantVD());
 		}
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(noHabMomo);
 			final List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé");
+			Assert.assertEquals("Le tiers n'a pas été indexé", 1, list.size());
 			final TiersIndexedData tiers = list.get(0);
-			Assert.isTrue(tiers.getNumero().equals(noHabMomo), "Le numéro du tiers est incorrect");
+			Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), noHabMomo);
 		}
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS(avsOriginal);
 			final List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé par numéro AVS");
+			Assert.assertEquals("Le tiers n'a pas été indexé par numéro AVS", 1, list.size());
 			final TiersIndexedData tiers = list.get(0);
-			Assert.isTrue(tiers.getNumero().equals(noHabMomo), "Ce n'est pas le bon tiers qui est retrouvé par numéro AVS");
+			Assert.assertEquals("Ce n'est pas le bon tiers qui est retrouvé par numéro AVS", (long) tiers.getNumero(), noHabMomo);
 		}
 		{
 			// vérification que la recherche par la nouvelle valeur du numéro AVS ne donne rien
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS(avsNouveau);
 			final List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.isEmpty(), "Un tiers est déjà trouvé par la nouvelle valeur du numéro AVS");
+			Assert.assertTrue("Un tiers est déjà trouvé par la nouvelle valeur du numéro AVS", list.isEmpty());
 		}
 	}
 
@@ -136,21 +137,21 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS(avsNouveau);
 			final List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé par numéro AVS");
+			Assert.assertEquals("Le tiers n'a pas été indexé par numéro AVS", 1, list.size());
 			final TiersIndexedData tiers = list.get(0);
-			Assert.isTrue(tiers.getNumero().equals(noHabMomo), "Ce n'est pas le bon tiers qui est retrouvé par numéro AVS");
+			Assert.assertEquals("Ce n'est pas le bon tiers qui est retrouvé par numéro AVS", (long) tiers.getNumero(), noHabMomo);
 		}
 		{
 			// vérification que la recherche par l'ancienne valeur du numéro AVS ne donne rien
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS(avsOriginal);
 			final List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.isEmpty(), "Un tiers est encore trouvé par l'ancienne valeur du numéro AVS");
+			Assert.assertTrue("Un tiers est encore trouvé par l'ancienne valeur du numéro AVS", list.isEmpty());
 		}
 		{
 			final PersonnePhysique momo = tiersDAO.getPPByNumeroIndividu(noIndMomo);
 			final String avs = momo.getNumeroAssureSocial();
-			Assert.isTrue(avsNouveau.equals(avs), "numéro avs erroné dans la personne physique");
+			Assert.assertEquals("numéro avs erroné dans la personne physique", avsNouveau, avs);
 		}
 	}
 }

@@ -16,7 +16,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.cache.CacheHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.CompletePartsCallbackWithException;
+import ch.vd.unireg.cache.EhCacheStats;
+import ch.vd.unireg.cache.KeyDumpableCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.stats.StatsService;
+import ch.vd.unireg.utils.LogLevel;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.party3.BatchParty;
@@ -39,19 +47,10 @@ import ch.vd.unireg.webservices.party3.SearchPartyRequest;
 import ch.vd.unireg.webservices.party3.SearchPartyResponse;
 import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.webservices.party3.WebServiceException;
+import ch.vd.unireg.webservices.party3.impl.ExceptionHelper;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.unireg.cache.CacheHelper;
-import ch.vd.unireg.cache.CacheStats;
-import ch.vd.unireg.cache.CompletePartsCallbackWithException;
-import ch.vd.unireg.cache.EhCacheStats;
-import ch.vd.unireg.cache.KeyDumpableCache;
-import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.stats.StatsService;
-import ch.vd.unireg.utils.LogLevel;
-import ch.vd.unireg.webservices.party3.impl.ExceptionHelper;
 
 public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCache, PartyWebService, InitializingBean, DisposableBean {
 
@@ -103,7 +102,9 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);
-			Assert.notNull(cache);
+			if (cache == null) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 
@@ -230,7 +231,9 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 			else if (entry.getParty() != null) {
 				// on met-à-jour le tiers (s'il existe) avec les parts chargées
 				GetPartyValue value = (GetPartyValue) element.getObjectValue();
-				Assert.isFalse(value.isNull());
+				if (value.isNull()) {
+					throw new IllegalArgumentException();
+				}
 				// [SIFISC-28103] on ne doit ajouter que les parts qui manquent
 				if (parts != null) {
 					value.addMissingParts(parts, entry.getParty());

@@ -22,7 +22,6 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.type.CategorieEtranger;
@@ -374,7 +373,9 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	 */
 	@Transient
 	public boolean isDecede() {
-		Assert.isFalse(habitant, "PersonnePhysique.isDecede ne doit être exécutée que sur un non-habitant");
+		if (habitant) {
+			throw new IllegalArgumentException("PersonnePhysique.isDecede ne doit être exécutée que sur un non-habitant");
+		}
 		return dateDeces != null;
 	}
 

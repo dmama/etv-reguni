@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.AddAndSaveHelper;
@@ -611,7 +611,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			            null);
 		}
 		else {
-			Assert.isTrue(ctbStart < 0 && ctbEnd < 0);
 			list = find("SELECT tiers.numero FROM Tiers AS tiers", null);
 		}
 		return list;
@@ -1195,7 +1194,9 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
-		Assert.isEqual(1, list.size()); // une seule collectivité administrative de regroupement par district
+		if (list.size() != 1) { // une seule collectivité administrative de regroupement par district
+			throw new IllegalArgumentException();
+		}
 		return list.get(0);
 	}
 
@@ -1206,7 +1207,9 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
-		Assert.isEqual(1, list.size()); // une seule collectivité administrative de regroupement par Region
+		if (list.size() != 1) { // une seule collectivité administrative de regroupement par Region
+			throw new IllegalArgumentException();
+		}
 		return list.get(0);
 	}
 
@@ -1220,7 +1223,9 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
-		Assert.isEqual(1, list.size()); // le numéro de collectivité administrative est défini comme 'unique' sur la base
+		if (list.size() != 1) {     // le numéro de collectivité administrative est défini comme 'unique' sur la base
+			throw new IllegalArgumentException();
+		}
 		return list.get(0);
 	}
 
@@ -1297,7 +1302,9 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			return null;
 		}
 		else {
-			Assert.isEqual(1, list.size());
+			if (list.size() != 1) {
+				throw new IllegalArgumentException();
+			}
 			return list.get(0);
 		}
 	}
@@ -1364,8 +1371,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(T d1, T d2) {
-			Assert.isSame(d1.getDateDebut(), d2.getDateDebut());
-			Assert.isSame(d1.getDateFin(), d2.getDateFin());
+			if (d1.getDateDebut() != d2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (d1.getDateFin() != d2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1387,8 +1398,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(Periodicite p1, Periodicite p2) {
-			Assert.isSame(p1.getDateDebut(), p2.getDateDebut());
-			Assert.isSame(p1.getDateFin(), p2.getDateFin());
+			if (p1.getDateDebut() != p2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (p1.getDateFin() != p2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1410,8 +1425,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(SituationFamille entity1, SituationFamille entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1436,8 +1455,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(AdresseTiers entity1, AdresseTiers entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1462,8 +1485,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(AdresseMandataire entity1, AdresseMandataire entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1485,8 +1512,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(IdentificationPersonne entity1, IdentificationPersonne entity2) {
-			Assert.isSame(entity1.getCategorieIdentifiant(), entity2.getCategorieIdentifiant());
-			Assert.isSame(entity1.getIdentifiant(), entity2.getIdentifiant());
+			if (entity1.getCategorieIdentifiant() != entity2.getCategorieIdentifiant()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getIdentifiant() != entity2.getIdentifiant()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1508,7 +1539,9 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(IdentificationEntreprise entity1, IdentificationEntreprise entity2) {
-			Assert.isSame(entity1.getNumeroIde(), entity2.getNumeroIde());
+			if (entity1.getNumeroIde() != entity2.getNumeroIde()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1530,10 +1563,18 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(DomicileEtablissement entity1, DomicileEtablissement entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-			Assert.isSame(entity1.getTypeAutoriteFiscale(), entity2.getTypeAutoriteFiscale());
-			Assert.isSame(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getTypeAutoriteFiscale() != entity2.getTypeAutoriteFiscale()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getNumeroOfsAutoriteFiscale() != entity2.getNumeroOfsAutoriteFiscale()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1556,10 +1597,18 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(T entity1, T entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-			Assert.isSame(entity1.getTypeCollectivite(), entity2.getTypeCollectivite());
-			Assert.isSame(entity1.getTypeImpot(), entity2.getTypeImpot());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getTypeCollectivite() != entity2.getTypeCollectivite()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getTypeImpot() != entity2.getTypeImpot()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 
@@ -1581,23 +1630,35 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(DonneeCivileEntreprise entity1, DonneeCivileEntreprise entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
 			if (RaisonSocialeFiscaleEntreprise.class.isAssignableFrom(entity1.getClass())) {
 				RaisonSocialeFiscaleEntreprise raison1 = (RaisonSocialeFiscaleEntreprise) entity1;
 				RaisonSocialeFiscaleEntreprise raison2 = (RaisonSocialeFiscaleEntreprise) entity2;
-				Assert.isEqual(raison1.getRaisonSociale(), raison2.getRaisonSociale());
+				if (!Objects.equals(raison1.getRaisonSociale(), raison2.getRaisonSociale())) {
+					throw new IllegalArgumentException();
+				}
 			}
 			else if (FormeJuridiqueFiscaleEntreprise.class.isAssignableFrom(entity1.getClass())) {
 				FormeJuridiqueFiscaleEntreprise jur1 = (FormeJuridiqueFiscaleEntreprise) entity1;
 				FormeJuridiqueFiscaleEntreprise jur2 = (FormeJuridiqueFiscaleEntreprise) entity2;
-				Assert.isSame(jur1.getFormeJuridique(), jur2.getFormeJuridique());
+				if (jur1.getFormeJuridique() != jur2.getFormeJuridique()) {
+					throw new IllegalArgumentException();
+				}
 			}
 			else if (CapitalFiscalEntreprise.class.isAssignableFrom(entity1.getClass())) {
 				CapitalFiscalEntreprise cap1 = (CapitalFiscalEntreprise) entity1;
 				CapitalFiscalEntreprise cap2 = (CapitalFiscalEntreprise) entity2;
-				Assert.isEqual(cap1.getMontant().getMontant(), cap2.getMontant().getMontant());
-				Assert.isEqual(cap1.getMontant().getMonnaie(), cap2.getMontant().getMonnaie());
+				if (!Objects.equals(cap1.getMontant().getMontant(), cap2.getMontant().getMontant())) {
+					throw new IllegalArgumentException();
+				}
+				if (!Objects.equals(cap1.getMontant().getMonnaie(), cap2.getMontant().getMonnaie())) {
+					throw new IllegalArgumentException();
+				}
 			}
 		}
 	};
@@ -1620,9 +1681,15 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(Bouclement entity1, Bouclement entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getAncrage(), entity2.getAncrage());
-			Assert.isSame(entity1.getPeriodeMois(), entity2.getPeriodeMois());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getAncrage() != entity2.getAncrage()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getPeriodeMois() != entity2.getPeriodeMois()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1644,8 +1711,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(RegimeFiscal entity1, RegimeFiscal entity2) {
-			Assert.isSame(entity1.getPortee(), entity2.getPortee());
-			Assert.isSame(entity1.getCode(), entity2.getCode());
+			if (entity1.getPortee() != entity2.getPortee()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getCode() != entity2.getCode()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1667,8 +1738,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(EtatEntreprise entity1, EtatEntreprise entity2) {
-			Assert.isSame(entity1.getDateObtention(), entity2.getDateObtention());
-			Assert.isSame(entity1.getType(), entity2.getType());
+			if (entity1.getDateObtention() != entity2.getDateObtention()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getType() != entity2.getType()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1690,9 +1765,15 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(FlagEntreprise entity1, FlagEntreprise entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-			Assert.isSame(entity1.getType(), entity2.getType());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getType() != entity2.getType()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	};
 
@@ -1714,9 +1795,15 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(T entity1, T entity2) {
-			Assert.isSame(entity1.getDateEnvoi(), entity2.getDateEnvoi());
-			Assert.isSame(entity1.getEtat(), entity2.getEtat());
-			Assert.isSame(entity1.getClass(), entity2.getClass());
+			if (entity1.getDateEnvoi() != entity2.getDateEnvoi()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getEtat() != entity2.getEtat()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getClass() != entity2.getClass()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 
@@ -1738,10 +1825,18 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(T entity1, T entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-			Assert.isSame(entity1.getImmeuble(), entity2.getImmeuble());
-			Assert.isSame(entity1.getClass(), entity2.getClass());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getImmeuble() != entity2.getImmeuble()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getClass() != entity2.getClass()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 
@@ -1852,8 +1947,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(T entity1, T entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 
@@ -1870,11 +1969,21 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertEquals(DecisionAci entity1, DecisionAci entity2) {
-			Assert.isSame(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale());
-			Assert.isSame(entity1.getTypeAutoriteFiscale(), entity2.getTypeAutoriteFiscale());
-			Assert.isSame(entity1.getContribuable().getNumero(), entity2.getContribuable().getNumero());
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			if (entity1.getNumeroOfsAutoriteFiscale() != entity2.getNumeroOfsAutoriteFiscale()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getTypeAutoriteFiscale() != entity2.getTypeAutoriteFiscale()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getContribuable().getNumero() != entity2.getContribuable().getNumero()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateDebut() != entity2.getDateDebut()) {
+				throw new IllegalArgumentException();
+			}
+			if (entity1.getDateFin() != entity2.getDateFin()) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 }

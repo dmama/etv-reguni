@@ -18,8 +18,6 @@ import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.type.Type;
 
-import ch.vd.registre.base.utils.Assert;
-
 public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentifierGenerator, Configurable {
 
 	private final String tableName;
@@ -120,7 +118,7 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 
 		if (foundId < minId || foundId > maxId) {
 			final String message = String.format("L'Id généré [%d] n'est pas dans la plage de validité spécifiée [%d -> %d]", foundId, minId, maxId);
-			Assert.fail(message);
+			throw new IllegalArgumentException(message);
 		}
 
 		return foundId;

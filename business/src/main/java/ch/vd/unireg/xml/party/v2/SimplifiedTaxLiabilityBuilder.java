@@ -1,10 +1,9 @@
 package ch.vd.unireg.xml.party.v2;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiabilityType;
-import ch.vd.unireg.xml.DataHelper;
 
 public class SimplifiedTaxLiabilityBuilder {
 	public static SimplifiedTaxLiability newSimplifiedTaxLiability(ch.vd.unireg.metier.assujettissement.Assujettissement assujettissement, SimplifiedTaxLiabilityType type) {
@@ -41,11 +40,13 @@ public class SimplifiedTaxLiabilityBuilder {
 			// un sourcier pure n'est pas assujetti au rôle ordinaire.
 			result = null;
 		}
-		else {
-			Assert.isTrue(a instanceof ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire
-					|| a instanceof ch.vd.unireg.metier.assujettissement.VaudoisDepense
-					|| a instanceof ch.vd.unireg.metier.assujettissement.Indigent);
+		else if (a instanceof ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire
+				|| a instanceof ch.vd.unireg.metier.assujettissement.VaudoisDepense
+				|| a instanceof ch.vd.unireg.metier.assujettissement.Indigent) {
 			result = newSimplifiedTaxLiability(a, SimplifiedTaxLiabilityType.UNLIMITED);
+		}
+		else {
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + a + "]");
 		}
 
 		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
@@ -85,11 +86,13 @@ public class SimplifiedTaxLiabilityBuilder {
 			// un sourcier pure n'est pas assujetti au rôle ordinaire.
 			result = null;
 		}
-		else {
-			Assert.isTrue(a instanceof ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire
-					|| a instanceof ch.vd.unireg.metier.assujettissement.VaudoisDepense
-					|| a instanceof ch.vd.unireg.metier.assujettissement.Indigent);
+		else if (a instanceof ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire
+				|| a instanceof ch.vd.unireg.metier.assujettissement.VaudoisDepense
+				|| a instanceof ch.vd.unireg.metier.assujettissement.Indigent) {
 			result = newSimplifiedTaxLiability(a, SimplifiedTaxLiabilityType.UNLIMITED);
+		}
+		else {
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + a + "]");
 		}
 
 		// [UNIREG-1517] l'assujettissement courant est laissé ouvert

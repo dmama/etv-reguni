@@ -2,8 +2,6 @@ package ch.vd.unireg.evenement.fiscal;
 
 import java.util.Collection;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -59,7 +57,9 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	}
 
 	private void saveAndPublish(EvenementFiscal evenementFiscal) {
-		Assert.notNull(evenementFiscal, "evenementFiscal ne peut être null.");
+		if (evenementFiscal == null) {
+			throw new IllegalArgumentException("evenementFiscal ne peut être null.");
+		}
 
 		// sauve evenementFiscal
 		evenementFiscal = evenementFiscalDAO.save(evenementFiscal);

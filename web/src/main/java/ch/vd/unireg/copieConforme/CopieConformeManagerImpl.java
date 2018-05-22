@@ -2,7 +2,6 @@ package ch.vd.unireg.copieConforme;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
@@ -102,7 +101,9 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat getPdfCopieConformeDelai(Long idDelai) throws EditiqueException {
 		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
-		Assert.notNull(delai);
+		if (delai == null) {
+			throw new IllegalArgumentException();
+		}
 		return diService.getCopieConformeConfirmationDelai(delai);
 	}
 
@@ -110,7 +111,9 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat getPdfCopieConformeEnvoiAutreDocumentFiscal(Long idDocument) throws EditiqueException {
 		final AutreDocumentFiscal doc = hibernateTemplate.get(AutreDocumentFiscal.class, idDocument);
-		Assert.notNull(doc);
+		if (doc == null) {
+			throw new IllegalArgumentException();
+		}
 		return autreDocumentFiscalService.getCopieConformeDocumentInitial(doc);
 	}
 
@@ -118,7 +121,9 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat getPdfCopieConformeRappelAutreDocumentFiscal(Long idDocument) throws EditiqueException {
 		final AutreDocumentFiscalAvecSuivi doc = hibernateTemplate.get(AutreDocumentFiscalAvecSuivi.class, idDocument);
-		Assert.notNull(doc);
+		if (doc == null) {
+			throw new IllegalArgumentException();
+		}
 		return autreDocumentFiscalService.getCopieConformeDocumentRappel(doc);
 	}
 

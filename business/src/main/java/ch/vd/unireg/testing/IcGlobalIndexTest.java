@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
@@ -62,19 +61,25 @@ public class IcGlobalIndexTest extends InContainerTest {
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison(nom);
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			Assert.isEqual(2, list.size());
+			if (list.size() != 2) {
+				throw new IllegalArgumentException();
+			}
 		}
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison(prenom1);
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			Assert.isEqual(1, list.size());
+			if (list.size() != 1) {
+				throw new IllegalArgumentException();
+			}
 		}
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison(prenom2);
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			Assert.isEqual(1, list.size());
+			if (list.size() != 1) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 
@@ -100,7 +105,9 @@ public class IcGlobalIndexTest extends InContainerTest {
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison(nom);
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			Assert.isEqual(0, list.size());
+			if (!list.isEmpty()) {
+				throw new IllegalArgumentException();
+			}
 		}
 
 	}
@@ -127,7 +134,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 			try {
 				LOGGER.warn("L'exception générée ci-dessous est normale!");
 				save(nh);
-				Assert.fail();
+				throw new IllegalArgumentException();
 			}
 			catch (Exception ex) {
 				LOGGER.warn("L'exception générée ci-dessus est normale!");
@@ -136,7 +143,9 @@ public class IcGlobalIndexTest extends InContainerTest {
 		}
 
 		globalTiersIndexer.sync();
-		Assert.isEqual(1, globalTiersSearcher.getApproxDocCount());
+		if (globalTiersSearcher.getApproxDocCount() != 1) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 

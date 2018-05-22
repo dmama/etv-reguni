@@ -32,7 +32,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.adresse.AdresseService;
@@ -412,7 +411,9 @@ public class TacheServiceImpl implements TacheService {
 
 		// S'il s'agit du dernier for secondaire existant, on génère une tâche de contrôle de dossier
 		if (forsAt.secondaires.size() == 1) {
-			Assert.isEqual(forSecondaire, forsAt.secondaires.get(0));
+			if (!Objects.equals(forSecondaire, forsAt.secondaires.get(0))) {
+				throw new IllegalArgumentException();
+			}
 			genereTacheControleDossier(contribuable, "Fermeture du dernier for secondaire");
 		}
 
@@ -552,7 +553,9 @@ public class TacheServiceImpl implements TacheService {
 
 	private void generateTacheNouveauDossier(Contribuable contribuable) {
 		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
-		Assert.notNull(oid);
+		if (oid == null) {
+			throw new IllegalArgumentException();
+		}
 		final TacheNouveauDossier tacheNouveauDossier = new TacheNouveauDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, oid);
 		tacheDAO.save(tacheNouveauDossier);
 	}
@@ -777,7 +780,9 @@ public class TacheServiceImpl implements TacheService {
 				}
 			}
 			else {
-				Assert.isFalse(questionnaires.isEmpty());
+				if (questionnaires.isEmpty()) {
+					throw new IllegalArgumentException();
+				}
 				QuestionnaireSNC toUpdate = null;
 
 				for (QuestionnaireSNC q : questionnaires) {
@@ -825,7 +830,9 @@ public class TacheServiceImpl implements TacheService {
 				}
 			}
 			else {
-				Assert.isFalse(ps.isEmpty());
+				if (ps.isEmpty()) {
+					throw new IllegalArgumentException();
+				}
 				// s'il y a une intersection entre la déclaration et une période d'imposition, le cas a déjà été traité à partir des périodes d'imposition -> rien d'autre à faire
 			}
 		}
@@ -1215,7 +1222,9 @@ public class TacheServiceImpl implements TacheService {
 				}
 			}
 			else {
-				Assert.isFalse(dis.isEmpty());
+				if (dis.isEmpty()) {
+					throw new IllegalArgumentException();
+				}
 				DeclarationImpotOrdinaire toUpdate = null;
 				PeriodeImposition toAdd = null;
 
@@ -1305,7 +1314,9 @@ public class TacheServiceImpl implements TacheService {
 				}
 			}
 			else {
-				Assert.isFalse(ps.isEmpty());
+				if (ps.isEmpty()) {
+					throw new IllegalArgumentException();
+				}
 				// s'il y a une intersection entre la déclaration et une période d'imposition, le cas a déjà été traité à partir des périodes d'imposition -> rien d'autre à faire
 			}
 		}
@@ -1619,7 +1630,9 @@ public class TacheServiceImpl implements TacheService {
 			}
 		}
 
-		Assert.notNull(collectivite);
+		if (collectivite == null) {
+			throw new IllegalArgumentException();
+		}
 		return collectivite;
 	}
 

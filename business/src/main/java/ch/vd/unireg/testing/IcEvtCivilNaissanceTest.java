@@ -5,11 +5,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -60,7 +59,9 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique tiers = getTiersDAO().getHabitantByNumeroIndividu(noInd);
-				Assert.notNull(tiers, "Pas de Tiers créé");
+				if (tiers == null) {
+					throw new IllegalArgumentException("Pas de Tiers créé");
+				}
 				return null;
 			}
 		});

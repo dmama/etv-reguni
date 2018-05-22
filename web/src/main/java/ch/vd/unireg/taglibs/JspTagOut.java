@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.DayMonthHelper;
 
@@ -204,7 +203,9 @@ public class JspTagOut extends BodyTagSupport {
 
 		@Override
 		public String generate(String id, Class clazz, Object value, HttpServletRequest request) {
-			Assert.isTrue(clazz.isEnum());
+			if (!clazz.isEnum()) {
+				throw new IllegalArgumentException();
+			}
 			return value == null ? "" : value.toString();
 		}
 	}

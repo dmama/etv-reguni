@@ -10,13 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Localite;
-import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.adresse.AdresseAutreTiers;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdresseEtrangere;
@@ -30,6 +23,12 @@ import ch.vd.unireg.adresse.TypeAdresseRepresentant;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
@@ -481,7 +480,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * Recupere le pays
 	 */
 	public Pays getPays(AdresseEtrangere adresseEtrangere) {
-		Assert.notNull(adresseEtrangere);
+		if (adresseEtrangere == null) {
+			throw new IllegalArgumentException();
+		}
 		return getServiceInfrastructureService().getPays(adresseEtrangere.getNumeroOfsPays(), adresseEtrangere.getDateDebut());
 	}
 
@@ -587,7 +588,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	private AdresseDisponibleView createAdresseDisponibleViewFromAddGenerique(AdresseGenerique adresse, Tiers tiers, TypeAdresseRepresentant type) {
 		AdresseDisponibleView addDispoView = new AdresseDisponibleView();
 
-		Assert.isFalse(tiers instanceof MenageCommun);
+		if (tiers instanceof MenageCommun) {
+			throw new IllegalArgumentException();
+		}
 		final RapportEntreTiers rapport = TiersHelper.getRapportSujetOfType(tiers, type.getTypeRapport(), null);
 		final Tiers conseiller = tiersDAO.get(rapport.getObjetId());
 

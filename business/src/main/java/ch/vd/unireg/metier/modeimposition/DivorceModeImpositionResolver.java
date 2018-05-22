@@ -1,7 +1,5 @@
 package ch.vd.unireg.metier.modeimposition;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -30,7 +28,9 @@ public class DivorceModeImpositionResolver extends TerminaisonCoupleModeImpositi
 	@Override
 	public Imposition resolve(Contribuable contribuable, RegDate date, ModeImposition ancienModeImposition, TypeAutoriteFiscale futurTypeAutoriteFiscale, boolean hadForSecondaire) throws ModeImpositionResolverException {
 
-		Assert.isTrue(contribuable instanceof PersonnePhysique);
+		if (!(contribuable instanceof PersonnePhysique)) {
+			throw new IllegalArgumentException();
+		}
 		
 		final PersonnePhysique contribuablePP = (PersonnePhysique) contribuable;
 		final Imposition result = new Imposition();

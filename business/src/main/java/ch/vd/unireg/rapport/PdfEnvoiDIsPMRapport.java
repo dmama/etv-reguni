@@ -7,7 +7,6 @@ import java.util.List;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -24,81 +23,83 @@ public class PdfEnvoiDIsPMRapport extends PdfRapport {
     public void write(final EnvoiDIsPMResults results, final String nom, final String description, final Date dateGeneration,
                           OutputStream os, StatusManager status) throws Exception {
 
-        Assert.notNull(status);
+	    if (status == null) {
+		    throw new IllegalArgumentException();
+	    }
 
-        // Création du document PDF
-        PdfWriter writer = PdfWriter.getInstance(this, os);
-        open();
-        addMetaInfo(nom, description);
-        addEnteteUnireg();
+	    // Création du document PDF
+	    PdfWriter writer = PdfWriter.getInstance(this, os);
+	    open();
+	    addMetaInfo(nom, description);
+	    addEnteteUnireg();
 
-        // Titre
-        addTitrePrincipal("Rapport d'exécution du job d'envoi des DIs PM en masse pour la période fiscale " + results.getPeriodeFiscale());
+	    // Titre
+	    addTitrePrincipal("Rapport d'exécution du job d'envoi des DIs PM en masse pour la période fiscale " + results.getPeriodeFiscale());
 
-        // Paramètres
-        addEntete1("Paramètres");
-        {
-            addTableSimple(2, table -> {
-                table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
-                table.addLigne("Date limite de bouclement :", RegDateHelper.dateToDisplayString(results.getDateLimiteBouclements()));
-                table.addLigne("Type d'envoi :", results.getCategorieEnvoi().name());
-                table.addLigne("Nombre maximum d'envois :", results.getNbMaxEnvois() == null ? "-" : String.valueOf(results.getNbMaxEnvois()));
-	            table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
-                table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-            });
-        }
+	    // Paramètres
+	    addEntete1("Paramètres");
+	    {
+		    addTableSimple(2, table -> {
+			    table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
+			    table.addLigne("Date limite de bouclement :", RegDateHelper.dateToDisplayString(results.getDateLimiteBouclements()));
+			    table.addLigne("Type d'envoi :", results.getCategorieEnvoi().name());
+			    table.addLigne("Nombre maximum d'envois :", results.getNbMaxEnvois() == null ? "-" : String.valueOf(results.getNbMaxEnvois()));
+			    table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
+			    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+		    });
+	    }
 
-        // Résultats
-        addEntete1("Résultats");
-        {
-            if (results.interrompu) {
-                addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-                        + "les valeurs ci-dessous sont donc incomplètes.");
-            }
+	    // Résultats
+	    addEntete1("Résultats");
+	    {
+		    if (results.interrompu) {
+			    addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
+					               + "les valeurs ci-dessous sont donc incomplètes.");
+		    }
 
-            addTableSimple(2, table -> {
-                table.addLigne("Nombre total de contribuables inspectés :", String.valueOf(results.getNbContribuablesVus()));
-                table.addLigne("Nombre de périodes d'imposition traitées :", String.valueOf(results.getEnvoyees().size()));
-                table.addLigne("Nombre de périodes d'imposition ignorées :", String.valueOf(results.getIgnorees().size()));
-                table.addLigne("Nombre de contribuables en erreur :", String.valueOf(results.getErreurs().size()));
-	            table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-                table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-            });
-        }
+		    addTableSimple(2, table -> {
+			    table.addLigne("Nombre total de contribuables inspectés :", String.valueOf(results.getNbContribuablesVus()));
+			    table.addLigne("Nombre de périodes d'imposition traitées :", String.valueOf(results.getEnvoyees().size()));
+			    table.addLigne("Nombre de périodes d'imposition ignorées :", String.valueOf(results.getIgnorees().size()));
+			    table.addLigne("Nombre de contribuables en erreur :", String.valueOf(results.getErreurs().size()));
+			    table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+			    table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
+		    });
+	    }
 
-        // CTBs traités
-        {
-            String filename = "contribuables_traites.csv";
-            String titre = "Liste des contribuables traités";
-	        String listVide = "(aucun contribuable traité)";
-	        try (TemporaryFile contenu = asCsvFileTraites(results.getEnvoyees(), filename, status)) {
-		        addListeDetaillee(writer, titre, listVide, filename, contenu);
-	        }
-        }
+	    // CTBs traités
+	    {
+		    String filename = "contribuables_traites.csv";
+		    String titre = "Liste des contribuables traités";
+		    String listVide = "(aucun contribuable traité)";
+		    try (TemporaryFile contenu = asCsvFileTraites(results.getEnvoyees(), filename, status)) {
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
+	    }
 
-        // CTBs ignorés
-        {
-            String filename = "contribuables_ignores.csv";
-            String titre = "Liste des contribuables ignorés";
-	        String listVide = "(aucun contribuable ignoré)";
-	        try (TemporaryFile contenu = asCsvFileIgnores(results.getIgnorees(), filename, status)) {
-		        addListeDetaillee(writer, titre, listVide, filename, contenu);
-	        }
-        }
+	    // CTBs ignorés
+	    {
+		    String filename = "contribuables_ignores.csv";
+		    String titre = "Liste des contribuables ignorés";
+		    String listVide = "(aucun contribuable ignoré)";
+		    try (TemporaryFile contenu = asCsvFileIgnores(results.getIgnorees(), filename, status)) {
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
+	    }
 
-        // CTBs en erreurs
-        {
-            String filename = "contribuables_en_erreur.csv";
-            String titre = "Liste des contribuables en erreur";
-	        String listVide = "(aucun contribuable en erreur)";
-	        try (TemporaryFile contenu = asCsvFileErreurs(results.getErreurs(), filename, status)) {
-		        addListeDetaillee(writer, titre, listVide, filename, contenu);
-	        }
-        }
+	    // CTBs en erreurs
+	    {
+		    String filename = "contribuables_en_erreur.csv";
+		    String titre = "Liste des contribuables en erreur";
+		    String listVide = "(aucun contribuable en erreur)";
+		    try (TemporaryFile contenu = asCsvFileErreurs(results.getErreurs(), filename, status)) {
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
+	    }
 
-        close();
+	    close();
 
-        status.setMessage("Génération du rapport terminée.");
+	    status.setMessage("Génération du rapport terminée.");
     }
 
     private static TemporaryFile asCsvFileTraites(List<EnvoiDIsPMResults.DiEnvoyee> list, String filename, StatusManager status) {

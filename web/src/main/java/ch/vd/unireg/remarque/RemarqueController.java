@@ -12,11 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.LengthConstants;
-import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
@@ -106,7 +105,9 @@ public class RemarqueController {
 		}
 
 		final Tiers tiers = tiersService.getTiers(tiersId);
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final Remarque remarque = new Remarque();
 		final String t = (texte.length() > LengthConstants.TIERS_REMARQUE ? texte.substring(0, LengthConstants.TIERS_REMARQUE - 1) : texte);

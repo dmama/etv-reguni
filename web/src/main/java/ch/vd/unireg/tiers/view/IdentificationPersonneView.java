@@ -2,7 +2,6 @@ package ch.vd.unireg.tiers.view;
 
 import java.util.Set;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.tiers.IdentificationPersonne;
 import ch.vd.unireg.tiers.PersonnePhysique;
 
@@ -31,7 +30,7 @@ public class IdentificationPersonneView {
 				numRegistreEtranger = ip.getIdentifiant();
 				break;
 			default:
-				Assert.fail("Catégorie d'identifiant inconnu :" + ip.getCategorieIdentifiant());
+				throw new IllegalArgumentException("Catégorie d'identifiant inconnu :" + ip.getCategorieIdentifiant());
 			}
 		}
 	}

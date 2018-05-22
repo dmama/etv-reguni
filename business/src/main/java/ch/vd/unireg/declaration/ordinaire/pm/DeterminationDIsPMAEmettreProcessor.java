@@ -25,7 +25,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -524,7 +523,9 @@ public class DeterminationDIsPMAEmettreProcessor {
 		}
 
 		final CollectiviteAdministrative oid = tiersService.getOfficeImpot(ServiceInfrastructureService.noOIPM);
-		Assert.notNull(oid);
+		if (oid == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création et sauvegarde de la tâche en base
 		final ExerciceCommercial exercice = pi.getExerciceCommercial();

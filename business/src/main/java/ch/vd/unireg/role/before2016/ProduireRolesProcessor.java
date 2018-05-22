@@ -32,15 +32,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -51,6 +44,12 @@ import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
@@ -1255,9 +1254,11 @@ public class ProduireRolesProcessor {
 		else if (a instanceof DiplomateSuisse && a.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
 			typeCtb = TypeContribuable.HORS_SUISSE;
 		}
-		else {
-			Assert.isTrue(a instanceof DiplomateSuisse);
+		else if (a instanceof DiplomateSuisse) {
 			typeCtb = null; // les diplomates suisses non soumis à l'ICC sont ignorés
+		}
+		else {
+			throw new IllegalArgumentException("Type d'assujettissemet inconnu = [" + a + "]");
 		}
 		return typeCtb;
 	}

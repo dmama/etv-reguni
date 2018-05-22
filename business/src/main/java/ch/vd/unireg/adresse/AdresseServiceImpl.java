@@ -21,27 +21,26 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.NpaEtLocalite;
+import ch.vd.unireg.common.RueEtNumero;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
-import ch.vd.unireg.common.DonneesCivilesException;
-import ch.vd.unireg.common.FiscalDateHelper;
-import ch.vd.unireg.common.NpaEtLocalite;
-import ch.vd.unireg.common.RueEtNumero;
-import ch.vd.unireg.common.StatusManager;
-import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -166,7 +165,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 	@Override
 	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final AdresseGenerique adresseDestination = getAdresseFiscale(tiers, type, date, strict);
 		return createAdresseEnvoi(tiers, adresseDestination, type, date);
@@ -174,13 +175,17 @@ public class AdresseServiceImpl implements AdresseService {
 
 	@Override
 	public AdresseEnvoiDetaillee getDummyAdresseEnvoi(Tiers tiers) {
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 		return new AdresseEnvoiDetaillee(tiers, null, null, null, true, localiteInvalideMatcherService);
 	}
 
 	@Override
 	public AdressesEnvoiHisto getAdressesEnvoiHisto(Tiers tiers, boolean strict) throws AdresseException {
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final AdressesFiscalesHisto adressesFiscales = getAdressesFiscalHisto(tiers, strict);
 		if (adressesFiscales == null) {
@@ -798,8 +803,7 @@ public class AdresseServiceImpl implements AdresseService {
 					return FormulePolitesse.MESDAMES;
 				}
 				else {
-					Assert.fail("Il n'est pas possible d'avoir un principal féminin avec un conjoint masculin");
-					return null;
+					throw new IllegalArgumentException("Il n'est pas possible d'avoir un principal féminin avec un conjoint masculin");
 				}
 			}
 		}
@@ -990,7 +994,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param adresse      une adresse générique à partir de laquelle l'adresse d'envoi sera remplie
 	 */
 	private void fillAdresseEnvoi(AdresseEnvoiDetaillee adresseEnvoi, final AdresseGenerique adresse) {
-		Assert.notNull(adresse, "Une adresse doit être spécifiée.");
+		if (adresse == null) {
+			throw new IllegalArgumentException("Une adresse doit être spécifiée.");
+		}
 
 		final String complement = adresse.getComplement();
 		if (notEmpty(complement)) {
@@ -1815,7 +1821,9 @@ public class AdresseServiceImpl implements AdresseService {
 		if (numero != null) {
 			ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectiviteCivil;
 			collectiviteCivil = serviceInfra.getCollectivite(numero);
-			Assert.notNull(collectiviteCivil);
+			if (collectiviteCivil == null) {
+				throw new IllegalArgumentException();
+			}
 
 			adresses.principale = collectiviteCivil.getAdresse();
 			adresses.courrier = adresses.principale;
@@ -1829,7 +1837,9 @@ public class AdresseServiceImpl implements AdresseService {
 		AdressesCivilesHisto adresses = new AdressesCivilesHisto();
 
 		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectiviteCivil = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
-		Assert.notNull(collectiviteCivil);
+		if (collectiviteCivil == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final Adresse adresse = collectiviteCivil.getAdresse();
 		if (adresse != null) {
@@ -1905,7 +1915,7 @@ public class AdresseServiceImpl implements AdresseService {
 			//                  donc il ne faut pas prendre le tiers passé en paramètre comme habitant, mais bien le tiers attaché à l'adresse surchargée
 			final PersonnePhysique habitant = (PersonnePhysique) a.getTiers();
 			final AdressesCiviles adressesCiviles = getAdressesCiviles(habitant, adresseSurchargee.getDateDebut(), strict);
-			final Adresse adresseCivile = adressesCiviles == null ? null :adressesCiviles.ofType(type);
+			final Adresse adresseCivile = adressesCiviles == null ? null : adressesCiviles.ofType(type);
 			if (adresseCivile == null) {
 				// il n'y a pas d'adresse civile du type et à la date spécifiée : problème.
 				if (adresseSurchargee.isAnnule()) {
@@ -1915,10 +1925,10 @@ public class AdresseServiceImpl implements AdresseService {
 				}
 				else {
 					throw new AdressesResolutionException("Il n'existe pas d'adresse civile " + type +
-							" sur l'habitant/l'individu n°" + habitant.getNumero() +
-							"/" + habitant.getNumeroIndividu() +
-							" le " + RegDateHelper.dateToDisplayString(adresseSurchargee.getDateDebut()) +
-							" alors qu'une adresse surchargée est pointée dessus.");
+							                                      " sur l'habitant/l'individu n°" + habitant.getNumero() +
+							                                      "/" + habitant.getNumeroIndividu() +
+							                                      " le " + RegDateHelper.dateToDisplayString(adresseSurchargee.getDateDebut()) +
+							                                      " alors qu'une adresse surchargée est pointée dessus.");
 				}
 			}
 			else {
@@ -1939,7 +1949,9 @@ public class AdresseServiceImpl implements AdresseService {
 			final Long id = a.getAutreTiersId();
 			final Tiers autreTiers = tiersDAO.get(id, true);
 			final TypeAdresseFiscale type = TypeAdresseFiscale.fromCore(a.getType());
-			Assert.notNull(autreTiers);
+			if (autreTiers == null) {
+				throw new IllegalArgumentException();
+			}
 
 			try {
 				final int nextDepth = oneLevelDeeper(callDepth, tiers, autreTiers, adresseSurchargee);
@@ -1966,7 +1978,9 @@ public class AdresseServiceImpl implements AdresseService {
 			throw new NotImplementedException("Type d'adresse [" + adresseSurchargee.getClass().getSimpleName() + "] inconnu");
 		}
 
-		Assert.notNull(surcharge);
+		if (surcharge == null) {
+			throw new IllegalArgumentException();
+		}
 		return surcharge;
 	}
 
@@ -2090,7 +2104,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final TypeAdresseTiers usage = adresse.getUsage();
 		final Tiers tiers = adresse.getTiers();
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// On rouvre l'adresse fiscale précédente, si elle existe *et* qu'elle est accolée à l'adresse annulée
 		final AdresseTiers adressePrecedente = tiers.getAdresseTiersAt(-2, usage); // = avant-dernière adresse tiers

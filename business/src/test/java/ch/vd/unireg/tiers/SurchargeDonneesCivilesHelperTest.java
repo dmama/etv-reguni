@@ -1,18 +1,22 @@
 package ch.vd.unireg.tiers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Raphaël Marmier, 2016-04-22, <raphael.marmier@vd.ch>
@@ -30,11 +34,11 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 
 		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 
-		Assert.isTrue(entites.size() == 1);
-		Assert.isTrue(entites.get(0).isAnnule());
-		Assert.isTrue(aSauver.size() == 1);
-		Assert.isEqual(date(2016, 4, 1), aSauver.iterator().next().getDateDebut());
-		Assert.isEqual(date(2016, 4, 7), aSauver.iterator().next().getDateFin());
+		assertEquals(1, entites.size());
+		assertTrue(entites.get(0).isAnnule());
+		assertEquals(1, aSauver.size());
+		assertEquals(date(2016, 4, 1), aSauver.iterator().next().getDateDebut());
+		assertEquals(date(2016, 4, 7), aSauver.iterator().next().getDateFin());
 	}
 
 	/**
@@ -48,11 +52,11 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 
 		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 
-		Assert.isTrue(entites.size() == 1);
-		Assert.isTrue(entites.get(0).isAnnule());
-		Assert.isEqual(date(2016, 4, 9), entites.get(0).getDateDebut());
-		Assert.isEqual(date(2016, 4, 10), entites.get(0).getDateFin());
-		Assert.isTrue(aSauver.isEmpty());
+		assertEquals(1, entites.size());
+		assertTrue(entites.get(0).isAnnule());
+		assertEquals(date(2016, 4, 9), entites.get(0).getDateDebut());
+		assertEquals(date(2016, 4, 10), entites.get(0).getDateFin());
+		assertTrue(aSauver.isEmpty());
 	}
 
 	/**
@@ -62,12 +66,12 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 	public void testTronqueVide() throws Exception {
 		final DateRangeHelper.Range range = new DateRangeHelper.Range(date(2016, 4, 8), date(2016, 4, 10));
 		final RegDate dateValeur = date(2016, 4, 11);
-		final List<DomicileEtablissement> entites =  Collections.emptyList();
+		final List<DomicileEtablissement> entites = Collections.emptyList();
 
 		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 
-		Assert.isTrue(entites.isEmpty());
-		Assert.isTrue(aSauver.isEmpty());
+		assertTrue(entites.isEmpty());
+		assertTrue(aSauver.isEmpty());
 	}
 
 	/**
@@ -85,17 +89,17 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 
 		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 
-		Assert.isTrue(entites.size() == 2);
-		Assert.isEqual(date(2016, 4, 1), domicile1.getDateDebut());
-		Assert.isEqual(date(2016, 4, 8), domicile1.getDateFin());
-		Assert.isEqual(date(2016, 4, 9), domicile2.getDateDebut());
-		Assert.isEqual(date(2016, 4, 10), domicile2.getDateFin());
+		assertEquals(2, entites.size());
+		assertEquals(date(2016, 4, 1), domicile1.getDateDebut());
+		assertEquals(date(2016, 4, 8), domicile1.getDateFin());
+		assertEquals(date(2016, 4, 9), domicile2.getDateDebut());
+		assertEquals(date(2016, 4, 10), domicile2.getDateFin());
 
-		Assert.isTrue(aSauver.size() == 1);
-		Assert.isEqual(date(2016, 4, 1), aSauver.iterator().next().getDateDebut());
-		Assert.isEqual(date(2016, 4, 7), aSauver.iterator().next().getDateFin());
-		Assert.isTrue(domicile1.isAnnule());
-		Assert.isTrue(domicile2.isAnnule());
+		assertEquals(1, aSauver.size());
+		assertEquals(date(2016, 4, 1), aSauver.iterator().next().getDateDebut());
+		assertEquals(date(2016, 4, 7), aSauver.iterator().next().getDateFin());
+		assertTrue(domicile1.isAnnule());
+		assertTrue(domicile2.isAnnule());
 	}
 
 	/**
@@ -114,12 +118,12 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 		try {
 			 SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 		} catch (TiersException e) {
-			Assert.isEqual(
+			assertEquals(
 					String.format("Impossible d'appliquer les données civiles car une surcharge fiscale de domicile est présente en date du %s.",
 					              RegDateHelper.dateToDisplayString(dateValeur)), e.getMessage());
-			Assert.isTrue(entites.size() == 2);
-			Assert.isFalse(domicile1.isAnnule());
-			Assert.isFalse(domicile2.isAnnule());
+			assertEquals(2, entites.size());
+			assertFalse(domicile1.isAnnule());
+			assertFalse(domicile2.isAnnule());
 			return;
 		}
 		Assert.fail("La période dépasse la date de valeur, mais pas d'exception remontée comme ca devrait être le cas.");

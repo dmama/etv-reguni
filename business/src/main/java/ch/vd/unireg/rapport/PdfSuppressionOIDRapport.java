@@ -6,7 +6,6 @@ import java.util.Date;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.oid.SuppressionOIDResults;
@@ -15,7 +14,9 @@ public class PdfSuppressionOIDRapport extends PdfRapport {
 
 	public void write(final SuppressionOIDResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);

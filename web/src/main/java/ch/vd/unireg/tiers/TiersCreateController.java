@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -528,7 +527,9 @@ public class TiersCreateController {
 		for (ForFiscalSecondaire forACreer : ajustementForsSecondaires.getACreer()) {
 			final Commune commune = infraService.getCommuneByNumeroOfs(forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getDateDebut());
 			if (!commune.isPrincipale()) {
-				Assert.notNull(forACreer.getMotifOuverture(), "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton");
+				if (forACreer.getMotifOuverture() == null) {
+					throw new IllegalArgumentException("Le motif d'ouverture est obligatoire sur un for secondaire dans le canton");
+				}
 				tiersService.addForSecondaire(entreprise, forACreer.getDateDebut(), forACreer.getDateFin(), forACreer.getMotifRattachement(), forACreer.getNumeroOfsAutoriteFiscale(),
 				                              forACreer.getTypeAutoriteFiscale(),
 				                              forACreer.getMotifOuverture(), forACreer.getMotifFermeture(), GenreImpot.BENEFICE_CAPITAL);

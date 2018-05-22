@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.ReflexionUtils;
 import ch.vd.unireg.hibernate.meta.MetaEntity;
@@ -137,18 +136,24 @@ public class AddSubEntity extends Delta {
 					}
 				}
 			}
-			Assert.notNull(idProp);
+			if (idProp == null) {
+				throw new IllegalArgumentException();
+			}
 
 			// Crée la nouvelle entité
 			final HibernateEntity subEntity = context.newEntity(subKey, subClass);
-			Assert.notNull(subEntity);
+			if (subEntity == null) {
+				throw new IllegalArgumentException();
+			}
 
 			// recupération de tous les descripteurs des propriétés
 			final Map<String, PropertyDescriptor> descriptors = ReflexionUtils.getPropertyDescriptors(subClass);
 
 			// Renseigne l'id
 			final PropertyDescriptor idDescr = descriptors.get(idProp);
-			Assert.notNull(idDescr);
+			if (idDescr == null) {
+				throw new IllegalArgumentException();
+			}
 			final Method idSetter = idDescr.getWriteMethod();
 			idSetter.invoke(subEntity, id);
 
@@ -156,7 +161,9 @@ public class AddSubEntity extends Delta {
 			if (parentProp != null) {
 				// on renseigne le parent
 				final PropertyDescriptor parentDescr = descriptors.get(parentProp.getName());
-				Assert.notNull(parentDescr);
+				if (parentDescr == null) {
+					throw new IllegalArgumentException();
+				}
 				final Method parentSetter = parentDescr.getWriteMethod();
 				parentSetter.invoke(subEntity, entity);
 			}
@@ -176,7 +183,9 @@ public class AddSubEntity extends Delta {
 				for (Property keyProp : foreignKeyProps) {
 					if (isSettableWith(keyProp, entity)) {
 						final PropertyDescriptor parentDescr = descriptors.get(keyProp.getName());
-						Assert.notNull(parentDescr);
+						if (parentDescr == null) {
+							throw new IllegalArgumentException();
+						}
 						final Method parentSetter = parentDescr.getWriteMethod();
 						parentSetter.invoke(subEntity, entity);
 					}

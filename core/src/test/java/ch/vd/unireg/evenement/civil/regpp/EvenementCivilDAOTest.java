@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import ch.vd.unireg.common.CoreDAOTest;
 import ch.vd.unireg.common.pagination.ParamPagination;
@@ -15,6 +14,7 @@ import ch.vd.unireg.type.TypeEvenementCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc", "unchecked"})
 public class EvenementCivilDAOTest extends CoreDAOTest {
@@ -71,7 +71,7 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 		assertEquals(1, list.size());
 		for (Long id : list) {
 			final EvenementCivilRegPP evt = dao.get(id);
-			Assert.isTrue( !evt.getEtat().isTraite(), "un évenement traité a été récupéré");
+			assertTrue("un évenement traité a été récupéré", !evt.getEtat().isTraite());
 		}
 	}
 

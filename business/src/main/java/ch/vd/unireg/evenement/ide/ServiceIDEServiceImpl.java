@@ -11,7 +11,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
@@ -181,7 +180,9 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	}
 
 	private ProtoAnnonceIDE evalueSynchronisationIDE(Entreprise entreprise, RegDate date) throws ServiceIDEException {
-		Assert.notNull(entreprise, "Impossible de synchroniser l'IDE sans une entreprise!");
+		if (entreprise == null) {
+			throw new IllegalArgumentException("Impossible de synchroniser l'IDE sans une entreprise!");
+		}
 
 		Audit.info(String.format("Evaluation de l'entreprise n°%s dont les données civiles pertinentes ont changé.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 
@@ -201,7 +202,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 		if (etablissement == null) {
 			final String message = String.format("Aucun établissement trouvé pour l'entreprise n°%s en date d'aujourd'hui (%s)!",
-			                                    FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), RegDateHelper.dateToDisplayString(date));
+			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), RegDateHelper.dateToDisplayString(date));
 			Audit.error(message);
 			throw new ServiceIDEException(message);
 		}
@@ -330,7 +331,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				switch (statusRegistreIDE) {
 				case AUTRE:
 					final String messageAutre = String.format("L'entreprise n°%s a un statut inattendu au registre IDE: %s", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-					                                    statusRegistreIDE.toString());
+					                                          statusRegistreIDE.toString());
 					Audit.error(messageAutre);
 					throw new ServiceIDEException(messageAutre);
 				case EN_MUTATION:
@@ -350,7 +351,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					break;
 				case DEFINITIVEMENT_RADIE:
 					final String messageDefRadie = String.format("L'entreprise n°%s est définitivement radiée du registre IDE et ne peut plus être modifiée.",
-					                                    FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
+					                                             FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
 					Audit.error(messageDefRadie);
 					throw new ServiceIDEException(messageDefRadie);
 				default:
@@ -504,7 +505,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		                         infraService.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date).getNomOfficielAvecCanton(),
 		                         formeLegale.getLibelle(),
 		                         actifAuRC ? " active au RC" : "non active au RC"
-		)
+		           )
 		);
 
 		return protoActuel;

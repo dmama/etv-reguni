@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.adresse.HistoriqueCommune;
 import ch.vd.unireg.audit.Audit;
@@ -710,16 +709,18 @@ public class ArriveePrincipale extends Arrivee {
 	 */
 	private void createOrUpdateForFiscalPrincipalOnCouple(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		Assert.notNull(menageCommun);
+		if (menageCommun == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final EnsembleTiersCouple ensemble = getService().getEnsembleTiersCouple(menageCommun, getDate());
 		//SIFISC-6065
 		//Cause de cet effet de bord: aucun composant du ménage trouvé à cette date
 		if (ensemble.getPrincipal() == null && ensemble.getConjoint() == null) {
 			throw new EvenementCivilException(String.format("L'arrivant(e) [%s] a un état civil marié ou pacsé à la date de l'évènement ainsi qu'un ménage commun. Cependant, aucun lien d'appartenance ménage n'a " +
-					"été trouvé pour cette date: [%s]. Vérifier si il n'y a pas une incohérence entre les dates civiles et fiscales",
-					FormatNumeroHelper.numeroCTBToDisplay(arrivant.getNumero()),
-					RegDateHelper.dateToDashString(getDate())));
+					                                                "été trouvé pour cette date: [%s]. Vérifier si il n'y a pas une incohérence entre les dates civiles et fiscales",
+			                                                FormatNumeroHelper.numeroCTBToDisplay(arrivant.getNumero()),
+			                                                RegDateHelper.dateToDashString(getDate())));
 		}
 
 		final Pair<Commune, RegDate> infosFor = getCommuneForSuiteArriveeCouple(arrivant, ensemble);
@@ -742,13 +743,13 @@ public class ArriveePrincipale extends Arrivee {
 		// pour un couple, le for principal est toujours sur le ménage commun
 		if (ffpHabitantPrincipal != null) {
 			throw new EvenementCivilException(String.format("Le contribuable principal [%s] du ménage [%s] possède un for fiscal principal individuel",
-					FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()),
-					FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
+			                                                FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()),
+			                                                FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
 		}
 		if (ffpHabitantConjoint != null) {
 			throw new EvenementCivilException(String.format("Le conjoint [%s] du ménage [%s] possède un for fiscal principal individuel",
-					FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()),
-					FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
+			                                                FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()),
+			                                                FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
 		}
 
 		MotifFor motifOuverture = getMotifOuvertureFor();
@@ -790,7 +791,8 @@ public class ArriveePrincipale extends Arrivee {
 			}
 			else if (determination.getRattrapageDepartHSInconnu() != null) {
 				Audit.info(getNumeroEvenement(), "Rattrapage d'un ancien départ HS pour pays inconnu");
-				openForFiscalPrincipalAvecRattrapage(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, determination.getModeImposition(), determination.getRattrapageDepartHSInconnu());
+				openForFiscalPrincipalAvecRattrapage(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, determination.getModeImposition(),
+				                                     determination.getRattrapageDepartHSInconnu());
 			}
 			else {
 				Audit.info(getNumeroEvenement(), "Mise-à-jour de la commune du for fiscal principal sur le ménage commun avec mode d'imposition [" + determination.getModeImposition() + ']');

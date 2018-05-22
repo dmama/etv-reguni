@@ -20,12 +20,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.norentes.annotation.EtapeAttribute;
 import ch.vd.unireg.norentes.common.NorentesContext.EtapeContext;
 import ch.vd.unireg.type.TypeEvenementCivil;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, DisposableBean, ApplicationContextAware {
 
@@ -49,8 +52,8 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 
 	@Override
 	public void register(NorentesScenario scenario) {
-		Assert.notNull(scenario);
-		Assert.notNull(scenario.geTypeEvenementCivil());
+		assertNotNull(scenario);
+		assertNotNull(scenario.geTypeEvenementCivil());
 		scenariosBeanNames.add(scenario.getBeanName());
 		if (!evenementCivils.contains(scenario.geTypeEvenementCivil())) {
 			evenementCivils.add(scenario.geTypeEvenementCivil());
@@ -102,7 +105,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		Assert.isNull(this.getContext());
+		assertNull(this.getContext());
 		if (currentScenario != null)
 			setContext(new NorentesContext(currentScenario));
 	}
@@ -130,8 +133,8 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 	public void runToStep(NorentesScenario scenario, int step)  {
 		setCurrentScenario(scenario);
 		NorentesContext norentesContext = getContext();
-		Assert.notNull(norentesContext);
-		Assert.isTrue(step <= norentesContext.getCountEtape());
+		assertNotNull(norentesContext);
+		assertTrue(step <= norentesContext.getCountEtape());
 		int currentEtape = norentesContext.getCurrentEtape();
 
 		// On recommence le run a zero
@@ -150,7 +153,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 
 	@Override
 	public void runFirst(NorentesScenario scenario) {
-		Assert.isTrue(!scenario.getEtapeAttributes().isEmpty());
+		assertTrue(!scenario.getEtapeAttributes().isEmpty());
 		runToStep(scenario, scenario.getEtapeAttributes().iterator().next().getIndex());
 	}
 

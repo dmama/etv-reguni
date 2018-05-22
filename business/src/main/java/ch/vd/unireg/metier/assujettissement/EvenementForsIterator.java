@@ -9,7 +9,6 @@ import java.util.Set;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
@@ -187,7 +186,9 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 		for (ForFiscal f : fors) {
 			if (f.isValidAt(dateEvent)) {
 				if (f instanceof ForFiscalPrincipal) {
-					Assert.isNull(principalActif);
+					if (principalActif != null) {
+						throw new IllegalArgumentException();
+					}
 					principalActif = (ForFiscalPrincipal) f;
 				}
 				else {
@@ -216,7 +217,9 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 		for (ForFiscal ff : fors) {
 			if (ff.getDateFin() == dateEvent) {
 				if (ff instanceof ForFiscalPrincipal) {
-					Assert.isNull(principalFerme);
+					if (principalFerme != null) {
+						throw new IllegalArgumentException();
+					}
 					principalFerme = (ForFiscalPrincipal) ff;
 				}
 				else {
@@ -239,7 +242,9 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 		for (ForFiscal ff : fors) {
 			if (ff.getDateDebut() == dateEvent) {
 				if (ff instanceof ForFiscalPrincipal) {
-					Assert.isNull(principal);
+					if (principal != null) {
+						throw new IllegalArgumentException();
+					}
 					principal = (ForFiscalPrincipal) ff;
 				}
 				else {

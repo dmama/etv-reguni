@@ -49,7 +49,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.data.DataEventService;
@@ -134,13 +133,15 @@ public class DatabaseServiceImpl implements DatabaseService {
 // msi/jde : on n'a pas besoin de mettre-à-jour la séquence parce qu'elle est associée avec le FillHoleGenerator qui fonctionne différemment
 //	         (en particulier elle est ré-initialisée dès qu'elle touche la limite supérieure)
 //        final long maxIdS_CTB = getMaxIdOfTiers("'Habitant','NonHabitant','MenageCommun'");
-//        Assert.isTrue(Contribuable.CTB_GEN_FIRST_ID <= maxIdS_CTB && maxIdS_CTB < Contribuable.CTB_GEN_LAST_ID);
+//        Assert. isTrue(Contribuable.CTB_GEN_FIRST_ID <= maxIdS_CTB && maxIdS_CTB < Contribuable.CTB_GEN_LAST_ID);
 //        updateSequence("S_CTB", maxIdS_CTB);
 	}
 
 	private static void assertMaxId(String sequence, long min, long max, long id) {
-		Assert.isTrue(id < max, String.format("Séquence %s: l'ID maximum trouvé %d est en dehors de la plage de validité %d -> %d",
-				sequence, id, min, max));
+		if (id >= max) {
+			throw new IllegalArgumentException(String.format("Séquence %s: l'ID maximum trouvé %d est en dehors de la plage de validité %d -> %d",
+			                                                 sequence, id, min, max));
+		}
 	}
 
 	private void updateSequence(String sequenceName, long maxId) {
@@ -165,7 +166,9 @@ public class DatabaseServiceImpl implements DatabaseService {
 				// on demande le prochain id pour mettre-à-jour la séquence
 				String select = "select " + sequenceName + ".nextval from dual";
 				long id = template.queryForObject(select, Long.class);
-				Assert.isTrue(id > maxId);
+				if (id <= maxId) {
+					throw new IllegalArgumentException();
+				}
 
 				// on reset l'incrément à 1
 				alter = "alter sequence " + sequenceName + " increment by 1";
@@ -180,7 +183,9 @@ public class DatabaseServiceImpl implements DatabaseService {
 		}
 
 		long newId = template.queryForObject(sql, Long.class);
-		Assert.isTrue(newId > maxId);
+		if (newId <= maxId); {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**

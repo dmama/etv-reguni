@@ -11,13 +11,12 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.common.AutoCloseableContainer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.role.before2016.InfoContribuable;
 import ch.vd.unireg.role.before2016.InfoContribuablePP;
@@ -34,7 +33,9 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 
 	public void write(final ProduireRolesOIDsResults[] results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		status.setMessage("Génération du rapport...");
 
@@ -54,11 +55,11 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 			// Paramètres
 			addEntete1("Paramètres");
 			{
-			    addTableSimple(2, table -> {
-			        table.addLigne("Année fiscale :", String.valueOf(results[0].annee));
-			        table.addLigne("Nombre de threads :", String.valueOf(results[0].nbThreads));
-			        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results[0].dateTraitement));
-			    });
+				addTableSimple(2, table -> {
+					table.addLigne("Année fiscale :", String.valueOf(results[0].annee));
+					table.addLigne("Nombre de threads :", String.valueOf(results[0].nbThreads));
+					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results[0].dateTraitement));
+				});
 			}
 
 			// Résultats
@@ -66,21 +67,21 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 			{
 				if (status.isInterrupted()) {
 					addWarning("Attention ! Le job a été interrompu par l'utilisateur,\nles valeurs ci-dessous sont donc incomplètes.");
-			    }
+				}
 
 				final int nbOidTraites = results.length;
 
-			    addTableSimple(2, table -> {
+				addTableSimple(2, table -> {
 
-				    long dureeTotale = 0;
-				    for (ProduireRolesOIDsResults part : results) {
-					    dureeTotale += getDureeExecution(part);
-				    }
+					long dureeTotale = 0;
+					for (ProduireRolesOIDsResults part : results) {
+						dureeTotale += getDureeExecution(part);
+					}
 
-		            table.addLigne("Nombre d'offices traités:", String.valueOf(nbOidTraites));
-				    table.addLigne("Durée d'exécution du job:", formatDureeExecution(dureeTotale));
-			        table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-			    });
+					table.addLigne("Nombre d'offices traités:", String.valueOf(nbOidTraites));
+					table.addLigne("Durée d'exécution du job:", formatDureeExecution(dureeTotale));
+					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
+				});
 			}
 
 			writeTousOid(results, dateGeneration, status, writer);

@@ -24,7 +24,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
@@ -1393,7 +1392,9 @@ public class MetierServiceImpl implements MetierService {
 				}
 			}
 		}
-		Assert.notNull(dernierRapportMenage, "Le dernier ménage n'a pas été trouvé");
+		if (dernierRapportMenage == null) {
+			throw new IllegalArgumentException("Le dernier ménage n'a pas été trouvé");
+		}
 		MenageCommun menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
 		EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
 		if (!ensembleTiersCouple.estComposeDe(principal, conjoint)) {
@@ -1426,7 +1427,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réunification du couple
 		 */
-		return doMariageReconciliation(menageCommun, date, remarque, mariesOuPacses(menageCommun) , numeroEvenement);
+		return doMariageReconciliation(menageCommun, date, remarque, mariesOuPacses(menageCommun), numeroEvenement);
 	}
 
 	@Override
@@ -1439,7 +1440,9 @@ public class MetierServiceImpl implements MetierService {
 	 */
 	@Override
 	public boolean isMajeurAt(PersonnePhysique pp, RegDate dateReference) {
-		Assert.notNull(dateReference);
+		if (dateReference == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final RegDate dateNaissance = tiersService.getDateNaissance(pp);
 		if (dateNaissance == null) {
@@ -1650,7 +1653,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 		// vérification que d'autres opérations n'aient été faites aprés le décès
 		if (NullDateBehavior.EARLIEST.compare(dernierRapportMenage.getDateFin(), date) > 0) {
-			Assert.fail("La date du dernier rapport entre tiers est postérieure à celle de l'événement");
+			throw new IllegalArgumentException("La date du dernier rapport entre tiers est postérieure à celle de l'événement");
 		}
 
 		final PersonnePhysique principal;
@@ -2179,7 +2182,7 @@ public class MetierServiceImpl implements MetierService {
 		if (dernierRapportMenage != null) {
 			// vérification que d'autres opérations n'aient été faites aprés le décès
 			if (NullDateBehavior.EARLIEST.compare(dernierRapportMenage.getDateFin(), date) > 0) {
-				Assert.fail("La date du dernier rapport entre tiers est postérieure à celle de l'événement");
+				throw new IllegalArgumentException("La date du dernier rapport entre tiers est postérieure à celle de l'événement");
 			}
 
 			// récuperer le ménage que si celui-ci est valide au moment du décès
@@ -2605,8 +2608,12 @@ public class MetierServiceImpl implements MetierService {
 		 * Recherche du dernier ménage
 		 */
 		final RapportEntreTiers dernierRapportMenage = tiers.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-		Assert.notNull(dernierRapportMenage, "Le dernier ménage n'a pas été trouvé");
-		Assert.isEqual(dernierRapportMenage.getDateFin(), date, "La date du dernier rapport entre tiers n'est pas la même que celle de l'événement");
+		if (dernierRapportMenage == null) {
+			throw new IllegalArgumentException("Le dernier ménage n'a pas été trouvé");
+		}
+		if (dernierRapportMenage.getDateFin() != date) {
+			throw new IllegalArgumentException("La date du dernier rapport entre tiers n'est pas la même que celle de l'événement");
+		}
 		final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
 		final EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
 		if (!ensembleTiersCouple.contient(tiers)) {

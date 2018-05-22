@@ -27,7 +27,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -154,7 +153,9 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 		});
 
 		final CollectiviteAdministrative oipm = tiersService.getOfficeImpot(ServiceInfrastructureService.noOIPM);
-		Assert.notNull(oipm);
+		if (oipm == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Traitement de tous les contribuables un par un
 		for (Entreprise ctb : list) {

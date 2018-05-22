@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
@@ -15,14 +17,14 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.unireg.type.EtatEvenementOrganisation;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementOrganisation;
 
 import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Raphaël Marmier, 2016-12-19, <raphael.marmier@vd.ch>
@@ -42,9 +44,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, date(2016, 12, 4), A_TRAITER);
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isTrue(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertTrue(informationDeDateEtDeCreation.isCreation());
 		}
 
 		/*
@@ -56,9 +58,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isTrue(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertTrue(informationDeDateEtDeCreation.isCreation());
 		}
 	}
 
@@ -77,9 +79,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isTrue(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertTrue(informationDeDateEtDeCreation.isCreation());
 		}
 
 		/*
@@ -92,9 +94,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isTrue(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 12, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertTrue(informationDeDateEtDeCreation.isCreation());
 		}
 
 	}
@@ -114,9 +116,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 12, 4), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 12, 4), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isTrue(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 12, 4), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 12, 4), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertTrue(informationDeDateEtDeCreation.isCreation());
 		}
 
 		/*
@@ -129,9 +131,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 12, 4), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 12, 4), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isTrue(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 12, 4), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 12, 4), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertTrue(informationDeDateEtDeCreation.isCreation());
 		}
 	}
 
@@ -154,9 +156,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isFalse(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertFalse(informationDeDateEtDeCreation.isCreation());
 		}
 
 		/*
@@ -169,9 +171,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			// Note: dans la pratique, ces dates ne sont pas utilisée lors l'ajout en base Unireg d'une tiers PM HC suite à la création d'un établissement secondaire VD. La date de l'événement est utilisée.
-			Assert.isEqual(date(2010, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2010, 12, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isFalse(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2010, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2010, 12, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertFalse(informationDeDateEtDeCreation.isCreation());
 		}
 	}
 
@@ -194,9 +196,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isFalse(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertFalse(informationDeDateEtDeCreation.isCreation());
 		}
 
 		/*
@@ -209,9 +211,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			// Note: dans la pratique, ces dates ne sont pas utilisée lors l'ajout en base Unireg d'une tiers PM HC suite à la création d'un établissement secondaire VD. La date de l'événement est utilisée.
-			Assert.isEqual(date(2010, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2010, 12, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isFalse(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2010, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2010, 12, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertFalse(informationDeDateEtDeCreation.isCreation());
 		}
 	}
 
@@ -234,9 +236,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
-			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isFalse(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertFalse(informationDeDateEtDeCreation.isCreation());
 		}
 
 		/*
@@ -249,9 +251,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			// Note: dans la pratique, ces dates ne sont pas utilisée lors l'ajout en base Unireg d'une tiers PM HC suite à la création d'un établissement secondaire VD. La date de l'événement est utilisée.
-			Assert.isEqual(date(2016, 10, 1), informationDeDateEtDeCreation.getDateDeCreation());
-			Assert.isEqual(date(2016, 10, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
-			Assert.isFalse(informationDeDateEtDeCreation.isCreation());
+			assertEquals(date(2016, 10, 1), informationDeDateEtDeCreation.getDateDeCreation());
+			assertEquals(date(2016, 10, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
+			assertFalse(informationDeDateEtDeCreation.isCreation());
 		}
 	}
 

@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.common.StatusManager;
@@ -21,68 +20,70 @@ public class PdfListesNominativesRapport extends PdfRapport{
 
 	public void write(final ListesNominativesResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-	    Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
-	    // Création du document PDF
-	    PdfWriter writer = PdfWriter.getInstance(this, os);
-	    open();
-	    addMetaInfo(nom, description);
-	    addEnteteUnireg();
+		// Création du document PDF
+		PdfWriter writer = PdfWriter.getInstance(this, os);
+		open();
+		addMetaInfo(nom, description);
+		addEnteteUnireg();
 
-	    // Titre
-	    addTitrePrincipal("Rapport de génération des listes nominatives");
+		// Titre
+		addTitrePrincipal("Rapport de génération des listes nominatives");
 
-	    // Paramètres
-	    addEntete1("Paramètre");
-	    {
-	        addTableSimple(2, table -> {
-		        table.addLigne("Type d'adresses :", String.valueOf(results.getTypeAdressesIncluses().getDescription()));
-			    table.addLigne("Inclure les personnes physiques / ménages :", String.valueOf(results.isAvecContribuablesPP()));
-			    table.addLigne("Inclure les personnes morales :", String.valueOf(results.isAvecContribuablesPM()));
-			    table.addLigne("Inclure les débiteurs de prestations imposables :", String.valueOf(results.isAvecDebiteurs()));
-			    table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
-	        });
-	    }
+		// Paramètres
+		addEntete1("Paramètre");
+		{
+			addTableSimple(2, table -> {
+				table.addLigne("Type d'adresses :", String.valueOf(results.getTypeAdressesIncluses().getDescription()));
+				table.addLigne("Inclure les personnes physiques / ménages :", String.valueOf(results.isAvecContribuablesPP()));
+				table.addLigne("Inclure les personnes morales :", String.valueOf(results.isAvecContribuablesPM()));
+				table.addLigne("Inclure les débiteurs de prestations imposables :", String.valueOf(results.isAvecDebiteurs()));
+				table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
+			});
+		}
 
-	    // Résultats
-	    addEntete1("Résultats");
-	    {
-	        if (results.isInterrompu()) {
-	            addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-	                    + "les valeurs ci-dessous sont donc incomplètes.");
-	        }
+		// Résultats
+		addEntete1("Résultats");
+		{
+			if (results.isInterrompu()) {
+				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
+						           + "les valeurs ci-dessous sont donc incomplètes.");
+			}
 
-	        addTableSimple(2, table -> {
-	            table.addLigne("Nombre total de tiers listés :", String.valueOf(results.getNombreTiersTraites()));
-	            table.addLigne("Dont tiers en erreur :", String.valueOf(results.getListeErreurs().size()));
-		        table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-	            table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-	        });
-	    }
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de tiers listés :", String.valueOf(results.getNombreTiersTraites()));
+				table.addLigne("Dont tiers en erreur :", String.valueOf(results.getListeErreurs().size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
+			});
+		}
 
-	    // Contribuables ok
-	    {
-	        final String filename = "tiers.csv";
-	        final String titre = "Liste des tiers";
-		    final String listVide = "(aucun)";
-		    try (TemporaryFile contenu = genererListesNominatives(results, filename, status)) {
-			    addListeDetaillee(writer, titre, listVide, filename, contenu);
-		    }
-	    }
+		// Contribuables ok
+		{
+			final String filename = "tiers.csv";
+			final String titre = "Liste des tiers";
+			final String listVide = "(aucun)";
+			try (TemporaryFile contenu = genererListesNominatives(results, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+		}
 
-	    // Contribuables en erreurs
-	    {
-	        final String filename = "tiers_en_erreur.csv";
-	        final String titre = "Liste des tiers en erreur";
-		    final String listVide = "(aucun)";
-		    try (TemporaryFile contenu = genererErreursListesNominatives(results, filename, status)) {
-			    addListeDetaillee(writer, titre, listVide, filename, contenu);
-		    }
-	    }
+		// Contribuables en erreurs
+		{
+			final String filename = "tiers_en_erreur.csv";
+			final String titre = "Liste des tiers en erreur";
+			final String listVide = "(aucun)";
+			try (TemporaryFile contenu = genererErreursListesNominatives(results, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+		}
 
-	    close();
+		close();
 
-	    status.setMessage("Génération du rapport terminée.");
+		status.setMessage("Génération du rapport terminée.");
 	}
 	
     private TemporaryFile genererListesNominatives(final ListesNominativesResults results, String filename, StatusManager status) {
@@ -114,7 +115,9 @@ public class PdfListesNominativesRapport extends PdfRapport{
 			        b.append(escapeChars(ligne.nomPrenom2));
 
 			        if (results.getTypeAdressesIncluses() == TypeAdresse.FORMATTEE) {
-				        Assert.isTrue(ligne instanceof ListesNominativesResults.InfoTiersAvecAdresseFormattee);
+				        if (!(ligne instanceof ListesNominativesResults.InfoTiersAvecAdresseFormattee)) {
+					        throw new IllegalArgumentException();
+				        }
 				        final ListesNominativesResults.InfoTiersAvecAdresseFormattee ligneAvecAdresse = (ListesNominativesResults.InfoTiersAvecAdresseFormattee) ligne;
 				        final String[] adresse = ligneAvecAdresse.adresse;
 				        for (int indexLigne = 0; indexLigne < adresse.length; ++indexLigne) {
@@ -123,7 +126,9 @@ public class PdfListesNominativesRapport extends PdfRapport{
 				        }
 			        }
 			        else if (results.getTypeAdressesIncluses() == TypeAdresse.STRUCTUREE_RF) {
-				        Assert.isTrue(ligne instanceof ListesNominativesResults.InfoTiersAvecAdresseStructureeRF);
+				        if (!(ligne instanceof ListesNominativesResults.InfoTiersAvecAdresseStructureeRF)) {
+					        throw new IllegalArgumentException();
+				        }
 				        final ListesNominativesResults.InfoTiersAvecAdresseStructureeRF ligneAvecAdresse = (ListesNominativesResults.InfoTiersAvecAdresseStructureeRF) ligne;
 				        b.append(COMMA);
 				        b.append(escapeChars(ligneAvecAdresse.rue)).append(COMMA);

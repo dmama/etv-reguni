@@ -20,7 +20,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.tx.TxCallback;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.cache.CacheHelper;
 import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
@@ -109,7 +108,9 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 		dataEventService.register(this);
 		uniregCacheManager.register(this);
 		cache = cacheManager.getCache(cacheName);
-		Assert.notNull(cache);
+		if (cache == null) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override

@@ -3,14 +3,13 @@ package ch.vd.unireg.interfaces.infra.mock;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
 public class MockAdresse implements Adresse, Duplicable<MockAdresse> {
@@ -53,7 +52,9 @@ public class MockAdresse implements Adresse, Duplicable<MockAdresse> {
 	}
 
 	public MockAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
-		Assert.isFalse(pays.getNoOFS() == ServiceInfrastructureRaw.noOfsSuisse, "Pour la Suisse, il faut utiliser une autre méthode newAdresse");
+		if (pays.getNoOFS() == ServiceInfrastructureRaw.noOfsSuisse) {
+			throw new IllegalArgumentException("Pour la Suisse, il faut utiliser une autre méthode newAdresse");
+		}
 		this.typeAdresse = type;
 		this.casePostale = casePostale;
 		this.noOfsPays = pays.getNoOFS();

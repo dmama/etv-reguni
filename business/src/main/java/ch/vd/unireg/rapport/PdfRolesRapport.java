@@ -8,6 +8,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.itextpdf.text.DocumentException;
@@ -17,17 +18,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.MotifAssujettissement;
 import ch.vd.unireg.role.before2016.InfoContribuable;
@@ -143,7 +143,9 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				Audit.error("Rôles: impossible de déterminer la commune avec le numéro Ofs = " + noOfsCommune);
 				continue;
 			}
-			Assert.isEqual(noOfsCommune, commune.getNoOFS());
+			if (!Objects.equals(noOfsCommune, commune.getNoOFS())) {
+				throw new IllegalArgumentException();
+			}
 			listCommunes.add(commune);
 		}
 
@@ -234,7 +236,9 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 						final String[] adresse = info.getAdresseEnvoi();
 
 						final int sizeNoms = noms.size();
-						Assert.isEqual(sizeNoms, nosAvs.size());
+						if (sizeNoms != nosAvs.size()) {
+							throw new IllegalArgumentException();
+						}
 
 						// ajout des infos au fichier
 						final String nom1 = emptyInsteadNull(sizeNoms > 0 ? noms.get(0).getNom() : null);

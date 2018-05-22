@@ -1,9 +1,8 @@
 package ch.vd.unireg.xml.party.v4;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.party.taxresidence.v3.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v3.SimplifiedTaxLiabilityType;
-import ch.vd.unireg.xml.DataHelper;
 
 public class SimplifiedTaxLiabilityBuilder {
 
@@ -41,11 +40,13 @@ public class SimplifiedTaxLiabilityBuilder {
 			// un sourcier pure n'est pas assujetti au rôle ordinaire.
 			result = null;
 		}
-		else {
-			Assert.isTrue(a instanceof ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire
-					|| a instanceof ch.vd.unireg.metier.assujettissement.VaudoisDepense
-					|| a instanceof ch.vd.unireg.metier.assujettissement.Indigent);
+		else if (a instanceof ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire
+				|| a instanceof ch.vd.unireg.metier.assujettissement.VaudoisDepense
+				|| a instanceof ch.vd.unireg.metier.assujettissement.Indigent) {
 			result = newSimplifiedTaxLiability(a, SimplifiedTaxLiabilityType.UNLIMITED);
+		}
+		else {
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + a + "]");
 		}
 
 		return result;
@@ -76,11 +77,13 @@ public class SimplifiedTaxLiabilityBuilder {
 			// un sourcier pure n'est pas assujetti au rôle ordinaire.
 			result = null;
 		}
-		else {
-			Assert.isTrue(a instanceof ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire
-					|| a instanceof ch.vd.unireg.metier.assujettissement.VaudoisDepense
-					|| a instanceof ch.vd.unireg.metier.assujettissement.Indigent);
+		else if (a instanceof ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire
+				|| a instanceof ch.vd.unireg.metier.assujettissement.VaudoisDepense
+				|| a instanceof ch.vd.unireg.metier.assujettissement.Indigent) {
 			result = newSimplifiedTaxLiability(a, SimplifiedTaxLiabilityType.UNLIMITED);
+		}
+		else {
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + a + "]");
 		}
 
 		return result;

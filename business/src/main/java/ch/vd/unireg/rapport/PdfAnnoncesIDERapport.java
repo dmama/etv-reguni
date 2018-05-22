@@ -8,13 +8,12 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.evenement.ide.AnnonceIDEJobResults;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 
 /**
  * Rapport PDF contenant les résultats de l'évaluation et de l'envoi des annonces à l'IDE pour les entreprises sous contrôle de l'ACI.
@@ -23,7 +22,9 @@ public class PdfAnnoncesIDERapport extends PdfRapport {
 
 	public void write(final AnnonceIDEJobResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -52,7 +53,7 @@ public class PdfAnnoncesIDERapport extends PdfRapport {
 		{
 			if (results.isInterrupted()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			addTableSimple(2, new TableSimpleCallback() {

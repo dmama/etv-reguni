@@ -13,13 +13,12 @@ import org.w3c.dom.Document;
 
 import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0024.v3.ObjectFactory;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.utils.LogLevel;
 
@@ -77,9 +76,11 @@ public class AnnonceIDESenderImpl implements AnnonceIDESender, InitializingBean 
 	public void sendEvent(AnnonceIDEEnvoyee annonce, String msgBusinessId) throws AnnonceIDEException {
 		if (annonce == null) {
 			throw new IllegalArgumentException("Contenu de l'annonce manquant.");
-		} else if (annonce.getNumero() == null) {
+		}
+		else if (annonce.getNumero() == null) {
 			throw new IllegalArgumentException("Numéro d'annonce manquant.");
-		} else if (StringUtils.isBlank(msgBusinessId)) {
+		}
+		else if (StringUtils.isBlank(msgBusinessId)) {
 			throw new IllegalArgumentException("Contenu de l'annonce manquant.");
 		}
 
@@ -89,7 +90,9 @@ public class AnnonceIDESenderImpl implements AnnonceIDESender, InitializingBean 
 		}
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
+		if (principal == null) {
+			throw new IllegalArgumentException();
+		}
 
 		NoticeRequest event = RCEntAnnonceIDEHelper.buildNoticeRequest(annonce);
 

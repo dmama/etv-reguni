@@ -36,6 +36,8 @@ import org.hibernate.dialect.function.PositionSubstringFunction;
 import org.hibernate.dialect.function.SQLFunctionTemplate;
 import org.hibernate.dialect.function.StandardSQLFunction;
 import org.hibernate.dialect.function.VarArgsSQLFunction;
+import org.hibernate.dialect.pagination.LimitHandler;
+import org.hibernate.engine.spi.RowSelection;
 import org.hibernate.exception.spi.TemplatedViolatedConstraintNameExtracter;
 import org.hibernate.exception.spi.ViolatedConstraintNameExtracter;
 import org.hibernate.id.SequenceGenerator;
@@ -191,21 +193,8 @@ public class PostgreSQL83Dialect extends Dialect {
 	}
 
 	@Override
-	public boolean supportsLimit() {
-		return true;
-	}
-
-	@Override
-	public String getLimitString(String sql, boolean hasOffset) {
-		return new StringBuffer( sql.length()+20 )
-			.append(sql)
-			.append(hasOffset ? " limit ? offset ?" : " limit ?")
-			.toString();
-	}
-
-	@Override
-	public boolean bindLimitParametersInReverseOrder() {
-		return true;
+	public LimitHandler buildLimitHandler(String sql, RowSelection selection) {
+		return new PostgreSQL83LimitHandler(sql, selection);
 	}
 
 	@Override
@@ -220,12 +209,7 @@ public class PostgreSQL83Dialect extends Dialect {
 
 	@Override
 	public String getIdentitySelectString(String table, String column, int type) {
-		return new StringBuffer().append("select currval('")
-			.append(table)
-			.append('_')
-			.append(column)
-			.append("_seq')")
-			.toString();
+		return "select currval('" + table + '_' + column + "_seq')";
 	}
 
 	@Override

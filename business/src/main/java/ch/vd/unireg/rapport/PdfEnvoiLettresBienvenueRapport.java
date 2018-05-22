@@ -10,7 +10,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -21,7 +20,9 @@ public class PdfEnvoiLettresBienvenueRapport extends PdfRapport {
 
 	public void write(final EnvoiLettresBienvenueResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);

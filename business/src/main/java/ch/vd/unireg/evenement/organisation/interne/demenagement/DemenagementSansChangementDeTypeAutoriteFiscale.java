@@ -2,13 +2,7 @@ package ch.vd.unireg.evenement.organisation.interne.demenagement;
 
 import java.util.List;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -16,6 +10,10 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.MotifFor;
 
@@ -67,17 +65,15 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.validateSpecific(erreurs, warnings, suivis);
 
-		/*
-		 Erreurs techniques fatale
-		  */
-
-		Assert.notNull(getSitePrincipalApres());
-
+		// Erreurs techniques fatale
 		// On doit avoir deux autorités fiscales
-		Assert.notNull(getSiegeAvant());
-		Assert.notNull(getSiegeApres());
+		if (getSitePrincipalApres() == null || getSiegeAvant() == null || getSiegeApres() == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Quelque conditions non valides
-		Assert.isTrue(getSiegeAvant() != getSiegeApres(), "Pas un déménagement de siège, la commune n'a pas changé!");
+		if (getSiegeAvant() == getSiegeApres()) {
+			throw new IllegalArgumentException("Pas un déménagement de siège, la commune n'a pas changé!");
+		}
 	}
 }

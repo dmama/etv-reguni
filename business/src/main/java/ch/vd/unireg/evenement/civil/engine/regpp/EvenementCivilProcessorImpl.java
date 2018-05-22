@@ -15,7 +15,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CheckedTransactionCallback;
@@ -145,7 +144,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 					// Charge l'événement
 					final EvenementCivilRegPP evenementCivilExterne = evenementCivilRegPPDAO.get(evenementCivilId);
-					Assert.notNull(evenementCivilExterne, "l'événement est null");
+					if (evenementCivilExterne == null) {
+						throw new IllegalArgumentException("l'événement est null");
+					}
 
 					if (evenementCivilExterne.getEtat().isTraite()) {
 						LOGGER.warn("Tentative de traitement de l'événement n°" + evenementCivilId + " qui est déjà traité. Aucune opération effectuée.");
@@ -205,9 +206,15 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	 */
 	private void assertEvenement(EvenementCivilRegPP event) {
 
-		Assert.notNull(event.getType(), "le type de l'événement n'est pas renseigné");
-		Assert.notNull(event.getDateEvenement(), "La date de l'événement n'est pas renseigné");
-		Assert.notNull(event.getNumeroOfsCommuneAnnonce(), "Le numero de la commune d'annonce n'est pas renseigné");
+		if (event.getType() == null) {
+			throw new IllegalArgumentException("le type de l'événement n'est pas renseigné");
+		}
+		if (event.getDateEvenement() == null) {
+			throw new IllegalArgumentException("La date de l'événement n'est pas renseigné");
+		}
+		if (event.getNumeroOfsCommuneAnnonce() == null) {
+			throw new IllegalArgumentException("Le numero de la commune d'annonce n'est pas renseigné");
+		}
 
 		// Controle la commune OFS
 		int numeroOFS = event.getNumeroOfsCommuneAnnonce();
@@ -226,7 +233,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			}
 		}
 
-		Assert.notNull(event.getNumeroIndividuPrincipal(), "Le numéro d'individu de l'événement ne peut pas être nul");
+		if (event.getNumeroIndividuPrincipal() == null) {
+			throw new IllegalArgumentException("Le numéro d'individu de l'événement ne peut pas être nul");
+		}
 	}
 
 	private Long traiteErreurs(EtatEvenementCivil etat, EvenementCivilRegPP evenementCivilExterne, List<EvenementCivilRegPPErreur> errorList, List<EvenementCivilRegPPErreur> warningList) {

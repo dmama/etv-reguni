@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -14,11 +15,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.common.AbstractBusinessTest;
 import ch.vd.unireg.common.RequiresNewTransactionDefinition;
 import ch.vd.unireg.database.DatabaseService;
@@ -40,6 +36,10 @@ import ch.vd.unireg.etiquette.UniteDecalageDate;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.norentes.annotation.AfterCheck;
 import ch.vd.unireg.norentes.annotation.AfterEtape;
 import ch.vd.unireg.norentes.annotation.BeforeCheck;
@@ -200,15 +200,15 @@ public abstract class EvenementScenario extends NorentesScenario {
 	}
 
 	protected ForFiscalPrincipalPP addForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
-		Assert.notNull(pays);
-		Assert.isFalse(pays.isSuisse());
+		Assert.assertNotNull(pays);
+		Assert.assertFalse(pays.isSuisse());
 		return addForFiscalPrincipal(tiers, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, debut, fin, motifDebut, motifFin, ModeImposition.ORDINAIRE);
 	}
 
 	protected ForFiscalPrincipalPP addForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin,
 	                                                     ModeImposition modeImposition) {
-		Assert.notNull(pays);
-		Assert.isFalse(pays.isSuisse());
+		Assert.assertNotNull(pays);
+		Assert.assertFalse(pays.isSuisse());
 		return addForFiscalPrincipal(tiers, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, debut, fin, motifDebut, motifFin, modeImposition);
 	}
 
@@ -313,7 +313,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 
 	protected void addSituationFamille(final MenageCommun menage, RegDate debut, RegDate fin, EtatCivil etatCivil,
 			int nbEnfants, TarifImpotSource tarifApplicable, Contribuable contribuablePrincipal) {
-		Assert.isTrue(EtatCivil.MARIE == etatCivil || EtatCivil.LIE_PARTENARIAT_ENREGISTRE == etatCivil);
+		Assert.assertTrue(EtatCivil.MARIE == etatCivil || EtatCivil.LIE_PARTENARIAT_ENREGISTRE == etatCivil);
 		SituationFamilleMenageCommun sit = new SituationFamilleMenageCommun();
 		sit.setDateDebut(debut);
 		sit.setDateFin(fin);
@@ -332,11 +332,9 @@ public abstract class EvenementScenario extends NorentesScenario {
 
 	/**
 	 * Uniquement pour mettre des breakpoints
-	 *
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#startNewTransaction()
 	 */
 	protected void endTransaction() {
-		Assert.notNull(tx);
+		Assert.assertNotNull(tx);
 		transactionManager.commit(tx);
 		tx = null;
 	}

@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Helper pour les problèmatiques de addAndSave rencontrées dans les tiers, les déclarations...
  */
@@ -66,7 +64,9 @@ public abstract class AddAndSaveHelper {
 				keys = new HashSet<>(entities.size());
 				for (HibernateEntity d : entities) {
 					final Object key = d.getKey();
-					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
+					if (key == null) {
+						throw new IllegalArgumentException("Les entités existantes doivent être déjà persistées.");
+					}
 					keys.add(key);
 				}
 			}
@@ -84,7 +84,9 @@ public abstract class AddAndSaveHelper {
 				}
 			}
 
-			Assert.notNull(newEntity);
+			if (newEntity == null) {
+				throw new IllegalArgumentException();
+			}
 			accessor.assertEquals(entity, (E) newEntity);
 			entity = (E) newEntity;
 		}
@@ -93,7 +95,9 @@ public abstract class AddAndSaveHelper {
 			accessor.addEntity(container, entity);
 		}
 
-		Assert.notNull(entity.getKey());
+		if (entity.getKey() == null) {
+			throw new IllegalArgumentException();
+		}
 		return entity;
 	}
 }

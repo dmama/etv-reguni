@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.evenement.externe.EtatEvenementExterne;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
@@ -145,7 +144,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo onRow(Object[] row) {
 
-				Assert.isEqual(9, row.length);
+				if (row.length != 9) {
+					throw new IllegalArgumentException();
+				}
 
 				final long id = ((Number) row[0]).longValue();
 				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[1]).intValue(), false);
@@ -170,7 +171,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo onRow(Object[] row) {
 
-				Assert.isEqual(10, row.length);
+				if (row.length != 10) {
+					throw new IllegalArgumentException();
+				}
 
 				final long id = ((Number) row[0]).longValue();
 				final Date dateReception = (Date) row[1];
@@ -193,7 +196,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo>() {
 			@Override
 			public StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo onRow(Object[] row) {
-				Assert.isEqual(4, row.length);
+				if (row.length != 4) {
+					throw new IllegalArgumentException();
+				}
 				if (row[0] != null) {
 					final long noIndividu = ((Number) row[0]).longValue();
 					final RegDate minDate = RegDate.fromIndex(((Number) row[1]).intValue(), false);
@@ -262,7 +267,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> onRow(Object[] row) {
 
-				Assert.isEqual(3, row.length);
+				if (row.length != 3) {
+					throw new IllegalArgumentException();
+				}
 
 				final String description = (String) row[1];
 				final String uniqueDescription;
@@ -311,7 +318,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee onRow(Object[] row) {
 
-				Assert.isEqual(6, row.length);
+				if (row.length != 6) {
+					throw new IllegalArgumentException();
+				}
 
 				final long noOrganisation = ((Number) row[0]).longValue();
 				final RegDate dateEvenement = RegDateHelper.indexStringToDate(Integer.toString(((Number) row[1]).intValue()));
@@ -343,7 +352,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public StatsEvenementsCivilsOrganisationsResults.ErreurInfo onRow(Object[] row) {
 
-				Assert.isEqual(7, row.length);
+				if (row.length != 7) {
+					throw new IllegalArgumentException();
+				}
 
 				final long id = ((Number) row[0]).longValue();
 				final long noEvenement = ((Number) row[1]).longValue();
@@ -365,7 +376,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo>() {
 			@Override
 			public StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo onRow(Object[] row) {
-				Assert.isEqual(6, row.length);
+				if (row.length != 6) {
+					throw new IllegalArgumentException();
+				}
 
 				final long id = ((Number) row[0]).longValue();
 				final long noEvevement = ((Number) row[1]).longValue();
@@ -396,7 +409,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public StatsEvenementsExternesResults.EvenementExterneErreur onRow(Object[] row) {
 
-				Assert.isEqual(2, row.length);
+				if (row.length != 2) {
+					throw new IllegalArgumentException();
+				}
 
 				final long id = ((Number) row[0]).longValue();
 				final String message = (String) row[1];

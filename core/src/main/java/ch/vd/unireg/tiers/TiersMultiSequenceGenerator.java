@@ -15,7 +15,6 @@ import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.type.Type;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.hibernate.FillHoleGenerator;
 
 /**
@@ -111,7 +110,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 				assertIdBetween(ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID, numeroTiers, object);
 			}
 			else {
-				Assert.fail("Classe " + object.getClass().getSimpleName() + " inconnue");
+				throw new IllegalArgumentException("Classe " + object.getClass().getSimpleName() + " inconnue");
 			}
 			sequenceNumber = numeroTiers;
 		}
@@ -140,8 +139,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 				sequenceNumber = ctbGenerator.generate(session, object);
 			}
 			else {
-				Assert.fail("Classe " + object.getClass().getSimpleName() + " inconnue");
-				sequenceNumber = null;
+				throw new IllegalArgumentException("Classe " + object.getClass().getSimpleName() + " inconnue");
 			}
 		}
 		return sequenceNumber;
@@ -153,7 +151,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 			final String message = String.format(
 					"L'id %d pour le type de tiers de type %s doit impérativement être compris dans la plage de %d à %d.", id, tiersType,
 					firstId, lastId);
-			Assert.fail(message);
+			throw new IllegalArgumentException(message);
 		}
 	}
 

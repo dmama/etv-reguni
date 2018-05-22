@@ -1,14 +1,7 @@
 package ch.vd.unireg.evenement.organisation.interne.demenagement;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -18,6 +11,11 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviColle
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -141,26 +139,28 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		/*
-		 Erreurs techniques fatale
-		  */
-		Assert.notNull(dateAvant);
-		Assert.notNull(dateApres);
-		Assert.isTrue(dateAvant.equals(dateApres.getOneDayBefore()));
+		// Erreurs techniques fatale
+		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
-		Assert.notNull(getEntreprise());
-
 		// On doit avoir deux autorités fiscales
-		Assert.isTrue(
-				(getSiegeAvant() != null && getSiegeApres() != null)
-		);
+		if (getEntreprise() == null || getSiegeAvant() == null || getSiegeApres() == null) {
+			throw new IllegalArgumentException();
+		}
 
-		Assert.notNull(getEtablissementPrincipalAvant().getNumeroEtablissement(), "L'établissement principal ne semble pas rattaché à son pendant civil RCEnt!");
-		Assert.notNull(getEtablissementPrincipalApres().getNumeroEtablissement(), "L'établissement principal ne semble pas rattaché à son pendant civil RCEnt!");
+		if (getEtablissementPrincipalAvant().getNumeroEtablissement() == null) {
+			throw new IllegalArgumentException("L'établissement principal ne semble pas rattaché à son pendant civil RCEnt!");
+		}
+		if (getEtablissementPrincipalApres().getNumeroEtablissement() == null) {
+			throw new IllegalArgumentException("L'établissement principal ne semble pas rattaché à son pendant civil RCEnt!");
+		}
 
 		// Ce serait étrange de ne pas avoir de changement finalement
-		Assert.isTrue(getSiegeAvant() != getSiegeApres(), "Pas un déménagement de siège, la commune n'a pas changé!");
+		if (getSiegeAvant() == getSiegeApres()) {
+			throw new IllegalArgumentException("Pas un déménagement de siège, la commune n'a pas changé!");
+		}
 
 		// Si on n'a pas d'établissement principal après, c'est qu'on ne l'a pas trouvé en recherchant avec le numéro de site principal après, donc ce dernier est nouveau.
 		if (!getEtablissementPrincipalAvant().getNumeroEtablissement().equals(sitePrincipalApres.getNumeroSite())) {

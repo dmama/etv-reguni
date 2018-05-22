@@ -10,7 +10,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.type.TypeMigRegError;
 
@@ -27,7 +26,9 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 		final String query = "from MigrationError m where m.noContribuable = :noCtb";
 		final List<MigrationError> list = find(query, buildNamedParameters(Pair.of("noCtb", numeroCtb)), FlushMode.MANUAL);
 		if (!list.isEmpty()) {
-			Assert.isEqual(1, list.size());
+			if (list.size() != 1) {
+				throw new IllegalArgumentException();
+			}
 			error = list.get(0);
 		}
 
@@ -96,7 +97,6 @@ public class MigrationErrorDAOImpl extends BaseDAOImpl<MigrationError, Long> imp
 			            null);
 		}
 		else {
-			Assert.isTrue(ctbStart < 0 && ctbEnd < 0);
 			list = find("FROM MigrationError AS migreg", null);
 		}
 		return list;

@@ -1,8 +1,5 @@
 package ch.vd.unireg.evenement.organisation.interne.information;
 
-import org.springframework.util.Assert;
-
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -12,6 +9,7 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurColl
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneInformationPure;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 import static ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
@@ -48,6 +46,8 @@ public class InformationComplementaire extends EvenementOrganisationInterneInfor
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		Assert.notNull(typeInfo);
+		if (typeInfo == null) {
+			throw new IllegalArgumentException();
+		}
 	}
 }

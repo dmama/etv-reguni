@@ -22,21 +22,20 @@ import org.w3c.dom.Document;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.CodeApplication;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.EvtPublicationCodeControleCyber;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.InformationComplementaireType;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.ObjectFactory;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.Statut;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.TypeDocument;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.StringRenderer;
-import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.jms.EsbBusinessCode;
-import ch.vd.unireg.jms.EsbMessageValidator;
 
 public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMSender, InitializingBean {
 
@@ -156,7 +155,9 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 	private void sendEvent(EvtPublicationCodeControleCyber evenement, String serviceDestination) throws EvenementDeclarationException {
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
+		if (principal == null) {
+			throw new IllegalArgumentException();
+		}
 
 		try {
 			final Marshaller marshaller = jaxbContext.createMarshaller();

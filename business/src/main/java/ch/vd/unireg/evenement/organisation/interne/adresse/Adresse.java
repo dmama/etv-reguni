@@ -2,12 +2,8 @@ package ch.vd.unireg.evenement.organisation.interne.adresse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -17,6 +13,9 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviColle
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
+import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -69,9 +68,13 @@ public class Adresse extends EvenementOrganisationInterneDeTraitement {
 		/*
 		 Erreurs techniques fatale
 		  */
-		Assert.notNull(dateApres);
+		if (dateApres == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
-		Assert.notNull(getEntreprise());
+		if (getEntreprise() == null) {
+			throw new IllegalArgumentException();
+		}
 	}
 }

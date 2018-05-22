@@ -30,7 +30,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.adresse.AdresseAutreTiers;
@@ -315,7 +314,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		 * @param attributeName le nom de l'attribut. Spécifier <b>null</b> pour référencer le discriminant de l'entité.
 		 */
 		private AttributeKey(Class<?> entityClass, String attributeName) {
-			Assert.notNull(entityClass);
+			if (entityClass == null) {
+				throw new IllegalArgumentException();
+			}
 			this.entityClass = entityClass;
 			this.attributeName = attributeName;
 		}
@@ -848,7 +849,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			try {
 				final MetaEntity m = MetaEntity.determine(clazz);
 				final Sequence sequence = m.getSequence();
-				Assert.notNull(sequence);
+				if (sequence == null) {
+					throw new IllegalArgumentException();
+				}
 
 				final Number id = (Number) sequence.nextValue(dialect, hibernateTemplate, clazz.newInstance());
 				return id.longValue();

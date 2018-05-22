@@ -9,8 +9,6 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Contient les six lignes utilisées pour l'adressage des déclaration d'impôt.
  */
@@ -72,9 +70,11 @@ public class AdresseEnvoi implements Serializable {
 				}
 				--niveau;
 			}
-			Assert.isTrue(temp.size() == MAX_LIGNES, "Il reste " + temp.size()
-					+ " lignes après suppression des lignes optionnelles, alors qu'il devrait en rester exactement 6. "
-					+ "Pensez à définir des lignes optionnelles, ou à augmenter la granularité des niveaux d'optionalité.");
+			if (temp.size() != MAX_LIGNES) {
+				throw new IllegalArgumentException("Il reste " + temp.size()
+						                                   + " lignes après suppression des lignes optionnelles, alors qu'il devrait en rester exactement 6. "
+						                                   + "Pensez à définir des lignes optionnelles, ou à augmenter la granularité des niveaux d'optionalité.");
+			}
 		}
 
 		/* copie des lignes existantes */

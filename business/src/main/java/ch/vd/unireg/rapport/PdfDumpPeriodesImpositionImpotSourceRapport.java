@@ -6,7 +6,6 @@ import java.util.Date;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -19,7 +18,9 @@ public class PdfDumpPeriodesImpositionImpotSourceRapport extends PdfRapport {
 	 */
 	public void write(final DumpPeriodesImpositionImpotSourceResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfDumpPeriodesImpositionImpotSourceRapport document = new PdfDumpPeriodesImpositionImpotSourceRapport();
@@ -47,7 +48,7 @@ public class PdfDumpPeriodesImpositionImpotSourceRapport extends PdfRapport {
 						                    + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			document.addTableSimple(new float[] {60, 40}, table -> {
+			document.addTableSimple(new float[]{60, 40}, table -> {
 				table.addLigne("Nombre total de personnes physiques analysées :", String.valueOf(results.getNbPersonnesPhysiquesAnalysees()));
 				table.addLigne("Nombre de personnes physiques ignorées :", String.valueOf(results.getIgnores().size()));
 				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErrors().size()));

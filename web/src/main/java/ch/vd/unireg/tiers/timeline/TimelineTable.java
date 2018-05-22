@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+
+import static ch.vd.unireg.tiers.timeline.TimelineCell.FILLER;
+import static ch.vd.unireg.tiers.timeline.TimelineCell.SPAN;
 
 /**
  * Représente la table contenant la "timeline"
@@ -108,13 +109,17 @@ public class TimelineTable {
 		int longueur = 0;
 		for (TimelineRow r : rows) {
 			if (isFirstRowForRange(r, range, bigBang)) {
-				Assert.isTrue(r.forPrincipal == TimelineCell.FILLER);
+				if (r.forPrincipal != FILLER) {
+					throw new IllegalArgumentException();
+				}
 				r.forPrincipal = c;
 				longueur++;
 			}
 			else if (DateRangeHelper.within(r.periode, range)) {
-				Assert.isTrue(r.forPrincipal == TimelineCell.FILLER);
-				r.forPrincipal = TimelineCell.SPAN;
+				if (r.forPrincipal != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.forPrincipal = SPAN;
 				longueur++;
 			}
 		}
@@ -129,13 +134,17 @@ public class TimelineTable {
 		int longueur = 0;
 		for (TimelineRow r : rows) {
 			if (isFirstRowForRange(r, range, bigBang)) {
-				Assert.isTrue(r.forGestion == TimelineCell.FILLER);
+				if (r.forGestion != FILLER) {
+					throw new IllegalArgumentException();
+				}
 				r.forGestion = c;
 				longueur++;
 			}
 			else if (DateRangeHelper.within(r.periode, range)) {
-				Assert.isTrue(r.forGestion == TimelineCell.FILLER);
-				r.forGestion = TimelineCell.SPAN;
+				if (r.forGestion != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.forGestion = SPAN;
 				longueur++;
 			}
 		}
@@ -150,13 +159,17 @@ public class TimelineTable {
 		int longueur = 0;
 		for (TimelineRow r : rows) {
 			if (isFirstRowForRange(r, range, bigBang)) {
-				Assert.isTrue(r.assujettissementSource == TimelineCell.FILLER);
+				if (r.assujettissementSource != FILLER) {
+					throw new IllegalArgumentException();
+				}
 				r.assujettissementSource = c;
 				longueur++;
 			}
 			else if (DateRangeHelper.within(r.periode, range)) {
-				Assert.isTrue(r.assujettissementSource == TimelineCell.FILLER);
-				r.assujettissementSource = TimelineCell.SPAN;
+				if (r.assujettissementSource != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.assujettissementSource = SPAN;
 				longueur++;
 			}
 		}
@@ -171,13 +184,17 @@ public class TimelineTable {
 		int longueur = 0;
 		for (TimelineRow r : rows) {
 			if (isFirstRowForRange(r, range, bigBang)) {
-				Assert.isTrue(r.assujettissementRole == TimelineCell.FILLER);
+				if (r.assujettissementRole != FILLER) {
+					throw new IllegalArgumentException();
+				}
 				r.assujettissementRole = c;
 				longueur++;
 			}
 			else if (DateRangeHelper.within(r.periode, range)) {
-				Assert.isTrue(r.assujettissementRole == TimelineCell.FILLER);
-				r.assujettissementRole = TimelineCell.SPAN;
+				if (r.assujettissementRole != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.assujettissementRole = SPAN;
 				longueur++;
 			}
 		}
@@ -192,13 +209,17 @@ public class TimelineTable {
 		int longueur = 0;
 		for (TimelineRow r : rows) {
 			if (isFirstRowForRange(r, range, bigBang)) {
-				Assert.isTrue(r.assujettissement == TimelineCell.FILLER);
+				if (r.assujettissement != FILLER) {
+					throw new IllegalArgumentException();
+				}
 				r.assujettissement = c;
 				longueur++;
 			}
 			else if (DateRangeHelper.within(r.periode, range)) {
-				Assert.isTrue(r.assujettissement == TimelineCell.FILLER);
-				r.assujettissement = TimelineCell.SPAN;
+				if (r.assujettissement != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.assujettissement = SPAN;
 				longueur++;
 			}
 		}
@@ -213,13 +234,17 @@ public class TimelineTable {
 		int longueur = 0;
 		for (TimelineRow r : rows) {
 			if (isFirstRowForRange(r, range, bigBang)) {
-				Assert.isTrue(r.periodeImposition == TimelineCell.FILLER);
+				if (r.periodeImposition != FILLER) {
+					throw new IllegalArgumentException();
+				}
 				r.periodeImposition = c;
 				longueur++;
 			}
 			else if (DateRangeHelper.within(r.periode, range)) {
-				Assert.isTrue(r.periodeImposition == TimelineCell.FILLER);
-				r.periodeImposition = TimelineCell.SPAN;
+				if (r.periodeImposition != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.periodeImposition = SPAN;
 				longueur++;
 			}
 		}
@@ -231,13 +256,17 @@ public class TimelineTable {
 		int longueur = 0;
 		for (TimelineRow r : rows) {
 			if (isFirstRowForRange(r, range, bigBang)) {
-				Assert.isTrue(r.periodeImpositionIS == TimelineCell.FILLER);
+				if (r.periodeImpositionIS != FILLER) {
+					throw new IllegalArgumentException();
+				}
 				r.periodeImpositionIS = c;
 				longueur++;
 			}
 			else if (DateRangeHelper.within(r.periode, range)) {
-				Assert.isTrue(r.periodeImpositionIS == TimelineCell.FILLER);
-				r.periodeImpositionIS = TimelineCell.SPAN;
+				if (r.periodeImpositionIS != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.periodeImpositionIS = SPAN;
 				longueur++;
 			}
 		}
@@ -294,12 +323,14 @@ public class TimelineTable {
 
 		for (int i = debut; i <= fin; ++i) {
 			TimelineRow r = rows.get(i);
-			Assert.isTrue(r.forsSecondaires.get(level) == TimelineCell.FILLER);
+			if (r.forsSecondaires.get(level) != FILLER) {
+				throw new IllegalArgumentException();
+			}
 			if (i == debut) {
 				r.forsSecondaires.set(level, c);
 			}
 			else {
-				r.forsSecondaires.set(level, TimelineCell.SPAN);
+				r.forsSecondaires.set(level, SPAN);
 			}
 		}
 

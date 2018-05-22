@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AsyncStorageWithPeriodicCleanup;
 import ch.vd.unireg.common.TimeHelper;
@@ -145,7 +144,9 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 	 * Démarre les threads de cleanup (classe de base) et de la gestion des triggers
 	 */
 	public void start() {
-		Assert.isTrue(triggerManagerThread == null);
+		if (triggerManagerThread != null) {
+			throw new IllegalStateException();
+		}
 		super.start();
 
 		triggerManagerThread = new TriggerThread();

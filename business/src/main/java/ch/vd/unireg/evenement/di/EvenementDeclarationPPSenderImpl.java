@@ -13,20 +13,19 @@ import org.w3c.dom.Document;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
 import ch.vd.unireg.xml.event.di.output.v1.EvenementAnnulationDeclarationImpot;
 import ch.vd.unireg.xml.event.di.output.v1.EvenementDeclarationImpotOutput;
 import ch.vd.unireg.xml.event.di.output.v1.EvenementEmissionDeclarationImpot;
 import ch.vd.unireg.xml.event.di.output.v1.ObjectFactory;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
-import ch.vd.unireg.jms.EsbBusinessCode;
-import ch.vd.unireg.jms.EsbMessageValidator;
 
 public class EvenementDeclarationPPSenderImpl implements EvenementDeclarationPPSender, InitializingBean {
 
@@ -105,7 +104,9 @@ public class EvenementDeclarationPPSenderImpl implements EvenementDeclarationPPS
 	private void sendEvent(EvenementDeclarationImpotOutput evenement) throws EvenementDeclarationException {
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
+		if (principal == null) {
+			throw new IllegalArgumentException();
+		}
 
 		try {
 			final Marshaller marshaller = jaxbContext.createMarshaller();

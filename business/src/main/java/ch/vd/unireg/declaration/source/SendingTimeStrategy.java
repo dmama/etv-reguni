@@ -2,7 +2,6 @@ package ch.vd.unireg.declaration.source;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.type.PeriodeDecompte;
 import ch.vd.unireg.type.PeriodiciteDecompte;
 
@@ -35,12 +34,20 @@ public enum SendingTimeStrategy {
 		public boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite, PeriodeDecompte periodeDecompte) {
 			if (periodicite == PeriodiciteDecompte.UNIQUE) {
 				final DateRange range = periodeDecompte.getPeriodeCourante(lrPeriod.getDateDebut());
-				Assert.isEqual(lrPeriod.getDateFin(), range.getDateFin());
-				Assert.isEqual(lrPeriod.getDateDebut(), range.getDateDebut());
+				if (lrPeriod.getDateFin() != range.getDateFin()) {
+					throw new IllegalArgumentException();
+				}
+				if (lrPeriod.getDateDebut() != range.getDateDebut()) {
+					throw new IllegalArgumentException();
+				}
 			}
 			else {
-				Assert.isEqual(lrPeriod.getDateFin(), periodicite.getFinPeriode(lrPeriod.getDateDebut()));
-				Assert.isEqual(lrPeriod.getDateDebut(), periodicite.getDebutPeriode(lrPeriod.getDateFin()));
+				if (lrPeriod.getDateFin() != periodicite.getFinPeriode(lrPeriod.getDateDebut())) {
+					throw new IllegalArgumentException();
+				}
+				if (lrPeriod.getDateDebut() != periodicite.getDebutPeriode(lrPeriod.getDateFin())) {
+					throw new IllegalArgumentException();
+				}
 			}
 
 			final int length = lrPeriod.getDateFin().month() - lrPeriod.getDateDebut().month() + 1;     // en mois

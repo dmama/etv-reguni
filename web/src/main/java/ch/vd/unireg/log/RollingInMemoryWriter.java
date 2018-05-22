@@ -3,8 +3,6 @@ package ch.vd.unireg.log;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.utils.NotImplementedException;
 
 /**
@@ -23,7 +21,9 @@ public class RollingInMemoryWriter extends Writer {
 	private int size;
 
 	public RollingInMemoryWriter(int max) {
-		Assert.isTrue(max > 0);
+		if (max <= 0) {
+			throw new IllegalArgumentException();
+		}
 		this.max = max;
 		this.buffer = new String[max];
 		this.index = 0;

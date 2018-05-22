@@ -29,7 +29,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseGenerique.SourceType;
@@ -1013,7 +1012,9 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected boolean isHorsSuisse(Long tiersId, DateRange range) {
 		final Tiers tiers = tiersDAO.get(tiersId);
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 
 		boolean horsSuisse = false;
 

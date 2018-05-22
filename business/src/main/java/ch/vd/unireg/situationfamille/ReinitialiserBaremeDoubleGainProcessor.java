@@ -11,7 +11,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -115,10 +114,14 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 	 */
 	protected void traiterSituation(Long id, RegDate dateTraitement, ReinitialiserBaremeDoubleGainResults r) {
 
-		Assert.notNull(id, "L'id doit être spécifié.");
+		if (id == null) {
+			throw new IllegalArgumentException("L'id doit être spécifié.");
+		}
 
 		final SituationFamilleMenageCommun situation = hibernateTemplate.get(SituationFamilleMenageCommun.class, id);
-		Assert.notNull(situation, "La situation de famille n'existe pas.");
+		if (situation == null) {
+			throw new IllegalArgumentException("La situation de famille n'existe pas.");
+		}
 
 		if (situation.getTarifApplicable() != TarifImpotSource.DOUBLE_GAIN) {
 			r.addIgnoreBaremeNonDoubleGain(situation, "Attendu = DOUBLE_GAIN, constaté = " + situation.getTarifApplicable()
@@ -127,7 +130,9 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 		}
 
 		final ContribuableImpositionPersonnesPhysiques contribuable = situation.getContribuable();
-		Assert.notNull(contribuable, "La situation de famille n'est pas rattachée à un contribuable.");
+		if (contribuable == null) {
+			throw new IllegalArgumentException("La situation de famille n'est pas rattachée à un contribuable.");
+		}
 
 		// Crée une nouvelle situation de famille identique à la précédente, mais avec le tarif NORMAL
 		SituationFamilleMenageCommun nouvelle = (SituationFamilleMenageCommun) situation.duplicate();

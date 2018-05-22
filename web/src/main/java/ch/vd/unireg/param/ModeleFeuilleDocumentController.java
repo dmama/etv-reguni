@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
@@ -147,7 +146,9 @@ public class ModeleFeuilleDocumentController {
 		}
 
 		final ModeleDocument modele = feuille.getModeleDocument();
-		Assert.notNull(modele);
+		if (modele == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// on construit la liste des feuilles telle qu'ordonnée actuellement
 		final List<ModeleFeuilleDocument> list = new ArrayList<>(modele.getModelesFeuilleDocument());

@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.acces.copie.manager.CopieDroitAccesManager;
 import ch.vd.unireg.acces.copie.view.ConfirmCopieView;
 import ch.vd.unireg.acces.copie.view.ConfirmedDataView;
@@ -145,7 +144,9 @@ public class DroitAccesController {
 
 	private List<TiersIndexedDataView> searchTiers(TiersCriteriaView criteriaView) {
 		final List<TiersIndexedData> results = tiersService.search(criteriaView.asCore());
-		Assert.notNull(results);
+		if (results == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final List<TiersIndexedDataView> list = new ArrayList<>(results.size());
 		for (TiersIndexedData d : results) {

@@ -7,7 +7,6 @@ import java.util.List;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -17,7 +16,9 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 
 	public void write(final ImportCodesSegmentResults results, final int nbLignesLuesFichierEntree, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);

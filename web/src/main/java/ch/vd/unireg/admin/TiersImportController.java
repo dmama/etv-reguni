@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.HtmlUtils;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.admin.ScriptBean.DBUnitMode;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.Flash;
@@ -169,7 +168,9 @@ public class TiersImportController {
 		}
 
 		final InputStream inputXML = new ByteArrayInputStream(script.getScriptData().getBytes());
-		Assert.notNull(inputXML);
+		if (inputXML == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// lancement du script
 		launchDbUnit(inputXML, script.getMode(), "<Raw data>");
@@ -196,7 +197,9 @@ public class TiersImportController {
 
 				// Juste pour vérifier que le fichier existe!
 				final URL scriptFile = getClass().getClassLoader().getResource(SCRIPTS_FOLDER_PATH + '/' + filename);
-				Assert.notNull(scriptFile, "Le fichier DBunit " + filename + " n'existe pas dans le repertoire " + SCRIPTS_FOLDER_PATH);
+				if (scriptFile == null) {
+					throw new IllegalArgumentException("Le fichier DBunit " + filename + " n'existe pas dans le repertoire " + SCRIPTS_FOLDER_PATH);
+				}
 
 				final LoadableFileDescription descr = new LoadableFileDescription(description, filename);
 				scriptFileNames.add(descr);

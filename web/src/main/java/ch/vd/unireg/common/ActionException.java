@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Exception qui contient les erreurs (éventuellement les warnings) découlant d'une action impossible dans un contrôleur web (ou un
  * manager).
@@ -38,7 +36,9 @@ public class ActionException extends RuntimeException {
 
 	public ActionException(List<String> errors, List<String> warnings, @Nullable Throwable cause) {
 		super(cause);
-		Assert.notEmpty(errors);
+		if (errors.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
 		this.errors = errors;
 		this.warnings = warnings;
 	}

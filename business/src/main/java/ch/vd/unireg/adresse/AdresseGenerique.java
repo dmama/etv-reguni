@@ -2,10 +2,9 @@ package ch.vd.unireg.adresse;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.Loggable;
 import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.common.Loggable;
 import ch.vd.unireg.tiers.Tiers;
 
 /**
@@ -24,7 +23,9 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 		private final Tiers tiers;
 
 		public Source(SourceType type, Tiers tiers) {
-			Assert.notNull(type);
+			if (type == null) {
+				throw new IllegalArgumentException();
+			}
 			this.type = type;
 			this.tiers = tiers;
 		}

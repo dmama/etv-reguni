@@ -141,7 +141,7 @@ public abstract class LuceneHelper {
 			}
 			stream.end();
 
-			// [UNIREG-2715] si value.length() est plus petit que minLength, on doit retourner null : Assert.isTrue(simpleQuery != null || complexQuery != null);
+			// [UNIREG-2715] si value.length() est plus petit que minLength, on doit retourner null
 			return complexQuery == null ? simpleQuery : complexQuery;
 		}
 		catch (Exception e) {

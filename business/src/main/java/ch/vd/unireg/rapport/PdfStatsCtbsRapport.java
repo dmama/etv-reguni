@@ -11,12 +11,11 @@ import java.util.Set;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.declaration.ordinaire.StatistiquesCtbs;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 
 /**
  * Rapport PDF contenant les statistiques des contribuables assujettis.
@@ -25,7 +24,9 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 
 	public void write(final StatistiquesCtbs results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -51,7 +52,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		{
 			if (results.interrompu) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			addTableSimple(2, table -> {

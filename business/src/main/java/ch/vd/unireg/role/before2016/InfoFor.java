@@ -2,7 +2,6 @@ package ch.vd.unireg.role.before2016;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.metier.assujettissement.MotifAssujettissement;
 import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
 import ch.vd.unireg.type.MotifRattachement;
@@ -38,8 +37,12 @@ public class InfoFor implements DateRange {
 	public InfoFor(InfoContribuable.TypeContribuable typeCtb, RegDate dateDebut, MotifAssujettissement motifDebut, RegDate dateFin, MotifAssujettissement motifFin,
 	               InfoContribuable.TypeAssujettissement typeAssujettissement, ForFiscalRevenuFortune forFiscal) {
 		this(typeCtb, dateDebut, motifDebut, dateFin, motifFin, typeAssujettissement, null, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateDebut(), forFiscal.getDateFin());
-		Assert.isTrue(typeAssujettissement == InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF || typeAssujettissement == InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF);
-		Assert.isEqual(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscal.getTypeAutoriteFiscale());
+		if (typeAssujettissement != InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF && typeAssujettissement != InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF) {
+			throw new IllegalArgumentException();
+		}
+		if (forFiscal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
@@ -64,9 +67,15 @@ public class InfoFor implements DateRange {
 	                InfoContribuable.TypeAssujettissement typeAssujettissement, InfoContribuable.TypeContribuable ancienTypeCtb, boolean forPrincipal,
 	                MotifRattachement motifRattachement, int ofsCommune, RegDate dateOuvertureFor, RegDate dateFermetureFor) {
 
-		Assert.notNull(dateDebut);
-		Assert.notNull(dateOuvertureFor);
-		Assert.notNull(motifDebut);
+		if (dateDebut == null) {
+			throw new IllegalArgumentException();
+		}
+		if (dateOuvertureFor == null) {
+			throw new IllegalArgumentException();
+		}
+		if (motifDebut == null) {
+			throw new IllegalArgumentException();
+		}
 
 		this.typeCtb = typeCtb;
 		this.dateDebut = dateDebut;

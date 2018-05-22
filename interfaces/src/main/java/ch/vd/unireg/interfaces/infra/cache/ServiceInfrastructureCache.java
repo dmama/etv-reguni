@@ -19,7 +19,13 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.cache.CacheHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.EhCacheStats;
+import ch.vd.unireg.cache.KeyDumpableCache;
+import ch.vd.unireg.cache.KeyValueDumpableCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -37,13 +43,6 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.cache.CacheHelper;
-import ch.vd.unireg.cache.CacheStats;
-import ch.vd.unireg.cache.EhCacheStats;
-import ch.vd.unireg.cache.KeyDumpableCache;
-import ch.vd.unireg.cache.KeyValueDumpableCache;
-import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.utils.LogLevel;
 
@@ -95,9 +94,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private void initCache() {
 		cache = cacheManager.getCache(cacheName);
-		Assert.notNull(cache);
+		if (cache == null) {
+			throw new IllegalArgumentException();
+		}
 		shortLivedCache = cacheManager.getCache(shortLivedCacheName);
-		Assert.notNull(shortLivedCache);
+		if (shortLivedCache == null) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override

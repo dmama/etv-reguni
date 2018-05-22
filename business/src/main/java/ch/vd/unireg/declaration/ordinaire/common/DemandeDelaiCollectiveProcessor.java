@@ -10,7 +10,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -158,7 +157,9 @@ public class DemandeDelaiCollectiveProcessor {
 		}
 
 		for (DeclarationImpotOrdinaire d : declarations) {
-			Assert.isFalse(d.isAnnule());
+			if (d.isAnnule()) {
+				throw new IllegalArgumentException();
+			}
 			final TypeEtatDocumentFiscal etatDeclaration = d.getDernierEtatDeclaration().getEtat();
 			switch (etatDeclaration) {
 			case EMIS: {

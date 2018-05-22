@@ -9,7 +9,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.norentes.annotation.AfterCheck;
 import ch.vd.unireg.norentes.annotation.AfterClass;
 import ch.vd.unireg.norentes.annotation.AfterEtape;
@@ -18,6 +17,8 @@ import ch.vd.unireg.norentes.annotation.BeforeClass;
 import ch.vd.unireg.norentes.annotation.BeforeEtape;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
+
+import static org.junit.Assert.assertNotNull;
 
 public class NorentesContext {
 
@@ -74,7 +75,7 @@ public class NorentesContext {
 		if (!hasNextRun()) {
 			throw new RuntimeException("out of bound");
 		}
-		Assert.notNull(scenario);
+		assertNotNull(scenario);
 		currentEtape++;
 		EtapeContext etapeContext = new EtapeContext(currentEtape, ScenarioEtat.Init);
 		this.etapes.add(etapeContext);
@@ -301,7 +302,7 @@ public class NorentesContext {
 	}
 
 	private static Method getMethodForEtape(NorentesScenario scenario, int step) {
-		Assert.notNull(scenario);
+		assertNotNull(scenario);
 		Method method = null;
 		Method[] methods = scenario.getClass().getMethods();
 		for (Method m : methods) {
@@ -316,12 +317,12 @@ public class NorentesContext {
 				}
 			}
 		}
-		Assert.notNull(method);
+		assertNotNull(method);
 		return method;
 	}
 
 	private static Method getMethodForCheck(NorentesScenario scenario, int step) {
-		Assert.notNull(scenario);
+		assertNotNull(scenario);
 		Method method = null;
 		Method[] methods = scenario.getClass().getMethods();
 		for (Method m : methods) {

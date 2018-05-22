@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.declaration.ForsList;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ForFiscal;
@@ -88,7 +87,7 @@ public abstract class DecompositionFors implements DateRange {
 				// Le for est valide à la fin de la période
 				if (f.isPrincipal()) {
 					if (forPrincipal != null) {
-						Assert.fail("Le contribuable n°" + contribuable.getNumero() + " possède plus d'un for principal valide à la date = " + fin);
+						throw new IllegalArgumentException("Le contribuable n°" + contribuable.getNumero() + " possède plus d'un for principal valide à la date = " + fin);
 					}
 					forPrincipal = (ForFiscalPrincipal) f;
 					this.principauxDansLaPeriode.add(forPrincipal);
@@ -111,7 +110,9 @@ public abstract class DecompositionFors implements DateRange {
 			if (debut != null && f.isValidAt(debut.getOneDayBefore())) {
 				// le for est valide juste avant la période
 				if (f instanceof ForFiscalPrincipal) {
-					Assert.isNull(forPrincipalAvant);
+					if (forPrincipalAvant != null) {
+						throw new IllegalArgumentException();
+					}
 					forPrincipalAvant = (ForFiscalPrincipal) f;
 				}
 				else if (f instanceof ForFiscalSecondaire) {
@@ -122,7 +123,9 @@ public abstract class DecompositionFors implements DateRange {
 			if (fin != null && f.isValidAt(fin.getOneDayAfter())) {
 				// le for est valide juste après la période
 				if (f instanceof ForFiscalPrincipal) {
-					Assert.isNull(forPrincipalApres);
+					if (forPrincipalApres != null) {
+						throw new IllegalArgumentException();
+					}
 					forPrincipalApres = (ForFiscalPrincipal) f;
 				}
 				else if (f instanceof ForFiscalSecondaire) {

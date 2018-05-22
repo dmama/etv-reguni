@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
@@ -45,6 +44,12 @@ import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+
+import static ch.vd.unireg.security.Role.*;
+import static ch.vd.unireg.security.SecurityHelper.isGranted;
+import static ch.vd.unireg.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 public class AutorisationManagerImpl implements AutorisationManager {
 
@@ -794,14 +799,16 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	 */
 	private boolean setDroitHabitant(ContribuableImpositionPersonnesPhysiques tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
 
-		Assert.isTrue(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun, "Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
+		if (!(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun)) {
+			throw new IllegalArgumentException("Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
+		}
 		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(tiers, visa, oid);
 		//les habitants n'ont jamais les onglets civil et rapport prestation
 		boolean isEditable = codeFactorise1(tiers, visa, oid, allowedOnglet);
 		if (isEditAllowedPP(tiers, visa, oid)) {
 			codeFactorise2(visa, oid, allowedOnglet);
 			isEditable = true;
-			allowedOnglet.put(MODIF_IDE, Boolean.TRUE);
+			allowedOnglet.put(MODIF_IDE, TRUE);
 		}
 		isEditable = codeFactorise3(tiers, visa, oid, allowedOnglet, isEditable);
 
@@ -817,15 +824,15 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 		}
 
-		if ((modifiableSelonRoleEtDecisions && typeImposition.isOrdinaireDepenseOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HAB, visa, oid)) ||
-				(modifiableSelonRoleEtDecisions && typeImposition.isSourcierOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HAB, visa, oid))) {
-			allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
-			allowedOnglet.put(FISCAL_FOR_PRINC, Boolean.TRUE);
+		if ((modifiableSelonRoleEtDecisions && typeImposition.isOrdinaireDepenseOuNonActif() && isGranted(securityProvider, FOR_PRINC_ORDDEP_HAB, visa, oid)) ||
+				(modifiableSelonRoleEtDecisions && typeImposition.isSourcierOuNonActif() && isGranted(securityProvider, FOR_PRINC_SOURC_HAB, visa, oid))) {
+			allowedOnglet.put(MODIF_FISCAL, TRUE);
+			allowedOnglet.put(FISCAL_FOR_PRINC, TRUE);
 			isEditable = true;
 		}
-		if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && SecurityHelper.isGranted(securityProvider, Role.RT, visa, oid)) {
-			allowedOnglet.put(MODIF_DOSSIER, Boolean.TRUE);
-			allowedOnglet.put(DOSSIER_TRAVAIL, Boolean.TRUE);
+		if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && isGranted(securityProvider, RT, visa, oid)) {
+			allowedOnglet.put(MODIF_DOSSIER, TRUE);
+			allowedOnglet.put(DOSSIER_TRAVAIL, TRUE);
 			isEditable = true;
 		}
 		return isEditable;
@@ -841,30 +848,32 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		//les non habitants n'ont jamais l'onglet rapport prestation
 		//les ménage commun n'ont jamais les onglets civil et rapport prestation
 
-		Assert.isTrue(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun, "Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
+		if (!(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun)) {
+			throw new IllegalArgumentException("Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
+		}
 
 		final boolean isPersonnePhysique = tiers instanceof PersonnePhysique;
 
 		boolean isEditable = codeFactorise1(tiers, visa, oid, allowedOnglet);
 		if (tiers.isDebiteurInactif()) {//I107
-			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_INACTIF, visa, oid)) {
+			if (isGranted(securityProvider, MODIF_NONHAB_INACTIF, visa, oid)) {
 				if (isPersonnePhysique) {
-					allowedOnglet.put(MODIF_CIVIL, Boolean.TRUE);
-					allowedOnglet.put(MODIF_IDE, Boolean.TRUE);
+					allowedOnglet.put(MODIF_CIVIL, TRUE);
+					allowedOnglet.put(MODIF_IDE, TRUE);
 				}
-				allowedOnglet.put(MODIF_DOSSIER, Boolean.FALSE);
-				allowedOnglet.put(MODIF_FISCAL, Boolean.FALSE);
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D, visa, oid)) {
-					allowedOnglet.put(MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(ADR_D, Boolean.TRUE);
+				allowedOnglet.put(MODIF_DOSSIER, FALSE);
+				allowedOnglet.put(MODIF_FISCAL, FALSE);
+				if (isGranted(securityProvider, ADR_PP_D, visa, oid)) {
+					allowedOnglet.put(MODIF_ADRESSE, TRUE);
+					allowedOnglet.put(ADR_D, TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B, visa, oid)) {
-					allowedOnglet.put(MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(ADR_B, Boolean.TRUE);
+				if (isGranted(securityProvider, ADR_PP_B, visa, oid)) {
+					allowedOnglet.put(MODIF_ADRESSE, TRUE);
+					allowedOnglet.put(ADR_B, TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C, visa, oid)) {
-					allowedOnglet.put(MODIF_ADRESSE, Boolean.TRUE);
-					allowedOnglet.put(ADR_C, Boolean.TRUE);
+				if (isGranted(securityProvider, ADR_PP_C, visa, oid)) {
+					allowedOnglet.put(MODIF_ADRESSE, TRUE);
+					allowedOnglet.put(ADR_C, TRUE);
 				}
 				isEditable = true;
 			}
@@ -872,8 +881,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		else {
 			if (isEditAllowedPP(tiers, visa, oid)) {
 				if (isPersonnePhysique) {
-					allowedOnglet.put(MODIF_CIVIL, Boolean.TRUE);
-					allowedOnglet.put(MODIF_IDE, Boolean.TRUE);
+					allowedOnglet.put(MODIF_CIVIL, TRUE);
+					allowedOnglet.put(MODIF_IDE, TRUE);
 				}
 				codeFactorise2(visa, oid, allowedOnglet);
 				isEditable = true;
@@ -894,20 +903,20 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 			final TypeImposition typeImposition = types.getFirst();
 			final TypeAutoriteFiscale typeAutoriteFiscale = types.getSecond();
-			if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && SecurityHelper.isGranted(securityProvider, Role.RT, visa, oid)) {
-				allowedOnglet.put(MODIF_DOSSIER, Boolean.TRUE);
-				allowedOnglet.put(DOSSIER_TRAVAIL, Boolean.TRUE);
+			if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && isGranted(securityProvider, RT, visa, oid)) {
+				allowedOnglet.put(MODIF_DOSSIER, TRUE);
+				allowedOnglet.put(DOSSIER_TRAVAIL, TRUE);
 				isEditable = true;
 			}
-			final boolean autoriteFiscaleVaudoiseOuIndeterminee = typeAutoriteFiscale == null || typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			final boolean autoriteFiscaleNonVaudoiseOuIndeterminee = typeAutoriteFiscale != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			if(modifiableSelonRoleEtDecisions){
-				if (typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS, visa, oid) ||
-						(typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS, visa, oid)) ||
-						(typeImposition.isSourcierOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS, visa, oid)) ||
-						(typeImposition.isSourcierOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS, visa, oid))) {
-					allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
-					allowedOnglet.put(FISCAL_FOR_PRINC, Boolean.TRUE);
+			final boolean autoriteFiscaleVaudoiseOuIndeterminee = typeAutoriteFiscale == null || typeAutoriteFiscale == COMMUNE_OU_FRACTION_VD;
+			final boolean autoriteFiscaleNonVaudoiseOuIndeterminee = typeAutoriteFiscale != COMMUNE_OU_FRACTION_VD;
+			if (modifiableSelonRoleEtDecisions) {
+				if (typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && isGranted(securityProvider, FOR_PRINC_ORDDEP_HCHS, visa, oid) ||
+						(typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && isGranted(securityProvider, FOR_PRINC_ORDDEP_GRIS, visa, oid)) ||
+						(typeImposition.isSourcierOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && isGranted(securityProvider, FOR_PRINC_SOURC_HCHS, visa, oid)) ||
+						(typeImposition.isSourcierOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && isGranted(securityProvider, FOR_PRINC_SOURC_GRIS, visa, oid))) {
+					allowedOnglet.put(MODIF_FISCAL, TRUE);
+					allowedOnglet.put(FISCAL_FOR_PRINC, TRUE);
 					isEditable = true;
 				}
 			}

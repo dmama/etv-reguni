@@ -13,7 +13,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -104,12 +103,14 @@ public class ValidationJobThread extends Thread {
 
 
 			final Long id = queue.take();
-			Assert.notNull(id);
+			if (id == null) {
+				throw new IllegalArgumentException();
+			}
 
 			results.incTiersTotal();
 
 			final Tiers tiers = tiersDAO.get(id);
-			if (tiers == null || tiers.isAnnule() ) {
+			if (tiers == null || tiers.isAnnule()) {
 				continue;
 			}
 

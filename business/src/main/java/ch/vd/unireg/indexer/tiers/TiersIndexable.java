@@ -1,13 +1,9 @@
 package ch.vd.unireg.indexer.tiers;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdressesFiscales;
 import ch.vd.unireg.avatar.AvatarService;
@@ -17,6 +13,9 @@ import ch.vd.unireg.indexer.Indexable;
 import ch.vd.unireg.indexer.IndexableData;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.LocalizedDateRange;
 import ch.vd.unireg.tiers.Tiers;
@@ -33,8 +32,12 @@ public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 	protected final ServiceInfrastructureService serviceInfra;
 
 	public TiersIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, T tiers) throws IndexerException {
-		Assert.notNull(tiers);
-		Assert.notNull(adresseService);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
+		if (adresseService == null) {
+			throw new IllegalArgumentException();
+		}
 		this.tiers = tiers;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;

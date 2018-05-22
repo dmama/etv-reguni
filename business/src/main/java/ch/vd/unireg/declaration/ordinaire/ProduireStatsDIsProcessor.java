@@ -14,12 +14,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.LoggingStatusManager;
@@ -30,6 +27,8 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -256,9 +255,11 @@ public class ProduireStatsDIsProcessor {
 		else if (assujet instanceof VaudoisDepense) {
 			type = TypeContribuable.VAUDOIS_DEPENSE;
 		}
-		else {
-			Assert.isTrue(assujet instanceof VaudoisOrdinaire);
+		else if (assujet instanceof VaudoisOrdinaire) {
 			type = TypeContribuable.VAUDOIS_ORDINAIRE;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + assujet.getClass() + "]");
 		}
 
 		return type;

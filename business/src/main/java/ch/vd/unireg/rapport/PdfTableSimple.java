@@ -2,8 +2,6 @@ package ch.vd.unireg.rapport;
 
 import com.itextpdf.text.pdf.PdfPTable;
 
-import ch.vd.registre.base.utils.Assert;
-
 public class PdfTableSimple extends PdfPTable {
 
 	private final int numColumns;
@@ -19,7 +17,9 @@ public class PdfTableSimple extends PdfPTable {
 	}
 
 	public void addLigne(String... columns) {
-		Assert.isEqual(numColumns, columns.length);
+		if (numColumns != columns.length) {
+			throw new IllegalArgumentException();
+		}
 		for (String cell : columns) {
 			addCell(cell);
 		}

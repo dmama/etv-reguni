@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.ActionException;
@@ -215,7 +214,9 @@ public class CoupleManagerImpl implements CoupleManager {
 				}
 				else {
 					// pas besoin de changer le type de tiers, le tiers doit déjà correspondre à un ménage commun annulé
-					Assert.isInstanceOf(MenageCommun.class, futurMc);
+					if (!(futurMc instanceof MenageCommun)) {
+						throw new IllegalArgumentException();
+					}
 				}
 
 				// rattachement des tiers au ménage

@@ -17,20 +17,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseService;
@@ -42,6 +32,15 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.OuvertureForsResults.ErreurType;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -317,7 +316,9 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			habitant.setMajoriteTraitee(Boolean.TRUE); // on ouvrira un for à son arrivée dans le canton, si nécessaire
 			throw new OuvertureForsIgnoreException(habitant, OuvertureForsResults.IgnoreType.HORS_VD, null);
 		}
-		Assert.notNull(data.getNumeroOfsAutoriteFiscale());
+		if (data.getNumeroOfsAutoriteFiscale() == null) {
+			throw new IllegalArgumentException();
+		}
 
 		fillEtatCivilPermisEtNationalite(habitant, data, dateMajorite);
 
@@ -376,7 +377,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		final Integer oid = tiersService.calculateCurrentOfficeID(habitant);
 		//On n'assert pas car les sourcier n'ont pour le moment pas de for de gestion
 		//Assert.notNull(oid);
-				
+
 		r.addHabitantTraite(habitant, oid, dateOuverture, motifOuverture, modeImposition);
 	}
 

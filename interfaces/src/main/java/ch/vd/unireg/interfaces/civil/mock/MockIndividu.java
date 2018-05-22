@@ -11,7 +11,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
@@ -25,7 +25,6 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
-import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.type.Sexe;
 
 public class MockIndividu implements Individu {
@@ -145,7 +144,9 @@ public class MockIndividu implements Individu {
 	}
 
 	public void setStatut(StatutIndividu statut) {
-		Assert.notNull(statut);
+		if (statut == null) {
+			throw new IllegalArgumentException();
+		}
 		this.statut = statut;
 	}
 

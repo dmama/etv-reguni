@@ -8,10 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Localite;
-import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.type.TexteCasePostale;
 
@@ -85,7 +84,9 @@ public abstract class AdresseFiscaleAdapter<T extends HibernateDateRangeEntity &
 			return nomLocalite;
 		}
 		else {
-			Assert.notNull(adresseEtrangere);
+			if (adresseEtrangere == null) {
+				throw new IllegalArgumentException();
+			}
 			return adresseEtrangere.getNumeroPostalLocalite(); // contient le npa + la localité + le complément npa
 		}
 	}
@@ -101,7 +102,9 @@ public abstract class AdresseFiscaleAdapter<T extends HibernateDateRangeEntity &
 			return nomLocalite;
 		}
 		else {
-			Assert.notNull(adresseEtrangere);
+			if (adresseEtrangere == null) {
+				throw new IllegalArgumentException();
+			}
 			return adresseEtrangere.getNumeroPostalLocalite(); // contient le npa + la localité + le complément npa
 		}
 	}
@@ -116,7 +119,9 @@ public abstract class AdresseFiscaleAdapter<T extends HibernateDateRangeEntity &
 			return localite.getNPA().toString();
 		}
 		else {
-			Assert.notNull(adresseEtrangere);
+			if (adresseEtrangere == null) {
+				throw new IllegalArgumentException();
+			}
 			return StringUtils.EMPTY; // est inclus dans la localité
 		}
 	}
@@ -143,7 +148,9 @@ public abstract class AdresseFiscaleAdapter<T extends HibernateDateRangeEntity &
 			return getNumeroOrdreLocalite(adresseSuisse);
 		}
 		else {
-			Assert.notNull(adresseEtrangere);
+			if (adresseEtrangere == null) {
+				throw new IllegalArgumentException();
+			}
 			return null;
 		}
 	}
@@ -161,7 +168,9 @@ public abstract class AdresseFiscaleAdapter<T extends HibernateDateRangeEntity &
 			return complement == null ? null : complement.toString();
 		}
 		else {
-			Assert.notNull(adresseEtrangere);
+			if (adresseEtrangere == null) {
+				throw new IllegalArgumentException();
+			}
 			return StringUtils.EMPTY; // est inclus dans la localité
 		}
 	}
@@ -172,7 +181,9 @@ public abstract class AdresseFiscaleAdapter<T extends HibernateDateRangeEntity &
 			return ServiceInfrastructureService.noOfsSuisse;
 		}
 		else {
-			Assert.notNull(adresseEtrangere);
+			if (adresseEtrangere == null) {
+				throw new IllegalArgumentException();
+			}
 			return adresseEtrangere.getNumeroOfsPays();
 		}
 	}
@@ -191,15 +202,19 @@ public abstract class AdresseFiscaleAdapter<T extends HibernateDateRangeEntity &
 		final int noLocalite = getNumeroOrdreLocalite(adresse);
 		final Localite localite;
 		localite = service.getLocaliteByONRP(noLocalite, adresse.getDateFin());
-		Assert.notNull(localite, "La localité avec le numéro " + noLocalite + " n'existe pas.");
+		if (localite == null) {
+			throw new IllegalArgumentException("La localité avec le numéro " + noLocalite + " n'existe pas.");
+		}
 		return localite;
 	}
 
 	private int getNumeroOrdreLocalite(AdresseFiscaleSuisse adresse) {
 		final Integer noLocalite = adresse.getNumeroOrdrePoste();
-		Assert.notNull(noLocalite, String.format("Impossible de déterminer le numéro de localité de l'adresse suisse %s/%d",
-		                                         adresse.getClass().getSimpleName(),
-		                                         adresse.getId()));
+		if (noLocalite == null) {
+			throw new IllegalArgumentException(String.format("Impossible de déterminer le numéro de localité de l'adresse suisse %s/%d",
+			                                                 adresse.getClass().getSimpleName(),
+			                                                 adresse.getId()));
+		}
 		return noLocalite;
 	}
 

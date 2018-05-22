@@ -2,14 +2,8 @@ package ch.vd.unireg.evenement.organisation.interne.inscription;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -18,6 +12,11 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurColl
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.TiersService;
@@ -103,21 +102,30 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		/*
-		 Erreurs techniques fatale
-		  */
-		Assert.notNull(dateAvant);
-		Assert.notNull(dateApres);
-		Assert.isTrue(dateAvant.equals(dateApres.getOneDayBefore()));
+
+		// Erreurs techniques fatale
+		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
-		Assert.notNull(getEntreprise());
+		if (getEntreprise() == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'on est bien en présence d'une inscription
-		Assert.state(statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION);
-		Assert.state(!getOrganisation().isConnueInscriteAuRC(dateAvant));
-		Assert.isNull(dateRadiationApres, "Date de radiation présente après l'annonce. Nous ne sommes pas en présence d'une inscription.");
-		Assert.isNull(dateRadiationAvant, "Date de radiation présente avant l'annonce. Nous ne sommes pas en présence d'une inscription mais d'une réinscription.");
+		if (statusInscriptionApres != StatusInscriptionRC.ACTIF && statusInscriptionApres != StatusInscriptionRC.EN_LIQUIDATION) {
+			throw new IllegalArgumentException();
+		}
+		if (getOrganisation().isConnueInscriteAuRC(dateAvant)) {
+			throw new IllegalArgumentException();
+		}
+		if (dateRadiationApres != null) {
+			throw new IllegalArgumentException("Date de radiation présente après l'annonce. Nous ne sommes pas en présence d'une inscription.");
+		}
+		if (dateRadiationAvant != null) {
+			throw new IllegalArgumentException("Date de radiation présente avant l'annonce. Nous ne sommes pas en présence d'une inscription mais d'une réinscription.");
+		}
 	}
 
 	public RegDate getDateAvant() {
@@ -126,25 +134,5 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
 	public RegDate getDateApres() {
 		return dateApres;
-	}
-
-	public SiteOrganisation getSitePrincipalAvant() {
-		return sitePrincipalAvant;
-	}
-
-	public SiteOrganisation getSitePrincipalApres() {
-		return sitePrincipalApres;
-	}
-
-	public RegDate getDateInscriptionAvant() {
-		return dateInscriptionAvant;
-	}
-
-	public RegDate getDateInscriptionApres() {
-		return dateInscriptionApres;
-	}
-
-	public StatusInscriptionRC getStatusInscriptionAvant() {
-		return statusInscriptionAvant;
 	}
 }

@@ -17,7 +17,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.cache.CacheHelper;
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.EhCacheStats;
+import ch.vd.unireg.cache.KeyDumpableCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.data.CivilDataEventListener;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
@@ -27,14 +34,6 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.cache.CacheHelper;
-import ch.vd.unireg.cache.CacheStats;
-import ch.vd.unireg.cache.EhCacheStats;
-import ch.vd.unireg.cache.KeyDumpableCache;
-import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.utils.LogLevel;
 
@@ -86,7 +85,9 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);
-			Assert.notNull(cache);
+			if (cache == null) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 

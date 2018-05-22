@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.supergra.EntityKey;
@@ -113,8 +112,12 @@ public class EntityView implements Duplicable<EntityView> {
 
 		for (AttributeView rightAttribute : right.attributes) {
 			final AttributeView leftAttribute = attributesMap.get(rightAttribute.getName());
-			Assert.notNull(leftAttribute);
-			Assert.isEqual(leftAttribute.getType(), rightAttribute.getType());
+			if (leftAttribute == null) {
+				throw new IllegalArgumentException();
+			}
+			if (leftAttribute.getType() != rightAttribute.getType()) {
+				throw new IllegalArgumentException();
+			}
 
 			if (leftAttribute.isReadonly() || leftAttribute.isCollection()) {
 				// les attributs read-only et les collections ne peuvent pas être mises-à-jour depuis l'écran d'édition d'une entité

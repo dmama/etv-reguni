@@ -16,7 +16,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.unireg.adresse.AdresseService;
@@ -378,9 +377,11 @@ public class ProduireStatsCtbsProcessor {
 		else if (assujet instanceof VaudoisDepense) {
 			type = StatistiquesCtbs.TypeContribuable.VAUDOIS_DEPENSE;
 		}
-		else {
-			Assert.isTrue(assujet instanceof VaudoisOrdinaire);
+		else if (assujet instanceof VaudoisOrdinaire) {
 			type = StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + assujet.getClass() + "]");
 		}
 
 		return type;

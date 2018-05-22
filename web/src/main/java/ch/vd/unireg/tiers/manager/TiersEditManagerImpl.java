@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.TiersNotFoundException;
@@ -117,7 +116,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		if (tiers == null) {
 			throw new TiersNotFoundException(numero);
 		}
-		Assert.isInstanceOf(DebiteurPrestationImposable.class, tiers);
+		if (!(tiers instanceof DebiteurPrestationImposable)) {
+			throw new IllegalArgumentException();
+		}
 		return new DebiteurEditView((DebiteurPrestationImposable) tiers);
 	}
 

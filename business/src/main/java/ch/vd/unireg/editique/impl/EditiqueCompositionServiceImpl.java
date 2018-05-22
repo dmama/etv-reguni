@@ -18,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import ch.vd.editique.unireg.CTypeImmeuble;
 import ch.vd.editique.unireg.CTypeInfoArchivage;
@@ -377,8 +376,10 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocumentEditique typeDocument = impressionDIPPHelper.getTypeDocumentEditique(declaration);
 		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration));
-		Assert.notNull(document);
-		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[] { document };
+		if (document == null) {
+			throw new IllegalArgumentException();
+		}
+		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[]{document};
 		editiqueDI.setDocumentArray(documents);
 
 		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getInfoArchivage();
@@ -415,7 +416,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocument typeDoc = infosDocument.getTypeDocument();
 		final TypeDocumentEditique typeDocument = impressionDIPPHelper.getTypeDocumentEditique(typeDoc);
 		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeuble), true);
-		Assert.notNull(document);
+		if (document == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getInfoArchivage();
 		final boolean withArchivage = infoArchivage != null;

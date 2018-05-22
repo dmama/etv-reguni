@@ -18,12 +18,7 @@ import ch.vd.registre.base.date.DateRangeHelper.AdapterCallback;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.EtatCivilHelper;
@@ -31,6 +26,10 @@ import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -108,9 +107,11 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			if (range instanceof VueSituationFamillePersonnePhysique) {
 				return new VueSituationFamillePersonnePhysiqueAdapter((VueSituationFamillePersonnePhysique) range, debut, fin);
 			}
-			else {
-				Assert.isTrue(range instanceof VueSituationFamilleMenageCommun);
+			else if (range instanceof VueSituationFamilleMenageCommun) {
 				return new VueSituationFamilleMenageCommunAdapter((VueSituationFamilleMenageCommun) range, debut, fin);
+			}
+			else {
+				throw new IllegalArgumentException("Type de situation inconnue = [" + range + "]");
 			}
 		}
 	}
@@ -197,7 +198,9 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			return list;
 		}
 
-		Assert.isTrue(contribuable instanceof PersonnePhysique);
+		if (!(contribuable instanceof PersonnePhysique)) {
+			throw new IllegalArgumentException();
+		}
 		final PersonnePhysique pp = (PersonnePhysique) contribuable;
 		if (pp.getNumeroIndividu() == null || pp.getNumeroIndividu() == 0) {
 			// aucune information n'est disponible dans le civil
@@ -376,7 +379,9 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			}
 		}
 		else {
-			Assert.isTrue(contribuable instanceof MenageCommun);
+			if (!(contribuable instanceof MenageCommun)) {
+				throw new IllegalArgumentException();
+			}
 			MenageCommun menage = (MenageCommun) contribuable;
 
 			Set<SituationFamille> situations = menage.getSituationsFamille();
@@ -406,7 +411,9 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	 */
 	@Override
 	public ch.vd.unireg.type.EtatCivil getEtatCivil(PersonnePhysique pp, RegDate date, boolean takeCivilAsDefault) {
-		Assert.notNull(pp, "la personne physique doit être renseignée");
+		if (pp == null) {
+			throw new IllegalArgumentException("la personne physique doit être renseignée");
+		}
 
 		/*
 		 * Mail de Thierry Declercq (18.08.2008) : "L'état civil du point de vue fiscal est celui de la situation de famille et cela dans
@@ -444,18 +451,26 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 		// Situation de famille ayant comme source Unireg
 		SituationFamille situationFamille = situationFamilleDAO.get(idSituationFamille);
-		Assert.notNull(situationFamille);
+		if (situationFamille == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final ContribuableImpositionPersonnesPhysiques contribuable = situationFamille.getContribuable();
-		Assert.notNull(contribuable);
+		if (contribuable == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Annulation de la situation de famille
 		final List<SituationFamille> situations = contribuable.getSituationsFamilleSorted();
 		// la situation de famille doit être la dernière non annulee
-		Assert.notEmpty(situations);
+		if (situations.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
 
 		final SituationFamille lastSituationFamille = situations.get(situations.size() - 1);
-		Assert.notNull(lastSituationFamille);
+		if (lastSituationFamille == null) {
+			throw new IllegalArgumentException();
+		}
 
 		if (lastSituationFamille.getId() != idSituationFamille) {
 			throw new ValidationException(idSituationFamille, "Seule la dernière situation de famille peut être annulée.");
@@ -507,7 +522,9 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 	@Override
 	public void closeSituationFamille(ContribuableImpositionPersonnesPhysiques contribuable, RegDate date) {
-		Assert.notNull(contribuable);
+		if (contribuable == null) {
+			throw new IllegalArgumentException();
+		}
 		// Situation de famille ayant comme source Unireg
 		final SituationFamille situationFamille = contribuable.getSituationFamilleActive();
 		if (situationFamille != null) {

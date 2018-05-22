@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexerImpl;
@@ -55,7 +54,9 @@ public class MassTiersIndexer {
 	}
 
 	public void clearQueue() {
-		Assert.isTrue(isInit);
+		if (!isInit) {
+			throw new IllegalStateException();
+		}
 		queue.reset();
 	}
 
@@ -104,8 +105,12 @@ public class MassTiersIndexer {
 	}
 
 	public void queueTiersForIndexation(Long id) throws Exception {
-		Assert.isTrue(isInit);
-		Assert.isTrue(enabled, "L'ASYNC indexer est disabled, ne devrait pas etre appelé!");
+		if (!isInit) {
+			throw new IllegalStateException();
+		}
+		if (!enabled) {
+			throw new IllegalStateException("L'ASYNC indexer est disabled, ne devrait pas etre appelé!");
+		}
 		queue.put(id);
 	}
 
@@ -118,8 +123,12 @@ public class MassTiersIndexer {
 	 * @throws Exception s'il n'est pas possible d'accepter l'id
 	 */
 	public boolean offerTiersForIndexation(Long id, Duration timeout) throws Exception {
-		Assert.isTrue(isInit);
-		Assert.isTrue(enabled, "L'ASYNC indexer est disabled, ne devrait pas etre appelé!");
+		if (!isInit) {
+			throw new IllegalStateException();
+		}
+		if (!enabled) {
+			throw new IllegalStateException("L'ASYNC indexer est disabled, ne devrait pas etre appelé!");
+		}
 		return queue.offer(id, timeout);
 	}
 

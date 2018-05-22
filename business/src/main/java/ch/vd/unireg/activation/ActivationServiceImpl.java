@@ -17,7 +17,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.tiers.ActiviteEconomique;
@@ -281,7 +280,9 @@ public class ActivationServiceImpl implements ActivationService {
 	 */
 	@Override
 	public void reactiveTiers(Tiers tiers, RegDate dateReactivation) throws ActivationServiceException {
-		Assert.notNull(dateReactivation);
+		if (dateReactivation == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// [SIFISC-18773] si nous avons affaire à une entreprise, il faut peut-être aller ré-activer l'établissement principal
 		if (tiers instanceof Entreprise) {

@@ -16,19 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.adresse.AdresseException;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
+import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.adresse.AdresseException;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.TiersNotFoundException;
-import ch.vd.unireg.general.manager.TiersGeneralManager;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
@@ -265,7 +264,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 				}
 			}
 			else {
-				Assert.fail("Type de mouvement de dossier non supporté : " + mvt.getClass().getName());
+				throw new IllegalArgumentException("Type de mouvement de dossier non supporté : " + mvt.getClass().getName());
 			}
 		}
 		return isAnnulable;

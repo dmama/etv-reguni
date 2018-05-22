@@ -2,10 +2,10 @@ package ch.vd.unireg.norentes.common;
 
 import java.util.Collection;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.norentes.annotation.AfterClass;
 import ch.vd.unireg.norentes.annotation.BeforeClass;
 import ch.vd.unireg.norentes.annotation.EtapeAttribute;
@@ -67,10 +67,10 @@ public  abstract class NorentesScenario implements InitializingBean, BeanNameAwa
 	// Methods assertXXX
 
 	protected static void assertNotNull(Object o, String msg) {
-		Assert.notNull(o, msg);
+		Assert.assertNotNull(msg, o);
 	}
 	protected static  void assertNull(Object o, String msg) {
-		Assert.isNull(o, msg);
+		Assert.assertNull(msg, o);
 	}
 	protected static void assertEquals(Object expected, Object actual, String msg) {
 		if (expected == null) {
@@ -81,10 +81,10 @@ public  abstract class NorentesScenario implements InitializingBean, BeanNameAwa
 		}
 	}
 	protected static void assertTrue(boolean value, String msg) {
-		Assert.isTrue(value, msg);
+		Assert.assertTrue(msg, value);
 	}
 	protected static void assertFalse(boolean value, String msg) {
-		Assert.isFalse(value, msg);
+		Assert.assertFalse(msg, value);
 	}
 
 }

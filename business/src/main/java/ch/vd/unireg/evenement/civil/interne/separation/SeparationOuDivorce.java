@@ -9,10 +9,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.common.EtatCivilHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.civil.EvenementCivilErreurCollector;
@@ -24,6 +21,8 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -230,7 +229,9 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 
 		// état civil au moment de l'événement
 		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(numeroIndividu, dateEvenement);
-		Assert.notNull(etatCivil);
+		if (etatCivil == null) {
+			throw new IllegalArgumentException();
+		}
 
 		if (!EtatCivilHelper.estSepare(etatCivil) && !EtatCivilHelper.estDivorce(etatCivil)) {
 			throw new EvenementCivilException("L'individu " + numeroIndividu + " n'est ni séparé ni divorcé dans le civil");

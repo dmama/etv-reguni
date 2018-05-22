@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
@@ -165,7 +164,9 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	@Override
 	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceOrganisationException {
-		Assert.notNull(modele, "Modèle d'annonce à valider manquant!");
+		if (modele == null) {
+			throw new IllegalArgumentException("Modèle d'annonce à valider manquant!");
+		}
 
 		final NoticeRequest noticeRequest = RCEntAnnonceIDEHelper.buildNoticeRequest(modele);
 		try {

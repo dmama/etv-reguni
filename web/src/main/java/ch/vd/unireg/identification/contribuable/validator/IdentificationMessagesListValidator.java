@@ -3,7 +3,6 @@ package ch.vd.unireg.identification.contribuable.validator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.identification.contribuable.view.IdentificationContribuableListCriteria;
 
 public class IdentificationMessagesListValidator implements Validator {
@@ -16,7 +15,9 @@ public class IdentificationMessagesListValidator implements Validator {
 
 	@Override
 	public void validate(Object obj, Errors errors) {
-		Assert.isTrue(obj instanceof IdentificationContribuableListCriteria);
+		if (!(obj instanceof IdentificationContribuableListCriteria)) {
+			throw new IllegalArgumentException();
+		}
 		IdentificationContribuableListCriteria identificationContribuableListCriteria = (IdentificationContribuableListCriteria) obj;
 	}
 }

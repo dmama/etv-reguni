@@ -2,13 +2,8 @@ package ch.vd.unireg.evenement.organisation.interne.reinscription;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -17,6 +12,10 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurColl
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.TiersService;
@@ -84,19 +83,25 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		/*
-		 Erreurs techniques fatale
-		  */
-		Assert.notNull(dateAvant);
-		Assert.notNull(dateApres);
-		Assert.isTrue(dateAvant.equals(dateApres.getOneDayBefore()));
+
+		// Erreurs techniques fatale
+		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
-		Assert.notNull(getEntreprise());
+		// On doit avoir deux autorités fiscales
+		if (getEntreprise() == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'on est bien en présence d'une réinscription
-		Assert.state(statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION);
-		Assert.state(statusInscriptionAvant == StatusInscriptionRC.RADIE);
+		if (statusInscriptionApres != StatusInscriptionRC.ACTIF && statusInscriptionApres != StatusInscriptionRC.EN_LIQUIDATION) {
+			throw new IllegalArgumentException();
+		}
+		if (statusInscriptionAvant != StatusInscriptionRC.RADIE) {
+			throw new IllegalArgumentException();
+		}
 		// Malheureusement, c'est le cas normal dans RCEnt
 		//Assert.isNull(dateRadiationApres, "Date de radiation toujours présente après l'annonce. Nous ne sommes pas en présence d'une réinscription.");
 		// Peut ne pas être vrai. Un date de radiation peut être présente dans RCEnt sur une entreprise précédament déménagée HC puis revenue sur VD.

@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.common.StatusManager;
@@ -20,7 +19,9 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 
 	public void write(final ListeContribuablesResidentsSansForVaudoisResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -34,25 +35,25 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		// Résultats
 		addEntete1("Résultats");
 		{
-		    if (results.isInterrompu()) {
-		        addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-		                + "les valeurs ci-dessous sont donc incomplètes.");
-		    }
+			if (results.isInterrompu()) {
+				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
+						           + "les valeurs ci-dessous sont donc incomplètes.");
+			}
 
-		    addTableSimple(2, table -> {
-		        table.addLigne("Nombre total de contribuables inspectés :", String.valueOf(results.getNombreContribuablesInspectes()));
-		        table.addLigne("Nombre de contribuables identifiés :", String.valueOf(results.getContribuablesIdentifies().size()));
-		        table.addLigne("Nombre de contribuables ignorés :", String.valueOf(results.getContribuablesIgnores().size()));
-		        table.addLigne("Nombre d'erreurs :", String.valueOf(results.getListeErreurs().size()));
-			    table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-		        table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-		    });
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de contribuables inspectés :", String.valueOf(results.getNombreContribuablesInspectes()));
+				table.addLigne("Nombre de contribuables identifiés :", String.valueOf(results.getContribuablesIdentifies().size()));
+				table.addLigne("Nombre de contribuables ignorés :", String.valueOf(results.getContribuablesIgnores().size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getListeErreurs().size()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
+			});
 		}
 
 		// contribuables cibles de ce job
 		{
-		    String filename = "ctbs_identifies.csv";
-		    String titre = "Liste des contribuables identifiés";
+			String filename = "ctbs_identifies.csv";
+			String titre = "Liste des contribuables identifiés";
 			String listVide = "(aucun)";
 			try (TemporaryFile contenu = buildListeContribuablesIdentifies(results.getContribuablesIdentifies(), filename, status)) {
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -71,8 +72,8 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 
 		// erreurs
 		{
-		    String filename = "ctbs_en_erreur.csv";
-		    String titre = "Liste des erreurs";
+			String filename = "ctbs_en_erreur.csv";
+			String titre = "Liste des erreurs";
 			String listVide = "(aucune)";
 			try (TemporaryFile contenu = buildErreurs(results.getListeErreurs(), filename, status)) {
 				addListeDetaillee(writer, titre, listVide, filename, contenu);

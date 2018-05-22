@@ -8,7 +8,6 @@ import java.util.List;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -23,7 +22,9 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 	public void write(final ListeTachesEnInstanceParOID results, final String nom, final String description, final Date dateGeneration,
 	                  OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfListeTacheEnInstanceParOIDRapport document = new PdfListeTacheEnInstanceParOIDRapport();
@@ -45,7 +46,7 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 		{
 			if (results.interrompu) {
 				document.addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						                    + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			document.addTableSimple(2, table -> {

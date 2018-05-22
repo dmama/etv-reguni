@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdressesResolutionException;
@@ -120,7 +119,9 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 		// on récupère les tiers eux-mêmes, et quelques infos supplémentaires
 		final Tiers tiersLie = tiersService.getTiers(numeroTiersLie); // l'autre tiers du rapport (pas celui par lequel on est arrivé sur le rapport)
-		Assert.notNull(tiersLie);
+		if (tiersLie == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final List<String> nomTiersLie = adresseService.getNomCourrier(tiersLie, null, false);
 		final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
@@ -191,12 +192,16 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 		else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 			final Tiers tiersCourant = tiersService.getTiers(numeroTiersCourant); // le tiers par lequel on est arrivé sur le rapport
-			Assert.notNull(tiersCourant);
+			if (tiersCourant == null) {
+				throw new IllegalArgumentException();
+			}
 			allowed = checkDroitEdit(tiersCourant); // [UNIREG-2814]
 		}
 		else {//rapport de non travail
 			final Tiers tiersLie = tiersService.getTiers(numeroTiersLie); // l'autre tiers du rapport (pas celui par lequel on est arrivé sur le rapport)
-			Assert.notNull(tiersLie);
+			if (tiersLie == null) {
+				throw new IllegalArgumentException();
+			}
 			allowed = checkDroitEdit(tiersLie);
 		}
 
@@ -224,11 +229,15 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			objet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
 		}
 		else {
-			Assert.isEqual(SensRapportEntreTiers.SUJET, sens);
+			if (SensRapportEntreTiers.SUJET != sens) {
+				throw new IllegalArgumentException();
+			}
 			sujet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
 			objet = tiersService.getTiers(rapportView.getTiers().getNumero());
 		}
-		Assert.notNull(type);
+		if (type == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// instancie le bon rapport
 		RapportEntreTiers rapport = type.newInstance();

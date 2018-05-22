@@ -2,7 +2,6 @@ package ch.vd.unireg.tiers;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
@@ -25,7 +24,9 @@ public class ForGestion implements DateRange {
 	 *            le for fiscal sur lequel sera basé le for de gestion
 	 */
 	public ForGestion(ForFiscalRevenuFortune sousjacent) {
-		Assert.isEqual(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, sousjacent.getTypeAutoriteFiscale());
+		if (sousjacent.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			throw new IllegalArgumentException();
+		}
 		this.dateDebut = sousjacent.getDateDebut();
 		this.dateFin = sousjacent.getDateFin();
 		this.noOfsCommune = sousjacent.getNumeroOfsAutoriteFiscale();
@@ -43,7 +44,9 @@ public class ForGestion implements DateRange {
 	 *            le for fiscal sur lequel sera basé le for de gestion
 	 */
 	public ForGestion(RegDate dateDebut, RegDate dateFin, ForFiscalRevenuFortune sousjacent) {
-		Assert.isEqual(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, sousjacent.getTypeAutoriteFiscale());
+		if (sousjacent.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			throw new IllegalArgumentException();
+		}
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.noOfsCommune = sousjacent.getNumeroOfsAutoriteFiscale();

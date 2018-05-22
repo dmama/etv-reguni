@@ -3,7 +3,6 @@ package ch.vd.unireg.documentfiscal;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.AddAndSaveHelper;
 import ch.vd.unireg.common.HibernateEntity;
 
@@ -26,9 +25,17 @@ public final class EtatDocumentFiscalAddAndSaveAccessor<D extends DocumentFiscal
 
 	@Override
 	public void assertEquals(E e1, E e2) {
-		Assert.isSame(e1.getClass(), e2.getClass());
-		Assert.isSame(e1.getDateDebut(), e2.getDateDebut());
-		Assert.isSame(e1.getDateObtention(), e2.getDateObtention());
-		Assert.isSame(e1.getEtat(), e2.getEtat());
+		if (e1.getClass() != e2.getClass()) {
+			throw new IllegalArgumentException();
+		}
+		if (e1.getDateDebut() != e2.getDateDebut()) {
+			throw new IllegalArgumentException();
+		}
+		if (e1.getDateObtention() != e2.getDateObtention()) {
+			throw new IllegalArgumentException();
+		}
+		if (e1.getEtat() != e2.getEtat()) {
+			throw new IllegalArgumentException();
+		}
 	}
 }

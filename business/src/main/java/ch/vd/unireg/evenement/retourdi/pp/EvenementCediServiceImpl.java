@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.coordfin.CoordonneesFinancieresService;
@@ -131,8 +130,12 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(annee);
 		final ModeleDocument vaudTax = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 		final ModeleDocument complete = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-		Assert.notNull(vaudTax);
-		Assert.notNull(complete);
+		if (vaudTax == null) {
+			throw new IllegalArgumentException();
+		}
+		if (complete == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final RetourDI.TypeDocument typeDocumentScanne = scan.getTypeDocument();
 		if (typeDocumentScanne != null) {

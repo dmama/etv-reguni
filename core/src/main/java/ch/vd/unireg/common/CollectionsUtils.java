@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 
 public abstract class CollectionsUtils {
@@ -50,7 +49,9 @@ public abstract class CollectionsUtils {
 
 		List<O> output = new ArrayList<>();
 
-		Assert.isTrue(size > 0);
+		if (size <= 0) {
+			throw new IllegalArgumentException();
+		}
 		final Iterator<T> iter = collection.iterator();
 		final List<T> list = new ArrayList<>();
 
@@ -79,7 +80,9 @@ public abstract class CollectionsUtils {
 	 * @return une liste de listes des éléments initialement contenus dans la collection d'entrée
 	 */
 	public static <T> List<List<T>> split(Collection<T> collection, int size) {
-		Assert.isTrue(size > 0);
+		if (size <= 0) {
+			throw new IllegalArgumentException();
+		}
 		final int outputSize = collection.size() / size + 1;
 		final List<List<T>> output = new ArrayList<>(outputSize);
 

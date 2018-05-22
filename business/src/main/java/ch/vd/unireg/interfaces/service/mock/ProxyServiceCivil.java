@@ -7,7 +7,6 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.HistoriqueCommune;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.NomPrenom;
@@ -147,7 +146,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	private void assertTargetNotNull() {
-		Assert.notNull(target, "Le service civil n'a pas été défini !");
+		if (target == null) {
+			throw new IllegalArgumentException("Le service civil n'a pas été défini !");
+		}
 	}
 
 	@Override

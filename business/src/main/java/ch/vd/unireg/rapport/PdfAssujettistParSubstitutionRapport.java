@@ -9,7 +9,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -23,65 +22,67 @@ public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
 
 	public void write(final AssujettisParSubstitutionResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-			Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
-			// Création du document PDF
-			PdfAssujettistParSubstitutionRapport document = new PdfAssujettistParSubstitutionRapport();
-			PdfWriter writer = PdfWriter.getInstance(document, os);
-			document.open();
-			document.addMetaInfo(nom, description);
-			document.addEnteteUnireg();
+		// Création du document PDF
+		PdfAssujettistParSubstitutionRapport document = new PdfAssujettistParSubstitutionRapport();
+		PdfWriter writer = PdfWriter.getInstance(document, os);
+		document.open();
+		document.addMetaInfo(nom, description);
+		document.addEnteteUnireg();
 
-			// Titre
-			document.addTitrePrincipal("Rapport d'exécution du job qui liste les assujettissements par substitution.");
+		// Titre
+		document.addTitrePrincipal("Rapport d'exécution du job qui liste les assujettissements par substitution.");
 
-			// Paramètres
-			document.addEntete1("Paramètres");
-			{
-				document.addTableSimple(2, table -> {
-					table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-				});
+		// Paramètres
+		document.addEntete1("Paramètres");
+		{
+			document.addTableSimple(2, table -> {
+				table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+			});
+		}
+
+		// Résultats
+		document.addEntete1("Résultats");
+		{
+			if (results.interrupted) {
+				document.addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
+						                    + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			// Résultats
-			document.addEntete1("Résultats");
-			{
-				if (results.interrupted) {
-					document.addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-							+ "les valeurs ci-dessous sont donc incomplètes.");
-				}
+			document.addTableSimple(2, table -> {
+				table.addLigne("Nombre total de relations analysées :", String.valueOf(results.getRapportsSubstitutions().size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
+			});
+		}
 
-				document.addTableSimple(2, table -> {
-					table.addLigne("Nombre total de relations analysées :", String.valueOf(results.getRapportsSubstitutions().size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				});
+		// Relations créées
+		{
+			String filename = "substitutions.csv";
+			String titre = "Liste des assujettissements par substitution";
+			String listVide = "(aucune)";
+			try (TemporaryFile contenu = asCsvFileTraite(results.getRapportsSubstitutions(), filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
+		}
 
-			// Relations créées
-			{
-				String filename = "substitutions.csv";
-				String titre = "Liste des assujettissements par substitution";
-				String listVide = "(aucune)";
-				try (TemporaryFile contenu = asCsvFileTraite(results.getRapportsSubstitutions(), filename, status)) {
-					document.addListeDetaillee(writer, titre, listVide, filename, contenu);
-				}
+		// Erreurs
+		{
+			String filename = "erreurs.csv";
+			String titre = "Liste des erreurs rencontrées";
+			String listVide = "(aucune)";
+			try (TemporaryFile contenu = asCsvFileErreur(results.getErreurs(), filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
+		}
 
-			// Erreurs
-			{
-				String filename = "erreurs.csv";
-				String titre = "Liste des erreurs rencontrées";
-				String listVide = "(aucune)";
-				try (TemporaryFile contenu = asCsvFileErreur(results.getErreurs(), filename, status)) {
-					document.addListeDetaillee(writer, titre, listVide, filename, contenu);
-				}
-			}
+		document.close();
 
-			document.close();
-
-			status.setMessage("Génération du rapport terminée.");
+		status.setMessage("Génération du rapport terminée.");
 	}
 
 	private static TemporaryFile asCsvFileTraite(List<AssujettisParSubstitutionResults.InfoRapportSubstitution> list, String filename, StatusManager status) {

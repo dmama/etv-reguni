@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.util.StringUtils;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -370,10 +371,12 @@ public class MetiersServiceTest extends BusinessTest {
 			public void execute(TransactionStatus status) {
 				try {
 					metierService.fusionneMenages((MenageCommun) tiersDAO.get(ids.noMenageAlfredo), (MenageCommun) tiersDAO.get(ids.noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
-					ch.vd.registre.base.utils.Assert.fail();
+					throw new IllegalArgumentException();
 				}
 				catch (MetierServiceException e) {
-					ch.vd.registre.base.utils.Assert.hasText(e.getMessage());
+					if (!StringUtils.hasText(e.getMessage())) {
+						throw new IllegalArgumentException();
+					}
 				}
 			}
 		});

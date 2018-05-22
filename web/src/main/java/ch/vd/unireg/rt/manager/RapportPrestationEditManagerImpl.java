@@ -18,7 +18,6 @@ import org.springframework.context.MessageSourceAware;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.ActionException;
@@ -263,7 +262,9 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 			}
 
 			final List<RapportsPrestationView.Rapport> rl = rapportsByNumero.get(numero);
-			Assert.notNull(rl);
+			if (rl == null) {
+				throw new IllegalArgumentException();
+			}
 
 			for (RapportsPrestationView.Rapport r : rl) {
 				r.nomCourrier = Collections.singletonList(getNomPrenom(prenom, nom));
@@ -292,7 +293,9 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 					final String noAVS = (String) line[1];
 
 					final List<RapportsPrestationView.Rapport> rl = rapportsByNumero.get(numero);
-					Assert.notNull(rl);
+					if (rl == null) {
+						throw new IllegalArgumentException();
+					}
 
 					for (RapportsPrestationView.Rapport r : rl) {
 						r.noAVS = FormatNumeroHelper.formatAncienNumAVS(noAVS);
@@ -335,7 +338,9 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 				final List<Individu> individus = serviceCivilService.getIndividus(batch, null);
 				for (Individu ind : individus) {
 					final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
-					Assert.notNull(rl);
+					if (rl == null) {
+						throw new IllegalArgumentException();
+					}
 					for (RapportsPrestationView.Rapport rapport : rl) {
 						rapport.nomCourrier = Collections.singletonList(serviceCivilService.getNomPrenom(ind));
 						rapport.noAVS = getNumeroAvs(ind);
@@ -350,7 +355,9 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 						Individu ind = serviceCivilService.getIndividu(numero, null);
 						if (ind != null) {
 							final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
-							Assert.notNull(rl);
+							if (rl == null) {
+								throw new IllegalArgumentException();
+							}
 							for (RapportsPrestationView.Rapport rapport : rl) {
 								rapport.nomCourrier = Collections.singletonList(serviceCivilService.getNomPrenom(ind));
 								rapport.noAVS = getNumeroAvs(ind);
@@ -361,7 +368,9 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 						LOGGER.warn("Impossible de charger l'individu [" + numero + "]. L'erreur est : " + ex.getMessage(), ex);
 						// on affiche le message d'erreur directement dans la page, pour éviter qu'il soit perdu
 						final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(numero);
-						Assert.notNull(rl);
+						if (rl == null) {
+							throw new IllegalArgumentException();
+						}
 						for (RapportsPrestationView.Rapport rapport : rl) {
 							rapport.nomCourrier = Collections.singletonList("##erreur## : " + ex.getMessage());
 							rapport.noAVS = "##erreur##";

@@ -8,13 +8,14 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.deces.view.DecesRecapView;
 import ch.vd.unireg.metier.MetierService;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.utils.ValidatorUtils;
+
+import static ch.vd.registre.base.date.RegDate.get;
+import static ch.vd.unireg.utils.ValidatorUtils.rejectErrors;
 
 public class DecesRecapValidator implements Validator {
 
@@ -31,7 +32,9 @@ public class DecesRecapValidator implements Validator {
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 
-		Assert.isTrue(obj instanceof DecesRecapView);
+		if (!(obj instanceof DecesRecapView)) {
+			throw new IllegalArgumentException();
+		}
 		DecesRecapView decesRecapView = (DecesRecapView) obj;
 
 		boolean veuvageMarieSeul = decesRecapView.isMarieSeul() && decesRecapView.isVeuf();
@@ -49,7 +52,7 @@ public class DecesRecapValidator implements Validator {
 			}
 		}
 		else {
-			boolean dateDecesFuture = RegDate.get().isBefore(dateDeces);
+			boolean dateDecesFuture = get().isBefore(dateDeces);
 
 			//Validation du deces
 			PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(decesRecapView.getTiersId());
@@ -68,7 +71,7 @@ public class DecesRecapValidator implements Validator {
 				results = metierService.validateDeces(pp, RegDateHelper.get(decesRecapView.getDateDeces()));
 			}
 			List<String> erreurs = results.getErrors();
-			ValidatorUtils.rejectErrors(erreurs, errors);
+			rejectErrors(erreurs, errors);
 		}
 	}
 

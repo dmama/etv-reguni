@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -137,7 +136,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		if (periodiciteDecompte == PeriodiciteDecompte.UNIQUE) {
 			// [SIFISC-14407] la fin de période est calculée différemment pour les périodicités uniques
 			final PeriodeDecompte periode = periodiciteAt.getPeriodeDecompte();
-		    lr.setDateFin(periode.getPeriodeCourante(dateDebutPeriode).getDateFin());
+			lr.setDateFin(periode.getPeriodeCourante(dateDebutPeriode).getDateFin());
 		}
 		else {
 			lr.setDateFin(periodiciteAt.getFinPeriode(dateDebutPeriode));
@@ -146,7 +145,9 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		lr.setModeCommunication(dpi.getModeCommunication());
 
 		final PeriodeFiscale periodeFiscale = periodeDAO.getPeriodeFiscaleByYear(dateDebutPeriode.year());
-		Assert.notNull(periodeFiscale);
+		if (periodeFiscale == null) {
+			throw new IllegalArgumentException();
+		}
 		lr.setPeriode(periodeFiscale);
 
 		ModeleDocument modDoc = modeleDocumentDAO.getModelePourDeclarationImpotSource(periodeFiscale);
@@ -238,7 +239,9 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 				// ici, on va prendre la période max (pour limiter l'appel à la méthode du DAO)
 				final List<RegDate> boundaries = DateRangeHelper.extractBoundaries(periodesActivite);
-				Assert.isTrue(boundaries.size() >= 1);
+				if (boundaries.size() < 1) {
+					throw new IllegalArgumentException();
+				}
 				final RegDate toutDebut = boundaries.get(0) != null ? boundaries.get(0) : RegDateHelper.getEarlyDate();
 				final RegDate finUltime;
 				{

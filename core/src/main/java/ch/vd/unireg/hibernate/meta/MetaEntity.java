@@ -42,7 +42,6 @@ import org.hibernate.usertype.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.ReflexionUtils;
 import ch.vd.unireg.hibernate.DayMonthUserType;
@@ -374,7 +373,9 @@ public class MetaEntity {
 		if (estCollection) {
 			// dans le cas de collections, on va stocker le type générique de la collection comme valeur de retour
 			final Class genericType = getGenericParamReturnType(readMethod);
-			Assert.notNull(genericType);
+			if (genericType == null) {
+				throw new IllegalArgumentException();
+			}
 			propertyType = new CollectionPropertyType(genericType);
 		}
 		else if (userType != null) {

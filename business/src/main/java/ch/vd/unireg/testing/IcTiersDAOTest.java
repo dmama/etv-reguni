@@ -1,8 +1,8 @@
 package ch.vd.unireg.testing;
 
 import java.util.List;
+import java.util.Objects;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 
@@ -12,23 +12,21 @@ public class IcTiersDAOTest extends InContainerTest {
 	@Rollback
 	public void execute() throws Exception {
 
-		long id;
-		{
-			PersonnePhysique nh = new PersonnePhysique(false);
-			nh.setNom("Bla");
-			nh.setPrenomUsuel("Bli");
-			nh = (PersonnePhysique)getTiersDAO().save(nh);
-			id = nh.getNumero();
-		}
+		PersonnePhysique nh = new PersonnePhysique(false);
+		nh.setNom("Bla");
+		nh.setPrenomUsuel("Bli");
+		nh = (PersonnePhysique) getTiersDAO().save(nh);
+		long id = nh.getNumero();
 
-		{
-			List<Tiers> list = getTiersDAO().getAll();
-			Assert.isEqual(1, list.size());
-			Assert.isEqual(id, list.get(0).getNumero());
+		List<Tiers> list = getTiersDAO().getAll();
+		if (list.size() != 1) {
+			throw new IllegalArgumentException();
 		}
-
-		{
-			Assert.isTrue(getTiersDAO().exists(id));
+		if (!Objects.equals(id, list.get(0).getNumero())) {
+			throw new IllegalArgumentException();
+		}
+		if (!getTiersDAO().exists(id)) {
+			throw new IllegalArgumentException();
 		}
 	}
 

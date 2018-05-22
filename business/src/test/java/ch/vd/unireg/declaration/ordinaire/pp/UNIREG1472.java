@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementPersonnesPhysiquesCalculator;
@@ -19,6 +18,9 @@ import ch.vd.unireg.metier.assujettissement.PeriodeImpositionServiceImpl;
 import ch.vd.unireg.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.unireg.parametrage.MockParameterAppService;
 import ch.vd.unireg.tiers.TiersServiceImpl;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class UNIREG1472 {
 	
@@ -43,19 +45,19 @@ public class UNIREG1472 {
 		di.setDateFin(RegDate.get(2008,12,31));
 
 		{
-			final List<Assujettissement> assujettissements = Collections.<Assujettissement>singletonList(new Indigent(null, RegDate.get(2008, 1, 1), RegDate.get(2008, 12, 31), null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER));
-			Assert.isTrue(processor.isIndigent(di, assujettissements));
+			final List<Assujettissement> assujettissements = Collections.singletonList(new Indigent(null, RegDate.get(2008, 1, 1), RegDate.get(2008, 12, 31), null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER));
+			assertTrue(processor.isIndigent(di, assujettissements));
 		}
 
 		{
-			final List<Assujettissement> assujettissements = Collections.<Assujettissement>singletonList(new VaudoisOrdinaire(null, RegDate.get(2008, 1, 1), RegDate.get(2008, 12, 31), null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER));
-			Assert.isFalse(processor.isIndigent(di, assujettissements));
+			final List<Assujettissement> assujettissements = Collections.singletonList(new VaudoisOrdinaire(null, RegDate.get(2008, 1, 1), RegDate.get(2008, 12, 31), null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER));
+			assertFalse(processor.isIndigent(di, assujettissements));
 		}
 
 		{
 			final List<Assujettissement> assujettissements = Arrays.asList(new Indigent(null, RegDate.get(2008, 1, 1), RegDate.get(2008, 1, 31), null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER),
 			                                                               new VaudoisOrdinaire(null, RegDate.get(2008, 2, 1), RegDate.get(2008, 12, 31), null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER));
-			Assert.isFalse(processor.isIndigent(di, assujettissements));
+			assertFalse(processor.isIndigent(di, assujettissements));
 		}
 	}
 

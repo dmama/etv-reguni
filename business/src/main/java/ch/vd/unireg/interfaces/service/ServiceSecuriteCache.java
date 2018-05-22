@@ -11,10 +11,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
-import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.cache.CacheHelper;
 import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
@@ -22,6 +18,9 @@ import ch.vd.unireg.cache.KeyDumpableCache;
 import ch.vd.unireg.cache.KeyValueDumpableCache;
 import ch.vd.unireg.cache.UniregCacheInterface;
 import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.service.host.Operateur;
 import ch.vd.unireg.security.IfoSecProcedure;
 import ch.vd.unireg.security.IfoSecProfil;
@@ -79,7 +78,9 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);
-			Assert.notNull(cache);
+			if (cache == null) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 

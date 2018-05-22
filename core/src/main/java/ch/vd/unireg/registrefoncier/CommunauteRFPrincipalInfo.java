@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.tiers.Contribuable;
 
@@ -104,7 +103,9 @@ public class CommunauteRFPrincipalInfo implements CollatableDateRange<Communaute
 
 	@Override
 	public CommunauteRFPrincipalInfo collate(CommunauteRFPrincipalInfo next) {
-		Assert.isTrue(isCollatable(next));
+		if (!isCollatable(next)) {
+			throw new IllegalArgumentException();
+		}
 		final Long id = (this.id == null ? next.id : this.id);
 		final Long ayantDroitId = (this.ayantDroitId == null ? next.ayantDroitId : this.ayantDroitId);
 		final boolean parDefaut = this.parDefaut && next.parDefaut;

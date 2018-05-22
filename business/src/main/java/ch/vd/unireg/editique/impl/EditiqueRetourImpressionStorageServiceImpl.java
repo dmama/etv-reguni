@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.AsyncStorage;
 import ch.vd.unireg.editique.EditiqueResultat;
@@ -110,7 +109,9 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 	@Override
 	public EditiqueResultat getDocument(final String nomDocument, final Duration timeout) {
 
-		Assert.isFalse(timeout.isNegative() || timeout.isZero());
+		if (timeout.isNegative() || timeout.isZero()) {
+			throw new IllegalArgumentException();
+		}
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(String.format("Demande de récupération du document '%s'", nomDocument));

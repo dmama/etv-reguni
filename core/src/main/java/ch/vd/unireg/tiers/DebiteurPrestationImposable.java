@@ -24,7 +24,6 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.ComparisonHelper;
@@ -340,7 +339,9 @@ public class DebiteurPrestationImposable extends Tiers {
 		}
 
 		this.periodicites.add(nouvellePeriodicite);
-		Assert.isTrue(nouvellePeriodicite.getDebiteur() == null || nouvellePeriodicite.getDebiteur() == this);
+		if (nouvellePeriodicite.getDebiteur() != null && nouvellePeriodicite.getDebiteur() != this) {
+			throw new IllegalArgumentException();
+		}
 		nouvellePeriodicite.setDebiteur(this);
 
 	}

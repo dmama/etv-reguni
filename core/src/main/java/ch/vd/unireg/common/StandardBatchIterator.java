@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Iterateur qui découpe en batches de taille déterminée un ensemble des données.
  *
@@ -24,7 +22,9 @@ public class StandardBatchIterator<E> implements Iterator<List<E>>, BatchIterato
 
 
 	public StandardBatchIterator(Iterator<E> iterator, int batchSize) {
-		Assert.isTrue(batchSize > 0);
+		if (batchSize <= 0) {
+			throw new IllegalArgumentException();
+		}
 		this.sourceIterator = iterator;
 		this.batchSize = batchSize;
 		this.next = buildNext();
@@ -35,7 +35,9 @@ public class StandardBatchIterator<E> implements Iterator<List<E>>, BatchIterato
 	}
 
 	public StandardBatchIterator(Collection<E> list, int batchSize) {
-		Assert.isTrue(batchSize > 0);
+		if (batchSize <= 0) {
+			throw new IllegalArgumentException();
+		}
 		this.sourceIterator = list.iterator();
 		this.batchSize = batchSize;
 		this.next = buildNext();

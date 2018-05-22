@@ -2,8 +2,6 @@ package ch.vd.unireg.security;
 
 import java.util.List;
 
-import org.springframework.util.Assert;
-
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.tiers.Tiers;
@@ -136,7 +134,9 @@ public class SecurityHelper {
 	 *         un droit d'accès complet au dossier.
 	 */
 	public static Niveau getDroitAcces(SecurityProviderInterface provider, Tiers tiers) {
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		return provider.getDroitAcces(visa, tiers.getNumero());
 	}
@@ -152,7 +152,9 @@ public class SecurityHelper {
 	 *         lecture seulement; et <b>ECRITURE</b> si l'opérateur possède un droit d'accès complet au dossier.
 	 */
 	public static List<Niveau> getDroitsAcces(SecurityProviderInterface provider, List<Long> ids) {
-		Assert.notNull(ids);
+		if (ids == null) {
+			throw new IllegalArgumentException();
+		}
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		return provider.getDroitsAcces(visa, ids);
 	}

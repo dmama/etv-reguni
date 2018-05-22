@@ -7,7 +7,6 @@ import java.util.List;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -20,7 +19,9 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 
 	public void write(final DeterminerMouvementsDossiersEnMasseResults results, String nom, String description, Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -34,10 +35,10 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-		    addTableSimple(2, table -> {
-		        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-			    table.addLigne("Archives seulements :", String.valueOf(results.archivesSeulement));
-		    });
+			addTableSimple(2, table -> {
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
+				table.addLigne("Archives seulements :", String.valueOf(results.archivesSeulement));
+			});
 		}
 
 		// Résultats
@@ -45,7 +46,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		{
 			if (results.isInterrompu()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			addTableSimple(2, table -> {

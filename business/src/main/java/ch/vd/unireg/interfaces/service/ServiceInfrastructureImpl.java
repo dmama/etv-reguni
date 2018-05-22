@@ -20,7 +20,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.adresse.AdresseGenerique;
+import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -39,8 +40,6 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.adresse.AdresseGenerique;
-import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.tiers.TiersDAO;
 
 /**
@@ -660,7 +659,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 				return false;
 			}
 			final Localite localite = getLocaliteByONRP(onrp, adresse.getDateFin());
-			Assert.notNull(localite, "Aucune localité trouvée avec le numéro " + onrp);
+			if (localite == null) {
+				throw new IllegalArgumentException("Aucune localité trouvée avec le numéro " + onrp);
+			}
 			return estDansLeCanton(localite.getCommuneLocalite());
 		}
 		else {

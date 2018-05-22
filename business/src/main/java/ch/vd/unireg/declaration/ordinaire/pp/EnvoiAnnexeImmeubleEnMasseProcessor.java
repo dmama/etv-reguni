@@ -12,7 +12,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -97,7 +96,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.periodeImpositionService = periodeImpositionService;
 		this.adresseService = adresseService;
-		Assert.isTrue(tailleLot > 0);
+		if (tailleLot < 1) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public EnvoiAnnexeImmeubleResults run(final int anneePeriode, final List<ContribuableAvecImmeuble> listCtbImmo, final int nbMax,

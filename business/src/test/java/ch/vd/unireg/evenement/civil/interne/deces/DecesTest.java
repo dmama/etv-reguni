@@ -9,16 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
+import ch.vd.unireg.evenement.civil.interne.MessageCollector;
+import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.unireg.evenement.civil.interne.MessageCollector;
-import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -26,6 +25,8 @@ import ch.vd.unireg.type.EtatEvenementCivil;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.TypeEvenementCivil;
 
+import static ch.vd.unireg.type.EtatEvenementCivil.A_TRAITER;
+import static ch.vd.unireg.type.TypeEvenementCivil.DECES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -112,7 +113,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		EvenementCivilRegPP
 				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_CELIBATAIRE , 0L, 1234, null);
 		Deces adapter = new Deces(evenement, context, options);
-		Assert.isNull(adapter.getConjointSurvivant(), "le conjoint survivant d'un celibataire ne doit pas exister");
+		assertNull("le conjoint survivant d'un celibataire ne doit pas exister", adapter.getConjointSurvivant());
 	}
 
 
@@ -129,7 +130,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		EvenementCivilRegPP
 				evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE_SEUL , 0L, 1234, null);
 		Deces adapter = new Deces(evenement, context, options);
-		Assert.isNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié seul ne doit pas exister");
+		assertNull("le conjoint survivant d'un marié seul ne doit pas exister", adapter.getConjointSurvivant());
 	}
 
 	/**
@@ -142,10 +143,10 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		// Cas du marié
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE);
-		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE , 0L, 1234, null);
+		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, DECES, A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE, 0L, 1234, null);
 		Deces adapter = new Deces(evenement, context, options);
-		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié doit exister");
-		Assert.isTrue( adapter.getConjointSurvivant().getNoTechnique() == NO_INDIVIDU_VEUF_MARIE, "le conjoint survivant n'est pas celui attendu");
+		assertNotNull("le conjoint survivant d'un marié doit exister", adapter.getConjointSurvivant());
+		assertEquals("le conjoint survivant n'est pas celui attendu", adapter.getConjointSurvivant().getNoTechnique(), (long) NO_INDIVIDU_VEUF_MARIE);
 	}
 
 	/**
@@ -158,10 +159,10 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		// Cas du pacsé
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_PACSE);
-		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_PACSE , 0L, 1234, null);
+		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, DECES, A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_PACSE, 0L, 1234, null);
 		Deces adapter = new Deces(evenement, context, options);
-		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un pacsé doit pas exister");
-		Assert.isTrue( adapter.getConjointSurvivant().getNoTechnique() == NO_INDIVIDU_VEUF_PACSE, "le conjoint survivant n'est pas celui attendu");
+		assertNotNull("le conjoint survivant d'un pacsé doit pas exister", adapter.getConjointSurvivant());
+		assertEquals("le conjoint survivant n'est pas celui attendu", adapter.getConjointSurvivant().getNoTechnique(), (long) NO_INDIVIDU_VEUF_PACSE);
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecesTest.class);

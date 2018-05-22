@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.GentilIterator;
 import ch.vd.unireg.common.StatusManager;
@@ -61,7 +60,9 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 	                  final RegDate dateReference, String nom, String description, final Date dateGeneration, OutputStream os,
 	                  StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -246,7 +247,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 		// événements externes
 		if (externes != null) {
-			
+
 			newPage();
 			addTitrePrincipal("Evénements externes");
 
@@ -286,7 +287,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements d'identification de contribuable : états
 			addEntete1("Répartition par état");
 			{
-				addTableSimple(new float[] {60f, 20f, 20f}, table -> {
+				addTableSimple(new float[]{60f, 20f, 20f}, table -> {
 
 					table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
 					table.setHeaderRows(1);
@@ -324,7 +325,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements ReqDes : états
 			addEntete1("Répartition par état");
 			{
-				addTableSimple(new float[] {60f, 20f, 20f}, table -> {
+				addTableSimple(new float[]{60f, 20f, 20f}, table -> {
 
 					table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
 					table.setHeaderRows(1);

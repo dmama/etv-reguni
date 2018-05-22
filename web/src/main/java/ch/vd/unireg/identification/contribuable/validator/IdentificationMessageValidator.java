@@ -3,7 +3,6 @@ package ch.vd.unireg.identification.contribuable.validator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.identification.contribuable.view.IdentificationContribuableListCriteria;
 import ch.vd.unireg.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
 
@@ -36,7 +35,7 @@ public class IdentificationMessageValidator implements Validator {
 			validatorList.validate(target,errors);
 		}
 		else{
-			Assert.fail();
+			throw new IllegalArgumentException();
 		}
 
 

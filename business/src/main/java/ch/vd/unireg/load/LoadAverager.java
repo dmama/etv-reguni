@@ -5,7 +5,6 @@ import java.util.TimerTask;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.stats.LoadMonitorable;
 
 /**
@@ -55,10 +54,9 @@ public class LoadAverager {
 	private int samplingHighWaterMark;
 
 	public LoadAverager(LoadMonitorable service, String nomService, int nbSamplingPoints, int samplingPeriod) {
-		Assert.notNull(service);
-		Assert.isTrue(StringUtils.isNotBlank(nomService));
-		Assert.isTrue(nbSamplingPoints > 0);
-		Assert.isTrue(samplingPeriod > 0);
+		if (service == null || StringUtils.isBlank(nomService) || nbSamplingPoints <= 0 || samplingPeriod <= 0) {
+			throw new IllegalArgumentException();
+		}
 
 		this.service = service;
 		this.nomService = nomService;
@@ -85,7 +83,9 @@ public class LoadAverager {
 	}
 
 	public void start() {
-		Assert.isNull(timer);
+		if (timer != null) {
+			throw new IllegalArgumentException();
+		}
 
 		// un thread daemon est tout-à-fait suffisant, cela ne doit en aucun cas bloquer l'arrêt de l'application
 		timer = new Timer(String.format("Load-%s", nomService), true);

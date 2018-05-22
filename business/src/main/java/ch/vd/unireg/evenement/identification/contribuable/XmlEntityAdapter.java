@@ -29,7 +29,6 @@ import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
 import ch.vd.unireg.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.unireg.evenement.identification.contribuable.Erreur.TypeErreur;
@@ -306,7 +305,9 @@ public abstract class XmlEntityAdapter {
 			return TypeErreur.TECHNIQUE;
 		}
 		else {
-			Assert.isEqual(2, xml.intValue());
+			if (xml.intValue() != 2) {
+				throw new IllegalArgumentException();
+			}
 			return TypeErreur.METIER;
 		}
 	}
@@ -385,7 +386,9 @@ public abstract class XmlEntityAdapter {
 			return Sexe.MASCULIN;
 		}
 		else {
-			Assert.isEqual(2, sexe.intValue());
+			if (sexe.intValue() != 2) {
+				throw new IllegalArgumentException();
+			}
 			return Sexe.FEMININ;
 		}
 	}
@@ -424,7 +427,9 @@ public abstract class XmlEntityAdapter {
 
 		final Calendar annee = date.getAnnee();
 		try {
-			Assert.notNull(annee);
+			if (annee == null) {
+				throw new IllegalArgumentException();
+			}
 			return RegDateHelper.get(annee.get(Calendar.YEAR), DateConstants.EXTENDED_VALIDITY_RANGE);
 		}
 		catch (IllegalArgumentException e) {

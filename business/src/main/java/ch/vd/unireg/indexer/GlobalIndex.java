@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.simpleindexer.LuceneException;
 import ch.vd.registre.simpleindexer.LuceneIndex;
 import ch.vd.registre.simpleindexer.ReadOnlyCallback;
@@ -59,7 +58,9 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	private void createIndex() {
 
 		// récupération du répertoire sur le disque
-		Assert.isNull(index);
+		if (index != null) {
+			throw new IllegalArgumentException();
+		}
 		try {
 			index = provider.getNewIndex();
 			// optimize(); // Prends bcp de temps, pas possible lors de l'open
@@ -72,7 +73,9 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 
 	private void closeIndex() {
 
-		Assert.notNull(index, BAD_CONTEXT_MESSAGE);
+		if (index == null) {
+			throw new IllegalArgumentException(BAD_CONTEXT_MESSAGE);
+		}
 		try {
 			index.close();
 		}
@@ -87,7 +90,9 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	@Override
 	public void overwriteIndex() {
 
-		Assert.notNull(index, BAD_CONTEXT_MESSAGE);
+		if (index == null) {
+			throw new IllegalArgumentException(BAD_CONTEXT_MESSAGE);
+		}
 		try {
 			index.overwrite();
 		}
@@ -168,7 +173,9 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	 */
 	@Override
 	public void removeThenIndexEntity(final IndexableData data) {
-		Assert.notNull(data);
+		if (data == null) {
+			throw new IllegalArgumentException();
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Removing and indexing entity: id = " + data.getId());
@@ -203,7 +210,9 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	 */
 	@Override
 	public void removeThenIndexEntities(final List<IndexableData> data) {
-		Assert.notNull(data);
+		if (data == null) {
+			throw new IllegalArgumentException();
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Re-indexing entities: ids = " + Arrays.toString(data.toArray()));
@@ -240,7 +249,9 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	 */
 	@Override
 	public void indexEntity(final IndexableData data) {
-		Assert.notNull(data);
+		if (data == null) {
+			throw new IllegalArgumentException();
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Indexing entity: id = " + data.getId());
@@ -274,7 +285,9 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	 */
 	@Override
 	public void indexEntities(final List<IndexableData> data) {
-		Assert.notNull(data);
+		if (data == null) {
+			throw new IllegalArgumentException();
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Indexing entities: ids = " + Arrays.toString(data.toArray()));

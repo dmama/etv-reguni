@@ -34,18 +34,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Canton;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Localite;
-import ch.vd.unireg.interfaces.upi.ServiceUpiException;
-import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
-import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -76,9 +68,16 @@ import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Canton;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
+import ch.vd.unireg.interfaces.upi.ServiceUpiException;
+import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
+import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.Entreprise;
@@ -863,7 +862,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @throws Exception si ça a pas marché
 	 */
 	private void identifie(IdentificationContribuable message, PersonnePhysique personne, Etat etat) {
-		Assert.notNull(personne);
+		if (personne == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// [UNIREG-1911] On retourne le numéro du ménage-commun associé s'il existe
 		// [SIFISC-1725] La date de référence pour le couple doit être en rapport avec la période fiscale du message
@@ -879,12 +880,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final int periodeFiscale = message.getDemande().getPeriodeFiscale();
 		final int anneeCourante = RegDate.get().year();
 		if (periodeFiscale < 2003) {
-			dateReferenceMenage = RegDate.get(anneeCourante -1, 12, 31);
+			dateReferenceMenage = RegDate.get(anneeCourante - 1, 12, 31);
 		}
-		else if (periodeFiscale >=  anneeCourante) {
+		else if (periodeFiscale >= anneeCourante) {
 			dateReferenceMenage = RegDate.get();
 		}
-		else{
+		else {
 			dateReferenceMenage = RegDate.get(periodeFiscale, 12, 31);
 		}
 
@@ -935,7 +936,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @throws Exception si ça a pas marché
 	 */
 	private void identifie(IdentificationContribuable message, Entreprise entreprise, Etat etat) {
-		Assert.notNull(entreprise);
+		if (entreprise == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final String user = AuthenticationHelper.getCurrentPrincipal();
 
@@ -1175,7 +1178,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	@Override
 	public void soumettre(IdentificationContribuable message) {
 		final Demande demande = message.getDemande();
-		Assert.notNull(demande, "Le message ne contient aucune demande.");
+		if (demande == null) {
+			throw new IllegalArgumentException("Le message ne contient aucune demande.");
+		}
 		final TypeDemande typeDemande = demande.getTypeDemande();
 		final Consumer<IdentificationContribuable> soumission = MAP_SOUMISSION.get(typeDemande);
 		if (soumission != null) {
@@ -1255,7 +1260,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		// Ensuite : effectuer l'identification
 		try {
 			final Demande demande = message.getDemande();
-			Assert.notNull(demande, "Le message ne contient aucune demande.");
+			if (demande == null) {
+				throw new IllegalArgumentException("Le message ne contient aucune demande.");
+			}
 
 			// [SIFISC-20374] Pour le moment, on bloque toute tentative automatique d'identification de contribuable non-PP
 			List<Long> found;
@@ -1266,7 +1273,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 			else {
 				final CriteresPersonne criteresPersonne = demande.getPersonne();
-				Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
+				if (demande == null) {
+					throw new IllegalArgumentException("Le message ne contient aucun critère sur la personne à identifier.");
+				}
 
 				final Mutable<String> avsUpi = new MutableObject<>();
 				try {
@@ -1536,7 +1545,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		// Ensuite : effectuer l'identification
 
 		final Demande demande = message.getDemande();
-		Assert.notNull(demande, "Le message ne contient aucune demande.");
+		if (demande == null) {
+			throw new IllegalArgumentException("Le message ne contient aucune demande.");
+		}
 
 		final CriteresPersonne criteresPersonne = demande.getPersonne();
 		if (criteresPersonne != null) {

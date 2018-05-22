@@ -20,7 +20,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.cache.CacheHelper;
 import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.EhCacheStats;
@@ -426,7 +425,9 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		cache = cacheManager.getCache(cacheName);
-		Assert.notNull(cache);
+		if (cache == null) {
+			throw new IllegalArgumentException();
+		}
 		dataEventService.register(this);
 		uniregCacheManager.register(this);
 		initCaches();

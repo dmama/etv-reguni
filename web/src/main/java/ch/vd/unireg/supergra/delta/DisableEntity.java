@@ -3,7 +3,6 @@ package ch.vd.unireg.supergra.delta;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.supergra.EntityKey;
 import ch.vd.unireg.supergra.SuperGraContext;
@@ -16,7 +15,9 @@ public class DisableEntity extends Delta {
 	private final EntityKey key;
 
 	public DisableEntity(EntityKey key) {
-		Assert.notNull(key);
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
 		this.key = key;
 	}
 

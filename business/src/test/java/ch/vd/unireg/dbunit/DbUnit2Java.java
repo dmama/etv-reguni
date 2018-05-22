@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.HibernateEntity;
@@ -32,6 +31,8 @@ import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.SituationFamille;
 import ch.vd.unireg.tiers.Tache;
 import ch.vd.unireg.tiers.Tiers;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Faux-test mais vrai utilitaire qui permet de lire un fichier DBUnit et de générer le code qui charge les mêmes données mais en pure Java.
@@ -150,7 +151,7 @@ public class DbUnit2Java extends BusinessTest {
 	private void print(HibernateEntity o) throws Exception {
 
 		final ClassInfo info = concreteClassInfo.get(o.getClass());
-		Assert.notNull(info);
+		assertNotNull(info);
 		final String clazz = o.getClass().getSimpleName();
 		final String instance = info.nextInstanceName();
 		entityInstanceNames.put(o, instance);
@@ -196,7 +197,7 @@ public class DbUnit2Java extends BusinessTest {
 
 		if (parentProp != null && !(o instanceof Declaration)) {
 			final String parentInstanceName = entityInstanceNames.get(parent);
-			Assert.notNull(parentInstanceName);
+			assertNotNull(parentInstanceName);
 			String s = parentInstanceName + ".add" + info.baseClass.getSimpleName() + '(' + instance + ");";
 			System.out.println(s);
 
@@ -209,7 +210,7 @@ public class DbUnit2Java extends BusinessTest {
 			// Cas spécial pour les déclarations qui doivent être sauvées par elles-mêmes
 			if (o instanceof Declaration) {
 				final String parentInstanceName = entityInstanceNames.get(parent);
-				Assert.notNull(parentInstanceName);
+				assertNotNull(parentInstanceName);
 				System.out.println(instance + ".setTiers(" + parentInstanceName + ");");
 			}
 
@@ -238,8 +239,8 @@ public class DbUnit2Java extends BusinessTest {
 						}
 					}
 				}
-				Assert.notNull(sujetName);
-				Assert.notNull(objetName);
+				assertNotNull(sujetName);
+				assertNotNull(objetName);
 
 				System.out.println(sujetName + ".addRapportSujet(" + instance + ");");
 				System.out.println(objetName + ".addRapportObjet(" + instance + ");");
@@ -271,7 +272,7 @@ public class DbUnit2Java extends BusinessTest {
 		else if (value instanceof HibernateEntity) {
 			final HibernateEntity entity = (HibernateEntity) value;
 			final String name = entityInstanceNames.get(entity);
-			Assert.notNull(name);
+			assertNotNull(name);
 			return name;
 		}
 		else {

@@ -14,7 +14,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -63,6 +62,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
@@ -773,10 +773,10 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		boolean checkImmovableProperties = PartyPart.IMMOVABLE_PROPERTIES == p; 		// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 		boolean checkChildren = PartyPart.CHILDREN == p;
 		boolean checkParents = PartyPart.PARENTS == p;
-		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
-				|| checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
-				|| checkCorporationStatuses || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
-				checkChildren || checkParents, "La partie [" + p + "] est inconnue");
+		assertTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
+				           || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
+				           || checkCorporationStatuses || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
+				           checkChildren || checkParents);
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");

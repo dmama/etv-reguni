@@ -4,20 +4,15 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.common.FiscalDateHelper;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -26,12 +21,18 @@ import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -89,9 +90,9 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(NUMERO_CONTRIBUABLE);
 		List<TiersIndexedData> list = searcher.search(criteria);
-		Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé");
+		Assert.assertEquals("Le tiers n'a pas été indexé", 1, list.size());
 		TiersIndexedData tiers = list.get(0);
-		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE), "Le numéro du tiers est incorrect");
+		Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), NUMERO_CONTRIBUABLE);
 
 		// changement de la date de naissance dans le registre civil
 		doModificationIndividu(NO_INDIVIDU, new IndividuModification() {
@@ -123,12 +124,12 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 			// on cherche de nouveau
 			List<TiersIndexedData> l = searcher.search(criteria);
 			LOGGER.debug("numero : " + l.get(0).getNumero());
-			LOGGER.debug ("nom : " + l.get(0).getNom1());
-			Assert.isTrue(l.size() == 1, "L'indexation n'a pas fonctionné");
+			LOGGER.debug("nom : " + l.get(0).getNom1());
+			Assert.assertEquals("L'indexation n'a pas fonctionné", 1, l.size());
 
 			// on verifie que le changement a bien été effectué
-			String dateNaissance = String.format("%4d%02d%02d", DATE_NAISSANCE_CORRIGEE.year(), DATE_NAISSANCE_CORRIGEE.month(), DATE_NAISSANCE_CORRIGEE.day());
-			Assert.isTrue(l.get(0).getDateNaissanceInscriptionRC().equals(dateNaissance), "la nouvelle date de naissance n'a pas été indexé");
+			String dateNaissance = format("%4d%02d%02d", DATE_NAISSANCE_CORRIGEE.year(), DATE_NAISSANCE_CORRIGEE.month(), DATE_NAISSANCE_CORRIGEE.day());
+			Assert.assertEquals("la nouvelle date de naissance n'a pas été indexé", l.get(0).getDateNaissanceInscriptionRC(), dateNaissance);
 		}
 
 	}
@@ -147,9 +148,9 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(NUMERO_CONTRIBUABLE_ERREUR);
 		List<TiersIndexedData> list = searcher.search(criteria);
-		Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé");
+		Assert.assertEquals("Le tiers n'a pas été indexé", 1, list.size());
 		TiersIndexedData tiers = list.get(0);
-		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE_ERREUR), "Le numéro du tiers est incorrect");
+		Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), NUMERO_CONTRIBUABLE_ERREUR);
 
 		// changement de la date de naissance dans le registre civil
 		doModificationIndividu(NO_INDIVIDU_ERREUR, new IndividuModification() {

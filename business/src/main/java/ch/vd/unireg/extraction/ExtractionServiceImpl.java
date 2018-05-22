@@ -24,7 +24,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -151,13 +150,17 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		}
 
 		public void onStart() {
-			Assert.isEqual(JobState.WAITING_FOR_START, this.state);
+			if (this.state != JobState.WAITING_FOR_START) {
+				throw new IllegalArgumentException();
+			}
 			this.state = JobState.RUNNING;
 			this.startTimestamp = System.nanoTime();
 		}
 
 		public void onStop(ExtractionResult result) {
-			Assert.isTrue(this.state != JobState.STOPPED && this.state != JobState.CANCELLED);
+			if (this.state == JobState.STOPPED || this.state == JobState.CANCELLED) {
+				throw new IllegalStateException();
+			}
 			if (this.state == JobState.RUNNING) {
 				this.state = JobState.STOPPED;
 			}
@@ -302,7 +305,9 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		private final StatusManager statusManager;
 
 		public ExtractorLauncher(T extractor) {
-			Assert.notNull(extractor);
+			if (extractor == null) {
+				throw new IllegalArgumentException();
+			}
 			this.extractor = extractor;
 			this.statusManager = extractor.getStatusManager();
 			if (this.statusManager != null) {
@@ -662,7 +667,10 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	}
 
 	private ExtractionJob postExtractionQuery(String visa, ExtractorLauncher launcher) {
-		Assert.isTrue(StringUtils.isNotBlank(visa), "Le visa ne doit pas être vide");
+
+		if (StringUtils.isBlank(visa)) {
+			throw new IllegalArgumentException("Le visa ne doit pas être vide");
+		}
 
 		// puis on poste la demande d'exécution dans la queue
 		final ExtractionJobImpl jobInfo = new ExtractionJobImpl(visa, launcher);
@@ -712,8 +720,12 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		Assert.isTrue(expiration > 0, "La valeur en jours de la durée de validité des extractions doit être strictement positive");
-		Assert.isTrue(threadPoolSize > 0, "Le nombre de threads dans le pool doit être strictement positif");
+		if (expiration <= 0) {
+			throw new IllegalArgumentException("La valeur en jours de la durée de validité des extractions doit être strictement positive");
+		}
+		if (threadPoolSize <= 0) {
+			throw new IllegalArgumentException("Le nombre de threads dans le pool doit être strictement positif");
+		}
 
 		final ThreadNameGenerator threadNameGenerator = new DefaultThreadNameGenerator("Extraction");
 		executorService = new MonitorableExecutorService<>(Executors.newFixedThreadPool(threadPoolSize, r -> new ExtractorThread(r, threadNameGenerator.getNewThreadName())));

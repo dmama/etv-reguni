@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.LockHelper;
 
 class ParametreAppContainer implements ParametreAppAccessor {
@@ -303,12 +302,16 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
-		Assert.isEqual(ParametreEnum.Type.jourDansAnnee, p.getType());
+		if (p.getType() != ParametreEnum.Type.jourDansAnnee) {
+			throw new IllegalArgumentException();
+		}
 		return (Integer[]) p.convertirStringVersValeurTypee(get(p));
 	}
 
 	private Integer[] getValeurPourParametreDeTypeDate(ParametreEnum p) {
-		Assert.isEqual(ParametreEnum.Type.date, p.getType());
+		if (p.getType() != ParametreEnum.Type.date) {
+			throw new IllegalArgumentException();
+		}
 		return (Integer[]) p.convertirStringVersValeurTypee(get(p));
 	}
 
@@ -377,7 +380,9 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val) {
-		Assert.isEqual(2, val.length);
+		if (val.length != 2) {
+			throw new IllegalArgumentException();
+		}
 		setValeur(ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -423,7 +428,9 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setFeteNationale(Integer[] val) {
-		Assert.isEqual(2, val.length);
+		if (val.length != 2) {
+			throw new IllegalArgumentException();
+		}
 		setValeur(ParametreEnum.feteNationale, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -434,7 +441,9 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setLendemainNouvelAn(Integer[] val) {
-		Assert.isEqual(2, val.length);
+		if (val.length != 2) {
+			throw new IllegalArgumentException();
+		}
 		setValeur(ParametreEnum.lendemainNouvelAn, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -450,13 +459,17 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setNoel(Integer[] val) {
-		Assert.isEqual(2, val.length);
+		if (val.length != 2) {
+			throw new IllegalArgumentException();
+		}
 		setValeur(ParametreEnum.noel, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
 	public void setNouvelAn(Integer[] val) {
-		Assert.isEqual(2, val.length);
+		if (val.length != 2) {
+			throw new IllegalArgumentException();
+		}
 		setValeur(ParametreEnum.nouvelAn, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -488,7 +501,9 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setDateExclusionDecedeEnvoiDI(Integer[] val) {
-		Assert.isEqual(2, val.length);
+		if (val.length != 2) {
+			throw new IllegalArgumentException();
+		}
 		setValeur(ParametreEnum.dateExclusionDecedeEnvoiDI, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -514,7 +529,9 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setDateDebutEnvoiLettresBienvenue(Integer[] val) {
-		Assert.isEqual(3, val.length);
+		if (val.length != 3) {
+			throw new IllegalArgumentException();
+		}
 		setValeur(ParametreEnum.dateDebutEnvoiLettresBienvenue, String.valueOf(val[0]) + '.' + val[1] + '.' + val[2]);
 	}
 
@@ -545,7 +562,9 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(Integer[] val) {
-		Assert.isEqual(3, val.length);
+		if (val.length != 3) {
+			throw new IllegalArgumentException();
+		}
 		setValeur(ParametreEnum.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI, String.valueOf(val[0]) + '.' + val[1] + '.' + val[2]);
 	}
 }

@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.document.Document;
 import ch.vd.unireg.utils.LogLevel;
@@ -120,7 +119,9 @@ public class Audit {
 	 */
 	public static void success(String message, Document doc) {
 		Long id = doc.getId();
-		Assert.notNull(id);
+		if (id == null) {
+			throw new IllegalArgumentException();
+		}
 		logAuditLine(AuditLevel.SUCCESS, message, null, id);
 	}
 
@@ -132,7 +133,9 @@ public class Audit {
 	 */
 	public static void error(String message, Document doc) {
 		Long id = doc.getId();
-		Assert.notNull(id);
+		if (id == null) {
+			throw new IllegalArgumentException();
+		}
 		logAuditLine(AuditLevel.ERROR, message, null, id);
 	}
 
@@ -144,7 +147,9 @@ public class Audit {
 	 */
 	public static void info(String message, Document doc) {
 		Long id = doc.getId();
-		Assert.notNull(id);
+		if (id == null) {
+			throw new IllegalArgumentException();
+		}
 		logAuditLine(AuditLevel.INFO, message, null, id);
 	}
 
@@ -156,7 +161,9 @@ public class Audit {
 		LogLevel.log(LOGGER, level.asLogLevel(), PREFIX + message);
 
 		try {
-			Assert.notNull(dao, "La DAO est Nulle! Le logging ne peut se faire que pendant que le contexte Spring se met en place");
+			if (dao == null) {
+				throw new IllegalArgumentException("La DAO est Nulle! Le logging ne peut se faire que pendant que le contexte Spring se met en place");
+			}
 			AuditLine line = new AuditLine(getThreadId(), evtId, AuthenticationHelper.getCurrentPrincipal(), level, message, docId);
 			dao.insertLineInNewTx(line);
 		}

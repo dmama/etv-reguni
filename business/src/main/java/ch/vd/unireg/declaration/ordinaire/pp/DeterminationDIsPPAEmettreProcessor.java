@@ -23,7 +23,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -313,7 +312,9 @@ public class DeterminationDIsPPAEmettreProcessor {
 				if (oid == null) {
 					// le contribuable n'a jamais possédé de for fiscal vaudois -> on l'envoie sur l'ACI
 					oid = tiersService.getOfficeImpot(ServiceInfrastructureService.noACI);
-					Assert.notNull(oid);
+					if (oid == null) {
+						throw new IllegalArgumentException();
+					}
 				}
 
 				// [UNIREG-1742] pas de période pour la déclaration => on crée une tâche d'annulation
@@ -529,11 +530,15 @@ public class DeterminationDIsPPAEmettreProcessor {
 		}
 
 		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, details.getDateFin());
-		Assert.notNull(oid);
+		if (oid == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création et sauvegarde de la tâche en base
 		final RegDate dateEcheance = periode.getParametrePeriodeFiscalePP(details.getTypeContribuable()).getDateFinEnvoiMasseDI();
-		Assert.notNull(dateEcheance);
+		if (dateEcheance == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, details.getDateDebut(), details.getDateFin(),
 		                                                                            details.getTypeContribuable(), details.getTypeDocumentDeclaration(), null,

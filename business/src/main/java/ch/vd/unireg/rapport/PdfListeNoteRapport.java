@@ -9,10 +9,9 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
@@ -25,7 +24,9 @@ public class PdfListeNoteRapport extends PdfRapport {
 
 	public void write(final ListeNoteResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -50,7 +51,7 @@ public class PdfListeNoteRapport extends PdfRapport {
 		{
 			if (results.isInterrompu()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			addTableSimple(new float[]{70f, 30f}, table -> {
@@ -123,7 +124,9 @@ public class PdfListeNoteRapport extends PdfRapport {
 					final String[] adresse = info.getAdresseEnvoi();
 
 					final int sizeNoms = noms.size();
-					Assert.isEqual(sizeNoms, nosAvs.size());
+					if (nosAvs.size() != sizeNoms) {
+						throw new IllegalArgumentException();
+					}
 
 					// ajout des infos au fichier
 					final String nom1 = emptyInsteadNull(sizeNoms > 0 ? noms.get(0).getNom() : null);

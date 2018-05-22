@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.dbutils.QueryFragment;
@@ -78,7 +77,9 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 	@SuppressWarnings("unchecked")
 	protected List<EVT> genericFind(final EvenementCivilCriteria<TYP_EVT> criterion, @Nullable final ParamPagination paramPagination) {
 
-		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
+		if (criterion == null) {
+			throw new IllegalArgumentException("Les critères de recherche peuvent pas être nuls");
+		}
 
 		final Map<String, Object> paramsWhere = new HashMap<>();
 		final String queryWhere = buildCriterion(paramsWhere, criterion);
@@ -108,14 +109,16 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 		return queryObject.list();
 	}
 
-	protected int genericCount(EvenementCivilCriteria<TYP_EVT> criterion){
-		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
+	protected int genericCount(EvenementCivilCriteria<TYP_EVT> criterion) {
+		if (criterion == null) {
+			throw new IllegalArgumentException("Les critères de recherche peuvent pas être nuls");
+		}
 		final Map<String, Object> criteria = new HashMap<>();
 		String queryWhere = buildCriterion(criteria, criterion);
 		String query = String.format(
 				"select count(*) from %s evenement %s where 1=1 %s",
 				getEvenementCivilClass().getSimpleName(),
-				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
+				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp" : "",
 				queryWhere);
 		return DataAccessUtils.intResult(find(query, criteria, null));
 	}

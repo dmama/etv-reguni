@@ -21,7 +21,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.avatar.ImageData;
 import ch.vd.unireg.cache.CacheHelper;
 import ch.vd.unireg.cache.CacheStats;
@@ -308,7 +307,9 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 				else {
 					// données dans le cache à compléter par celle qu'on a maintenant
 					final GetPartyValue value = (GetPartyValue) element.getObjectValue();
-					Assert.isFalse(value.isNull());
+					if (value.isNull()) {
+						throw new IllegalArgumentException();
+					}
 					// [SIFISC-28103] on ne doit ajouter que les parts qui manquent
 					value.addMissingParts(parts, party);
 				}

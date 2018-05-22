@@ -4,23 +4,23 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.unireg.evenement.civil.interne.MessageCollector;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersDAO;
 
+import static ch.vd.registre.base.date.RegDate.get;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -72,9 +72,9 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(NUMERO_CONTRIBUABLE);
 		List<TiersIndexedData> list = searcher.search(criteria);
-		Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé");
+		Assert.assertEquals("Le tiers n'a pas été indexé", 1, list.size());
 		TiersIndexedData tiers = list.get(0);
-		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE), "Le numéro du tiers est incorrect");
+		Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), NUMERO_CONTRIBUABLE);
 
 		// le tiers ne doit pas être dirty (précondition)
 		doInNewTransaction(new TxCallback<Object>() {
@@ -94,13 +94,13 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
-				final ChangementNom chgtNom = new ChangementNom(individu, null, RegDate.get(), 4848, context);
+				final ChangementNom chgtNom = new ChangementNom(individu, null, get(), 4848, context);
 
 				final MessageCollector collector = buildMessageCollector();
 				chgtNom.validate(collector, collector);// ne fait rien
 				chgtNom.handle(collector);
 
-				Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement du changement de nom");
+				Assert.assertTrue("Une erreur est survenue lors du traitement du changement de nom", collector.getErreurs().isEmpty());
 				return null;
 			}
 		});
@@ -112,10 +112,10 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			List<TiersIndexedData> l = searcher.search(criteria);
 			LOGGER.debug("numero : " + l.get(0).getNumero());
 			LOGGER.debug("nom : " + l.get(0).getNom1());
-			Assert.isTrue(l.size() == 1, "L'indexation n'a pas fonctionné");
+			Assert.assertEquals("L'indexation n'a pas fonctionné", 1, l.size());
 
 			// on verifie que le changement a bien été effectué
-			Assert.isTrue(l.get(0).getNom1().endsWith("Dupuid"), "le nouveau nom n'a pas été indexé");
+			Assert.assertTrue("le nouveau nom n'a pas été indexé", l.get(0).getNom1().endsWith("Dupuid"));
 		}
 
 		// le tiers ne doit pas être dirty (postcondition)
@@ -145,9 +145,9 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(NUMERO_CONTRIBUABLE_DIRTY);
 		List<TiersIndexedData> list = searcher.search(criteria);
-		Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé");
+		Assert.assertEquals("Le tiers n'a pas été indexé", 1, list.size());
 		TiersIndexedData tiers = list.get(0);
-		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE_DIRTY), "Le numéro du tiers est incorrect");
+		Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), NUMERO_CONTRIBUABLE_DIRTY);
 
 		// on est obligé de mettre-à-jour la base dans le dos d'hibernate et de le faire après avoir indexé la base (voir commentaire sur
 		// appel de loadDatabase()).
@@ -180,13 +180,13 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
-				final ChangementNom chgtNom = new ChangementNom(individu, null, RegDate.get(), 4848, context);
+				final ChangementNom chgtNom = new ChangementNom(individu, null, get(), 4848, context);
 
 				final MessageCollector collector = buildMessageCollector();
 				chgtNom.validate(collector, collector);// ne fait rien
 				chgtNom.handle(collector);
 
-				Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement du changement de nom");
+				Assert.assertTrue("Une erreur est survenue lors du traitement du changement de nom", collector.getErreurs().isEmpty());
 				return null;
 			}
 		});
@@ -198,7 +198,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 			List<TiersIndexedData> l = searcher.search(criteria);
 			LOGGER.debug("numero : " + l.get(0).getNumero());
 			LOGGER.debug("nom : " + l.get(0).getNom1());
-			Assert.isTrue(l.size() == 1, "L'indexation n'a pas fonctionné");
+			assertEquals("L'indexation n'a pas fonctionné", 1, l.size());
 
 			// on verifie que le changement a bien été effectué
 			assertEquals("le nouveau nom n'a pas été indexé", "Julie Woux", l.get(0).getNom1());

@@ -20,7 +20,6 @@ import org.w3c.dom.Document;
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -142,7 +141,9 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 	                                 FormatDocumentEditique typeFormat, boolean archive, EsbJmsTemplate esbTemplate) throws EditiqueException {
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
+		if (principal == null) {
+			throw new IllegalArgumentException();
+		}
 
 		try {
 			final Marshaller marshaller = jaxbContext.createMarshaller();
@@ -220,7 +221,9 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 	 */
 	private EsbMessage buildBodylessEsbMessage(String businessId, TypeDocumentEditique typeDocument, String serviceDestination, boolean reponseAttendue, HeaderCustomFiller headerFiller) throws Exception {
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
+		if (principal == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final EsbMessage m = EsbMessageFactory.createMessage();
 
@@ -285,7 +288,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender, Ini
 				b.append("--------------------------------------------------\n");
 			}
 			b.append("--------------------------------------------------\n");
-			Assert.fail(b.toString());
+			throw new IllegalArgumentException(b.toString());
 		}
 	}
 

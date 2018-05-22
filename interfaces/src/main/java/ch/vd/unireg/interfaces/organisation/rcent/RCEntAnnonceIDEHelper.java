@@ -22,7 +22,6 @@ import ch.vd.evd0022.v3.NoticeRequestIdentification;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.NoticeRequestStatus;
 import ch.vd.evd0022.v3.RequestApplication;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
@@ -270,7 +269,9 @@ public class RCEntAnnonceIDEHelper {
 	                                          RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
 	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
 	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
-		Assert.notNull(numero, "Une annonce à l'IDE ne peut pas avoir un numéro vide.");
+		if (numero == null) {
+			throw new IllegalArgumentException("Une annonce à l'IDE ne peut pas avoir un numéro vide.");
+		}
 
 		// SIFISC-23702 Dans les annonces renvoyées par le WS noticeRequestList de RCEnt, le userId peut être nul lorsque l'annonce n'est pas encore traitée à proprement parler par RCEnt.
 		final AnnonceIDEData.UtilisateurImpl utilisateur = userId == null ? null : new AnnonceIDEData.UtilisateurImpl(userId, telephone);

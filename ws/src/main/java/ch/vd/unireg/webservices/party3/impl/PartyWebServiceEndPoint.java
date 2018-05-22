@@ -16,9 +16,15 @@ import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.load.DetailedLoadMeter;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
+import ch.vd.unireg.stats.DetailedLoadMonitorable;
+import ch.vd.unireg.stats.LoadDetail;
+import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
@@ -50,13 +56,9 @@ import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.load.DetailedLoadMeter;
-import ch.vd.unireg.security.Role;
-import ch.vd.unireg.security.SecurityProviderInterface;
-import ch.vd.unireg.stats.DetailedLoadMonitorable;
-import ch.vd.unireg.stats.LoadDetail;
-import ch.vd.unireg.type.Niveau;
+
+import static ch.vd.unireg.common.AuthenticationHelper.getCurrentOID;
+import static ch.vd.unireg.common.AuthenticationHelper.getCurrentPrincipal;
 
 /**
  * Cette classe réceptionne tous les appels au web-service, authentifie l'utilisateur, vérifie ses droits d'accès et finalement redirige les appels vers l'implémentation concrète du service.
@@ -643,10 +645,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 				ids.add((long) e.getNumber());
 			}
 		}
-		Assert.isTrue(ids.size() == size);
+		if (ids.size() != size) {
+			throw new IllegalArgumentException();
+		}
 
-		final List<Niveau> niveaux = securityProvider.getDroitsAcces(AuthenticationHelper.getCurrentPrincipal(), ids);
-		Assert.isTrue(niveaux.size() == size);
+		final List<Niveau> niveaux = securityProvider.getDroitsAcces(getCurrentPrincipal(), ids);
+		if (niveaux.size() != size) {
+			throw new IllegalArgumentException();
+		}
 
 		for (int i = 0; i < ids.size(); ++i) {
 			final BatchPartyEntry entry = batch.getEntries().get(i);
@@ -655,8 +661,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			}
 			final Niveau niveau = niveaux.get(i);
 			if (niveau == null) {
-				String message = "L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
-						+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + entry.getNumber();
+				String message = "L'utilisateur spécifié (" + getCurrentPrincipal() + '/'
+						+ getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + entry.getNumber();
 				entry.setParty(null);
 				entry.setExceptionInfo(new AccessDeniedExceptionInfo(message, null));
 			}

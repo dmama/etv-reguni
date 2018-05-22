@@ -25,7 +25,6 @@ import java.util.Set;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -173,7 +172,9 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	}
 
 	private EtatDocumentFiscal getDernierEtatOfType(TypeEtatDocumentFiscal etatRecherche, List<EtatDocumentFiscal> etatsSorted) {
-		Assert.notNull(etatRecherche, "etatDeclaration required.");
+		if (etatRecherche == null) {
+			throw new IllegalArgumentException("etatDeclaration required.");
+		}
 
 		// récupère le dernier état non-annulé du type spécifié
 		for (int i = etatsSorted.size() - 1; i >= 0; --i) {

@@ -8,7 +8,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.common.ValidatorHelper;
 import ch.vd.unireg.metier.MetierService;
@@ -141,32 +140,29 @@ public class CoupleValidator implements Validator {
 		}
 
 		switch (typeUnion) {
-			case SEUL:
-			case COUPLE:
-				validationResults.merge(metierService.validateMariage(dateDebut, principal, conjoint));
-				break;
+		case SEUL:
+		case COUPLE:
+			validationResults.merge(metierService.validateMariage(dateDebut, principal, conjoint));
+			break;
 
-			case RECONCILIATION:
-				validationResults.merge(metierService.validateReconciliation(principal, conjoint, dateDebut, false));
-				break;
+		case RECONCILIATION:
+			validationResults.merge(metierService.validateReconciliation(principal, conjoint, dateDebut, false));
+			break;
 
-			case RECONSTITUTION_MENAGE:
-				{
-					final CoupleManager.Couple couple = coupleManager.getCoupleForReconstitution(principal, conjoint, dateDebut);
-					validationResults.merge(metierService.validateReconstitution((MenageCommun) couple.getPremierTiers(), (PersonnePhysique) couple.getSecondTiers(), dateDebut));
-				}
-				break;
+		case RECONSTITUTION_MENAGE: {
+			final CoupleManager.Couple couple = coupleManager.getCoupleForReconstitution(principal, conjoint, dateDebut);
+			validationResults.merge(metierService.validateReconstitution((MenageCommun) couple.getPremierTiers(), (PersonnePhysique) couple.getSecondTiers(), dateDebut));
+		}
+		break;
 
-			case FUSION_MENAGES:
-				{
-					final CoupleManager.Couple couple = coupleManager.getCoupleForFusion(principal, conjoint, null);
-					validationResults.merge(metierService.validateFusion((MenageCommun) couple.getPremierTiers(), (MenageCommun) couple.getSecondTiers()));
-				}
-				break;
+		case FUSION_MENAGES: {
+			final CoupleManager.Couple couple = coupleManager.getCoupleForFusion(principal, conjoint, null);
+			validationResults.merge(metierService.validateFusion((MenageCommun) couple.getPremierTiers(), (MenageCommun) couple.getSecondTiers()));
+		}
+		break;
 
-			default:
-				Assert.fail("Type d'union non supporté : " + typeUnion);
-				break;
+		default:
+			throw new IllegalArgumentException("Type d'union non supporté : " + typeUnion);
 		}
 
 		final List<String> validationErrors = validationResults.getErrors();

@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationContext;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -32,7 +31,9 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 			throw new IllegalArgumentException("Le bean 'evenementRFMutationDAO' n'existe pas.");
 		}
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);

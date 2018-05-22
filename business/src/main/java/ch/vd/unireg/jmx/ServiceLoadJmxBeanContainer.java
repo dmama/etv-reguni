@@ -9,7 +9,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.MBeanExportOperations;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.load.DetailedLoadJmxBeanImpl;
 import ch.vd.unireg.load.LoadJmxBean;
 import ch.vd.unireg.load.LoadJmxBeanImpl;
@@ -54,13 +53,15 @@ public class ServiceLoadJmxBeanContainer implements InitializingBean, Disposable
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(services);
+		if (services == null) {
+			throw new IllegalArgumentException();
+		}
 		if (!services.isEmpty()) {
 			jmxBeans = new HashMap<>(services.size());
 			for (Map.Entry<String, LoadMonitorable> entry : services.entrySet()) {
 				final String serviceName = entry.getKey();
 				final LoadMonitorable service = entry.getValue();
-				
+
 				final String name = String.format("%s%s", objectNamePrefix, serviceName);
 				final LoadJmxBean bean;
 				if (service instanceof DetailedLoadMonitorable) {
@@ -69,7 +70,7 @@ public class ServiceLoadJmxBeanContainer implements InitializingBean, Disposable
 				else {
 					bean = new LoadJmxBeanImpl<>(serviceName, service, statsService);
 				}
-				
+
 				jmxBeans.put(serviceName, bean);
 				exporter.registerManagedResource(bean, ObjectName.getInstance(name));
 			}

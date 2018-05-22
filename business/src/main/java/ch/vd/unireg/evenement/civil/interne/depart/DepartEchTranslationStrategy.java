@@ -2,8 +2,6 @@ package ch.vd.unireg.evenement.civil.interne.depart;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
@@ -11,6 +9,7 @@ import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.unireg.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
@@ -30,7 +29,9 @@ public class DepartEchTranslationStrategy implements EvenementCivilEchTranslatio
 	private final int decalageAutorise;
 
 	public DepartEchTranslationStrategy(int decalageAutorise) {
-		Assert.isTrue(decalageAutorise >= 0);
+		if (decalageAutorise < 0) {
+			throw new IllegalArgumentException();
+		}
 		this.decalageAutorise = decalageAutorise;
 	}
 

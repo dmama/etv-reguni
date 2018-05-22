@@ -2,14 +2,13 @@ package ch.vd.unireg.evenement.civil.interne.annulationpermis;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.unireg.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 
 /**
  * Règles métiers permettant de traiter les événements suivants :
@@ -32,7 +31,9 @@ public abstract class AnnulationPermisOuNationaliteTranslationStrategy implement
 	 */
 	@NotNull
 	protected static Individu getIndividuAvant(EvenementCivilEchFacade event, EvenementCivilContext context) throws EvenementCivilException {
-		Assert.notNull(event.getRefMessageId(), "Evénement sans événement de référence");
+		if (event.getRefMessageId() == null) {
+			throw new IllegalArgumentException("Evénement sans événement de référence");
+		}
 		return getIndividuAfterEvent(event.getRefMessageId(), context);
 	}
 

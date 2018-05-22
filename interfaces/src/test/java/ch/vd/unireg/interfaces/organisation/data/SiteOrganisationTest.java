@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.builder.AdresseEffectiveBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.AdresseLegaleBuilder;
@@ -13,10 +13,11 @@ import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.SiteOrganisationBuilder;
-import ch.vd.unireg.common.WithoutSpringTest;
 
 import static ch.vd.unireg.interfaces.infra.mock.MockLocalite.Leysin;
 import static ch.vd.unireg.interfaces.infra.mock.MockPays.Suisse;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Raphaël Marmier, 2016-03-23, <raphael.marmier@vd.ch>
@@ -100,7 +101,7 @@ public class SiteOrganisationTest extends WithoutSpringTest {
 				.withRee(new DonneesREERCEnt(null))
 				.build();
 
-		Assert.isTrue(builder.isSuccursale(date(2016, 3, 23)));
+		assertTrue(builder.isSuccursale(date(2016, 3, 23)));
 	}
 
 	@Test
@@ -181,6 +182,6 @@ public class SiteOrganisationTest extends WithoutSpringTest {
 				.withRee(new DonneesREERCEnt(null))
 				.build();
 
-		Assert.isFalse(builder.isSuccursale(date(2016, 3, 23)));
+		assertFalse(builder.isSuccursale(date(2016, 3, 23)));
 	}
 }

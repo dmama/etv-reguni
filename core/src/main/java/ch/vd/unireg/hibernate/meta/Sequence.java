@@ -12,7 +12,6 @@ import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.type.StandardBasicTypes;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -42,10 +41,12 @@ public class Sequence {
 			});
 		}
 		else {
-			Assert.notNull(generatorClass);
+			if (generatorClass == null) {
+				throw new IllegalArgumentException();
+			}
 			try {
 				final IdentifierGenerator generator = generatorClass.newInstance();
-				((Configurable)generator).configure(StandardBasicTypes.LONG, new Properties(), dialect);
+				((Configurable) generator).configure(StandardBasicTypes.LONG, new Properties(), dialect);
 				return hibernateTemplate.execute(new HibernateCallback<Object>() {
 					@Override
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {

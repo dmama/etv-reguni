@@ -22,14 +22,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
@@ -37,6 +34,8 @@ import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.AllegementFiscal;
 import ch.vd.unireg.tiers.AllegementFiscalCommune;
@@ -228,16 +227,21 @@ public class FusionDeCommunesProcessor {
 	protected void traiteTiers(TiersATraiter data, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, FusionDeCommunesResults r) {
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, data.idTiers);
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Désactivation de validation automatique par l'intercepteur
 		final boolean wasValidationInterceptorEnabled = validationInterceptor.isEnabled();
 		validationInterceptor.setEnabled(false);
 		try {
 			final FusionDeCommunesResults.ResultatTraitement fors = data.concerneParFors ? traiteLocalisationsDatees(tiers.getForsFiscauxSorted(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
-			final FusionDeCommunesResults.ResultatTraitement decisions = data.concerneParDecisions ? traiteLocalisationsDatees(((Contribuable) tiers).getDecisionsSorted(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
-			final FusionDeCommunesResults.ResultatTraitement domiciles = data.concerneParDomicilesEtablissement ? traiteLocalisationsDatees(((Etablissement) tiers).getSortedDomiciles(false), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
-			final FusionDeCommunesResults.ResultatTraitement allegements = data.concerneParAllegementsFiscaux ? traiteAllegementsFiscaux(((Entreprise) tiers).getAllegementsFiscaux(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
+			final FusionDeCommunesResults.ResultatTraitement decisions =
+					data.concerneParDecisions ? traiteLocalisationsDatees(((Contribuable) tiers).getDecisionsSorted(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
+			final FusionDeCommunesResults.ResultatTraitement domiciles =
+					data.concerneParDomicilesEtablissement ? traiteLocalisationsDatees(((Etablissement) tiers).getSortedDomiciles(false), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
+			final FusionDeCommunesResults.ResultatTraitement allegements =
+					data.concerneParAllegementsFiscaux ? traiteAllegementsFiscaux(((Entreprise) tiers).getAllegementsFiscaux(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
 
 			// Validation manuelle après le traitement de tous les éléments
 			final ValidationResults validationResults = validationService.validate(tiers);

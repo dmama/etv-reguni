@@ -23,7 +23,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.codec.PngImage;
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.AbstractJobResults;
 import ch.vd.unireg.common.ApplicationInfo;
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -203,11 +202,13 @@ public abstract class PdfRapport extends Document {
 	}
 
 	protected void addListeDetailleeDecoupee(PdfWriter writer, String titre, String listVide, String[] filenames, TemporaryFile[] contenus) throws DocumentException {
-		Assert.isEqual(filenames.length, contenus.length);
+		if (filenames.length != contenus.length) {
+			throw new IllegalArgumentException();
+		}
 
 		addEnteteListeDetaillee(titre);
 		if (filenames.length > 0) {
-			for (int i = 0 ; i < filenames.length ; ++ i) {
+			for (int i = 0; i < filenames.length; ++i) {
 				addPartieDeListeDetaillee(writer, titre, listVide, filenames[i], contenus[i]);
 			}
 		}

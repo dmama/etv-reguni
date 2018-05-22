@@ -1,6 +1,5 @@
 package ch.vd.unireg.webservices.party3.exception;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
 
 public class TaxDeclarationAcknowledgeError extends Exception {
@@ -11,7 +10,9 @@ public class TaxDeclarationAcknowledgeError extends Exception {
 
 	public TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode code, String message) {
 		super(message);
-		Assert.isTrue(code.name().startsWith("ERROR"));
+		if (!code.name().startsWith("ERROR")) {
+			throw new IllegalArgumentException();
+		}
 		this.code = code;
 	}
 

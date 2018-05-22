@@ -7,7 +7,6 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.Adresse;
 
 /**
@@ -82,9 +81,15 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		this.typeDeSite = typeDeSite;
 		this.domicile = domicile;
 		this.fonction = fonction;
-		Assert.notNull(this.rc);
-		Assert.notNull(this.ide);
-		Assert.notNull(this.ree);
+		if (this.rc == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.ide == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.ree == null) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override

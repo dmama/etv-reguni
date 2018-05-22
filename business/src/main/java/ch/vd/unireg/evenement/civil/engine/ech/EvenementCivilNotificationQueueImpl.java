@@ -25,7 +25,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.InstantHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.AgeTrackingBlockingQueueMixer;
 import ch.vd.unireg.common.Aged;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -209,7 +208,9 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchService;
 	 * @param mode le mode de traitement
 	 */
 	private void internalPost(Long noIndividu, EvenementCivilEchProcessingMode mode) {
-		Assert.isTrue(lock.isHeldByCurrentThread());
+		if (!lock.isHeldByCurrentThread()) {
+			throw new IllegalStateException();
+		}
 
 		if (noIndividu == null) {
 			throw new NullPointerException("noIndividu");
@@ -220,7 +221,9 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchService;
 		final boolean wasManual = manualQueue.remove(elt);
 		final boolean wasImmediate = immediateQueue.remove(elt);
 		final boolean wasNowhere = !wasBatch && !wasManual && !wasImmediate;
-		Assert.isTrue((wasBatch ? 1 : 0) + (wasManual ? 1 : 0) + (wasImmediate ? 1 : 0) <= 1);
+		if ((wasBatch ? 1 : 0) + (wasManual ? 1 : 0) + (wasImmediate ? 1 : 0) > 1) {
+			throw new IllegalArgumentException();
+		}
 
 		final BlockingQueue<DelayedIndividu> postingQueue;
 		switch (mode) {

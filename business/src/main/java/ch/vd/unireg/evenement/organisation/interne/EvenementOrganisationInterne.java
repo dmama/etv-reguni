@@ -5,18 +5,11 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.adresse.AdresseSupplementaire;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.audit.Audit;
@@ -32,6 +25,12 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.metier.AjustementForsSecondairesResult;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
@@ -223,7 +222,9 @@ public abstract class EvenementOrganisationInterne {
 		}
 
 		this.doHandle(warnings, suivis);
-		Assert.notNull(status, "Status inconnu après le traitement de l'événement interne!");
+		if (status == null) {
+			throw new IllegalArgumentException("Status inconnu après le traitement de l'événement interne!");
+		}
 		return status;
 	}
 
@@ -467,8 +468,12 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	protected void createEntreprise(RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
-		Assert.notNull(organisation);
-		Assert.notNull(dateDebut);
+		if (organisation == null) {
+			throw new IllegalArgumentException();
+		}
+		if (dateDebut == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final Entreprise entreprise = createEntreprise(getNoOrganisation());
 		suivis.addSuivi(String.format("Entreprise créée avec le numéro de contribuable %s pour l'organisation n°%d", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
@@ -601,9 +606,15 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	protected Etablissement createAddEtablissement(Long numeroSite, Domicile autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
-		Assert.notNull(numeroSite);
-		Assert.notNull(autoriteFiscale);
-		Assert.notNull(dateDebut);
+		if (numeroSite == null) {
+			throw new IllegalArgumentException();
+		}
+		if (autoriteFiscale == null) {
+			throw new IllegalArgumentException();
+		}
+		if (dateDebut == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// L'établissement
 		Etablissement etablissement = context.getTiersService().createEtablissement(numeroSite);
@@ -724,7 +735,9 @@ public abstract class EvenementOrganisationInterne {
 	                                                       EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		final Commune commune = getCommune(numeroOfsAutoriteFiscale, dateOuverture);
 		if (!commune.isPrincipale()) {
-			Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
+			if (motifOuverture == null) {
+				throw new IllegalArgumentException("Le motif d'ouverture est obligatoire sur un for secondaire dans le canton");
+			} // TODO: is it?
 			suivis.addSuivi(String.format("Création d'un for fiscal secondaire à %s à partir du %s (%s)%s, rattachement %s, entreprise n°%s (civil: %d).",
 			                              commune.getNomOfficielAvecCanton(),
 			                              RegDateHelper.dateToDisplayString(dateOuverture),
@@ -736,7 +749,7 @@ public abstract class EvenementOrganisationInterne {
 			);
 			raiseStatusTo(HandleStatus.TRAITE);
 			return context.getTiersService().addForSecondaire(entreprise, dateOuverture, dateFermeture, motifRattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale,
-			                                           motifOuverture, motifFermeture, genreImpot);
+			                                                  motifOuverture, motifFermeture, genreImpot);
 		} else {
 			warnings.addWarning(
 					String.format("La création doit être faite manuellement pour un for fiscal secondaire sur une commune faîtière de fractions " +

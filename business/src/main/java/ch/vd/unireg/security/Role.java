@@ -3,8 +3,6 @@ package ch.vd.unireg.security;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Liste des rôles IFOSec utilisés dans Unireg
  *
@@ -198,7 +196,7 @@ public enum Role {
 
 			for (Role role : Role.values()) {
 				if (ifoSec2Role.containsKey(role.getIfosecCode())) {
-					Assert.fail("Le code IfoSec " + role.getIfosecCode() + " est défini deux fois !");
+					throw new IllegalArgumentException("Le code IfoSec " + role.getIfosecCode() + " est défini deux fois !");
 				}
 				ifoSec2Role.put(role.getIfosecCode(), role);
 			}

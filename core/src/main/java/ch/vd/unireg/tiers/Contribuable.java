@@ -20,7 +20,6 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -32,9 +31,8 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
-import ch.vd.unireg.mouvement.MouvementDossier;
 import ch.vd.unireg.documentfiscal.DocumentFiscal;
-import ch.vd.unireg.foncier.AllegementFoncier;
+import ch.vd.unireg.mouvement.MouvementDossier;
 import ch.vd.unireg.registrefoncier.RapprochementRF;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
@@ -168,7 +166,9 @@ public abstract class Contribuable extends Tiers {
 		 * @return le premier for fiscal dont le numéro Ofs est celui spécifié en paramètre.
 		 */
 		public ForFiscal findForWithNumeroOfs(Integer noOfs) {
-			Assert.notNull(noOfs);
+			if (noOfs == null) {
+				throw new IllegalArgumentException();
+			}
 			for (ForFiscal f : this) {
 				if (noOfs.equals(f.getNumeroOfsAutoriteFiscale())) {
 					return f;
@@ -362,7 +362,9 @@ public abstract class Contribuable extends Tiers {
 	@NotNull
 	@Transient
 	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date, boolean withAnnule) {
-		ch.vd.registre.base.utils.Assert.notNull(date);
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
 		return getStreamForsFiscaux(ForFiscalPrincipal.class, withAnnule)
 				.filter(ff -> date.isBeforeOrEqual(ff.getDateDebut()))
 				.sorted(FOR_FISCAL_COMPARATOR)
@@ -377,7 +379,9 @@ public abstract class Contribuable extends Tiers {
 	 */
 	@Transient
 	public boolean hasForFiscalPrincipalAnnule(RegDate date, @Nullable MotifFor motif) {
-		ch.vd.registre.base.utils.Assert.notNull(date);
+		if (date == null) {
+			throw new IllegalArgumentException();
+		}
 		return getStreamForsFiscaux(ForFiscalPrincipal.class, true)
 				.filter(ForFiscal::isAnnule)
 				.filter(ff -> RegDateHelper.isBetween(date, ff.getDateDebut(), ff.getDateFin(), NullDateBehavior.EARLIEST))

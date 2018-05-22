@@ -36,7 +36,6 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.BusinessComparable;
@@ -333,7 +332,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public AdresseTiers getAdresseActive(TypeAdresseTiers type, @Nullable RegDate date) {
-		Assert.notNull(type);
+		if (type == null) {
+			throw new IllegalArgumentException();
+		}
 		return getAt(adressesTiers, date, adr -> adr.getUsage() == type);
 	}
 
@@ -362,7 +363,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			rapportsObjet = new HashSet<>();
 		}
 		rapportsObjet.add(rapport);
-		Assert.isTrue(rapport.getObjetId() == null || rapport.getObjetId().equals(numero));
+		if (rapport.getObjetId() != null && !rapport.getObjetId().equals(numero)) {
+			throw new IllegalArgumentException();
+		}
 		rapport.setObjet(this);
 	}
 
@@ -382,7 +385,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			rapportsSujet = new HashSet<>();
 		}
 		rapportsSujet.add(rapport);
-		Assert.isTrue(rapport.getSujetId() == null || rapport.getSujetId().equals(numero));
+		if (rapport.getSujetId() != null && !rapport.getSujetId().equals(numero)) {
+			throw new IllegalArgumentException();
+		}
 		rapport.setSujet(this);
 	}
 
@@ -629,7 +634,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			this.forsFiscaux = new HashSet<>();
 		}
 		this.forsFiscaux.add(nouveauForFiscal);
-		Assert.isTrue(nouveauForFiscal.getTiers() == null || nouveauForFiscal.getTiers() == this);
+		if (nouveauForFiscal.getTiers() != null && nouveauForFiscal.getTiers() != this) {
+			throw new IllegalArgumentException();
+		}
 		nouveauForFiscal.setTiers(this);
 	}
 
@@ -670,7 +677,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	public void addAdresseTiers(AdresseTiers adresse) {
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException();
+		}
 		if (adressesTiers == null) {
 			adressesTiers = new HashSet<>();
 		}
@@ -679,7 +688,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	public synchronized void addDocumentFiscal(DocumentFiscal documentFiscal) {
-		Assert.notNull(documentFiscal);
+		if (documentFiscal == null) {
+			throw new IllegalArgumentException();
+		}
 		if (documentsFiscaux == null) {
 			documentsFiscaux = new HashSet<>();
 		}
@@ -738,7 +749,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @param reindexOn la date à partir de laquelle le tiers devra être réindexé.
 	 */
 	public void scheduleReindexationOn(RegDate reindexOn) {
-		Assert.notNull(reindexOn);
+		if (reindexOn == null) {
+			throw new IllegalArgumentException();
+		}
 		if (this.reindexOn == null) {
 			this.reindexOn = reindexOn;
 		}

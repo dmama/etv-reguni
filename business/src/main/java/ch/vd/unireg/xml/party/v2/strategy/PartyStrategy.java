@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.tiers.CompteBancaire;
 import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.Mandat;
@@ -404,7 +403,9 @@ public abstract class PartyStrategy<T extends Party> {
 			}
 		}
 		else {
-			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
+			if (mode != CopyMode.EXCLUSIVE) {
+				throw new IllegalArgumentException();
+			}
 			if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES)) {
 				copyColl(to.getMainTaxResidences(), from.getMainTaxResidences());
 			}
@@ -460,7 +461,9 @@ public abstract class PartyStrategy<T extends Party> {
 			}
 		}
 		else {
-			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
+			if (mode != CopyMode.EXCLUSIVE) {
+				throw new IllegalArgumentException();
+			}
 
 			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
 				// on veut les déclarations et leurs états/délais => on copie tout

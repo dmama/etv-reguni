@@ -3,15 +3,9 @@ package ch.vd.unireg.evenement.organisation.interne.creation;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationAbortException;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -21,6 +15,11 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurColl
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 
@@ -150,10 +149,14 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		/*
 		 Erreurs techniques fatale
 		  */
-		Assert.notNull(dateDeCreation);
+		if (dateDeCreation == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'il n'y a pas d'entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
-		Assert.isNull(getEntreprise());
+		if (getEntreprise() != null) {
+			throw new IllegalArgumentException();
+		}
 
 		/*
 		 Problèmes métiers empêchant la progression

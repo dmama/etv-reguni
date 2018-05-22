@@ -4,15 +4,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -23,6 +17,11 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviColle
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -283,18 +282,26 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 		/*
 		 Erreurs techniques fatale
 		  */
-		Assert.notNull(dateAvant);
-		Assert.notNull(dateApres);
-		Assert.isTrue(dateAvant.equals(dateApres.getOneDayBefore()));
+		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
-		Assert.notNull(getEntreprise());
+		if (getEntreprise() == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier que les établissements à fermer existent bien, sont connus au civil, et ne sont pas annulés.
 		for (Etablissement aFermer : etablissementsAFermer) {
-			Assert.isTrue(aFermer.getNumero() != null, String.format("L'établissement secondaire n°%s ne peut être fermé: il n'existe pas en base.", FormatNumeroHelper.numeroCTBToDisplay(aFermer.getNumero())));
-			Assert.isTrue(aFermer.getAnnulationDate() == null, String.format("L'établissement secondaire n°%s ne peut être fermé: il est annulé.", FormatNumeroHelper.numeroCTBToDisplay(aFermer.getNumero())));
-			Assert.isTrue(aFermer.isConnuAuCivil(), String.format("L'établissement secondaire  n°%s ne peut être fermé: il n'est pas connu au civil.", FormatNumeroHelper.numeroCTBToDisplay(aFermer.getNumero())));
+			if (aFermer.getNumero() == null) {
+				throw new IllegalArgumentException(String.format("L'établissement secondaire n°%s ne peut être fermé: il n'existe pas en base.", FormatNumeroHelper.numeroCTBToDisplay(aFermer.getNumero())));
+			}
+			if (aFermer.getAnnulationDate() != null) {
+				throw new IllegalArgumentException(String.format("L'établissement secondaire n°%s ne peut être fermé: il est annulé.", FormatNumeroHelper.numeroCTBToDisplay(aFermer.getNumero())));
+			}
+			if (!aFermer.isConnuAuCivil()) {
+				throw new IllegalArgumentException(String.format("L'établissement secondaire  n°%s ne peut être fermé: il n'est pas connu au civil.", FormatNumeroHelper.numeroCTBToDisplay(aFermer.getNumero())));
+			}
 			final RapportEntreTiers rapportSujet = aFermer.getRapportObjetValidAt(dateApres, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
 			// SIFISC-19230: Le rapport peut avoir été fermé dans le cadre du processus complexe "Fin d'activité"
 			//Assert.notNull(rapportSujet, "L'établissement secondaire ne peut être fermé: il n'y a déjà plus de rapport à la date demandée.");

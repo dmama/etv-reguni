@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.stats.JobMonitor;
@@ -193,11 +192,15 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	 */
 	@Override
 	public JobDefinition startJob(String jobName, @Nullable Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
-		Assert.notNull(jobName, "Pas de nom de Job défini");
+		if (jobName == null) {
+			throw new IllegalArgumentException("Pas de nom de Job défini");
+		}
 
 		LOGGER.info("Lancement du job <" + jobName + '>');
 		JobDefinition job = jobs.get(jobName);
-		Assert.notNull(job, "Le job <" + jobName + "> n'existe pas");
+		if (job == null) {
+			throw new IllegalArgumentException("Le job <" + jobName + "> n'existe pas");
+		}
 		return startJob(job, params);
 	}
 
@@ -233,7 +236,9 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 
 		// Renseignement de l'authentication
 		final String launchingUser = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(launchingUser);
+		if (launchingUser == null) {
+			throw new IllegalArgumentException();
+		}
 		trigger.getJobDataMap().put(JobDefinition.KEY_USER, launchingUser);
 		trigger.getJobDataMap().put(JobDefinition.KEY_PARAMS, params);
 
@@ -380,7 +385,9 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	public void stopJob(String name, @Nullable Duration timeout) throws SchedulerException {
 
 		final JobDefinition job = jobs.get(name);
-		Assert.notNull(job, "Le job <" + name + "> n'existe pas");
+		if (job == null) {
+			throw new IllegalArgumentException("Le job <" + name + "> n'existe pas");
+		}
 
 		// demande d'arrêt
 		registerInterruptionRequest(job);

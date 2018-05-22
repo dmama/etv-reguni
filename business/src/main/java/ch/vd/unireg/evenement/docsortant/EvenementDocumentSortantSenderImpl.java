@@ -12,16 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.unireg.xml.event.docsortant.v1.Documents;
-import ch.vd.unireg.xml.event.docsortant.v1.ObjectFactory;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.utils.LogLevel;
+import ch.vd.unireg.xml.event.docsortant.v1.Documents;
+import ch.vd.unireg.xml.event.docsortant.v1.ObjectFactory;
 
 public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSortantSender, InitializingBean {
 
@@ -74,7 +73,9 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 		}
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
+		if (principal == null) {
+			throw new IllegalArgumentException();
+		}
 
 		try {
 			final Marshaller marshaller = jaxbContext.createMarshaller();

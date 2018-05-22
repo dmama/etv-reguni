@@ -18,22 +18,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.ws.ack.v6.OrdinaryTaxDeclarationAckRequest;
-import ch.vd.unireg.ws.ack.v6.OrdinaryTaxDeclarationAckResponse;
-import ch.vd.unireg.ws.deadline.v6.DeadlineRequest;
-import ch.vd.unireg.ws.deadline.v6.DeadlineResponse;
-import ch.vd.unireg.ws.modifiedtaxpayers.v6.PartyNumberList;
-import ch.vd.unireg.ws.parties.v6.Entry;
-import ch.vd.unireg.ws.parties.v6.Parties;
-import ch.vd.unireg.ws.security.v6.SecurityResponse;
-import ch.vd.unireg.ws.taxoffices.v6.TaxOffices;
-import ch.vd.unireg.xml.error.v1.ErrorType;
-import ch.vd.unireg.xml.party.v4.Party;
-import ch.vd.unireg.xml.party.v4.PartyInfo;
-import ch.vd.unireg.xml.party.v4.PartyPart;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.unireg.avatar.ImageData;
 import ch.vd.unireg.cache.CacheHelper;
 import ch.vd.unireg.cache.CacheStats;
@@ -51,7 +35,22 @@ import ch.vd.unireg.webservices.common.WebServiceHelper;
 import ch.vd.unireg.webservices.v6.BusinessWebService;
 import ch.vd.unireg.webservices.v6.PartySearchType;
 import ch.vd.unireg.webservices.v6.SearchMode;
+import ch.vd.unireg.ws.ack.v6.OrdinaryTaxDeclarationAckRequest;
+import ch.vd.unireg.ws.ack.v6.OrdinaryTaxDeclarationAckResponse;
+import ch.vd.unireg.ws.deadline.v6.DeadlineRequest;
+import ch.vd.unireg.ws.deadline.v6.DeadlineResponse;
+import ch.vd.unireg.ws.modifiedtaxpayers.v6.PartyNumberList;
+import ch.vd.unireg.ws.parties.v6.Entry;
+import ch.vd.unireg.ws.parties.v6.Parties;
+import ch.vd.unireg.ws.security.v6.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v6.TaxOffices;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.party.v4.Party;
+import ch.vd.unireg.xml.party.v4.PartyInfo;
+import ch.vd.unireg.xml.party.v4.PartyPart;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 public class BusinessWebServiceCache implements BusinessWebService, UniregCacheInterface, KeyDumpableCache, InitializingBean, DisposableBean {
 
@@ -273,7 +272,9 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 				else {
 					// données dans le cache à compléter par celle qu'on a maintenant
 					final GetPartyValue value = (GetPartyValue) element.getObjectValue();
-					Assert.isFalse(value.isNull());
+					if (value.isNull()) {
+						throw new IllegalArgumentException();
+					}
 					// [SIFISC-28103] on ne doit ajouter que les parts qui manquent
 					value.addMissingParts(parts, party);
 				}

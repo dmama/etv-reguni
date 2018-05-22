@@ -7,8 +7,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Element stocké dans le cache qui contient une valeur et sa liste de 'parts'.
  * <p/>
@@ -70,7 +68,9 @@ public abstract class CacheValueWithParts<T, P extends Enum<P>> implements Seria
 	 * @param newValue la valeur possédant les parts
 	 */
 	public synchronized void addParts(Set<P> newParts, T newValue) {
-		Assert.notNull(newParts);
+		if (newParts == null) {
+			throw new IllegalArgumentException();
+		}
 		if (this.value == null) {
 			this.value = newValue;
 		}

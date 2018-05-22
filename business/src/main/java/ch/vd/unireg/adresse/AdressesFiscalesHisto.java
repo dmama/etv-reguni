@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.type.TypeAdresseTiers;
 
 
@@ -89,7 +88,9 @@ public class AdressesFiscalesHisto {
 			if (list != null) {
 				for (AdresseGenerique a : list) {
 					if (a.isValidAt(date)) {
-						Assert.isFalse(a.isAnnule()); // [UNIREG-2895] on s'assure que les adresses annulées sont ignorées
+						if (a.isAnnule()) {
+							throw new IllegalArgumentException();
+						} // [UNIREG-2895] on s'assure que les adresses annulées sont ignorées
 						adresses.set(type, a);
 						break;
 					}

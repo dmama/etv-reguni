@@ -9,7 +9,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.common.StatusManager;
@@ -24,7 +23,9 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 
 	public void write(final ExtractionDonneesRptResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -39,10 +40,10 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, table -> {
-			    table.addLigne("Période fiscale :", String.valueOf(results.periodeFiscale));
-			    table.addLigne("Mode d'extraction :", results.getMode().getDescription());
+				table.addLigne("Période fiscale :", String.valueOf(results.periodeFiscale));
+				table.addLigne("Mode d'extraction :", results.getMode().getDescription());
 				table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
-			    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			});
 		}
 
@@ -51,7 +52,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		{
 			if (results.isInterrompu()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			addTableSimple(2, table -> {

@@ -32,7 +32,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.HttpHelper;
@@ -199,7 +198,9 @@ public class SuperGraController {
 		}
 
 		final EntityView referenceView = (EntityView) request.getSession().getAttribute("referenceEntity");
-		Assert.notNull(referenceView);
+		if (referenceView == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// On détermine les changements effectués
 		final SuperGraSession session = getSession(request);

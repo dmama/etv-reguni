@@ -11,7 +11,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteException;
 import ch.vd.unireg.interfaces.service.ServiceSecuriteService;
 import ch.vd.unireg.interfaces.service.host.Operateur;
@@ -188,8 +187,10 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	 * @throws DroitAccesException en cas de conflit (la spécification dit qu'un conflit est un droit qui serait à la fois en écriture et en lecture, ou à la fois une autorisation et une interdiction)
 	 */
 	private boolean adapteExistantPourTransfertDossier(DroitAcces aAjouter, DroitAcces existant, RegDate aujourdhui) throws DroitAccesException {
-		Assert.isFalse(aAjouter.isAnnule());
-		return  aAjouter.getNoIndividuOperateur() == existant.getNoIndividuOperateur() &&
+		if (aAjouter.isAnnule()) {
+			throw new IllegalArgumentException();
+		}
+		return aAjouter.getNoIndividuOperateur() == existant.getNoIndividuOperateur() &&
 				adapteExistant(aAjouter.getType(), aAjouter.getNiveau(), aAjouter, existant, aujourdhui);
 	}
 
@@ -287,8 +288,10 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	 * @param aujourdhui date du jour (= date d'ouverture au plus tard du droit existant en cas d'adaptation)
 	 * @return <code>true</code> si le droit déjà existant a juste été adapté à l'ajout, <code>false</code> s'il faut recopier le droit
 	 */
-	private boolean adapteExistantPourTransfertOperateur(DroitAcces aAjouter, DroitAcces existant, RegDate aujourdhui, List<DroitAccesConflit> conflits)  {
-		Assert.isFalse(aAjouter.isAnnule());
+	private boolean adapteExistantPourTransfertOperateur(DroitAcces aAjouter, DroitAcces existant, RegDate aujourdhui, List<DroitAccesConflit> conflits) {
+		if (aAjouter.isAnnule()) {
+			throw new IllegalArgumentException();
+		}
 		if (aAjouter.getTiers().getNumero().equals(existant.getTiers().getNumero())) {
 			try {
 				return adapteExistant(aAjouter.getType(), aAjouter.getNiveau(), aAjouter, existant, aujourdhui);

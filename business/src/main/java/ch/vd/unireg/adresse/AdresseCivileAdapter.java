@@ -8,12 +8,11 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -42,7 +41,9 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	 */
 	public AdresseCivileAdapter(Adresse adresse, Tiers tiers, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
 		super(service);
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException();
+		}
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
@@ -68,11 +69,15 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	 */
 	public AdresseCivileAdapter(Adresse adresse, Source source, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
 		super(service);
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException();
+		}
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
-		Assert.notNull(source);
+		if (source == null) {
+			throw new IllegalArgumentException();
+		}
 		this.source = source;
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
@@ -97,7 +102,9 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	 */
 	public AdresseCivileAdapter(Adresse adresse, Tiers tiers, RegDate debut, RegDate fin, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
 		super(service);
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException();
+		}
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = debut;
 		this.finValiditeSurcharge = fin;
@@ -124,11 +131,15 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	 */
 	public AdresseCivileAdapter(Adresse adresse, RegDate debut, RegDate fin, Source source, boolean isDefault, ServiceInfrastructureService service) throws DonneesCivilesException {
 		super(service);
-		Assert.notNull(adresse);
+		if (adresse == null) {
+			throw new IllegalArgumentException();
+		}
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = debut;
 		this.finValiditeSurcharge = fin;
-		Assert.notNull(source);
+		if (source == null) {
+			throw new IllegalArgumentException();
+		}
 		this.source = source;
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);

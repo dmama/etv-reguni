@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.annulation.deces.manager.AnnulationDecesRecapManager;
 import ch.vd.unireg.annulation.deces.view.AnnulationDecesRecapView;
 import ch.vd.unireg.common.ControllerUtils;
@@ -148,7 +147,9 @@ public class AnnulationDecesController {
 	private List<TiersIndexedDataView> searchDecedes(TiersCriteriaView criteresEnSession) {
 
 		final List<TiersIndexedData> results = tiersService.search(criteresEnSession.asCore());
-		Assert.notNull(results);
+		if (results == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final List<TiersIndexedDataView> list = new ArrayList<>(results.size());
 		for (TiersIndexedData d : results) {

@@ -1,6 +1,5 @@
 package ch.vd.unireg.evenement.civil.interne.annulationpermis;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilContext;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilException;
 import ch.vd.unireg.evenement.civil.common.EvenementCivilOptions;
@@ -36,18 +35,20 @@ public class SuppressionNationaliteTranslationStrategy extends AnnulationPermisO
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
-		Assert.isEqual(ActionEvenementCivilEch.ANNULATION, event.getAction());
+		if (ActionEvenementCivilEch.ANNULATION != event.getAction()) {
+			throw new IllegalArgumentException();
+		}
 
 		final EvenementCivilInterne interne;
 		switch (event.getType()) {
-			case NATURALISATION:
-				interne = new SuppressionNationaliteSuisse(event, context, options);
-				break;
-			case CHGT_NATIONALITE_ETRANGERE:
-				interne = new SuppressionNationaliteNonSuisse(event, context, options);
-				break;
-			default:
-				throw new IllegalArgumentException("Type d'événement non supporté par la stratégie : " + event.getType());
+		case NATURALISATION:
+			interne = new SuppressionNationaliteSuisse(event, context, options);
+			break;
+		case CHGT_NATIONALITE_ETRANGERE:
+			interne = new SuppressionNationaliteNonSuisse(event, context, options);
+			break;
+		default:
+			throw new IllegalArgumentException("Type d'événement non supporté par la stratégie : " + event.getType());
 		}
 		return interne;
 	}

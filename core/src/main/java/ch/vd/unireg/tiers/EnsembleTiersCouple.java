@@ -1,7 +1,5 @@
 package ch.vd.unireg.tiers;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Regroupe tous les tiers individuels et couple liés à un ménage.
  *
@@ -102,7 +100,9 @@ public class EnsembleTiersCouple {
 			tiers = autreTiers;
 			autreTiers = null;
 		}
-		Assert.notNull(tiers);
+		if (tiers == null) {
+			throw new IllegalArgumentException();
+		}
 
 		boolean tiersPresent = ((principal != null) && (principal.getId().equals(tiers.getId())))
 				|| ((conjoint != null) && (conjoint.getId().equals(tiers.getId())));

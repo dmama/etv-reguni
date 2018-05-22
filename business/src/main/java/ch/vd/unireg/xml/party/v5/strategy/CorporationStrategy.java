@@ -17,7 +17,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.HibernateDateRangeEntity;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
@@ -238,7 +237,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		@Override
 		public DatedLegalFormWithCategory collate(DatedLegalFormWithCategory next) {
-			Assert.isTrue(isCollatable(next));
+			if (!isCollatable(next)) {
+				throw new IllegalArgumentException();
+			}
 			return new DatedLegalFormWithCategory(getCategorie(), getDateDebut(), next.getDateFin(), getFormeLegale());
 		}
 

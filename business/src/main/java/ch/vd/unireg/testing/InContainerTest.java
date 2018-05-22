@@ -14,7 +14,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.dbutils.SqlFileExecutor;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.tiers.TiersDAO;
@@ -39,10 +38,14 @@ public abstract class InContainerTest {
 	protected void loadDatabase(String filename) throws Exception {
 
 		InputStream inputStream = getClass().getResourceAsStream(filename);
-		Assert.notNull(inputStream, "Le fichier DBUnit '" + filename + "' est invalide");
+		if (inputStream == null) {
+			throw new IllegalArgumentException("Le fichier DBUnit '" + filename + "' est invalide");
+		}
 		XmlDataSet dataSet = new XmlDataSet(inputStream);
 
-		Assert.notNull(dataSet);
+		if (dataSet == null) {
+			throw new IllegalArgumentException();
+		}
 		try (Connection connection = dataSource.getConnection()) {
 			DatabaseConnection con = new DatabaseConnection(connection);
 			DatabaseConfig config = con.getConfig();

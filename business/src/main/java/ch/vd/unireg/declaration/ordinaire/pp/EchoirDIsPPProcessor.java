@@ -13,7 +13,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -123,13 +122,19 @@ public class EchoirDIsPPProcessor {
 	 */
 	protected void traiterDI(IdentifiantDeclaration ident, EchoirDIsPPResults rapport) {
 
-		Assert.notNull(ident, "L'id doit être spécifié.");
+		if (ident == null) {
+			throw new IllegalArgumentException("L'id doit être spécifié.");
+		}
 
 		final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ident.getIdDeclaration());
-		Assert.notNull(di, "La déclaration n'existe pas.");
+		if (di == null) {
+			throw new IllegalArgumentException("La déclaration n'existe pas.");
+		}
 
 		final EtatDeclaration etat = di.getDernierEtatDeclaration();
-		Assert.notNull(etat, "La déclaration ne possède pas d'état.");
+		if (etat == null) {
+			throw new IllegalArgumentException("La déclaration ne possède pas d'état.");
+		}
 
 		// Vérifie l'état de la DI (en cas de bug)
 		if (etat.getEtat() != TypeEtatDocumentFiscal.SOMME) {
@@ -142,7 +147,9 @@ public class EchoirDIsPPProcessor {
 		rapport.addDeclarationTraitee(di);
 
 		// un peu de paranoïa ne fait pas de mal
-		Assert.isTrue(di.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.ECHU, "L'état après traitement n'est pas ECHU.");
+		if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.ECHU) {
+			throw new IllegalArgumentException("L'état après traitement n'est pas ECHU.");
+		}
 	}
 
 	/**

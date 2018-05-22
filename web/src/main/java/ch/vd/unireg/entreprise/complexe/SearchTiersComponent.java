@@ -13,7 +13,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.NumeroIDEHelper;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
@@ -140,7 +139,9 @@ public class SearchTiersComponent {
 	@NotNull
 	public List<TiersIndexedDataView> _searchTiers(TiersCriteriaView criteriaView) throws IndexerException {
 		final List<TiersIndexedData> results = tiersService.search(criteriaView.asCore());
-		Assert.notNull(results);
+		if (results == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final List<TiersIndexedDataView> list = new ArrayList<>(results.size());
 		for (TiersIndexedData d : results) {

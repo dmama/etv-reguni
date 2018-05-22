@@ -8,7 +8,6 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -21,7 +20,9 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 
 	public void write(final ComparerSituationFamilleResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -45,7 +46,7 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 		{
 			if (results.isInterrompu()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			addTableSimple(new float[]{70f, 30f}, table -> {
@@ -58,17 +59,15 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 		}
 
 
-
 		// adresses resolues
-			{
-				final String filename = "situations_differentes.csv";
-				final String titre = "Liste des situations différentes";
-				final String listVide = "(aucune)";
-				try (TemporaryFile contenu = getCsvSituationsDifferentes(results.listeSituationsDifferentes, filename, status)) {
-					addListeDetaillee(writer, titre, listVide, filename, contenu);
-				}
+		{
+			final String filename = "situations_differentes.csv";
+			final String titre = "Liste des situations différentes";
+			final String listVide = "(aucune)";
+			try (TemporaryFile contenu = getCsvSituationsDifferentes(results.listeSituationsDifferentes, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
-
+		}
 
 
 		// erreurs

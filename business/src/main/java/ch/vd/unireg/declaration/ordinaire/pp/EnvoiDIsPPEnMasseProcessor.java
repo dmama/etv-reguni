@@ -26,7 +26,6 @@ import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -137,7 +136,9 @@ public class EnvoiDIsPPEnMasseProcessor {
 		this.adresseService = adresseService;
 		this.ticketService = ticketService;
 		this.dateExclusionDecedes = null;
-		Assert.isTrue(tailleLot > 0);
+		if (tailleLot < 1) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public EnvoiDIsPPResults run(final int anneePeriode, final CategorieEnvoiDIPP categorie, @Nullable final Long noCtbMin, @Nullable final Long noCtbMax, final int nbMax,
@@ -653,7 +654,9 @@ public class EnvoiDIsPPEnMasseProcessor {
 	private void imprimerDI(DeclarationImpotOrdinairePP di, RegDate dateTraitement) throws DeclarationException {
 
 		final Contribuable contribuable = di.getTiers();
-		Assert.notNull(contribuable);
+		if (contribuable == null) {
+			throw new IllegalArgumentException();
+		}
 
 		diService.envoiDIForBatch(di, dateTraitement);
 	}
@@ -669,8 +672,12 @@ public class EnvoiDIsPPEnMasseProcessor {
 
 		final PeriodeFiscale periode = di.getPeriode();
 		final Contribuable contribuable = di.getTiers();
-		Assert.notNull(periode);
-		Assert.notNull(contribuable);
+		if (periode == null) {
+			throw new IllegalArgumentException();
+		}
+		if (contribuable == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final RegDate dateRetourAccorde;
 		final RegDate dateRetourImprime;
@@ -687,7 +694,9 @@ public class EnvoiDIsPPEnMasseProcessor {
 		else {
 			// Traitement normal
 			final ParametrePeriodeFiscalePP ppf = periode.getParametrePeriodeFiscalePP(di.getTypeContribuable());
-			Assert.notNull(ppf, "Impossible de retrouver les parametres pour la periode fiscale [" + periode.getAnnee() + "] pour le type de contribuable [" + di.getTypeContribuable() + ']');
+			if (ppf == null) {
+				throw new IllegalArgumentException("Impossible de retrouver les parametres pour la periode fiscale [" + periode.getAnnee() + "] pour le type de contribuable [" + di.getTypeContribuable() + ']');
+			}
 
 			dateRetourAccorde = ppf.getTermeGeneralSommationEffectif(); // [UNIREG-1976] le délai de retour accordé est toujours la date effective
 			dateRetourImprime = ppf.getTermeGeneralSommationReglementaire(); // [UNIREG-1740] la date de retour imprimée est toujours la date réglementaire
@@ -737,7 +746,9 @@ public class EnvoiDIsPPEnMasseProcessor {
 			di.setRetourCollectiviteAdministrativeId(cache.aci.getId());
 		}
 		else {
-			Assert.isEqual(TypeAdresseRetour.OID, adresseRetour);
+			if (adresseRetour != TypeAdresseRetour.OID) {
+				throw new IllegalArgumentException();
+			}
 
 			final Contribuable ctb = tache.getContribuable();
 			final CollectiviteAdministrative coll = tiersService.getOfficeImpotAt(ctb, tache.getDateFin());
@@ -849,7 +860,9 @@ public class EnvoiDIsPPEnMasseProcessor {
 						final Query queryCtbs = session.createQuery("FROM Tiers AS t WHERE t.id in (:ids)");
 						queryCtbs.setParameterList("ids", ids);
 						final List<?> ctbs = queryCtbs.list();
-						Assert.notEmpty(ctbs);
+						if (ctbs.isEmpty()) {
+							throw new IllegalArgumentException();
+						}
 
 						// et finalement on charge les déclarations
 						final Query queryDecls = session.createQuery(declQuery);
@@ -897,8 +910,8 @@ public class EnvoiDIsPPEnMasseProcessor {
 		public List<DeclarationImpotOrdinairePP> getDeclarationsInRange(final ContribuableImpositionPersonnesPhysiques contribuable, final DateRange range, boolean annuleesIncluses) {
 
 			if (!DateRangeHelper.within(range, baseRange)) {
-				Assert.fail("Le range [" + range.getDateDebut() + ';' + range.getDateFin() + "] n'est pas compris dans le range de base ["
-						+ baseRange.getDateDebut() + ';' + baseRange.getDateFin() + ']');
+				throw new IllegalArgumentException("Le range [" + range.getDateDebut() + ';' + range.getDateFin() + "] n'est pas compris dans le range de base ["
+						                                   + baseRange.getDateDebut() + ';' + baseRange.getDateFin() + ']');
 			}
 			List<DeclarationImpotOrdinairePP> list = map.get(contribuable.getNumero());
 

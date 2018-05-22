@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.dbutils.QueryFragment;
@@ -112,7 +111,9 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
-		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
+		if (identificationContribuableCriteria == null) {
+			throw new IllegalArgumentException("Les critères de recherche peuvent pas être nuls");
+		}
 		final Map<String, Object> criteria = new HashMap<>();
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly);
 
@@ -141,9 +142,11 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
-		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
+		if (identificationContribuableCriteria == null) {
+			throw new IllegalArgumentException("Les critères de recherche peuvent pas être nuls");
+		}
 		final Map<String, Object> criteria = new HashMap<>();
-		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria,filter);
+		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, filter);
 
 		final String selectBase = "select count(*) from IdentificationContribuable identificationContribuable where";
 		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);

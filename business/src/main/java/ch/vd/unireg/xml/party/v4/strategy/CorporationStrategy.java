@@ -15,20 +15,9 @@ import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.xml.party.corporation.v4.Capital;
-import ch.vd.unireg.xml.party.corporation.v4.Corporation;
-import ch.vd.unireg.xml.party.corporation.v4.CorporationFlag;
-import ch.vd.unireg.xml.party.corporation.v4.CorporationStatus;
-import ch.vd.unireg.xml.party.corporation.v4.LegalForm;
-import ch.vd.unireg.xml.party.corporation.v4.LegalSeat;
-import ch.vd.unireg.xml.party.corporation.v4.MonetaryAmount;
-import ch.vd.unireg.xml.party.corporation.v4.TaxSystem;
-import ch.vd.unireg.xml.party.v4.PartyPart;
-import ch.vd.unireg.xml.party.v4.UidNumberList;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.AllegementFiscal;
 import ch.vd.unireg.tiers.CapitalHisto;
@@ -45,9 +34,19 @@ import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.corporation.v4.Capital;
+import ch.vd.unireg.xml.party.corporation.v4.Corporation;
+import ch.vd.unireg.xml.party.corporation.v4.CorporationFlag;
+import ch.vd.unireg.xml.party.corporation.v4.CorporationStatus;
+import ch.vd.unireg.xml.party.corporation.v4.LegalForm;
+import ch.vd.unireg.xml.party.corporation.v4.LegalSeat;
+import ch.vd.unireg.xml.party.corporation.v4.MonetaryAmount;
+import ch.vd.unireg.xml.party.corporation.v4.TaxSystem;
 import ch.vd.unireg.xml.party.v4.BusinessYearBuilder;
 import ch.vd.unireg.xml.party.v4.CorporationFlagBuilder;
+import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.unireg.xml.party.v4.TaxLighteningBuilder;
+import ch.vd.unireg.xml.party.v4.UidNumberList;
 
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
@@ -202,7 +201,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		@Override
 		public DatedLegalFormWithCategory collate(DatedLegalFormWithCategory next) {
-			Assert.isTrue(isCollatable(next));
+			if (!isCollatable(next)) {
+				throw new IllegalArgumentException();
+			}
 			return new DatedLegalFormWithCategory(getCategorie(), getDateDebut(), next.getDateFin(), getFormeLegale());
 		}
 

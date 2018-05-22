@@ -1,6 +1,5 @@
 package ch.vd.unireg.adresse;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.type.TypeAdresseTiers;
 
 /**
@@ -79,9 +78,9 @@ public class AdressesFiscales {
 
 	private static void assertIsEmpty(AdresseGenerique existante, AdresseGenerique nouvelle, TypeAdresseFiscale type) {
 		if (existante != null) {
-			Assert.fail("Deux adresses fiscales de type " + type.name() + " se recoupent. Adresse existante = [" + existante.getDateDebut()
-					+ ", " + existante.getDateFin() + "] et nouvelle adresse = [" + nouvelle.getDateDebut() + ", " + nouvelle.getDateFin()
-					+ ']');
+			throw new IllegalArgumentException("Deux adresses fiscales de type " + type.name() + " se recoupent. Adresse existante = [" + existante.getDateDebut()
+					                                   + ", " + existante.getDateFin() + "] et nouvelle adresse = [" + nouvelle.getDateDebut() + ", " + nouvelle.getDateFin()
+					                                   + ']');
 		}
 	}
 

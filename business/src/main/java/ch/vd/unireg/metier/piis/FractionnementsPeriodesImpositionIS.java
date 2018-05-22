@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.common.DecalageDateHelper;
 import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
@@ -78,7 +77,7 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 				return MotifFor.ARRIVEE_HC;
 			}
 			else {
-				Assert.fail("On ne devrait jamais arriver ici avec des localisations différentes avant et après...");
+				throw new IllegalArgumentException("On ne devrait jamais arriver ici avec des localisations différentes avant et après...");
 			}
 		}
 

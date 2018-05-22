@@ -15,7 +15,6 @@ import org.springframework.dao.support.DataAccessUtils;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.dbutils.QueryFragment;
 import ch.vd.unireg.type.CategorieImpotSource;
@@ -221,8 +220,12 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 	@SuppressWarnings("unchecked")
 	public List<DateRange> findIntersection(long numeroDpi, DateRange range) {
 
-		Assert.notNull(range.getDateDebut());
-		Assert.notNull(range.getDateFin());
+		if (range.getDateDebut() == null) {
+			throw new IllegalArgumentException();
+		}
+		if (range.getDateFin() == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final Map<String, Object> params = new HashMap<>(3);
 		params.put("noDpi", numeroDpi);

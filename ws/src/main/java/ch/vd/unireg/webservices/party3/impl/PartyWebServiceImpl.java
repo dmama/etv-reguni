@@ -23,43 +23,10 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
-import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
-import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
-import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
-import ch.vd.unireg.webservices.party3.BatchParty;
-import ch.vd.unireg.webservices.party3.ExtendDeadlineCode;
-import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
-import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
-import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
-import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
-import ch.vd.unireg.webservices.party3.GetPartyRequest;
-import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
-import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
-import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
-import ch.vd.unireg.webservices.party3.PartyNumberList;
-import ch.vd.unireg.webservices.party3.PartyWebService;
-import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
-import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
-import ch.vd.unireg.webservices.party3.SearchPartyRequest;
-import ch.vd.unireg.webservices.party3.SearchPartyResponse;
-import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
-import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
-import ch.vd.unireg.webservices.party3.WebServiceException;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
-import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationKey;
-import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.unireg.xml.party.v1.PartyInfo;
-import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.avatar.TypeAvatar;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
@@ -101,6 +68,30 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
+import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
+import ch.vd.unireg.webservices.party3.BatchParty;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineCode;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
+import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
+import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
+import ch.vd.unireg.webservices.party3.GetPartyRequest;
+import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
+import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
+import ch.vd.unireg.webservices.party3.PartyNumberList;
+import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
+import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
+import ch.vd.unireg.webservices.party3.SearchPartyRequest;
+import ch.vd.unireg.webservices.party3.SearchPartyResponse;
+import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
+import ch.vd.unireg.webservices.party3.TaxDeclarationAcknowledgeCode;
+import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.webservices.party3.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.unireg.webservices.party3.data.BatchPartyBuilder;
 import ch.vd.unireg.webservices.party3.data.DebtorInfoBuilder;
@@ -110,7 +101,15 @@ import ch.vd.unireg.webservices.party3.exception.TaxDeclarationAcknowledgeError;
 import ch.vd.unireg.xml.BusinessHelper;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
+import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyBuilder;
+import ch.vd.unireg.xml.party.v1.PartyInfo;
+import ch.vd.unireg.xml.party.v1.PartyType;
 
 public class PartyWebServiceImpl implements PartyWebService {
 
@@ -884,7 +883,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		final RegDate dateRetour = ch.vd.unireg.xml.DataHelper.xmlToCore(demande.getAcknowledgeDate());
 		if (RegDateHelper.isBeforeOrEqual(dateRetour, declaration.getDateExpedition(), NullDateBehavior.EARLIEST)) {
 			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_INVALID_ACKNOWLEDGE_DATE,
-					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
+			                                         "La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
 		}
 
 		// envoie le quittancement au BAM
@@ -892,7 +891,9 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		// La déclaration est correcte, on la quittance
 		context.diService.quittancementDI(ctb, declaration, dateRetour, demande.getSource(), true);
-		Assert.isEqual(TypeEtatDocumentFiscal.RETOURNE, declaration.getDernierEtatDeclaration().getEtat());
+		if (declaration.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.RETOURNE) {
+			throw new IllegalArgumentException();
+		}
 
 		return AcknowledgeTaxDeclarationBuilder.newAcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.OK);
 	}

@@ -10,32 +10,35 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 public abstract class BeanUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BeanUtils.class);
 	private static final String [] EMPTY_STRING_ARRAY = new String[0];
 
-	public static void simpleMerge( Object dest, Object src)  {
-		Assert.notNull(src);
-		Assert.notNull(dest);
+	public static void simpleMerge( Object dest, Object src) {
+		if (src == null) {
+			throw new IllegalArgumentException();
+		}
+		if (dest == null) {
+			throw new IllegalArgumentException();
+		}
 		try {
-			if ( !src.getClass().isAssignableFrom(dest.getClass())) {
+			if (!src.getClass().isAssignableFrom(dest.getClass())) {
 				throw new RuntimeException("src != dest");
 			}
-			PropertyDescriptor[]  propertiesSrc = PropertyUtils.getPropertyDescriptors(src);
+			PropertyDescriptor[] propertiesSrc = PropertyUtils.getPropertyDescriptors(src);
 			for (PropertyDescriptor desc : propertiesSrc) {
 				if (desc.getReadMethod() == null || desc.getWriteMethod() == null)
 					continue;
 				String name = desc.getName();
 				Object srcValue = PropertyUtils.getProperty(src, name);
-				if ( srcValue instanceof Collection<?> || srcValue instanceof Map<?, ?>){
+				if (srcValue instanceof Collection<?> || srcValue instanceof Map<?, ?>) {
 					continue;
 				}
 				Class<?> type = desc.getPropertyType();
 				String canonicalClass = type.getName();
-				if ( type.isEnum() || type.isArray() || type.isPrimitive() || canonicalClass.startsWith("java.lang")) {
+				if (type.isEnum() || type.isArray() || type.isPrimitive() || canonicalClass.startsWith("java.lang")) {
 					PropertyUtils.setProperty(dest, name, srcValue);
 				}
 			}
@@ -43,7 +46,7 @@ public abstract class BeanUtils {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-}
+	}
 
 	/**
 	 * Teste la présence d'un propriété null dans un bean

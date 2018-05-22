@@ -17,12 +17,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.regimefiscal.extraction.ExtractionRegimesFiscauxResults;
 import ch.vd.unireg.tiers.RegimeFiscal;
 
@@ -32,7 +31,9 @@ import ch.vd.unireg.tiers.RegimeFiscal;
 public class PdfExtractionRegimesFiscauxRapport extends PdfRapport {
 
 	public void write(final ExtractionRegimesFiscauxResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -61,7 +62,7 @@ public class PdfExtractionRegimesFiscauxRapport extends PdfRapport {
 						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(new float[] {.6f, .4f}, table -> {
+			addTableSimple(new float[]{.6f, .4f}, table -> {
 				table.addLigne("Nombre d'entreprises sans régime fiscal VD :", String.valueOf(results.getSansRegimeFiscal().stream().filter(srf -> srf.portee == RegimeFiscal.Portee.VD).count()));
 				table.addLigne("Nombre d'entreprises sans régime fiscal CH :", String.valueOf(results.getSansRegimeFiscal().stream().filter(srf -> srf.portee == RegimeFiscal.Portee.CH).count()));
 				table.addLigne("Entreprises en erreur :", String.valueOf(results.getErreurs().size()));
@@ -73,7 +74,7 @@ public class PdfExtractionRegimesFiscauxRapport extends PdfRapport {
 		// Répartition par code de régime fiscal
 		addEntete1("Répartition des régimes trouvés");
 		{
-			addTableSimple(new float[] {.7f, .15f, .15f}, table -> {
+			addTableSimple(new float[]{.7f, .15f, .15f}, table -> {
 				table.addLigne(StringUtils.EMPTY, RegimeFiscal.Portee.VD.name(), RegimeFiscal.Portee.CH.name());
 
 				final Map<String, String> libelles = new TreeMap<>();

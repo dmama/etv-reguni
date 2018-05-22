@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
-import org.springframework.util.Assert;
 
 import ch.vd.unireg.common.BaseDAOImpl;
 import ch.vd.unireg.type.TypeDocument;
@@ -26,8 +25,12 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 	@Override
 	public ModeleDocument getModelePourDeclarationImpotOrdinaire(PeriodeFiscale periode, TypeDocument type, boolean doNotAutoFlush) {
 
-		Assert.notNull(periode, "La période fiscale ne doit pas être nulle.");
-		Assert.notNull(type, "Le type de document ne doit pas être nul.");
+		if (periode == null) {
+			throw new IllegalArgumentException("La période fiscale ne doit pas être nulle.");
+		}
+		if (type == null) {
+			throw new IllegalArgumentException("Le type de document ne doit pas être nul.");
+		}
 
 		// Recherche du modèle de document correspondant
 		final Map<String, Object> params = new HashMap<>(2);
@@ -39,7 +42,7 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 		if (list != null && !list.isEmpty()) {
 			if (list.size() > 1) {
 				throw new RuntimeException("Trouvé plus d'un modèle de document pour la période fiscale [" + periode.getAnnee()
-						+ "] et le type de document [" + type.name() + "].");
+						                           + "] et le type de document [" + type.name() + "].");
 			}
 			return list.get(0);
 		}
@@ -54,7 +57,9 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 	@Override
 	public ModeleDocument getModelePourDeclarationImpotSource(PeriodeFiscale periode, boolean doNotAutoFlush) {
 
-		Assert.notNull(periode, "La période fiscale ne doit pas être nulle.");
+		if (periode == null) {
+			throw new IllegalArgumentException("La période fiscale ne doit pas être nulle.");
+		}
 
 		// Recherche du modèle de document correspondant
 		final Map<String, Object> params = buildNamedParameters(Pair.of("pf", periode),
@@ -65,7 +70,7 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 		if (list != null && !list.isEmpty()) {
 			if (list.size() > 1) {
 				throw new RuntimeException("Trouvé plus d'un modèle de document pour la période fiscale [" + periode.getAnnee()
-						+ "] et le type de document [" + TypeDocument.LISTE_RECAPITULATIVE.name() + "].");
+						                           + "] et le type de document [" + TypeDocument.LISTE_RECAPITULATIVE.name() + "].");
 			}
 			return list.get(0);
 		}

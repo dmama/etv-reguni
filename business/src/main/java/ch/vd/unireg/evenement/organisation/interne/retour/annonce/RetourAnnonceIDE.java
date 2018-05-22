@@ -3,18 +3,9 @@ package ch.vd.unireg.evenement.organisation.interne.retour.annonce;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.adresse.AdresseSupplementaire;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -28,6 +19,14 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviColle
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.DomicileHisto;
 import ch.vd.unireg.tiers.Entreprise;
@@ -238,19 +237,21 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		/*
-		 Erreurs techniques fatale
-		  */
-		Assert.notNull(dateAvant);
-		Assert.notNull(dateApres);
-		Assert.isTrue(dateAvant.equals(dateApres.getOneDayBefore()));
+		// Erreurs techniques fatale
+		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
-		Assert.notNull(getEntreprise());
+		// On doit avoir deux autorités fiscales
+		if (getEntreprise() == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'on a bien une annonce à l'IDE
-		Assert.notNull(annonceIDE);
-
+		if (annonceIDE == null) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public RegDate getDateAvant() {

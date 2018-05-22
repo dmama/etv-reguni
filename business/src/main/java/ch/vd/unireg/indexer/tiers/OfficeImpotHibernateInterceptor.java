@@ -11,7 +11,6 @@ import org.hibernate.CallbackException;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.Switchable;
 import ch.vd.unireg.common.ThreadSwitch;
 import ch.vd.unireg.hibernate.interceptor.AbstractLinkedInterceptor;
@@ -110,7 +109,9 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 					break;
 				}
 			}
-			Assert.isTrue(found);
+			if (!found) {
+				throw new IllegalArgumentException();
+			}
 			return true; // l'entité a été modifiée
 		}
 		else {

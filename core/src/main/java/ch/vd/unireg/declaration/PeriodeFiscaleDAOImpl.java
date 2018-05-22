@@ -9,7 +9,6 @@ import org.hibernate.FlushMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.BaseDAOImpl;
 
 public class PeriodeFiscaleDAOImpl extends BaseDAOImpl< PeriodeFiscale, Long> implements  PeriodeFiscaleDAO {
@@ -73,7 +72,9 @@ public class PeriodeFiscaleDAOImpl extends BaseDAOImpl< PeriodeFiscale, Long> im
 		PeriodeFiscale periode = null;
 
 		while (i.hasNext()) {
-			Assert.isNull(periode, "Plusieurs périodes trouvée pour la même année fiscale !");
+			if (periode != null) {
+				throw new IllegalArgumentException("Plusieurs périodes trouvée pour la même année fiscale !");
+			}
 			periode = (PeriodeFiscale) i.next();
 		}
 

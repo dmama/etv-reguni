@@ -3,9 +3,10 @@ package ch.vd.unireg.tiers;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Raphaël Marmier, 2015-12-21
@@ -26,7 +27,7 @@ public class ForFiscalFirstOpenedFirstComparatorTest extends WithoutSpringTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setDateDebut(RegDate.get(2012, 7, 5));
 
-		Assert.isTrue(orderIsConserved(for1, for2));
+		assertTrue(orderIsConserved(for1, for2));
 	}
 
 	@Test
@@ -42,11 +43,11 @@ public class ForFiscalFirstOpenedFirstComparatorTest extends WithoutSpringTest {
 		for2.setDateFin(RegDate.get(2012, 7, 5));
 		for2.setNumeroOfsAutoriteFiscale(100); // Garantir l'échec du test en cas de ratage de la comparaison.
 
-		Assert.isTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsReversed(for1, for2));
 
 		for1.setDateFin(RegDate.get(2011, 1, 1));
 
-		Assert.isTrue(orderIsConserved(for1, for2));
+		assertTrue(orderIsConserved(for1, for2));
 	}
 
 	@Test
@@ -64,8 +65,8 @@ public class ForFiscalFirstOpenedFirstComparatorTest extends WithoutSpringTest {
 		for2.setDateFin(null);
 		for2.setNumeroOfsAutoriteFiscale(200); // Garantir l'échec du test en cas de ratage de la comparaison.
 
-		Assert.isTrue(orderIsReversed(for1, for2));
-		Assert.isTrue(orderIsConserved(for2, for1));
+		assertTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsConserved(for2, for1));
 	}
 
 	@Test
@@ -80,12 +81,12 @@ public class ForFiscalFirstOpenedFirstComparatorTest extends WithoutSpringTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setNumeroOfsAutoriteFiscale(200);
 
-		Assert.isTrue(orderIsConserved(for1, for2));
+		assertTrue(orderIsConserved(for1, for2));
 
 		for1.setNumeroOfsAutoriteFiscale(200);
 		for2.setNumeroOfsAutoriteFiscale(100);
 
-		Assert.isTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsReversed(for1, for2));
 	}
 
 	@Test
@@ -100,12 +101,12 @@ public class ForFiscalFirstOpenedFirstComparatorTest extends WithoutSpringTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setNumeroOfsAutoriteFiscale(200);
 
-		Assert.isTrue(orderIsConserved(for1, for2));
+		assertTrue(orderIsConserved(for1, for2));
 
 		for1.setNumeroOfsAutoriteFiscale(200);
 		for2.setNumeroOfsAutoriteFiscale(100);
 
-		Assert.isTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsReversed(for1, for2));
 	}
 
 	@Test
@@ -121,10 +122,10 @@ public class ForFiscalFirstOpenedFirstComparatorTest extends WithoutSpringTest {
 		for2.setDateFin(RegDate.get(2012, 12, 12));
 
 		// A ce stade, la date de fin décide, les dates de début étant identiques
-		Assert.isTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsReversed(for1, for2));
 
 		for2.setDateDebut(RegDate.get(2012, 7, 5));
-		Assert.isTrue(orderIsConserved(for1, for2));
+		assertTrue(orderIsConserved(for1, for2));
 	}
 
 	protected boolean orderIsConserved(ForFiscal for1, ForFiscal for2) {

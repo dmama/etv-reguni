@@ -21,13 +21,12 @@ import ch.vd.evd0025.v1.UpdatePayer;
 import ch.vd.evd0025.v1.UpdatePayerContact;
 import ch.vd.evd0025.v1.UpdateRegistrationRequest;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ThreadSafeSimpleDateFormat;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.jms.EsbMessageValidator;
 
 public class EFactureMessageSenderImpl implements EFactureMessageSender, InitializingBean {
@@ -189,7 +188,9 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 
 		if (enabled) {
 			final String principal = AuthenticationHelper.getCurrentPrincipal();
-			Assert.notNull(principal);
+			if (principal == null) {
+				throw new IllegalArgumentException();
+			}
 
 			try {
 				final Marshaller marshaller = jaxbContext.createMarshaller();

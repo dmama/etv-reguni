@@ -13,12 +13,11 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.DecompositionForsAnneeComplete;
@@ -278,7 +277,9 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		++ nbContribuablesAnalyses;
 		try {
 			final List<InfoPeriodeImposition> periodes = buildInfoPeriodes(ctb);
-			Assert.notEmpty(periodes);
+			if (periodes.isEmpty()) {
+				throw new IllegalArgumentException();
+			}
 			for (InfoPeriodeImposition periode : periodes) {
 				addPeriodeImposition(periode);
 			}

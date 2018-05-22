@@ -32,6 +32,7 @@ import net.sf.ehcache.Element;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.declaration.ModeleDocument;
@@ -2170,12 +2170,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkLandTaxLightenings = InternalPartyPart.LAND_TAX_LIGHTENINGS == p;
 		boolean checkInheritanceRelationships = InternalPartyPart.INHERITANCE_RELATIONSHIPS == p;
 
-		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
-				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
-				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
-				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
-				              || checkRealLandRights || checkVirtualTransitiveLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships || checkVirtualInheritedRealLandRights || checkVirtualInheritedVirtuelLandRights,
-		              "La partie [" + p + "] est inconnue");
+		Assert.assertTrue("La partie [" + p + "] est inconnue",
+		                  checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
+				                  || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
+				                  || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
+				                  || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
+				                  || checkRealLandRights || checkVirtualTransitiveLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships || checkVirtualInheritedRealLandRights ||
+				                  checkVirtualInheritedVirtuelLandRights);
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses" + "(" + p + ")");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses" + "(" + p + ")");

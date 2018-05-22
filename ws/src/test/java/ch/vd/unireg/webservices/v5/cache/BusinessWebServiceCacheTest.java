@@ -36,7 +36,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -95,10 +94,12 @@ import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
+import static ch.vd.unireg.xml.party.v3.PartyPart.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
@@ -1703,35 +1704,35 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	 */
 	private static void assertOnlyPart(PartyPart p, Party tiers) {
 
-		boolean checkAddresses = PartyPart.ADDRESSES == p;
-		boolean checkTaxLiabilities = PartyPart.TAX_LIABILITIES == p;
-		boolean checkSimplifiedTaxLiabilities = PartyPart.SIMPLIFIED_TAX_LIABILITIES == p;
-		boolean checkHouseholdMembers = PartyPart.HOUSEHOLD_MEMBERS == p;
-		boolean checkBankAccounts = PartyPart.BANK_ACCOUNTS == p;
-		boolean checkTaxDeclarations = PartyPart.TAX_DECLARATIONS == p;
-		boolean checkTaxDeclarationsStatuses = PartyPart.TAX_DECLARATIONS_STATUSES == p;
-		boolean checkTaxDeclarationsDeadlines = PartyPart.TAX_DECLARATIONS_DEADLINES == p;
-		boolean checkTaxResidences = PartyPart.TAX_RESIDENCES == p;
-		boolean checkVirtualTaxResidences = PartyPart.VIRTUAL_TAX_RESIDENCES == p;
-		boolean checkManagingTaxResidences = PartyPart.MANAGING_TAX_RESIDENCES == p;
-		boolean checkTaxationPeriods = PartyPart.TAXATION_PERIODS == p;
-		boolean checkRelationsBetweenParties = PartyPart.RELATIONS_BETWEEN_PARTIES == p;
-		boolean checkFamilyStatuses = PartyPart.FAMILY_STATUSES == p;
-		boolean checkCapitals = PartyPart.CAPITALS == p;
-		boolean checkCorporationStatuses = PartyPart.CORPORATION_STATUSES == p;
-		boolean checkLegalForms = PartyPart.LEGAL_FORMS == p;
-		boolean checkTaxSystems = PartyPart.TAX_SYSTEMS == p;
-		boolean checkLegalSeats = PartyPart.LEGAL_SEATS == p;
-		boolean checkDebtorPeriodicities = PartyPart.DEBTOR_PERIODICITIES == p;
-		boolean checkImmovableProperties = PartyPart.IMMOVABLE_PROPERTIES == p; // [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
-		boolean checkChildren = PartyPart.CHILDREN == p;
-		boolean checkParents = PartyPart.PARENTS == p;
-		boolean checkWithholdingTaxDeclarationPeriods = PartyPart.WITHHOLDING_TAXATION_PERIODS == p;
-		boolean checkEbillingStatuses = PartyPart.EBILLING_STATUSES == p;
-		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
-				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
-				              || checkCorporationStatuses || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
-				              checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses, "La partie [" + p + "] est inconnue");
+		boolean checkAddresses = ADDRESSES == p;
+		boolean checkTaxLiabilities = TAX_LIABILITIES == p;
+		boolean checkSimplifiedTaxLiabilities = SIMPLIFIED_TAX_LIABILITIES == p;
+		boolean checkHouseholdMembers = HOUSEHOLD_MEMBERS == p;
+		boolean checkBankAccounts = BANK_ACCOUNTS == p;
+		boolean checkTaxDeclarations = TAX_DECLARATIONS == p;
+		boolean checkTaxDeclarationsStatuses = TAX_DECLARATIONS_STATUSES == p;
+		boolean checkTaxDeclarationsDeadlines = TAX_DECLARATIONS_DEADLINES == p;
+		boolean checkTaxResidences = TAX_RESIDENCES == p;
+		boolean checkVirtualTaxResidences = VIRTUAL_TAX_RESIDENCES == p;
+		boolean checkManagingTaxResidences = MANAGING_TAX_RESIDENCES == p;
+		boolean checkTaxationPeriods = TAXATION_PERIODS == p;
+		boolean checkRelationsBetweenParties = RELATIONS_BETWEEN_PARTIES == p;
+		boolean checkFamilyStatuses = FAMILY_STATUSES == p;
+		boolean checkCapitals = CAPITALS == p;
+		boolean checkCorporationStatuses = CORPORATION_STATUSES == p;
+		boolean checkLegalForms = LEGAL_FORMS == p;
+		boolean checkTaxSystems = TAX_SYSTEMS == p;
+		boolean checkLegalSeats = LEGAL_SEATS == p;
+		boolean checkDebtorPeriodicities = DEBTOR_PERIODICITIES == p;
+		boolean checkImmovableProperties = IMMOVABLE_PROPERTIES == p; // [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
+		boolean checkChildren = CHILDREN == p;
+		boolean checkParents = PARENTS == p;
+		boolean checkWithholdingTaxDeclarationPeriods = WITHHOLDING_TAXATION_PERIODS == p;
+		boolean checkEbillingStatuses = EBILLING_STATUSES == p;
+		assertTrue("La partie [" + p + "] est inconnue", checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
+				|| checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
+				|| checkCorporationStatuses || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
+				checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses);
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");

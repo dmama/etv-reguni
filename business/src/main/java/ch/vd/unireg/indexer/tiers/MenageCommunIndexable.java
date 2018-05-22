@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.indexer.IndexerException;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -75,7 +74,9 @@ public class MenageCommunIndexable extends ContribuableImpositionPersonnesPhysiq
 					nonAnnules.add(entry.getKey());
 				}
 			}
-			Assert.isTrue(nonAnnules.size() <= 2, "Plus de deux personnes avec lien non-annulé dans le ménage " + menage.getNumero());
+			if (nonAnnules.size() > 2) {
+				throw new IllegalArgumentException("Plus de deux personnes avec lien non-annulé dans le ménage " + menage.getNumero());
+			}
 
 			// s'il y a des liens non-annulés, on ne va pas chercher plus loin
 			if (!nonAnnules.isEmpty()) {

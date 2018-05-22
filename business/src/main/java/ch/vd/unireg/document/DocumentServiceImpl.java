@@ -23,7 +23,6 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 
@@ -150,7 +149,9 @@ public class DocumentServiceImpl implements DocumentService {
 	 */
 	@Override
 	public void delete(final Document doc) throws Exception {
-		Assert.notNull(doc);
+		if (doc == null) {
+			throw new IllegalArgumentException();
+		}
 
 		String filepath = getFilePath(doc);
 		if (LOGGER.isDebugEnabled()) {

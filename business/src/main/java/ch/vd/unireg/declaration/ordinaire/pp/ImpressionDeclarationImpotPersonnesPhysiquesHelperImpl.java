@@ -35,7 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -222,7 +221,9 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		final Tiers tiers = informationDocument.getTiers();
 		final RegDate dateDeclaration = informationDocument.getDateReference();
 		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(tiers, dateDeclaration);
-		Assert.notNull(oid);
+		if (oid == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(oid, null, TypeAdresseFiscale.COURRIER, false);
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
@@ -449,7 +450,9 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		if (col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) { // Cas spécial pour le CEDI
 			final Integer officeImpot = getNumeroOfficeImpotRetour(informationsDocument);
 
-			Assert.notNull(officeImpot);
+			if (officeImpot == null) {
+				throw new IllegalArgumentException();
+			}
 			remplitAdresseRetourCEDI(adresseRetour, officeImpot);
 		}
 		else if (col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noACI) { // Cas spécial pour l'ACI
@@ -565,7 +568,9 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		if (collAdm == null) {
 			// valeur par défaut
 			collAdm = tiersService.getOfficeImpot(ServiceInfrastructureService.noCEDI);
-			Assert.notNull(collAdm);
+			if (collAdm == null) {
+				throw new IllegalArgumentException();
+			}
 		}
 
 		// [UNIREG-1741] les DIs dépenses ne peuvent pas être scannées au CEDI, elles doivent retourner directement aux OIDs (ou éventuellement à l'ACI en cas de décès)
@@ -574,7 +579,9 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 			final Tiers tiers = informationsDocument.getTiers();
 			final RegDate dateDeclaration = informationsDocument.getDateReference();
 			collAdm = tiersService.getOfficeImpotAt(tiers, dateDeclaration);
-			Assert.notNull(collAdm);
+			if (collAdm == null) {
+				throw new IllegalArgumentException();
+			}
 		}
 
 		return collAdm;
@@ -848,12 +855,14 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 			principal = (PersonnePhysique) tiers;
 			conjoint = null;
 		}
-		else {
-			Assert.isTrue(tiers instanceof MenageCommun);
+		else if (tiers instanceof MenageCommun) {
 			final MenageCommun menage = (MenageCommun) tiers;
 			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, dateDeclaration);
 			principal = ensembleTiersCouple.getPrincipal();
 			conjoint = ensembleTiersCouple.getConjoint();
+		}
+		else {
+			throw new IllegalArgumentException("Le tiers n'est pas une personne physique ou un ménage-commun");
 		}
 
 		final int anneeDeclaration = informationsDocument.getAnnee();
@@ -890,7 +899,9 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		final int anneeDeclaration = informationsDocument.getAnnee();
 		final Tiers tiers = informationsDocument.getTiers();
 		final Integer officeImpotId = getNumeroOfficeImpotGestion(informationsDocument);
-		Assert.notNull(officeImpotId);
+		if (officeImpotId == null) {
+			throw new IllegalArgumentException();
+		}
 		final Integer idDocument = informationsDocument.getIdDocument();
 		return StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + anneeDeclaration
 				+ StringUtils.leftPad(idDocument.toString(), 2, "0")
@@ -904,7 +915,9 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	private String calculIndividuNomPrenom(PersonnePhysique pp) throws EditiqueException {
 		try {
 			List<String> noms = adresseService.getNomCourrier(pp, null, false);
-			Assert.isTrue(noms.size() == 1);
+			if (noms.size() != 1) {
+				throw new IllegalArgumentException();
+			}
 			return adresseService.getFormulePolitesse(pp).salutations() + ' ' + noms.get(0);
 		}
 		catch (AdresseException e) {

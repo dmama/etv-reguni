@@ -2,16 +2,16 @@ package ch.vd.unireg.norentes.civil.changement.dateNaissance;
 
 import java.util.List;
 
-import org.springframework.util.Assert;
+import org.junit.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.norentes.annotation.Check;
 import ch.vd.unireg.norentes.annotation.Etape;
 import ch.vd.unireg.norentes.common.EvenementCivilScenario;
@@ -23,6 +23,8 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeEvenementCivil;
+
+import static java.lang.String.format;
 
 public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivilScenario {
 
@@ -87,9 +89,9 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(noHabMomo);
 			List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé");
+			Assert.assertEquals("Le tiers n'a pas été indexé", 1, list.size());
 			TiersIndexedData tiers = list.get(0);
-			Assert.isTrue(tiers.getNumero().equals(noHabMomo), "Le numéro du tiers est incorrect");
+			Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), noHabMomo);
 		}
 	}
 
@@ -116,13 +118,13 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(noHabMomo);
 			List<TiersIndexedData> list = globalSearcher.search(criteria);
-			Assert.isTrue(list.size() == 1, "L'indexation n'a pas fonctionné");
+			Assert.assertEquals("L'indexation n'a pas fonctionné", 1, list.size());
 			TiersIndexedData tiers = list.get(0);
-			Assert.isTrue(tiers.getNumero().equals(noHabMomo), "Le numéro du tiers est incorrect");
+			Assert.assertEquals("Le numéro du tiers est incorrect", (long) tiers.getNumero(), noHabMomo);
 
 			String dateNaissance =
-				String.format("%4d%02d%02d", dateNaissanceCorrigee.year(), dateNaissanceCorrigee.month(), dateNaissanceCorrigee.day());
-			Assert.isTrue(tiers.getDateNaissanceInscriptionRC().equals(dateNaissance), "La nouvelle date de naissance n'a pas été indexé");
+					format("%4d%02d%02d", dateNaissanceCorrigee.year(), dateNaissanceCorrigee.month(), dateNaissanceCorrigee.day());
+			Assert.assertEquals("La nouvelle date de naissance n'a pas été indexé", tiers.getDateNaissanceInscriptionRC(), dateNaissance);
 		}
 		{
 			PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noHabMomo);

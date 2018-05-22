@@ -3,7 +3,6 @@ package ch.vd.unireg.evenement.ide;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.tiers.Etablissement;
@@ -27,8 +26,12 @@ public class AnnonceIDEServiceImpl implements AnnonceIDEService {
 	@Override
 	public AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE proto, Etablissement etablissement) throws AnnonceIDEException {
 
-		Assert.notNull(proto, "Le prototype de la demande d'annonce doit être fournie.");
-		Assert.notNull(etablissement, "L'établissement concerné par l'annonce doit être fournie.");
+		if (proto == null) {
+			throw new IllegalArgumentException("Le prototype de la demande d'annonce doit être fournie.");
+		}
+		if (etablissement == null) {
+			throw new IllegalArgumentException("L'établissement concerné par l'annonce doit être fournie.");
+		}
 
 		final ReferenceAnnonceIDE tmpReferenceAnnonceIDE = new ReferenceAnnonceIDE();
 		tmpReferenceAnnonceIDE.setEtablissement(etablissement);

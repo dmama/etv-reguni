@@ -1,9 +1,6 @@
 package ch.vd.unireg.evenement.organisation.interne.formejuridique;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -12,6 +9,7 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurColl
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.RegimeFiscal;
 
@@ -72,15 +70,15 @@ public class ChangementRegimeFiscalParDefaut extends EvenementOrganisationIntern
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		/*
-		 Erreurs techniques fatale
-		  */
-		Assert.notNull(dateAvant);
-		Assert.notNull(dateApres);
-		Assert.isTrue(dateAvant.equals(dateApres.getOneDayBefore()));
+		// Erreurs techniques fatale
+		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {
+			throw new IllegalArgumentException();
+		}
 
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
-		Assert.notNull(getEntreprise());
+		if (getEntreprise() == null) {
+			throw new IllegalArgumentException();
+		}
 
 		/*
 		 Problèmes métiers empêchant la progression

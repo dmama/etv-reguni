@@ -8,11 +8,10 @@ import java.util.Map;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.AutoCloseableContainer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.role.before2016.InfoContribuable;
 import ch.vd.unireg.role.before2016.InfoContribuablePM;
@@ -29,7 +28,9 @@ public class PdfRolesOIPMRapport extends PdfRolesRapport<ProduireRolesOIPMResult
 
 	public void write(final ProduireRolesOIPMResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		status.setMessage("Génération du rapport...");
 
@@ -44,11 +45,11 @@ public class PdfRolesOIPMRapport extends PdfRolesRapport<ProduireRolesOIPMResult
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-		    addTableSimple(2, table -> {
-		        table.addLigne("Année fiscale :", String.valueOf(results.annee));
-		        table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-		        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-		    });
+			addTableSimple(2, table -> {
+				table.addLigne("Année fiscale :", String.valueOf(results.annee));
+				table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
+			});
 		}
 
 		// Résultats
@@ -56,7 +57,7 @@ public class PdfRolesOIPMRapport extends PdfRolesRapport<ProduireRolesOIPMResult
 		{
 			if (status.isInterrupted()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\nles valeurs ci-dessous sont donc incomplètes.");
-		    }
+			}
 
 			addTableSimple(2, table -> {
 				table.addLigne("Nombre de communes traitées:", String.valueOf(results.getNoOfsCommunesTraitees().size()));

@@ -14,14 +14,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.FiscalDateHelper;
@@ -35,6 +27,13 @@ import ch.vd.unireg.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.unireg.evenement.civil.interne.HandleStatus;
 import ch.vd.unireg.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Contribuable;
@@ -382,7 +381,9 @@ public abstract class Depart extends Mouvement {
 
 	protected static ModeImposition determineModeImpositionDepartHCHS(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateFermeture, ForFiscalPrincipalPP ffp, TiersService tiersService) throws EvenementCivilException {
 
-		Assert.notNull(ffp);
+		if (ffp == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final ModeImposition modeImpositionAncien = ffp.getModeImposition();
 		final ModeImposition modeImposition;

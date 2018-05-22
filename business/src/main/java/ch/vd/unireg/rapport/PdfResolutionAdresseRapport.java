@@ -8,7 +8,6 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.adresse.ResolutionAdresseResults;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
@@ -21,7 +20,9 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 
 	public void write(final ResolutionAdresseResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws DocumentException {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -45,7 +46,7 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 		{
 			if (results.isInterrompu()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-						+ "les valeurs ci-dessous sont donc incomplètes.");
+						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
 			addTableSimple(new float[]{70f, 30f}, table -> {
@@ -58,17 +59,15 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 		}
 
 
-
 		// adresses resolues
-			{
-				final String filename = "adresses_resolues.csv";
-				final String titre = "Liste des adresses résolues";
-				final String listVide = "(aucune)";
-				try (TemporaryFile contenu = getCsvAdresseResolue(results.listeAdresseResolues, filename, status)) {
-					addListeDetaillee(writer, titre, listVide, filename, contenu);
-				}
+		{
+			final String filename = "adresses_resolues.csv";
+			final String titre = "Liste des adresses résolues";
+			final String listVide = "(aucune)";
+			try (TemporaryFile contenu = getCsvAdresseResolue(results.listeAdresseResolues, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
-
+		}
 
 
 		// erreurs

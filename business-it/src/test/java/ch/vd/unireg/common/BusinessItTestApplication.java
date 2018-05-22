@@ -24,10 +24,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.database.DatabaseService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 
 /**
@@ -71,7 +73,7 @@ public abstract class BusinessItTestApplication {
 					DOMConfigurator.configure("business-it/src/test/resources/ut/log4j.xml");
 				}
 				else {
-					Assert.fail("Pas de fichier Log4j");
+					fail("Pas de fichier Log4j");
 				}
 			}
 		}
@@ -108,7 +110,7 @@ public abstract class BusinessItTestApplication {
 		transactionManager = (PlatformTransactionManager) context.getBean("transactionManager");
 		databaseService = (DatabaseService) context.getBean("databaseService");
 		indexer = (GlobalTiersIndexer) context.getBean("globalTiersIndexer");
-		Assert.notNull(databaseService);
+		assertNotNull(databaseService);
 	}
 
 	protected void clearDatabase() throws Exception {

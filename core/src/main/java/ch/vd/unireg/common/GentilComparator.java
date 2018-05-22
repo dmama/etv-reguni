@@ -3,8 +3,6 @@ package ch.vd.unireg.common;
 import java.util.Comparator;
 import java.util.List;
 
-import ch.vd.registre.base.utils.Assert;
-
 /**
  * Comparateur qui ordonne les éléments qui lui sont passés suivant le même
  * ordre que dans une liste fournie (ceux qui ne font pas partie de la
@@ -17,8 +15,9 @@ public final class GentilComparator<T> implements Comparator<T> {
 
 	public GentilComparator(List<T> ordre) {
 		this.ordre = ordre;
-		Assert.notNull(ordre);
-		Assert.isTrue(!ordre.isEmpty());
+		if (ordre == null || ordre.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override

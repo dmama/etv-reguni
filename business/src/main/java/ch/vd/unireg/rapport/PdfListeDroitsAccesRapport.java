@@ -7,7 +7,6 @@ import java.util.List;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -24,16 +23,18 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
      */
     public void write(final ListeDroitsAccesResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-        Assert.notNull(status);
+	    if (status == null) {
+		    throw new IllegalArgumentException();
+	    }
 
-        // Création du document PDF
-        PdfWriter writer = PdfWriter.getInstance(this, os);
-        open();
-        addMetaInfo(nom, description);
-        addEnteteUnireg();
+	    // Création du document PDF
+	    PdfWriter writer = PdfWriter.getInstance(this, os);
+	    open();
+	    addMetaInfo(nom, description);
+	    addEnteteUnireg();
 
-        // Titre
-        addTitrePrincipal("Rapport d'exécution du job de listing des droits d'accès sur les dossiers protégés");
+	    // Titre
+	    addTitrePrincipal("Rapport d'exécution du job de listing des droits d'accès sur les dossiers protégés");
 
 	    // Paramètres
 	    addEntete1("Paramètres");
@@ -43,45 +44,45 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
 		    });
 	    }
 
-        // Résultats
-        addEntete1("Résultats");
-        {
-            if (results.interrompu) {
-                addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-                        + "les valeurs ci-dessous sont donc incomplètes.");
-            }
+	    // Résultats
+	    addEntete1("Résultats");
+	    {
+		    if (results.interrompu) {
+			    addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
+					               + "les valeurs ci-dessous sont donc incomplètes.");
+		    }
 
-            addTableSimple(2, table -> {
-                table.addLigne("Nombre total de droits d'accès:", String.valueOf(results.droitsAcces.size()));
-                table.addLigne("Nombre d'erreurs:", String.valueOf(results.erreurs.size()));
-	            table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-                table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-            });
-        }
+		    addTableSimple(2, table -> {
+			    table.addLigne("Nombre total de droits d'accès:", String.valueOf(results.droitsAcces.size()));
+			    table.addLigne("Nombre d'erreurs:", String.valueOf(results.erreurs.size()));
+			    table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+			    table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
+		    });
+	    }
 
-        // CTBs traités
+	    // CTBs traités
 	    {
 		    String filename = "droits_acces.csv";
 		    String titre = "Liste des droits d'accès";
 		    String listVide = "(aucun droit d'accès)";
 		    try (TemporaryFile contenu = droitsAccesAsCsvFile(results.droitsAcces, filename, status)) {
-		        addListeDetaillee(writer, titre, listVide, filename, contenu);
-	        }
-        }
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
+	    }
 
-        // CTBs en erreurs
-        {
-            String filename = "erreurs.csv";
-            String titre = "Liste des erreurs";
-	        String listVide = "(aucune erreur)";
-	        try (TemporaryFile contenu = asCsvFile(results.erreurs, filename, status)) {
-		        addListeDetaillee(writer, titre, listVide, filename, contenu);
-	        }
-        }
+	    // CTBs en erreurs
+	    {
+		    String filename = "erreurs.csv";
+		    String titre = "Liste des erreurs";
+		    String listVide = "(aucune erreur)";
+		    try (TemporaryFile contenu = asCsvFile(results.erreurs, filename, status)) {
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
+	    }
 
-        close();
+	    close();
 
-        status.setMessage("Génération du rapport terminée.");
+	    status.setMessage("Génération du rapport terminée.");
     }
 
 	private TemporaryFile droitsAccesAsCsvFile(List<ListeDroitsAccesResults.InfoDroitAcces> list, String filename, StatusManager status) {

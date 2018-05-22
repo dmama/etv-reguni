@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.Interruptible;
@@ -61,7 +60,9 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 	protected R doRun(final RegDate dateTraitement, final int nbThreads, final StatusManager status,
 	                  final HibernateTemplate hibernateTemplate, final Customizer<R, T> customizer) {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final R results = customizer.createResults(dateTraitement);
 

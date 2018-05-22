@@ -3,8 +3,9 @@ package ch.vd.unireg.tiers;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Raphaël Marmier, 2015-12-22
@@ -26,7 +27,7 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setDateFin(RegDate.get(2012, 7, 5));
 
-		Assert.isTrue(orderIsConserved(for1, for2));
+		assertTrue(orderIsConserved(for1, for2));
 	}
 
 	@Test
@@ -42,7 +43,7 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setDateDebut(RegDate.get(2012, 7, 5));
 
-		Assert.isTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsReversed(for1, for2));
 	}
 
 	@Test
@@ -61,8 +62,8 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		for2.setTypeAutoriteFiscale(for1.getTypeAutoriteFiscale());
 		for2.setNumeroOfsAutoriteFiscale(200);
 
-		Assert.isTrue(orderIsReversed(for1, for2));
-		Assert.isTrue(orderIsConserved(for2, for1));
+		assertTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsConserved(for2, for1));
 	}
 
 	@Test
@@ -78,12 +79,12 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setNumeroOfsAutoriteFiscale(200);
 
-		Assert.isTrue(orderIsConserved(for1, for2));
+		assertTrue(orderIsConserved(for1, for2));
 
 		for1.setNumeroOfsAutoriteFiscale(200);
 		for2.setNumeroOfsAutoriteFiscale(100);
 
-		Assert.isTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsReversed(for1, for2));
 	}
 
 	@Test
@@ -100,10 +101,10 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		for2.setDateDebut(RegDate.get(2012, 12, 12));
 
 		// A ce stade, la date de fin décide, la date de début étant identique
-		Assert.isTrue(orderIsReversed(for1, for2));
+		assertTrue(orderIsReversed(for1, for2));
 
 		for2.setDateFin(RegDate.get(2012, 7, 5));
-		Assert.isTrue(orderIsConserved(for1, for2));
+		assertTrue(orderIsConserved(for1, for2));
 	}
 
 	protected boolean orderIsConserved(ForFiscal for1, ForFiscal for2) {

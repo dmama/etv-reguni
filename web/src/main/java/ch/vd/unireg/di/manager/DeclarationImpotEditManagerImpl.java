@@ -27,7 +27,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.audit.Audit;
@@ -954,7 +953,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		@Override
 		public EditiqueResultat imprimeSommation(DeclarationImpotOrdinairePM declaration, RegDate date, @Nullable Integer emolument) throws DeclarationException, EditiqueException, JMSException {
-			Assert.isNull(emolument);       // si ça pête, c'est qu'on a oublié de mettre en cohérence le résultat de la méthode getMontantEmolument avec celle-ci...
+			if (emolument != null) {    // si ça pête, c'est qu'on a oublié de mettre en cohérence le résultat de la méthode getMontantEmolument avec celle-ci...
+				throw new IllegalArgumentException();
+			}
 			return editiqueCompositionService.imprimeSommationDIOnline(declaration, date, date);
 		}
 	}

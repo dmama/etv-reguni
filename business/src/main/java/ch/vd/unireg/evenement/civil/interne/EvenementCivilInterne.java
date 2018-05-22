@@ -8,7 +8,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -484,7 +483,9 @@ public abstract class EvenementCivilInterne {
 	                                                      @Nullable ModeImposition modeImposition) {
 
 		ForFiscalPrincipalPP forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
-		Assert.notNull(forFiscalPrincipal);
+		if (forFiscalPrincipal == null) {
+			throw new IllegalArgumentException();
+		}
 		final Integer numeroOfsActuel = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
 
 		// On ne ferme et ouvre les fors que si nécessaire

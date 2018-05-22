@@ -8,7 +8,6 @@ import java.util.Set;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.Tiers;
@@ -67,7 +66,9 @@ public class SuperGraContext {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		Assert.notNull(entity);
+		if (entity == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Enregistre la nouvelle entité
 		newlyCreated.put(key, entity);

@@ -14,7 +14,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
-import org.springframework.util.Assert;
 
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
@@ -121,24 +120,26 @@ public class InContainerTestingJob extends JobDefinition {
 				.synchronizedMap(new IdentityHashMap<>());
 
 		public void beforeTestMethod(final Method testMethod) throws Exception {
-			Assert.notNull(testMethod, "The test method of the supplied TestContext must not be null");
+			if (testMethod == null) {
+				throw new IllegalArgumentException("The test method of the supplied TestContext must not be null");
+			}
 
 			if (this.transactionContextCache.remove(testMethod) != null) {
 				throw new IllegalStateException("Cannot start new transaction without ending existing transaction: "
-						+ "Invoke endTransaction() before startNewTransaction().");
+						                                + "Invoke endTransaction() before startNewTransaction().");
 			}
 
 			if (testMethod.isAnnotationPresent(NotTransactional.class)) {
 				return;
 			}
 
-			DefaultTransactionAttribute transactionDefinition =  new DefaultTransactionAttribute ();
-			transactionDefinition.setName(testMethod.getClass().getSimpleName()+ '.' +testMethod.getName());
+			DefaultTransactionAttribute transactionDefinition = new DefaultTransactionAttribute();
+			transactionDefinition.setName(testMethod.getClass().getSimpleName() + '.' + testMethod.getName());
 
 			if (transactionDefinition != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Explicit transaction definition [" + transactionDefinition + "] found for test context [" + testMethod
-							+ ']');
+							             + ']');
 				}
 				TransactionContext txContext = new TransactionContext(getTransactionManager(), transactionDefinition);
 				startNewTransaction(testMethod, txContext);
@@ -147,7 +148,9 @@ public class InContainerTestingJob extends JobDefinition {
 		}
 
 		public void afterTestMethod(Method testMethod) throws Exception {
-			Assert.notNull(testMethod, "The test method of the supplied TestContext must not be null");
+			if (testMethod == null) {
+				throw new IllegalArgumentException("The test method of the supplied TestContext must not be null");
+			}
 
 			// If the transaction is still active...
 			TransactionContext txContext = this.transactionContextCache.remove(testMethod);

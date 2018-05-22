@@ -1,13 +1,12 @@
 package ch.vd.unireg.indexer.tiers;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -26,7 +25,9 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService,
 	                         ServiceInfrastructureService serviceInfra, AvatarService avatarService, PersonnePhysique hab, Individu individu) throws IndexerException {
 		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, hab);
-		Assert.notNull(individu);
+		if (individu == null) {
+			throw new IllegalArgumentException();
+		}
 		this.individu = individu;
 	}
 

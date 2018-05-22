@@ -2,10 +2,9 @@ package ch.vd.unireg.taglibs.formInput;
 
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.tags.form.TagWriter;
 
-import ch.vd.registre.base.utils.Assert;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 class EnumEditor implements Editor {
 
@@ -18,7 +17,9 @@ class EnumEditor implements Editor {
 	@Override
 	public void generate(TagWriter tagWriter, String value) throws JspException {
 
-		Assert.isTrue(params.getType().isEnum());
+		if (!params.getType().isEnum()) {
+			throw new IllegalArgumentException();
+		}
 
 		final String v = value == null ? "" : value;
 		if (params.isReadonly()) {
@@ -32,12 +33,12 @@ class EnumEditor implements Editor {
 			tagWriter.startTag("select");
 
 			final String id = params.getId();
-			if (StringUtils.isNotBlank(id)) {
+			if (isNotBlank(id)) {
 				tagWriter.writeAttribute("id", id);
 			}
 
 			final String path = params.getPath();
-			if (StringUtils.isNotBlank(path)) {
+			if (isNotBlank(path)) {
 				tagWriter.writeAttribute("name", path);
 			}
 

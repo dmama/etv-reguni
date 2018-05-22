@@ -13,18 +13,17 @@ import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.unireg.xml.event.di.liberation.v1.DemandeLiberation;
-import ch.vd.unireg.xml.event.di.liberation.v1.ObjectFactory;
-import ch.vd.unireg.xml.event.di.liberation.v1.TypeDeclarationImpot;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbMessageValidator;
+import ch.vd.unireg.xml.event.di.liberation.v1.DemandeLiberation;
+import ch.vd.unireg.xml.event.di.liberation.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.di.liberation.v1.TypeDeclarationImpot;
 
 /**
  * Implémentation du service d'envoi des messages de demande de libération des déclarations d'impôt
@@ -79,7 +78,9 @@ public class EvenementLiberationDeclarationImpotSenderImpl implements EvenementL
 
 	private void sendMessage(DemandeLiberation demande) throws EvenementDeclarationException {
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
+		if (principal == null) {
+			throw new IllegalArgumentException();
+		}
 
 		try {
 			final Marshaller marshaller = jaxbContext.createMarshaller();

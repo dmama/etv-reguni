@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.EtatCivilHelper;
@@ -57,7 +56,9 @@ public abstract class Arrivee extends Mouvement {
 
 	protected Arrivee(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
-		Assert.isTrue(isEvenementArrivee(evenement.getType()));
+		if (!isEvenementArrivee(evenement.getType())) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	protected Arrivee(EvenementCivilEchFacade evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
@@ -477,20 +478,22 @@ public abstract class Arrivee extends Mouvement {
 
 		if (isConjointMarieSeul()) {
 			long numeroIndividu = getNoIndividu();
-			String message = String.format("Le conjoint de l'individu (n° %s) correspond à un(e) marié(e) seul",numeroIndividu);
+			String message = String.format("Le conjoint de l'individu (n° %s) correspond à un(e) marié(e) seul", numeroIndividu);
 			throw new EvenementCivilException(message);
 		}
 
 		if (isArriveeRedondanteAnterieurPourIndividuEnMenage()) {
 			String stringDateArrivee = RegDateHelper.dateToDashString(getDate());
 			long numeroIndividu = getNoIndividu();
-			String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun",stringDateArrivee,numeroIndividu);
+			String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun", stringDateArrivee, numeroIndividu);
 
 			throw new EvenementCivilException(message);
 		}
 
 		final Individu individu = getIndividu();
-		Assert.notNull(individu); // prérequis
+		if (individu == null) {
+			throw new IllegalArgumentException();
+		} // prérequis
 
 		// [UNIREG-2212] Il faut décaler la date du for en cas d'arrivée vaudoise après le 20 décembre
 		final RegDate dateEvenement = getDateArriveeEffective(getDate());
@@ -510,7 +513,7 @@ public abstract class Arrivee extends Mouvement {
 		final PersonnePhysique arrivant = getOrCreatePersonnePhysique(individu, numeroEvenement);
 		//[SIFISC-12624]
 		//Si une décision aci en cours est présente, on met l'évenement en erreur
-		verifierPresenceDecisionEnCours(arrivant,dateEvenement);
+		verifierPresenceDecisionEnCours(arrivant, dateEvenement);
 		verifierPresenceDecisionsEnCoursSurCouple(arrivant);
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
@@ -519,7 +522,7 @@ public abstract class Arrivee extends Mouvement {
 		final PersonnePhysique conjointDeLArrivant;
 		if (conjoint != null) {
 			conjointDeLArrivant = getOrCreatePersonnePhysique(conjoint, numeroEvenement);
-			verifierPresenceDecisionEnCours(conjointDeLArrivant,arrivant,dateEvenement);
+			verifierPresenceDecisionEnCours(conjointDeLArrivant, arrivant, dateEvenement);
 		}
 		else {
 			conjointDeLArrivant = null;
@@ -531,7 +534,7 @@ public abstract class Arrivee extends Mouvement {
 
 		// trouve la date du mariage (qui peut avoir eu lieu bien avant l'arrivée !)
 		final RegDate dateDebutMenage = findDateDebutMenageAvant(individu, getDate());
-		 // Fermeture de l'eventuel for personnel ouvert en dehors du canton.
+		// Fermeture de l'eventuel for personnel ouvert en dehors du canton.
 		if (contribuableAUnForFiscalPrincipalPersonnelOuvertEnDehorsDuCanton(arrivant)) {
 			context.getTiersService().closeForFiscalPrincipal(arrivant, dateDebutMenage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
@@ -540,7 +543,9 @@ public abstract class Arrivee extends Mouvement {
 		}
 
 		final MenageCommun menageCommun = getOrCreateMenageCommun(arrivant, conjointDeLArrivant, dateEvenement, dateDebutMenage, numeroEvenement);
-		Assert.notNull(menageCommun);
+		if (menageCommun == null) {
+			throw new IllegalArgumentException();
+		}
 
 		/*
 		 * Mise-à-jour des adresses
@@ -642,11 +647,15 @@ public abstract class Arrivee extends Mouvement {
 			/*
 			 * Les deux individus appartiennt déjà au même ménage => rien de spécial à faire
 			 */
-			Assert.isTrue(menageCommunHabitantPrincipal == menageCommunHabitantConjoint);
-			Assert.isTrue(habitantConjoint == null
-					|| habitantConjoint == getAutrePersonneDuMenage(menageCommunHabitantPrincipal, habitantPrincipal));
-			Assert.isTrue(habitantConjoint == null
-					|| habitantPrincipal == getAutrePersonneDuMenage(menageCommunHabitantConjoint, habitantConjoint));
+			if (menageCommunHabitantPrincipal != menageCommunHabitantConjoint) {
+				throw new IllegalArgumentException();
+			}
+			if (habitantConjoint != getAutrePersonneDuMenage(menageCommunHabitantPrincipal, habitantPrincipal)) {
+				throw new IllegalArgumentException();
+			}
+			if (habitantPrincipal != getAutrePersonneDuMenage(menageCommunHabitantConjoint, habitantConjoint)) {
+				throw new IllegalArgumentException();
+			}
 			menageCommun = menageCommunHabitantPrincipal;
 			Audit.info(evenementId, String.format("Le ménage commun [%d] des nouveaux arrivants existe déjà.", menageCommun.getNumero()));
 		}
@@ -688,19 +697,23 @@ public abstract class Arrivee extends Mouvement {
 
 			}
 			else {
-				Assert.notNull(habitantConjoint);
-				Assert.notNull(menageCommunHabitantConjoint);
+				if (habitantConjoint == null) {
+					throw new IllegalArgumentException();
+				}
+				if (menageCommunHabitantConjoint == null) {
+					throw new IllegalArgumentException();
+				}
 
 				/*
 				 * Le conjoint appartient déjà à un ménage => on vérifie que le ménage en question ne possède bien qu'un seul membre actif
 				 * et on rattache l'individu principal au ménage
-                 *
-                 * Vérification que l'on ajoute pas un deuxième individu principal
-                 */
+				 *
+				 * Vérification que l'on ajoute pas un deuxième individu principal
+				 */
 				final PersonnePhysique autrePersonne = getAutrePersonneDuMenage(menageCommunHabitantConjoint, habitantConjoint);
 				if (autrePersonne != null) {
 					final String message = String.format("L'individu conjoint [%s] est en ménage commun avec une personne [%s] autre que son individu principal[%s]",
-														habitantConjoint, autrePersonne, habitantPrincipal);
+					                                     habitantConjoint, autrePersonne, habitantPrincipal);
 					throw new EvenementCivilException(message);
 				}
 
@@ -709,7 +722,9 @@ public abstract class Arrivee extends Mouvement {
 				 * [UNIREG-1677] La date de début du nouveau rapport entre tiers doit être reprise sur le rapport existant
 				 */
 				final RapportEntreTiers rapportExistant = habitantConjoint.getRapportSujetValidAt(null, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				Assert.notNull(rapportExistant);
+				if (rapportExistant == null) {
+					throw new IllegalArgumentException();
+				}
 
 				final RapportEntreTiers rapport = getService().addTiersToCouple(menageCommunHabitantConjoint, habitantPrincipal, rapportExistant.getDateDebut(), null);
 				menageCommun = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());

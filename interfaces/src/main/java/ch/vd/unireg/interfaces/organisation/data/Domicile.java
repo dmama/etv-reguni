@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.tiers.LocalizedDateRange;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -58,7 +57,7 @@ public class Domicile implements Serializable, CollatableDateRange<Domicile>, Da
 
 	@Override
 	public Domicile collate(Domicile next) {
-		Assert.isTrue(isCollatable(next));
+		if (!isCollatable(next)) { 			throw new IllegalArgumentException(); 		}
 		return new Domicile(this.dateDebut, next.getDateFin(), this.typeAutoriteFiscale, this.numeroOfsAutoriteFiscale);
 	}
 

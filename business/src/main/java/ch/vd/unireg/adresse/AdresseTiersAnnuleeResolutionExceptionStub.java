@@ -6,7 +6,6 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.CasePostale;
 
 /**
@@ -20,7 +19,10 @@ public class AdresseTiersAnnuleeResolutionExceptionStub implements AdresseGeneri
 	private final Source source;
 
 	public AdresseTiersAnnuleeResolutionExceptionStub(AdresseTiers target) {
-		Assert.isTrue(target.isAnnule()); // si l'adresse autre tiers n'est pas annulée, l'exception de résolution des adresses doit être remontée !
+		if (!target.isAnnule()) {
+			// si l'adresse autre tiers n'est pas annulée, l'exception de résolution des adresses doit être remontée !
+			throw new IllegalArgumentException();
+		}
 		this.target = target;
 		this.source = new Source(SourceType.FISCALE, null);
 	}

@@ -34,7 +34,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -229,7 +228,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	}
 
 	public void toBeExecuted() {
-		Assert.isTrue(statut != JobStatut.JOB_INTERRUPTING && statut != JobStatut.JOB_RUNNING);
+		if (statut == JobStatut.JOB_INTERRUPTING || statut == JobStatut.JOB_RUNNING) {
+			throw new IllegalStateException();
+		}
 		setStatut(JobStatut.JOB_RUNNING);
 	}
 
@@ -518,7 +519,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 	@Nullable
 	private static Boolean getOptionnalBooleanValue(Map<String, Object> params, JobParam paramDefinition, @Nullable Boolean defaultValue) {
-		Assert.notNull(paramDefinition);
+		if (paramDefinition == null) {
+			throw new IllegalArgumentException();
+		}
 		Boolean value = null;
 		if (params != null) {
 			final Boolean b = (Boolean) params.get(paramDefinition.getName());
@@ -609,7 +612,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	}
 
 	private static @Nullable Integer getOptionalIntegerValue(Map<String, Object> params, JobParam paramDefinition) {
-		Assert.notNull(paramDefinition);
+		if (paramDefinition == null) {
+			throw new IllegalArgumentException();
+		}
 		Integer value = null;
 		if (params != null) {
 			final Number i = (Number) params.get(paramDefinition.getName());
@@ -674,7 +679,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	}
 
 	private static @Nullable Long getOptionalLongValue(Map<String, Object> params, JobParam paramDefinition) {
-		Assert.notNull(paramDefinition);
+		if (paramDefinition == null) {
+			throw new IllegalArgumentException();
+		}
 		Long value = null;
 		if (params != null) {
 			final Number i = (Number) params.get(paramDefinition.getName());

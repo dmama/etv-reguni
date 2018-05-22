@@ -11,7 +11,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.common.HibernateDateRangeEntity;
 
@@ -30,7 +29,9 @@ public class SurchargeDonneesCivilesHelper {
 	 */
 	public static <T extends HibernateDateRangeEntity & Duplicable<T>> Set<T> tronqueSurchargeFiscale(DateRange range, RegDate dateValeur, List<T> entites, String descriptionType) throws TiersException {
 		if (!entites.isEmpty()) {
-			Assert.isFalse(range.isValidAt(dateValeur));
+			if (range.isValidAt(dateValeur)) {
+				throw new IllegalArgumentException();
+			}
 			/*
 			   Condition pour fonctionner: à la date de valeur, il n'y a pas d'override. On s'attend à en avoir jusqu'à la veille pour
 			   les entreprises déjà connues d'Unireg.

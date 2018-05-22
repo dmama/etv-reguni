@@ -10,11 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.ui.Model;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.view.TiersCriteriaView;
 
@@ -103,12 +102,14 @@ public class TiersSearchHelper {
 	 * @throws IndexerException en cas de problème
 	 */
 	public List<TiersIndexedDataView> search(TiersCriteriaView criteria) throws IndexerException {
-		if (StringUtils.isNotBlank(criteria.getNumeroAVS())){
+		if (StringUtils.isNotBlank(criteria.getNumeroAVS())) {
 			criteria.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(criteria.getNumeroAVS()));
 		}
 
 		final List<TiersIndexedData> results = tiersService.search(criteria.asCore());
-		Assert.notNull(results);
+		if (results == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final List<TiersIndexedDataView> list = new ArrayList<>(results.size());
 		for (TiersIndexedData d : results) {

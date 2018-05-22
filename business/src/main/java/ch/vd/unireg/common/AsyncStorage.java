@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.InstantHelper;
-import ch.vd.registre.base.utils.Assert;
 
 /**
  * Classe de stockage avec accès multithread
@@ -190,7 +189,9 @@ public class AsyncStorage<K, V> {
 	 * @see #signalAll()
 	 */
 	protected final void await() throws InterruptedException {
-		Assert.isTrue(lock.isHeldByCurrentThread());
+		if (!lock.isHeldByCurrentThread()) {
+			throw new IllegalStateException();
+		}
 		newDocument.await();
 	}
 
@@ -200,7 +201,9 @@ public class AsyncStorage<K, V> {
 	 * @see #signalAll()
 	 */
 	protected final void awaitNanos(long nanos) throws InterruptedException {
-		Assert.isTrue(lock.isHeldByCurrentThread());
+		if (!lock.isHeldByCurrentThread()) {
+			throw new IllegalStateException();
+		}
 		newDocument.awaitNanos(nanos);
 	}
 
@@ -208,7 +211,9 @@ public class AsyncStorage<K, V> {
 	 * Appelable depuis l'intérieur d'un "environnement protégé" pour lancer le signal de réveil des threads éventuellement en attente
 	 */
 	protected final void signalAll() {
-		Assert.isTrue(lock.isHeldByCurrentThread());
+		if (!lock.isHeldByCurrentThread()) {
+			throw new IllegalStateException();
+		}
 		newDocument.signalAll();
 	}
 }

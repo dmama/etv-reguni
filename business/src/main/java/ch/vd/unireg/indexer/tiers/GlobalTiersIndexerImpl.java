@@ -31,10 +31,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.simpleindexer.LuceneException;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.avatar.AvatarService;
@@ -54,6 +51,8 @@ import ch.vd.unireg.indexer.async.MassTiersIndexer;
 import ch.vd.unireg.indexer.async.OnTheFlyTiersIndexer;
 import ch.vd.unireg.indexer.async.TiersIndexerWorker;
 import ch.vd.unireg.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -555,7 +554,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	 *                               tiers lève une exception, les tiers suivants seront quand même indexés.
 	 */
     public void indexTiers(List<Tiers> tiers, boolean removeBefore, boolean followDependents) throws IndexerBatchException {
-        Assert.notNull(tiers);
+	    if (tiers == null) {
+		    throw new IllegalArgumentException();
+	    }
 
         // Note : en cas d'exception, on continue le processing, on stocke les exceptions et on les lèves d'un seul coup à la fin
         IndexerBatchException exception = null;
@@ -719,14 +720,16 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             final PersonnePhysique pp = (PersonnePhysique) tiers;
             // Habitant
             if (pp.isHabitantVD()) {
-                final Long numeroIndividu = pp.getNumeroIndividu();
-                Assert.notNull(numeroIndividu);
-                // Recuperation de l'individu
-                final Individu individu = serviceCivilService.getIndividu(numeroIndividu, null, AttributeIndividu.ADRESSES);
+	            final Long numeroIndividu = pp.getNumeroIndividu();
+	            if (numeroIndividu == null) {
+		            throw new IllegalArgumentException();
+	            }
+	            // Recuperation de l'individu
+	            final Individu individu = serviceCivilService.getIndividu(numeroIndividu, null, AttributeIndividu.ADRESSES);
 	            if (individu == null) {
 		            throw new IndividuNotFoundException(pp);
 	            }
-                indexable = new HabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, pp, individu);
+	            indexable = new HabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, pp, individu);
             }
             // NonHabitant
             else {

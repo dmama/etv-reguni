@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
 import ch.vd.evd0025.v1.PayerStatus;
-import ch.vd.registre.base.utils.Assert;
 
 public enum TypeEtatDestinataire {
 	NON_INSCRIT("Non inscrit"),
@@ -39,55 +38,63 @@ public enum TypeEtatDestinataire {
 
 	public TypeEtatDestinataire avecSuspension() {
 		switch (this) {
-			case NON_INSCRIT:
-				return NON_INSCRIT_SUSPENDU;
-			case DESINSCRIT:
-				return DESINSCRIT_SUSPENDU;
-			case INSCRIT:
-				return INSCRIT_SUSPENDU;
-			default:
-				Assert.isTrue(isSuspendu());
-				return this;
+		case NON_INSCRIT:
+			return NON_INSCRIT_SUSPENDU;
+		case DESINSCRIT:
+			return DESINSCRIT_SUSPENDU;
+		case INSCRIT:
+			return INSCRIT_SUSPENDU;
+		default:
+			if (!isSuspendu()) {
+				throw new IllegalArgumentException();
+			}
+			return this;
 		}
 	}
 
 	public TypeEtatDestinataire avecActivation() {
 		switch (this) {
-			case NON_INSCRIT_SUSPENDU:
-				return NON_INSCRIT;
-			case DESINSCRIT_SUSPENDU:
-				return DESINSCRIT;
-			case INSCRIT_SUSPENDU:
-				return INSCRIT;
-			default:
-				Assert.isFalse(isSuspendu());
-				return this;
+		case NON_INSCRIT_SUSPENDU:
+			return NON_INSCRIT;
+		case DESINSCRIT_SUSPENDU:
+			return DESINSCRIT;
+		case INSCRIT_SUSPENDU:
+			return INSCRIT;
+		default:
+			if (isSuspendu()) {
+				throw new IllegalArgumentException();
+			}
+			return this;
 		}
 	}
 
 	public TypeEtatDestinataire avecInscription() {
 		switch (this) {
-			case NON_INSCRIT:
-			case DESINSCRIT:
-				return INSCRIT;
-			case NON_INSCRIT_SUSPENDU:
-			case DESINSCRIT_SUSPENDU:
-				return INSCRIT_SUSPENDU;
-			default:
-				Assert.isTrue(isInscrit());
-				return this;
+		case NON_INSCRIT:
+		case DESINSCRIT:
+			return INSCRIT;
+		case NON_INSCRIT_SUSPENDU:
+		case DESINSCRIT_SUSPENDU:
+			return INSCRIT_SUSPENDU;
+		default:
+			if (!isInscrit()) {
+				throw new IllegalArgumentException();
+			}
+			return this;
 		}
 	}
 
 	public TypeEtatDestinataire avecDesinscription() {
 		switch (this) {
-			case INSCRIT:
-				return DESINSCRIT;
-			case INSCRIT_SUSPENDU:
-				return DESINSCRIT_SUSPENDU;
-			default:
-				Assert.isFalse(isInscrit());
-				return this;
+		case INSCRIT:
+			return DESINSCRIT;
+		case INSCRIT_SUSPENDU:
+			return DESINSCRIT_SUSPENDU;
+		default:
+			if (isInscrit()) {
+				throw new IllegalArgumentException();
+			}
+			return this;
 		}
 	}
 

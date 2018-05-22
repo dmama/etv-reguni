@@ -8,7 +8,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.common.StatusManager;
@@ -22,7 +21,9 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 
 	public void write(final ListeAssujettisResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		// Création du document PDF
 		final PdfWriter writer = PdfWriter.getInstance(this, os);
@@ -37,11 +38,11 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, table -> {
-			    table.addLigne("Période fiscale :", String.valueOf(results.getAnneeFiscale()));
+				table.addLigne("Période fiscale :", String.valueOf(results.getAnneeFiscale()));
 				table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
 				table.addLigne("Avec sourciers purs :", String.valueOf(results.isAvecSourciersPurs()));
 				table.addLigne("Seulement assujettis fin année :", String.valueOf(results.isSeulementAssujettisFinAnnee()));
-			    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			});
 		}
 

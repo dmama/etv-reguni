@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -57,6 +57,13 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementCivil;
 import ch.vd.unireg.validation.fors.ForFiscalValidator;
 
+import static ch.vd.unireg.interfaces.infra.mock.MockCommune.Cossonay;
+import static ch.vd.unireg.interfaces.infra.mock.MockCommune.Fraction.LeSentier;
+import static ch.vd.unireg.interfaces.infra.mock.MockCommune.Lausanne;
+import static ch.vd.unireg.interfaces.infra.mock.MockCommune.LeChenit;
+import static ch.vd.unireg.interfaces.infra.mock.MockCommune.Neuchatel;
+import static ch.vd.unireg.interfaces.infra.mock.MockPays.Suisse;
+import static ch.vd.unireg.type.TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -149,10 +156,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 	}
 
-	@Test
 	/**
 	 * Teste les différents scénarios devant échouer au test de complétude de l'arrivée.
 	 */
+	@Test
 	public void testCheckCompleteness() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -166,7 +173,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31));
 				final ArriveePrincipale arrivee = createValidArrivee(individuSeul, DATE_VALIDE);
 				arrivee.checkCompleteness(collector, collector);
-				Assert.isTrue(collector.getErreurs().isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
+				Assert.assertTrue("individu célibataire : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
 			}
 		});
 
@@ -178,15 +185,15 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				final Individu individuMarieSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, date(2000, 12, 31));
 				final ArriveePrincipale arrivee = createValidArrivee(individuMarieSeul, DATE_VALIDE);
 				arrivee.checkCompleteness(collector, collector);
-				Assert.isTrue(collector.getErreurs().isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
+				Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
 			}
 		});
 	}
 
-	@Test
 	/**
 	 * Teste les différents scénarios devant échouer à la validation.
 	 */
+	@Test
 	public void testValidate() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -199,7 +206,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				// 1er test : événement avec une date dans le futur
 				Arrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), DATE_FUTURE);
 				arrivee.validate(collector, collector);
-				Assert.notEmpty(collector.getErreurs(), "Une date future pour l'événement aurait dû renvoyer une erreur");
+				assertFalse("Une date future pour l'événement aurait dû renvoyer une erreur", collector.getErreurs().isEmpty());
 
 				// 2ème test : arrivée antérieur à la date de début de validité de
 				// l'ancienne adresse
@@ -208,31 +215,31 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				// Ancienne adresse
 				MockAdresse ancienneAdresse = new MockAdresse();
 				ancienneAdresse.setDateDebutValidite(DATE_ANCIENNE_ADRESSE);
-				ancienneAdresse.setPays(MockPays.Suisse);
-				final MockCommune ancienneCommune = MockCommune.Cossonay;
+				ancienneAdresse.setPays(Suisse);
+				final MockCommune ancienneCommune = Cossonay;
 				ancienneAdresse.setCommuneAdresse(ancienneCommune);
 
 				// Nouvelle adresse
-				final MockCommune commune = MockCommune.Lausanne;
+				final MockCommune commune = Lausanne;
 				final MockAdresse nouvelleAdresse = new MockAdresse();
 				nouvelleAdresse.setDateDebutValidite(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
 
-				arrivee = new ArriveePrincipale(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
+				arrivee = new ArriveePrincipale(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, ARRIVEE_PRINCIPALE_HS,
 				                                DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFS(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
 				arrivee.validate(collector, collector);
-				Assert.notEmpty(collector.getErreurs(), "L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
+				assertFalse("L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée", collector.getErreurs().isEmpty());
 
 				// 3ème test : arrivée hors canton
 				collector.clear();
-				arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.Neuchatel, DATE_VALIDE);
+				arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), Neuchatel, DATE_VALIDE);
 				arrivee.validate(collector, collector);
-				Assert.notEmpty(collector.getErreurs(), "L'arrivée est hors canton, une erreur aurait du être déclenchée");
+				assertFalse("L'arrivée est hors canton, une erreur aurait du être déclenchée", collector.getErreurs().isEmpty());
 
 				// 4ème test : commune du Sentier -> traitement manuel dans tous les cas
 				collector.clear();
-				arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), MockCommune.LeChenit, MockCommune.Fraction.LeSentier);
+				arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), LeChenit, LeSentier);
 				arrivee.validate(collector, collector);
-				Assert.isTrue(collector.getWarnings().size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
+				Assert.assertEquals("L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée", 1, collector.getWarnings().size());
 			}
 		});
 	}
@@ -274,9 +281,9 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Arrivee arrivee =
-						new ArriveePrincipale(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
+						new ArriveePrincipale(inconnu, null, ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
 				arrivee.validate(collector, collector);
-				Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
+				Assert.assertTrue("Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée", collector.getErreurs().isEmpty());
 			}
 		});
 
@@ -288,9 +295,9 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			public void execute(TransactionStatus status) throws Exception {
 				collector.clear();
 				final ArriveePrincipale arrivee =
-						new ArriveePrincipale(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
+						new ArriveePrincipale(inconnu, conjoint, ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
 				arrivee.validate(collector, collector);
-				Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
+				assertTrue("Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée", collector.getErreurs().isEmpty());
 			}
 		});
 
@@ -312,10 +319,10 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				arrivee.validate(collector, collector);
 				arrivee.handle(collector);
 
-				Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement de l'arrivée");
+				Assert.assertTrue("Une erreur est survenue lors du traitement de l'arrivée", collector.getErreurs().isEmpty());
 
 				PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(arrivee.getNoIndividu());
-				assertTrue(tiers != null);
+				assertNotNull(tiers);
 
 				Set<AdresseTiers> adresses = tiers.getAdressesTiers();
 				assertFalse(adresses.isEmpty());

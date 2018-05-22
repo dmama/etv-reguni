@@ -10,13 +10,12 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AutoCloseableContainer;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.role.before2016.InfoCommune;
 import ch.vd.unireg.role.before2016.InfoContribuable;
@@ -33,7 +32,9 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 	}
 
 	public void write(final T results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
-		Assert.notNull(status);
+		if (status == null) {
+			throw new IllegalArgumentException();
+		}
 
 		status.setMessage("Génération du rapport...");
 
@@ -45,8 +46,8 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 
 		final String titrePrincipal;
 		if (results.noOfsCommune != null) {
-		    final Commune commune = getCommune(results.noOfsCommune, RegDate.get(results.annee, 12, 31));
-		    titrePrincipal = String.format("Rapport des rôles pour la commune de %s", commune.getNomOfficiel());
+			final Commune commune = getCommune(results.noOfsCommune, RegDate.get(results.annee, 12, 31));
+			titrePrincipal = String.format("Rapport des rôles pour la commune de %s", commune.getNomOfficiel());
 		}
 		else {
 			titrePrincipal = "Rapport des rôles pour toutes les communes vaudoises";
@@ -56,12 +57,12 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-		    addTableSimple(2, table -> {
-		        table.addLigne("Année fiscale :", String.valueOf(results.annee));
-			    table.addLigne("Type de rôles :", results.getTypeRoles().name());
-		        table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-		        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-		    });
+			addTableSimple(2, table -> {
+				table.addLigne("Année fiscale :", String.valueOf(results.annee));
+				table.addLigne("Type de rôles :", results.getTypeRoles().name());
+				table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
+			});
 		}
 
 		// Résultats
@@ -69,30 +70,30 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 		{
 			if (results.interrompu) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\nles valeurs ci-dessous sont donc incomplètes.");
-		    }
+			}
 
 			final int nbCommunesTraitees;
 			if (results.noOfsCommune != null) {
-			    nbCommunesTraitees = 1; // par définition
+				nbCommunesTraitees = 1; // par définition
 			}
 			else {
-			    nbCommunesTraitees = results.getNoOfsCommunesTraitees().size();
+				nbCommunesTraitees = results.getNoOfsCommunesTraitees().size();
 			}
 
-		    addTableSimple(2, table -> {
-		        table.addLigne("Nombre de communes traitées:", String.valueOf(nbCommunesTraitees));
-		        table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites));
-		        table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
-		        table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
-			    table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-		        table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-		    });
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de communes traitées:", String.valueOf(nbCommunesTraitees));
+				table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites));
+				table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
+				table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
+			});
 		}
 
 		// Détails des contribuables en erreur ou ignorés
 		if (!results.ctbsEnErrors.isEmpty()) {
-		    final String filename = "contribuables_en_erreur.csv";
-		    final String titre = "Liste des contribuables en erreur";
+			final String filename = "contribuables_en_erreur.csv";
+			final String titre = "Liste des contribuables en erreur";
 			final String listVide = "(aucun contribuable en erreur)";
 			try (TemporaryFile contenu = asCsvFile(results.ctbsEnErrors, filename, status)) {
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -100,8 +101,8 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 		}
 
 		if (!results.ctbsIgnores.isEmpty()) {
-		    final String filename = "contribuables_ignores.csv";
-		    final String titre = "Liste des contribuables ignorés";
+			final String filename = "contribuables_ignores.csv";
+			final String titre = "Liste des contribuables ignorés";
 			final String listVide = "(aucun contribuable ignoré)";
 			try (TemporaryFile contenu = asCsvFile(results.ctbsIgnores, filename, status)) {
 				addListeDetaillee(writer, titre, listVide, filename, contenu);

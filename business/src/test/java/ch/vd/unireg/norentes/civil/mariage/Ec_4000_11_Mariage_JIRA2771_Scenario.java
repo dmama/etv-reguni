@@ -1,7 +1,8 @@
 package ch.vd.unireg.norentes.civil.mariage;
 
+import org.springframework.util.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -177,10 +178,12 @@ public class Ec_4000_11_Mariage_JIRA2771_Scenario extends EvenementCivilScenario
 	public void step2() throws Exception {
 		try {
 			metierService.fusionneMenages((MenageCommun) tiersDAO.get(noMenageAlfredo), (MenageCommun) tiersDAO.get(noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
-			Assert.fail();
+			throw new IllegalArgumentException();
 		}
 		catch (MetierServiceException e) {
-			Assert.hasText(e.getMessage());
+			if (!StringUtils.hasText(e.getMessage())) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 

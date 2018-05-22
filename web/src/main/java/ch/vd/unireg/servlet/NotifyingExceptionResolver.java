@@ -97,7 +97,7 @@ public class NotifyingExceptionResolver implements HandlerExceptionResolver, Ord
 	 */
 	private int registerException(Exception ex) {
 		final String callstack = ExceptionUtils.extractCallStack(ex);
-		final byte[] bytes = DigestUtils.sha(callstack);
+		final byte[] bytes = DigestUtils.sha1(callstack);
 		final String sha = new String(bytes);
 
 		int occurenceCount = 1;

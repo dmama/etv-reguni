@@ -11,7 +11,6 @@ import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
 import ch.vd.registre.base.date.DateHelper;
@@ -121,7 +120,9 @@ public class IdentificationContribuableV1EsbHandler implements IdentificationCon
 				header.setMetadata(EsbMessageHelper.extractCustomHeaders(msg));
 				message.setHeader(header);
 
-				Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");
+				if (demandeHandler == null) {
+					throw new IllegalArgumentException("Le handler de demandes n'est pas défini");
+				}
 
 				AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ')');
 				try {
@@ -160,15 +161,23 @@ public class IdentificationContribuableV1EsbHandler implements IdentificationCon
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void sendReponse(IdentificationContribuable message) throws Exception {
-		
+
 		final EsbHeader header = message.getHeader();
-		Assert.notNull(header, "Le header doit être renseigné.");
+		if (header == null) {
+			throw new IllegalArgumentException("Le header doit être renseigné.");
+		}
 		final String businessUser = header.getBusinessUser();
 		final String businessId = header.getBusinessId();
 		final String replyTo = header.getReplyTo();
-		Assert.notNull(businessUser, "Le business user doit être renseigné.");
-		Assert.notNull(businessId, "Le business id doit être renseigné.");
-		Assert.notNull(replyTo, "Le reply-to doit être renseigné.");
+		if (businessUser == null) {
+			throw new IllegalArgumentException("Le business user doit être renseigné.");
+		}
+		if (businessId == null) {
+			throw new IllegalArgumentException("Le business id doit être renseigné.");
+		}
+		if (replyTo == null) {
+			throw new IllegalArgumentException("Le reply-to doit être renseigné.");
+		}
 
 		final IdentificationCTBDocument identificationCtb = XmlEntityAdapter.entity2xml(message);
 
@@ -180,7 +189,7 @@ public class IdentificationContribuableV1EsbHandler implements IdentificationCon
 		m.setContext("identificationContribuable");
 		m.setBody(XmlUtils.xmlbeans2string(identificationCtb));
 
-		final Map<String,String> metadata = header.getMetadata();
+		final Map<String, String> metadata = header.getMetadata();
 		if (metadata != null && metadata.size() > 0) {
 			EsbMessageHelper.setHeaders(m, metadata, false);
 		}

@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
@@ -256,7 +255,9 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable String rue, @Nullable String numeroMaison, @Nullable Integer numeroPostal, @Nullable CasePostale casePostale,
 	                             @Nullable String localite, @NotNull Pays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
 
-		Assert.isFalse(pays.isSuisse());
+		if (pays.isSuisse()) {
+			throw new IllegalArgumentException();
+		}
 
 		final MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(type);
@@ -579,10 +580,16 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * Ajoute un individu dans le mock
 	 */
 	private void add(MockIndividu individu) {
-		Assert.notNull(individu);
+		if (individu == null) {
+			throw new IllegalArgumentException();
+		}
 		final Long numero = individu.getNoTechnique();
-		Assert.notNull(numero);
-		Assert.isNull(individusMap.get(numero));
+		if (numero == null) {
+			throw new IllegalArgumentException();
+		}
+		if (individusMap.get(numero) != null) {
+			throw new IllegalArgumentException();
+		}
 		individusMap.put(numero, individu);
 	}
 
@@ -590,10 +597,14 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * Ajoute une adresse pour individu dans le mock
 	 */
 	protected void add(MockIndividu individu, MockAdresse adresse) {
-		Assert.notNull(individu);
+		if (individu == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final Long numero = individu.getNoTechnique();
-		Assert.notNull(numero);
+		if (numero == null) {
+			throw new IllegalArgumentException();
+		}
 
 		individu.addAdresse(adresse);
 	}
