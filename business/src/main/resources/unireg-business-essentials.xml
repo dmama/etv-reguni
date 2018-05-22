@@ -219,6 +219,11 @@
 		<property name="editiqueService" ref="editiqueService"/>
 		<property name="impressionRappelHelper" ref="impressionRappelQSNCHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="periodeExploitationService" ref="periodeExploitationService"/>
+	</bean>
+
+	<bean id="periodeExploitationService" class="ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationServiceImpl">
+		<property name="parametreAppService" ref="parametreAppService"/>
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
