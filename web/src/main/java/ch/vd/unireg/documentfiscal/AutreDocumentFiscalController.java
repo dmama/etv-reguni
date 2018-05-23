@@ -443,8 +443,8 @@ public class AutreDocumentFiscalController {
 				Flash.message(String.format("La lettre de bienvenue n°%s a été quittancée avec succès.", FormatNumeroHelper.numeroCTBToDisplay(doc.getId())));
 			}
 			else {
-				Flash.warning(String.format("La lettre de bienvenue n°%s, étant déjà retournée en date du %s, n'a pas été quittancée à nouveau.",
-				                            FormatNumeroHelper.numeroCTBToDisplay(doc.getId()), RegDateHelper.dateToDisplayString(doc.getDateRetour())));
+				Flash.warning(String.format("La lettre de bienvenue est déjà retournée en date du %s, nouvelle quittance non prise en compte.",
+				                            RegDateHelper.dateToDisplayString(doc.getDateRetour())));
 			}
 		}
 		else {
