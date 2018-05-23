@@ -151,7 +151,7 @@ public class AutreDocumentFiscalController {
 	public String showEditList(Model model, @RequestParam(value = "pmId") long idEntreprise) {
 		checkAnyRight();
 
-		return showEditList(model, new ImprimerAutreDocumentFiscalView(idEntreprise, null));
+		return showEditList(model, new ImprimerAutreDocumentFiscalView(idEntreprise, null, "edit-list"));
 	}
 
 	private Set<TypeAutreDocumentFiscalEmettableManuellement> getTypesAutreDocumentFiscalEmettablesManuellement() {
@@ -185,6 +185,8 @@ public class AutreDocumentFiscalController {
 		model.addAttribute("print", view);
 		model.addAttribute("isRadieeRCOuDissoute", autreDocumentFiscalManager.hasAnyEtat(idEntreprise, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
 		model.addAttribute("docsAvecSuivi", new AutreDocumentFiscalListView(idEntreprise, autreDocumentFiscalManager.getAutresDocumentsFiscauxAvecSuivi(idEntreprise)));
+		model.addAttribute("page", view.getPage());
+
 		return "tiers/edition/pm/autresdocs";
 	}
 

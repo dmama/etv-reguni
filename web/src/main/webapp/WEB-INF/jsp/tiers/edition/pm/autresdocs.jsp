@@ -2,6 +2,11 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <%--@elvariable id="docsAvecSuivi" type="ch.vd.unireg.documentfiscal.AutreDocumentFiscalListView"--%>
+<c:set var="page" value="${page}" />
+<c:set var="url" value="visu.do" />
+<c:if test="${page == 'edit-list' }">
+	<c:set var="url" value="edit-list.do" />
+</c:if>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
@@ -288,7 +293,7 @@
 
 			<c:choose>
 				<c:when test="${not empty documents}">
-					<display:table name="${documents}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
+					<display:table name="${documents}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="${url}" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
 						<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
 							${docFiscal.libelleTypeDocument}
 						</display:column>
