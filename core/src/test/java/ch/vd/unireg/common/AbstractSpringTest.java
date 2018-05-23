@@ -188,7 +188,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		}
 	}
 
-	protected static void assertRange(RegDate debut, RegDate fin, DateRange range) {
+	public static void assertRange(RegDate debut, RegDate fin, DateRange range) {
 		assertNotNull(range);
 		assertEquals(debut, range.getDateDebut());
 		assertEquals(fin, range.getDateFin());

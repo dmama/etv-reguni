@@ -2,11 +2,13 @@ package ch.vd.unireg.declaration.snc;
 
 import javax.jms.JMSException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AddAndSaveHelper;
@@ -144,7 +146,11 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	@NotNull
 	@Override
 	public Set<Integer> getPeriodesFiscalesTheoriquementCouvertes(Entreprise entreprise, boolean pourEmissionAutoSeulement) {
-		return periodeExploitationService.determinePeriodesExploitation(entreprise, pourEmissionAutoSeulement ? PeriodeContext.ENVOI_AUTO : PeriodeContext.THEORIQUE);
+		return periodeExploitationService.determinePeriodesExploitation(entreprise, pourEmissionAutoSeulement ? PeriodeContext.ENVOI_AUTO : PeriodeContext.THEORIQUE)
+				.stream()
+				.map(DateRange::getDateDebut)
+				.map(RegDate::year)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
