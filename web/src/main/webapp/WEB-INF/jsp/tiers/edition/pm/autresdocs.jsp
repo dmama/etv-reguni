@@ -238,7 +238,7 @@
 					<display:column sortable="true" titleKey="label.autre.document.fiscal.soustype.document">
 						${doc.libelleSousType}
 					</display:column>
-					<display:column sortable ="true" titleKey="label.date.emission" sortProperty="dateDebut">
+					<display:column sortable ="true" titleKey="label.date.emission" sortProperty="dateEnvoi">
 						<unireg:regdate regdate="${doc.dateEnvoi}"/>
 						<c:if test="${doc.urlVisualisationExterneDocument != null}">
 							&nbsp;<a href="#" class="pdf" title="Visualisation du courrier" onclick="VisuExterneDoc.openWindow('${doc.urlVisualisationExterneDocument}');">&nbsp;</a>
