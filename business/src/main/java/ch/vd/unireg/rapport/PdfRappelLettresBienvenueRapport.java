@@ -27,7 +27,7 @@ public class PdfRappelLettresBienvenueRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport de l'envoi des lettres de bienvenue");
+		addTitrePrincipal("Rapport de l'envoi des rappels des lettres de bienvenue");
 
 		// Paramètres
 		addEntete1("Paramètres");
