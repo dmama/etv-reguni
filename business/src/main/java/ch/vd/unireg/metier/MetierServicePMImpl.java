@@ -808,14 +808,19 @@ public class MetierServicePMImpl implements MetierServicePM {
 	}
 
 	private static void reouvreAdressesMandataireFermeesAu(Entreprise entreprise, @NotNull RegDate dateFermeture) {
+
+		Set<AdresseMandataire> toAdd = new HashSet<>();
+
 		for (AdresseMandataire adresse : entreprise.getAdressesMandataires()) {
 			if (!adresse.isAnnule() && adresse.getDateFin() == dateFermeture) {
 				final AdresseMandataire copie = adresse.duplicate();
 				adresse.setAnnule(true);
 				copie.setDateFin(null);
-				entreprise.addAdresseMandataire(copie);
+				toAdd.add(copie);
 			}
 		}
+
+		toAdd.stream().forEach(am -> entreprise.addAdresseMandataire(am));
 	}
 
 	@Override
