@@ -40,6 +40,7 @@ import ch.vd.unireg.etiquette.UniteDecalageDate;
 import ch.vd.unireg.foncier.DegrevementICI;
 import ch.vd.unireg.foncier.DonneesLoiLogement;
 import ch.vd.unireg.foncier.DonneesUtilisation;
+import ch.vd.unireg.foncier.ExonerationIFONC;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationIndexer;
 import ch.vd.unireg.indexer.messageidentification.GlobalMessageIdentificationSearcher;
@@ -1504,6 +1505,16 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     	deg.setPropreUsage(usagePropre);
     	deg.setLoiLogement(loiLogement);
     	return tiersDAO.addAndSave(entreprise, deg);
+    }
+
+    protected ExonerationIFONC addExonerationIFONC(Entreprise entreprise, ImmeubleRF immeuble, RegDate dateDebut, RegDate dateFin, BigDecimal pourcentage) {
+    	final ExonerationIFONC exo = new ExonerationIFONC();
+    	exo.setImmeuble(immeuble);
+    	exo.setContribuable(entreprise);
+    	exo.setDateDebut(dateDebut);
+	    exo.setDateFin(dateFin);
+	    exo.setPourcentageExoneration(pourcentage);
+    	return tiersDAO.addAndSave(entreprise, exo);
     }
 
     protected AllegementFiscalConfederation addAllegementFiscalFederal(Entreprise entreprise,
