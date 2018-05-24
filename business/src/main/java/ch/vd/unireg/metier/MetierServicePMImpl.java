@@ -807,7 +807,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		}
 	}
 
-	private static void reouvreAdressesMandataireFermeesAu(Entreprise entreprise, @NotNull RegDate dateFermeture) {
+	protected static void reouvreAdressesMandataireFermeesAu(Entreprise entreprise, @NotNull RegDate dateFermeture) {
 
 		Set<AdresseMandataire> toAdd = new HashSet<>();
 

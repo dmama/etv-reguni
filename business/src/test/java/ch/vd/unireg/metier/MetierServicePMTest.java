@@ -24,6 +24,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseMandataire;
+import ch.vd.unireg.adresse.AdresseMandataireSuisse;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.adresse.AdresseTiers;
@@ -3555,4 +3556,28 @@ public class MetierServicePMTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testReouvreAdressesMandataireFermeesAu() {
+
+		RegDate dateFermeture = RegDate.get(2018, 03, 23);
+
+		// Adresses mandataires
+		AdresseMandataire adresse1 = new AdresseMandataireSuisse();
+		adresse1.setDateFin(dateFermeture);
+		AdresseMandataire adresse2 = new AdresseMandataireSuisse();
+		adresse2.setDateFin(dateFermeture);
+
+		// Entreprise
+		Entreprise entreprise = new Entreprise();
+		entreprise.addAdresseMandataire(adresse1);
+		entreprise.addAdresseMandataire(adresse2);
+
+		metierServicePM.reouvreAdressesMandataireFermeesAu(entreprise, dateFermeture);
+
+		Assert.assertEquals(4, entreprise.getAdressesMandataires().size());
+		Assert.assertEquals(2L, entreprise.getAdressesMandataires().stream().filter(a -> a.getDateFin() == null).count());
+		Assert.assertEquals(2L, entreprise.getAdressesMandataires().stream().filter(a ->  dateFermeture.equals(a.getDateFin())).count());
+	}
+
 }
