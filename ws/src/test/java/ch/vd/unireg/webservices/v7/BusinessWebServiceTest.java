@@ -16,10 +16,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -227,7 +225,11 @@ import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicit
 
 import static ch.vd.unireg.xml.party.v5.strategy.NaturalPersonStrategyTest.assertInheritanceTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("Duplicates")
 public class BusinessWebServiceTest extends WebserviceTest {
@@ -246,14 +248,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
 			@Override
 			public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
-				Assert.assertNull(parametres);
+				assertNull(parametres);
 				return "https://secure.vd.ch/territoire/intercapi/faces?bfs={noCommune}&kr=0&n1={noParcelle}&n2={index1}&n3={index2}&n4={index3}&type=grundstueck_grundbuch_auszug";
 			}
 		});
 	}
 
 	private static void assertValidInteger(long value) {
-		Assert.assertTrue(Long.toString(value), value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE);
+		assertTrue(Long.toString(value), value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE);
 	}
 
 	@Test
@@ -268,39 +270,36 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
-				pp.setBlocageRemboursementAutomatique(false);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
+			pp.setBlocageRemboursementAutomatique(false);
+			return pp.getNumero();
 		});
 		assertValidInteger(ppId);
 
 		// vérification du point de départ
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				assertNotNull(pp);
+				assertFalse(pp.getBlocageRemboursementAutomatique());
 			}
 		});
 
-		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
+		assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
 
 		// appel du WS (= sans changement)
 		service.setAutomaticRepaymentBlockingFlag((int) ppId, false);
 
 		// vérification
-		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
+		assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				assertNotNull(pp);
+				assertFalse(pp.getBlocageRemboursementAutomatique());
 			}
 		});
 
@@ -308,13 +307,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		service.setAutomaticRepaymentBlockingFlag((int) ppId, true);
 
 		// vérification
-		Assert.assertTrue(service.getAutomaticRepaymentBlockingFlag((int) ppId));
+		assertTrue(service.getAutomaticRepaymentBlockingFlag((int) ppId));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				assertNotNull(pp);
+				assertTrue(pp.getBlocageRemboursementAutomatique());
 			}
 		});
 
@@ -322,23 +321,23 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		service.setAutomaticRepaymentBlockingFlag((int) ppId, false);
 
 		// vérification
-		Assert.assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
+		assertFalse(service.getAutomaticRepaymentBlockingFlag((int) ppId));
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				assertNotNull(pp);
+				assertFalse(pp.getBlocageRemboursementAutomatique());
 			}
 		});
 	}
 
 	private void assertAllowedAccess(String visa, int partyNo, AllowedAccess expectedAccess) {
 		final SecurityResponse access = service.getSecurityOnParty(visa, partyNo);
-		Assert.assertNotNull(access);
-		Assert.assertEquals(visa, access.getUser());
-		Assert.assertEquals(partyNo, access.getPartyNo());
-		Assert.assertEquals(expectedAccess, access.getAllowedAccess());
+		assertNotNull(access);
+		assertEquals(visa, access.getUser());
+		assertEquals(partyNo, access.getPartyNo());
+		assertEquals(expectedAccess, access.getAllowedAccess());
 	}
 
 	@Test
@@ -381,26 +380,23 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// création des contribuables avec éventuelle protections
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique protege = addNonHabitant("Jürg", "Bunker", date(1975, 4, 23), Sexe.MASCULIN);
-				final PersonnePhysique conjointDeProtege = addNonHabitant("Adelheid", "Bunker", date(1974, 7, 31), Sexe.FEMININ);
-				final EnsembleTiersCouple coupleProtege = addEnsembleTiersCouple(protege, conjointDeProtege, date(2010, 6, 3), null);
-				addDroitAcces(visaActeur, protege, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2010, 1, 1), null);
-				addDroitAcces(visaVoyeur, protege, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2010, 1, 1), null);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique protege = addNonHabitant("Jürg", "Bunker", date(1975, 4, 23), Sexe.MASCULIN);
+			final PersonnePhysique conjointDeProtege = addNonHabitant("Adelheid", "Bunker", date(1974, 7, 31), Sexe.FEMININ);
+			final EnsembleTiersCouple coupleProtege = addEnsembleTiersCouple(protege, conjointDeProtege, date(2010, 6, 3), null);
+			addDroitAcces(visaActeur, protege, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2010, 1, 1), null);
+			addDroitAcces(visaVoyeur, protege, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2010, 1, 1), null);
 
-				final PersonnePhysique normal = addNonHabitant("Emile", "Gardavou", date(1962, 7, 4), Sexe.MASCULIN);
-				final EnsembleTiersCouple coupleNormal = addEnsembleTiersCouple(normal, null, date(1987, 6, 5), null);
+			final PersonnePhysique normal = addNonHabitant("Emile", "Gardavou", date(1962, 7, 4), Sexe.MASCULIN);
+			final EnsembleTiersCouple coupleNormal = addEnsembleTiersCouple(normal, null, date(1987, 6, 5), null);
 
-				final Ids ids = new Ids();
-				ids.idProtege = protege.getNumero().intValue();
-				ids.idConjointDeProtege = conjointDeProtege.getNumero().intValue();
-				ids.idCoupleProtege = coupleProtege.getMenage().getNumero().intValue();
-				ids.idNormal = normal.getNumero().intValue();
-				ids.idCoupleNormal = coupleNormal.getMenage().getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idProtege = protege.getNumero().intValue();
+			ids1.idConjointDeProtege = conjointDeProtege.getNumero().intValue();
+			ids1.idCoupleProtege = coupleProtege.getMenage().getNumero().intValue();
+			ids1.idNormal = normal.getNumero().intValue();
+			ids1.idCoupleNormal = coupleNormal.getMenage().getNumero().intValue();
+			return ids1;
 		});
 		assertValidInteger(ids.idProtege);
 		assertValidInteger(ids.idConjointDeProtege);
@@ -421,14 +417,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// accès batch
 			final SecurityListResponse response = service.getSecurityOnParties(visaOmnipotent, Arrays.asList(ids.idProtege, ids.idConjointDeProtege, ids.idCoupleProtege, ids.idNormal, ids.idCoupleNormal));
-			Assert.assertEquals(visaOmnipotent, response.getUser());
+			assertEquals(visaOmnipotent, response.getUser());
 			final Map<Integer, AllowedAccess> accessesMap = response.getPartyAccesses().stream()
 					.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
 		}
 
 		// l'acteur peut tout faire également
@@ -442,14 +438,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// accès batch
 			final SecurityListResponse response = service.getSecurityOnParties(visaActeur, Arrays.asList(ids.idProtege, ids.idConjointDeProtege, ids.idCoupleProtege, ids.idNormal, ids.idCoupleNormal));
-			Assert.assertEquals(visaActeur, response.getUser());
+			assertEquals(visaActeur, response.getUser());
 			final Map<Integer, AllowedAccess> accessesMap = response.getPartyAccesses().stream()
 					.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
 		}
 
 		// le voyeur, lui, ne peut pas modifier ce qui est protégé, mais peut le voir
@@ -463,14 +459,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// accès batch
 			final SecurityListResponse response = service.getSecurityOnParties(visaVoyeur, Arrays.asList(ids.idProtege, ids.idConjointDeProtege, ids.idCoupleProtege, ids.idNormal, ids.idCoupleNormal));
-			Assert.assertEquals(visaVoyeur, response.getUser());
+			assertEquals(visaVoyeur, response.getUser());
 			final Map<Integer, AllowedAccess> accessesMap = response.getPartyAccesses().stream()
 					.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
-			Assert.assertEquals(AllowedAccess.READ_ONLY, accessesMap.get(ids.idProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
-			Assert.assertEquals(AllowedAccess.READ_ONLY, accessesMap.get(ids.idCoupleProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
+			assertEquals(AllowedAccess.READ_ONLY, accessesMap.get(ids.idProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
+			assertEquals(AllowedAccess.READ_ONLY, accessesMap.get(ids.idCoupleProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
 		}
 
 		// le grouillot, lui, ne peut pas voir ce qui est protégé
@@ -484,14 +480,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// accès batch
 			final SecurityListResponse response = service.getSecurityOnParties(visaGrouillot, Arrays.asList(ids.idProtege, ids.idConjointDeProtege, ids.idCoupleProtege, ids.idNormal, ids.idCoupleNormal));
-			Assert.assertEquals(visaGrouillot, response.getUser());
+			assertEquals(visaGrouillot, response.getUser());
 			final Map<Integer, AllowedAccess> accessesMap = response.getPartyAccesses().stream()
 					.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
-			Assert.assertEquals(AllowedAccess.NONE, accessesMap.get(ids.idProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
-			Assert.assertEquals(AllowedAccess.NONE, accessesMap.get(ids.idCoupleProtege));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
-			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
+			assertEquals(AllowedAccess.NONE, accessesMap.get(ids.idProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
+			assertEquals(AllowedAccess.NONE, accessesMap.get(ids.idCoupleProtege));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
+			assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
 		}
 	}
 
@@ -514,29 +510,26 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Data data = doInNewTransactionAndSession(new TransactionCallback<Data>() {
-			@Override
-			public Data doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final RegDate debut = date(annee, 1, 1);
-				final RegDate fin = date(annee, 12, 31);
+		final Data data = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final RegDate debut = date(annee, 1, 1);
+			final RegDate fin = date(annee, 12, 31);
 
-				final PersonnePhysique pp1 = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
-				addForPrincipal(pp1, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
-				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp1, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
+			final PersonnePhysique pp1 = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
+			addForPrincipal(pp1, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp1, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
 
-				final PersonnePhysique pp2 = addNonHabitant("Louise", "Defuneste", date(1943, 5, 12), Sexe.FEMININ);
-				addForPrincipal(pp2, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aubonne);
-				final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp2, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di2, date(annee + 1, 1, 22));
+			final PersonnePhysique pp2 = addNonHabitant("Louise", "Defuneste", date(1943, 5, 12), Sexe.FEMININ);
+			addForPrincipal(pp2, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aubonne);
+			final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp2, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di2, date(annee + 1, 1, 22));
 
-				final Data data = new Data();
-				data.pp1 = pp1.getNumero();
-				data.pp2 = pp2.getNumero();
-				return data;
-			}
+			final Data data1 = new Data();
+			data1.pp1 = pp1.getNumero();
+			data1.pp2 = pp2.getNumero();
+			return data1;
 		});
 		assertValidInteger(data.pp1);
 		assertValidInteger(data.pp2);
@@ -552,39 +545,39 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final List<TaxDeclarationKey> keys = Arrays.asList(key1, key2);
 		final OrdinaryTaxDeclarationAckRequest req = new OrdinaryTaxDeclarationAckRequest("ADDO", DataHelper.coreToWeb(DateHelper.getCurrentDate()), keys);
 		final OrdinaryTaxDeclarationAckResponse resp = service.ackOrdinaryTaxDeclarations(req);
-		Assert.assertNotNull(resp);
+		assertNotNull(resp);
 
 		// vérification des codes retour
 		final List<OrdinaryTaxDeclarationAckResult> result = resp.getAckResult();
-		Assert.assertNotNull(result);
-		Assert.assertEquals(keys.size(), result.size());
+		assertNotNull(result);
+		assertEquals(keys.size(), result.size());
 		for (OrdinaryTaxDeclarationAckResult ack : result) {
-			Assert.assertNotNull(ack);
+			assertNotNull(ack);
 
 			final AckStatus expectedStatus = expected.get(ack.getDeclaration());
-			Assert.assertNotNull(ack.toString(), expectedStatus);
-			Assert.assertEquals(ack.toString(), expectedStatus, ack.getStatus());
+			assertNotNull(ack.toString(), expectedStatus);
+			assertEquals(ack.toString(), expectedStatus, ack.getStatus());
 		}
 
 		// vérification en base
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				for (Map.Entry<TaxDeclarationKey, AckStatus> entry : expected.entrySet()) {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(entry.getKey().getTaxpayerNumber(), false);
 					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
-					Assert.assertNotNull(decls);
-					Assert.assertEquals(1, decls.size());
+					assertNotNull(decls);
+					assertEquals(1, decls.size());
 
 					final Declaration decl = decls.get(0);
-					Assert.assertNotNull(decl);
+					assertNotNull(decl);
 
 					final EtatDeclaration etat = decl.getDernierEtatDeclaration();
 					if (entry.getValue() == AckStatus.OK) {
-						Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
+						assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
 					}
 					else {
-						Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
+						assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 					}
 				}
 			}
@@ -606,37 +599,34 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf = addPeriodeFiscale(annee);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final RegDate debut = date(annee, 1, 1);
-				final RegDate fin = date(annee, 12, 31);
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final RegDate debut = date(annee, 1, 1);
+			final RegDate fin = date(annee, 12, 31);
 
-				final PersonnePhysique pp = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
-				addForPrincipal(pp, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
-				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
-				addDelaiDeclaration(di1, date(annee + 1, 1, 22), delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
-				return pp.getNumero();
-			}
+			final PersonnePhysique pp = addNonHabitant("Francis", "Noire", date(1965, 8, 31), Sexe.MASCULIN);
+			addForPrincipal(pp, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
+			addDelaiDeclaration(di1, date(annee + 1, 1, 22), delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
 		});
 		assertValidInteger(ppId);
 
 		// vérification du délai existant
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
-				Assert.assertNotNull(di);
+				assertNotNull(di);
 
 				final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
-				Assert.assertNotNull(delai);
-				Assert.assertEquals(delaiInitial, delai.getDelaiAccordeAu());
+				assertNotNull(delai);
+				assertEquals(delaiInitial, delai.getDelaiAccordeAu());
 			}
 		});
 
@@ -644,23 +634,23 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		{
 			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToWeb(delaiInitial.addMonths(-2)), DataHelper.coreToWeb(RegDate.get()));
 			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, req);
-			Assert.assertNotNull(resp);
-			Assert.assertEquals(DeadlineStatus.ERROR_INVALID_DEADLINE, resp.getStatus());
+			assertNotNull(resp);
+			assertEquals(DeadlineStatus.ERROR_INVALID_DEADLINE, resp.getStatus());
 		}
 
 		// vérification du délai qui ne devrait pas avoir bougé
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
-				Assert.assertNotNull(di);
+				assertNotNull(di);
 
 				final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
-				Assert.assertNotNull(delai);
-				Assert.assertEquals(delaiInitial, delai.getDelaiAccordeAu());
+				assertNotNull(delai);
+				assertEquals(delaiInitial, delai.getDelaiAccordeAu());
 			}
 		});
 
@@ -670,23 +660,23 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		{
 			final DeadlineRequest req = new DeadlineRequest(DataHelper.coreToWeb(nouveauDelai), DataHelper.coreToWeb(RegDate.get()));
 			final DeadlineResponse resp = service.newOrdinaryTaxDeclarationDeadline((int) ppId, annee, 1, req);
-			Assert.assertNotNull(resp);
-			Assert.assertEquals(resp.getAdditionalMessage(), DeadlineStatus.OK, resp.getStatus());
+			assertNotNull(resp);
+			assertEquals(resp.getAdditionalMessage(), DeadlineStatus.OK, resp.getStatus());
 		}
 
 		// vérification du nouveau délai
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
-				Assert.assertNotNull(di);
+				assertNotNull(di);
 
 				final DelaiDeclaration delai = di.getDernierDelaiDeclarationAccorde();
-				Assert.assertNotNull(delai);
-				Assert.assertEquals(nouveauDelai, delai.getDelaiAccordeAu());
+				assertNotNull(delai);
+				assertEquals(nouveauDelai, delai.getDelaiAccordeAu());
 			}
 		});
 	}
@@ -700,133 +690,121 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// préparation
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative pays = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PAYS_D_ENHAUT.getNoColAdm());
-				final CollectiviteAdministrative vevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm());
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative pays = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PAYS_D_ENHAUT.getNoColAdm());
+			final CollectiviteAdministrative vevey = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm());
 
-				final Ids ids = new Ids();
-				ids.idVevey = vevey.getNumero();
-				ids.idPaysDEnhaut = pays.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idVevey = vevey.getNumero();
+			ids1.idPaysDEnhaut = pays.getNumero();
+			return ids1;
 		});
 
 		// une commune vaudoise
 		{
 			final TaxOffices taxOffices = service.getTaxOffices(MockCommune.ChateauDoex.getNoOFS(), null);
-			Assert.assertNotNull(taxOffices);
-			Assert.assertNotNull(taxOffices.getDistrict());
-			Assert.assertNotNull(taxOffices.getRegion());
-			Assert.assertEquals(ids.idPaysDEnhaut, taxOffices.getDistrict().getPartyNo());
-			Assert.assertEquals(MockOfficeImpot.OID_PAYS_D_ENHAUT.getNoColAdm(), taxOffices.getDistrict().getAdmCollNo());
-			Assert.assertEquals(ids.idVevey, taxOffices.getRegion().getPartyNo());
-			Assert.assertEquals(MockOfficeImpot.OID_VEVEY.getNoColAdm(), taxOffices.getRegion().getAdmCollNo());
+			assertNotNull(taxOffices);
+			assertNotNull(taxOffices.getDistrict());
+			assertNotNull(taxOffices.getRegion());
+			assertEquals(ids.idPaysDEnhaut, taxOffices.getDistrict().getPartyNo());
+			assertEquals(MockOfficeImpot.OID_PAYS_D_ENHAUT.getNoColAdm(), taxOffices.getDistrict().getAdmCollNo());
+			assertEquals(ids.idVevey, taxOffices.getRegion().getPartyNo());
+			assertEquals(MockOfficeImpot.OID_VEVEY.getNoColAdm(), taxOffices.getRegion().getAdmCollNo());
 		}
 
 		// une commune hors-canton
 		try {
-			final TaxOffices taxOffices = service.getTaxOffices(MockCommune.Bern.getNoOFS(), null);
-			Assert.fail();
+			service.getTaxOffices(MockCommune.Bern.getNoOFS(), null);
+			fail();
 		}
 		catch (ObjectNotFoundException e) {
-			Assert.assertEquals(String.format("Commune %d inconnue dans le canton de Vaud.", MockCommune.Bern.getNoOFS()), e.getMessage());
+			assertEquals(String.format("Commune %d inconnue dans le canton de Vaud.", MockCommune.Bern.getNoOFS()), e.getMessage());
 		}
 
 		// une commune inconnue
 		try {
-			final TaxOffices taxOffices = service.getTaxOffices(99999, null);
-			Assert.fail();
+			service.getTaxOffices(99999, null);
+			fail();
 		}
 		catch (ObjectNotFoundException e) {
-			Assert.assertEquals("Commune 99999 inconnue dans le canton de Vaud.", e.getMessage());
+			assertEquals("Commune 99999 inconnue dans le canton de Vaud.", e.getMessage());
 		}
 	}
 
 	@Test
 	public void testGetModifiedTaxPayers() throws Exception {
 
-		final Pair<Long, Date> pp1 = doInNewTransactionAndSession(new TransactionCallback<Pair<Long, Date>>() {
-			@Override
-			public Pair<Long, Date> doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Philippe", "Lemol", date(1956, 9, 30), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				return Pair.<Long, Date>of(pp.getNumero(), pp.getLogModifDate());
-			}
+		final Pair<Long, Date> pp1 = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Philippe", "Lemol", date(1956, 9, 30), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			return Pair.of(pp.getNumero(), pp.getLogModifDate());
 		});
 
 		Thread.sleep(1000);
-		final Pair<Long, Date> pp2 = doInNewTransactionAndSession(new TransactionCallback<Pair<Long, Date>>() {
-			@Override
-			public Pair<Long, Date> doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Albert", "Duchmol", date(1941, 5, 4), Sexe.MASCULIN);
-				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				return Pair.<Long, Date>of(pp.getNumero(), pp.getLogModifDate());
-			}
+		final Pair<Long, Date> pp2 = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Albert", "Duchmol", date(1941, 5, 4), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			return Pair.of(pp.getNumero(), pp.getLogModifDate());
 		});
 
 		final Date start = new Date(pp1.getRight().getTime() - 100);
 		final Date middle = new Date(pp2.getRight().getTime() - 100);
-		Assert.assertTrue(pp1.getRight().before(middle));
+		assertTrue(pp1.getRight().before(middle));
 		final Date end = new Date(pp2.getRight().getTime() + 100);
 		final Date now = new Date(pp2.getRight().getTime() + 200);
 
 		// rien
 		final PartyNumberList none = service.getModifiedTaxPayers(end, now);
-		Assert.assertNotNull(none);
-		Assert.assertNotNull(none.getPartyNo());
-		Assert.assertEquals(0, none.getPartyNo().size());
+		assertNotNull(none);
+		assertNotNull(none.getPartyNo());
+		assertEquals(0, none.getPartyNo().size());
 
 		// 1 contribuable
 		final PartyNumberList one = service.getModifiedTaxPayers(middle, now);
-		Assert.assertNotNull(one);
-		Assert.assertNotNull(one.getPartyNo());
-		Assert.assertEquals(1, one.getPartyNo().size());
-		Assert.assertEquals(pp2.getLeft().longValue(), one.getPartyNo().get(0).longValue());
+		assertNotNull(one);
+		assertNotNull(one.getPartyNo());
+		assertEquals(1, one.getPartyNo().size());
+		assertEquals(pp2.getLeft().longValue(), one.getPartyNo().get(0).longValue());
 
 		// 2 contribuables
 		final PartyNumberList two = service.getModifiedTaxPayers(start, now);
-		Assert.assertNotNull(two);
-		Assert.assertNotNull(two.getPartyNo());
-		Assert.assertEquals(2, two.getPartyNo().size());
+		assertNotNull(two);
+		assertNotNull(two.getPartyNo());
+		assertEquals(2, two.getPartyNo().size());
 
 		final List<Integer> sortedList = new ArrayList<>(two.getPartyNo());
 		Collections.sort(sortedList);
-		Assert.assertEquals(pp1.getLeft().longValue(), sortedList.get(0).longValue());
-		Assert.assertEquals(pp2.getLeft().longValue(), sortedList.get(1).longValue());
+		assertEquals(pp1.getLeft().longValue(), sortedList.get(0).longValue());
+		assertEquals(pp2.getLeft().longValue(), sortedList.get(1).longValue());
 	}
 
 	@Test
 	public void testDebtorInfo() throws Exception {
 
-		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
-				final PeriodeFiscale pf = addPeriodeFiscale(2013);
-				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				addListeRecapitulative(dpi, pf, date(2013, 4, 1), date(2013, 4, 30), md);
-				addListeRecapitulative(dpi, pf, date(2013, 10, 1), date(2013, 10, 31), md);
-				return dpi.getNumero();
-			}
+		final long dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+			final PeriodeFiscale pf = addPeriodeFiscale(2013);
+			final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			addListeRecapitulative(dpi, pf, date(2013, 4, 1), date(2013, 4, 30), md);
+			addListeRecapitulative(dpi, pf, date(2013, 10, 1), date(2013, 10, 31), md);
+			return dpi.getNumero();
 		});
 
-		Assert.assertTrue(dpiId >= Integer.MIN_VALUE && dpiId <= Integer.MAX_VALUE);
+		assertTrue(dpiId >= Integer.MIN_VALUE && dpiId <= Integer.MAX_VALUE);
 		{
 			final DebtorInfo info = service.getDebtorInfo((int) dpiId, 2012);
-			Assert.assertEquals((int) dpiId, info.getNumber());
-			Assert.assertEquals(2012, info.getTaxPeriod());
-			Assert.assertEquals(0, info.getNumberOfWithholdingTaxDeclarationsIssued());
-			Assert.assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
+			assertEquals((int) dpiId, info.getNumber());
+			assertEquals(2012, info.getTaxPeriod());
+			assertEquals(0, info.getNumberOfWithholdingTaxDeclarationsIssued());
+			assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
 		}
 		{
 			final DebtorInfo info = service.getDebtorInfo((int) dpiId, 2013);
-			Assert.assertEquals((int) dpiId, info.getNumber());
-			Assert.assertEquals(2013, info.getTaxPeriod());
-			Assert.assertEquals(2, info.getNumberOfWithholdingTaxDeclarationsIssued());
-			Assert.assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
+			assertEquals((int) dpiId, info.getNumber());
+			assertEquals(2013, info.getTaxPeriod());
+			assertEquals(2, info.getNumberOfWithholdingTaxDeclarationsIssued());
+			assertEquals(12, info.getTheoreticalNumberOfWithholdingTaxDeclarations());
 		}
 	}
 
@@ -844,18 +822,15 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		try {
 			globalTiersIndexer.overwriteIndex();
 
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", date(1979, 5, 31), Sexe.MASCULIN);
-					final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2013, 1, 1));
-					addForDebiteur(dpi, date(2013, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+			ids = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", date(1979, 5, 31), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(2013, 1, 1));
+				addForDebiteur(dpi, date(2013, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
 
-					final Ids ids = new Ids();
-					ids.pp = pp.getNumero();
-					ids.dpi = dpi.getNumero();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.pp = pp.getNumero();
+				ids1.dpi = dpi.getNumero();
+				return ids1;
 			});
 
 			// attente de la fin de l'indexation des deux tiers
@@ -870,19 +845,19 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(Long.toString(ids.pp),
 			                                                null, SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(1, res.size());
+			assertNotNull(res);
+			assertEquals(1, res.size());
 
 			{
 				final PartyInfo info = res.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.pp, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.pp, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -891,19 +866,19 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(Long.toString(ids.pp),
 			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(1, res.size());
+			assertNotNull(res);
+			assertEquals(1, res.size());
 
 			{
 				final PartyInfo info = res.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.pp, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.pp, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -912,8 +887,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Daboville", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(0, res.size());
+			assertNotNull(res);
+			assertEquals(0, res.size());
 		}
 
 		// recherche par nom -> les deux viennent
@@ -921,80 +896,70 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(2, res.size());
+			assertNotNull(res);
+			assertEquals(2, res.size());
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			sortedRes.sort(Comparator.comparingInt(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = sortedRes.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.dpi, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertNull(info.getDateOfBirth());
-				Assert.assertEquals(PartyType.DEBTOR, info.getType());
-				Assert.assertNull(info.getNaturalPersonSubtype());
-				Assert.assertNull(info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.dpi, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertNull(info.getDateOfBirth());
+				assertEquals(PartyType.DEBTOR, info.getType());
+				assertNull(info.getNaturalPersonSubtype());
+				assertNull(info.getIndividualTaxLiability());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.pp, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.pp, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.emptySet(), null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(2, res.size());
+			assertNotNull(res);
+			assertEquals(2, res.size());
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			sortedRes.sort(Comparator.comparingInt(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = sortedRes.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.dpi, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertNull(info.getDateOfBirth());
-				Assert.assertEquals(PartyType.DEBTOR, info.getType());
-				Assert.assertNull(info.getNaturalPersonSubtype());
-				Assert.assertNull(info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.dpi, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertNull(info.getDateOfBirth());
+				assertEquals(PartyType.DEBTOR, info.getType());
+				assertNull(info.getNaturalPersonSubtype());
+				assertNull(info.getIndividualTaxLiability());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.pp, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.pp, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -1003,8 +968,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.HOUSEHOLD), null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(0, res.size());
+			assertNotNull(res);
+			assertEquals(0, res.size());
 		}
 
 		// recherche par nom avec liste de types mauvaise -> aucun ne vient
@@ -1012,8 +977,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.RESIDENT_NATURAL_PERSON), null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(0, res.size());
+			assertNotNull(res);
+			assertEquals(0, res.size());
 		}
 
 		// recherche par nom avec liste de types des deux -> les deux viennent
@@ -1021,39 +986,34 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR, PartySearchType.NATURAL_PERSON), null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(2, res.size());
+			assertNotNull(res);
+			assertEquals(2, res.size());
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			sortedRes.sort(Comparator.comparingInt(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = sortedRes.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.dpi, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertNull(info.getDateOfBirth());
-				Assert.assertEquals(PartyType.DEBTOR, info.getType());
-				Assert.assertNull(info.getNaturalPersonSubtype());
-				Assert.assertNull(info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.dpi, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertNull(info.getDateOfBirth());
+				assertEquals(PartyType.DEBTOR, info.getType());
+				assertNull(info.getNaturalPersonSubtype());
+				assertNull(info.getIndividualTaxLiability());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.pp, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.pp, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 
@@ -1062,19 +1022,19 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.DEBTOR), null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(1, res.size());
+			assertNotNull(res);
+			assertEquals(1, res.size());
 
 			{
 				final PartyInfo info = res.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.dpi, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertNull(info.getDateOfBirth());
-				Assert.assertEquals(PartyType.DEBTOR, info.getType());
-				Assert.assertNull(info.getNaturalPersonSubtype());
-				Assert.assertNull(info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.dpi, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertNull(info.getDateOfBirth());
+				assertEquals(PartyType.DEBTOR, info.getType());
+				assertNull(info.getNaturalPersonSubtype());
+				assertNull(info.getIndividualTaxLiability());
 			}
 		}
 
@@ -1083,19 +1043,19 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, EnumSet.of(PartySearchType.NON_RESIDENT_NATURAL_PERSON), null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(1, res.size());
+			assertNotNull(res);
+			assertEquals(1, res.size());
 
 			{
 				final PartyInfo info = res.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.pp, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.pp, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(date(1979, 5, 31), DataHelper.webToRegDate(info.getDateOfBirth()));
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 			}
 		}
 	}
@@ -1115,27 +1075,24 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		try {
 			globalTiersIndexer.overwriteIndex();
 
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final PersonnePhysique ppUn = addNonHabitant("Gérard", "AvecUn", null, Sexe.MASCULIN);
-					final IdentificationEntreprise identUn = new IdentificationEntreprise();
-					identUn.setNumeroIde("CHE123456789");
-					ppUn.addIdentificationEntreprise(identUn);
+			ids = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique ppUn = addNonHabitant("Gérard", "AvecUn", null, Sexe.MASCULIN);
+				final IdentificationEntreprise identUn = new IdentificationEntreprise();
+				identUn.setNumeroIde("CHE123456789");
+				ppUn.addIdentificationEntreprise(identUn);
 
-					final PersonnePhysique ppAutre = addNonHabitant("Gérard", "AvecAutre", null, Sexe.MASCULIN);
-					final IdentificationEntreprise identAutre = new IdentificationEntreprise();
-					identAutre.setNumeroIde("CHE987654321");
-					ppAutre.addIdentificationEntreprise(identAutre);
+				final PersonnePhysique ppAutre = addNonHabitant("Gérard", "AvecAutre", null, Sexe.MASCULIN);
+				final IdentificationEntreprise identAutre = new IdentificationEntreprise();
+				identAutre.setNumeroIde("CHE987654321");
+				ppAutre.addIdentificationEntreprise(identAutre);
 
-					final PersonnePhysique ppSans = addNonHabitant("Gérard", "Sans", null, Sexe.MASCULIN);
+				final PersonnePhysique ppSans = addNonHabitant("Gérard", "Sans", null, Sexe.MASCULIN);
 
-					final Ids ids = new Ids();
-					ids.ppAvecUn = ppUn.getNumero().intValue();
-					ids.ppAvecAutre = ppAutre.getNumero().intValue();
-					ids.ppSans = ppSans.getNumero().intValue();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.ppAvecUn = ppUn.getNumero().intValue();
+				ids1.ppAvecAutre = ppAutre.getNumero().intValue();
+				ids1.ppSans = ppSans.getNumero().intValue();
+				return ids1;
 			});
 
 			// attente de la fin de l'indexation des deux tiers
@@ -1150,51 +1107,46 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, null, null, false, null, null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(3, res.size());
+			assertNotNull(res);
+			assertEquals(3, res.size());
 
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			sortedRes.sort(Comparator.comparingInt(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = sortedRes.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.ppAvecUn, info.getNumber());
-				Assert.assertEquals("Gérard AvecUn", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
-				Assert.assertNotNull(info.getUidNumbers());
-				Assert.assertEquals(Collections.singletonList("CHE123456789"), info.getUidNumbers().getUidNumber());
+				assertNotNull(info);
+				assertEquals(ids.ppAvecUn, info.getNumber());
+				assertEquals("Gérard AvecUn", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info.getUidNumbers());
+				assertEquals(Collections.singletonList("CHE123456789"), info.getUidNumbers().getUidNumber());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.ppAvecAutre, info.getNumber());
-				Assert.assertEquals("Gérard AvecAutre", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
-				Assert.assertNotNull(info.getUidNumbers());
-				Assert.assertEquals(Collections.singletonList("CHE987654321"), info.getUidNumbers().getUidNumber());
+				assertNotNull(info);
+				assertEquals(ids.ppAvecAutre, info.getNumber());
+				assertEquals("Gérard AvecAutre", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info.getUidNumbers());
+				assertEquals(Collections.singletonList("CHE987654321"), info.getUidNumbers().getUidNumber());
 			}
 			{
 				final PartyInfo info = sortedRes.get(2);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.ppSans, info.getNumber());
-				Assert.assertEquals("Gérard Sans", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
-				Assert.assertNull(info.getUidNumbers());
+				assertNotNull(info);
+				assertEquals(ids.ppSans, info.getNumber());
+				assertEquals("Gérard Sans", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNull(info.getUidNumbers());
 			}
 		}
 
@@ -1203,20 +1155,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE123456789", null, false, null, null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(1, res.size());
+			assertNotNull(res);
+			assertEquals(1, res.size());
 
 			{
 				final PartyInfo info = res.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.ppAvecUn, info.getNumber());
-				Assert.assertEquals("Gérard AvecUn", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
-				Assert.assertNotNull(info.getUidNumbers());
-				Assert.assertEquals(Collections.singletonList("CHE123456789"), info.getUidNumbers().getUidNumber());
+				assertNotNull(info);
+				assertEquals(ids.ppAvecUn, info.getNumber());
+				assertEquals("Gérard AvecUn", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info.getUidNumbers());
+				assertEquals(Collections.singletonList("CHE123456789"), info.getUidNumbers().getUidNumber());
 			}
 		}
 
@@ -1225,20 +1177,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE987654321", null, false, null, null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(1, res.size());
+			assertNotNull(res);
+			assertEquals(1, res.size());
 
 			{
 				final PartyInfo info = res.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.ppAvecAutre, info.getNumber());
-				Assert.assertEquals("Gérard AvecAutre", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
-				Assert.assertNotNull(info.getUidNumbers());
-				Assert.assertEquals(Collections.singletonList("CHE987654321"), info.getUidNumbers().getUidNumber());
+				assertNotNull(info);
+				assertEquals(ids.ppAvecAutre, info.getNumber());
+				assertEquals("Gérard AvecAutre", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
+				assertNotNull(info.getUidNumbers());
+				assertEquals(Collections.singletonList("CHE987654321"), info.getUidNumbers().getUidNumber());
 			}
 		}
 
@@ -1247,8 +1199,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final List<PartyInfo> res = service.searchParty(null,
 			                                                "Gérard", SearchMode.IS_EXACTLY, null, null, null, "CHE111222333", null, false, null, null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(0, res.size());
+			assertNotNull(res);
+			assertEquals(0, res.size());
 		}
 	}
 
@@ -1269,20 +1221,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		try {
 			globalTiersIndexer.overwriteIndex();
 
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", dateNaissance, Sexe.MASCULIN);
-					addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
-					final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-					final MenageCommun mc = couple.getMenage();
-					addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.ORDINAIRE);
+			ids = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Gérard", "Nietmochevillage", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne, ModeImposition.ORDINAIRE);
 
-					final Ids ids = new Ids();
-					ids.pp = pp.getNumero();
-					ids.mc = mc.getNumero();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.pp = pp.getNumero();
+				ids1.mc = mc.getNumero();
+				return ids1;
 			});
 
 			// attente de la fin de l'indexation des deux tiers
@@ -1295,45 +1244,40 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(null,
-			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
+			                                                "Nietmochevillage", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.emptySet(), null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(2, res.size());
+			assertNotNull(res);
+			assertEquals(2, res.size());
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			sortedRes.sort(Comparator.comparingInt(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = sortedRes.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.pp, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertEquals(dateNaissance, DataHelper.webToRegDate(info.getDateOfBirth()));
-				Assert.assertEquals(PartyType.NATURAL_PERSON, info.getType());
-				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());     // il est maintenant marié
-				Assert.assertEquals(dateNaissance.addYears(18), DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
-				Assert.assertEquals(dateMariage.getOneDayBefore(), DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
-				Assert.assertNull(info.getCorporationTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.pp, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertEquals(dateNaissance, DataHelper.webToRegDate(info.getDateOfBirth()));
+				assertEquals(PartyType.NATURAL_PERSON, info.getType());
+				assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());     // il est maintenant marié
+				assertEquals(dateNaissance.addYears(18), DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
+				assertEquals(dateMariage.getOneDayBefore(), DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
+				assertNull(info.getCorporationTaxLiability());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.mc, info.getNumber());
-				Assert.assertEquals("Gérard Nietmochevillage", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertNull(info.getDateOfBirth());
-				Assert.assertEquals(PartyType.HOUSEHOLD, info.getType());
-				Assert.assertEquals(IndividualTaxLiabilityType.ORDINARY_RESIDENT, info.getIndividualTaxLiability());
-				Assert.assertEquals(dateMariage, DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
-				Assert.assertNull(DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
-				Assert.assertNull(info.getCorporationTaxLiability());
+				assertNotNull(info);
+				assertEquals(ids.mc, info.getNumber());
+				assertEquals("Gérard Nietmochevillage", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertNull(info.getDateOfBirth());
+				assertEquals(PartyType.HOUSEHOLD, info.getType());
+				assertEquals(IndividualTaxLiabilityType.ORDINARY_RESIDENT, info.getIndividualTaxLiability());
+				assertEquals(dateMariage, DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
+				assertNull(DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
+				assertNull(info.getCorporationTaxLiability());
 			}
 		}
 	}
@@ -1354,29 +1298,26 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		try {
 			globalTiersIndexer.overwriteIndex();
 
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
-					addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
-					addRaisonSociale(entreprise1, dateDebut, null, "Association pour la protection des petits oiseaux des parcs");
-					addRegimeFiscalVD(entreprise1, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-					addRegimeFiscalCH(entreprise1, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-					addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+			ids = doInNewTransactionAndSession(status -> {
+				final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRaisonSociale(entreprise1, dateDebut, null, "Association pour la protection des petits oiseaux des parcs");
+				addRegimeFiscalVD(entreprise1, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalCH(entreprise1, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
-					final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
-					addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SARL);
-					addRaisonSociale(entreprise2, dateDebut, null, "Gros-bras protection");
-					addRegimeFiscalVD(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(entreprise2, dateDebut, null, MockCommune.Geneve);
-					addForSecondaire(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(entreprise2, dateDebut, null, "Gros-bras protection");
+				addRegimeFiscalVD(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise2, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise2, dateDebut, null, MockCommune.Geneve);
+				addForSecondaire(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
-					final Ids ids = new Ids();
-					ids.entreprise1 = entreprise1.getNumero();
-					ids.entreprise2 = entreprise2.getNumero();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.entreprise1 = entreprise1.getNumero();
+				ids1.entreprise2 = entreprise2.getNumero();
+				return ids1;
 			});
 
 			// attente de la fin de l'indexation des tiers
@@ -1389,45 +1330,40 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// recherche par nom avec liste de types vide -> les deux viennent
 		{
 			final List<PartyInfo> res = service.searchParty(null,
-			                                                "protection", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.<PartySearchType>emptySet(), null, null, null);
+			                                                "protection", SearchMode.IS_EXACTLY, null, null, null, null, null, false, Collections.emptySet(), null, null, null);
 
-			Assert.assertNotNull(res);
-			Assert.assertEquals(2, res.size());
+			assertNotNull(res);
+			assertEquals(2, res.size());
 
 			// triage des résultats par ordre croissant de numéro de tiers (le DPI viendra donc toujours devant)
 			final List<PartyInfo> sortedRes = new ArrayList<>(res);
-			Collections.sort(sortedRes, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			sortedRes.sort(Comparator.comparingInt(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = sortedRes.get(0);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.entreprise1, info.getNumber());
-				Assert.assertEquals("Association pour la protection des petits oiseaux des parcs", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertNull(info.getDateOfBirth());
-				Assert.assertEquals(PartyType.CORPORATION, info.getType());
-				Assert.assertNull(info.getIndividualTaxLiability());
-				Assert.assertEquals(CorporationTaxLiabilityType.ORDINARY_RESIDENT, info.getCorporationTaxLiability());
-				Assert.assertEquals(dateDebut, DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
-				Assert.assertNull(DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
+				assertNotNull(info);
+				assertEquals(ids.entreprise1, info.getNumber());
+				assertEquals("Association pour la protection des petits oiseaux des parcs", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertNull(info.getDateOfBirth());
+				assertEquals(PartyType.CORPORATION, info.getType());
+				assertNull(info.getIndividualTaxLiability());
+				assertEquals(CorporationTaxLiabilityType.ORDINARY_RESIDENT, info.getCorporationTaxLiability());
+				assertEquals(dateDebut, DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
+				assertNull(DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
-				Assert.assertNotNull(info);
-				Assert.assertEquals(ids.entreprise2, info.getNumber());
-				Assert.assertEquals("Gros-bras protection", info.getName1());
-				Assert.assertEquals(StringUtils.EMPTY, info.getName2());
-				Assert.assertNull(info.getDateOfBirth());
-				Assert.assertEquals(PartyType.CORPORATION, info.getType());
-				Assert.assertNull(info.getIndividualTaxLiability());
-				Assert.assertEquals(CorporationTaxLiabilityType.OTHER_CANTON, info.getCorporationTaxLiability());
-				Assert.assertEquals(dateDebut, DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
-				Assert.assertNull(DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
+				assertNotNull(info);
+				assertEquals(ids.entreprise2, info.getNumber());
+				assertEquals("Gros-bras protection", info.getName1());
+				assertEquals(StringUtils.EMPTY, info.getName2());
+				assertNull(info.getDateOfBirth());
+				assertEquals(PartyType.CORPORATION, info.getType());
+				assertNull(info.getIndividualTaxLiability());
+				assertEquals(CorporationTaxLiabilityType.OTHER_CANTON, info.getCorporationTaxLiability());
+				assertEquals(dateDebut, DataHelper.webToRegDate(info.getLastTaxResidenceBeginDate()));
+				assertNull(DataHelper.webToRegDate(info.getLastTaxResidenceEndDate()));
 			}
 		}
 	}
@@ -1473,134 +1409,131 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long ac;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
 
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur IS", mc, dateDebutContactIS);
-				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			final DebiteurPrestationImposable dpi = addDebiteur("Débiteur IS", mc, dateDebutContactIS);
+			dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(noEntreprise);
-				addRegimeFiscalVD(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
+			final Entreprise pm = addEntrepriseConnueAuCivil(noEntreprise);
+			addRegimeFiscalVD(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
 
-				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);
-				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
-				ac.setFormeJuridique(FormeJuridique.ASS);
-				final IdentificationEntreprise ide = new IdentificationEntreprise();
-				ide.setNumeroIde("CHE999999996");
-				ac.addIdentificationEntreprise(ide);
+			final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);
+			final AutreCommunaute ac = addAutreCommunaute("Tata!!");
+			ac.setFormeJuridique(FormeJuridique.ASS);
+			final IdentificationEntreprise ide = new IdentificationEntreprise();
+			ide.setNumeroIde("CHE999999996");
+			ac.addIdentificationEntreprise(ide);
 
-				final IdentificationEntreprise idePP = new IdentificationEntreprise();
-				idePP.setNumeroIde("CHE100001000");
-				pp.addIdentificationEntreprise(idePP);
+			final IdentificationEntreprise idePP = new IdentificationEntreprise();
+			idePP.setNumeroIde("CHE100001000");
+			pp.addIdentificationEntreprise(idePP);
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero();
-				ids.mc = mc.getNumero();
-				ids.dpi = dpi.getNumero();
-				ids.pm = pm.getNumero();
-				ids.ca = ca.getNumero();
-				ids.ac = ac.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero();
+			ids1.mc = mc.getNumero();
+			ids1.dpi = dpi.getNumero();
+			ids1.pm = pm.getNumero();
+			ids1.ca = ca.getNumero();
+			ids1.ac = ac.getNumero();
+			return ids1;
 		});
 
 		// get PP
 		{
 			final Party party = service.getParty((int) ids.pp, null);
-			Assert.assertNotNull(party);
-			Assert.assertEquals(NaturalPerson.class, party.getClass());
-			Assert.assertEquals(ids.pp, party.getNumber());
+			assertNotNull(party);
+			assertEquals(NaturalPerson.class, party.getClass());
+			assertEquals(ids.pp, party.getNumber());
 
 
 			final NaturalPerson pp = (NaturalPerson) party;
-			Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(pp.getDateOfBirth()));
-			Assert.assertEquals("Dufoin", pp.getOfficialName());
-			Assert.assertEquals("Balthazar", pp.getFirstName());
-			Assert.assertEquals(Sex.MALE, pp.getSex());
+			assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(pp.getDateOfBirth()));
+			assertEquals("Dufoin", pp.getOfficialName());
+			assertEquals("Balthazar", pp.getFirstName());
+			assertEquals(Sex.MALE, pp.getSex());
 
 			final List<NaturalPersonCategory> categories = pp.getCategories();
-			Assert.assertNotNull(categories);
-			Assert.assertEquals(1, categories.size());
+			assertNotNull(categories);
+			assertEquals(1, categories.size());
 
 			final NaturalPersonCategory category = categories.get(0);
-			Assert.assertNotNull(category);
-			Assert.assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, category.getCategory());
-			Assert.assertEquals(datePermisC, ch.vd.unireg.xml.DataHelper.xmlToCore(category.getDateFrom()));
-			Assert.assertNull(category.getDateTo());
+			assertNotNull(category);
+			assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, category.getCategory());
+			assertEquals(datePermisC, ch.vd.unireg.xml.DataHelper.xmlToCore(category.getDateFrom()));
+			assertNull(category.getDateTo());
 
-			Assert.assertNotNull(pp.getMotherName());
-			Assert.assertEquals("Delagrange", pp.getMotherName().getLastName());
-			Assert.assertEquals("Martine", pp.getMotherName().getFirstNames());
-			Assert.assertNotNull(pp.getFatherName());
-			Assert.assertEquals("Dufoin", pp.getFatherName().getLastName());
-			Assert.assertEquals("Melchior", pp.getFatherName().getFirstNames());
-			Assert.assertNotNull(pp.getUidNumbers());
-			Assert.assertEquals(1, pp.getUidNumbers().getUidNumber().size());
-			Assert.assertEquals("CHE100001000", pp.getUidNumbers().getUidNumber().get(0));
+			assertNotNull(pp.getMotherName());
+			assertEquals("Delagrange", pp.getMotherName().getLastName());
+			assertEquals("Martine", pp.getMotherName().getFirstNames());
+			assertNotNull(pp.getFatherName());
+			assertEquals("Dufoin", pp.getFatherName().getLastName());
+			assertEquals("Melchior", pp.getFatherName().getFirstNames());
+			assertNotNull(pp.getUidNumbers());
+			assertEquals(1, pp.getUidNumbers().getUidNumber().size());
+			assertEquals("CHE100001000", pp.getUidNumbers().getUidNumber().get(0));
 		}
 		// get MC
 		{
 			final Party party = service.getParty((int) ids.mc, null);
-			Assert.assertNotNull(party);
-			Assert.assertEquals(CommonHousehold.class, party.getClass());
-			Assert.assertEquals(ids.mc, party.getNumber());
+			assertNotNull(party);
+			assertEquals(CommonHousehold.class, party.getClass());
+			assertEquals(ids.mc, party.getNumber());
 		}
 		// get DPI
 		{
 			final Party party = service.getParty((int) ids.dpi, null);
-			Assert.assertNotNull(party);
-			Assert.assertEquals(Debtor.class, party.getClass());
-			Assert.assertEquals(ids.dpi, party.getNumber());
+			assertNotNull(party);
+			assertEquals(Debtor.class, party.getClass());
+			assertEquals(ids.dpi, party.getNumber());
 
 			final Debtor dpi = (Debtor) party;
-			Assert.assertEquals("Balthazar Dufoin", dpi.getName());
-			Assert.assertEquals("Débiteur IS", dpi.getComplementaryName());
-			Assert.assertEquals(ModeCommunication.ELECTRONIQUE, ch.vd.unireg.xml.EnumHelper.xmlToCore(dpi.getCommunicationMode()));
+			assertEquals("Balthazar Dufoin", dpi.getName());
+			assertEquals("Débiteur IS", dpi.getComplementaryName());
+			assertEquals(ModeCommunication.ELECTRONIQUE, ch.vd.unireg.xml.EnumHelper.xmlToCore(dpi.getCommunicationMode()));
 		}
 		// get PM
 		{
 			final Party party = service.getParty((int) ids.pm, null);
-			Assert.assertNotNull(party);
-			Assert.assertEquals(Corporation.class, party.getClass());
-			Assert.assertEquals(ids.pm, party.getNumber());
+			assertNotNull(party);
+			assertEquals(Corporation.class, party.getClass());
+			assertEquals(ids.pm, party.getNumber());
 
 			final Corporation pm = (Corporation) party;
-			Assert.assertEquals("Au petit coin", pm.getName());
-			Assert.assertNotNull(pm.getUidNumbers());
-			Assert.assertEquals(1, pm.getUidNumbers().getUidNumber().size());
-			Assert.assertEquals("CHE123456788", pm.getUidNumbers().getUidNumber().get(0));
+			assertEquals("Au petit coin", pm.getName());
+			assertNotNull(pm.getUidNumbers());
+			assertEquals(1, pm.getUidNumbers().getUidNumber().size());
+			assertEquals("CHE123456788", pm.getUidNumbers().getUidNumber().get(0));
 		}
 		// get CA
 		{
 			final Party party = service.getParty((int) ids.ca, null);
-			Assert.assertNotNull(party);
-			Assert.assertEquals(AdministrativeAuthority.class, party.getClass());
-			Assert.assertEquals(ids.ca, party.getNumber());
+			assertNotNull(party);
+			assertEquals(AdministrativeAuthority.class, party.getClass());
+			assertEquals(ids.ca, party.getNumber());
 
 			final AdministrativeAuthority ca = (AdministrativeAuthority) party;
-			Assert.assertEquals(MockCollectiviteAdministrative.CAT.getNomCourt(), ca.getName());
-			Assert.assertEquals(MockCollectiviteAdministrative.CAT.getNoColAdm(), ca.getAdministrativeAuthorityId());
+			assertEquals(MockCollectiviteAdministrative.CAT.getNomCourt(), ca.getName());
+			assertEquals(MockCollectiviteAdministrative.CAT.getNoColAdm(), ca.getAdministrativeAuthorityId());
 		}
 		// get AC
 		{
 			final Party party = service.getParty((int) ids.ac, null);
-			Assert.assertNotNull(party);
-			Assert.assertEquals(OtherCommunity.class, party.getClass());
-			Assert.assertEquals(ids.ac, party.getNumber());
+			assertNotNull(party);
+			assertEquals(OtherCommunity.class, party.getClass());
+			assertEquals(ids.ac, party.getNumber());
 
 			final OtherCommunity ac = (OtherCommunity) party;
-			Assert.assertEquals("Tata!!", ac.getName());
-			Assert.assertEquals(LegalForm.ASSOCIATION, ac.getLegalForm());
+			assertEquals("Tata!!", ac.getName());
+			assertEquals(LegalForm.ASSOCIATION, ac.getLegalForm());
 
-			Assert.assertNotNull(ac.getUidNumbers());
-			Assert.assertEquals(1, ac.getUidNumbers().getUidNumber().size());
-			Assert.assertEquals("CHE999999996", ac.getUidNumbers().getUidNumber().get(0));
+			assertNotNull(ac.getUidNumbers());
+			assertEquals(1, ac.getUidNumbers().getUidNumber().size());
+			assertEquals("CHE999999996", ac.getUidNumbers().getUidNumber().get(0));
 		}
 	}
 
@@ -1618,223 +1551,220 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				return pp.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero().intValue();
 		});
 
 		final Party partySans = service.getParty(ppId, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertNotNull(partySans.getRepresentationAddresses());
-		Assert.assertNotNull(partySans.getDebtProsecutionAddressesOfOtherParty());
-		Assert.assertNotNull(partySans.getRepresentationAddresses());
-		Assert.assertNotNull(partySans.getMailAddresses());
-		Assert.assertNotNull(partySans.getResidenceAddresses());
-		Assert.assertEquals(0, partySans.getRepresentationAddresses().size());
-		Assert.assertEquals(0, partySans.getDebtProsecutionAddressesOfOtherParty().size());
-		Assert.assertEquals(0, partySans.getRepresentationAddresses().size());
-		Assert.assertEquals(0, partySans.getMailAddresses().size());
-		Assert.assertEquals(0, partySans.getResidenceAddresses().size());
+		assertNotNull(partySans);
+		assertNotNull(partySans.getRepresentationAddresses());
+		assertNotNull(partySans.getDebtProsecutionAddressesOfOtherParty());
+		assertNotNull(partySans.getRepresentationAddresses());
+		assertNotNull(partySans.getMailAddresses());
+		assertNotNull(partySans.getResidenceAddresses());
+		assertEquals(0, partySans.getRepresentationAddresses().size());
+		assertEquals(0, partySans.getDebtProsecutionAddressesOfOtherParty().size());
+		assertEquals(0, partySans.getRepresentationAddresses().size());
+		assertEquals(0, partySans.getMailAddresses().size());
+		assertEquals(0, partySans.getResidenceAddresses().size());
 
 		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.ADDRESSES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertNotNull(partyAvec.getRepresentationAddresses());
-		Assert.assertNotNull(partyAvec.getDebtProsecutionAddressesOfOtherParty());
-		Assert.assertNotNull(partyAvec.getRepresentationAddresses());
-		Assert.assertNotNull(partyAvec.getMailAddresses());
-		Assert.assertNotNull(partyAvec.getResidenceAddresses());
-		Assert.assertEquals(1, partyAvec.getRepresentationAddresses().size());
-		Assert.assertEquals(0, partyAvec.getDebtProsecutionAddressesOfOtherParty().size());
-		Assert.assertEquals(1, partyAvec.getRepresentationAddresses().size());
-		Assert.assertEquals(1, partyAvec.getMailAddresses().size());
-		Assert.assertEquals(1, partyAvec.getResidenceAddresses().size());
+		assertNotNull(partyAvec);
+		assertNotNull(partyAvec.getRepresentationAddresses());
+		assertNotNull(partyAvec.getDebtProsecutionAddressesOfOtherParty());
+		assertNotNull(partyAvec.getRepresentationAddresses());
+		assertNotNull(partyAvec.getMailAddresses());
+		assertNotNull(partyAvec.getResidenceAddresses());
+		assertEquals(1, partyAvec.getRepresentationAddresses().size());
+		assertEquals(0, partyAvec.getDebtProsecutionAddressesOfOtherParty().size());
+		assertEquals(1, partyAvec.getRepresentationAddresses().size());
+		assertEquals(1, partyAvec.getMailAddresses().size());
+		assertEquals(1, partyAvec.getResidenceAddresses().size());
 
 		{
 			final Address address = partyAvec.getRepresentationAddresses().get(0);
-			Assert.assertNotNull(address);
-			Assert.assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(address.getDateFrom()));
-			Assert.assertEquals(AddressType.REPRESENTATION, address.getType());
+			assertNotNull(address);
+			assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(address.getDateFrom()));
+			assertEquals(AddressType.REPRESENTATION, address.getType());
 			final PostAddress postAddress = address.getPostAddress();
-			Assert.assertNotNull(postAddress);
+			assertNotNull(postAddress);
 			final Recipient recipient = postAddress.getRecipient();
-			Assert.assertNotNull(recipient);
-			Assert.assertNull(recipient.getCouple());
-			Assert.assertNull(recipient.getOrganisation());
-			Assert.assertFalse(address.isFake());
-			Assert.assertFalse(postAddress.isIncomplete());
+			assertNotNull(recipient);
+			assertNull(recipient.getCouple());
+			assertNull(recipient.getOrganisation());
+			assertFalse(address.isFake());
+			assertFalse(postAddress.isIncomplete());
 
 			final AddressInformation info = postAddress.getDestination();
-			Assert.assertNotNull(info);
-			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
-			Assert.assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
-			Assert.assertEquals(MockRue.CossonayVille.AvenueDuFuniculaire.getDesignationCourrier(), info.getStreet());
-			Assert.assertNull(info.getAddressLine1());
-			Assert.assertNull(info.getAddressLine2());
-			Assert.assertNull(info.getCareOf());
-			Assert.assertNull(info.getComplementaryInformation());
-			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
-			Assert.assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
-			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
-			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
-			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
+			assertNotNull(info);
+			assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
+			assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
+			assertEquals(MockRue.CossonayVille.AvenueDuFuniculaire.getDesignationCourrier(), info.getStreet());
+			assertNull(info.getAddressLine1());
+			assertNull(info.getAddressLine2());
+			assertNull(info.getCareOf());
+			assertNull(info.getComplementaryInformation());
+			assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
+			assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
+			assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
+			assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
+			assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
 			final FormattedAddress formatted = postAddress.getFormattedAddress();
-			Assert.assertNotNull(formatted);
-			Assert.assertEquals("Monsieur", formatted.getLine1());
-			Assert.assertEquals("Arthur Delagrange", formatted.getLine2());
-			Assert.assertEquals("Avenue du Funiculaire", formatted.getLine3());
-			Assert.assertEquals("1304 Cossonay-Ville", formatted.getLine4());
-			Assert.assertNull(formatted.getLine5());
-			Assert.assertNull(formatted.getLine6());
+			assertNotNull(formatted);
+			assertEquals("Monsieur", formatted.getLine1());
+			assertEquals("Arthur Delagrange", formatted.getLine2());
+			assertEquals("Avenue du Funiculaire", formatted.getLine3());
+			assertEquals("1304 Cossonay-Ville", formatted.getLine4());
+			assertNull(formatted.getLine5());
+			assertNull(formatted.getLine6());
 
 			final PersonMailAddressInfo person = recipient.getPerson();
-			Assert.assertNotNull(person);
-			Assert.assertEquals("Monsieur", person.getFormalGreeting());
-			Assert.assertEquals("Monsieur", person.getSalutation());
-			Assert.assertEquals("Delagrange", person.getLastName());
-			Assert.assertEquals("Arthur", person.getFirstName());
-			Assert.assertEquals(ch.vd.unireg.xml.DataHelper.salutations2MrMrs("Monsieur"), person.getMrMrs());
+			assertNotNull(person);
+			assertEquals("Monsieur", person.getFormalGreeting());
+			assertEquals("Monsieur", person.getSalutation());
+			assertEquals("Delagrange", person.getLastName());
+			assertEquals("Arthur", person.getFirstName());
+			assertEquals(ch.vd.unireg.xml.DataHelper.salutations2MrMrs("Monsieur"), person.getMrMrs());
 		}
 		{
 			final Address address = partyAvec.getDebtProsecutionAddresses().get(0);
-			Assert.assertNotNull(address);
-			Assert.assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(address.getDateFrom()));
-			Assert.assertEquals(AddressType.DEBT_PROSECUTION, address.getType());
+			assertNotNull(address);
+			assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(address.getDateFrom()));
+			assertEquals(AddressType.DEBT_PROSECUTION, address.getType());
 			final PostAddress postAddress = address.getPostAddress();
-			Assert.assertNotNull(postAddress);
+			assertNotNull(postAddress);
 			final Recipient recipient = postAddress.getRecipient();
-			Assert.assertNotNull(recipient);
-			Assert.assertNull(recipient.getCouple());
-			Assert.assertNull(recipient.getOrganisation());
-			Assert.assertFalse(address.isFake());
-			Assert.assertFalse(postAddress.isIncomplete());
+			assertNotNull(recipient);
+			assertNull(recipient.getCouple());
+			assertNull(recipient.getOrganisation());
+			assertFalse(address.isFake());
+			assertFalse(postAddress.isIncomplete());
 
 			final AddressInformation info = postAddress.getDestination();
-			Assert.assertNotNull(info);
-			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
-			Assert.assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
-			Assert.assertEquals(MockRue.CossonayVille.AvenueDuFuniculaire.getDesignationCourrier(), info.getStreet());
-			Assert.assertNull(info.getAddressLine1());
-			Assert.assertNull(info.getAddressLine2());
-			Assert.assertNull(info.getCareOf());
-			Assert.assertNull(info.getComplementaryInformation());
-			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
-			Assert.assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
-			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
-			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
-			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
+			assertNotNull(info);
+			assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
+			assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
+			assertEquals(MockRue.CossonayVille.AvenueDuFuniculaire.getDesignationCourrier(), info.getStreet());
+			assertNull(info.getAddressLine1());
+			assertNull(info.getAddressLine2());
+			assertNull(info.getCareOf());
+			assertNull(info.getComplementaryInformation());
+			assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
+			assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
+			assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
+			assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
+			assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
 			final FormattedAddress formatted = postAddress.getFormattedAddress();
-			Assert.assertNotNull(formatted);
-			Assert.assertEquals("Monsieur", formatted.getLine1());
-			Assert.assertEquals("Arthur Delagrange", formatted.getLine2());
-			Assert.assertEquals("Avenue du Funiculaire", formatted.getLine3());
-			Assert.assertEquals("1304 Cossonay-Ville", formatted.getLine4());
-			Assert.assertNull(formatted.getLine5());
-			Assert.assertNull(formatted.getLine6());
+			assertNotNull(formatted);
+			assertEquals("Monsieur", formatted.getLine1());
+			assertEquals("Arthur Delagrange", formatted.getLine2());
+			assertEquals("Avenue du Funiculaire", formatted.getLine3());
+			assertEquals("1304 Cossonay-Ville", formatted.getLine4());
+			assertNull(formatted.getLine5());
+			assertNull(formatted.getLine6());
 
 			final PersonMailAddressInfo person = recipient.getPerson();
-			Assert.assertNotNull(person);
-			Assert.assertEquals("Monsieur", person.getFormalGreeting());
-			Assert.assertEquals("Monsieur", person.getSalutation());
-			Assert.assertEquals("Delagrange", person.getLastName());
-			Assert.assertEquals("Arthur", person.getFirstName());
-			Assert.assertEquals(ch.vd.unireg.xml.DataHelper.salutations2MrMrs("Monsieur"), person.getMrMrs());
+			assertNotNull(person);
+			assertEquals("Monsieur", person.getFormalGreeting());
+			assertEquals("Monsieur", person.getSalutation());
+			assertEquals("Delagrange", person.getLastName());
+			assertEquals("Arthur", person.getFirstName());
+			assertEquals(ch.vd.unireg.xml.DataHelper.salutations2MrMrs("Monsieur"), person.getMrMrs());
 		}
 		{
 			final Address address = partyAvec.getMailAddresses().get(0);
-			Assert.assertNotNull(address);
-			Assert.assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(address.getDateFrom()));
-			Assert.assertEquals(AddressType.MAIL, address.getType());
+			assertNotNull(address);
+			assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(address.getDateFrom()));
+			assertEquals(AddressType.MAIL, address.getType());
 			final PostAddress postAddress = address.getPostAddress();
-			Assert.assertNotNull(postAddress);
+			assertNotNull(postAddress);
 			final Recipient recipient = postAddress.getRecipient();
-			Assert.assertNotNull(recipient);
-			Assert.assertNull(recipient.getCouple());
-			Assert.assertNull(recipient.getOrganisation());
-			Assert.assertFalse(address.isFake());
-			Assert.assertFalse(postAddress.isIncomplete());
+			assertNotNull(recipient);
+			assertNull(recipient.getCouple());
+			assertNull(recipient.getOrganisation());
+			assertFalse(address.isFake());
+			assertFalse(postAddress.isIncomplete());
 
 			final AddressInformation info = postAddress.getDestination();
-			Assert.assertNotNull(info);
-			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
-			Assert.assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
-			Assert.assertEquals(MockRue.CossonayVille.AvenueDuFuniculaire.getDesignationCourrier(), info.getStreet());
-			Assert.assertNull(info.getAddressLine1());
-			Assert.assertNull(info.getAddressLine2());
-			Assert.assertNull(info.getCareOf());
-			Assert.assertNull(info.getComplementaryInformation());
-			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
-			Assert.assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
-			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
-			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
-			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
+			assertNotNull(info);
+			assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
+			assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
+			assertEquals(MockRue.CossonayVille.AvenueDuFuniculaire.getDesignationCourrier(), info.getStreet());
+			assertNull(info.getAddressLine1());
+			assertNull(info.getAddressLine2());
+			assertNull(info.getCareOf());
+			assertNull(info.getComplementaryInformation());
+			assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
+			assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
+			assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
+			assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
+			assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
 			final FormattedAddress formatted = postAddress.getFormattedAddress();
-			Assert.assertNotNull(formatted);
-			Assert.assertEquals("Monsieur", formatted.getLine1());
-			Assert.assertEquals("Arthur Delagrange", formatted.getLine2());
-			Assert.assertEquals("Avenue du Funiculaire", formatted.getLine3());
-			Assert.assertEquals("1304 Cossonay-Ville", formatted.getLine4());
-			Assert.assertNull(formatted.getLine5());
-			Assert.assertNull(formatted.getLine6());
+			assertNotNull(formatted);
+			assertEquals("Monsieur", formatted.getLine1());
+			assertEquals("Arthur Delagrange", formatted.getLine2());
+			assertEquals("Avenue du Funiculaire", formatted.getLine3());
+			assertEquals("1304 Cossonay-Ville", formatted.getLine4());
+			assertNull(formatted.getLine5());
+			assertNull(formatted.getLine6());
 
 			final PersonMailAddressInfo person = recipient.getPerson();
-			Assert.assertNotNull(person);
-			Assert.assertEquals("Monsieur", person.getFormalGreeting());
-			Assert.assertEquals("Monsieur", person.getSalutation());
-			Assert.assertEquals("Delagrange", person.getLastName());
-			Assert.assertEquals("Arthur", person.getFirstName());
-			Assert.assertEquals(ch.vd.unireg.xml.DataHelper.salutations2MrMrs("Monsieur"), person.getMrMrs());
+			assertNotNull(person);
+			assertEquals("Monsieur", person.getFormalGreeting());
+			assertEquals("Monsieur", person.getSalutation());
+			assertEquals("Delagrange", person.getLastName());
+			assertEquals("Arthur", person.getFirstName());
+			assertEquals(ch.vd.unireg.xml.DataHelper.salutations2MrMrs("Monsieur"), person.getMrMrs());
 		}
 		{
 			final Address address = partyAvec.getResidenceAddresses().get(0);
-			Assert.assertNotNull(address);
-			Assert.assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(address.getDateFrom()));
-			Assert.assertEquals(AddressType.RESIDENCE, address.getType());
+			assertNotNull(address);
+			assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(address.getDateFrom()));
+			assertEquals(AddressType.RESIDENCE, address.getType());
 			final PostAddress postAddress = address.getPostAddress();
-			Assert.assertNotNull(postAddress);
+			assertNotNull(postAddress);
 			final Recipient recipient = postAddress.getRecipient();
-			Assert.assertNotNull(recipient);
-			Assert.assertNull(recipient.getCouple());
-			Assert.assertNull(recipient.getOrganisation());
-			Assert.assertFalse(address.isFake());
-			Assert.assertFalse(postAddress.isIncomplete());
+			assertNotNull(recipient);
+			assertNull(recipient.getCouple());
+			assertNull(recipient.getOrganisation());
+			assertFalse(address.isFake());
+			assertFalse(postAddress.isIncomplete());
 
 			final AddressInformation info = postAddress.getDestination();
-			Assert.assertNotNull(info);
-			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
-			Assert.assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
-			Assert.assertEquals(MockRue.CossonayVille.AvenueDuFuniculaire.getDesignationCourrier(), info.getStreet());
-			Assert.assertNull(info.getAddressLine1());
-			Assert.assertNull(info.getAddressLine2());
-			Assert.assertNull(info.getCareOf());
-			Assert.assertNull(info.getComplementaryInformation());
-			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
-			Assert.assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
-			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
-			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
-			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
+			assertNotNull(info);
+			assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
+			assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
+			assertEquals(MockRue.CossonayVille.AvenueDuFuniculaire.getDesignationCourrier(), info.getStreet());
+			assertNull(info.getAddressLine1());
+			assertNull(info.getAddressLine2());
+			assertNull(info.getCareOf());
+			assertNull(info.getComplementaryInformation());
+			assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
+			assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
+			assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
+			assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
+			assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
 			final FormattedAddress formatted = postAddress.getFormattedAddress();
-			Assert.assertNotNull(formatted);
-			Assert.assertEquals("Monsieur", formatted.getLine1());
-			Assert.assertEquals("Arthur Delagrange", formatted.getLine2());
-			Assert.assertEquals("Avenue du Funiculaire", formatted.getLine3());
-			Assert.assertEquals("1304 Cossonay-Ville", formatted.getLine4());
-			Assert.assertNull(formatted.getLine5());
-			Assert.assertNull(formatted.getLine6());
+			assertNotNull(formatted);
+			assertEquals("Monsieur", formatted.getLine1());
+			assertEquals("Arthur Delagrange", formatted.getLine2());
+			assertEquals("Avenue du Funiculaire", formatted.getLine3());
+			assertEquals("1304 Cossonay-Ville", formatted.getLine4());
+			assertNull(formatted.getLine5());
+			assertNull(formatted.getLine6());
 
 			final PersonMailAddressInfo person = recipient.getPerson();
-			Assert.assertNotNull(person);
-			Assert.assertEquals("Monsieur", person.getFormalGreeting());
-			Assert.assertEquals("Monsieur", person.getSalutation());
-			Assert.assertEquals("Delagrange", person.getLastName());
-			Assert.assertEquals("Arthur", person.getFirstName());
-			Assert.assertEquals(ch.vd.unireg.xml.DataHelper.salutations2MrMrs("Monsieur"), person.getMrMrs());
+			assertNotNull(person);
+			assertEquals("Monsieur", person.getFormalGreeting());
+			assertEquals("Monsieur", person.getSalutation());
+			assertEquals("Delagrange", person.getLastName());
+			assertEquals("Arthur", person.getFirstName());
+			assertEquals(ch.vd.unireg.xml.DataHelper.salutations2MrMrs("Monsieur"), person.getMrMrs());
 		}
 	}
 
@@ -1854,61 +1784,58 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero().intValue();
 		});
 
 		final Party partySans = service.getParty(ppId, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertNotNull(partySans.getMainTaxResidences());
-		Assert.assertNotNull(partySans.getOtherTaxResidences());
-		Assert.assertNotNull(partySans.getManagingTaxResidences());
-		Assert.assertEquals(0, partySans.getMainTaxResidences().size());
-		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
-		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
+		assertNotNull(partySans);
+		assertNotNull(partySans.getMainTaxResidences());
+		assertNotNull(partySans.getOtherTaxResidences());
+		assertNotNull(partySans.getManagingTaxResidences());
+		assertEquals(0, partySans.getMainTaxResidences().size());
+		assertEquals(0, partySans.getOtherTaxResidences().size());
+		assertEquals(0, partySans.getManagingTaxResidences().size());
 
 		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.TAX_RESIDENCES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertNotNull(partyAvec.getMainTaxResidences());
-		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
-		Assert.assertNotNull(partyAvec.getManagingTaxResidences());
-		Assert.assertEquals(1, partyAvec.getMainTaxResidences().size());
-		Assert.assertEquals(1, partyAvec.getOtherTaxResidences().size());
-		Assert.assertEquals(0, partyAvec.getManagingTaxResidences().size());
+		assertNotNull(partyAvec);
+		assertNotNull(partyAvec.getMainTaxResidences());
+		assertNotNull(partyAvec.getOtherTaxResidences());
+		assertNotNull(partyAvec.getManagingTaxResidences());
+		assertEquals(1, partyAvec.getMainTaxResidences().size());
+		assertEquals(1, partyAvec.getOtherTaxResidences().size());
+		assertEquals(0, partyAvec.getManagingTaxResidences().size());
 
 		{
 			final TaxResidence tr = partyAvec.getMainTaxResidences().get(0);
-			Assert.assertNotNull(tr);
-			Assert.assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateFrom()));
-			Assert.assertEquals(LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY, tr.getStartReason());
-			Assert.assertNull(tr.getDateTo());
-			Assert.assertNull(tr.getEndReason());
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), tr.getTaxationAuthorityFSOId());
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, tr.getTaxationAuthorityType());
-			Assert.assertEquals(TaxationMethod.ORDINARY, tr.getTaxationMethod());
-			Assert.assertEquals(TaxLiabilityReason.RESIDENCE, tr.getTaxLiabilityReason());
-			Assert.assertEquals(TaxType.INCOME_WEALTH, tr.getTaxType());
-			Assert.assertFalse(tr.isVirtual());
+			assertNotNull(tr);
+			assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateFrom()));
+			assertEquals(LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY, tr.getStartReason());
+			assertNull(tr.getDateTo());
+			assertNull(tr.getEndReason());
+			assertEquals(MockCommune.Aubonne.getNoOFS(), tr.getTaxationAuthorityFSOId());
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, tr.getTaxationAuthorityType());
+			assertEquals(TaxationMethod.ORDINARY, tr.getTaxationMethod());
+			assertEquals(TaxLiabilityReason.RESIDENCE, tr.getTaxLiabilityReason());
+			assertEquals(TaxType.INCOME_WEALTH, tr.getTaxType());
+			assertFalse(tr.isVirtual());
 		}
 		{
 			final TaxResidence tr = partyAvec.getOtherTaxResidences().get(0);
-			Assert.assertNotNull(tr);
-			Assert.assertEquals(dateAchat, ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateFrom()));
-			Assert.assertEquals(LiabilityChangeReason.PURCHASE_REAL_ESTATE, tr.getStartReason());
-			Assert.assertEquals(dateVente, ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateTo()));
-			Assert.assertEquals(LiabilityChangeReason.SALE_REAL_ESTATE, tr.getEndReason());
-			Assert.assertEquals(MockCommune.Echallens.getNoOFS(), tr.getTaxationAuthorityFSOId());
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, tr.getTaxationAuthorityType());
-			Assert.assertNull(tr.getTaxationMethod());
-			Assert.assertEquals(TaxLiabilityReason.PRIVATE_IMMOVABLE_PROPERTY, tr.getTaxLiabilityReason());
-			Assert.assertEquals(TaxType.INCOME_WEALTH, tr.getTaxType());
-			Assert.assertFalse(tr.isVirtual());
+			assertNotNull(tr);
+			assertEquals(dateAchat, ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateFrom()));
+			assertEquals(LiabilityChangeReason.PURCHASE_REAL_ESTATE, tr.getStartReason());
+			assertEquals(dateVente, ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateTo()));
+			assertEquals(LiabilityChangeReason.SALE_REAL_ESTATE, tr.getEndReason());
+			assertEquals(MockCommune.Echallens.getNoOFS(), tr.getTaxationAuthorityFSOId());
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, tr.getTaxationAuthorityType());
+			assertNull(tr.getTaxationMethod());
+			assertEquals(TaxLiabilityReason.PRIVATE_IMMOVABLE_PROPERTY, tr.getTaxLiabilityReason());
+			assertEquals(TaxType.INCOME_WEALTH, tr.getTaxType());
+			assertFalse(tr.isVirtual());
 		}
 	}
 
@@ -1928,65 +1855,62 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee.addYears(-1), MotifFor.DEBUT_EXPLOITATION, dateArrivee.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				                MockPays.Allemagne);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateArrivee, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee.addYears(-1), MotifFor.DEBUT_EXPLOITATION, dateArrivee.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                MockPays.Allemagne);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateArrivee, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero().intValue();
 		});
 
 		final Party partySans = service.getParty(ppId, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertNotNull(partySans.getMainTaxResidences());
-		Assert.assertNotNull(partySans.getOtherTaxResidences());
-		Assert.assertNotNull(partySans.getManagingTaxResidences());
-		Assert.assertEquals(0, partySans.getMainTaxResidences().size());
-		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
-		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
+		assertNotNull(partySans);
+		assertNotNull(partySans.getMainTaxResidences());
+		assertNotNull(partySans.getOtherTaxResidences());
+		assertNotNull(partySans.getManagingTaxResidences());
+		assertEquals(0, partySans.getMainTaxResidences().size());
+		assertEquals(0, partySans.getOtherTaxResidences().size());
+		assertEquals(0, partySans.getManagingTaxResidences().size());
 
 		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.VIRTUAL_TAX_RESIDENCES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertNotNull(partyAvec.getMainTaxResidences());
-		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
-		Assert.assertNotNull(partyAvec.getManagingTaxResidences());
-		Assert.assertEquals(2, partyAvec.getMainTaxResidences().size());
-		Assert.assertEquals(0, partyAvec.getOtherTaxResidences().size());
-		Assert.assertEquals(0, partyAvec.getManagingTaxResidences().size());
+		assertNotNull(partyAvec);
+		assertNotNull(partyAvec.getMainTaxResidences());
+		assertNotNull(partyAvec.getOtherTaxResidences());
+		assertNotNull(partyAvec.getManagingTaxResidences());
+		assertEquals(2, partyAvec.getMainTaxResidences().size());
+		assertEquals(0, partyAvec.getOtherTaxResidences().size());
+		assertEquals(0, partyAvec.getManagingTaxResidences().size());
 
 		{
 			final TaxResidence tr = partyAvec.getMainTaxResidences().get(0);
-			Assert.assertNotNull(tr);
-			Assert.assertEquals(dateArrivee.addYears(-1), ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateFrom()));
-			Assert.assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, tr.getStartReason());
-			Assert.assertEquals(dateArrivee.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateTo()));
-			Assert.assertEquals(LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION, tr.getEndReason());
-			Assert.assertEquals(MockPays.Allemagne.getNoOFS(), tr.getTaxationAuthorityFSOId());
-			Assert.assertEquals(TaxationAuthorityType.FOREIGN_COUNTRY, tr.getTaxationAuthorityType());
-			Assert.assertEquals(TaxationMethod.ORDINARY, tr.getTaxationMethod());
-			Assert.assertEquals(TaxLiabilityReason.RESIDENCE, tr.getTaxLiabilityReason());
-			Assert.assertEquals(TaxType.INCOME_WEALTH, tr.getTaxType());
-			Assert.assertFalse(tr.isVirtual());
+			assertNotNull(tr);
+			assertEquals(dateArrivee.addYears(-1), ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateFrom()));
+			assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, tr.getStartReason());
+			assertEquals(dateArrivee.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateTo()));
+			assertEquals(LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION, tr.getEndReason());
+			assertEquals(MockPays.Allemagne.getNoOFS(), tr.getTaxationAuthorityFSOId());
+			assertEquals(TaxationAuthorityType.FOREIGN_COUNTRY, tr.getTaxationAuthorityType());
+			assertEquals(TaxationMethod.ORDINARY, tr.getTaxationMethod());
+			assertEquals(TaxLiabilityReason.RESIDENCE, tr.getTaxLiabilityReason());
+			assertEquals(TaxType.INCOME_WEALTH, tr.getTaxType());
+			assertFalse(tr.isVirtual());
 		}
 		{
 			final TaxResidence tr = partyAvec.getMainTaxResidences().get(1);
-			Assert.assertNotNull(tr);
-			Assert.assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateFrom()));
-			Assert.assertEquals(LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY, tr.getStartReason());
-			Assert.assertNull(tr.getDateTo());
-			Assert.assertNull(tr.getEndReason());
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), tr.getTaxationAuthorityFSOId());
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, tr.getTaxationAuthorityType());
-			Assert.assertEquals(TaxationMethod.ORDINARY, tr.getTaxationMethod());
-			Assert.assertEquals(TaxLiabilityReason.RESIDENCE, tr.getTaxLiabilityReason());
-			Assert.assertEquals(TaxType.INCOME_WEALTH, tr.getTaxType());
-			Assert.assertTrue(tr.isVirtual());
+			assertNotNull(tr);
+			assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(tr.getDateFrom()));
+			assertEquals(LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY, tr.getStartReason());
+			assertNull(tr.getDateTo());
+			assertNull(tr.getEndReason());
+			assertEquals(MockCommune.Aubonne.getNoOFS(), tr.getTaxationAuthorityFSOId());
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, tr.getTaxationAuthorityType());
+			assertEquals(TaxationMethod.ORDINARY, tr.getTaxationMethod());
+			assertEquals(TaxLiabilityReason.RESIDENCE, tr.getTaxLiabilityReason());
+			assertEquals(TaxType.INCOME_WEALTH, tr.getTaxType());
+			assertTrue(tr.isVirtual());
 		}
 	}
 
@@ -2006,40 +1930,37 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+			addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero().intValue();
 		});
 
 		final Party partySans = service.getParty(ppId, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertNotNull(partySans.getMainTaxResidences());
-		Assert.assertNotNull(partySans.getOtherTaxResidences());
-		Assert.assertNotNull(partySans.getManagingTaxResidences());
-		Assert.assertEquals(0, partySans.getMainTaxResidences().size());
-		Assert.assertEquals(0, partySans.getOtherTaxResidences().size());
-		Assert.assertEquals(0, partySans.getManagingTaxResidences().size());
+		assertNotNull(partySans);
+		assertNotNull(partySans.getMainTaxResidences());
+		assertNotNull(partySans.getOtherTaxResidences());
+		assertNotNull(partySans.getManagingTaxResidences());
+		assertEquals(0, partySans.getMainTaxResidences().size());
+		assertEquals(0, partySans.getOtherTaxResidences().size());
+		assertEquals(0, partySans.getManagingTaxResidences().size());
 
 		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.MANAGING_TAX_RESIDENCES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertNotNull(partyAvec.getMainTaxResidences());
-		Assert.assertNotNull(partyAvec.getOtherTaxResidences());
-		Assert.assertNotNull(partyAvec.getManagingTaxResidences());
-		Assert.assertEquals(0, partyAvec.getMainTaxResidences().size());
-		Assert.assertEquals(0, partyAvec.getOtherTaxResidences().size());
-		Assert.assertEquals(1, partyAvec.getManagingTaxResidences().size());
+		assertNotNull(partyAvec);
+		assertNotNull(partyAvec.getMainTaxResidences());
+		assertNotNull(partyAvec.getOtherTaxResidences());
+		assertNotNull(partyAvec.getManagingTaxResidences());
+		assertEquals(0, partyAvec.getMainTaxResidences().size());
+		assertEquals(0, partyAvec.getOtherTaxResidences().size());
+		assertEquals(1, partyAvec.getManagingTaxResidences().size());
 
 		{
 			final ManagingTaxResidence mtr = partyAvec.getManagingTaxResidences().get(0);
-			Assert.assertNotNull(mtr);
-			Assert.assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(mtr.getDateFrom()));
-			Assert.assertNull(mtr.getDateTo());
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), mtr.getMunicipalityFSOId());
+			assertNotNull(mtr);
+			assertEquals(dateArrivee, ch.vd.unireg.xml.DataHelper.xmlToCore(mtr.getDateFrom()));
+			assertNull(mtr.getDateTo());
+			assertEquals(MockCommune.Aubonne.getNoOFS(), mtr.getMunicipalityFSOId());
 		}
 	}
 
@@ -2068,55 +1989,52 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int mc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			return ids1;
 		});
 
 		final Party partySans = service.getParty(ids.mc, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(CommonHousehold.class, partySans.getClass());
+		assertNotNull(partySans);
+		assertEquals(CommonHousehold.class, partySans.getClass());
 
 		final CommonHousehold mcSans = (CommonHousehold) partySans;
-		Assert.assertNull(mcSans.getMainTaxpayer());
-		Assert.assertNull(mcSans.getSecondaryTaxpayer());
+		assertNull(mcSans.getMainTaxpayer());
+		assertNull(mcSans.getSecondaryTaxpayer());
 
 		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(InternalPartyPart.HOUSEHOLD_MEMBERS));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
+		assertNotNull(partyAvec);
+		assertEquals(CommonHousehold.class, partyAvec.getClass());
 
 		final CommonHousehold mcAvec = (CommonHousehold) partyAvec;
 		{
 			final NaturalPerson pp = mcAvec.getMainTaxpayer();
-			Assert.assertNotNull(pp);
-			Assert.assertEquals(Sex.MALE, pp.getSex());
-			Assert.assertEquals("Delagrange", pp.getOfficialName());
-			Assert.assertEquals("Marcel", pp.getFirstName());
-			Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(pp.getDateOfBirth()));
-			Assert.assertEquals(ids.lui, pp.getNumber());
+			assertNotNull(pp);
+			assertEquals(Sex.MALE, pp.getSex());
+			assertEquals("Delagrange", pp.getOfficialName());
+			assertEquals("Marcel", pp.getFirstName());
+			assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(pp.getDateOfBirth()));
+			assertEquals(ids.lui, pp.getNumber());
 		}
 		{
 			final NaturalPerson pp = mcAvec.getSecondaryTaxpayer();
-			Assert.assertNotNull(pp);
-			Assert.assertEquals(Sex.FEMALE, pp.getSex());
-			Assert.assertEquals("Delagrange", pp.getOfficialName());
-			Assert.assertEquals("Marceline", pp.getFirstName());
-			Assert.assertNull(pp.getDateOfBirth());
-			Assert.assertEquals(ids.elle, pp.getNumber());
+			assertNotNull(pp);
+			assertEquals(Sex.FEMALE, pp.getSex());
+			assertEquals("Delagrange", pp.getOfficialName());
+			assertEquals("Marceline", pp.getFirstName());
+			assertNull(pp.getDateOfBirth());
+			assertEquals(ids.elle, pp.getNumber());
 		}
 	}
 
@@ -2145,48 +2063,45 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int mc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			return ids1;
 		});
 
 		final Party partySans = service.getParty(ids.mc, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(CommonHousehold.class, partySans.getClass());
+		assertNotNull(partySans);
+		assertEquals(CommonHousehold.class, partySans.getClass());
 
 		final Taxpayer tpSans = (Taxpayer) partySans;
-		Assert.assertNotNull(tpSans.getTaxLiabilities());
-		Assert.assertEquals(0, tpSans.getTaxLiabilities().size());
+		assertNotNull(tpSans.getTaxLiabilities());
+		assertEquals(0, tpSans.getTaxLiabilities().size());
 
 		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(InternalPartyPart.TAX_LIABILITIES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
+		assertNotNull(partyAvec);
+		assertEquals(CommonHousehold.class, partyAvec.getClass());
 
 		final Taxpayer tpAvec = (Taxpayer) partyAvec;
-		Assert.assertNotNull(tpAvec.getTaxLiabilities());
-		Assert.assertEquals(1, tpAvec.getTaxLiabilities().size());
+		assertNotNull(tpAvec.getTaxLiabilities());
+		assertEquals(1, tpAvec.getTaxLiabilities().size());
 
 		final TaxLiability tl = tpAvec.getTaxLiabilities().get(0);
-		Assert.assertNotNull(tl);
-		Assert.assertEquals(date(dateMariage.year(), 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateFrom()));
-		Assert.assertEquals(LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION, tl.getStartReason());
-		Assert.assertNull(tl.getDateTo());
-		Assert.assertNull(tl.getEndReason());
-		Assert.assertEquals(OrdinaryResident.class, tl.getClass());
+		assertNotNull(tl);
+		assertEquals(date(dateMariage.year(), 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateFrom()));
+		assertEquals(LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION, tl.getStartReason());
+		assertNull(tl.getDateTo());
+		assertNull(tl.getEndReason());
+		assertEquals(OrdinaryResident.class, tl.getClass());
 	}
 
 	@Test
@@ -2214,52 +2129,49 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int mc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			return ids1;
 		});
 
 		final Party partySans = service.getParty(ids.mc, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(CommonHousehold.class, partySans.getClass());
+		assertNotNull(partySans);
+		assertEquals(CommonHousehold.class, partySans.getClass());
 
 		final Taxpayer tpSans = (Taxpayer) partySans;
-		Assert.assertNotNull(tpSans.getTaxationPeriods());
-		Assert.assertEquals(0, tpSans.getTaxationPeriods().size());
+		assertNotNull(tpSans.getTaxationPeriods());
+		assertEquals(0, tpSans.getTaxationPeriods().size());
 
 		final Party partyAvec = service.getParty(ids.mc, EnumSet.of(InternalPartyPart.TAXATION_PERIODS));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
+		assertNotNull(partyAvec);
+		assertEquals(CommonHousehold.class, partyAvec.getClass());
 
 		final Taxpayer tpAvec = (Taxpayer) partyAvec;
-		Assert.assertNotNull(tpAvec.getTaxationPeriods());
-		Assert.assertEquals(RegDate.get().year() - dateMariage.year() + 1, tpAvec.getTaxationPeriods().size());
+		assertNotNull(tpAvec.getTaxationPeriods());
+		assertEquals(RegDate.get().year() - dateMariage.year() + 1, tpAvec.getTaxationPeriods().size());
 
 		for (int year = dateMariage.year(); year <= RegDate.get().year(); ++year) {
 			final TaxationPeriod tp = tpAvec.getTaxationPeriods().get(year - dateMariage.year());
-			Assert.assertNotNull(tp);
-			Assert.assertEquals(date(year, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+			assertNotNull(tp);
+			assertEquals(date(year, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
 			if (year == RegDate.get().year()) {
-				Assert.assertNull(tp.getDateTo());
+				assertNull(tp.getDateTo());
 			}
 			else {
-				Assert.assertEquals(date(year, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertEquals(date(year, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
 			}
-			Assert.assertNull(tp.getTaxDeclarationId());
+			assertNull(tp.getTaxDeclarationId());
 		}
 	}
 
@@ -2290,112 +2202,109 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int mc;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			return ids1;
 		});
 
 		final Party partySans = service.getParty(ids.lui, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(NaturalPerson.class, partySans.getClass());
+		assertNotNull(partySans);
+		assertEquals(NaturalPerson.class, partySans.getClass());
 
 		final NaturalPerson tpSans = (NaturalPerson) partySans;
-		Assert.assertNotNull(tpSans.getWithholdingTaxationPeriods());
-		Assert.assertEquals(0, tpSans.getWithholdingTaxationPeriods().size());
+		assertNotNull(tpSans.getWithholdingTaxationPeriods());
+		assertEquals(0, tpSans.getWithholdingTaxationPeriods().size());
 
 		final Party partyAvec = service.getParty(ids.lui, EnumSet.of(InternalPartyPart.WITHHOLDING_TAXATION_PERIODS));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
+		assertNotNull(partyAvec);
+		assertEquals(NaturalPerson.class, partyAvec.getClass());
 
 		final NaturalPerson tpAvec = (NaturalPerson) partyAvec;
-		Assert.assertNotNull(tpAvec.getWithholdingTaxationPeriods());
-		Assert.assertEquals(8, tpAvec.getWithholdingTaxationPeriods().size());
+		assertNotNull(tpAvec.getWithholdingTaxationPeriods());
+		assertEquals(8, tpAvec.getWithholdingTaxationPeriods().size());
 
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(0);
-			Assert.assertNotNull(wtp);
-			Assert.assertEquals(date(2008, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateNaissance.addYears(18).getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-			Assert.assertNull(wtp.getTaxationAuthority());
-			Assert.assertNull(wtp.getTaxationAuthorityFSOId());
-			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
+			assertNotNull(wtp);
+			assertEquals(date(2008, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			assertEquals(dateNaissance.addYears(18).getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			assertNull(wtp.getTaxationAuthority());
+			assertNull(wtp.getTaxationAuthorityFSOId());
+			assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
 		}
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(1);
-			Assert.assertNotNull(wtp);
-			Assert.assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2008, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-			Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
+			assertNotNull(wtp);
+			assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			assertEquals(date(2008, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+			assertEquals((Integer) MockCommune.Aigle.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+			assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
 		}
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(2);
-			Assert.assertNotNull(wtp);
-			Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-			Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
+			assertNotNull(wtp);
+			assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+			assertEquals((Integer) MockCommune.Aigle.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+			assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
 		}
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(3);
-			Assert.assertNotNull(wtp);
-			Assert.assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateMariage.getLastDayOfTheMonth(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
+			assertNotNull(wtp);
+			assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			assertEquals(dateMariage.getLastDayOfTheMonth(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+			assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+			assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
 		}
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(4);
-			Assert.assertNotNull(wtp);
-			Assert.assertEquals(dateMariage.getLastDayOfTheMonth().getOneDayAfter(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+			assertNotNull(wtp);
+			assertEquals(dateMariage.getLastDayOfTheMonth().getOneDayAfter(), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+			assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+			assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 		}
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(5);
-			Assert.assertNotNull(wtp);
-			Assert.assertEquals(date(2011, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2011, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+			assertNotNull(wtp);
+			assertEquals(date(2011, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			assertEquals(date(2011, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+			assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+			assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 		}
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(6);
-			Assert.assertNotNull(wtp);
-			Assert.assertEquals(date(2012, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2012, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+			assertNotNull(wtp);
+			assertEquals(date(2012, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			assertEquals(date(2012, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+			assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+			assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 		}
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(7);
-			Assert.assertNotNull(wtp);
-			Assert.assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateDeces, ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+			assertNotNull(wtp);
+			assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			assertEquals(dateDeces, ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+			assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+			assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 		}
 	}
 
@@ -2428,67 +2337,61 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int dpi;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
 
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur lié", mc, dateMariage);
-				addRapportPrestationImposable(dpi, lui, dateDebutRT, dateDeces, true);
+			final DebiteurPrestationImposable dpi = addDebiteur("Débiteur lié", mc, dateMariage);
+			addRapportPrestationImposable(dpi, lui, dateDebutRT, dateDeces, true);
 
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.lui = lui.getNumero().intValue();
+			ids1.elle = elle.getNumero().intValue();
+			ids1.mc = mc.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			return ids1;
 		});
 
 		final Party partySans = service.getParty(ids.lui, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertNotNull(partySans.getRelationsBetweenParties());
-		Assert.assertEquals(0, partySans.getRelationsBetweenParties().size());
+		assertNotNull(partySans);
+		assertNotNull(partySans.getRelationsBetweenParties());
+		assertEquals(0, partySans.getRelationsBetweenParties().size());
 
 		final Party partyAvec = service.getParty(ids.lui, EnumSet.of(InternalPartyPart.RELATIONS_BETWEEN_PARTIES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
-		Assert.assertEquals(2, partyAvec.getRelationsBetweenParties().size());
+		assertNotNull(partyAvec);
+		assertNotNull(partyAvec.getRelationsBetweenParties());
+		assertEquals(2, partyAvec.getRelationsBetweenParties().size());
 
 		final List<RelationBetweenParties> sortedRelations = new ArrayList<>(partyAvec.getRelationsBetweenParties());
-		Collections.sort(sortedRelations, new Comparator<RelationBetweenParties>() {
-			@Override
-			public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
-				final DateRange r1 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateTo()));
-				final DateRange r2 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateTo()));
-				return DateRangeComparator.compareRanges(r1, r2);
-			}
+		sortedRelations.sort((o1, o2) -> {
+			final DateRange r1 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateTo()));
+			final DateRange r2 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateTo()));
+			return DateRangeComparator.compareRanges(r1, r2);
 		});
 
 		{
 			final RelationBetweenParties rel = sortedRelations.get(0);
-			Assert.assertNotNull(rel);
-			Assert.assertEquals(dateMariage, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-			Assert.assertNull(rel.getDateTo());
-			Assert.assertTrue(rel instanceof HouseholdMember);
-			Assert.assertEquals(ids.mc, rel.getOtherPartyNumber());
-			Assert.assertNull(rel.getCancellationDate());
+			assertNotNull(rel);
+			assertEquals(dateMariage, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+			assertNull(rel.getDateTo());
+			assertTrue(rel instanceof HouseholdMember);
+			assertEquals(ids.mc, rel.getOtherPartyNumber());
+			assertNull(rel.getCancellationDate());
 		}
 		{
 			final RelationBetweenParties rel = sortedRelations.get(1);
-			Assert.assertNotNull(rel);
-			Assert.assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-			Assert.assertEquals(dateDeces, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
-			Assert.assertTrue(rel instanceof TaxableRevenue);
-			Assert.assertEquals(ids.dpi, rel.getOtherPartyNumber());
-			Assert.assertNotNull(rel.getCancellationDate());
-			Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
+			assertNotNull(rel);
+			assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+			assertEquals(dateDeces, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
+			assertTrue(rel instanceof TaxableRevenue);
+			assertEquals(ids.dpi, rel.getOtherPartyNumber());
+			assertNotNull(rel.getCancellationDate());
+			assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 		}
 	}
 
@@ -2512,73 +2415,70 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				return lui.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			return lui.getNumero().intValue();
 		});
 
 		final Party partySans = service.getParty(ppId, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(NaturalPerson.class, partySans.getClass());
+		assertNotNull(partySans);
+		assertEquals(NaturalPerson.class, partySans.getClass());
 
 		final Taxpayer tpSans = (Taxpayer) partySans;
-		Assert.assertNotNull(tpSans.getFamilyStatuses());
-		Assert.assertEquals(0, tpSans.getFamilyStatuses().size());
+		assertNotNull(tpSans.getFamilyStatuses());
+		assertEquals(0, tpSans.getFamilyStatuses().size());
 
 		final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.FAMILY_STATUSES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
+		assertNotNull(partyAvec);
+		assertEquals(NaturalPerson.class, partyAvec.getClass());
 
 		final Taxpayer tpAvec = (Taxpayer) partyAvec;
-		Assert.assertNotNull(tpAvec.getFamilyStatuses());
-		Assert.assertEquals(4, tpAvec.getFamilyStatuses().size());
+		assertNotNull(tpAvec.getFamilyStatuses());
+		assertEquals(4, tpAvec.getFamilyStatuses().size());
 
 		{
 			final FamilyStatus fs = tpAvec.getFamilyStatuses().get(0);
-			Assert.assertNotNull(fs);
-			Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateFrom()));
-			Assert.assertEquals(dateMariage.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateTo()));
-			Assert.assertNull(fs.getCancellationDate());
-			Assert.assertNull(fs.getApplicableTariff());
-			Assert.assertNull(fs.getMainTaxpayerNumber());
-			Assert.assertNull(fs.getNumberOfChildren());
-			Assert.assertEquals(MaritalStatus.SINGLE, fs.getMaritalStatus());
+			assertNotNull(fs);
+			assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateFrom()));
+			assertEquals(dateMariage.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateTo()));
+			assertNull(fs.getCancellationDate());
+			assertNull(fs.getApplicableTariff());
+			assertNull(fs.getMainTaxpayerNumber());
+			assertNull(fs.getNumberOfChildren());
+			assertEquals(MaritalStatus.SINGLE, fs.getMaritalStatus());
 		}
 		{
 			final FamilyStatus fs = tpAvec.getFamilyStatuses().get(1);
-			Assert.assertNotNull(fs);
-			Assert.assertEquals(dateMariage, ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateFrom()));
-			Assert.assertEquals(dateSeparation.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateTo()));
-			Assert.assertNull(fs.getCancellationDate());
-			Assert.assertNull(fs.getApplicableTariff());
-			Assert.assertNull(fs.getMainTaxpayerNumber());
-			Assert.assertNull(fs.getNumberOfChildren());
-			Assert.assertEquals(MaritalStatus.MARRIED, fs.getMaritalStatus());
+			assertNotNull(fs);
+			assertEquals(dateMariage, ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateFrom()));
+			assertEquals(dateSeparation.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateTo()));
+			assertNull(fs.getCancellationDate());
+			assertNull(fs.getApplicableTariff());
+			assertNull(fs.getMainTaxpayerNumber());
+			assertNull(fs.getNumberOfChildren());
+			assertEquals(MaritalStatus.MARRIED, fs.getMaritalStatus());
 		}
 		{
 			final FamilyStatus fs = tpAvec.getFamilyStatuses().get(2);
-			Assert.assertNotNull(fs);
-			Assert.assertEquals(dateSeparation, ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateFrom()));
-			Assert.assertEquals(dateDivorce.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateTo()));
-			Assert.assertNull(fs.getCancellationDate());
-			Assert.assertNull(fs.getApplicableTariff());
-			Assert.assertNull(fs.getMainTaxpayerNumber());
-			Assert.assertNull(fs.getNumberOfChildren());
-			Assert.assertEquals(MaritalStatus.SEPARATED, fs.getMaritalStatus());
+			assertNotNull(fs);
+			assertEquals(dateSeparation, ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateFrom()));
+			assertEquals(dateDivorce.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateTo()));
+			assertNull(fs.getCancellationDate());
+			assertNull(fs.getApplicableTariff());
+			assertNull(fs.getMainTaxpayerNumber());
+			assertNull(fs.getNumberOfChildren());
+			assertEquals(MaritalStatus.SEPARATED, fs.getMaritalStatus());
 		}
 		{
 			final FamilyStatus fs = tpAvec.getFamilyStatuses().get(3);
-			Assert.assertNotNull(fs);
-			Assert.assertEquals(dateDivorce, ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateFrom()));
-			Assert.assertNull(fs.getDateTo());
-			Assert.assertNull(fs.getCancellationDate());
-			Assert.assertNull(fs.getApplicableTariff());
-			Assert.assertNull(fs.getMainTaxpayerNumber());
-			Assert.assertNull(fs.getNumberOfChildren());
-			Assert.assertEquals(MaritalStatus.DIVORCED, fs.getMaritalStatus());
+			assertNotNull(fs);
+			assertEquals(dateDivorce, ch.vd.unireg.xml.DataHelper.xmlToCore(fs.getDateFrom()));
+			assertNull(fs.getDateTo());
+			assertNull(fs.getCancellationDate());
+			assertNull(fs.getApplicableTariff());
+			assertNull(fs.getMainTaxpayerNumber());
+			assertNull(fs.getNumberOfChildren());
+			assertEquals(MaritalStatus.DIVORCED, fs.getMaritalStatus());
 		}
 	}
 
@@ -2598,100 +2498,97 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pf = addPeriodeFiscale(2013);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(pf.getAnnee(), 1, 1), date(pf.getAnnee(), 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				addEtatDeclarationEmise(di, dateEmissionDi);
-				addDelaiDeclaration(di, dateEmissionDi, dateDelaiDi, EtatDelaiDocumentFiscal.ACCORDE);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pf = addPeriodeFiscale(2013);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(pf.getAnnee(), 1, 1), date(pf.getAnnee(), 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, dateEmissionDi);
+			addDelaiDeclaration(di, dateEmissionDi, dateDelaiDi, EtatDelaiDocumentFiscal.ACCORDE);
 
-				return pp.getNumero().intValue();
-			}
+			return pp.getNumero().intValue();
 		});
 
 		final Party partySans = service.getParty(ppId, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertNotNull(partySans.getTaxDeclarations());
-		Assert.assertEquals(0, partySans.getTaxDeclarations().size());
+		assertNotNull(partySans);
+		assertNotNull(partySans.getTaxDeclarations());
+		assertEquals(0, partySans.getTaxDeclarations().size());
 
 		{
 			final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.TAX_DECLARATIONS));
-			Assert.assertNotNull(partyAvec);
-			Assert.assertNotNull(partyAvec.getTaxDeclarations());
-			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
+			assertNotNull(partyAvec);
+			assertNotNull(partyAvec.getTaxDeclarations());
+			assertEquals(1, partyAvec.getTaxDeclarations().size());
 
 			final TaxDeclaration di = partyAvec.getTaxDeclarations().get(0);
-			Assert.assertNotNull(di);
-			Assert.assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateFrom()));
-			Assert.assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateTo()));
-			Assert.assertNotNull(di.getDeadlines());
-			Assert.assertEquals(0, di.getDeadlines().size());
-			Assert.assertNotNull(di.getStatuses());
-			Assert.assertEquals(0, di.getStatuses().size());
+			assertNotNull(di);
+			assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateFrom()));
+			assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateTo()));
+			assertNotNull(di.getDeadlines());
+			assertEquals(0, di.getDeadlines().size());
+			assertNotNull(di.getStatuses());
+			assertEquals(0, di.getStatuses().size());
 
 			final TaxPeriod period = di.getTaxPeriod();
-			Assert.assertNotNull(period);
-			Assert.assertEquals(2013, period.getYear());
+			assertNotNull(period);
+			assertEquals(2013, period.getYear());
 		}
 
 		{
 			final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.TAX_DECLARATIONS_DEADLINES));
-			Assert.assertNotNull(partyAvec);
-			Assert.assertNotNull(partyAvec.getTaxDeclarations());
-			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
+			assertNotNull(partyAvec);
+			assertNotNull(partyAvec.getTaxDeclarations());
+			assertEquals(1, partyAvec.getTaxDeclarations().size());
 
 			final TaxDeclaration di = partyAvec.getTaxDeclarations().get(0);
-			Assert.assertNotNull(di);
-			Assert.assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateFrom()));
-			Assert.assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateTo()));
-			Assert.assertNotNull(di.getDeadlines());
-			Assert.assertEquals(1, di.getDeadlines().size());
+			assertNotNull(di);
+			assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateFrom()));
+			assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateTo()));
+			assertNotNull(di.getDeadlines());
+			assertEquals(1, di.getDeadlines().size());
 
 			final TaxDeclarationDeadline delai = di.getDeadlines().get(0);
-			Assert.assertNotNull(delai);
-			Assert.assertEquals(dateDelaiDi, ch.vd.unireg.xml.DataHelper.xmlToCore(delai.getDeadline()));
-			Assert.assertNull(delai.getCancellationDate());
-			Assert.assertEquals(dateEmissionDi, ch.vd.unireg.xml.DataHelper.xmlToCore(delai.getApplicationDate()));
-			Assert.assertEquals(dateEmissionDi, ch.vd.unireg.xml.DataHelper.xmlToCore(delai.getProcessingDate()));
+			assertNotNull(delai);
+			assertEquals(dateDelaiDi, ch.vd.unireg.xml.DataHelper.xmlToCore(delai.getDeadline()));
+			assertNull(delai.getCancellationDate());
+			assertEquals(dateEmissionDi, ch.vd.unireg.xml.DataHelper.xmlToCore(delai.getApplicationDate()));
+			assertEquals(dateEmissionDi, ch.vd.unireg.xml.DataHelper.xmlToCore(delai.getProcessingDate()));
 
-			Assert.assertNotNull(di.getStatuses());
-			Assert.assertEquals(0, di.getStatuses().size());
+			assertNotNull(di.getStatuses());
+			assertEquals(0, di.getStatuses().size());
 
 			final TaxPeriod period = di.getTaxPeriod();
-			Assert.assertNotNull(period);
-			Assert.assertEquals(2013, period.getYear());
+			assertNotNull(period);
+			assertEquals(2013, period.getYear());
 		}
 
 		{
 			final Party partyAvec = service.getParty(ppId, EnumSet.of(InternalPartyPart.TAX_DECLARATIONS_STATUSES));
-			Assert.assertNotNull(partyAvec);
-			Assert.assertNotNull(partyAvec.getTaxDeclarations());
-			Assert.assertEquals(1, partyAvec.getTaxDeclarations().size());
+			assertNotNull(partyAvec);
+			assertNotNull(partyAvec.getTaxDeclarations());
+			assertEquals(1, partyAvec.getTaxDeclarations().size());
 
 			final TaxDeclaration di = partyAvec.getTaxDeclarations().get(0);
-			Assert.assertNotNull(di);
-			Assert.assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateFrom()));
-			Assert.assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateTo()));
-			Assert.assertNotNull(di.getDeadlines());
-			Assert.assertEquals(0, di.getDeadlines().size());
-			Assert.assertNotNull(di.getStatuses());
-			Assert.assertEquals(1, di.getStatuses().size());
+			assertNotNull(di);
+			assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateFrom()));
+			assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(di.getDateTo()));
+			assertNotNull(di.getDeadlines());
+			assertEquals(0, di.getDeadlines().size());
+			assertNotNull(di.getStatuses());
+			assertEquals(1, di.getStatuses().size());
 
 			final TaxDeclarationStatus status = di.getStatuses().get(0);
-			Assert.assertNotNull(status);
-			Assert.assertEquals(dateEmissionDi, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
-			Assert.assertNull(status.getCancellationDate());
-			Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+			assertNotNull(status);
+			assertEquals(dateEmissionDi, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
+			assertNull(status.getCancellationDate());
+			assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 
 			final TaxPeriod period = di.getTaxPeriod();
-			Assert.assertNotNull(period);
-			Assert.assertEquals(2013, period.getYear());
+			assertNotNull(period);
+			assertEquals(2013, period.getYear());
 		}
 	}
 
@@ -2708,50 +2605,47 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final int dpiId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutPeriodiciteInitiale);
-				final Periodicite periodiciteInitiale = dpi.getPeriodicites().iterator().next();
-				periodiciteInitiale.setDateFin(dateDebutPeriodiciteModifiee.getOneDayBefore());
-				dpi.getPeriodicites().add(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, dateDebutPeriodiciteModifiee, null));
-				return dpi.getNumero().intValue();
-			}
+		final int dpiId = doInNewTransactionAndSession(status -> {
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebutPeriodiciteInitiale);
+			final Periodicite periodiciteInitiale = dpi.getPeriodicites().iterator().next();
+			periodiciteInitiale.setDateFin(dateDebutPeriodiciteModifiee.getOneDayBefore());
+			dpi.getPeriodicites().add(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, dateDebutPeriodiciteModifiee, null));
+			return dpi.getNumero().intValue();
 		});
 
 		final Party partySans = service.getParty(dpiId, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(Debtor.class, partySans.getClass());
+		assertNotNull(partySans);
+		assertEquals(Debtor.class, partySans.getClass());
 
 		final Debtor dpiSans = (Debtor) partySans;
-		Assert.assertNotNull(dpiSans.getPeriodicities());
-		Assert.assertEquals(0, dpiSans.getPeriodicities().size());
+		assertNotNull(dpiSans.getPeriodicities());
+		assertEquals(0, dpiSans.getPeriodicities().size());
 
 		final Party partyAvec = service.getParty(dpiId, EnumSet.of(InternalPartyPart.DEBTOR_PERIODICITIES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertEquals(Debtor.class, partyAvec.getClass());
+		assertNotNull(partyAvec);
+		assertEquals(Debtor.class, partyAvec.getClass());
 
 		final Debtor dpiAvec = (Debtor) partyAvec;
-		Assert.assertNotNull(dpiAvec.getPeriodicities());
-		Assert.assertEquals(2, dpiAvec.getPeriodicities().size());
+		assertNotNull(dpiAvec.getPeriodicities());
+		assertEquals(2, dpiAvec.getPeriodicities().size());
 
 		{
 			final DebtorPeriodicity dp = dpiAvec.getPeriodicities().get(0);
-			Assert.assertNotNull(dp);
-			Assert.assertNull(dp.getCancellationDate());
-			Assert.assertEquals(dateDebutPeriodiciteInitiale, ch.vd.unireg.xml.DataHelper.xmlToCore(dp.getDateFrom()));
-			Assert.assertEquals(dateDebutPeriodiciteModifiee.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(dp.getDateTo()));
-			Assert.assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, dp.getPeriodicity());
-			Assert.assertNull(dp.getSpecificPeriod());
+			assertNotNull(dp);
+			assertNull(dp.getCancellationDate());
+			assertEquals(dateDebutPeriodiciteInitiale, ch.vd.unireg.xml.DataHelper.xmlToCore(dp.getDateFrom()));
+			assertEquals(dateDebutPeriodiciteModifiee.getOneDayBefore(), ch.vd.unireg.xml.DataHelper.xmlToCore(dp.getDateTo()));
+			assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, dp.getPeriodicity());
+			assertNull(dp.getSpecificPeriod());
 		}
 		{
 			final DebtorPeriodicity dp = dpiAvec.getPeriodicities().get(1);
-			Assert.assertNotNull(dp);
-			Assert.assertNull(dp.getCancellationDate());
-			Assert.assertEquals(dateDebutPeriodiciteModifiee, ch.vd.unireg.xml.DataHelper.xmlToCore(dp.getDateFrom()));
-			Assert.assertNull(dp.getDateTo());
-			Assert.assertEquals(WithholdingTaxDeclarationPeriodicity.HALF_YEARLY, dp.getPeriodicity());
-			Assert.assertNull(dp.getSpecificPeriod());
+			assertNotNull(dp);
+			assertNull(dp.getCancellationDate());
+			assertEquals(dateDebutPeriodiciteModifiee, ch.vd.unireg.xml.DataHelper.xmlToCore(dp.getDateFrom()));
+			assertNull(dp.getDateTo());
+			assertEquals(WithholdingTaxDeclarationPeriodicity.HALF_YEARLY, dp.getPeriodicity());
+			assertNull(dp.getSpecificPeriod());
 		}
 	}
 
@@ -2783,92 +2677,86 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int fiston;
 		}
 
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papa = addHabitant(noIndividuPapa);
-				final PersonnePhysique moi = addHabitant(noIndividu);
-				final PersonnePhysique fiston = addHabitant(noIndividuFiston);
-				final Ids ids = new Ids();
-				ids.papa = papa.getNumero().intValue();
-				ids.moi = moi.getNumero().intValue();
-				ids.fiston = fiston.getNumero().intValue();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique papa = addHabitant(noIndividuPapa);
+			final PersonnePhysique moi = addHabitant(noIndividu);
+			final PersonnePhysique fiston = addHabitant(noIndividuFiston);
+			final Ids ids1 = new Ids();
+			ids1.papa = papa.getNumero().intValue();
+			ids1.moi = moi.getNumero().intValue();
+			ids1.fiston = fiston.getNumero().intValue();
+			return ids1;
 		});
 
 		final Party partySans = service.getParty(ids.moi, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(NaturalPerson.class, partySans.getClass());
-		Assert.assertNotNull(partySans.getRelationsBetweenParties());
-		Assert.assertEquals(0, partySans.getRelationsBetweenParties().size());
+		assertNotNull(partySans);
+		assertEquals(NaturalPerson.class, partySans.getClass());
+		assertNotNull(partySans.getRelationsBetweenParties());
+		assertEquals(0, partySans.getRelationsBetweenParties().size());
 
 		{
 			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(InternalPartyPart.PARENTS));
-			Assert.assertNotNull(partyAvec);
-			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
+			assertNotNull(partyAvec);
+			assertEquals(NaturalPerson.class, partyAvec.getClass());
 
 			final NaturalPerson tpAvec = (NaturalPerson) partyAvec;
-			Assert.assertNotNull(tpAvec.getRelationsBetweenParties());
-			Assert.assertEquals(1, tpAvec.getRelationsBetweenParties().size());
+			assertNotNull(tpAvec.getRelationsBetweenParties());
+			assertEquals(1, tpAvec.getRelationsBetweenParties().size());
 
 			final RelationBetweenParties rel = tpAvec.getRelationsBetweenParties().get(0);
-			Assert.assertNotNull(rel);
-			Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-			Assert.assertEquals(dateDecesPapa, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
-			Assert.assertTrue(rel instanceof Parent);
-			Assert.assertEquals(ids.papa, rel.getOtherPartyNumber());
-			Assert.assertNull(rel.getCancellationDate());
+			assertNotNull(rel);
+			assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+			assertEquals(dateDecesPapa, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
+			assertTrue(rel instanceof Parent);
+			assertEquals(ids.papa, rel.getOtherPartyNumber());
+			assertNull(rel.getCancellationDate());
 		}
 		{
 			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(InternalPartyPart.CHILDREN));
-			Assert.assertNotNull(partyAvec);
-			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
-			Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
-			Assert.assertEquals(1, partyAvec.getRelationsBetweenParties().size());
+			assertNotNull(partyAvec);
+			assertEquals(NaturalPerson.class, partyAvec.getClass());
+			assertNotNull(partyAvec.getRelationsBetweenParties());
+			assertEquals(1, partyAvec.getRelationsBetweenParties().size());
 
 			final RelationBetweenParties rel = partyAvec.getRelationsBetweenParties().get(0);
-			Assert.assertNotNull(rel);
-			Assert.assertEquals(dateNaissanceFiston, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-			Assert.assertNull(rel.getDateTo());
-			Assert.assertTrue(rel instanceof Child);
-			Assert.assertEquals(ids.fiston, rel.getOtherPartyNumber());
-			Assert.assertNull(rel.getCancellationDate());
+			assertNotNull(rel);
+			assertEquals(dateNaissanceFiston, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+			assertNull(rel.getDateTo());
+			assertTrue(rel instanceof Child);
+			assertEquals(ids.fiston, rel.getOtherPartyNumber());
+			assertNull(rel.getCancellationDate());
 		}
 		{
 			final Party partyAvec = service.getParty(ids.moi, EnumSet.of(InternalPartyPart.CHILDREN, InternalPartyPart.PARENTS));
-			Assert.assertNotNull(partyAvec);
-			Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
-			Assert.assertNotNull(partyAvec.getRelationsBetweenParties());
-			Assert.assertEquals(2, partyAvec.getRelationsBetweenParties().size());
+			assertNotNull(partyAvec);
+			assertEquals(NaturalPerson.class, partyAvec.getClass());
+			assertNotNull(partyAvec.getRelationsBetweenParties());
+			assertEquals(2, partyAvec.getRelationsBetweenParties().size());
 
 			final List<RelationBetweenParties> sortedRelations = new ArrayList<>(partyAvec.getRelationsBetweenParties());
-			Collections.sort(sortedRelations, new Comparator<RelationBetweenParties>() {
-				@Override
-				public int compare(RelationBetweenParties o1, RelationBetweenParties o2) {
-					final DateRange r1 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateTo()));
-					final DateRange r2 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateTo()));
-					return DateRangeComparator.compareRanges(r1, r2);
-				}
+			sortedRelations.sort((o1, o2) -> {
+				final DateRange r1 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o1.getDateTo()));
+				final DateRange r2 = new DateRangeHelper.Range(ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateFrom()), ch.vd.unireg.xml.DataHelper.xmlToCore(o2.getDateTo()));
+				return DateRangeComparator.compareRanges(r1, r2);
 			});
 
 			{
 				final RelationBetweenParties rel = sortedRelations.get(0);
-				Assert.assertNotNull(rel);
-				Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-				Assert.assertEquals(dateDecesPapa, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
-				Assert.assertTrue(rel instanceof Parent);
-				Assert.assertEquals(ids.papa, rel.getOtherPartyNumber());
-				Assert.assertNull(rel.getCancellationDate());
+				assertNotNull(rel);
+				assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				assertEquals(dateDecesPapa, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				assertTrue(rel instanceof Parent);
+				assertEquals(ids.papa, rel.getOtherPartyNumber());
+				assertNull(rel.getCancellationDate());
 			}
 			{
 				final RelationBetweenParties rel = sortedRelations.get(1);
-				Assert.assertNotNull(rel);
-				Assert.assertEquals(dateNaissanceFiston, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-				Assert.assertNull(rel.getDateTo());
-				Assert.assertTrue(rel instanceof Child);
-				Assert.assertEquals(ids.fiston, rel.getOtherPartyNumber());
-				Assert.assertNull(rel.getCancellationDate());
+				assertNotNull(rel);
+				assertEquals(dateNaissanceFiston, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				assertNull(rel.getDateTo());
+				assertTrue(rel instanceof Child);
+				assertEquals(ids.fiston, rel.getOtherPartyNumber());
+				assertNull(rel.getCancellationDate());
 			}
 		}
 	}
@@ -2908,48 +2796,45 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long immeuble;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
-				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
-				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+			addEtatDeclarationEmise(di, dateEmissionDI);
+			addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
-				dpi.setNom1("MonTestAdoré");
-				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
-				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
-				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+			dpi.setNom1("MonTestAdoré");
+			dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+			final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+			addEtatDeclarationEmise(lr, dateEmissionLR);
+			addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
 
-				assertValidInteger(pp.getNumero());
-				assertValidInteger(dpi.getNumero());
+			assertValidInteger(pp.getNumero());
+			assertValidInteger(dpi.getNumero());
 
-				// un droit de propriété sur un immeuble
-				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondsRF immeuble = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
-				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 15615151L, null);
-				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
-				                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble, null);
-				addRapprochementRF(pp, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+			// un droit de propriété sur un immeuble
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 15615151L, null);
+			addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
+			                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble, null);
+			addRapprochementRF(pp, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				ids.di = di.getId();
-				ids.immeuble = immeuble.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			ids1.di = di.getId();
+			ids1.immeuble = immeuble.getId();
+			return ids1;
 		});
 
 		efactureService.setUp(new MockEFactureService() {
@@ -2961,257 +2846,257 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		final Party party = service.getParty(ids.pp, EnumSet.allOf(InternalPartyPart.class));
-		Assert.assertNotNull(party);
+		assertNotNull(party);
 
 		{
-			Assert.assertEquals(NaturalPerson.class, party.getClass());
+			assertEquals(NaturalPerson.class, party.getClass());
 
 			final NaturalPerson np = (NaturalPerson) party;
-			Assert.assertEquals(ids.pp, np.getNumber());
-			Assert.assertEquals("Mafalda Henriette", np.getFirstNames());
-			Assert.assertEquals("Mafalda", np.getFirstName());
-			Assert.assertEquals("Gautier", np.getOfficialName());
-			Assert.assertEquals("Dupont", np.getBirthName());
-			Assert.assertEquals(Sex.FEMALE, np.getSex());
+			assertEquals(ids.pp, np.getNumber());
+			assertEquals("Mafalda Henriette", np.getFirstNames());
+			assertEquals("Mafalda", np.getFirstName());
+			assertEquals("Gautier", np.getOfficialName());
+			assertEquals("Dupont", np.getBirthName());
+			assertEquals(Sex.FEMALE, np.getSex());
 
 			final List<Nationality> nationalities = np.getNationalities();
-			Assert.assertNotNull(nationalities);
-			Assert.assertEquals(1, nationalities.size());
+			assertNotNull(nationalities);
+			assertEquals(1, nationalities.size());
 			{
 				final Nationality nat = nationalities.get(0);
-				Assert.assertNotNull(nat);
-				Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(nat.getDateFrom()));
-				Assert.assertNull(nat.getDateTo());
-				Assert.assertNull(nat.getSwiss());
-				Assert.assertNull(nat.getStateless());
-				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), nat.getForeignCountry());
+				assertNotNull(nat);
+				assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(nat.getDateFrom()));
+				assertNull(nat.getDateTo());
+				assertNull(nat.getSwiss());
+				assertNull(nat.getStateless());
+				assertEquals((Integer) MockPays.France.getNoOFS(), nat.getForeignCountry());
 			}
 
 			final List<Origin> origins = np.getOrigins();
-			Assert.assertNotNull(origins);
-			Assert.assertEquals(1, origins.size());
+			assertNotNull(origins);
+			assertEquals(1, origins.size());
 			{
 				final Origin orig = origins.get(0);
-				Assert.assertNotNull(orig);
-				Assert.assertEquals("BE", orig.getCanton().value());
-				Assert.assertEquals("Bern", orig.getOriginName());
+				assertNotNull(orig);
+				assertEquals("BE", orig.getCanton().value());
+				assertEquals("Bern", orig.getOriginName());
 			}
 
 			final List<TaxDeclaration> decls = np.getTaxDeclarations();
-			Assert.assertNotNull(decls);
-			Assert.assertEquals(1, decls.size());
+			assertNotNull(decls);
+			assertEquals(1, decls.size());
 			{
 				final TaxDeclaration decl = decls.get(0);
-				Assert.assertNotNull(decl);
-				Assert.assertEquals(date(anneeDI, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateFrom()));
-				Assert.assertEquals(date(anneeDI, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateTo()));
-				Assert.assertNull(decl.getCancellationDate());
+				assertNotNull(decl);
+				assertEquals(date(anneeDI, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateFrom()));
+				assertEquals(date(anneeDI, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateTo()));
+				assertNull(decl.getCancellationDate());
 
 				final List<TaxDeclarationDeadline> deadlines = decl.getDeadlines();
-				Assert.assertNotNull(deadlines);
-				Assert.assertEquals(1, deadlines.size());
+				assertNotNull(deadlines);
+				assertEquals(1, deadlines.size());
 				{
 					final TaxDeclarationDeadline deadline = deadlines.get(0);
-					Assert.assertNotNull(deadline);
-					Assert.assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
-					Assert.assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
-					Assert.assertEquals(dateDelaiDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getDeadline()));
-					Assert.assertNull(deadline.getCancellationDate());
+					assertNotNull(deadline);
+					assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
+					assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
+					assertEquals(dateDelaiDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getDeadline()));
+					assertNull(deadline.getCancellationDate());
 				}
 
 				final List<TaxDeclarationStatus> statuses = decl.getStatuses();
-				Assert.assertNotNull(statuses);
-				Assert.assertEquals(1, statuses.size());
+				assertNotNull(statuses);
+				assertEquals(1, statuses.size());
 				{
 					final TaxDeclarationStatus status = statuses.get(0);
-					Assert.assertNotNull(status);
-					Assert.assertNull(status.getCancellationDate());
-					Assert.assertNull(status.getSource());
-					Assert.assertNull(status.getFee());
-					Assert.assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
-					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+					assertNotNull(status);
+					assertNull(status.getCancellationDate());
+					assertNull(status.getSource());
+					assertNull(status.getFee());
+					assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 				}
 			}
 
-			Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(np.getDateOfBirth()));
-			Assert.assertNull(np.getDateOfDeath());
+			assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(np.getDateOfBirth()));
+			assertNull(np.getDateOfDeath());
 
 			final List<NaturalPersonCategory> cats = np.getCategories();
-			Assert.assertNotNull(cats);
-			Assert.assertEquals(1, cats.size());
+			assertNotNull(cats);
+			assertEquals(1, cats.size());
 			{
 				final NaturalPersonCategory cat = cats.get(0);
-				Assert.assertNotNull(cat);
-				Assert.assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, cat.getCategory());
-				Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(cat.getDateFrom()));
-				Assert.assertNull(cat.getDateTo());
+				assertNotNull(cat);
+				assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, cat.getCategory());
+				assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(cat.getDateFrom()));
+				assertNull(cat.getDateTo());
 			}
 
 			final List<EbillingStatus> ebillingStatuses = np.getEbillingStatuses();
-			Assert.assertNotNull(ebillingStatuses);
-			Assert.assertEquals(2, ebillingStatuses.size());
+			assertNotNull(ebillingStatuses);
+			assertEquals(2, ebillingStatuses.size());
 			{
 				final EbillingStatus st = ebillingStatuses.get(0);
-				Assert.assertNotNull(st);
-				Assert.assertEquals(EbillingStatusType.NOT_REGISTERED, st.getType());
-				Assert.assertNull(st.getSince());
+				assertNotNull(st);
+				assertEquals(EbillingStatusType.NOT_REGISTERED, st.getType());
+				assertNull(st.getSince());
 			}
 			{
 				final EbillingStatus st = ebillingStatuses.get(1);
-				Assert.assertNotNull(st);
-				Assert.assertEquals(EbillingStatusType.REGISTERED, st.getType());
-				Assert.assertEquals(dateInscriptionEfacture, XmlUtils.xmlcal2date(st.getSince()));
+				assertNotNull(st);
+				assertEquals(EbillingStatusType.REGISTERED, st.getType());
+				assertEquals(dateInscriptionEfacture, XmlUtils.xmlcal2date(st.getSince()));
 			}
 
 			final List<WithholdingTaxationPeriod> wtps = np.getWithholdingTaxationPeriods();
-			Assert.assertNotNull(wtps);
-			Assert.assertEquals(2, wtps.size());
+			assertNotNull(wtps);
+			assertEquals(2, wtps.size());
 			{
 				final WithholdingTaxationPeriod wtp = wtps.get(0);
-				Assert.assertNotNull(wtp);
-				Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-				Assert.assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-				Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+				assertNotNull(wtp);
+				assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+				assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+				assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+				assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 			}
 			{
 				final WithholdingTaxationPeriod wtp = wtps.get(1);
-				Assert.assertNotNull(wtp);
-				Assert.assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-				Assert.assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-				Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+				assertNotNull(wtp);
+				assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+				assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+				assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+				assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 			}
 
-			Assert.assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(np.getActivityStartDate()));
-			Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(np.getActivityEndDate()));
+			assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(np.getActivityStartDate()));
+			assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(np.getActivityEndDate()));
 
 			final List<TaxResidence> fors = np.getMainTaxResidences();
-			Assert.assertNotNull(fors);
-			Assert.assertEquals(1, fors.size());
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 			{
 				final TaxResidence ff = fors.get(0);
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getCancellationDate());
-				Assert.assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
-				Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateTo()));
-				Assert.assertEquals(LiabilityChangeReason.MAJORITY, ff.getStartReason());
-				Assert.assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, ff.getEndReason());
-				Assert.assertEquals(TaxType.INCOME_WEALTH, ff.getTaxType());
-				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), ff.getTaxationAuthorityFSOId());
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
-				Assert.assertEquals(TaxationMethod.ORDINARY, ff.getTaxationMethod());
-				Assert.assertEquals(TaxLiabilityReason.RESIDENCE, ff.getTaxLiabilityReason());
-				Assert.assertFalse(ff.isVirtual());
+				assertNotNull(ff);
+				assertNull(ff.getCancellationDate());
+				assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateTo()));
+				assertEquals(LiabilityChangeReason.MAJORITY, ff.getStartReason());
+				assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, ff.getEndReason());
+				assertEquals(TaxType.INCOME_WEALTH, ff.getTaxType());
+				assertEquals(MockCommune.Lausanne.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				assertEquals(TaxationMethod.ORDINARY, ff.getTaxationMethod());
+				assertEquals(TaxLiabilityReason.RESIDENCE, ff.getTaxLiabilityReason());
+				assertFalse(ff.isVirtual());
 			}
 
 			final List<RelationBetweenParties> rels = np.getRelationsBetweenParties();
-			Assert.assertNotNull(rels);
-			Assert.assertEquals(1, rels.size());
+			assertNotNull(rels);
+			assertEquals(1, rels.size());
 			{
 				final RelationBetweenParties rel = rels.get(0);
-				Assert.assertNotNull(rel);
-				Assert.assertNull(rel.getCancellationDate());
-				Assert.assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-				Assert.assertEquals(dateFinRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
-				Assert.assertEquals(ids.dpi, rel.getOtherPartyNumber());
-				Assert.assertTrue(rel instanceof TaxableRevenue);
-				Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
+				assertNotNull(rel);
+				assertNull(rel.getCancellationDate());
+				assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				assertEquals(dateFinRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				assertEquals(ids.dpi, rel.getOtherPartyNumber());
+				assertTrue(rel instanceof TaxableRevenue);
+				assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 			}
 
 			final List<TaxLiability> tls = np.getTaxLiabilities();
-			Assert.assertNotNull(tls);
-			Assert.assertEquals(1, tls.size());
+			assertNotNull(tls);
+			assertEquals(1, tls.size());
 			{
 				final TaxLiability tl = tls.get(0);
-				Assert.assertNotNull(tl);
-				Assert.assertEquals(OrdinaryResident.class, tl.getClass());
-				Assert.assertEquals(date(dateNaissance.addYears(18).year(), 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateFrom()));
-				Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateTo()));
-				Assert.assertEquals(LiabilityChangeReason.MAJORITY, tl.getStartReason());
-				Assert.assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, tl.getEndReason());
+				assertNotNull(tl);
+				assertEquals(OrdinaryResident.class, tl.getClass());
+				assertEquals(date(dateNaissance.addYears(18).year(), 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateFrom()));
+				assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateTo()));
+				assertEquals(LiabilityChangeReason.MAJORITY, tl.getStartReason());
+				assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, tl.getEndReason());
 			}
 
 			final List<TaxationPeriod> tps = np.getTaxationPeriods();
-			Assert.assertNotNull(tps);
-			Assert.assertEquals(7, tps.size());
+			assertNotNull(tps);
+			assertEquals(7, tps.size());
 			{
 				final TaxationPeriod tp = tps.get(0);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2008, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2008, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2008, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2008, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(1);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(2);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(3);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2011, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2011, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2011, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2011, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(4);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2012, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2012, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2012, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2012, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(5);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertEquals((Long) ids.di, tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertEquals((Long) ids.di, tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(6);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2014, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2014, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 
 			final List<ResidencyPeriod> residencyPeriods = np.getResidencyPeriods();
-			Assert.assertNotNull(residencyPeriods);
-			Assert.assertEquals(1, residencyPeriods.size());
+			assertNotNull(residencyPeriods);
+			assertEquals(1, residencyPeriods.size());
 			{
 				final ResidencyPeriod rp = residencyPeriods.get(0);
-				Assert.assertNotNull(rp);
-				Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(rp.getDateFrom()));
-				Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(rp.getDateTo()));
+				assertNotNull(rp);
+				assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(rp.getDateFrom()));
+				assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(rp.getDateTo()));
 			}
 
 			final List<LandRight> landRights = np.getLandRights();
-			Assert.assertNotNull(landRights);
-			Assert.assertEquals(1, landRights.size());
+			assertNotNull(landRights);
+			assertEquals(1, landRights.size());
 			{
 				final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
-				Assert.assertNotNull(landRight0);
-				Assert.assertNull(landRight0.getCommunityId());
-				Assert.assertEquals(OwnershipType.SOLE_OWNERSHIP, landRight0.getType());
+				assertNotNull(landRight0);
+				assertNull(landRight0.getCommunityId());
+				assertEquals(OwnershipType.SOLE_OWNERSHIP, landRight0.getType());
 				assertShare(1, 1, landRight0.getShare());
-				Assert.assertEquals(date(2004, 4, 12), ch.vd.unireg.xml.DataHelper.xmlToCore(landRight0.getDateFrom()));
-				Assert.assertNull(landRight0.getDateTo());
-				Assert.assertEquals("Achat", landRight0.getStartReason());
-				Assert.assertNull(landRight0.getEndReason());
+				assertEquals(date(2004, 4, 12), ch.vd.unireg.xml.DataHelper.xmlToCore(landRight0.getDateFrom()));
+				assertNull(landRight0.getDateTo());
+				assertEquals("Achat", landRight0.getStartReason());
+				assertNull(landRight0.getEndReason());
 				assertCaseIdentifier(123, "2004/202/3", landRight0.getCaseIdentifier());
-				Assert.assertEquals(ids.immeuble, landRight0.getImmovablePropertyId());
+				assertEquals(ids.immeuble, landRight0.getImmovablePropertyId());
 			}
 		}
 	}
@@ -3245,148 +3130,145 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long di;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
-				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
-				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+			addEtatDeclarationEmise(di, dateEmissionDI);
+			addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
-				dpi.setNom1("MonTestAdoré");
-				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
-				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
-				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+			dpi.setNom1("MonTestAdoré");
+			dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+			final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+			addEtatDeclarationEmise(lr, dateEmissionLR);
+			addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
 
-				assertValidInteger(pp.getNumero());
-				assertValidInteger(dpi.getNumero());
+			assertValidInteger(pp.getNumero());
+			assertValidInteger(dpi.getNumero());
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				ids.di = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			ids1.di = di.getId();
+			return ids1;
 		});
 
 		final Party party = service.getParty(ids.dpi, EnumSet.allOf(InternalPartyPart.class));
-		Assert.assertNotNull(party);
+		assertNotNull(party);
 		{
-			Assert.assertEquals(Debtor.class, party.getClass());
+			assertEquals(Debtor.class, party.getClass());
 
 			final Debtor dpi = (Debtor) party;
-			Assert.assertEquals(ids.dpi, dpi.getNumber());
-			Assert.assertEquals("MonTestAdoré", dpi.getName());
+			assertEquals(ids.dpi, dpi.getNumber());
+			assertEquals("MonTestAdoré", dpi.getName());
 
 			final List<TaxDeclaration> decls = dpi.getTaxDeclarations();
-			Assert.assertNotNull(decls);
-			Assert.assertEquals(1, decls.size());
+			assertNotNull(decls);
+			assertEquals(1, decls.size());
 			{
 				final TaxDeclaration decl = decls.get(0);
-				Assert.assertNotNull(decl);
-				Assert.assertEquals(date(anneeDI, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateFrom()));
-				Assert.assertEquals(date(anneeDI, 1, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateTo()));
-				Assert.assertNull(decl.getCancellationDate());
+				assertNotNull(decl);
+				assertEquals(date(anneeDI, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateFrom()));
+				assertEquals(date(anneeDI, 1, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateTo()));
+				assertNull(decl.getCancellationDate());
 
 				final List<TaxDeclarationDeadline> deadlines = decl.getDeadlines();
-				Assert.assertNotNull(deadlines);
-				Assert.assertEquals(1, deadlines.size());
+				assertNotNull(deadlines);
+				assertEquals(1, deadlines.size());
 				{
 					final TaxDeclarationDeadline deadline = deadlines.get(0);
-					Assert.assertNotNull(deadline);
-					Assert.assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
-					Assert.assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
-					Assert.assertEquals(dateDelaiLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getDeadline()));
-					Assert.assertNull(deadline.getCancellationDate());
+					assertNotNull(deadline);
+					assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
+					assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
+					assertEquals(dateDelaiLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getDeadline()));
+					assertNull(deadline.getCancellationDate());
 				}
 
 				final List<TaxDeclarationStatus> statuses = decl.getStatuses();
-				Assert.assertNotNull(statuses);
-				Assert.assertEquals(2, statuses.size());
+				assertNotNull(statuses);
+				assertEquals(2, statuses.size());
 				{
 					final TaxDeclarationStatus status = statuses.get(0);
-					Assert.assertNotNull(status);
-					Assert.assertNull(status.getCancellationDate());
-					Assert.assertNull(status.getSource());
-					Assert.assertNull(status.getFee());
-					Assert.assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
-					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+					assertNotNull(status);
+					assertNull(status.getCancellationDate());
+					assertNull(status.getSource());
+					assertNull(status.getFee());
+					assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 				}
 				{
 					final TaxDeclarationStatus status = statuses.get(1);
-					Assert.assertNotNull(status);
-					Assert.assertNull(status.getCancellationDate());
-					Assert.assertNull(status.getSource());
-					Assert.assertNull(status.getFee());
-					Assert.assertEquals(dateSommationLR.addDays(3), ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
-					Assert.assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status.getType());
+					assertNotNull(status);
+					assertNull(status.getCancellationDate());
+					assertNull(status.getSource());
+					assertNull(status.getFee());
+					assertEquals(dateSommationLR.addDays(3), ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status.getType());
 				}
 			}
 
 			final List<DebtorPeriodicity> periodicities = dpi.getPeriodicities();
-			Assert.assertNotNull(periodicities);
-			Assert.assertEquals(1, periodicities.size());
+			assertNotNull(periodicities);
+			assertEquals(1, periodicities.size());
 			{
 				final DebtorPeriodicity periodicity = periodicities.get(0);
-				Assert.assertNotNull(periodicity);
-				Assert.assertNull(periodicity.getCancellationDate());
-				Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(periodicity.getDateFrom()));
-				Assert.assertNull(periodicity.getDateTo());
-				Assert.assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, periodicity.getPeriodicity());
-				Assert.assertNull(periodicity.getSpecificPeriod());
+				assertNotNull(periodicity);
+				assertNull(periodicity.getCancellationDate());
+				assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(periodicity.getDateFrom()));
+				assertNull(periodicity.getDateTo());
+				assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, periodicity.getPeriodicity());
+				assertNull(periodicity.getSpecificPeriod());
 			}
 
-			Assert.assertNull(dpi.getAssociatedTaxpayerNumber());
-			Assert.assertEquals(DebtorCategory.REGULAR, dpi.getCategory());
-			Assert.assertEquals(CommunicationMode.UPLOAD, dpi.getCommunicationMode());
-			Assert.assertFalse(dpi.isWithoutReminder());
-			Assert.assertFalse(dpi.isWithoutWithholdingTaxDeclaration());
+			assertNull(dpi.getAssociatedTaxpayerNumber());
+			assertEquals(DebtorCategory.REGULAR, dpi.getCategory());
+			assertEquals(CommunicationMode.UPLOAD, dpi.getCommunicationMode());
+			assertFalse(dpi.isWithoutReminder());
+			assertFalse(dpi.isWithoutWithholdingTaxDeclaration());
 
-			Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(dpi.getActivityStartDate()));
-			Assert.assertNull(dpi.getActivityEndDate());
+			assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(dpi.getActivityStartDate()));
+			assertNull(dpi.getActivityEndDate());
 
 			final List<TaxResidence> fors = dpi.getMainTaxResidences();
-			Assert.assertNotNull(fors);
-			Assert.assertEquals(1, fors.size());
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 			{
 				final TaxResidence ff = fors.get(0);
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getCancellationDate());
-				Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
-				Assert.assertNull(ff.getDateTo());
-				Assert.assertEquals(LiabilityChangeReason.START_WITHHOLDING_ACTIVITY, ff.getStartReason());
-				Assert.assertNull(ff.getEndReason());
-				Assert.assertEquals(TaxType.DEBTOR_TAXABLE_INCOME, ff.getTaxType());
-				Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), ff.getTaxationAuthorityFSOId());
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
-				Assert.assertNull(ff.getTaxationMethod());
-				Assert.assertNull(ff.getTaxLiabilityReason());
-				Assert.assertFalse(ff.isVirtual());
+				assertNotNull(ff);
+				assertNull(ff.getCancellationDate());
+				assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				assertNull(ff.getDateTo());
+				assertEquals(LiabilityChangeReason.START_WITHHOLDING_ACTIVITY, ff.getStartReason());
+				assertNull(ff.getEndReason());
+				assertEquals(TaxType.DEBTOR_TAXABLE_INCOME, ff.getTaxType());
+				assertEquals(MockCommune.Aubonne.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				assertNull(ff.getTaxationMethod());
+				assertNull(ff.getTaxLiabilityReason());
+				assertFalse(ff.isVirtual());
 			}
 
 			final List<RelationBetweenParties> rels = dpi.getRelationsBetweenParties();
-			Assert.assertNotNull(rels);
-			Assert.assertEquals(1, rels.size());
+			assertNotNull(rels);
+			assertEquals(1, rels.size());
 			{
 				final RelationBetweenParties rel = rels.get(0);
-				Assert.assertNotNull(rel);
-				Assert.assertNull(rel.getCancellationDate());
-				Assert.assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-				Assert.assertEquals(dateFinRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
-				Assert.assertEquals(ids.pp, rel.getOtherPartyNumber());
-				Assert.assertTrue(rel instanceof TaxableRevenue);
-				Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
+				assertNotNull(rel);
+				assertNull(rel.getCancellationDate());
+				assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				assertEquals(dateFinRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				assertEquals(ids.pp, rel.getOtherPartyNumber());
+				assertTrue(rel instanceof TaxableRevenue);
+				assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 			}
 		}
 	}
@@ -3409,150 +3291,147 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 
-				addRaisonSociale(entreprise, date(2000, 3, 1), date(2013, 5, 12), "Ma petite entreprise");
-				addRaisonSociale(entreprise, date(2013, 5, 13), null, "Ma grande entreprise");
-				addFormeJuridique(entreprise, date(2000, 3, 1), null, FormeJuridiqueEntreprise.SARL);
-				addCapitalEntreprise(entreprise, date(2000, 3, 1), date(2009, 12, 31), new MontantMonetaire(1000L, "CHF"));
-				addCapitalEntreprise(entreprise, date(2010, 1, 1), date(2013, 5, 12), new MontantMonetaire(1100L, "CHF"));
-				addCapitalEntreprise(entreprise, date(2013, 5, 13), null, new MontantMonetaire(100000L, "CHF"));
-				addFlagEntreprise(entreprise, date(2010, 6, 2), RegDate.get(2013, 5, 26), TypeFlagEntreprise.UTILITE_PUBLIQUE);
+			addRaisonSociale(entreprise, date(2000, 3, 1), date(2013, 5, 12), "Ma petite entreprise");
+			addRaisonSociale(entreprise, date(2013, 5, 13), null, "Ma grande entreprise");
+			addFormeJuridique(entreprise, date(2000, 3, 1), null, FormeJuridiqueEntreprise.SARL);
+			addCapitalEntreprise(entreprise, date(2000, 3, 1), date(2009, 12, 31), new MontantMonetaire(1000L, "CHF"));
+			addCapitalEntreprise(entreprise, date(2010, 1, 1), date(2013, 5, 12), new MontantMonetaire(1100L, "CHF"));
+			addCapitalEntreprise(entreprise, date(2013, 5, 13), null, new MontantMonetaire(100000L, "CHF"));
+			addFlagEntreprise(entreprise, date(2010, 6, 2), RegDate.get(2013, 5, 26), TypeFlagEntreprise.UTILITE_PUBLIQUE);
 
-				addRegimeFiscalVD(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, date(2000, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Geneve);
-				addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			addRegimeFiscalVD(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(entreprise, date(2000, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Geneve);
+			addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay, MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
-				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);
-				return entreprise.getNumero();
-			}
+			addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);
+			return entreprise.getNumero();
 		});
 		assertValidInteger(idpm);
 
 		final Set<InternalPartyPart> parts = EnumSet.allOf(InternalPartyPart.class);
 		final Party party = service.getParty((int) idpm, parts);
-		Assert.assertNotNull(party);
+		assertNotNull(party);
 		{
-			Assert.assertEquals(Corporation.class, party.getClass());
+			assertEquals(Corporation.class, party.getClass());
 
 			final Corporation corp = (Corporation) party;
-			Assert.assertEquals((int) idpm, corp.getNumber());
-			Assert.assertEquals("Ma grande entreprise", corp.getName());
+			assertEquals((int) idpm, corp.getNumber());
+			assertEquals("Ma grande entreprise", corp.getName());
 
-			Assert.assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(corp.getActivityStartDate()));
-			Assert.assertNull(corp.getActivityEndDate());
+			assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(corp.getActivityStartDate()));
+			assertNull(corp.getActivityEndDate());
 
 			final List<TaxResidence> prnFors = corp.getMainTaxResidences();
-			Assert.assertNotNull(prnFors);
-			Assert.assertEquals(1, prnFors.size());
+			assertNotNull(prnFors);
+			assertEquals(1, prnFors.size());
 			{
 				final TaxResidence ff = prnFors.get(0);
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getCancellationDate());
-				Assert.assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
-				Assert.assertNull(ff.getDateTo());
-				Assert.assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ff.getStartReason());
-				Assert.assertNull(ff.getEndReason());
-				Assert.assertEquals(TaxType.PROFITS_CAPITAL, ff.getTaxType());
-				Assert.assertEquals(MockCommune.Geneve.getNoOFS(), ff.getTaxationAuthorityFSOId());
-				Assert.assertEquals(TaxationAuthorityType.OTHER_CANTON_MUNICIPALITY, ff.getTaxationAuthorityType());
-				Assert.assertNull(ff.getTaxationMethod());
-				Assert.assertEquals(TaxLiabilityReason.RESIDENCE, ff.getTaxLiabilityReason());
-				Assert.assertFalse(ff.isVirtual());
+				assertNotNull(ff);
+				assertNull(ff.getCancellationDate());
+				assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				assertNull(ff.getDateTo());
+				assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ff.getStartReason());
+				assertNull(ff.getEndReason());
+				assertEquals(TaxType.PROFITS_CAPITAL, ff.getTaxType());
+				assertEquals(MockCommune.Geneve.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				assertEquals(TaxationAuthorityType.OTHER_CANTON_MUNICIPALITY, ff.getTaxationAuthorityType());
+				assertNull(ff.getTaxationMethod());
+				assertEquals(TaxLiabilityReason.RESIDENCE, ff.getTaxLiabilityReason());
+				assertFalse(ff.isVirtual());
 			}
 			final List<TaxResidence> secFors = corp.getOtherTaxResidences();
-			Assert.assertNotNull(secFors);
-			Assert.assertEquals(1, secFors.size());
+			assertNotNull(secFors);
+			assertEquals(1, secFors.size());
 			{
 				final TaxResidence ff = secFors.get(0);
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getCancellationDate());
-				Assert.assertEquals(date(2005, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
-				Assert.assertNull(ff.getDateTo());
-				Assert.assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ff.getStartReason());
-				Assert.assertNull(ff.getEndReason());
-				Assert.assertEquals(TaxType.PROFITS_CAPITAL, ff.getTaxType());
-				Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), ff.getTaxationAuthorityFSOId());
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
-				Assert.assertNull(ff.getTaxationMethod());
-				Assert.assertEquals(TaxLiabilityReason.STABLE_ESTABLISHMENT, ff.getTaxLiabilityReason());
-				Assert.assertFalse(ff.isVirtual());
+				assertNotNull(ff);
+				assertNull(ff.getCancellationDate());
+				assertEquals(date(2005, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				assertNull(ff.getDateTo());
+				assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ff.getStartReason());
+				assertNull(ff.getEndReason());
+				assertEquals(TaxType.PROFITS_CAPITAL, ff.getTaxType());
+				assertEquals(MockCommune.Cossonay.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				assertNull(ff.getTaxationMethod());
+				assertEquals(TaxLiabilityReason.STABLE_ESTABLISHMENT, ff.getTaxLiabilityReason());
+				assertFalse(ff.isVirtual());
 			}
 
 			final List<Capital> caps = corp.getCapitals();
-			Assert.assertNotNull(caps);
-			Assert.assertEquals(3, caps.size());
+			assertNotNull(caps);
+			assertEquals(3, caps.size());
 			{
 				final Capital cap = caps.get(0);
-				Assert.assertNotNull(cap);
-				Assert.assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateFrom()));
-				Assert.assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateTo()));
-				Assert.assertNotNull(cap.getPaidInCapital());
-				Assert.assertEquals(1000L, cap.getPaidInCapital().getAmount());
-				Assert.assertEquals("CHF", cap.getPaidInCapital().getCurrency());
+				assertNotNull(cap);
+				assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateFrom()));
+				assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateTo()));
+				assertNotNull(cap.getPaidInCapital());
+				assertEquals(1000L, cap.getPaidInCapital().getAmount());
+				assertEquals("CHF", cap.getPaidInCapital().getCurrency());
 			}
 			{
 				final Capital cap = caps.get(1);
-				Assert.assertNotNull(cap);
-				Assert.assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateFrom()));
-				Assert.assertEquals(date(2013, 5, 12), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateTo()));
-				Assert.assertNotNull(cap.getPaidInCapital());
-				Assert.assertEquals(1100L, cap.getPaidInCapital().getAmount());
-				Assert.assertEquals("CHF", cap.getPaidInCapital().getCurrency());
+				assertNotNull(cap);
+				assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateFrom()));
+				assertEquals(date(2013, 5, 12), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateTo()));
+				assertNotNull(cap.getPaidInCapital());
+				assertEquals(1100L, cap.getPaidInCapital().getAmount());
+				assertEquals("CHF", cap.getPaidInCapital().getCurrency());
 			}
 			{
 				final Capital cap = caps.get(2);
-				Assert.assertNotNull(cap);
-				Assert.assertEquals(date(2013, 5, 13), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateFrom()));
-				Assert.assertNull(cap.getDateTo());
-				Assert.assertNotNull(cap.getPaidInCapital());
-				Assert.assertEquals(100000L, cap.getPaidInCapital().getAmount());
-				Assert.assertEquals("CHF", cap.getPaidInCapital().getCurrency());
+				assertNotNull(cap);
+				assertEquals(date(2013, 5, 13), ch.vd.unireg.xml.DataHelper.xmlToCore(cap.getDateFrom()));
+				assertNull(cap.getDateTo());
+				assertNotNull(cap.getPaidInCapital());
+				assertEquals(100000L, cap.getPaidInCapital().getAmount());
+				assertEquals("CHF", cap.getPaidInCapital().getCurrency());
 			}
 
 			final List<ch.vd.unireg.xml.party.corporation.v5.LegalForm> lfs = corp.getLegalForms();
-			Assert.assertNotNull(lfs);
-			Assert.assertEquals(1, lfs.size());
+			assertNotNull(lfs);
+			assertEquals(1, lfs.size());
 			{
 				final ch.vd.unireg.xml.party.corporation.v5.LegalForm lf = lfs.get(0);
-				Assert.assertNotNull(lf);
-				Assert.assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(lf.getDateFrom()));
-				Assert.assertNull(lf.getDateTo());
-				Assert.assertEquals(LegalForm.LIMITED_LIABILITY_COMPANY, lf.getType());
-				Assert.assertEquals("Société à responsabilité limitée", lf.getLabel());
-				Assert.assertEquals(LegalFormCategory.CAPITAL_COMPANY, lf.getLegalFormCategory());
+				assertNotNull(lf);
+				assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(lf.getDateFrom()));
+				assertNull(lf.getDateTo());
+				assertEquals(LegalForm.LIMITED_LIABILITY_COMPANY, lf.getType());
+				assertEquals("Société à responsabilité limitée", lf.getLabel());
+				assertEquals(LegalFormCategory.CAPITAL_COMPANY, lf.getLegalFormCategory());
 			}
 
 			final RegDate today = RegDate.get();
 			final List<BusinessYear> bys = corp.getBusinessYears();
-			Assert.assertNotNull(bys);
+			assertNotNull(bys);
 			final int nbExpectedExercices = today.year() - 2000 + (today.month() > 6 ? 1 : 0);
-			Assert.assertEquals(nbExpectedExercices, bys.size());
+			assertEquals(nbExpectedExercices, bys.size());
 			for (int i = 0; i < nbExpectedExercices; ++i) {
 				final BusinessYear by = bys.get(i);
-				Assert.assertNotNull(by);
+				assertNotNull(by);
 				if (i == 0) {
-					Assert.assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(by.getDateFrom()));
+					assertEquals(date(2000, 3, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(by.getDateFrom()));
 				}
 				else {
-					Assert.assertEquals(date(2000 + i, 7, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(by.getDateFrom()));
+					assertEquals(date(2000 + i, 7, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(by.getDateFrom()));
 				}
-				Assert.assertEquals(date(2001 + i, 6, 30), ch.vd.unireg.xml.DataHelper.xmlToCore(by.getDateTo()));
+				assertEquals(date(2001 + i, 6, 30), ch.vd.unireg.xml.DataHelper.xmlToCore(by.getDateTo()));
 			}
 
 			final List<CorporationFlag> flags = corp.getCorporationFlags();
-			Assert.assertNotNull(flags);
-			Assert.assertEquals(1, flags.size());
+			assertNotNull(flags);
+			assertEquals(1, flags.size());
 			{
 				final CorporationFlag flag = flags.get(0);
-				Assert.assertNotNull(flag);
-				Assert.assertEquals(date(2010, 6, 2), ch.vd.unireg.xml.DataHelper.xmlToCore(flag.getDateFrom()));
-				Assert.assertEquals(date(2013, 5, 26), ch.vd.unireg.xml.DataHelper.xmlToCore(flag.getDateTo()));
-				Assert.assertEquals(CorporationFlagType.PUBLIC_INTEREST, flag.getType());
+				assertNotNull(flag);
+				assertEquals(date(2010, 6, 2), ch.vd.unireg.xml.DataHelper.xmlToCore(flag.getDateFrom()));
+				assertEquals(date(2013, 5, 26), ch.vd.unireg.xml.DataHelper.xmlToCore(flag.getDateTo()));
+				assertEquals(CorporationFlagType.PUBLIC_INTEREST, flag.getType());
 			}
 		}
 	}
@@ -3573,8 +3452,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				}
 			}
 			final Parties res = service.getParties(nos, null);
-			Assert.assertNotNull(res);
-			Assert.assertEquals(max, res.getEntries().size());
+			assertNotNull(res);
+			assertEquals(max, res.getEntries().size());
 		}
 		{
 			final List<Integer> nos = new ArrayList<>(max + 1);
@@ -3587,10 +3466,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			try {
 				service.getParties(nos, null);
-				Assert.fail("Nombre de tiers demandés trop élevé... L'appel aurait dû échouer.");
+				fail("Nombre de tiers demandés trop élevé... L'appel aurait dû échouer.");
 			}
 			catch (BadRequestException e) {
-				Assert.assertEquals("Le nombre de tiers demandés ne peut dépasser " + max, e.getMessage());
+				assertEquals("Le nombre de tiers demandés ne peut dépasser " + max, e.getMessage());
 			}
 		}
 
@@ -3606,8 +3485,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			nos.add(nos.get(0));
 
 			final Parties res = service.getParties(nos, null);
-			Assert.assertNotNull(res);
-			Assert.assertEquals(max, res.getEntries().size());
+			assertNotNull(res);
+			assertEquals(max, res.getEntries().size());
 		}
 	}
 
@@ -3634,110 +3513,102 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int ac;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp1 = addNonHabitant("Daubet", "Philibert", null, Sexe.MASCULIN);
-				final PersonnePhysique pp2 = addNonHabitant("Baudet", "Ernestine", null, Sexe.FEMININ);
-				final PersonnePhysique ppProtege = addNonHabitant("Knox", "Fort", null, null);
-				final DroitAcces da = new DroitAcces();
-				da.setDateDebut(date(2000, 1, 1));
-				da.setNiveau(Niveau.LECTURE);
-				da.setVisaOperateur("zai455");
-				da.setType(TypeDroitAcces.AUTORISATION);
-				da.setTiers(ppProtege);
-				hibernateTemplate.merge(da);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp1 = addNonHabitant("Daubet", "Philibert", null, Sexe.MASCULIN);
+			final PersonnePhysique pp2 = addNonHabitant("Baudet", "Ernestine", null, Sexe.FEMININ);
+			final PersonnePhysique ppProtege = addNonHabitant("Knox", "Fort", null, null);
+			final DroitAcces da = new DroitAcces();
+			da.setDateDebut(date(2000, 1, 1));
+			da.setNiveau(Niveau.LECTURE);
+			da.setVisaOperateur("zai455");
+			da.setType(TypeDroitAcces.AUTORISATION);
+			da.setTiers(ppProtege);
+			hibernateTemplate.merge(da);
 
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntreprise);
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntreprise);
 
-				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
-				ac.setFormeJuridique(FormeJuridique.ASS);
-				final IdentificationEntreprise ide = new IdentificationEntreprise();
-				ide.setNumeroIde("CHE999999996");
-				ac.addIdentificationEntreprise(ide);
+			final AutreCommunaute ac = addAutreCommunaute("Tata!!");
+			ac.setFormeJuridique(FormeJuridique.ASS);
+			final IdentificationEntreprise ide = new IdentificationEntreprise();
+			ide.setNumeroIde("CHE999999996");
+			ac.addIdentificationEntreprise(ide);
 
-				final Ids ids = new Ids();
-				ids.pp1 = pp1.getNumero().intValue();
-				ids.pp2 = pp2.getNumero().intValue();
-				ids.ppProtege = ppProtege.getNumero().intValue();
-				ids.pm = entreprise.getNumero().intValue();
-				ids.ac = ac.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp1 = pp1.getNumero().intValue();
+			ids1.pp2 = pp2.getNumero().intValue();
+			ids1.ppProtege = ppProtege.getNumero().intValue();
+			ids1.pm = entreprise.getNumero().intValue();
+			ids1.ac = ac.getNumero().intValue();
+			return ids1;
 		});
 
 		AuthenticationHelper.pushPrincipal("TOTO", 22);
 		try {
 			final Parties parties = service.getParties(Arrays.asList(ids.pp1, ids.ppProtege, 99999, ids.pp2, ids.pm, ids.ac), null);
-			Assert.assertNotNull(parties);
-			Assert.assertNotNull(parties.getEntries());
-			Assert.assertEquals(6, parties.getEntries().size());
+			assertNotNull(parties);
+			assertNotNull(parties.getEntries());
+			assertEquals(6, parties.getEntries().size());
 
 			final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-			Collections.sort(sorted, new Comparator<Entry>() {
-				@Override
-				public int compare(Entry o1, Entry o2) {
-					return o1.getPartyNo() - o2.getPartyNo();
-				}
-			});
+			sorted.sort(Comparator.comparingInt(Entry::getPartyNo));
 
 			{
 				final Entry e = sorted.get(0);
-				Assert.assertNotNull(e.getParty());
-				Assert.assertNull(e.getError());
-				Assert.assertEquals(Corporation.class, e.getParty().getClass());
-				Assert.assertEquals(ids.pm, e.getPartyNo());
-				Assert.assertEquals(ids.pm, e.getParty().getNumber());
+				assertNotNull(e.getParty());
+				assertNull(e.getError());
+				assertEquals(Corporation.class, e.getParty().getClass());
+				assertEquals(ids.pm, e.getPartyNo());
+				assertEquals(ids.pm, e.getParty().getNumber());
 
 				final Corporation corp = (Corporation) e.getParty();
-				Assert.assertNotNull(corp.getUidNumbers());
-				Assert.assertEquals(1, corp.getUidNumbers().getUidNumber().size());
-				Assert.assertEquals("CHE123456788", corp.getUidNumbers().getUidNumber().get(0));
+				assertNotNull(corp.getUidNumbers());
+				assertEquals(1, corp.getUidNumbers().getUidNumber().size());
+				assertEquals("CHE123456788", corp.getUidNumbers().getUidNumber().get(0));
 			}
 			{
 				final Entry e = sorted.get(1);
-				Assert.assertNull(e.getParty());
-				Assert.assertNotNull(e.getError());
-				Assert.assertEquals(99999, e.getPartyNo());
-				Assert.assertEquals("Le tiers n°999.99 n'existe pas", e.getError().getErrorMessage());
-				Assert.assertEquals(ErrorType.BUSINESS, e.getError().getType());
+				assertNull(e.getParty());
+				assertNotNull(e.getError());
+				assertEquals(99999, e.getPartyNo());
+				assertEquals("Le tiers n°999.99 n'existe pas", e.getError().getErrorMessage());
+				assertEquals(ErrorType.BUSINESS, e.getError().getType());
 			}
 			{
 				final Entry e = sorted.get(2);
-				Assert.assertNotNull(e.getParty());
-				Assert.assertNull(e.getError());
-				Assert.assertEquals(OtherCommunity.class, e.getParty().getClass());
-				Assert.assertEquals(ids.ac, e.getPartyNo());
-				Assert.assertEquals(ids.ac, e.getParty().getNumber());
+				assertNotNull(e.getParty());
+				assertNull(e.getError());
+				assertEquals(OtherCommunity.class, e.getParty().getClass());
+				assertEquals(ids.ac, e.getPartyNo());
+				assertEquals(ids.ac, e.getParty().getNumber());
 
 				final OtherCommunity otherComm = (OtherCommunity) e.getParty();
-				Assert.assertNotNull(otherComm.getUidNumbers());
-				Assert.assertEquals(1, otherComm.getUidNumbers().getUidNumber().size());
-				Assert.assertEquals("CHE999999996", otherComm.getUidNumbers().getUidNumber().get(0));
+				assertNotNull(otherComm.getUidNumbers());
+				assertEquals(1, otherComm.getUidNumbers().getUidNumber().size());
+				assertEquals("CHE999999996", otherComm.getUidNumbers().getUidNumber().get(0));
 			}
 			{
 				final Entry e = sorted.get(3);
-				Assert.assertNotNull(e.getParty());
-				Assert.assertNull(e.getError());
-				Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
-				Assert.assertEquals(ids.pp1, e.getPartyNo());
-				Assert.assertEquals(ids.pp1, e.getParty().getNumber());
+				assertNotNull(e.getParty());
+				assertNull(e.getError());
+				assertEquals(NaturalPerson.class, e.getParty().getClass());
+				assertEquals(ids.pp1, e.getPartyNo());
+				assertEquals(ids.pp1, e.getParty().getNumber());
 			}
 			{
 				final Entry e = sorted.get(4);
-				Assert.assertNotNull(e.getParty());
-				Assert.assertNull(e.getError());
-				Assert.assertEquals(NaturalPerson.class, e.getParty().getClass());
-				Assert.assertEquals(ids.pp2, e.getPartyNo());
-				Assert.assertEquals(ids.pp2, e.getParty().getNumber());
+				assertNotNull(e.getParty());
+				assertNull(e.getError());
+				assertEquals(NaturalPerson.class, e.getParty().getClass());
+				assertEquals(ids.pp2, e.getPartyNo());
+				assertEquals(ids.pp2, e.getParty().getNumber());
 			}
 			{
 				final Entry e = sorted.get(5);
-				Assert.assertNull(e.getParty());
-				Assert.assertNotNull(e.getError());
-				Assert.assertEquals(ids.ppProtege, e.getPartyNo());
-				Assert.assertEquals("L'utilisateur TOTO/22 ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, e.getError().getErrorMessage());
-				Assert.assertEquals(ErrorType.ACCESS, e.getError().getType());
+				assertNull(e.getParty());
+				assertNotNull(e.getError());
+				assertEquals(ids.ppProtege, e.getPartyNo());
+				assertEquals("L'utilisateur TOTO/22 ne possède aucun droit de lecture sur le dossier " + ids.ppProtege, e.getError().getErrorMessage());
+				assertEquals(ErrorType.ACCESS, e.getError().getType());
 			}
 		}
 		finally {
@@ -3779,39 +3650,36 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long di;
 		}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
-				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
-				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addSituation(pp, dateNaissance, null, 0, EtatCivil.CELIBATAIRE);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+			final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+			final PeriodeFiscale pf = addPeriodeFiscale(anneeDI);
+			final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+			final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
+			addEtatDeclarationEmise(di, dateEmissionDI);
+			addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDocumentFiscal.ACCORDE);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
-				dpi.setNom1("MonTestAdoré");
-				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
-				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
-				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
-				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), 10);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+			dpi.setNom1("MonTestAdoré");
+			dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+			addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+			final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+			final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
+			addEtatDeclarationEmise(lr, dateEmissionLR);
+			addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), 10);
 
-				assertValidInteger(pp.getNumero());
-				assertValidInteger(dpi.getNumero());
+			assertValidInteger(pp.getNumero());
+			assertValidInteger(dpi.getNumero());
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero().intValue();
-				ids.dpi = dpi.getNumero().intValue();
-				ids.di = di.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero().intValue();
+			ids1.dpi = dpi.getNumero().intValue();
+			ids1.di = di.getId();
+			return ids1;
 		});
 
 		efactureService.setUp(new MockEFactureService() {
@@ -3823,330 +3691,325 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		final Parties parties = service.getParties(Arrays.asList(ids.pp, ids.dpi), EnumSet.allOf(InternalPartyPart.class));
-		Assert.assertNotNull(parties);
-		Assert.assertNotNull(parties.getEntries());
-		Assert.assertEquals(2, parties.getEntries().size());
+		assertNotNull(parties);
+		assertNotNull(parties.getEntries());
+		assertEquals(2, parties.getEntries().size());
 
 		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-		Collections.sort(sorted, new Comparator<Entry>() {
-			@Override
-			public int compare(Entry o1, Entry o2) {
-				return o1.getPartyNo() - o2.getPartyNo();
-			}
-		});
+		sorted.sort(Comparator.comparingInt(Entry::getPartyNo));
 
 		{
 			final Entry e = sorted.get(0);
-			Assert.assertNotNull(e);
-			Assert.assertNull(e.getError());
-			Assert.assertNotNull(e.getParty());
-			Assert.assertEquals(Debtor.class, e.getParty().getClass());
+			assertNotNull(e);
+			assertNull(e.getError());
+			assertNotNull(e.getParty());
+			assertEquals(Debtor.class, e.getParty().getClass());
 
 			final Debtor dpi = (Debtor) e.getParty();
-			Assert.assertEquals(ids.dpi, dpi.getNumber());
-			Assert.assertEquals("MonTestAdoré", dpi.getName());
+			assertEquals(ids.dpi, dpi.getNumber());
+			assertEquals("MonTestAdoré", dpi.getName());
 
 			final List<TaxDeclaration> decls = dpi.getTaxDeclarations();
-			Assert.assertNotNull(decls);
-			Assert.assertEquals(1, decls.size());
+			assertNotNull(decls);
+			assertEquals(1, decls.size());
 			{
 				final TaxDeclaration decl = decls.get(0);
-				Assert.assertNotNull(decl);
-				Assert.assertEquals(date(anneeDI, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateFrom()));
-				Assert.assertEquals(date(anneeDI, 1, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateTo()));
-				Assert.assertNull(decl.getCancellationDate());
+				assertNotNull(decl);
+				assertEquals(date(anneeDI, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateFrom()));
+				assertEquals(date(anneeDI, 1, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateTo()));
+				assertNull(decl.getCancellationDate());
 
 				final List<TaxDeclarationDeadline> deadlines = decl.getDeadlines();
-				Assert.assertNotNull(deadlines);
-				Assert.assertEquals(1, deadlines.size());
+				assertNotNull(deadlines);
+				assertEquals(1, deadlines.size());
 				{
 					final TaxDeclarationDeadline deadline = deadlines.get(0);
-					Assert.assertNotNull(deadline);
-					Assert.assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
-					Assert.assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
-					Assert.assertEquals(dateDelaiLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getDeadline()));
-					Assert.assertNull(deadline.getCancellationDate());
+					assertNotNull(deadline);
+					assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
+					assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
+					assertEquals(dateDelaiLR, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getDeadline()));
+					assertNull(deadline.getCancellationDate());
 				}
 
 				final List<TaxDeclarationStatus> statuses = decl.getStatuses();
-				Assert.assertNotNull(statuses);
-				Assert.assertEquals(2, statuses.size());
+				assertNotNull(statuses);
+				assertEquals(2, statuses.size());
 				{
 					final TaxDeclarationStatus status = statuses.get(0);
-					Assert.assertNotNull(status);
-					Assert.assertNull(status.getCancellationDate());
-					Assert.assertNull(status.getSource());
-					Assert.assertNull(status.getFee());
-					Assert.assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
-					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+					assertNotNull(status);
+					assertNull(status.getCancellationDate());
+					assertNull(status.getSource());
+					assertNull(status.getFee());
+					assertEquals(dateEmissionLR, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 				}
 				{
 					final TaxDeclarationStatus status = statuses.get(1);
-					Assert.assertNotNull(status);
-					Assert.assertNull(status.getCancellationDate());
-					Assert.assertNull(status.getSource());
-					Assert.assertEquals((Integer) 10, status.getFee());
-					Assert.assertEquals(dateSommationLR.addDays(3), ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
-					Assert.assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status.getType());
+					assertNotNull(status);
+					assertNull(status.getCancellationDate());
+					assertNull(status.getSource());
+					assertEquals((Integer) 10, status.getFee());
+					assertEquals(dateSommationLR.addDays(3), ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status.getType());
 				}
 			}
 
 			final List<DebtorPeriodicity> periodicities = dpi.getPeriodicities();
-			Assert.assertNotNull(periodicities);
-			Assert.assertEquals(1, periodicities.size());
+			assertNotNull(periodicities);
+			assertEquals(1, periodicities.size());
 			{
 				final DebtorPeriodicity periodicity = periodicities.get(0);
-				Assert.assertNotNull(periodicity);
-				Assert.assertNull(periodicity.getCancellationDate());
-				Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(periodicity.getDateFrom()));
-				Assert.assertNull(periodicity.getDateTo());
-				Assert.assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, periodicity.getPeriodicity());
-				Assert.assertNull(periodicity.getSpecificPeriod());
+				assertNotNull(periodicity);
+				assertNull(periodicity.getCancellationDate());
+				assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(periodicity.getDateFrom()));
+				assertNull(periodicity.getDateTo());
+				assertEquals(WithholdingTaxDeclarationPeriodicity.MONTHLY, periodicity.getPeriodicity());
+				assertNull(periodicity.getSpecificPeriod());
 			}
 
-			Assert.assertNull(dpi.getAssociatedTaxpayerNumber());
-			Assert.assertEquals(DebtorCategory.REGULAR, dpi.getCategory());
-			Assert.assertEquals(CommunicationMode.UPLOAD, dpi.getCommunicationMode());
-			Assert.assertFalse(dpi.isWithoutReminder());
-			Assert.assertFalse(dpi.isWithoutWithholdingTaxDeclaration());
+			assertNull(dpi.getAssociatedTaxpayerNumber());
+			assertEquals(DebtorCategory.REGULAR, dpi.getCategory());
+			assertEquals(CommunicationMode.UPLOAD, dpi.getCommunicationMode());
+			assertFalse(dpi.isWithoutReminder());
+			assertFalse(dpi.isWithoutWithholdingTaxDeclaration());
 
-			Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(dpi.getActivityStartDate()));
-			Assert.assertNull(dpi.getActivityEndDate());
+			assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(dpi.getActivityStartDate()));
+			assertNull(dpi.getActivityEndDate());
 
 			final List<TaxResidence> fors = dpi.getMainTaxResidences();
-			Assert.assertNotNull(fors);
-			Assert.assertEquals(1, fors.size());
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 			{
 				final TaxResidence ff = fors.get(0);
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getCancellationDate());
-				Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
-				Assert.assertNull(ff.getDateTo());
-				Assert.assertEquals(LiabilityChangeReason.START_WITHHOLDING_ACTIVITY, ff.getStartReason());
-				Assert.assertNull(ff.getEndReason());
-				Assert.assertEquals(TaxType.DEBTOR_TAXABLE_INCOME, ff.getTaxType());
-				Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), ff.getTaxationAuthorityFSOId());
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
-				Assert.assertNull(ff.getTaxationMethod());
-				Assert.assertNull(ff.getTaxLiabilityReason());
-				Assert.assertFalse(ff.isVirtual());
+				assertNotNull(ff);
+				assertNull(ff.getCancellationDate());
+				assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				assertNull(ff.getDateTo());
+				assertEquals(LiabilityChangeReason.START_WITHHOLDING_ACTIVITY, ff.getStartReason());
+				assertNull(ff.getEndReason());
+				assertEquals(TaxType.DEBTOR_TAXABLE_INCOME, ff.getTaxType());
+				assertEquals(MockCommune.Aubonne.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				assertNull(ff.getTaxationMethod());
+				assertNull(ff.getTaxLiabilityReason());
+				assertFalse(ff.isVirtual());
 			}
 
 			final List<RelationBetweenParties> rels = dpi.getRelationsBetweenParties();
-			Assert.assertNotNull(rels);
-			Assert.assertEquals(1, rels.size());
+			assertNotNull(rels);
+			assertEquals(1, rels.size());
 			{
 				final RelationBetweenParties rel = rels.get(0);
-				Assert.assertNotNull(rel);
-				Assert.assertNull(rel.getCancellationDate());
-				Assert.assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-				Assert.assertEquals(dateFinRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
-				Assert.assertEquals(ids.pp, rel.getOtherPartyNumber());
-				Assert.assertTrue(rel instanceof TaxableRevenue);
-				Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
+				assertNotNull(rel);
+				assertNull(rel.getCancellationDate());
+				assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				assertEquals(dateFinRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				assertEquals(ids.pp, rel.getOtherPartyNumber());
+				assertTrue(rel instanceof TaxableRevenue);
+				assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 			}
 		}
 		{
 			final Entry o = sorted.get(1);
-			Assert.assertNotNull(o);
-			Assert.assertNull(o.getError());
-			Assert.assertNotNull(o.getParty());
-			Assert.assertEquals(NaturalPerson.class, o.getParty().getClass());
+			assertNotNull(o);
+			assertNull(o.getError());
+			assertNotNull(o.getParty());
+			assertEquals(NaturalPerson.class, o.getParty().getClass());
 
 			final NaturalPerson np = (NaturalPerson) o.getParty();
-			Assert.assertEquals(ids.pp, np.getNumber());
-			Assert.assertEquals("Mafalda", np.getFirstName());
-			Assert.assertEquals("Gautier", np.getOfficialName());
-			Assert.assertEquals(Sex.FEMALE, np.getSex());
+			assertEquals(ids.pp, np.getNumber());
+			assertEquals("Mafalda", np.getFirstName());
+			assertEquals("Gautier", np.getOfficialName());
+			assertEquals(Sex.FEMALE, np.getSex());
 
 			final List<TaxDeclaration> decls = np.getTaxDeclarations();
-			Assert.assertNotNull(decls);
-			Assert.assertEquals(1, decls.size());
+			assertNotNull(decls);
+			assertEquals(1, decls.size());
 			{
 				final TaxDeclaration decl = decls.get(0);
-				Assert.assertNotNull(decl);
-				Assert.assertEquals(date(anneeDI, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateFrom()));
-				Assert.assertEquals(date(anneeDI, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateTo()));
-				Assert.assertNull(decl.getCancellationDate());
+				assertNotNull(decl);
+				assertEquals(date(anneeDI, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateFrom()));
+				assertEquals(date(anneeDI, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(decl.getDateTo()));
+				assertNull(decl.getCancellationDate());
 
 				final List<TaxDeclarationDeadline> deadlines = decl.getDeadlines();
-				Assert.assertNotNull(deadlines);
-				Assert.assertEquals(1, deadlines.size());
+				assertNotNull(deadlines);
+				assertEquals(1, deadlines.size());
 				{
 					final TaxDeclarationDeadline deadline = deadlines.get(0);
-					Assert.assertNotNull(deadline);
-					Assert.assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
-					Assert.assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
-					Assert.assertEquals(dateDelaiDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getDeadline()));
-					Assert.assertNull(deadline.getCancellationDate());
+					assertNotNull(deadline);
+					assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getApplicationDate()));
+					assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getProcessingDate()));
+					assertEquals(dateDelaiDI, ch.vd.unireg.xml.DataHelper.xmlToCore(deadline.getDeadline()));
+					assertNull(deadline.getCancellationDate());
 				}
 
 				final List<TaxDeclarationStatus> statuses = decl.getStatuses();
-				Assert.assertNotNull(statuses);
-				Assert.assertEquals(1, statuses.size());
+				assertNotNull(statuses);
+				assertEquals(1, statuses.size());
 				{
 					final TaxDeclarationStatus status = statuses.get(0);
-					Assert.assertNotNull(status);
-					Assert.assertNull(status.getCancellationDate());
-					Assert.assertNull(status.getSource());
-					Assert.assertNull(status.getFee());
-					Assert.assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
-					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
+					assertNotNull(status);
+					assertNull(status.getCancellationDate());
+					assertNull(status.getSource());
+					assertNull(status.getFee());
+					assertEquals(dateEmissionDI, ch.vd.unireg.xml.DataHelper.xmlToCore(status.getDateFrom()));
+					assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 				}
 			}
 
-			Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(np.getDateOfBirth()));
-			Assert.assertNull(np.getDateOfDeath());
+			assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(np.getDateOfBirth()));
+			assertNull(np.getDateOfDeath());
 
 			final List<NaturalPersonCategory> cats = np.getCategories();
-			Assert.assertNotNull(cats);
-			Assert.assertEquals(1, cats.size());
+			assertNotNull(cats);
+			assertEquals(1, cats.size());
 			{
 				final NaturalPersonCategory cat = cats.get(0);
-				Assert.assertNotNull(cat);
-				Assert.assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, cat.getCategory());
-				Assert.assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(cat.getDateFrom()));
-				Assert.assertNull(cat.getDateTo());
+				assertNotNull(cat);
+				assertEquals(NaturalPersonCategoryType.C_03_C_PERMIT, cat.getCategory());
+				assertEquals(dateNaissance, ch.vd.unireg.xml.DataHelper.xmlToCore(cat.getDateFrom()));
+				assertNull(cat.getDateTo());
 			}
 
 			final List<EbillingStatus> ebillingStatuses = np.getEbillingStatuses();
-			Assert.assertNotNull(ebillingStatuses);
-			Assert.assertEquals(2, ebillingStatuses.size());
+			assertNotNull(ebillingStatuses);
+			assertEquals(2, ebillingStatuses.size());
 			{
 				final EbillingStatus st = ebillingStatuses.get(0);
-				Assert.assertNotNull(st);
-				Assert.assertEquals(EbillingStatusType.NOT_REGISTERED, st.getType());
-				Assert.assertNull(st.getSince());
+				assertNotNull(st);
+				assertEquals(EbillingStatusType.NOT_REGISTERED, st.getType());
+				assertNull(st.getSince());
 			}
 			{
 				final EbillingStatus st = ebillingStatuses.get(1);
-				Assert.assertNotNull(st);
-				Assert.assertEquals(EbillingStatusType.REGISTERED, st.getType());
-				Assert.assertEquals(dateInscriptionEfacture, XmlUtils.xmlcal2date(st.getSince()));
+				assertNotNull(st);
+				assertEquals(EbillingStatusType.REGISTERED, st.getType());
+				assertEquals(dateInscriptionEfacture, XmlUtils.xmlcal2date(st.getSince()));
 			}
 
 			final List<WithholdingTaxationPeriod> wtps = np.getWithholdingTaxationPeriods();
-			Assert.assertNotNull(wtps);
-			Assert.assertEquals(2, wtps.size());
+			assertNotNull(wtps);
+			assertEquals(2, wtps.size());
 			{
 				final WithholdingTaxationPeriod wtp = wtps.get(0);
-				Assert.assertNotNull(wtp);
-				Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-				Assert.assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-				Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+				assertNotNull(wtp);
+				assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+				assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+				assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+				assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 			}
 			{
 				final WithholdingTaxationPeriod wtp = wtps.get(1);
-				Assert.assertNotNull(wtp);
-				Assert.assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-				Assert.assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
-				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
-				Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
+				assertNotNull(wtp);
+				assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+				assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+				assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+				assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 			}
 
-			Assert.assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(np.getActivityStartDate()));
-			Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(np.getActivityEndDate()));
+			assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(np.getActivityStartDate()));
+			assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(np.getActivityEndDate()));
 
 			final List<TaxResidence> fors = np.getMainTaxResidences();
-			Assert.assertNotNull(fors);
-			Assert.assertEquals(1, fors.size());
+			assertNotNull(fors);
+			assertEquals(1, fors.size());
 			{
 				final TaxResidence ff = fors.get(0);
-				Assert.assertNotNull(ff);
-				Assert.assertNull(ff.getCancellationDate());
-				Assert.assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
-				Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateTo()));
-				Assert.assertEquals(LiabilityChangeReason.MAJORITY, ff.getStartReason());
-				Assert.assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, ff.getEndReason());
-				Assert.assertEquals(TaxType.INCOME_WEALTH, ff.getTaxType());
-				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), ff.getTaxationAuthorityFSOId());
-				Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
-				Assert.assertEquals(TaxationMethod.ORDINARY, ff.getTaxationMethod());
-				Assert.assertEquals(TaxLiabilityReason.RESIDENCE, ff.getTaxLiabilityReason());
-				Assert.assertFalse(ff.isVirtual());
+				assertNotNull(ff);
+				assertNull(ff.getCancellationDate());
+				assertEquals(dateNaissance.addYears(18), ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateFrom()));
+				assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(ff.getDateTo()));
+				assertEquals(LiabilityChangeReason.MAJORITY, ff.getStartReason());
+				assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, ff.getEndReason());
+				assertEquals(TaxType.INCOME_WEALTH, ff.getTaxType());
+				assertEquals(MockCommune.Lausanne.getNoOFS(), ff.getTaxationAuthorityFSOId());
+				assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ff.getTaxationAuthorityType());
+				assertEquals(TaxationMethod.ORDINARY, ff.getTaxationMethod());
+				assertEquals(TaxLiabilityReason.RESIDENCE, ff.getTaxLiabilityReason());
+				assertFalse(ff.isVirtual());
 			}
 
 			final List<RelationBetweenParties> rels = np.getRelationsBetweenParties();
-			Assert.assertNotNull(rels);
-			Assert.assertEquals(1, rels.size());
+			assertNotNull(rels);
+			assertEquals(1, rels.size());
 			{
 				final RelationBetweenParties rel = rels.get(0);
-				Assert.assertNotNull(rel);
-				Assert.assertNull(rel.getCancellationDate());
-				Assert.assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
-				Assert.assertEquals(dateFinRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
-				Assert.assertEquals(ids.dpi, rel.getOtherPartyNumber());
-				Assert.assertTrue(rel instanceof TaxableRevenue);
-				Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
+				assertNotNull(rel);
+				assertNull(rel.getCancellationDate());
+				assertEquals(dateDebutRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateFrom()));
+				assertEquals(dateFinRT, ch.vd.unireg.xml.DataHelper.xmlToCore(rel.getDateTo()));
+				assertEquals(ids.dpi, rel.getOtherPartyNumber());
+				assertTrue(rel instanceof TaxableRevenue);
+				assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 			}
 
 			final List<TaxLiability> tls = np.getTaxLiabilities();
-			Assert.assertNotNull(tls);
-			Assert.assertEquals(1, tls.size());
+			assertNotNull(tls);
+			assertEquals(1, tls.size());
 			{
 				final TaxLiability tl = tls.get(0);
-				Assert.assertNotNull(tl);
-				Assert.assertEquals(OrdinaryResident.class, tl.getClass());
-				Assert.assertEquals(date(dateNaissance.addYears(18).year(), 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateFrom()));
-				Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateTo()));
-				Assert.assertEquals(LiabilityChangeReason.MAJORITY, tl.getStartReason());
-				Assert.assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, tl.getEndReason());
+				assertNotNull(tl);
+				assertEquals(OrdinaryResident.class, tl.getClass());
+				assertEquals(date(dateNaissance.addYears(18).year(), 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateFrom()));
+				assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(tl.getDateTo()));
+				assertEquals(LiabilityChangeReason.MAJORITY, tl.getStartReason());
+				assertEquals(LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY, tl.getEndReason());
 			}
 
 			final List<TaxationPeriod> tps = np.getTaxationPeriods();
-			Assert.assertNotNull(tps);
-			Assert.assertEquals(7, tps.size());
+			assertNotNull(tps);
+			assertEquals(7, tps.size());
 			{
 				final TaxationPeriod tp = tps.get(0);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2008, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2008, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2008, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2008, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(1);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2009, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2009, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(2);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2010, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2010, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(3);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2011, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2011, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2011, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2011, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(4);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2012, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2012, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2012, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2012, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(5);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertEquals((Long) ids.di, tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2013, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(date(2013, 12, 31), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertEquals((Long) ids.di, tp.getTaxDeclarationId());
 			}
 			{
 				final TaxationPeriod tp = tps.get(6);
-				Assert.assertNotNull(tp);
-				Assert.assertEquals(date(2014, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
-				Assert.assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
-				Assert.assertNull(tp.getTaxDeclarationId());
+				assertNotNull(tp);
+				assertEquals(date(2014, 1, 1), ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateFrom()));
+				assertEquals(dateDepartHS, ch.vd.unireg.xml.DataHelper.xmlToCore(tp.getDateTo()));
+				assertNull(tp.getTaxDeclarationId());
 			}
 		}
 	}
@@ -4179,64 +4042,56 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final PersonnePhysique conjoint = addNonHabitant("Mariam", "Labaffe", null, Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, conjoint, dateMariage, null);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			final PersonnePhysique conjoint = addNonHabitant("Mariam", "Labaffe", null, Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, conjoint, dateMariage, null);
 
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
-				addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
+			addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.ChateauDoex);
 
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, dateDebutRT, dateFinRT, false);
 
-				assertValidInteger(pp.getNumero());
-				assertValidInteger(conjoint.getNumero());
-				final Ids ids = new Ids();
-				ids.ppHabitant = pp.getNumero().intValue();
-				ids.ppNonHabitant = conjoint.getNumero().intValue();
-				return ids;
-			}
+			assertValidInteger(pp.getNumero());
+			assertValidInteger(conjoint.getNumero());
+			final Ids ids1 = new Ids();
+			ids1.ppHabitant = pp.getNumero().intValue();
+			ids1.ppNonHabitant = conjoint.getNumero().intValue();
+			return ids1;
 		});
 
 		final Parties parties = service.getParties(Arrays.asList(ids.ppHabitant, ids.ppNonHabitant), EnumSet.of(InternalPartyPart.WITHHOLDING_TAXATION_PERIODS));
-		Assert.assertNotNull(parties);
-		Assert.assertNotNull(parties.getEntries());
-		Assert.assertEquals(2, parties.getEntries().size());
+		assertNotNull(parties);
+		assertNotNull(parties.getEntries());
+		assertEquals(2, parties.getEntries().size());
 
 		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-		Collections.sort(sorted, new Comparator<Entry>() {
-			@Override
-			public int compare(Entry o1, Entry o2) {
-				return o1.getPartyNo() - o2.getPartyNo();
-			}
-		});
+		sorted.sort(Comparator.comparingInt(Entry::getPartyNo));
 
 		{
 			final Entry entry = sorted.get(0);
-			Assert.assertEquals(ids.ppHabitant, entry.getPartyNo());
+			assertEquals(ids.ppHabitant, entry.getPartyNo());
 
 			final Party party = entry.getParty();
-			Assert.assertNotNull(party);
-			Assert.assertEquals(NaturalPerson.class, party.getClass());
+			assertNotNull(party);
+			assertEquals(NaturalPerson.class, party.getClass());
 
 			final NaturalPerson np = (NaturalPerson) party;
-			Assert.assertNotNull(np.getWithholdingTaxationPeriods());
-			Assert.assertEquals(4, np.getWithholdingTaxationPeriods().size());      // on vérifie juste qu'elles sont bien là... 2003 à 2006 = 4
+			assertNotNull(np.getWithholdingTaxationPeriods());
+			assertEquals(4, np.getWithholdingTaxationPeriods().size());      // on vérifie juste qu'elles sont bien là... 2003 à 2006 = 4
 		}
 		{
 			final Entry entry = sorted.get(1);
-			Assert.assertEquals(ids.ppNonHabitant, entry.getPartyNo());
+			assertEquals(ids.ppNonHabitant, entry.getPartyNo());
 
 			final Party party = entry.getParty();
-			Assert.assertNotNull(party);
-			Assert.assertEquals(NaturalPerson.class, party.getClass());
+			assertNotNull(party);
+			assertEquals(NaturalPerson.class, party.getClass());
 
 			final NaturalPerson np = (NaturalPerson) party;
-			Assert.assertNotNull(np.getWithholdingTaxationPeriods());
-			Assert.assertEquals(0, np.getWithholdingTaxationPeriods().size());      // elle n'a rien du tout
+			assertNotNull(np.getWithholdingTaxationPeriods());
+			assertEquals(0, np.getWithholdingTaxationPeriods().size());      // elle n'a rien du tout
 		}
 	}
 
@@ -4264,49 +4119,41 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique connu = addHabitant(noIndividu);
-				final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
-				final Ids ids = new Ids();
-				ids.ppConnu = connu.getNumero().intValue();
-				ids.ppInconnu = inconnu.getNumero().intValue();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique connu = addHabitant(noIndividu);
+			final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
+			final Ids ids1 = new Ids();
+			ids1.ppConnu = connu.getNumero().intValue();
+			ids1.ppInconnu = inconnu.getNumero().intValue();
+			return ids1;
 		});
 
 		final Parties parties = service.getParties(Arrays.asList(ids.ppConnu, ids.ppInconnu), null);
-		Assert.assertNotNull(parties);
-		Assert.assertNotNull(parties.getEntries());
-		Assert.assertEquals(2, parties.getEntries().size());
+		assertNotNull(parties);
+		assertNotNull(parties.getEntries());
+		assertEquals(2, parties.getEntries().size());
 
 		final List<Entry> sorted = new ArrayList<>(parties.getEntries());
-		Collections.sort(sorted, new Comparator<Entry>() {
-			@Override
-			public int compare(Entry o1, Entry o2) {
-				return o1.getPartyNo() - o2.getPartyNo();
-			}
-		});
+		sorted.sort(Comparator.comparingInt(Entry::getPartyNo));
 
 		{
 			final Entry entry = sorted.get(0);
-			Assert.assertEquals(ids.ppConnu, entry.getPartyNo());
+			assertEquals(ids.ppConnu, entry.getPartyNo());
 
 			final Party party = entry.getParty();
-			Assert.assertNotNull(party);
-			Assert.assertEquals(NaturalPerson.class, party.getClass());
+			assertNotNull(party);
+			assertEquals(NaturalPerson.class, party.getClass());
 		}
 		{
 			final Entry entry = sorted.get(1);
-			Assert.assertEquals(ids.ppInconnu, entry.getPartyNo());
+			assertEquals(ids.ppInconnu, entry.getPartyNo());
 
 			final Party party = entry.getParty();
-			Assert.assertNull(party);
+			assertNull(party);
 
 			final Error error = entry.getError();
-			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ids.ppInconnu, error.getErrorMessage());
-			Assert.assertEquals(ErrorType.BUSINESS, error.getType());
+			assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ids.ppInconnu, error.getErrorMessage());
+			assertEquals(ErrorType.BUSINESS, error.getType());
 		}
 	}
 
@@ -4327,20 +4174,17 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// mise en place fiscale
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
-				return inconnu.getNumero().intValue();
-			}
+		final int ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique inconnu = addHabitant(noIndividuAbsent);
+			return inconnu.getNumero().intValue();
 		});
 
 		try {
-			final Party party = service.getParty(ppId, null);
-			Assert.fail("Aurait dû partir en erreur...");
+			service.getParty(ppId, null);
+			fail("Aurait dû partir en erreur...");
 		}
 		catch (IndividuNotFoundException e) {
-			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ppId, e.getMessage());
+			assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ppId, e.getMessage());
 		}
 	}
 
@@ -4356,38 +4200,35 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
+		final Ids ids = doInNewTransactionAndSession(status -> {
 
-				final DebiteurPrestationImposable dpiSans = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				dpiSans.setAciAutreCanton(Boolean.FALSE);
+			final DebiteurPrestationImposable dpiSans = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			dpiSans.setAciAutreCanton(Boolean.FALSE);
 
-				final DebiteurPrestationImposable dpiAvec = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
-				dpiAvec.setAciAutreCanton(Boolean.TRUE);
+			final DebiteurPrestationImposable dpiAvec = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			dpiAvec.setAciAutreCanton(Boolean.TRUE);
 
-				final Ids ids = new Ids();
-				ids.dpiAvecFlag = dpiAvec.getNumero().intValue();
-				ids.dpiSansFlag = dpiSans.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.dpiAvecFlag = dpiAvec.getNumero().intValue();
+			ids1.dpiSansFlag = dpiSans.getNumero().intValue();
+			return ids1;
 		});
 
 		// interrogation
 
 		// cas avec flag
 		final Party avec = service.getParty(ids.dpiAvecFlag, null);
-		Assert.assertNotNull(avec);
-		Assert.assertEquals(Debtor.class, avec.getClass());
+		assertNotNull(avec);
+		assertEquals(Debtor.class, avec.getClass());
 		final Debtor avecDebtor = (Debtor) avec;
-		Assert.assertTrue(avecDebtor.isOtherCantonTaxAdministration());
+		assertTrue(avecDebtor.isOtherCantonTaxAdministration());
 
 		// cas sans flag
 		final Party sans = service.getParty(ids.dpiSansFlag, null);
-		Assert.assertNotNull(sans);
-		Assert.assertEquals(Debtor.class, sans.getClass());
+		assertNotNull(sans);
+		assertEquals(Debtor.class, sans.getClass());
 		final Debtor sansDebtor = (Debtor) sans;
-		Assert.assertFalse(sansDebtor.isOtherCantonTaxAdministration());
+		assertFalse(sansDebtor.isOtherCantonTaxAdministration());
 	}
 
 	@Test
@@ -4399,51 +4240,48 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique avec = addNonHabitant("Albert", "Pommery", date(1985, 3, 15), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(avec, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addEvenementFiscalFor(avec, ffp, date(2000, 1, 1), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+		final Ids ids = doInNewTransaction(transactionStatus -> {
+			final PersonnePhysique avec = addNonHabitant("Albert", "Pommery", date(1985, 3, 15), Sexe.MASCULIN);
+			final ForFiscalPrincipal ffp = addForPrincipal(avec, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			addEvenementFiscalFor(avec, ffp, date(2000, 1, 1), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
 
-				final PersonnePhysique sans = addNonHabitant("Bartholomé", "Mazo", date(1956, 8, 3), Sexe.MASCULIN);
+			final PersonnePhysique sans = addNonHabitant("Bartholomé", "Mazo", date(1956, 8, 3), Sexe.MASCULIN);
 
-				final Ids ids = new Ids();
-				ids.ppAvec = avec.getNumero().intValue();
-				ids.ppSans = sans.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.ppAvec = avec.getNumero().intValue();
+			ids1.ppSans = sans.getNumero().intValue();
+			return ids1;
 		});
 
 		// interrogation
 
 		// sans événement fiscal
 		final FiscalEvents sans = service.getFiscalEvents(ids.ppSans);
-		Assert.assertNotNull(sans);
-		Assert.assertNotNull(sans.getEvents());
-		Assert.assertEquals(0, sans.getEvents().size());
+		assertNotNull(sans);
+		assertNotNull(sans.getEvents());
+		assertEquals(0, sans.getEvents().size());
 
 		// avec un événement fiscal
 		final FiscalEvents avec = service.getFiscalEvents(ids.ppAvec);
-		Assert.assertNotNull(avec);
-		Assert.assertNotNull(avec.getEvents());
-		Assert.assertEquals(1, avec.getEvents().size());
+		assertNotNull(avec);
+		assertNotNull(avec.getEvents());
+		assertEquals(1, avec.getEvents().size());
 		{
 			final FiscalEvent evt = avec.getEvents().get(0);
-			Assert.assertNotNull(evt);
-			Assert.assertEquals(AuthenticationHelper.getCurrentPrincipal(), evt.getUser());
-			Assert.assertNotNull(evt.getTreatmentDate());
-			Assert.assertEquals("Ouverture d'un for principal pour motif 'Arrivée de hors-Suisse'", evt.getDescription());
+			assertNotNull(evt);
+			assertEquals(AuthenticationHelper.getCurrentPrincipal(), evt.getUser());
+			assertNotNull(evt.getTreatmentDate());
+			assertEquals("Ouverture d'un for principal pour motif 'Arrivée de hors-Suisse'", evt.getDescription());
 
 			final EvenementFiscal xml = evt.getEvent();
-			Assert.assertNotNull(xml);
-			Assert.assertEquals(OuvertureFor.class, xml.getClass());
-			Assert.assertEquals(date(2000, 1, 1), DataHelper.webToRegDate(xml.getDate()));
-			Assert.assertEquals(CategorieTiers.PP, xml.getCategorieTiers());
-			Assert.assertEquals(ids.ppAvec, xml.getNumeroTiers());
+			assertNotNull(xml);
+			assertEquals(OuvertureFor.class, xml.getClass());
+			assertEquals(date(2000, 1, 1), DataHelper.webToRegDate(xml.getDate()));
+			assertEquals(CategorieTiers.PP, xml.getCategorieTiers());
+			assertEquals(ids.ppAvec, xml.getNumeroTiers());
 
 			final OuvertureFor ouverture = (OuvertureFor) xml;
-			Assert.assertEquals(LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY, ouverture.getMotifOuverture());
+			assertEquals(LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY, ouverture.getMotifOuverture());
 		}
 	}
 
@@ -4454,14 +4292,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final String codeToto = "TOTO";
 
 		// mise en place des étiquettes manquantes (héritage et collaborateur sont mis en place par le AbstractBusinessTest...)
-		final long idCollAdmNouvelleEntite = doInNewTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				addEtiquette(codeToto, "Etiquette TOTO", TypeTiersEtiquette.PP_MC, null);
+		final long idCollAdmNouvelleEntite = doInNewTransaction(status -> {
+			addEtiquette(codeToto, "Etiquette TOTO", TypeTiersEtiquette.PP_MC, null);
 
-				final CollectiviteAdministrative nouvelleEntite = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
-				return nouvelleEntite.getNumero();
-			}
+			final CollectiviteAdministrative nouvelleEntite = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
+			return nouvelleEntite.getNumero();
 		});
 
 		final class Ids {
@@ -4471,174 +4306,171 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 
 		// mise en place des individus avec leur liens d'étiquette
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique prn = addNonHabitant("Albert", "Mucas", null, Sexe.MASCULIN);
-				final PersonnePhysique cjt = addNonHabitant("Françoise", "Mucas", null, Sexe.FEMININ);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(prn, cjt, date(2008, 1, 1), null);
-				final MenageCommun menage = couple.getMenage();
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique prn = addNonHabitant("Albert", "Mucas", null, Sexe.MASCULIN);
+			final PersonnePhysique cjt = addNonHabitant("Françoise", "Mucas", null, Sexe.FEMININ);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(prn, cjt, date(2008, 1, 1), null);
+			final MenageCommun menage = couple.getMenage();
 
-				final Etiquette collaborateurs = etiquetteService.getEtiquette(codeCollaborateur);
-				final Etiquette toto = etiquetteService.getEtiquette(codeToto);
+			final Etiquette collaborateurs = etiquetteService.getEtiquette(codeCollaborateur);
+			final Etiquette toto = etiquetteService.getEtiquette(codeToto);
 
-				addEtiquetteTiers(collaborateurs, prn, date(2008, 5, 12), date(2010, 8, 31));
-				addEtiquetteTiers(collaborateurs, prn, date(2015, 2, 1), null);
-				addEtiquetteTiers(collaborateurs, cjt, date(2009, 6, 1), date(2014, 5, 30));
+			addEtiquetteTiers(collaborateurs, prn, date(2008, 5, 12), date(2010, 8, 31));
+			addEtiquetteTiers(collaborateurs, prn, date(2015, 2, 1), null);
+			addEtiquetteTiers(collaborateurs, cjt, date(2009, 6, 1), date(2014, 5, 30));
 
-				addEtiquetteTiers(toto, cjt, date(2005, 3, 1), null);
-				addEtiquetteTiers(toto, menage, date(2010, 1, 1), date(2010, 7, 15));
+			addEtiquetteTiers(toto, cjt, date(2005, 3, 1), null);
+			addEtiquetteTiers(toto, menage, date(2010, 1, 1), date(2010, 7, 15));
 
-				final Ids ids = new Ids();
-				ids.prn = prn.getNumero().intValue();
-				ids.cjt = cjt.getNumero().intValue();
-				ids.mc = menage.getNumero().intValue();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.prn = prn.getNumero().intValue();
+			ids1.cjt = cjt.getNumero().intValue();
+			ids1.mc = menage.getNumero().intValue();
+			return ids1;
 		});
 
 		// interrogation
 		final Parties parties = service.getParties(Arrays.asList(ids.prn, ids.cjt, ids.mc), EnumSet.of(InternalPartyPart.LABELS));
 		final Map<Integer, Party> mapParties = parties.getEntries().stream()
 				.collect(Collectors.toMap(Entry::getPartyNo, Entry::getParty));
-		Assert.assertEquals(3, mapParties.size());
+		assertEquals(3, mapParties.size());
 
 		// principal
 		{
 			final Party party = mapParties.get(ids.prn);
-			Assert.assertNotNull(party);
+			assertNotNull(party);
 
 			final List<PartyLabel> labels = party.getLabels();
-			Assert.assertNotNull(labels);
-			Assert.assertEquals(2, labels.size());
+			assertNotNull(labels);
+			assertEquals(2, labels.size());
 			{
 				final PartyLabel label = labels.get(0);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2008, 5, 12), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertEquals(date(2010, 8, 31), DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateur, label.getLabel());
-				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
-				Assert.assertFalse(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2008, 5, 12), DataHelper.webToRegDate(label.getDateFrom()));
+				assertEquals(date(2010, 8, 31), DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeCollaborateur, label.getLabel());
+				assertEquals("DS Collaborateur", label.getDisplayLabel());
+				assertFalse(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNotNull(ca);
-				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
-				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+				assertNotNull(ca);
+				assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
+				assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 			{
 				final PartyLabel label = labels.get(1);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2015, 2, 1), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateur, label.getLabel());
-				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
-				Assert.assertFalse(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2015, 2, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				assertNull(DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeCollaborateur, label.getLabel());
+				assertEquals("DS Collaborateur", label.getDisplayLabel());
+				assertFalse(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNotNull(ca);
-				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
-				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+				assertNotNull(ca);
+				assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
+				assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 		}
 
 		// conjoint
 		{
 			final Party party = mapParties.get(ids.cjt);
-			Assert.assertNotNull(party);
+			assertNotNull(party);
 
 			final List<PartyLabel> labels = party.getLabels();
-			Assert.assertNotNull(labels);
-			Assert.assertEquals(2, labels.size());
+			assertNotNull(labels);
+			assertEquals(2, labels.size());
 			{
 				final PartyLabel label = labels.get(0);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2005, 3, 1), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeToto, label.getLabel());
-				Assert.assertEquals("Etiquette TOTO", label.getDisplayLabel());
-				Assert.assertFalse(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2005, 3, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				assertNull(DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeToto, label.getLabel());
+				assertEquals("Etiquette TOTO", label.getDisplayLabel());
+				assertFalse(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNull(ca);
+				assertNull(ca);
 			}
 			{
 				final PartyLabel label = labels.get(1);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2009, 6, 1), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertEquals(date(2014, 5, 30), DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateur, label.getLabel());
-				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
-				Assert.assertFalse(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2009, 6, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				assertEquals(date(2014, 5, 30), DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeCollaborateur, label.getLabel());
+				assertEquals("DS Collaborateur", label.getDisplayLabel());
+				assertFalse(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNotNull(ca);
-				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
-				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+				assertNotNull(ca);
+				assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
+				assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 		}
 
 		// ménage
 		{
 			final Party party = mapParties.get(ids.mc);
-			Assert.assertNotNull(party);
+			assertNotNull(party);
 
 			final List<PartyLabel> labels = party.getLabels();
-			Assert.assertNotNull(labels);
-			Assert.assertEquals(5, labels.size());
+			assertNotNull(labels);
+			assertEquals(5, labels.size());
 			{
 				final PartyLabel label = labels.get(0);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2005, 3, 1), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertEquals(date(2009, 12, 31), DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeToto, label.getLabel());
-				Assert.assertEquals("Etiquette TOTO", label.getDisplayLabel());
-				Assert.assertTrue(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2005, 3, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				assertEquals(date(2009, 12, 31), DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeToto, label.getLabel());
+				assertEquals("Etiquette TOTO", label.getDisplayLabel());
+				assertTrue(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNull(ca);
+				assertNull(ca);
 			}
 			{
 				final PartyLabel label = labels.get(1);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2008, 5, 12), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertEquals(date(2014, 5, 30), DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateur, label.getLabel());
-				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
-				Assert.assertTrue(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2008, 5, 12), DataHelper.webToRegDate(label.getDateFrom()));
+				assertEquals(date(2014, 5, 30), DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeCollaborateur, label.getLabel());
+				assertEquals("DS Collaborateur", label.getDisplayLabel());
+				assertTrue(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNotNull(ca);
-				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
-				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+				assertNotNull(ca);
+				assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
+				assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 			{
 				final PartyLabel label = labels.get(2);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2010, 1, 1), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertEquals(date(2010, 7, 15), DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeToto, label.getLabel());
-				Assert.assertEquals("Etiquette TOTO", label.getDisplayLabel());
-				Assert.assertFalse(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2010, 1, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				assertEquals(date(2010, 7, 15), DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeToto, label.getLabel());
+				assertEquals("Etiquette TOTO", label.getDisplayLabel());
+				assertFalse(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNull(ca);
+				assertNull(ca);
 			}
 			{
 				final PartyLabel label = labels.get(3);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2010, 7, 16), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeToto, label.getLabel());
-				Assert.assertEquals("Etiquette TOTO", label.getDisplayLabel());
-				Assert.assertTrue(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2010, 7, 16), DataHelper.webToRegDate(label.getDateFrom()));
+				assertNull(DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeToto, label.getLabel());
+				assertEquals("Etiquette TOTO", label.getDisplayLabel());
+				assertTrue(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNull(ca);
+				assertNull(ca);
 			}
 			{
 				final PartyLabel label = labels.get(4);
-				Assert.assertNotNull(label);
-				Assert.assertEquals(date(2015, 2, 1), DataHelper.webToRegDate(label.getDateFrom()));
-				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateur, label.getLabel());
-				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
-				Assert.assertTrue(label.isVirtual());
+				assertNotNull(label);
+				assertEquals(date(2015, 2, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				assertNull(DataHelper.webToRegDate(label.getDateTo()));
+				assertEquals(codeCollaborateur, label.getLabel());
+				assertEquals("DS Collaborateur", label.getDisplayLabel());
+				assertTrue(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
-				Assert.assertNotNull(ca);
-				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
-				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+				assertNotNull(ca);
+				assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
+				assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 		}
 	}
@@ -4675,13 +4507,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// on demande les rapports-entre-tiers
 		final Party party = service.getParty(ids.decede.intValue(), Collections.singleton(InternalPartyPart.RELATIONS_BETWEEN_PARTIES));
-		Assert.assertNotNull(party);
+		assertNotNull(party);
 
 		// on doit bien recevoir tous les rapports-entre-tiers *sauf* les parentés et les relations d'héritages
 		// qui - pour des raisons de comptabilité ascendante - ne sont exposés que sur demande explicite.
 		final List<RelationBetweenParties> relations = party.getRelationsBetweenParties();
-		Assert.assertNotNull(relations);
-		Assert.assertEquals(1, relations.size());
+		assertNotNull(relations);
+		assertEquals(1, relations.size());
 		assertRepresentative(ids.representant.intValue(), RegDate.get(2000, 1, 1), null, false, relations.get(0));
 	}
 
@@ -4717,11 +4549,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// on demande les relations d'héritage : on ne reçoit qu'elles
 		final Party party = service.getParty(ids.decede.intValue(), Collections.singleton(InternalPartyPart.INHERITANCE_RELATIONSHIPS));
-		Assert.assertNotNull(party);
+		assertNotNull(party);
 
 		final List<RelationBetweenParties> relations = party.getRelationsBetweenParties();
-		Assert.assertNotNull(relations);
-		Assert.assertEquals(2, relations.size());
+		assertNotNull(relations);
+		assertEquals(2, relations.size());
 		relations.sort(Comparator.comparing(RelationBetweenParties::getOtherPartyNumber));
 		assertInheritanceTo(ids.heritier1.intValue(), dateDeces, null, true, relations.get(0));
 		assertInheritanceTo(ids.heritier2.intValue(), dateDeces, null, false, relations.get(1));
@@ -4741,16 +4573,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = service.getImmovableProperty(id);
-		Assert.assertNotNull(immo);
-		Assert.assertTrue(immo instanceof RealEstate);
+		assertNotNull(immo);
+		assertTrue(immo instanceof RealEstate);
 
 		final RealEstate realEstate = (RealEstate) immo;
-		Assert.assertEquals(id.longValue(), realEstate.getId());
-		Assert.assertEquals("some egrid", realEstate.getEgrid());
-		Assert.assertNull(realEstate.getCancellationDate());
+		assertEquals(id.longValue(), realEstate.getId());
+		assertEquals("some egrid", realEstate.getEgrid());
+		assertNull(realEstate.getCancellationDate());
 
 		final List<Location> locations = realEstate.getLocations();
-		Assert.assertEquals(1, locations.size());
+		assertEquals(1, locations.size());
 		assertLocation(RegDate.get(2000, 1, 1), null, 579, null, null, null, 5498, locations.get(0));
 	}
 
@@ -4774,8 +4606,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// on vérifie qu'on reçoit bien trois réponses
 		final List<ImmovablePropertyEntry> entries = immovableProperties.getEntries();
-		Assert.assertNotNull(entries);
-		Assert.assertEquals(3, entries.size());
+		assertNotNull(entries);
+		assertEquals(3, entries.size());
 		assertNotFoundEntry(idInexistant, entries.get(0));
 		assertFoundEntry(ids.get(0), entries.get(1));
 		assertFoundEntry(ids.get(1), entries.get(2));
@@ -4806,23 +4638,23 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		final Building building = service.getBuilding(ids.batiment);
-		Assert.assertNotNull(building);
-		Assert.assertEquals(ids.batiment, building.getId());
+		assertNotNull(building);
+		assertEquals(ids.batiment, building.getId());
 
 		final List<BuildingDescription> descriptions = building.getDescriptions();
-		Assert.assertEquals(1, descriptions.size());
+		assertEquals(1, descriptions.size());
 		final BuildingDescription description0 = descriptions.get(0);
-		Assert.assertEquals(RegDate.get(2000, 1, 1), DataHelper.webToRegDate(description0.getDateFrom()));
-		Assert.assertNull(description0.getDateTo());
-		Assert.assertEquals("Centrale électrique", description0.getType());
-		Assert.assertEquals(Integer.valueOf(300), description0.getArea());
+		assertEquals(RegDate.get(2000, 1, 1), DataHelper.webToRegDate(description0.getDateFrom()));
+		assertNull(description0.getDateTo());
+		assertEquals("Centrale électrique", description0.getType());
+		assertEquals(Integer.valueOf(300), description0.getArea());
 
 		final List<BuildingSetting> settings = building.getSettings();
-		Assert.assertEquals(1, settings.size());
+		assertEquals(1, settings.size());
 		final BuildingSetting setting0 = settings.get(0);
-		Assert.assertEquals(RegDate.get(2000, 1, 1), DataHelper.webToRegDate(setting0.getDateFrom()));
-		Assert.assertNull(setting0.getDateTo());
-		Assert.assertEquals(Integer.valueOf(310), setting0.getArea());
+		assertEquals(RegDate.get(2000, 1, 1), DataHelper.webToRegDate(setting0.getDateFrom()));
+		assertNull(setting0.getDateTo());
+		assertEquals(Integer.valueOf(310), setting0.getArea());
 	}
 
 	@Test
@@ -4841,8 +4673,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// on vérifie qu'on reçoit bien trois réponses
 		final List<BuildingEntry> entries = buildings.getEntries();
-		Assert.assertNotNull(entries);
-		Assert.assertEquals(3, entries.size());
+		assertNotNull(entries);
+		assertEquals(3, entries.size());
 		assertNotFoundEntry(idInexistant, entries.get(0));
 		assertFoundEntry(ids.get(0), entries.get(1));
 		assertFoundEntry(ids.get(1), entries.get(2));
@@ -4892,12 +4724,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// on fait l'appel
 		final CommunityOfOwners community = service.getCommunityOfOwners(ids.communaute);
-		Assert.assertNotNull(community);
-		Assert.assertEquals(ids.communaute, community.getId());
-		Assert.assertEquals(CommunityOfOwnersType.COMMUNITY_OF_PROPERTY, community.getType());
+		assertNotNull(community);
+		assertEquals(ids.communaute, community.getId());
+		assertEquals(CommunityOfOwnersType.COMMUNITY_OF_PROPERTY, community.getType());
 
 		final List<RightHolder> members = community.getMembers();
-		Assert.assertEquals(2, members.size());
+		assertEquals(2, members.size());
 		assertOwnerParty(ids.pp, members.get(0));
 		assertOwnerNaturalPerson("Attila", "Misère", RegDate.get(2002, 12, 22), members.get(1));
 	}
@@ -4957,12 +4789,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// on demande trois communautés : deux existantes et une inconnue
 		final Long idCommunauteInconnue = -1L;
 		final CommunityOfOwnersList list = service.getCommunitiesOfOwners(Arrays.asList(ids.communaute1, ids.communaute2, idCommunauteInconnue));
-		Assert.assertNotNull(list);
+		assertNotNull(list);
 
 		// on vérifie qu'on reçoit bien trois réponses
 		final List<CommunityOfOwnersEntry> entries = list.getEntries();
-		Assert.assertNotNull(entries);
-		Assert.assertEquals(3, entries.size());
+		assertNotNull(entries);
+		assertEquals(3, entries.size());
 		assertNotFoundEntry(idCommunauteInconnue, entries.get(0));
 		assertFoundEntry(ids.communaute1, entries.get(1));
 		assertFoundEntry(ids.communaute2, entries.get(2));
@@ -4995,103 +4827,103 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		// on demande deux communautés : une existante et une inconnue
-		Assert.assertNull(service.getCommunityOfHeirs(-1));
+		assertNull(service.getCommunityOfHeirs(-1));
 
 		// on vérifie qu'on reçoit bien trois réponses
 		final CommunityOfHeirs community = service.getCommunityOfHeirs((int) ids.defunt);
-		Assert.assertNotNull(community);
-		Assert.assertEquals(ids.defunt, community.getInheritedFromNumber());
-		Assert.assertEquals(RegDate.get(2016, 5, 13), DataHelper.webToRegDate(community.getInheritanceDateFrom()));
+		assertNotNull(community);
+		assertEquals(ids.defunt, community.getInheritedFromNumber());
+		assertEquals(RegDate.get(2016, 5, 13), DataHelper.webToRegDate(community.getInheritanceDateFrom()));
 
 		final List<CommunityOfHeirMember> members = community.getMembers();
-		Assert.assertNotNull(members);
-		Assert.assertEquals(2, members.size());
+		assertNotNull(members);
+		assertEquals(2, members.size());
 		assertMember(ids.heritier1, RegDate.get(2016, 5, 13), null, null, members.get(0));
 		assertMember(ids.heritier2, RegDate.get(2016, 5, 15), null, null, members.get(1));
 
 		final List<CommunityOfHeirLeader> leaders = community.getLeaders();
-		Assert.assertNotNull(leaders);
-		Assert.assertEquals(1, leaders.size());
+		assertNotNull(leaders);
+		assertEquals(1, leaders.size());
 		assertLeader(ids.heritier1, RegDate.get(2016, 5, 13), null, null, leaders.get(0));
 	}
 
 	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {
 		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
-		Assert.assertEquals(firstName, identity.getFirstName());
-		Assert.assertEquals(lastName, identity.getLastName());
-		Assert.assertEquals(dateOfBirth, DataHelper.webToRegDate(identity.getDateOfBirth()));
+		assertEquals(firstName, identity.getFirstName());
+		assertEquals(lastName, identity.getLastName());
+		assertEquals(dateOfBirth, DataHelper.webToRegDate(identity.getDateOfBirth()));
 	}
 
 	private static void assertOwnerParty(long id, RightHolder rightHolder) {
-		Assert.assertEquals(Integer.valueOf((int) id), rightHolder.getTaxPayerNumber());
+		assertEquals(Integer.valueOf((int) id), rightHolder.getTaxPayerNumber());
 	}
 
 	private void assertShare(int numerator, int denominator, Share share) {
-		Assert.assertNotNull(share);
-		Assert.assertEquals(numerator, share.getNumerator());
-		Assert.assertEquals(denominator, share.getDenominator());
+		assertNotNull(share);
+		assertEquals(numerator, share.getNumerator());
+		assertEquals(denominator, share.getDenominator());
 	}
 
 	private void assertCaseIdentifier(int officeNumber, String caseNumber, CaseIdentifier caseIdentifier) {
-		Assert.assertNotNull(caseIdentifier);
-		Assert.assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
-		Assert.assertEquals(caseNumber, caseIdentifier.getCaseNumberText());
+		assertNotNull(caseIdentifier);
+		assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
+		assertEquals(caseNumber, caseIdentifier.getCaseNumberText());
 	}
 
 	private static void assertLocation(RegDate dateFrom, RegDate dateTo, int parcelNumber, Integer index1, Integer index2, Integer index3, int noOfsCommune, Location location) {
-		Assert.assertNotNull(location);
-		Assert.assertEquals(dateFrom, DataHelper.webToRegDate(location.getDateFrom()));
-		Assert.assertEquals(dateTo, DataHelper.webToRegDate(location.getDateTo()));
-		Assert.assertEquals(parcelNumber, location.getParcelNumber());
-		Assert.assertEquals(index1, location.getIndex1());
-		Assert.assertEquals(index2, location.getIndex2());
-		Assert.assertEquals(index3, location.getIndex3());
-		Assert.assertEquals(noOfsCommune, location.getMunicipalityFsoId());
+		assertNotNull(location);
+		assertEquals(dateFrom, DataHelper.webToRegDate(location.getDateFrom()));
+		assertEquals(dateTo, DataHelper.webToRegDate(location.getDateTo()));
+		assertEquals(parcelNumber, location.getParcelNumber());
+		assertEquals(index1, location.getIndex1());
+		assertEquals(index2, location.getIndex2());
+		assertEquals(index3, location.getIndex3());
+		assertEquals(noOfsCommune, location.getMunicipalityFsoId());
 	}
 
 	public static void assertFoundEntry(long immoId, ImmovablePropertyEntry entry) {
-		Assert.assertEquals(immoId, entry.getImmovablePropertyId());
+		assertEquals(immoId, entry.getImmovablePropertyId());
 		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = entry.getImmovableProperty();
-		Assert.assertNotNull(immo);
-		Assert.assertEquals(immoId, immo.getId());
-		Assert.assertNull(entry.getError());
+		assertNotNull(immo);
+		assertEquals(immoId, immo.getId());
+		assertNull(entry.getError());
 	}
 
 	private static void assertNotFoundEntry(long immoId, ImmovablePropertyEntry entry) {
-		Assert.assertEquals(immoId, entry.getImmovablePropertyId());
-		Assert.assertNull(entry.getImmovableProperty());
-		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
-		Assert.assertEquals("L'immeuble n°[" + immoId + "] n'existe pas.", entry.getError().getErrorMessage());
+		assertEquals(immoId, entry.getImmovablePropertyId());
+		assertNull(entry.getImmovableProperty());
+		assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		assertEquals("L'immeuble n°[" + immoId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 
 	public static void assertFoundEntry(long buildingId, BuildingEntry entry) {
-		Assert.assertEquals(buildingId, entry.getBuildingId());
+		assertEquals(buildingId, entry.getBuildingId());
 		final Building building = entry.getBuilding();
-		Assert.assertNotNull(building);
-		Assert.assertEquals(buildingId, building.getId());
-		Assert.assertNull(entry.getError());
+		assertNotNull(building);
+		assertEquals(buildingId, building.getId());
+		assertNull(entry.getError());
 	}
 
 	private static void assertNotFoundEntry(long buildingId, BuildingEntry entry) {
-		Assert.assertEquals(buildingId, entry.getBuildingId());
-		Assert.assertNull(entry.getBuilding());
-		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
-		Assert.assertEquals("Le bâtiment n°[" + buildingId + "] n'existe pas.", entry.getError().getErrorMessage());
+		assertEquals(buildingId, entry.getBuildingId());
+		assertNull(entry.getBuilding());
+		assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		assertEquals("Le bâtiment n°[" + buildingId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 
 	public static void assertFoundEntry(long communityId, CommunityOfOwnersEntry entry) {
-		Assert.assertEquals(communityId, entry.getCommunityOfOwnersId());
+		assertEquals(communityId, entry.getCommunityOfOwnersId());
 		final CommunityOfOwners community = entry.getCommunityOfOwners();
-		Assert.assertNotNull(community);
-		Assert.assertEquals(communityId, community.getId());
-		Assert.assertNull(entry.getError());
+		assertNotNull(community);
+		assertEquals(communityId, community.getId());
+		assertNull(entry.getError());
 	}
 
 	private static void assertNotFoundEntry(long communityId, CommunityOfOwnersEntry entry) {
-		Assert.assertEquals(communityId, entry.getCommunityOfOwnersId());
-		Assert.assertNull(entry.getCommunityOfOwners());
-		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
-		Assert.assertEquals("La communauté n°[" + communityId + "] n'existe pas.", entry.getError().getErrorMessage());
+		assertEquals(communityId, entry.getCommunityOfOwnersId());
+		assertNull(entry.getCommunityOfOwners());
+		assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		assertEquals("La communauté n°[" + communityId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 
 	private static void assertRepresentative(int id, RegDate dateFrom, RegDate dateTo, boolean forced, RelationBetweenParties relation) {
