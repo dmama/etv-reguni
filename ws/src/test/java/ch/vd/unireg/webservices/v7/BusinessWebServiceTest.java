@@ -100,6 +100,7 @@ import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.PeriodiciteDecompte;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeAdresseCivil;
+import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeDroitAcces;
@@ -200,6 +201,7 @@ import ch.vd.unireg.xml.party.taxresidence.v4.CorporationTaxLiabilityType;
 import ch.vd.unireg.xml.party.taxresidence.v4.IndividualTaxLiabilityType;
 import ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v4.ManagingTaxResidence;
+import ch.vd.unireg.xml.party.taxresidence.v4.OperatingPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.OrdinaryResident;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiabilityReason;
@@ -2761,6 +2763,38 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 	}
 
+	/**
+	 * [FISCPROJ-49] Vérifie que les périodes d'exploitation sont correctement exposées dans le WS v7.
+	 */
+	@Test
+	public void testGetPartyWithOperatingPeriods() throws Exception {
+
+		final Long id = doInNewTransaction(status -> {
+			final RegDate dateCreationEntreprise = date(2010, 6, 1);
+			final RegDate dateRadiationEntreprise = date(2014, 9, 11);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil("Ma petite entreprise", dateCreationEntreprise);
+			addRegimeFiscalVD(entreprise, dateCreationEntreprise, dateRadiationEntreprise, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, dateCreationEntreprise, dateRadiationEntreprise, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateCreationEntreprise, dateRadiationEntreprise, MockRue.Lausanne.AvenueDeBeaulieu);
+			addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateRadiationEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			return entreprise.getNumero();
+		});
+
+		final Party party = service.getParty(id.intValue(), EnumSet.of(InternalPartyPart.OPERATING_PERIODS));
+		assertNotNull(party);
+		assertTrue(party instanceof Corporation);
+
+		final Corporation corporation = (Corporation) party;
+		final List<OperatingPeriod> operatingPeriods = corporation.getOperatingPeriods();
+		assertNotNull(operatingPeriods);
+		assertEquals(5, operatingPeriods.size());
+		assertOperatingPeriod(date(2010, 6, 1), date(2010, 12, 31), operatingPeriods.get(0));
+		assertOperatingPeriod(date(2011, 1, 1), date(2011, 12, 31), operatingPeriods.get(1));
+		assertOperatingPeriod(date(2012, 1, 1), date(2012, 12, 31), operatingPeriods.get(2));
+		assertOperatingPeriod(date(2013, 1, 1), date(2013, 12, 31), operatingPeriods.get(3));
+		assertOperatingPeriod(date(2014, 1, 1), date(2014, 9, 11), operatingPeriods.get(4));
+	}
+
 	@Test
 	public void testGetPartyAllPartsOnNaturalPerson() throws Exception {
 		final long noIndividu = 320327L;
@@ -4947,5 +4981,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertEquals(dateFrom, ch.vd.unireg.xml.DataHelper.xmlToCore(leader.getDateFrom()));
 		assertEquals(dateTo, ch.vd.unireg.xml.DataHelper.xmlToCore(leader.getDateTo()));
 		assertEquals(cancellationDate, ch.vd.unireg.xml.DataHelper.xmlToCore(leader.getCancellationDate()));
+	}
+
+	private static void assertOperatingPeriod(RegDate dateDebut, RegDate dateFin, OperatingPeriod period) {
+		assertNotNull(period);
+		assertEquals(dateDebut, ch.vd.unireg.xml.DataHelper.xmlToCore(period.getDateFrom()));
+		assertEquals(dateFin, ch.vd.unireg.xml.DataHelper.xmlToCore(period.getDateTo()));
 	}
 }

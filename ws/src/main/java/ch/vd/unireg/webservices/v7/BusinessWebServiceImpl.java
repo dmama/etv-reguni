@@ -83,6 +83,7 @@ import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
@@ -220,6 +221,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setAssujettissementService(AssujettissementService service) {
 		context.assujettissementService = service;
+	}
+
+	public void setPeriodeExploitationService(PeriodeExploitationService service) {
+		context.periodeExploitationService = service;
 	}
 
 	public void setPeriodeImpositionService(PeriodeImpositionService service) {

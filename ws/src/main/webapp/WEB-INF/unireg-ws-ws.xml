@@ -356,6 +356,7 @@
 		<property name="serviceOrganisation" ref="serviceOrganisationService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeExploitationService" ref="periodeExploitationService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>

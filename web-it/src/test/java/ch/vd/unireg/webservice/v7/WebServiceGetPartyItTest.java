@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.adminauth.v5.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.debtor.v5.Debtor;
@@ -21,9 +22,13 @@ import ch.vd.unireg.xml.party.establishment.v2.Establishment;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
+import ch.vd.unireg.xml.party.taxresidence.v4.OperatingPeriod;
 import ch.vd.unireg.xml.party.v5.BankAccount;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
+
+import static ch.vd.unireg.webservice.v7.WebServiceLandRegistryItTest.assertDate;
+import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings("Duplicates")
 public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
@@ -167,5 +172,34 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertEquals(Debtor.class, party.getClass());
 			Assert.assertTrue(((Debtor) party).isOtherCantonTaxAdministration());
 		}
+	}
+
+	@Test
+	public void testGetPeriodesExploitationSocieteNomCollectif() throws Exception {
+
+		final Pair<String, Map<String, ?>> params = buildUriAndParams(312, EnumSet.of(PartyPart.OPERATING_PERIODS));
+		final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+		Assert.assertNotNull(resp);
+		Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final Party party = resp.getBody();
+		Assert.assertNotNull(party);
+		Assert.assertEquals(Corporation.class, party.getClass());
+
+		final Corporation corporation =(Corporation) party;
+		final List<OperatingPeriod> operatingPeriods = corporation.getOperatingPeriods();
+		Assert.assertNotNull(operatingPeriods);
+		Assert.assertEquals(5, operatingPeriods.size());
+		assertOperatingPeriod(RegDate.get(2010, 6, 1), RegDate.get(2010, 12, 31), operatingPeriods.get(0));
+		assertOperatingPeriod(RegDate.get(2011, 1, 1), RegDate.get(2011, 12, 31), operatingPeriods.get(1));
+		assertOperatingPeriod(RegDate.get(2012, 1, 1), RegDate.get(2012, 12, 31), operatingPeriods.get(2));
+		assertOperatingPeriod(RegDate.get(2013, 1, 1), RegDate.get(2013, 12, 31), operatingPeriods.get(3));
+		assertOperatingPeriod(RegDate.get(2014, 1, 1), RegDate.get(2014, 9, 11), operatingPeriods.get(4));
+	}
+
+	private static void assertOperatingPeriod(RegDate dateDebut, RegDate dateFin, OperatingPeriod period) {
+		assertNotNull(period);
+		assertDate(dateDebut, period.getDateFrom());
+		assertDate(dateFin, period.getDateTo());
 	}
 }

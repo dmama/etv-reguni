@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService.PeriodeContext;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.unireg.tiers.AllegementFiscal;
@@ -63,12 +64,14 @@ import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
+import ch.vd.unireg.xml.party.taxresidence.v4.OperatingPeriod;
 import ch.vd.unireg.xml.party.v5.BusinessYearBuilder;
 import ch.vd.unireg.xml.party.v5.CorporationFlagBuilder;
 import ch.vd.unireg.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 import ch.vd.unireg.xml.party.v5.LandRightBuilder;
 import ch.vd.unireg.xml.party.v5.LandTaxLighteningBuilder;
+import ch.vd.unireg.xml.party.v5.OperatingPeriodBuilder;
 import ch.vd.unireg.xml.party.v5.TaxLighteningBuilder;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 
@@ -159,6 +162,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		if (parts != null && parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS)) {
 			initLandTaxLightenings(to, entreprise);
+		}
+
+		if (parts != null && parts.contains(InternalPartyPart.OPERATING_PERIODS)) {
+			initOperatingPeriods(to, entreprise, context);
 		}
 	}
 
@@ -424,6 +431,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			copyColl(to.getIciAbatements(), from.getIciAbatements());
 			copyColl(to.getIciAbatementRequests(), from.getIciAbatementRequests());
 		}
+
+		if (parts != null && parts.contains(InternalPartyPart.OPERATING_PERIODS)) {
+			copyColl(to.getOperatingPeriods(), from.getOperatingPeriods());
+		}
 	}
 
 	private void initLandRights(Corporation to, Entreprise entreprise, @NotNull Set<InternalPartyPart> parts, Context context) {
@@ -524,4 +535,13 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				.map(LandTaxLighteningBuilder::buildIciAbatementRequest)
 				.forEach(requests::add);
 	}
+
+	private void initOperatingPeriods(Corporation to, Entreprise from, Context context) {
+		final List<OperatingPeriod> toPeriods = to.getOperatingPeriods();
+		final List<DateRange> periodes = context.periodeExploitationService.determinePeriodesExploitation(from, PeriodeContext.THEORIQUE);
+		periodes.stream()
+				.map(OperatingPeriodBuilder::newPeriod)
+				.forEach(toPeriods::add);
+	}
+
 }

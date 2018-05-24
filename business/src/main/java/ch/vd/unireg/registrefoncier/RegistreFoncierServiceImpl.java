@@ -406,7 +406,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	 * @param absorbante               l'entreprise absorbante Unireg
 	 * @param absorbee                 l'entreprise absorbée
 	 * @param fusions                  les liens de fusion entre les entreprises absorbées et l'entreprise absorbante
-	 * @param includeVirtualTransitive vrai s'il faut inclure les droits virtuels du décédé induits par des droits entre immeubles
+	 * @param includeVirtualTransitive vrai s'il faut inclure les droits virtuels de l'entreprise absorbée induits par des droits entre immeubles
 	 * @return la liste des droits virtuels
 	 */
 	private List<DroitRF> determineDroitsFusionVirtuels(@NotNull Contribuable absorbante, @NotNull Contribuable absorbee, @NotNull List<FusionEntreprises> fusions, boolean includeVirtualTransitive) {

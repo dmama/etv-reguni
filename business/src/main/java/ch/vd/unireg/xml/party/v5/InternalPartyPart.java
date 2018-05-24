@@ -68,7 +68,11 @@ public enum InternalPartyPart {
 	VIRTUAL_INHERITED_VIRTUAL_LAND_RIGHTS,
 	RESIDENCY_PERIODS,
 	LAND_TAX_LIGHTENINGS,
-	INHERITANCE_RELATIONSHIPS;
+	INHERITANCE_RELATIONSHIPS,
+	/**
+	 * Les périodes d'exploitation des sociétés en nom collectif (SNC).
+	 */
+	OPERATING_PERIODS;
 
 	@Nullable
 	public static InternalPartyPart fromPartyV5(@NotNull ch.vd.unireg.xml.party.v5.PartyPart part) {
@@ -148,6 +152,8 @@ public enum InternalPartyPart {
 			return LAND_TAX_LIGHTENINGS;
 		case INHERITANCE_RELATIONSHIPS:
 			return INHERITANCE_RELATIONSHIPS;
+		case OPERATING_PERIODS:
+			return OPERATING_PERIODS;
 		default:
 			throw new IllegalArgumentException("Part inconnue = [" + part + "]");
 		}

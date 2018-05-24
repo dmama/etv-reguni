@@ -42,6 +42,7 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 		return "Contribuable PM";
 	}
 
+	// configuration hibernate : le contribuable possède les allègements fonciers
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "CTB_ID", nullable = false)
 	@ForeignKey(name = "FK_AFONC_CTB_ID")

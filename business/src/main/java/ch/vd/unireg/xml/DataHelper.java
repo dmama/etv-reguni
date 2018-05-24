@@ -1048,6 +1048,7 @@ public abstract class DataHelper {
 			case TAX_LIABILITIES:
 			case SIMPLIFIED_TAX_LIABILITIES:
 			case TAXATION_PERIODS:
+			case OPERATING_PERIODS:
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
 				results.add(TiersDAO.Parts.BOUCLEMENTS);
 				break;

@@ -2265,6 +2265,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkResidencyPeriods = InternalPartyPart.RESIDENCY_PERIODS == p;
 		boolean checkLandTaxLightenings = InternalPartyPart.LAND_TAX_LIGHTENINGS == p;
 		boolean checkInheritanceRelationships = InternalPartyPart.INHERITANCE_RELATIONSHIPS == p;
+		boolean checkOperatingPeriods = InternalPartyPart.OPERATING_PERIODS == p;
 
 		assertNotNull(tiers);
 		assertTrue("La partie [" + p + "] est inconnue",
@@ -2273,7 +2274,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				                  || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
 				                  || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
 				                  || checkRealLandRights || checkVirtualTransitiveLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships || checkVirtualInheritedRealLandRights ||
-				                  checkVirtualInheritedVirtuelLandRights);
+				                  checkVirtualInheritedVirtuelLandRights || checkOperatingPeriods);
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses" + "(" + p + ")");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses" + "(" + p + ")");
@@ -2321,6 +2322,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkRealLandRights || checkVirtualTransitiveLandRights || checkVirtualInheritedRealLandRights || checkVirtualInheritedVirtuelLandRights, pm.getLandRights(), "landRights" + "(" + p + ")");
 			assertNullOrNotNull(checkLandTaxLightenings, pm.getIfoncExemptions(), "ifoncExemptions" + "(" + p + ")");
 			assertNullOrNotNull(checkLandTaxLightenings, pm.getIciAbatements(), "iciAbatements" + "(" + p + ")");
+			assertNullOrNotNull(checkOperatingPeriods, pm.getOperatingPeriods(), "operatingPeriods" + "(" + p + ")");
 		}
 
 		if (tiers instanceof NaturalPerson) {

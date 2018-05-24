@@ -16,6 +16,7 @@ import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
@@ -59,6 +60,8 @@ public class Context {
 	public BamMessageSender bamSender;
 
 	public AssujettissementService assujettissementService;
+
+	public PeriodeExploitationService periodeExploitationService;
 
 	public PeriodeImpositionService periodeImpositionService;
 

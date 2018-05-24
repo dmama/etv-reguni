@@ -3161,16 +3161,6 @@
 		<column>PRINCIPAL</column>
 		<column>MODELE_ID</column>
 	</table>
-	<table name="MIGREG_ERROR">
-		<column>ID</column>
-		<column>FOR_PRINCIPAL_CTB</column>
-		<column>LIBELLE_MESSAGE</column>
-		<column>NO_CONTRIBUABLE</column>
-		<column>NO_INDIVIDU</column>
-		<column>NOM_CONTRIBUABLE</column>
-		<column>NOM_INDIVIDU</column>
-		<column>TYPE_ERREUR</column>
-	</table>
 	<table name="IDENTIFICATION_PERSONNE">
 		<column>ID</column>
 		<column>ANNULATION_DATE</column>
@@ -3265,6 +3255,26 @@
 			<value>IMMEUBLE_PRIVE</value>
 			<null />
 			<value>86116202</value>
+		</row>
+		<row>
+			<value>ForFiscalPrincipalPM</value>                   <!-- FOR_TYPE -->
+			<value>3</value>                                      <!-- ID -->
+			<null />                                              <!-- ANNULATION_DATE -->
+			<null />                                              <!-- ANNULATION_USER -->
+			<null />                                              <!-- LOG_CDATE -->
+			<null />                                              <!-- LOG_CUSER -->
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>      <!-- LOG_MDATE -->
+			<null />                                              <!-- LOG_MUSER -->
+			<value>20100601</value>                               <!-- DATE_OUVERTURE -->
+			<value>20140911</value>                               <!-- DATE_FERMETURE -->
+			<value>REVENU_FORTUNE</value>                         <!-- GENRE_IMPOT -->
+			<value>5586</value>                                   <!-- NUMERO_OFS -->
+			<value>COMMUNE_OU_FRACTION_VD</value>                 <!-- TYPE_AUT_FISC -->
+			<value>FIN_EXPLOITATION</value>                       <!-- MOTIF_FERMETURE -->
+			<value>DEBUT_EXPLOITATION</value>                     <!-- MOTIF_OUVERTURE -->
+			<value>DOMICILE</value>                               <!-- MOTIF_RATTACHEMENT -->
+			<null />                                              <!-- MODE_IMPOSITION -->
+			<value>312</value>                                    <!-- TIERS_ID -->
 		</row>
 		<row>
 			<value>ForFiscalPrincipal</value>
@@ -3687,164 +3697,6 @@
 			<value>10876076</value>
 		</row>
 	</table>
-	<table name="EVENEMENT_IDENTIFICATION_CTB">
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>DATE_TRAITEMENT</column>
-		<column>DATE_DEMANDE</column>
-		<column>EMETTEUR_ID</column>
-		<column>MESSAGE_ID</column>
-		<column>MODE_IDENTIFICATION</column>
-		<column>MONTANT</column>
-		<column>PERIODE_FISCALE</column>
-		<column>NAVS11</column>
-		<column>NAVS13</column>
-		<column>ADR_CH_COMPL</column>
-		<column>ADR_CODE_PAYS</column>
-		<column>ADR_LIEU</column>
-		<column>ADR_LIGNE_1</column>
-		<column>ADR_LIGNE_2</column>
-		<column>ADR_LOCALITE</column>
-		<column>ADR_NO_APPART</column>
-		<column>ADR_ORDRE_POSTE</column>
-		<column>ADR_NO_POLICE</column>
-		<column>ADR_NPA_ETRANGER</column>
-		<column>ADR_NPA_SUISSE</column>
-		<column>ADR_NO_CP</column>
-		<column>ADR_RUE</column>
-		<column>ADR_TEXT_CP</column>
-		<column>ADR_TYPE</column>
-		<column>DATE_NAISSANCE</column>
-		<column>NOM</column>
-		<column>PRENOMS</column>
-		<column>SEXE</column>
-		<column>PRIO_EMETTEUR</column>
-		<column>PRIO_UTILISATEUR</column>
-		<column>TRANSMETTEUR</column>
-		<column>DEMANDE_TYPE</column>
-		<column>TYPE_MESSAGE</column>
-		<column>ETAT</column>
-		<column>BUSINESS_ID</column>
-		<column>BUSINESS_USER</column>
-		<column>DOCUMENT_URL</column>
-		<column>REPLY_TO</column>
-		<column>NB_CTB_TROUVES</column>
-		<column>DATE_REPONSE</column>
-		<column>ATTENTE_IDENTIF_MANUEL</column>
-		<column>ERREUR_CODE</column>
-		<column>ERREUR_MESSAGE</column>
-		<column>ERREUR_TYPE</column>
-		<column>NO_CONTRIBUABLE</column>
-		<column>NO_MENAGE_COMMUN</column>
-		<column>TRAITEMENT_USER</column>
-		<column>WORK_USER</column>
-	</table>
-	<table name="EVENEMENT_FISCAL">
-		<column>EVT_TYPE</column>
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>DATE_EVENEMENT</column>
-		<column>NUMERO_TECHNIQUE</column>
-		<column>TYPE</column>
-		<column>MODE_IMPOSITION</column>
-		<column>MOTIF_FOR</column>
-		<column>DATE_DEBUT_PERIODE</column>
-		<column>DATE_FIN_PERIODE</column>
-		<column>TIERS_ID</column>
-		<column>ENFANT_ID</column>
-	</table>
-	<table name="EVENEMENT_EXTERNE">
-		<column>EVENT_TYPE</column>
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>CORRELATION_ID</column>
-		<column>DATE_EVENEMENT</column>
-		<column>DATE_TRAITEMENT</column>
-		<column>ERREUR_MESSAGE</column>
-		<column>ETAT</column>
-		<column>MESSAGE</column>
-		<column>QLR_DATE_DEBUT</column>
-		<column>QLR_DATE_FIN</column>
-		<column>QLR_TYPE</column>
-		<column>TIERS_ID</column>
-	</table>
-	<table name="EVENEMENT_CIVIL_ECH">
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>ACTION_EVT</column>
-		<column>COMMENTAIRE_TRAITEMENT</column>
-		<column>DATE_EVENEMENT</column>
-		<column>DATE_TRAITEMENT</column>
-		<column>ETAT</column>
-		<column>NO_INDIVIDU</column>
-		<column>REF_MESSAGE_ID</column>
-		<column>TYPE</column>
-	</table>
-	<table name="EVENEMENT_CIVIL_ECH_ERREUR">
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>CALLSTACK</column>
-		<column>MESSAGE</column>
-		<column>TYPE</column>
-		<column>EVT_CIVIL_ID</column>
-	</table>
-	<table name="EVENEMENT_CIVIL">
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>COMMENTAIRE_TRAITEMENT</column>
-		<column>DATE_EVENEMENT</column>
-		<column>DATE_TRAITEMENT</column>
-		<column>ETAT</column>
-		<column>NO_INDIVIDU_CONJOINT</column>
-		<column>NO_INDIVIDU_PRINCIPAL</column>
-		<column>NUMERO_OFS_ANNONCE</column>
-		<column>TYPE</column>
-		<column>HAB_CONJOINT</column>
-		<column>HAB_PRINCIPAL</column>
-	</table>
-	<table name="EVENEMENT_CIVIL_ERREUR">
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>CALLSTACK</column>
-		<column>MESSAGE</column>
-		<column>TYPE</column>
-		<column>EVT_CIVIL_ID</column>
-	</table>
 	<table name="DROIT_ACCES">
 		<column>ID</column>
 		<column>ANNULATION_DATE</column>
@@ -3989,28 +3841,6 @@
 			<value>77714803</value>
 		</row>
 	</table>
-	<table name="TACHE">
-		<column>TACHE_TYPE</column>
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>DATE_ECHEANCE</column>
-		<column>ETAT</column>
-		<column>DECL_ADRESSE_RETOUR</column>
-		<column>CODE_SEGMENT</column>
-		<column>DECL_DATE_DEBUT</column>
-		<column>DECL_DATE_FIN</column>
-		<column>QUALIFICATION</column>
-		<column>DECL_TYPE_CTB</column>
-		<column>DECL_TYPE_DOC</column>
-		<column>CA_ID</column>
-		<column>CTB_ID</column>
-		<column>DECLARATION_ID</column>
-	</table>
 	<table name="ETAT_DOCUMENT_FISCAL">
 		<column>ETAT_TYPE</column>
 		<column>TYPE</column>
@@ -4119,33 +3949,6 @@
 			<value>3</value>
 			<value>DELAI_DECLARATION</value>
 		</row>
-	</table>
-	<table name="BORDEREAU_MVT_DOSSIER">
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-	</table>
-	<table name="MOUVEMENT_DOSSIER">
-		<column>MVT_TYPE</column>
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>DATE_MOUVEMENT</column>
-		<column>ETAT</column>
-		<column>NUMERO_INDIVIDU</column>
-		<column>CTB_ID</column>
-		<column>COLL_ADMIN_EMETTRICE_ID</column>
-		<column>BORDEREAU_ID</column>
-		<column>COLL_ADMIN_DEST_ID</column>
-		<column>COLL_ADMIN_RECEPTRICE_ID</column>
 	</table>
 	<table name="ADRESSE_TIERS">
 		<column>ADR_TYPE</column>
@@ -4516,6 +4319,42 @@
 			<value>CH7400243243G15379860</value>                <!-- IBAN -->
 			<null />                                            <!-- BIC_SWIFT -->
 			<value>10711803</value>                             <!-- TIERS_ID -->
+		</row>
+	</table>
+	<table name="REGIME_FISCAL">
+		<column>PORTEE</column>
+		<column>ID</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>CODE</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>ENTREPRISE_ID</column>
+		<row>
+			<value>VD</value>
+			<value>1</value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value>80</value>
+			<value>20100601</value>
+			<value>20140911</value>
+			<value>312</value>
+		</row>
+		<row>
+			<value>CH</value>
+			<value>2</value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value>80</value>
+			<value>20100601</value>
+			<value>20140911</value>
+			<value>312</value>
 		</row>
 	</table>
 </dataset>

@@ -199,6 +199,7 @@
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeExploitationService" ref="periodeExploitationService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
