@@ -12,12 +12,10 @@ public class ImprimerAutreDocumentFiscalView {
 	// pour la lettre de bienvenue :
 	private RegDate delaiRetour;
 	private TypeLettreBienvenue typeLettreBienvenue;
-	private String page;
 
-	public ImprimerAutreDocumentFiscalView(long noEntreprise, TypeAutreDocumentFiscalEmettableManuellement typeDocument, String page) {
-		this.noEntreprise   = noEntreprise;
-		this.typeDocument   = typeDocument;
-		this.page           = page;
+	public ImprimerAutreDocumentFiscalView(long noEntreprise, TypeAutreDocumentFiscalEmettableManuellement typeDocument) {
+		this.noEntreprise = noEntreprise;
+		this.typeDocument = typeDocument;
 	}
 
 	public ImprimerAutreDocumentFiscalView() {
@@ -70,8 +68,4 @@ public class ImprimerAutreDocumentFiscalView {
 	public void setTypeLettreBienvenue(TypeLettreBienvenue typeLettreBienvenue) {
 		this.typeLettreBienvenue = typeLettreBienvenue;
 	}
-
-	public String getPage() { return page; }
-
-	public void setPage(String page) { this.page = page; }
 }
