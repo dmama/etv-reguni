@@ -19,6 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -547,6 +548,111 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals(datePrononceFaillite, efic.getDateValeur());
 					Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.PUBLICATION_FAILLITE_APPEL_CREANCIERS, efic.getType());
 				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-29044] Ce test vérifie que la faillite d'une entreprise se passe correctement lorsque l'entreprise possède un établissement secondaire
+	 * avec deux périodes d'activités économiques distincts (avant la correction, ce cas provoquait une erreur de validation).
+	 */
+	@Test
+	public void testFailliteEntrepriseAvecEtablissementSecondaireAvecDeuxPeriodesDActiviteEconomique() throws Exception {
+
+		// cas de l'entreprise 377.22
+		final RegDate dateCreationEntreprise = date(2000, 4, 1);
+		final RegDate datePrononceFaillite = date(2017, 12, 28);
+
+		final class Ids {
+			long idEntreprise;
+			long idEtablissementPrincipal;
+			long idEtablissementSecondaire;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateCreationEntreprise, null, "Ma petite entreprise");
+			addFormeJuridique(entreprise, dateCreationEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalCH(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+			addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
+			addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+			entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
+
+			addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+
+			final Etablissement etablissementPrincipal = addEtablissement();
+			addDomicileEtablissement(etablissementPrincipal, dateCreationEntreprise, null, MockCommune.Grandson);
+			addActiviteEconomique(entreprise, etablissementPrincipal, dateCreationEntreprise, null, true);
+
+			final Etablissement etablissementSecondaire = addEtablissement();
+			addDomicileEtablissement(etablissementSecondaire, dateCreationEntreprise, null, MockCommune.ChateauDoex);
+			// 2 périodes d'activité économiques distincts sur le même établissement secondaire
+			addActiviteEconomique(entreprise, etablissementSecondaire, dateCreationEntreprise, date(2006, 9, 20), false);
+			addActiviteEconomique(entreprise, etablissementSecondaire, date(2008, 1, 1), null, false);
+
+			addEtatEntreprise(entreprise, dateCreationEntreprise, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+			final Ids ids1 = new Ids();
+			ids1.idEntreprise = entreprise.getNumero();
+			ids1.idEtablissementPrincipal = etablissementPrincipal.getNumero();
+			ids1.idEtablissementSecondaire = etablissementSecondaire.getNumero();
+			return ids1;
+		});
+
+		// traitement de la faillite
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+				metierServicePM.faillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle...");
+			}
+		});
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				// le rapport entre tiers actif vers l'établissement secondaire doit être fermé
+				final List<RapportEntreTiers> rapportsSujet = new ArrayList<>(entreprise.getRapportsSujet());
+				Assert.assertNotNull(rapportsSujet);
+				Assert.assertEquals(3, rapportsSujet.size());
+				rapportsSujet.sort( DateRangeComparator::compareRanges);
+
+				// la 1ère activité économique déjà fermée avant la faillite ne doit pas être modifiée
+				final ActiviteEconomique ret0 = (ActiviteEconomique) rapportsSujet.get(0);
+				Assert.assertFalse(ret0.isAnnule());
+				Assert.assertFalse(ret0.isPrincipal());
+				Assert.assertEquals(dateCreationEntreprise, ret0.getDateDebut());
+				Assert.assertEquals(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, ret0.getType());
+				Assert.assertEquals(date(2006, 9, 20), ret0.getDateFin());
+				Assert.assertEquals((Long) ids.idEtablissementSecondaire, ret0.getObjetId());
+
+				// l'activité économique principale n'est pas touchée
+				final ActiviteEconomique ret1 = (ActiviteEconomique) rapportsSujet.get(1);
+				Assert.assertFalse(ret1.isAnnule());
+				Assert.assertTrue(ret1.isPrincipal());
+				Assert.assertEquals(dateCreationEntreprise, ret1.getDateDebut());
+				Assert.assertEquals(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, ret1.getType());
+				Assert.assertNull(ret1.getDateFin());
+				Assert.assertEquals((Long) ids.idEtablissementPrincipal, ret1.getObjetId());
+
+				// la seconde activité économique fermée par la faillite avec maintenant une date de fin
+				final ActiviteEconomique ret2 = (ActiviteEconomique) rapportsSujet.get(2);
+				Assert.assertFalse(ret2.isAnnule());
+				Assert.assertFalse(ret2.isPrincipal());
+				Assert.assertEquals(date(2008, 1, 1), ret2.getDateDebut());
+				Assert.assertEquals(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, ret2.getType());
+				Assert.assertEquals(datePrononceFaillite, ret2.getDateFin());
+				Assert.assertEquals((Long) ids.idEtablissementSecondaire, ret2.getObjetId());
 			}
 		});
 	}
