@@ -20,6 +20,7 @@ import ch.vd.unireg.metier.common.Fractionnements;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -39,12 +40,12 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 		this.infraService = infraService;
 		this.fractionnements = new Fractionnements<ForFiscalPrincipalPP>(principauxDansPF) {
 			@Override
-			protected Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+			protected Fraction isFractionOuverture(@NotNull ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires) {
 				return FractionnementsPeriodesImpositionIS.this.isFractionOuverture(forPrincipal);
 			}
 
 			@Override
-			protected Fraction isFractionFermeture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+			protected Fraction isFractionFermeture(@NotNull ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires) {
 				return FractionnementsPeriodesImpositionIS.this.isFractionFermeture(forPrincipal);
 			}
 		};

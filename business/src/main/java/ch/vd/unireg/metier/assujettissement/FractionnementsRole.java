@@ -2,6 +2,8 @@ package ch.vd.unireg.metier.assujettissement;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.metier.common.DecalageDateHelper;
@@ -10,6 +12,7 @@ import ch.vd.unireg.metier.common.Fraction;
 import ch.vd.unireg.metier.common.FractionDecalee;
 import ch.vd.unireg.metier.common.FractionSimple;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 
@@ -18,17 +21,18 @@ import static ch.vd.unireg.metier.assujettissement.AssujettissementPersonnesPhys
 import static ch.vd.unireg.metier.assujettissement.AssujettissementPersonnesPhysiquesCalculator.isDepartHCApresArriveHSMemeAnnee;
 import static ch.vd.unireg.metier.assujettissement.AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse;
 import static ch.vd.unireg.metier.assujettissement.AssujettissementPersonnesPhysiquesCalculator.isMixte2Vaudois;
+import static ch.vd.unireg.metier.assujettissement.AssujettissementPersonnesPhysiquesCalculator.isRattachementEconomiqueContinu;
 
 public class FractionnementsRole extends FractionnementsAssujettissementPP {
 
 	private static final int PREMIERE_ANNEE_DECALAGE_FIN_MOIS_POUR_MIXTE2_PARTI_HC = 2014;
 
-	public FractionnementsRole(List<ForFiscalPrincipalPP> principaux) {
-		super(principaux);
+	public FractionnementsRole(@NotNull List<ForFiscalPrincipalPP> principaux, @NotNull List<ForFiscalSecondaire> secondaires) {
+		super(principaux, secondaires);
 	}
 
 	@Override
-	protected Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+	protected Fraction isFractionOuverture(@NotNull ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires) {
 		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
 		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 
@@ -40,7 +44,7 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 			// fractionnement systématique à la date d'ouverture pour ce motif
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
-		else if (isDepartOuArriveeHorsSuisse(previous, current) && isFractionDepartOuArriveeHorsSuisse(forPrincipal.slideToPrevious(), forPrincipal)) {
+		else if (isDepartOuArriveeHorsSuisse(previous, current) && isFractionDepartOuArriveeHorsSuisse(forPrincipal.slideToPrevious(), forPrincipal, secondaires)) {
 			// fractionnement en cas de départ HS significatif
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
@@ -55,7 +59,7 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 	}
 
 	@Override
-	protected Fraction isFractionFermeture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+	protected Fraction isFractionFermeture(@NotNull ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires) {
 		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 		final ForFiscalPrincipalPP next = forPrincipal.getNext();
 
@@ -71,7 +75,7 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 			// fractionnement systématique à la date de fermeture pour ce motif
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}
-		else if (isDepartOuArriveeHorsSuisse(current, next) && isFractionDepartOuArriveeHorsSuisse(forPrincipal, forPrincipal.slideToNext())) {
+		else if (isDepartOuArriveeHorsSuisse(current, next) && isFractionDepartOuArriveeHorsSuisse(forPrincipal, forPrincipal.slideToNext(), secondaires)) {
 			// fractionnement en cas de départ HS significatif
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}
@@ -94,15 +98,21 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 	/**
 	 * Détermine si le départ ou l'arrivée hors-Suisse détectée doit provoquer un fractionnement.
 	 *
-	 * @param before le for principal avant le départ HS et son context.
-	 * @param after  le for principal après le départ HS et son context.
+	 * @param before      le for principal avant le départ HS et son context.
+	 * @param after       le for principal après le départ HS et son context.
+	 * @param secondaires les fors secondaires du tiers
 	 * @return <i>vrai</i> s'il faut fractionner l'assujettissement; <i>false</i> autrement.
 	 */
-	protected static boolean isFractionDepartOuArriveeHorsSuisse(ForFiscalPrincipalContext<ForFiscalPrincipalPP> before, ForFiscalPrincipalContext<ForFiscalPrincipalPP> after) {
+	protected static boolean isFractionDepartOuArriveeHorsSuisse(@NotNull ForFiscalPrincipalContext<ForFiscalPrincipalPP> before,
+	                                                             @NotNull ForFiscalPrincipalContext<ForFiscalPrincipalPP> after,
+	                                                             @NotNull List<ForFiscalSecondaire> secondaires) {
 		// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 		// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+		// [SIFISC-17170] le départ hors-Suisse depuis hors-canton doit quand même fractionner la période d'assujettissement si le rattachement économique n'est pas continu avant et après le départ
 		// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 		// [SIFISC-14388] le cas d'une arrivée HS de mixte 2 doit fractionner à l'arrivée, même en cas de départ HC ensuite dans la même année
-		return isDepartDepuisOuArriveeVersVaud(before) && (!isDepartHCApresArriveHSMemeAnnee(after) || isMixte2Vaudois(after));
+		final RegDate dateFin = (before.getCurrent() == null ? after.getCurrent().getDateDebut() : before.getCurrent().getDateFin());
+		return (isDepartDepuisOuArriveeVersVaud(before) || !isRattachementEconomiqueContinu(secondaires, dateFin))
+				&& (!isDepartHCApresArriveHSMemeAnnee(after) || isMixte2Vaudois(after));
 	}
 }

@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.metier.common.DecalageDateHelper;
 import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
@@ -119,8 +121,8 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	 * <p/>
 	 * Les méthodes {@link #determineDateDebutAssujettissement(ch.vd.unireg.metier.common.ForFiscalPrincipalContext, ch.vd.unireg.metier.common.Fractionnements)}
 	 * et {@link #determineDateFinAssujettissement(ch.vd.unireg.metier.common.ForFiscalPrincipalContext, ch.vd.unireg.metier.common.Fractionnements)} déterminent
-	 * les durées des assujettissements pour raison de domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ch.vd.unireg.metier.common.ForFiscalPrincipalContext)}
-	 * et {@link #determineDateFinNonAssujettissement(ch.vd.unireg.metier.common.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour
+	 * les durées des assujettissements pour raison de domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ForFiscalPrincipalContext, List)}
+	 * et {@link #determineDateFinNonAssujettissement(ForFiscalPrincipalContext, List)} déterminent les durées des assujettissements pour
 	 * raison de domicile hors-canton ou hors-Suisse (qui ne correspondent pas à des assujettissements vaudois et sont donc appelés des "non-assujettissements". Ces "non-assujettissements" sont
 	 * nécessaires plus tard pour fusionner les assujettissements économiques).
 	 * <p/>
@@ -385,10 +387,10 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 	public static List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		// Détermination des données d'assujettissement brutes
-		final Fractionnements<ForFiscalPrincipalPP> fractionnements = new FractionnementsRole(fors.principauxPP);
+		final Fractionnements<ForFiscalPrincipalPP> fractionnements = new FractionnementsRole(fors.principauxPP, fors.secondaires);
 		final CasParticuliers casParticuliers = determineCasParticuliers(ctb, fors.principauxPP);
 
-		final DataList domicile = determineAssujettissementDomicile(fors.principauxPP, fractionnements, casParticuliers, noOfsCommunesVaudoises);
+		final DataList domicile = determineAssujettissementDomicile(fors.principauxPP, fors.secondaires, fractionnements, casParticuliers, noOfsCommunesVaudoises);
 		domicile.compacterNonAssujettissements(noOfsCommunesVaudoises != null); // SIFISC-2939
 		AssujettissementHelper.assertCoherenceRanges(domicile);
 
@@ -589,13 +591,17 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	 * Détermine les données d'assujettissements brutes pour les rattachements de type domicile.
 	 *
 	 * @param principaux             les fors principaux d'un contribuable
+	 * @param secondaires            les fors secondaires du tiers
 	 * @param fractionnements        une liste vide qui contiendra les fractionnements calculés après l'exécution de la méthode
 	 * @param casParticuliers        les cas particuliers identifiés dans l'historique des fors fiscaux
 	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static DataList determineAssujettissementDomicile(List<ForFiscalPrincipalPP> principaux, Fractionnements<ForFiscalPrincipalPP> fractionnements, CasParticuliers casParticuliers,
+	private static DataList determineAssujettissementDomicile(@NotNull List<ForFiscalPrincipalPP> principaux,
+	                                                          @NotNull List<ForFiscalSecondaire> secondaires,
+	                                                          Fractionnements<ForFiscalPrincipalPP> fractionnements,
+	                                                          CasParticuliers casParticuliers,
 	                                                          @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final DataList domicile = new DataList();
@@ -609,7 +615,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			final ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal = new ForFiscalPrincipalContext<>(snapshot);
 
 			// on détermine l'assujettissement pour le for principal courant
-			Data a = determine(forPrincipal, fractionnements, noOfsCommunesVaudoises);
+			Data a = determine(forPrincipal, secondaires, fractionnements, noOfsCommunesVaudoises);
 			if (a == null) {
 				continue;
 			}
@@ -651,7 +657,10 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		if (debut != null) {
 			final LimitesAssujettissement limites = LimitesAssujettissement.determine(debut, debut, fractions);
-			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().getDate();
+			final RegDate dernierFractionnement = Optional.ofNullable(limites)
+					.map(LimitesAssujettissement::getLeft)
+					.map(Fraction::getDate)
+					.orElse(null);
 
 			if (casParticuliers.isMenageCommun() && casParticuliers.hasMariage(debut.year())) {
 				// en cas de mariage, le ménage commun est assumé assujetti depuis le début de l'année (ou depuis le dernier fractionnement)
@@ -666,8 +675,14 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		if (fin != null) {
 			final LimitesAssujettissement limites = LimitesAssujettissement.determine(fin, fin, fractions);
-			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().getDate();
-			final RegDate prochainFractionnement = limites == null ? null : limites.getRight() == null ? null : limites.getRight().getDate();
+			final RegDate dernierFractionnement = Optional.ofNullable(limites)
+					.map(LimitesAssujettissement::getLeft)
+					.map(Fraction::getDate)
+					.orElse(null);
+			final RegDate prochainFractionnement = Optional.ofNullable(limites)
+					.map(LimitesAssujettissement::getRight)
+					.map(Fraction::getDate)
+					.orElse(null);
 
 			final boolean finDejaFractionnee = (prochainFractionnement != null && fin == prochainFractionnement.getOneDayBefore());
 			if (!finDejaFractionnee) {
@@ -1001,9 +1016,10 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	 * Détermine la date de début de la période de non-assujettissement correspondant à un for fiscal principal (période durant laquelle un for secondaire pourrait provoquer un assujettissement).
 	 *
 	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de début de non-assujettissement
+	 * @param secondaires  les fors secondaires du tiers
 	 * @return la date de fin de la période de non-assujettissement
 	 */
-	private static RegDate determineDateDebutNonAssujettissement(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+	private static RegDate determineDateDebutNonAssujettissement(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires) {
 
 		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
 		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
@@ -1011,14 +1027,9 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		final RegDate debut = current.getDateDebut();
 
 		final RegDate adebut;
-		if (isDepartOuArriveeHorsSuisse(previous, current) && !isFractionDepartOuArriveeHorsSuisse(forPrincipal.slideToPrevious(), forPrincipal)) {
+		if (isDepartOuArriveeHorsSuisse(previous, current) && !isFractionDepartOuArriveeHorsSuisse(forPrincipal.slideToPrevious(), forPrincipal, secondaires)) {
 			// en cas de départ HS sans fractionnement, on applique normalement l'assujettissement depuis le début de l'année
 			adebut = getDernier1Janvier(debut);
-		}
-		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && current.getMotifOuverture() == MotifFor.DEPART_HC) {
-			// cas limite du ctb qui part HC et arrive de HS dans la même année -> la durée précise de la période hors-Suisse n'est pas connue et on prend la solution
-			// la plus avantageuse pour l'ACI : arrivée de HS au 1er janvier de l'année suivante
-			adebut = getProchain1Janvier(debut);
 		}
 		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && isMariageOuDivorce(current.getMotifOuverture())) {
 			// [UNIREG-2432] Exception : si le motif d'ouverture est MARIAGE ou SEPARATION, la date de début est ramenée au 1 janvier de l'année courante.
@@ -1042,9 +1053,10 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	 * Détermine la date de fin de la période de non-assujettissement correspondant à un for fiscal principal (période durant laquelle un for secondaire pourrait provoquer un assujettissement).
 	 *
 	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de fin de non-assujettissement
+	 * @param secondaires  les fors secondaires du tiers
 	 * @return la date de fin de la période de non-assujettissement
 	 */
-	private static RegDate determineDateFinNonAssujettissement(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+	private static RegDate determineDateFinNonAssujettissement(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires) {
 
 		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 		final ForFiscalPrincipalPP next = forPrincipal.getNext();
@@ -1055,7 +1067,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		if (fin == null) {
 			afin = null;
 		}
-		else if (isDepartOuArriveeHorsSuisse(current, next) && !isFractionDepartOuArriveeHorsSuisse(forPrincipal, forPrincipal.slideToNext())) {
+		else if (isDepartOuArriveeHorsSuisse(current, next) && !isFractionDepartOuArriveeHorsSuisse(forPrincipal, forPrincipal.slideToNext(), secondaires)) {
 			// en cas de départ HS sans fractionnement, on limite normalement le rattachement économique au 31 décembre précédent.
 			afin = getDernier31Decembre(fin);
 		}
@@ -1171,7 +1183,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		/**
 		 * Collections des motifs d'ouverture de for qui ne donnent normalement pas lieu à un début d'assujettissement
 		 * ou qui doivent, le cas échéant, laisser la priorité au motif d'ouverture du for "économique" - si existant à la même date - dans la méthode
-		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
+		 * {@link #mergeMotif(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) mergeMotif}
 		 */
 		@SuppressWarnings({"deprecation"})
 		private static final Set<MotifAssujettissement> DEBUT_ASSUJETTISSEMENT = EnumSet.of(MotifAssujettissement.INDETERMINE,
@@ -1183,7 +1195,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		/**
 		 * Collections des motifs de fermeture de for qui ne donnent normalement pas lieu à une fin d'assujettissement
 		 * ou qui doivent, le cas échéant, laisser la priorité au motif de fermeture du for "économique" - si existant à la même date - dans la méthode
-		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
+		 * {@link #mergeMotif(ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.unireg.metier.assujettissement.MotifAssujettissement, java.util.Set) mergeMotif}
 		 */
 		@SuppressWarnings({"deprecation"})
 		private static final Set<MotifAssujettissement> FIN_ASSUJETTISSEMENT = EnumSet.of(MotifAssujettissement.INDETERMINE,
@@ -1237,61 +1249,95 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		/**
 		 * Cette méthode fusionne une donnée d'assujettissement <i>domicile</i> avec une donnée d'assujettissement <i>économique</i>.
 		 *
-		 * @param eco une donnée d'assujettissement économique
+		 * <b>Note :</b> l'algorithme est ainsi fait que cette méthode ne doit tenir compte de l'assujettissement économique que dans la période de validité
+		 * de l'assujettissement domicile.
+		 *
+		 * @param domicile une donnée d'assujettissement domicile
+		 * @param eco      une donnée d'assujettissement économique
 		 * @return une liste de données d'assujettissement résultante qui doivent remplacer l'assujettissement courant; ou <b>null</b> s'il n'y a rien à faire.
 		 */
-		public List<Data> merge(Data eco) {
+		@Nullable
+		public static List<Data> merge(@NotNull Data domicile, @NotNull Data eco) {
 
-			if (type != Type.NonAssujetti) {
-				// l'assujettissement 'this' (qui est forcéement de type domicile) est différent de non-assujetti : quelque soit la valeur de 'eco', il prime sur ce dernier et il n'y a rien à faire.
+			if (domicile.type != Type.NonAssujetti) {
+				// l'assujettissement domicile est différent de non-assujetti : quelque soit la valeur de 'eco',
+				// il prime sur ce dernier et il n'y a rien à faire.
 				return null;
 			}
 
-			if (!DateRangeHelper.intersect(this, eco)) {
+			if (!DateRangeHelper.intersect(domicile, eco)) {
 				// pas d'intersection -> rien à faire
 				return null;
 			}
 
 			final List<Data> list;
-			if (eco.debut.isBeforeOrEqual(this.debut) && RegDateHelper.isAfterOrEqual(eco.fin, this.fin, NullDateBehavior.LATEST)) {
-				// eco dépasse des deux côtés de this -> pas besoin de découper quoique ce soit
-				list = null;
+
+			if (eco.debut.isBeforeOrEqual(domicile.debut) && RegDateHelper.isAfterOrEqual(eco.fin, domicile.fin, NullDateBehavior.LATEST)) {
+				// l'assujettissement économique dépasse des deux côtés de domicile -> pas besoin d'adapter les plages de validité
+				final Data mergedEco = new Data(domicile);
+
+				// si les motifs de début/fin manquent, on profite de ceux du for économique pour les renseigner
+				mergedEco.motifDebut = mergeMotif(mergedEco.debut, mergedEco.motifDebut, eco.debut, eco.motifDebut, DEBUT_ASSUJETTISSEMENT);
+				mergedEco.motifFin = mergeMotif(mergedEco.fin, mergedEco.motifFin, eco.fin, eco.motifFin, FIN_ASSUJETTISSEMENT);
+
+				// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
+				mergedEco.type = getAType(mergedEco.typeAut);
+
+				list = Collections.singletonList(mergedEco);
 			}
 			else {
-				list = new ArrayList<>(3);
-				list.add(this);
-				if (eco.debut.isAfter(this.debut)) {
+				// l'assujettissement économique ne couvre que partielle le non-assujettissement : on découpe à gauche et à droite si nécessaire
+
+				final Data domicileLeft;   // le non-assujettissement qui reste à gauche
+				final Data mergedEco = new Data(domicile);
+				final Data domicileRight;  // le non-assujettissement qui reste à droite
+
+
+				if (eco.debut.isAfter(domicile.debut)) {
 					// on découpe à gauche
-					Data left = new Data(this);
-					left.fin = eco.debut.getOneDayBefore();
-					left.motifFin = eco.motifDebut;
-					list.add(0, left);
+					domicileLeft = new Data(domicile);
+					domicileLeft.fin = eco.debut.getOneDayBefore();
+					domicileLeft.motifFin = eco.motifDebut;
 
 					// on décale la date de début
-					this.debut = eco.debut;
-					this.motifDebut = eco.motifDebut;
+					mergedEco.debut = eco.debut;
+					mergedEco.motifDebut = eco.motifDebut;
+				}
+				else {
+					domicileLeft = null;
 				}
 
-				if (!RegDateHelper.isAfterOrEqual(eco.fin, this.fin, NullDateBehavior.LATEST)) {
+
+				if (!RegDateHelper.isAfterOrEqual(eco.fin, domicile.fin, NullDateBehavior.LATEST)) {
 					// on découpe à droite
-					Data right = new Data(this);
-					right.debut = eco.fin.getOneDayAfter();
-					right.motifDebut = eco.motifFin;
-					list.add(right);
+					domicileRight = new Data(domicile);
+					domicileRight.debut = eco.fin.getOneDayAfter();
+					domicileRight.motifDebut = eco.motifFin;
 
 					// on décale la date de fin
-					this.fin = eco.fin;
-					this.motifFin = eco.motifFin;
+					mergedEco.fin = eco.fin;
+					mergedEco.motifFin = eco.motifFin;
+				}
+				else {
+					domicileRight = null;
 				}
 
+				// si les motifs de début/fin manquent, on profite de ceux du for économique pour les renseigner
+				mergedEco.motifDebut = mergeMotif(mergedEco.debut, mergedEco.motifDebut, eco.debut, eco.motifDebut, DEBUT_ASSUJETTISSEMENT);
+				mergedEco.motifFin = mergeMotif(mergedEco.fin, mergedEco.motifFin, eco.fin, eco.motifFin, FIN_ASSUJETTISSEMENT);
+
+				// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
+				mergedEco.type = getAType(mergedEco.typeAut);
+
+				list = new ArrayList<>(3);
+				if (domicileLeft != null) {
+					list.add(domicileLeft);
+				}
+				list.add(mergedEco);
+				if (domicileRight != null) {
+					list.add(domicileRight);
+				}
 			}
-
-			// si les motifs de début/fin manquent, on profite de ceux du for économique pour les renseigner
-			this.motifDebut = merge(this.debut, this.motifDebut, eco.debut, eco.motifDebut, DEBUT_ASSUJETTISSEMENT);
-			this.motifFin = merge(this.fin, this.motifFin, eco.fin, eco.motifFin, FIN_ASSUJETTISSEMENT);
-
-			// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
-			this.type = getAType(this.typeAut);
 
 			return list;
 		}
@@ -1306,7 +1352,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		 * @param motifsDomicileNonPrioritaires la liste des motifs de fors "Domicile" pour lesquels le motif "Econonique" prend la priorité
 		 * @return le motid de début/fin d'assujettissement résultant.
 		 */
-		private static MotifAssujettissement merge(RegDate dateDomicile, MotifAssujettissement motifDomicile, RegDate dateEco, MotifAssujettissement motifEco, Set<MotifAssujettissement> motifsDomicileNonPrioritaires) {
+		private static MotifAssujettissement mergeMotif(RegDate dateDomicile, MotifAssujettissement motifDomicile, RegDate dateEco, MotifAssujettissement motifEco, Set<MotifAssujettissement> motifsDomicileNonPrioritaires) {
 			if (dateDomicile == dateEco && motifEco != null && (motifDomicile == null || motifsDomicileNonPrioritaires.contains(motifDomicile))) {
 				return motifEco;
 			}
@@ -1330,12 +1376,13 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	 * Détermine les données d'assujettissement pour un for fiscal principal.
 	 *
 	 * @param forPrincipal           le for fiscal dont on veut calculer l'assujettissement (plus ceux qui précèdent et suivent immédiatement)
+	 * @param secondaires            les fors secondaires du tiers
 	 * @param fractionnements        les fractionnements déterminés par avance
 	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.  @return les
 	 *                               données d'assujettissement, ou <b>null</b> si le for principal n'induit aucun assujettissement
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static Data determine(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, Fractionnements<ForFiscalPrincipalPP> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private static Data determine(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires, Fractionnements<ForFiscalPrincipalPP> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final Data data;
 		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
@@ -1380,8 +1427,8 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		case COMMUNE_HC:
 		case PAYS_HS: {
 
-			final RegDate adebut = determineDateDebutNonAssujettissement(forPrincipal);
-			final RegDate afin = determineDateFinNonAssujettissement(forPrincipal);
+			final RegDate adebut = determineDateDebutNonAssujettissement(forPrincipal, secondaires);
+			final RegDate afin = determineDateFinNonAssujettissement(forPrincipal, secondaires);
 
 			if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
 				data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), Type.NonAssujetti, current.getTypeAutoriteFiscale());
@@ -1472,6 +1519,10 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	/**
 	 * Fusionne les assujettissements économiques aux assujettissement domicile en appliquant les régles métier. Le résultat est stocké dans la liste des assujettissements domicile.
 	 *
+	 * <b>Note :</b> par définition, la période de validité des assujettissements pour motif de rattachement domicile couvre toute la période de validité
+	 *               des assujettissements pour motif de rattachement économique. C'est uniquement lorsqu'un assujettissement pour motif de rattachement domicile
+	 *               est de type 'non-assujettissement' qu'un assujettissement pour motif de rattachement économique peut être significatif.
+	 *
 	 * @param domicile   les assujettissements pour motif de rattachement domicile
 	 * @param economique les assujettissements pour motif de rattachement économique
 	 */
@@ -1480,7 +1531,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		for (int i = 0; i < domicile.size(); i++) {
 			for (Data e : economique) {
 				final Data d = domicile.get(i);
-				final List<Data> sub = d.merge(e);
+				final List<Data> sub = Data.merge(d, e);
 				if (sub != null) {
 					domicile.set(i, sub.get(0));
 					for (int j = 1; j < sub.size(); ++j) {
@@ -1542,6 +1593,13 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		return (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS ? Type.HorsSuisse : Type.HorsCanton);
 	}
 
+	/**
+	 * Détermine si le départ ou l'arrivée identifié sur le for fiscal spécifié correspond à un départ ou à une arrivée vers le canton de Vaud <b>ou</b>
+	 * s'il correspond à une situation <i>équivalente</i>.
+	 *
+	 * @param ctxt le for fiscal principal et son contexte
+	 * @return <i>vrai</i> s'il s'agit d'une situation de départ ou d'arrivée vers le canton de Vaud; <i>faux</i> autrement.
+	 */
 	protected static <F extends ForFiscalPrincipal> boolean isDepartDepuisOuArriveeVersVaud(ForFiscalPrincipalContext<F> ctxt) {
 		final F current = ctxt.getCurrent();
 		final F next = ctxt.getNext();
@@ -1571,6 +1629,24 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		}
 
 		return false;
+	}
+
+	/**
+	 * Détermine si le rattachement économique (= les fors fiscaux secondaires) est continu <b>avant</b> et <b>après</b> la date spécifié <b>dans l'année civile courante</b>.
+	 * <p>
+	 * Cette méthode retourne <i>vrai</i> si le tiers ne possède pas de rattachement économique avant et après la date spécifiée. Elle retourne aussi <i>vrai</i> si le tiers possède
+	 * au moins un même rattachement économique valide juste avant et juste après la date spécifiée. Elle retourne <i>faux</i> si le tiers possède des rattachements économiques seulement
+	 * valides avant la date spécifiée, ou seulement valides après la date spécifiée.
+	 *
+	 * @param secondaires    la liste des fors secondaires du tiers
+	 * @param dateFinPeriode la date de référence (fin de période, comprise dans l'<i>avant</i>) pour le calcul du rattachement économique
+	 * @return <i>vrai</i> s'il s'agit d'une situation de départ ou d'arrivée vers le canton de Vaud; <i>faux</i> autrement.
+	 */
+	protected static boolean isRattachementEconomiqueContinu(@NotNull List<ForFiscalSecondaire> secondaires, @NotNull RegDate dateFinPeriode) {
+		return secondaires.stream().noneMatch(AnnulableHelper::nonAnnule) ||    // il n'y a aucun for
+				secondaires.stream()                                            // il y a au moins un for dont la plage de validité commence avant et fini après la date spécifiée
+				.filter(f -> f.isValidAt(dateFinPeriode))
+				.anyMatch(f -> f.isValidAt(dateFinPeriode.getOneDayAfter()));
 	}
 
 	private static boolean isArriveeVaudDepuisHorsCantonMemePeriodeApres(ForFiscalPrincipalContext<?> ctxt, int pf) {

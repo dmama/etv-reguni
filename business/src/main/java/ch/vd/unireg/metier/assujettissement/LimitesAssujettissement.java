@@ -61,13 +61,14 @@ public final class LimitesAssujettissement {
 		Fraction left = null;
 		Fraction right = null;
 		for (Fraction f : fractions) {
-			if (dateDebut != null && f.getDate().isBeforeOrEqual(dateDebut)) {
-				if (left == null || left.getDate().isBefore(f.getDate())) {
+			final RegDate dateFraction = f.getDate();
+			if (dateDebut != null && dateFraction.isBeforeOrEqual(dateDebut)) {
+				if (left == null || left.getDate().isBefore(dateFraction)) {    // on prend la fraction la plus proche de la date de début
 					left = f;
 				}
 			}
-			if (dateFin != null && f.getDate().isAfter(dateFin)) {
-				if (right == null || right.getDate().isAfter(f.getDate())) {
+			if (dateFin != null && dateFraction.isAfter(dateFin)) {
+				if (right == null || right.getDate().isAfter(dateFraction)) {   // on prend la fraction la plus proche de la date de fin
 					right = f;
 				}
 			}

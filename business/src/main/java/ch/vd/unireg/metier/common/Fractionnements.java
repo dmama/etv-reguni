@@ -1,5 +1,6 @@
 package ch.vd.unireg.metier.common;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.MovingWindow;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.ForFiscalSecondaire;
 
 /**
  * Les fractionnements déterminés pour un contribuable donné.
@@ -26,7 +28,16 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 	 *
 	 * @param principaux une liste de fors fiscaux principaux
 	 */
-	protected Fractionnements(List<FFP> principaux) {
+	protected Fractionnements(@NotNull List<FFP> principaux) {
+		this(principaux, Collections.emptyList());
+	}
+
+	/**
+	 * Analyse les fors fiscaux principaux et retourne les dates (et motifs) de fractionnement.
+	 *
+	 * @param principaux une liste de fors fiscaux principaux
+	 */
+	protected Fractionnements(@NotNull List<FFP> principaux, @NotNull List<ForFiscalSecondaire> secondaires) {
 
 		// Détermine les assujettissements pour le rattachement de type domicile
 		final MovingWindow<FFP> iter = new MovingWindow<>(principaux);
@@ -37,21 +48,21 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 			final ForFiscalPrincipalContext<FFP> forPrincipal = new ForFiscalPrincipalContext<>(snapshot);
 
 			// on détecte une éventuelle date de fractionnement à l'ouverture
-			final Fraction fractionOuverture = isFractionOuverture(forPrincipal);
+			final Fraction fractionOuverture = isFractionOuverture(forPrincipal, secondaires);
 			if (fractionOuverture != null) {
 				addFractionOuverture(fractionOuverture);
 			}
 
 			// on détecte une éventuelle date de fractionnement à la fermeture
-			final Fraction fractionFermeture = isFractionFermeture(forPrincipal);
+			final Fraction fractionFermeture = isFractionFermeture(forPrincipal, secondaires);
 			if (fractionFermeture != null) {
 				addFractionFermeture(fractionFermeture);
 			}
 		}
 	}
 
-	protected abstract Fraction isFractionOuverture(ForFiscalPrincipalContext<FFP> forPrincipal);
-	protected abstract Fraction isFractionFermeture(ForFiscalPrincipalContext<FFP> forPrincipal);
+	protected abstract Fraction isFractionOuverture(@NotNull ForFiscalPrincipalContext<FFP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires);
+	protected abstract Fraction isFractionFermeture(@NotNull ForFiscalPrincipalContext<FFP> forPrincipal, @NotNull List<ForFiscalSecondaire> secondaires);
 
 	private void addFractionOuverture(Fraction fraction) {
 
