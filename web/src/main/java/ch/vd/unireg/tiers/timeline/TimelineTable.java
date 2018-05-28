@@ -1,7 +1,6 @@
 package ch.vd.unireg.tiers.timeline;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
@@ -56,12 +55,7 @@ public class TimelineTable {
 		}
 
 		// tri des lignes selon l'ordre qui va bien
-		rows.sort(new Comparator<TimelineRow>() {
-			@Override
-			public int compare(TimelineRow o1, TimelineRow o2) {
-				return DateRangeComparator.compareRanges(o1.getPeriode(), o2.getPeriode()) * (invertedTime ? -1 : 1);
-			}
-		});
+		rows.sort((o1, o2) -> DateRangeComparator.compareRanges(o1.getPeriode(), o2.getPeriode()) * (invertedTime ? -1 : 1));
 
 		// on calcule les yearspans
 		int year = -1;
@@ -267,6 +261,28 @@ public class TimelineTable {
 					throw new IllegalArgumentException();
 				}
 				r.periodeImpositionIS = SPAN;
+				longueur++;
+			}
+		}
+		c.longueurAffichage = longueur;
+	}
+
+	public void addPeriodeExploitation(DateRange range) {
+		TimelineCell c = new TimelineCell(range);
+		int longueur = 0;
+		for (TimelineRow r : rows) {
+			if (isFirstRowForRange(r, range, bigBang)) {
+				if (r.periodeExploitation != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.periodeExploitation = c;
+				longueur++;
+			}
+			else if (DateRangeHelper.within(r.periode, range)) {
+				if (r.periodeExploitation != FILLER) {
+					throw new IllegalArgumentException();
+				}
+				r.periodeExploitation = SPAN;
 				longueur++;
 			}
 		}

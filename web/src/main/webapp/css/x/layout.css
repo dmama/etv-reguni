@@ -645,6 +645,10 @@ table.timeline {
 	background-color: #dddd00
 }
 
+.timeline td.periodeExploitation {
+	background-color: #99CCCC;
+}
+
 .timeline td.civile_pers, #legend td.civile_pers {
 	background-color: #99FF66;
 }

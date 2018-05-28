@@ -24,6 +24,8 @@ import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.metier.assujettissement.SourcierPur;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService.PeriodeContext;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceServiceException;
@@ -32,6 +34,7 @@ import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.ForFiscalRevenuFortune;
 import ch.vd.unireg.tiers.ForGestion;
@@ -61,6 +64,7 @@ public class ForsTimelineController {
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
 	private PeriodeImpositionImpotSourceService periodeImpositionImpotSourceService;
+	private PeriodeExploitationService periodeExploitationService;
 	private ControllerUtils controllerUtils;
 	private RegDate bigBangPersonnesPhysiques;
 	private RegDate bigBangPersonnesMorales;
@@ -76,6 +80,7 @@ public class ForsTimelineController {
 	                         @RequestParam(value = "showAssujettissements", defaultValue = "true") boolean showAssujettissements,
 	                         @RequestParam(value = "showPeriodesImposition", defaultValue = "false") boolean showPeriodesImposition,
 	                         @RequestParam(value = "showPeriodesImpositionIS", defaultValue = "false") boolean showPeriodesImpositionIS,
+	                         @RequestParam(value = "showPeriodesExploitation", defaultValue = "false") boolean showPeriodesExploitation,
 	                         @RequestParam(value = FOR_PRINT, required = false) Boolean forPrint,
 	                         @RequestParam(value = TITLE, required = false) String title,
 	                         @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
@@ -86,7 +91,7 @@ public class ForsTimelineController {
 		}
 
 		return commonTimeline(mav, id, invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition, showPeriodesImpositionIS,
-		                      forPrint, title, description, true);
+		                      showPeriodesExploitation, forPrint, title, description, true);
 	}
 
 	@RequestMapping(value = "/fors/timeline.do", method = RequestMethod.GET)
@@ -98,11 +103,12 @@ public class ForsTimelineController {
 	                    @RequestParam(value = "showAssujettissements", defaultValue = "true") boolean showAssujettissements,
 	                    @RequestParam(value = "showPeriodesImposition", defaultValue = "false") boolean showPeriodesImposition,
 	                    @RequestParam(value = "showPeriodesImpositionIS", defaultValue = "false") boolean showPeriodesImpositionIS,
+	                    @RequestParam(value = "showPeriodesExploitation", defaultValue = "false") boolean showPeriodesExploitation,
 	                    @RequestParam(value = FOR_PRINT, required = false) Boolean forPrint,
 	                    @RequestParam(value = TITLE, required = false) String title,
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
-		return commonTimeline(mav, id, invertedTime, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, showPeriodesImpositionIS, forPrint, title, description, false);
+		return commonTimeline(mav, id, invertedTime, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, showPeriodesImpositionIS, showPeriodesExploitation, forPrint, title, description, false);
 	}
 
 	private RegDate determineBigBang(boolean debugMode, Tiers tiers) {
@@ -118,16 +124,15 @@ public class ForsTimelineController {
 	private String commonTimeline(Model mav, Long id, boolean invertedTime, boolean showForsGestion,
 	                              boolean showAssujettissementsSource, boolean showAssujettissementsRole,
 	                              boolean showAssujettissements, boolean showPeriodesImposition,
-	                              boolean showPeriodesImpositionIS,
-	                              Boolean forPrint, String title, String description,
-	                              boolean debugMode) throws AccessDeniedException {
+	                              boolean showPeriodesImpositionIS, boolean showPeriodesExploitation,
+	                              Boolean forPrint, String title, String description, boolean debugMode) throws AccessDeniedException {
 
 		controllerUtils.checkAccesDossierEnLecture(id);
 
 		final Tiers tiers = id == null ? null : dao.get(id);
 		final RegDate bigBang = determineBigBang(debugMode, tiers);
 		final ForsTimelineView bean = new ForsTimelineView(invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition,
-		                                                   showPeriodesImpositionIS, bigBang);
+		                                                   showPeriodesImpositionIS, showPeriodesExploitation, bigBang);
 
 		if (forPrint != null) {
 			bean.setForPrint(forPrint);
@@ -241,6 +246,18 @@ public class ForsTimelineController {
 			}
 		}
 
+		// Extraction des périodes d'exploitation
+		final List<DateRange> periodesExploitation = new ArrayList<>();
+		if (bean.isShowPeriodesExploitation() && tiers instanceof Entreprise) {
+			final Entreprise ent = (Entreprise) tiers;
+			try {
+				periodesExploitation.addAll(periodeExploitationService.determinePeriodesExploitation(ent, PeriodeContext.THEORIQUE));
+			}
+			catch (RuntimeException e) {
+				bean.addException(new AssujettissementException(e));
+			}
+		}
+
 		// Calcul des différents ranges de l'axe du temps
 		final List<DateRange> ranges = new ArrayList<>();
 		ranges.addAll(filter(forsFiscaux, bigBang));
@@ -250,6 +267,7 @@ public class ForsTimelineController {
 		ranges.addAll(filter(assujettissements, bigBang));
 		ranges.addAll(filter(periodesImposition, bigBang));
 		ranges.addAll(filter(periodesImpositionIS, bigBang));
+		ranges.addAll(filter(periodesExploitation, bigBang));
 
 		final List<DateRange> periodes = buildPeriodes(ranges);
 
@@ -320,6 +338,13 @@ public class ForsTimelineController {
 					table.addPeriodeImpositionIS(p);
 				}
 			}
+		}
+
+		// Renseignement des périodes d'exploitation des SNC
+		if (bean.isShowPeriodesExploitation()) {
+			periodesExploitation.stream()
+					.filter(p -> compare(p, bigBang) >= 0)
+					.forEach(table::addPeriodeExploitation);
 		}
 	}
 
@@ -417,6 +442,10 @@ public class ForsTimelineController {
 
 	public void setPeriodeImpositionImpotSourceService(PeriodeImpositionImpotSourceService periodeImpositionImpotSourceService) {
 		this.periodeImpositionImpotSourceService = periodeImpositionImpotSourceService;
+	}
+
+	public void setPeriodeExploitationService(PeriodeExploitationService periodeExploitationService) {
+		this.periodeExploitationService = periodeExploitationService;
 	}
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {

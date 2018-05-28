@@ -80,6 +80,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
+		<property name="periodeExploitationService" ref="periodeExploitationService"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>

@@ -104,6 +104,12 @@
 					<input type="hidden" id="showPeriodesImpositionIS" name="showPeriodesImpositionIS" value="${command.showPeriodesImpositionIS}"/>
 				</c:if>
 
+				<c:if test="${command.natureTiers == 'Entreprise'}">
+					<input type="checkbox" id="checkPeriodesExploitation" onclick="$('#showPeriodesExploitation').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showPeriodesExploitation}"> checked</c:if>/>
+					<label for="checkPeriodesExploitation">Périodes d'exploitation SNC</label>
+					<input type="hidden" id="showPeriodesExploitation" name="showPeriodesExploitation" value="${command.showPeriodesExploitation}"/>
+				</c:if>
+
 			</span>
 		</form>
 
@@ -120,9 +126,10 @@
 				<c:if test="${command.showAssujettissements}"><th>Assujettissements<c:if test="${debugAssujettissement && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}"> (combinés)</c:if></th></c:if>
 				<c:if test="${command.showPeriodesImposition}"><th>Périodes d'imposition</th></c:if>
 				<c:if test="${command.showPeriodesImpositionIS}"><th>Périodes d'imposition IS</th></c:if>
+				<c:if test="${command.showPeriodesExploitation}"><th>Périodes d'exploitation SNC</th></c:if>
 			</tr>
 
-			<tr class="invisibleBorder" />
+			<tr class="invisibleBorder" ></tr>
 
 			<c:forEach var="ligne" varStatus="status" items="${command.table.rows}" >
 				<tr>
@@ -168,12 +175,12 @@
 						</c:choose>
 					</c:if>
 
-					<td class="invisibleBorder" />
+					<td class="invisibleBorder" ></td>
 
 					<%-- fors principaux --%>
 					<c:choose>
 						<c:when test="${ligne.forPrincipal.filler}">			
-							<td class="filler" />
+							<td class="filler" ></td>
 						</c:when>
 						<c:when test="${!ligne.forPrincipal.span && !ligne.forPrincipal.filler}">
 							<c:set var="fp" value="${ligne.forPrincipal.range}" />
@@ -235,7 +242,7 @@
 					<c:forEach var="fs" items="${ligne.forsSecondaires}" varStatus="fsLoop">
 						<c:choose>
 							<c:when test="${fs.filler}">			
-								<td class="filler <c:if test="${fsLoop.index >= defaultMaxColsFS}">fs-hideable</c:if>"/>
+								<td class="filler <c:if test="${fsLoop.index >= defaultMaxColsFS}">fs-hideable</c:if>"></td>
 							</c:when>
 							<c:when test="${!fs.span && !fs.filler}">
 								<td class="secondaire tooltip_cell <c:if test="${fsLoop.index >= defaultMaxColsFS}">fs-hideable</c:if>" id="ffs-${fs.range.id}" rowspan="<c:out value="${fs.longueurAffichage}" />">
@@ -267,7 +274,7 @@
 					<c:if test="${command.showForsGestion && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}">
 						<c:choose>
 							<c:when test="${ligne.forGestion.filler}">
-								<td class="filler" />
+								<td class="filler" ></td>
 							</c:when>
 							<c:when test="${!ligne.forGestion.span && !ligne.forGestion.filler}">
 								<c:set var="fg" value="${ligne.forGestion.range}" />
@@ -292,7 +299,7 @@
 						<c:if test="${command.showAssujettissementsSource}">
 							<c:choose>
 								<c:when test="${ligne.assujettissementSource.filler}">
-									<td class="filler" />
+									<td class="filler" ></td>
 								</c:when>
 								<c:when test="${!ligne.assujettissementSource.span && !ligne.assujettissementSource.filler}">
 									<c:set var="a" value="${ligne.assujettissementSource.range}" />
@@ -325,7 +332,7 @@
 						<c:if test="${command.showAssujettissementsRole}">
 							<c:choose>
 								<c:when test="${ligne.assujettissementRole.filler}">
-									<td class="filler" />
+									<td class="filler" ></td>
 								</c:when>
 								<c:when test="${!ligne.assujettissementRole.span && !ligne.assujettissementRole.filler}">
 									<c:set var="a" value="${ligne.assujettissementRole.range}" />
@@ -359,7 +366,7 @@
 					<c:if test="${command.showAssujettissements}">
 						<c:choose>
 							<c:when test="${ligne.assujettissement.filler}">
-								<td class="filler" />
+								<td class="filler" ></td>
 							</c:when>
 							<c:when test="${!ligne.assujettissement.span && !ligne.assujettissement.filler}">
 								<c:set var="a" value="${ligne.assujettissement.range}" />
@@ -392,7 +399,7 @@
 					<c:if test="${command.showPeriodesImposition}">
 						<c:choose>
 							<c:when test="${ligne.periodeImposition.filler}">
-								<td class="filler" />
+								<td class="filler" ></td>
 							</c:when>
 							<c:when test="${!ligne.periodeImposition.span && !ligne.periodeImposition.filler}">
 								<c:set var="pi" value="${ligne.periodeImposition.range}" />
@@ -432,7 +439,7 @@
 					<c:if test="${command.showPeriodesImpositionIS}">
 						<c:choose>
 							<c:when test="${ligne.periodeImpositionIS.filler}">
-								<td class="filler" />
+								<td class="filler" ></td>
 							</c:when>
 							<c:when test="${ligne.periodeImpositionIS.span}">
 								<%-- rien à mettre, le rowspan est automatiquement rempli --%>
@@ -470,6 +477,27 @@
 				                                </c:when>
 			                                </c:choose>
 		                                </c:if>
+	                                </div>
+								</td>
+							</c:otherwise>
+						</c:choose>
+					</c:if>
+
+					<%-- périodes d'exploitation SNC --%>
+					<c:if test="${command.showPeriodesExploitation}">
+						<c:choose>
+							<c:when test="${ligne.periodeExploitation.filler}">
+								<td class="filler" ></td>
+							</c:when>
+							<c:when test="${ligne.periodeExploitation.span}">
+								<%-- rien à mettre, le rowspan est automatiquement rempli --%>
+							</c:when>
+							<c:otherwise>
+								<c:set var="pi" value="${ligne.periodeExploitation.range}" />
+								<td class="periodeExploitation tooltip_cell" id="pex-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.periodeExploitation.longueurAffichage}" />">
+	                                <div id="pex-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
+	                                    Début : <b><unireg:date date="${pi.dateDebut}"/></b><br/>
+	                                    Fin : <b><unireg:date date="${pi.dateFin}"/></b><br/>
 	                                </div>
 								</td>
 							</c:otherwise>

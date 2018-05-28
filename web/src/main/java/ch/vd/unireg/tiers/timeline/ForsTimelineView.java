@@ -33,15 +33,17 @@ public class ForsTimelineView {
 	private final boolean showAssujettissements;
 	private final boolean showPeriodesImposition;
 	private final boolean showPeriodesImpositionIS;
+	private final boolean showPeriodesExploitation;
 
 	public ForsTimelineView(boolean invertedTime, boolean showForsGestion, boolean showAssujettissementsSource, boolean showAssujettissementsRole, boolean showAssujettissements,
-	                        boolean showPeriodesImposition, boolean showPeriodesImpositionIS, RegDate bigBang) {
+	                        boolean showPeriodesImposition, boolean showPeriodesImpositionIS, boolean showPeriodesExploitation, RegDate bigBang) {
 		this.showForsGestion = showForsGestion;
 		this.showAssujettissementsSource = showAssujettissementsSource;
 		this.showAssujettissementsRole = showAssujettissementsRole;
 		this.showAssujettissements = showAssujettissements;
 		this.showPeriodesImposition = showPeriodesImposition;
 		this.showPeriodesImpositionIS = showPeriodesImpositionIS;
+		this.showPeriodesExploitation = showPeriodesExploitation;
 		this.table = new TimelineTable(invertedTime, bigBang);
 	}
 
@@ -111,6 +113,10 @@ public class ForsTimelineView {
 
 	public boolean isShowPeriodesImpositionIS() {
 		return showPeriodesImpositionIS;
+	}
+
+	public boolean isShowPeriodesExploitation() {
+		return showPeriodesExploitation;
 	}
 
 	public boolean isInvertedTime() {

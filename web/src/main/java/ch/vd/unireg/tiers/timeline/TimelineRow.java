@@ -19,6 +19,7 @@ public class TimelineRow {
 	public TimelineCell assujettissement;
 	public TimelineCell periodeImposition;
 	public TimelineCell periodeImpositionIS;
+	public TimelineCell periodeExploitation;
 
 	public TimelineRow(TimelineRange periode) {
 		this.periode = periode;
@@ -30,6 +31,7 @@ public class TimelineRow {
 		this.assujettissement = TimelineCell.FILLER;
 		this.periodeImposition = TimelineCell.FILLER;
 		this.periodeImpositionIS = TimelineCell.FILLER;
+		this.periodeExploitation = TimelineCell.FILLER;
 	}
 
 	public DateRange getPeriode() {
@@ -66,5 +68,9 @@ public class TimelineRow {
 
 	public TimelineCell getPeriodeImpositionIS() {
 		return periodeImpositionIS;
+	}
+
+	public TimelineCell getPeriodeExploitation() {
+		return periodeExploitation;
 	}
 }
