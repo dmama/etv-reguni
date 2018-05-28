@@ -3006,6 +3006,7 @@ public class TiersServiceImpl implements TiersService {
 								.filter(ActiviteEconomique.class::isInstance)
 								.map(ActiviteEconomique.class::cast)
 								.filter(rapport -> !rapport.isPrincipal())
+								.filter(rapport -> rapport.getDateFin() == null)    // [SIFISC-29044] on ne ferme que les rapports ouverts
 								.collect(Collectors.toList());
 
 				for (RapportEntreTiers rapport : rapports) {
