@@ -30,7 +30,6 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.StandardBatchIterator;
@@ -78,17 +77,11 @@ public class TableFillerWithCivilValues {
 	private final ServiceCivilRaw serviceCivil;
 
 	public static void main(String[] args) throws Exception {
-		Log4jConfigurer.initLogging("classpath:" + TableFillerWithCivilValues.class.getPackage().getName().replaceAll("\\.", "/") + "/" + TableFillerWithCivilValues.class.getSimpleName() + "-log4j.xml", 30000);
-		try {
-			Class.forName(dbDriverClassName);
-			new TableFillerWithCivilValues().run();
-		}
-		finally {
-			Log4jConfigurer.shutdownLogging();
-		}
+		Class.forName(dbDriverClassName);
+		new TableFillerWithCivilValues().run();
 	}
 
-	public TableFillerWithCivilValues() throws Exception {
+	public TableFillerWithCivilValues() {
 
 		final WebClientPool rcpersPool = new WebClientPool();
 		rcpersPool.setBaseUrl(RCPERS_URL);
