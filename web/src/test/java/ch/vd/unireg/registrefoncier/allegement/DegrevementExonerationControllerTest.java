@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -14,7 +13,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.FlashMessage;
 import ch.vd.unireg.common.MockControllerUtils;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.hibernate.HibernateTemplateImpl;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -28,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(UniregJUnit4Runner.class)
 public class DegrevementExonerationControllerTest {
 
 	@Before

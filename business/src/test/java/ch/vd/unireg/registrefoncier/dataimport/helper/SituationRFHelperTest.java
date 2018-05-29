@@ -1,10 +1,8 @@
 package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
 
@@ -12,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(UniregJUnit4Runner.class)
 public class SituationRFHelperTest {
 
 	@Test

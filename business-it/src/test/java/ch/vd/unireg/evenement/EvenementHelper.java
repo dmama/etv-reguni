@@ -1,7 +1,6 @@
 package ch.vd.unireg.evenement;
 
 import javax.jms.ConnectionFactory;
-import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -10,7 +9,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -23,15 +21,6 @@ import ch.vd.unireg.utils.UniregPropertiesImpl;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public abstract class EvenementHelper {
-
-	public static void initLog4j() {
-		try {
-			Log4jConfigurer.initLogging("classpath:ut/log4j.xml");
-		}
-		catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	public static UniregProperties initProps() {
 		try {

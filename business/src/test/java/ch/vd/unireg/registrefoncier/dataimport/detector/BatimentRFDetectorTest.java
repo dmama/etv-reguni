@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.grundstueck.CapiCode;
@@ -15,7 +14,6 @@ import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.GebaeudeArt;
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
@@ -39,7 +37,6 @@ import ch.vd.unireg.transaction.MockTransactionManager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@RunWith(UniregJUnit4Runner.class)
 public class BatimentRFDetectorTest {
 
 	private static final Long IMPORT_ID = 1L;

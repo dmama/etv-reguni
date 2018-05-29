@@ -9,7 +9,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
@@ -34,7 +33,6 @@ import ch.vd.capitastra.grundstueck.Rechtsgrund;
 import ch.vd.capitastra.grundstueck.SDR;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 
 import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
@@ -42,7 +40,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(UniregJUnit4Runner.class)
 public class FichierImmeublesRFParserTest {
 
 	private FichierImmeublesRFParser parser;

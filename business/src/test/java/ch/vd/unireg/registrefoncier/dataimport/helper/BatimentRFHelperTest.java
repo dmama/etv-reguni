@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.capitastra.grundstueck.Gebaeude;
@@ -15,7 +14,6 @@ import ch.vd.capitastra.grundstueck.GebaeudeArt;
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.ProgrammingException;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
@@ -29,7 +27,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@RunWith(UniregJUnit4Runner.class)
 public class BatimentRFHelperTest {
 
 	/**

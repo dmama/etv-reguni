@@ -8,11 +8,9 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.CapiCode;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
@@ -23,7 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(UniregJUnit4Runner.class)
 public class SurfaceAuSolRFHelperTest {
 
 	@Test

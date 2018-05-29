@@ -44,7 +44,6 @@ public abstract class EvenementTest {
 	protected GentilEsbMessageListenerContainer listener;
 
 	protected EvenementTest() {
-		EvenementHelper.initLog4j();
 		uniregProperties = EvenementHelper.initProps();
 		jmsConnectionFactory = EvenementHelper.initConnectionFactory(uniregProperties);
 	}

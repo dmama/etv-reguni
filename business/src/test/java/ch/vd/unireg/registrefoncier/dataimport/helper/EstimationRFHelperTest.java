@@ -6,11 +6,9 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.registrefoncier.EstimationRF;
 
 import static org.junit.Assert.assertEquals;
@@ -19,7 +17,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("Duplicates")
-@RunWith(UniregJUnit4Runner.class)
 public class EstimationRFHelperTest {
 
 	/**

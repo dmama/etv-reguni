@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 
 import ch.vd.registre.base.date.RegDate;
 
@@ -17,7 +16,6 @@ import static org.junit.Assert.assertTrue;
  * @author jec
  *
  */
-@RunWith(UniregJUnit4Runner.class)
 public abstract class WithoutSpringTest {
 
 	/**

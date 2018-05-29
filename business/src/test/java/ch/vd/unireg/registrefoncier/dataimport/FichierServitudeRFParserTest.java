@@ -9,7 +9,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.capitastra.rechteregister.BelastetesGrundstueck;
@@ -21,12 +20,10 @@ import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.NatuerlichePersonGb;
 import ch.vd.capitastra.rechteregister.NatuerlichePersonstamm;
 import ch.vd.capitastra.rechteregister.Personstamm;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(UniregJUnit4Runner.class)
 public class FichierServitudeRFParserTest {
 
 	private FichierServitudeRFParser parser;

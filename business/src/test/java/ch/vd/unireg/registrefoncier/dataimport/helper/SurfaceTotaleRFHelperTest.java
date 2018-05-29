@@ -1,17 +1,14 @@
 package ch.vd.unireg.registrefoncier.dataimport.helper;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.GrundstueckFlaeche;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(UniregJUnit4Runner.class)
 public class SurfaceTotaleRFHelperTest {
 
 	/**

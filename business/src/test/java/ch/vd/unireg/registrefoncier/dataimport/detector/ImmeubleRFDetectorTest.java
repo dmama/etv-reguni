@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
@@ -24,7 +23,6 @@ import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
@@ -55,7 +53,6 @@ import ch.vd.unireg.transaction.MockTransactionManager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@RunWith(UniregJUnit4Runner.class)
 public class ImmeubleRFDetectorTest {
 
 	private static final Long IMPORT_ID = 1L;

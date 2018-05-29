@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE log4j:configuration SYSTEM "/projets/registre/unireg/trunk/04-Implementation/unireg/core/src/test/resources/ut/log4j.dtd">
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 
-	<!-- log4j config pour les UT de Biz -->
+	<!-- log4j config pour les test UT et BIT -->
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="Threshold" value="WARN" />
@@ -25,35 +25,24 @@
 		<level value="DEBUG" />
 	</logger>
 
-	<!--<logger name="ch.vd.unireg.worker">-->
-		<!--<level value="TRACE" />-->
-	<!--</logger>-->
-
-	<logger name="net.sf.ehcache">
-		<level value="ERROR" />
-	</logger>
-
-	<logger name="org.apache">
-		<level value="WARN" />
-	</logger>
-
-	<logger name="org.dbunit">
-		<level value="WARN" />
-	</logger>
-
-	<logger name="org.hibernate">
-		<level value="WARN" />
-	</logger>
-
-	<logger name="org.hibernate.SQL">
+	<logger name="ch.vd.unireg.tiers.TiersHelper">
 		<level value="INFO" />
+	</logger>
+
+	<!-- Affichage des démarcation de transactions -->
+	<logger name="ch.vd.unireg.transaction">
+		<level value="WARN" />
 	</logger>
 
 	<logger name="org.springframework">
 		<level value="INFO" />
 	</logger>
 
-	<logger name="org.springframework.test.jdbc.SimpleJdbcTestUtils">
+	<logger name="net.sf.ehcache">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.hibernate.SQL">
 		<level value="WARN" />
 	</logger>
 
@@ -61,6 +50,12 @@
 		<!-- pour ne pas se faire spammer par les erreurs de parsing des CSS -->
 		<level value="ERROR" />
 	</logger>
+
+	<!-- Suppress warnings from Commons Validator -->
+	<logger name="org.apache.commons.validator.ValidatorResources">
+		<level value="ERROR" />
+	</logger>
+
 
 	<root>
 		<level value="WARN" />

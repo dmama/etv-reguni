@@ -4,22 +4,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.springframework.util.Log4jConfigurer;
-import org.springframework.util.ResourceUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class WorkingQueueTest {
-
-	static {
-		try {
-			Log4jConfigurer.initLogging(ResourceUtils.getURL("classpath:ut/log4j.xml").toString());
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	@Test
 	public void testOneSimpleWorker() throws Exception {

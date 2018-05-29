@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.grundstueck.GeburtsDatum;
@@ -22,7 +21,6 @@ import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImportDAO;
@@ -46,7 +44,6 @@ import ch.vd.unireg.transaction.MockTransactionManager;
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("Duplicates")
-@RunWith(UniregJUnit4Runner.class)
 public class AyantDroitRFDetectorTest {
 
 	private static final Long IMPORT_ID = 1L;

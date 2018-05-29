@@ -6,10 +6,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.ImplantationRF;
@@ -17,7 +15,6 @@ import ch.vd.unireg.registrefoncier.ImplantationRF;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(UniregJUnit4Runner.class)
 public class ImplantationRFHelperTest {
 
 	@Test

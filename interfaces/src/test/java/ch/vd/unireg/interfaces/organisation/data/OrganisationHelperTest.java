@@ -6,21 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesREE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
-import ch.vd.unireg.common.UniregJUnit4Runner;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
 import static ch.vd.unireg.interfaces.civil.data.IndividuRCPersTest.assertAdresse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(UniregJUnit4Runner.class)
 public class OrganisationHelperTest {
 
 	/**
