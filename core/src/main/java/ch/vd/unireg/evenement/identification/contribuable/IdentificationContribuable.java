@@ -66,9 +66,8 @@ public class IdentificationContribuable extends HibernateEntity {
 		 */
 		A_EXPERTISER_SUSPENDU,
 		/**
-		 * A ne plus utiliser
+		 * Un événement suspendu. <b>Attention !</b> A ne plus utiliser, cet état est gardé pour des raisons historiques uniquement.
 		 */
-		@Deprecated
 		SUSPENDU,
 
 		/**
