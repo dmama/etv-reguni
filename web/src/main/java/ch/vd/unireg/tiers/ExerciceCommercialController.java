@@ -106,7 +106,7 @@ public class ExerciceCommercialController {
 	public List<ExerciceCommercialView> getExercicesCommerciaux(@RequestParam("pmId") long pmId,
 	                                                            @RequestParam(value = "reversed", required = false, defaultValue = "false") boolean reversed) {
 		final Tiers tiers = tiersDAO.get(pmId);
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new ObjectNotFoundException("Pas d'entreprise avec le numéro " + pmId);
 		}
 		controllerUtils.checkAccesDossierEnLecture(pmId);
@@ -148,7 +148,7 @@ public class ExerciceCommercialController {
 		controllerUtils.checkAccesDossierEnEcriture(pmId);
 
 		final Tiers tiers = tiersDAO.get(pmId);
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new ObjectNotFoundException("Pas d'entreprise avec le numéro " + pmId);
 		}
 
@@ -171,7 +171,7 @@ public class ExerciceCommercialController {
 		controllerUtils.checkAccesDossierEnEcriture(view.getPmId());
 
 		final Tiers tiers = tiersDAO.get(view.getPmId());
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new ObjectNotFoundException("Pas d'entreprise avec le numéro " + view.getPmId());
 		}
 
@@ -245,7 +245,7 @@ public class ExerciceCommercialController {
 		controllerUtils.checkAccesDossierEnEcriture(view.getPmId());
 
 		final Tiers tiers = tiersDAO.get(view.getPmId());
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new ObjectNotFoundException("Pas d'entreprise avec le numéro " + view.getPmId());
 		}
 
@@ -296,7 +296,7 @@ public class ExerciceCommercialController {
 		controllerUtils.checkAccesDossierEnEcriture(view.getPmId());
 
 		final Tiers tiers = tiersDAO.get(view.getPmId());
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new ObjectNotFoundException("Pas d'entreprise avec le numéro " + view.getPmId());
 		}
 

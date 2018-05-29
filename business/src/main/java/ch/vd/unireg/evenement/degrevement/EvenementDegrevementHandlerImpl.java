@@ -22,14 +22,6 @@ import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
-import ch.vd.unireg.xml.degrevement.quittance.v1.Commune;
-import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
-import ch.vd.unireg.xml.event.degrevement.v1.DonneesMetier;
-import ch.vd.unireg.xml.event.degrevement.v1.Message;
-import ch.vd.unireg.xml.event.degrevement.v1.TypDateAttr;
-import ch.vd.unireg.xml.event.degrevement.v1.TypEntMax12Attr;
-import ch.vd.unireg.xml.event.degrevement.v1.TypPctPosDecMax32Attr;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.documentfiscal.DemandeDegrevementICIHelper;
@@ -37,6 +29,7 @@ import ch.vd.unireg.foncier.DegrevementICI;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.foncier.DonneesLoiLogement;
 import ch.vd.unireg.foncier.DonneesUtilisation;
+import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -50,6 +43,13 @@ import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.xml.degrevement.quittance.v1.Commune;
+import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
+import ch.vd.unireg.xml.event.degrevement.v1.DonneesMetier;
+import ch.vd.unireg.xml.event.degrevement.v1.Message;
+import ch.vd.unireg.xml.event.degrevement.v1.TypDateAttr;
+import ch.vd.unireg.xml.event.degrevement.v1.TypEntMax12Attr;
+import ch.vd.unireg.xml.event.degrevement.v1.TypPctPosDecMax32Attr;
 
 /**
  * Handler métier des retours des données de dégrèvement
@@ -312,7 +312,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 		final IdFormulaire id = extractIdFormulaire(retour.getDonneesMetier());
 
 		final Tiers tiers = tiersService.getTiers(id.noContribuable);
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new EsbBusinessException(EsbBusinessCode.CTB_INEXISTANT, "Entreprise inconnue avec ce numéro de contribuable.", null);
 		}
 

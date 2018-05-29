@@ -131,7 +131,7 @@ public class SecurityDebugConfig implements InitializingBean {
 
 	private boolean getBooleanProp(String key) {
 		String value = properties.getProperty(key);
-		return value != null && Boolean.parseBoolean(value);
+		return Boolean.parseBoolean(value);
 	}
 
 	@Override

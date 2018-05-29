@@ -2142,7 +2142,7 @@ public class MetierServiceImpl implements MetierService {
 				 * on ne fait rien si son état civil est déjà 'veuf' dans le registre civil.
 				 */
 
-				if (etatCivilActif == null || !EtatCivilHelper.estVeuf(etatCivilActif)) {
+				if (!EtatCivilHelper.estVeuf(etatCivilActif)) {
 
 					int nombreEnfants = 0;
 					if (situationFamilleMenage != null) {

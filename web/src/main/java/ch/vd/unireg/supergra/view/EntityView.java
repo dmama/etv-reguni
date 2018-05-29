@@ -130,7 +130,7 @@ public class EntityView implements Duplicable<EntityView> {
 				continue;
 			}
 
-			if (leftValue != null && rightValue != null && leftValue.equals(rightValue)) {
+			if (leftValue != null && leftValue.equals(rightValue)) {
 				continue;
 			}
 

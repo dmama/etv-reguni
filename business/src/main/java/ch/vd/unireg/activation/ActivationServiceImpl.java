@@ -458,7 +458,7 @@ public class ActivationServiceImpl implements ActivationService {
 			// on valide que le nouveau lien ne serait pas en conflit avec un lien existant...
 			liensNonAnnules.sort(new DateRangeComparator<>());
 			final List<DateRange> plageLiensNonAnnules = DateRangeHelper.merge(liensNonAnnules);
-			if (plageLiensNonAnnules != null && DateRangeHelper.intersect(plageNouveauLien, plageLiensNonAnnules)) {
+			if (DateRangeHelper.intersect(plageNouveauLien, plageLiensNonAnnules)) {
 				throw new ActivationServiceException(String.format("La date de réactivation au %s entre en conflit avec un lien d'activité économique non-annulé existant.",
 				                                                   RegDateHelper.dateToDisplayString(dateReactivation)));
 			}

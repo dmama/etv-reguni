@@ -3151,7 +3151,7 @@ public class TiersServiceImpl implements TiersService {
 
 	private DecisionAci corrigerDecisionAci(@NotNull DecisionAci decisionAci, RegDate dateFin, String remarque, int noOfsAutoriteFiscale) {
 
-		final boolean remarquesIdentiques = decisionAci.getRemarque() != null && remarque != null && decisionAci.getRemarque().equals(remarque);
+		final boolean remarquesIdentiques = decisionAci.getRemarque() != null && decisionAci.getRemarque().equals(remarque);
 		final boolean remarquesNulles = decisionAci.getRemarque() == null && remarque == null;
 		if (remarquesIdentiques || remarquesNulles)
 			if ((decisionAci.getNumeroOfsAutoriteFiscale() == noOfsAutoriteFiscale)) {

@@ -31,7 +31,7 @@ public abstract class ScissionEntrepriseHelper {
 		for (RapportEntreTiers ret : scindee.getRapportsSujet()) {
 			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.SCISSION_ENTREPRISE) {
 				final Tiers resultante = tiersService.getTiers(ret.getObjetId());
-				if (resultante == null || !(resultante instanceof Entreprise)) {
+				if (!(resultante instanceof Entreprise)) {
 					throw new TiersNotFoundException(ret.getObjetId());
 				}
 

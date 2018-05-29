@@ -46,7 +46,7 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 
 	@Override
 	public DataSource getUltimateTarget() {
-		if (target != null && target instanceof WrappingDataSource) {
+		if (target instanceof WrappingDataSource) {
 			return ((WrappingDataSource) target).getUltimateTarget();
 		}
 		else {

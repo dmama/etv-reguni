@@ -295,7 +295,7 @@ public abstract class TiersHelper {
 	 * @return <code>false</code> si l'un au moins des objets est <code>null</code> ou si leurs valeurs sont différentes, <code>true</code> si les deux objets ne sont pas <code>null</code> et que les valeurs sont identiques
 	 */
 	private static <T> boolean areSame(T o1, T o2) {
-		return o1 != null && o2 != null && o1.equals(o2);
+		return o1 != null && o1.equals(o2);
 	}
 
 	public static boolean isSameEgidEwid(AdresseGenerique a1, AdresseGenerique a2) {

@@ -697,7 +697,7 @@ public class RapportController {
 		// Tri
 		final String sortingField = pagination.getSorting().getField();
 
-		if (sortingField != null && "autoriteTutelaire".equals(sortingField)) {
+		if ("autoriteTutelaire".equals(sortingField)) {
 			sortRapportsByAutoriteTutelaire(pagination, rapports, this.tiersService);
 		}
 

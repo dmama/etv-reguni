@@ -151,8 +151,7 @@ public class AnnulationSeparationController {
 
 	private boolean isDernierForFiscalPrincipalFermePourSeparation(long idTiers) {
 		final Tiers tiers = tiersService.getTiers(idTiers);
-		return tiers != null
-				&& tiers instanceof ContribuableImpositionPersonnesPhysiques
+		return tiers instanceof ContribuableImpositionPersonnesPhysiques
 				&& tiersService.isDernierForFiscalPrincipalFermePourSeparation((ContribuableImpositionPersonnesPhysiques) tiers);
 	}
 
@@ -179,7 +178,7 @@ public class AnnulationSeparationController {
 	@NotNull
 	private MenageCommun getMenage(long idMenage) {
 		final Tiers tiersMenage = tiersService.getTiers(idMenage);
-		if (tiersMenage == null || !(tiersMenage instanceof MenageCommun)) {
+		if (!(tiersMenage instanceof MenageCommun)) {
 			throw new TiersNotFoundException(idMenage);
 		}
 		return (MenageCommun) tiersMenage;

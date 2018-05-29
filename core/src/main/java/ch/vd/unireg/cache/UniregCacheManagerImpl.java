@@ -106,7 +106,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 			else if (actionName.startsWith("dumpKeys")) {
 				final String cacheName = actionName.substring(8);
 				final UniregCacheInterface cache = map.get(cacheName);
-				if (cache == null || !(cache instanceof KeyDumpableCache)) {
+				if (!(cache instanceof KeyDumpableCache)) {
 					throw new NoSuchMethodException(actionName);
 				}
 				((KeyDumpableCache) cache).dumpCacheKeys(LOGGER, LogLevel.Level.INFO);
@@ -115,7 +115,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 			else if (actionName.startsWith("dumpValues")) {
 				final String cacheName = actionName.substring(10);
 				final UniregCacheInterface cache = map.get(cacheName);
-				if (cache == null || !(cache instanceof KeyValueDumpableCache)) {
+				if (!(cache instanceof KeyValueDumpableCache)) {
 					throw new NoSuchMethodException(actionName);
 				}
 				((KeyValueDumpableCache) cache).dumpCacheContent(LOGGER, LogLevel.Level.INFO);

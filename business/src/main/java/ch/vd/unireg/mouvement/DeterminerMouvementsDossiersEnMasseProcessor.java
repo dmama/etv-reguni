@@ -321,7 +321,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 		// pas de mouvement, ou dernier pas réception vers les archives ?
 		final ReceptionDossierArchives receptionGeneree;
-		if (dernierMouvement == null || !(dernierMouvement instanceof ReceptionDossierArchives)) {
+		if (!(dernierMouvement instanceof ReceptionDossierArchives)) {
 			final CollectiviteAdministrative ca = getCollectiviteAdministrativeByNumeroTechnique(oid, caCache);
 
 			final ReceptionDossier receptionDossier = new ReceptionDossierArchives();

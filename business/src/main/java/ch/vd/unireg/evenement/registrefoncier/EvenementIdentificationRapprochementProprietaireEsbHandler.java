@@ -90,7 +90,7 @@ public class EvenementIdentificationRapprochementProprietaireEsbHandler implemen
 
 	private static long extractIdTiersRF(EsbMessage message) throws EsbBusinessException {
 		final String strIdTiersRF = message.getHeader(RapprochementManuelTiersRFService.ID_TIERS_RF);
-		if (strIdTiersRF == null || !StringUtils.isNumeric(strIdTiersRF)) {
+		if (!StringUtils.isNumeric(strIdTiersRF)) {
 			throw new EsbBusinessException(EsbBusinessCode.MESSAGE_NON_SUPPORTE, "L'attribut " + RapprochementManuelTiersRFService.ID_TIERS_RF + " du header est absent ou invalide", null);
 		}
 

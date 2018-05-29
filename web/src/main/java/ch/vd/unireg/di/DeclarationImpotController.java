@@ -868,7 +868,7 @@ public class DeclarationImpotController {
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
-		if (di == null || !(di instanceof DeclarationImpotOrdinairePM)) {
+		if (!(di instanceof DeclarationImpotOrdinairePM)) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 
@@ -1174,7 +1174,7 @@ public class DeclarationImpotController {
 			@Override
 			public TypeDocument execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null || !(di instanceof DeclarationImpotOrdinairePM)) {
+				if (!(di instanceof DeclarationImpotOrdinairePM)) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
 
@@ -1237,7 +1237,7 @@ public class DeclarationImpotController {
 			@Override
 			public String execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null || !(di instanceof DeclarationImpotOrdinairePP)) {
+				if (!(di instanceof DeclarationImpotOrdinairePP)) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
 
@@ -1281,7 +1281,7 @@ public class DeclarationImpotController {
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
-		if (di == null || !(di instanceof DeclarationImpotOrdinairePP)) {
+		if (!(di instanceof DeclarationImpotOrdinairePP)) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 
@@ -1317,7 +1317,7 @@ public class DeclarationImpotController {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null || !(di instanceof DeclarationImpotOrdinairePP)) {
+				if (!(di instanceof DeclarationImpotOrdinairePP)) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
 
@@ -1413,7 +1413,7 @@ public class DeclarationImpotController {
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
-		if (di == null || !(di instanceof DeclarationImpotOrdinairePM)) {
+		if (!(di instanceof DeclarationImpotOrdinairePM)) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 
@@ -1462,7 +1462,7 @@ public class DeclarationImpotController {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null || !(di instanceof DeclarationImpotOrdinairePM)) {
+				if (!(di instanceof DeclarationImpotOrdinairePM)) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
 
@@ -1497,7 +1497,7 @@ public class DeclarationImpotController {
 		}
 
 		final Declaration declaration = delai.getDeclaration();
-		if (declaration == null || !(declaration instanceof DeclarationImpotOrdinairePM)) {
+		if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 
@@ -1542,7 +1542,7 @@ public class DeclarationImpotController {
 				}
 
 				final Declaration declaration = delai.getDeclaration();
-				if (declaration == null || !(declaration instanceof DeclarationImpotOrdinairePM)) {
+				if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
 

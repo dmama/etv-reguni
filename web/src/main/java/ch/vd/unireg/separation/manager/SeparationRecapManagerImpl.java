@@ -81,7 +81,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 	@Transactional(readOnly = true)
 	public boolean isAvecForFiscalPrincipalActif(long noTiers) {
 		final Tiers tiers = tiersService.getTiers(noTiers);
-		if (tiers != null && tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
 			final ForFiscalPrincipal ffp = ((ContribuableImpositionPersonnesPhysiques) tiers).getDernierForFiscalPrincipal();
 			return ffp != null && ffp.getDateFin() == null;
 		}

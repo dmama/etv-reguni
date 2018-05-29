@@ -143,7 +143,7 @@ public class ControllerUtilsImpl implements ControllerUtils {
 	public void checkTraitementContribuableAvecDecisionAci(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
 		if (tiersId != null) {
 			Tiers tiers = tiersService.getTiers(tiersId);
-			if (tiers != null && tiers instanceof Contribuable) {
+			if (tiers instanceof Contribuable) {
 				Contribuable ctb = (Contribuable)tiers;
 				Autorisations autorisations = getAutorisations(ctb);
 				if (!autorisations.isDecisionsAci() && tiersService.isSousInfluenceDecisions(ctb)) {

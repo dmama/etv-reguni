@@ -65,7 +65,7 @@ public abstract class FusionEntreprisesHelper {
 			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES) {
 				final RegDate dateBilan = ret.getDateDebut();
 				final Tiers absorbee = tiersService.getTiers(ret.getSujetId());
-				if (absorbee == null || !(absorbee instanceof Entreprise)) {
+				if (!(absorbee instanceof Entreprise)) {
 					throw new TiersNotFoundException(ret.getSujetId());
 				}
 				final EtatEntreprise dd = getEtatAbsorbee((Entreprise) absorbee);

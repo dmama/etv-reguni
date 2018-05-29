@@ -538,7 +538,7 @@ public abstract class Arrivee extends Mouvement {
 		if (contribuableAUnForFiscalPrincipalPersonnelOuvertEnDehorsDuCanton(arrivant)) {
 			context.getTiersService().closeForFiscalPrincipal(arrivant, dateDebutMenage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
-		if (conjointDeLArrivant != null && contribuableAUnForFiscalPrincipalPersonnelOuvertEnDehorsDuCanton(conjointDeLArrivant)) {
+		if (contribuableAUnForFiscalPrincipalPersonnelOuvertEnDehorsDuCanton(conjointDeLArrivant)) {
 			context.getTiersService().closeForFiscalPrincipal(conjointDeLArrivant, dateDebutMenage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 

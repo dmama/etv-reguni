@@ -15,9 +15,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -31,6 +28,9 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 
 
 public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequestHandler {
@@ -108,7 +108,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		final List<List<RapportPrestationImposable>> groupes = new ArrayList<>(anciensRapports.size());
 		List<RapportPrestationImposable> groupeCourant = null;
 		for (RapportPrestationImposable elt : listeTriee) {
-			if (groupeCourant == null || !DateRangeHelper.intersect(elt, groupeCourant)) {
+			if (!DateRangeHelper.intersect(elt, groupeCourant)) {
 				groupeCourant = new ArrayList<>(anciensRapports.size());
 				groupes.add(groupeCourant);
 			}

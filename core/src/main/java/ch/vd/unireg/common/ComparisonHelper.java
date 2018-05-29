@@ -16,7 +16,7 @@ public abstract class ComparisonHelper {
 	 * @return <code>true</code> si les deux objets sont soit tous deux nulls, soit identiques, soit égaux (au sens de {@link Object#equals(Object)})
 	 */
 	public static <T> boolean areEqual(@Nullable T one, @Nullable T other) {
-		return one == other || (one != null && other != null && one.equals(other));
+		return one == other || (one != null && one.equals(other));
 	}
 
 	/**

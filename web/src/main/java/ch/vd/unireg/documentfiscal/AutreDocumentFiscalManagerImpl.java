@@ -213,7 +213,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 	@NotNull
 	private Entreprise getEntreprise(long id) {
 		final Tiers tiers = tiersService.getTiers(id);
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new TiersNotFoundException(id);
 		}
 		return (Entreprise) tiers;

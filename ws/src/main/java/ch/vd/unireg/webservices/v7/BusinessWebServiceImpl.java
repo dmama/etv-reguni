@@ -651,7 +651,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public DebtorInfo getDebtorInfo(final int debtorNo, final int pf) {
 		return doInTransaction(true, status -> {
 			final Tiers tiers = context.tiersDAO.get(debtorNo, false);
-			if (tiers == null || !(tiers instanceof DebiteurPrestationImposable)) {
+			if (!(tiers instanceof DebiteurPrestationImposable)) {
 				throw new ObjectNotFoundException("Pas de débiteur de prestation imposable avec le numéro " + debtorNo);
 			}
 
@@ -669,7 +669,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	                                   boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes, @Nullable DebtorCategory debtorCategory,
 	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws IndexerException {
 		final TiersCriteria criteria = new TiersCriteria();
-		if (partyNo != null && StringUtils.isNotBlank(partyNo)) {
+		if (StringUtils.isNotBlank(partyNo)) {
 			// tous les autres critères sont ignorés si le numéro est renseigné
 			final String pureNo = StringUtils.trimToNull(partyNo.replaceAll("[^0-9]", StringUtils.EMPTY));
 			if (pureNo != null) {

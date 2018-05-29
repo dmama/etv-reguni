@@ -84,7 +84,7 @@ public class CoupleValidator implements Validator {
 		if (!view.isMarieSeul()) {
 			validatePP(pp2Id, "pp2Id", errors);
 
-			if (pp1Id != null && pp2Id != null && pp1Id.equals(pp2Id)) {
+			if (pp1Id != null && pp1Id.equals(pp2Id)) {
 				errors.rejectValue("pp2Id", "error.seconde.pp.identique");
 			}
 		}
@@ -94,10 +94,10 @@ public class CoupleValidator implements Validator {
 			validateFuturMC(mcId, errors, info.getForceMcId() != null);
 
 			if (mcId != null) {
-				if (pp1Id != null && mcId.equals(pp1Id)) {
+				if (mcId.equals(pp1Id)) {
 					errors.rejectValue("mcId", "error.mc.identique.premiere.pp");
 				}
-				if (pp2Id != null && mcId.equals(pp2Id)) {
+				if (mcId.equals(pp2Id)) {
 					errors.rejectValue("mcId", "error.mc.identique.seconde.pp");
 				}
 			}

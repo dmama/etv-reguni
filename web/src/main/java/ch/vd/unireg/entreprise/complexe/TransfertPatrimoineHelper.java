@@ -31,7 +31,7 @@ public abstract class TransfertPatrimoineHelper {
 		for (RapportEntreTiers ret : emettrice.getRapportsSujet()) {
 			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.TRANSFERT_PATRIMOINE) {
 				final Tiers receptrice = tiersService.getTiers(ret.getObjetId());
-				if (receptrice == null || !(receptrice instanceof Entreprise)) {
+				if (!(receptrice instanceof Entreprise)) {
 					throw new TiersNotFoundException(ret.getObjetId());
 				}
 

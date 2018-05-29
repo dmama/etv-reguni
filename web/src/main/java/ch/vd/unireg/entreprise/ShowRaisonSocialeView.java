@@ -57,7 +57,7 @@ public class ShowRaisonSocialeView implements Sourced<Source>, Annulable, DateRa
 	}
 
 	private static <T> boolean isSameValue(T one, T two) {
-		return one == two || (one != null && two != null && one.equals(two));
+		return one == two || (one != null && one.equals(two));
 	}
 
 	@Override

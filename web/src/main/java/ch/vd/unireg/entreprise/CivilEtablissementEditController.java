@@ -112,7 +112,7 @@ public class CivilEtablissementEditController {
 	public String editEtablissement(Model model, @RequestParam(value = ID) long id) {
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof Etablissement) {
+		if (tiers instanceof Etablissement) {
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isDonneesCiviles()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
@@ -143,7 +143,7 @@ public class CivilEtablissementEditController {
 	public String editRaisonSociale(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
 		final Tiers tiers = tiersDAO.get(tiersId);
-		if (tiers == null || !(tiers instanceof Etablissement)) {
+		if (!(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(tiersId);
 		}
 
@@ -169,7 +169,7 @@ public class CivilEtablissementEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(view.getTiersId());
-		if (tiers == null || !(tiers instanceof Etablissement)) {
+		if (!(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(view.getTiersId());
 		}
 
@@ -193,7 +193,7 @@ public class CivilEtablissementEditController {
 	public String editEnseigne(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
 		final Tiers tiers = tiersDAO.get(tiersId);
-		if (tiers == null || !(tiers instanceof Etablissement)) {
+		if (!(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(tiersId);
 		}
 
@@ -216,7 +216,7 @@ public class CivilEtablissementEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(view.getTiersId());
-		if (tiers == null || !(tiers instanceof Etablissement)) {
+		if (!(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(view.getTiersId());
 		}
 
@@ -235,7 +235,7 @@ public class CivilEtablissementEditController {
 	public String editIdeEtablissement(Model model, @RequestParam(value = ID) long id) {
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers == null || !(tiers instanceof Etablissement)) {
+		if (!(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(id);
 		}
 
@@ -258,7 +258,7 @@ public class CivilEtablissementEditController {
 	public String editIdeEtablissement(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) throws TiersException {
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers == null || !(tiers instanceof Etablissement)) {
+		if (!(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(id);
 		}
 		Etablissement etablissement = (Etablissement) tiers;
@@ -288,7 +288,7 @@ public class CivilEtablissementEditController {
 	public String addDomicile(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
 		final Tiers tiers = tiersDAO.get(tiersId);
-		if (tiers == null || !(tiers instanceof Etablissement)) {
+		if (!(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(tiersId);
 		}
 
@@ -318,7 +318,7 @@ public class CivilEtablissementEditController {
 
 		final Long tiersId = view.getTiersId();
 		final Tiers tiers = tiersDAO.get(tiersId);
-		if (tiers == null || !(tiers instanceof Etablissement)) {
+		if (!(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(tiersId);
 		}
 

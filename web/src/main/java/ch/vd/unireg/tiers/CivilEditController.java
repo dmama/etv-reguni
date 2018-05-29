@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.DelegatingValidator;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
@@ -134,7 +134,7 @@ public class CivilEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof PersonnePhysique) {
+		if (tiers instanceof PersonnePhysique) {
 			checkDroitEditionIDE(tiers);
 			final ContribuableInfosEntrepriseView view = new ContribuableInfosEntrepriseView((PersonnePhysique) tiers);
 			return showEditIdeHabitant(model, id, view);
@@ -157,7 +157,7 @@ public class CivilEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof PersonnePhysique) {
+		if (tiers instanceof PersonnePhysique) {
 			checkDroitEditionIDE(tiers);
 
 			final PersonnePhysique personnePhysique = (PersonnePhysique) tiers;
@@ -179,7 +179,7 @@ public class CivilEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof AutreCommunaute) {
+		if (tiers instanceof AutreCommunaute) {
 			checkDroitEditionDonneesCiviles(tiers);
 			final AutreCommunauteCivilView view = new AutreCommunauteCivilView((AutreCommunaute) tiers);
 			return showEditAutreCommunaute(model, id, view);
@@ -208,7 +208,7 @@ public class CivilEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof AutreCommunaute) {
+		if (tiers instanceof AutreCommunaute) {
 			checkDroitEditionDonneesCiviles(tiers);
 
 			final AutreCommunaute ac = (AutreCommunaute) tiers;
@@ -232,7 +232,7 @@ public class CivilEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof PersonnePhysique && !((PersonnePhysique) tiers).isHabitantVD()) {
+		if (tiers instanceof PersonnePhysique && !((PersonnePhysique) tiers).isHabitantVD()) {
 			checkDroitEditionDonneesCiviles(tiers);
 			final NonHabitantCivilView view = new NonHabitantCivilView(infraService, (PersonnePhysique) tiers);
 			return showEditNonHabitant(model, id, view);
@@ -262,7 +262,7 @@ public class CivilEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof PersonnePhysique && !((PersonnePhysique) tiers).isHabitantVD()) {
+		if (tiers instanceof PersonnePhysique && !((PersonnePhysique) tiers).isHabitantVD()) {
 			checkDroitEditionDonneesCiviles(tiers);
 
 			final PersonnePhysique pp = (PersonnePhysique) tiers;

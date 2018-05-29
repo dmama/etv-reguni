@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.ControllerUtils;
@@ -26,6 +25,7 @@ import ch.vd.unireg.common.LiteralStringHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.tiers.CapitalFiscalEntreprise;
 import ch.vd.unireg.tiers.DegreAssociationRegistreCivil;
@@ -125,7 +125,7 @@ public class CivilEntrepriseEditController {
 	public String editEntreprise(Model model, @RequestParam(value = ID) long id) {
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof Entreprise) {
+		if (tiers instanceof Entreprise) {
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isDonneesCiviles()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
@@ -528,7 +528,7 @@ public class CivilEntrepriseEditController {
 	public String editIdeEntreprise(Model model, @RequestParam(value = ID) long id) {
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof Entreprise) {
+		if (tiers instanceof Entreprise) {
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
@@ -555,7 +555,7 @@ public class CivilEntrepriseEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof Entreprise) {
+		if (tiers instanceof Entreprise) {
 
 			Entreprise entreprise = (Entreprise) tiers;
 			final Set<IdentificationEntreprise> identificationsEntreprise = entreprise.getIdentificationsEntreprise();
@@ -731,7 +731,7 @@ public class CivilEntrepriseEditController {
 	public String editSecteurActivite(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
 		final Tiers tiers = tiersDAO.get(tiersId);
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new TiersNotFoundException(tiersId);
 		}
 
@@ -757,7 +757,7 @@ public class CivilEntrepriseEditController {
 		}
 
 		final Tiers tiers = tiersDAO.get(view.getTiersId());
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new TiersNotFoundException(view.getTiersId());
 		}
 

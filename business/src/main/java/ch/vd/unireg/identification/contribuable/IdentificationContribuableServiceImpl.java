@@ -508,7 +508,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final List<PersonnePhysique> list = new ArrayList<>();
 		for (TiersIndexedData d : listIndexedData) {
 			final Tiers t = tiersDAO.get(d.getNumero());
-			if (t != null && t instanceof PersonnePhysique) {
+			if (t instanceof PersonnePhysique) {
 				list.add((PersonnePhysique) t);
 			}
 		}

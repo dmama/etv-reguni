@@ -95,7 +95,7 @@ public class EtatEntrepriseEditController {
 	public String editEntreprise(Model model, @RequestParam(value = "id") long id) {
 
 		final Tiers tiers = tiersDAO.get(id);
-		if (tiers != null && tiers instanceof Entreprise) {
+		if (tiers instanceof Entreprise) {
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isEtatsPM()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des états d'entreprise.");

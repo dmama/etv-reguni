@@ -44,30 +44,6 @@ import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.ws.ack.v1.AckStatus;
-import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
-import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
-import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResult;
-import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
-import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
-import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
-import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
-import ch.vd.unireg.ws.parties.v1.Entry;
-import ch.vd.unireg.ws.parties.v1.Parties;
-import ch.vd.unireg.ws.security.v1.SecurityResponse;
-import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
-import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
-import ch.vd.unireg.xml.error.v1.ErrorType;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
-import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
-import ch.vd.unireg.xml.party.v3.Party;
-import ch.vd.unireg.xml.party.v3.PartyInfo;
-import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
-import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.avatar.ImageData;
@@ -92,6 +68,7 @@ import ch.vd.unireg.indexer.EmptySearchCriteriaException;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -126,9 +103,32 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.UserLogin;
 import ch.vd.unireg.webservices.common.WebServiceHelper;
+import ch.vd.unireg.ws.ack.v1.AckStatus;
+import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
+import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
+import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResult;
+import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
+import ch.vd.unireg.ws.deadline.v1.DeadlineResponse;
+import ch.vd.unireg.ws.deadline.v1.DeadlineStatus;
+import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.parties.v1.Entry;
+import ch.vd.unireg.ws.parties.v1.Parties;
+import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffice;
+import ch.vd.unireg.ws.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.party.corporation.v3.CorporationEvent;
+import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyBuilder;
+import ch.vd.unireg.xml.party.v3.PartyInfo;
+import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
+import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
 public class BusinessWebServiceImpl implements BusinessWebService {
 
@@ -617,7 +617,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			@Override
 			public DebtorInfo doInTransaction(TransactionStatus status) {
 				final Tiers tiers = context.tiersDAO.get(debtorNo, false);
-				if (tiers == null || !(tiers instanceof DebiteurPrestationImposable)) {
+				if (!(tiers instanceof DebiteurPrestationImposable)) {
 					throw new ObjectNotFoundException("Pas de débiteur de prestation imposable avec le numéro " + debtorNo);
 				}
 
@@ -636,7 +636,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	                                   boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes, @Nullable DebtorCategory debtorCategory,
 	                                   @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
 		final TiersCriteria criteria = new TiersCriteria();
-		if (partyNo != null && StringUtils.isNotBlank(partyNo)) {
+		if (StringUtils.isNotBlank(partyNo)) {
 			// tous les autres critères sont ignorés si le numéro est renseigné
 			final String pureNo = StringUtils.trimToNull(partyNo.replaceAll("[^0-9]", StringUtils.EMPTY));
 			if (pureNo != null) {

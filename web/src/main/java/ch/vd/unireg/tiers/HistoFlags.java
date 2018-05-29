@@ -20,7 +20,7 @@ public class HistoFlags {
 		for (HistoFlag flag : HistoFlag.values()) {
 			final String paramName = flag.getParamName();
 			final String paramValue = parameterExtractor.apply(paramName);
-			if (paramValue != null && Boolean.parseBoolean(paramValue)) {
+			if (Boolean.parseBoolean(paramValue)) {
 				this.flags.add(flag);
 			}
 		}

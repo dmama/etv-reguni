@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -38,6 +37,7 @@ import ch.vd.unireg.common.DynamicDelegatingValidator;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.security.AccessDeniedException;
@@ -111,7 +111,7 @@ public class SpecificiteFiscaleController {
 	@NotNull
 	private Entreprise getEntreprise(long idpm) throws ObjectNotFoundException {
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, idpm);
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		if (!(tiers instanceof Entreprise)) {
 			throw new ObjectNotFoundException("Pas d'entreprise avec le numéro " + idpm);
 		}
 		return (Entreprise) tiers;

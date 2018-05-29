@@ -4,7 +4,6 @@ import javax.persistence.DiscriminatorValue;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,8 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.unireg.common.BaseDAOImpl;
-import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.ReflexionUtils;
+import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.dbutils.QueryFragment;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
@@ -195,7 +194,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 	@NotNull
 	static Comparator<RapportEntreTiers> getRapportEntreTiersComparator(long tiersId, String sortingField) {
 		final Comparator<RapportEntreTiers> comparateurAsc;
-		if (sortingField != null && "tiersId".equals(sortingField)) {
+		if ("tiersId".equals(sortingField)) {
 			comparateurAsc = new Comparator<RapportEntreTiers>() {
 				@Override
 				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
@@ -209,7 +208,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 					return comparison;
 				}
 			};
-		} else if(sortingField != null && "autoriteTutelaire".equals(sortingField)) {
+		} else if("autoriteTutelaire".equals(sortingField)) {
 			// [SIFISC-26747] pour le tri sur la colonne "autoriteTutelaire" le tri est fait au niveau service
 			comparateurAsc = new Comparator<RapportEntreTiers>() {
 				@Override
