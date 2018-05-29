@@ -64,6 +64,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.VirtualLandTaxLightening;
 import ch.vd.unireg.xml.party.taxresidence.v4.OperatingPeriod;
 import ch.vd.unireg.xml.party.v5.BusinessYearBuilder;
 import ch.vd.unireg.xml.party.v5.CorporationFlagBuilder;
@@ -160,8 +161,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			initLandRights(to, entreprise, parts, context);
 		}
 
-		if (parts != null && parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS)) {
-			initLandTaxLightenings(to, entreprise);
+		if (parts != null && (parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS) ||
+				parts.contains(InternalPartyPart.VIRTUAL_LAND_TAX_LIGHTENINGS))) {
+			initLandTaxLightenings(to, entreprise, parts, context);
 		}
 
 		if (parts != null && parts.contains(InternalPartyPart.OPERATING_PERIODS)) {
@@ -426,10 +428,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			copyLandRights(to, from, parts, mode);
 		}
 
-		if (parts != null && parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS)) {
-			copyColl(to.getIfoncExemptions(), from.getIfoncExemptions());
-			copyColl(to.getIciAbatements(), from.getIciAbatements());
-			copyColl(to.getIciAbatementRequests(), from.getIciAbatementRequests());
+		if (parts != null && (parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS) ||
+				parts.contains(InternalPartyPart.VIRTUAL_LAND_TAX_LIGHTENINGS))) {
+			copyLandTaxLightenings(to, from, parts);
 		}
 
 		if (parts != null && parts.contains(InternalPartyPart.OPERATING_PERIODS)) {
@@ -503,37 +504,58 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				                          .collect(Collectors.toList()));
 	}
 
-	void initLandTaxLightenings(Corporation to, Entreprise entreprise) {
+	void initLandTaxLightenings(Corporation to, Entreprise entreprise, Set<InternalPartyPart> parts, Context context) {
 
-		// les exonérations
-		final List<IfoncExemption> exemptions = to.getIfoncExemptions();
-		entreprise.getAllegementsFonciers().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(ExonerationIFONC.class::isInstance)
-				.map(ExonerationIFONC.class::cast)
-				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
-				.map(LandTaxLighteningBuilder::buildIfoncExemption)
-				.forEach(exemptions::add);
+		if (parts != null && parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS)) {
+			// les exonérations
+			final List<IfoncExemption> exemptions = to.getIfoncExemptions();
+			entreprise.getAllegementsFonciers().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(ExonerationIFONC.class::isInstance)
+					.map(ExonerationIFONC.class::cast)
+					.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
+					.map(LandTaxLighteningBuilder::buildIfoncExemption)
+					.forEach(exemptions::add);
 
-		// les dégrèvements
-		final List<IciAbatement> abatements = to.getIciAbatements();
-		entreprise.getAllegementsFonciers().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(DegrevementICI.class::isInstance)
-				.map(DegrevementICI.class::cast)
-				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
-				.map(LandTaxLighteningBuilder::buildIciAbatement)
-				.forEach(abatements::add);
+			// les dégrèvements
+			final List<IciAbatement> abatements = to.getIciAbatements();
+			entreprise.getAllegementsFonciers().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(DegrevementICI.class::isInstance)
+					.map(DegrevementICI.class::cast)
+					.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
+					.map(LandTaxLighteningBuilder::buildIciAbatement)
+					.forEach(abatements::add);
 
-		// les demandes de dégrèvements
-		final List<IciAbatementRequest> requests = to.getIciAbatementRequests();
-		entreprise.getAutresDocumentsFiscaux().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(DemandeDegrevementICI.class::isInstance)
-				.map(DemandeDegrevementICI.class::cast)
-				.sorted(Comparator.<DemandeDegrevementICI, RegDate>comparing(AutreDocumentFiscal::getDateEnvoi).thenComparing(a -> a.getImmeuble().getId()))
-				.map(LandTaxLighteningBuilder::buildIciAbatementRequest)
-				.forEach(requests::add);
+			// les demandes de dégrèvements
+			final List<IciAbatementRequest> requests = to.getIciAbatementRequests();
+			entreprise.getAutresDocumentsFiscaux().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(DemandeDegrevementICI.class::isInstance)
+					.map(DemandeDegrevementICI.class::cast)
+					.sorted(Comparator.<DemandeDegrevementICI, RegDate>comparing(AutreDocumentFiscal::getDateEnvoi).thenComparing(a -> a.getImmeuble().getId()))
+					.map(LandTaxLighteningBuilder::buildIciAbatementRequest)
+					.forEach(requests::add);
+		}
+
+		// les allégements virtuels
+		if (parts != null && parts.contains(InternalPartyPart.VIRTUAL_LAND_TAX_LIGHTENINGS)) {
+			final List<VirtualLandTaxLightening> virtuals = to.getVirtualLandTaxLightenings();
+			context.registreFoncierService.determineAllegementsFonciersVirtuels(entreprise).stream()
+					.map(LandTaxLighteningBuilder::buildVirtualLandTaxLightening)
+					.forEach(virtuals::add);
+		}
+	}
+
+	private static void copyLandTaxLightenings(Corporation to, Corporation from, @Nullable Set<InternalPartyPart> parts) {
+		if (parts != null && parts.contains(InternalPartyPart.LAND_TAX_LIGHTENINGS)) {
+			copyColl(to.getIfoncExemptions(), from.getIfoncExemptions());
+			copyColl(to.getIciAbatements(), from.getIciAbatements());
+			copyColl(to.getIciAbatementRequests(), from.getIciAbatementRequests());
+		}
+		if (parts != null && parts.contains(InternalPartyPart.VIRTUAL_LAND_TAX_LIGHTENINGS)) {
+			copyColl(to.getVirtualLandTaxLightenings(), from.getVirtualLandTaxLightenings());
+		}
 	}
 
 	private void initOperatingPeriods(Corporation to, Entreprise from, Context context) {

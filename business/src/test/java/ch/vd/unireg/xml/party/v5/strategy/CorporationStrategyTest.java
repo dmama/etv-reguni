@@ -108,7 +108,7 @@ public class CorporationStrategyTest extends BusinessTest {
 		entreprise.addAutreDocumentFiscal(newDemandeDegrevement(RegDate.get(2005, 3, 15), RegDate.get(2005, 6, 30), RegDate.get(2005, 5, 22), 2004, 1, immeuble0));
 
 		final Corporation corporation = new Corporation();
-		strategy.initLandTaxLightenings(corporation, entreprise);
+		strategy.initLandTaxLightenings(corporation, entreprise, EnumSet.of(InternalPartyPart.LAND_TAX_LIGHTENINGS), context);
 
 		// l'ordre doit être :
 		// - chronologique croissant

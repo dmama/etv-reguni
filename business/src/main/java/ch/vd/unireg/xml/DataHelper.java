@@ -1076,6 +1076,10 @@ public abstract class DataHelper {
 			case TAX_LIGHTENINGS:
 				results.add(TiersDAO.Parts.ALLEGEMENTS_FISCAUX);
 				break;
+			case VIRTUAL_LAND_TAX_LIGHTENINGS:
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				results.add(TiersDAO.Parts.ALLEGEMENTS_FISCAUX);
+				break;
 			case CORPORATION_STATUSES:
 				results.add(TiersDAO.Parts.ETATS_FISCAUX);
 				break;

@@ -36,6 +36,8 @@ import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.foncier.AllegementFoncier;
+import ch.vd.unireg.foncier.AllegementFoncierVirtuel;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
@@ -234,6 +236,50 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		}
 
 		return droitsEffectifs;
+	}
+
+	@Override
+	@NotNull
+	public List<AllegementFoncierVirtuel> determineAllegementsFonciersVirtuels(@NotNull Entreprise entreprise) {
+		return entreprise.getRapportsObjet().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(FusionEntreprises.class::isInstance)
+				.map(FusionEntreprises.class::cast)
+				.map(this::determineAllegementsFonciersVirtuels)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Détermine les allégements fonciers virtuels du point de vue de l'entreprise absorbante de la fusion spécifiée.
+	 *
+	 * @param fusion une fusion d'entreprise
+	 * @return la liste des allégements fonciers virtuels calculés
+	 */
+	@NotNull
+	private List<AllegementFoncierVirtuel> determineAllegementsFonciersVirtuels(@NotNull FusionEntreprises fusion) {
+
+		final Long idAbsorbee = fusion.getSujetId();
+		final Entreprise absorbee = (Entreprise) tiersService.getTiers(idAbsorbee);
+		if (absorbee == null) {
+			throw new IllegalArgumentException("L'entreprise n°" + idAbsorbee + " n'existe pas.");
+		}
+
+		final List<AllegementFoncier> allegementsFonciers = new ArrayList<>(absorbee.getAllegementsFonciers());
+
+		final List<AllegementFoncier> extraction = DateRangeHelper.extract(allegementsFonciers, fusion.getDateDebut(), fusion.getDateFin(), (allegement, debut, fin) -> {
+			final AllegementFoncierVirtuel v = new AllegementFoncierVirtuel();
+			v.setDateDebut(debut == null ? allegement.getDateDebut() : debut);
+			v.setDateFin(fin == null ? allegement.getDateFin() : fin);
+			v.setAbsorbeeId(idAbsorbee);
+			v.setReference(allegement);
+			return v;
+		});
+
+		return extraction.stream()
+				.map(AllegementFoncierVirtuel.class::cast)
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 	}
 
 	private static DroitVirtuelHeriteRF adaptDroitVirtuel(Contribuable contribuable, DroitProprieteRF droit, Long heritierId, RegDate debutAdapte, RegDate finAdapte) {

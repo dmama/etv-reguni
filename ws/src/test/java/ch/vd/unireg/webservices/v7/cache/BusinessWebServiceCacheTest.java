@@ -390,6 +390,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 					addAdresseSuisse(absorbee, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
 					addForPrincipal(absorbee, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFusion.getOneDayBefore(), MotifFor.FUSION_ENTREPRISES, MockCommune.Lausanne);
 					addFusionEntreprises(entreprise, absorbee, dateFusion);
+					addDegrevementICI(absorbee, immeuble0, 2005, null, new DonneesUtilisation(500L, 200L, 120L, BigDecimal.valueOf(80), BigDecimal.valueOf(60)), null, null);
+					addExonerationIFONC(absorbee, immeuble0, date(2002, 1, 1), date(2010, 12, 31), BigDecimal.valueOf(22));
 
 					final PersonneMoraleRF entrepriseRF = addPersonneMoraleRF("Ma pEtItE entreprise", "CHE2222", "wliu239eru8", 82289, null);
 					final PersonneMoraleRF absorbeeRF = addPersonneMoraleRF("Mon entreprise aBSorbEe", "CHE1221", "372282", 473232, null);
@@ -2266,6 +2268,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkLandTaxLightenings = InternalPartyPart.LAND_TAX_LIGHTENINGS == p;
 		boolean checkInheritanceRelationships = InternalPartyPart.INHERITANCE_RELATIONSHIPS == p;
 		boolean checkOperatingPeriods = InternalPartyPart.OPERATING_PERIODS == p;
+		boolean checkVirtualLandTaxLightenings = InternalPartyPart.VIRTUAL_LAND_TAX_LIGHTENINGS == p;
 
 		assertNotNull(tiers);
 		assertTrue("La partie [" + p + "] est inconnue",
@@ -2274,7 +2277,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				                  || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
 				                  || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
 				                  || checkRealLandRights || checkVirtualTransitiveLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships || checkVirtualInheritedRealLandRights ||
-				                  checkVirtualInheritedVirtuelLandRights || checkOperatingPeriods);
+				                  checkVirtualInheritedVirtuelLandRights || checkOperatingPeriods || checkVirtualLandTaxLightenings);
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses" + "(" + p + ")");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses" + "(" + p + ")");
@@ -2323,6 +2326,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkLandTaxLightenings, pm.getIfoncExemptions(), "ifoncExemptions" + "(" + p + ")");
 			assertNullOrNotNull(checkLandTaxLightenings, pm.getIciAbatements(), "iciAbatements" + "(" + p + ")");
 			assertNullOrNotNull(checkOperatingPeriods, pm.getOperatingPeriods(), "operatingPeriods" + "(" + p + ")");
+			assertNullOrNotNull(checkVirtualLandTaxLightenings, pm.getVirtualLandTaxLightenings(), "virtualLandTaxLightenings" + "(" + p + ")");
 		}
 
 		if (tiers instanceof NaturalPerson) {

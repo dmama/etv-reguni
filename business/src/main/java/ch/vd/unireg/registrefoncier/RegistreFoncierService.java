@@ -9,8 +9,10 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.foncier.AllegementFoncierVirtuel;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Entreprise;
 
 /**
  * Service qui expose des méthodes d'accès aux données du registre foncier (Capistastra).
@@ -39,7 +41,7 @@ public interface RegistreFoncierService {
 	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtualTransitive, boolean includeVirtualInheritance);
 
 	/**
-	 * Détermine les droits virtuels qui découlent d'un héritage ou d'une fusion d'entreprise.
+	 * Détermine les droits virtuels qui découlent d'un héritage ou d'une fusion d'entreprise (et seulement les droits virtuels).
 	 *
 	 * @param droit         un droit réel de référence
 	 * @param contribuable  le contribuable rapproché au droit et qui possède potentiellement des héritiers ou des entreprises absorbantes
@@ -48,6 +50,15 @@ public interface RegistreFoncierService {
 	 */
 	@NotNull
 	List<DroitVirtuelHeriteRF> determineDroitsVirtuelsHerites(@NotNull DroitProprieteRF droit, @Nullable Contribuable contribuable, @Nullable RegDate dateReference);
+
+	/**
+	 * Détermine les allégements fonciers virtuels qui découlent d'une fusion d'entreprise (et seulement les allégements virtuels).
+	 *
+	 * @param entreprise un entreprise
+	 * @return une liste des allégements fonciers virtuels; ou une liste vide si aucune fusion n'existe pour cette entreprise.
+	 */
+	@NotNull
+	List<AllegementFoncierVirtuel> determineAllegementsFonciersVirtuels(@NotNull Entreprise entreprise);
 
 	/**
 	 * @param immeubleId l'id technique d'un immeuble

@@ -10,8 +10,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.foncier.AllegementFoncierVirtuel;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Entreprise;
 
 public class MockRegistreFoncierService implements RegistreFoncierService {
 	@Override
@@ -27,6 +29,11 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 	@NotNull
 	@Override
 	public List<DroitVirtuelHeriteRF> determineDroitsVirtuelsHerites(@NotNull DroitProprieteRF droit, @Nullable Contribuable contribuable, @Nullable RegDate dateReference) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public @NotNull List<AllegementFoncierVirtuel> determineAllegementsFonciersVirtuels(@NotNull Entreprise entreprise) {
 		throw new NotImplementedException();
 	}
 

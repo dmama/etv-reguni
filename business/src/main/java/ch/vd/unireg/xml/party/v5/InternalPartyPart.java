@@ -72,7 +72,11 @@ public enum InternalPartyPart {
 	/**
 	 * Les périodes d'exploitation des sociétés en nom collectif (SNC).
 	 */
-	OPERATING_PERIODS;
+	OPERATING_PERIODS,
+	/**
+	 * Les allégements virtuels qui correspondent aux allégements hérités par l'entreprise absorbante dans le cas d'une fusion.
+	 */
+	VIRTUAL_LAND_TAX_LIGHTENINGS;
 
 	@Nullable
 	public static InternalPartyPart fromPartyV5(@NotNull ch.vd.unireg.xml.party.v5.PartyPart part) {
@@ -154,6 +158,8 @@ public enum InternalPartyPart {
 			return INHERITANCE_RELATIONSHIPS;
 		case OPERATING_PERIODS:
 			return OPERATING_PERIODS;
+		case VIRTUAL_LAND_TAX_LIGHTENINGS:
+			return VIRTUAL_LAND_TAX_LIGHTENINGS;
 		default:
 			throw new IllegalArgumentException("Part inconnue = [" + part + "]");
 		}

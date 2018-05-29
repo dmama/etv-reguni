@@ -1,5 +1,6 @@
 package ch.vd.unireg.webservices.v7;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import ch.vd.unireg.efacture.MockEFactureService;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.unireg.foncier.DonneesUtilisation;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
@@ -171,6 +173,10 @@ import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.RealLandTaxLightening;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.VirtualLandTaxLightening;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
@@ -2795,6 +2801,63 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertOperatingPeriod(date(2014, 1, 1), date(2014, 9, 11), operatingPeriods.get(4));
 	}
 
+	/**
+	 * [IMM-1206] Vérifie que les allégements fonciers virtuels sont correctement exposées dans le WS v7.
+	 */
+	@Test
+	public void testGetPartyWithVirtualLandTaxLightenings() throws Exception {
+
+		final RegDate dateFusion = RegDate.get(2004, 4, 17);
+
+		class Ids {
+			Long absorbante;
+			Long immeuble;
+
+			public Ids(Long absorbante, Long immeuble) {
+				this.absorbante = absorbante;
+				this.immeuble = immeuble;
+			}
+		}
+
+		final Ids ids = doInNewTransaction(status -> {
+			// création de deux entreprises, une absorbée et l'autre absorbante
+			final Entreprise absorbee = addEntrepriseInconnueAuCivil("Fantôme", RegDate.get(1990, 1, 1));
+			final Entreprise absorbante = addEntrepriseInconnueAuCivil("Pacman", RegDate.get(1990, 1, 1));
+			addFusionEntreprises(absorbante, absorbee, dateFusion);
+
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+
+			// l'entreprise absorbée possède 3 allégements dont 1 qui se termine avant la fusion
+			addExonerationIFONC(absorbee, immeuble0, date(2000, 1, 1), date(2009, 12, 31), BigDecimal.TEN);
+			addDegrevementICI(absorbee, immeuble0, 2000, 2001,
+			                  new DonneesUtilisation(10000L, 360L, 240L, BigDecimal.valueOf(100), BigDecimal.valueOf(100)),
+			                  new DonneesUtilisation(10000L, 360L, 240L, BigDecimal.ZERO, BigDecimal.ZERO), null);
+			addDegrevementICI(absorbee, immeuble0, 2002, null,
+			                  new DonneesUtilisation(10000L, 360L, 240L, BigDecimal.valueOf(40), BigDecimal.valueOf(50)),
+			                  new DonneesUtilisation(10000L, 360L, 240L, BigDecimal.valueOf(50), BigDecimal.valueOf(60)), null);
+
+			return new Ids(absorbante.getId(), immeuble0.getId());
+		});
+
+		final Party party = service.getParty(ids.absorbante.intValue(), EnumSet.of(InternalPartyPart.VIRTUAL_LAND_TAX_LIGHTENINGS));
+		assertNotNull(party);
+		assertTrue(party instanceof Corporation);
+
+		final Corporation corporation = (Corporation) party;
+		final List<VirtualLandTaxLightening> lightenings = corporation.getVirtualLandTaxLightenings();
+		assertNotNull(lightenings);
+		assertEquals(2, lightenings.size());
+
+		final VirtualLandTaxLightening lightening0 = lightenings.get(0);
+		assertVirtualLandTaxLightening(dateFusion, date(2009, 12, 31), ids.immeuble, lightening0);
+		assertIfoncExemption(10, lightening0.getReference());
+
+		final VirtualLandTaxLightening lightening1 = lightenings.get(1);
+		assertVirtualLandTaxLightening(dateFusion, null, ids.immeuble, lightening1);
+		assertIciAbatement(60, lightening1.getReference());
+	}
+
 	@Test
 	public void testGetPartyAllPartsOnNaturalPerson() throws Exception {
 		final long noIndividu = 320327L;
@@ -4987,5 +5050,22 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertNotNull(period);
 		assertEquals(dateDebut, ch.vd.unireg.xml.DataHelper.xmlToCore(period.getDateFrom()));
 		assertEquals(dateFin, ch.vd.unireg.xml.DataHelper.xmlToCore(period.getDateTo()));
+	}
+
+	private static void assertIfoncExemption(int percent, RealLandTaxLightening lightening) {
+		final IfoncExemption exo =(IfoncExemption) lightening;
+		assertEquals(percent, exo.getExemptionPercent().intValue());
+	}
+
+	private static void assertIciAbatement(int percent, RealLandTaxLightening lightening) {
+		final IciAbatement aba =(IciAbatement) lightening;
+		assertEquals(percent, aba.getAbatementPercent().intValue());
+	}
+
+	private static void assertVirtualLandTaxLightening(RegDate dateFrom, RegDate dateTo, long immeubleId, VirtualLandTaxLightening lightening) {
+		assertNotNull(lightening);
+		assertEquals(dateFrom, ch.vd.unireg.xml.DataHelper.xmlToCore(lightening.getDateFrom()));
+		assertEquals(dateTo, ch.vd.unireg.xml.DataHelper.xmlToCore(lightening.getDateTo()));
+		assertEquals(immeubleId, lightening.getImmovablePropertyId());
 	}
 }

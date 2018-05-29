@@ -14,42 +14,6 @@
 		<column>COMPLEMENT_NOM</column>
 		<column>DEBITEUR_INACTIF</column>
 		<column>INDEX_DIRTY</column>
-		<column>NUMERO_TELECOPIE</column>
-		<column>NUMERO_TEL_PORTABLE</column>
-		<column>NUMERO_TEL_PRIVE</column>
-		<column>NUMERO_TEL_PROF</column>
-		<column>OID</column>
-		<column>PERSONNE_CONTACT</column>
-		<column>REINDEX_ON</column>
-		<column>DATE_LIMITE_EXCLUSION</column>
-		<column>AC_FORME_JURIDIQUE</column>
-		<column>AC_NOM</column>
-		<column>DISTRICT_FISCAL_ID</column>
-		<column>REGION_FISCALE_ID</column>
-		<column>NUMERO_CA</column>
-		<column>CATEGORIE_IMPOT_SOURCE</column>
-		<column>LOGICIEL_ID</column>
-		<column>MODE_COM</column>
-		<column>DPI_NOM1</column>
-		<column>DPI_NOM2</column>
-		<column>PERIODE_DECOMPTE</column>
-		<column>PERIODICITE_DECOMPTE</column>
-		<column>SANS_LISTE_RECAP</column>
-		<column>SANS_RAPPEL</column>
-		<column>NUMERO_ETABLISSEMENT</column>
-		<column>ANCIEN_NUMERO_SOURCIER</column>
-		<column>NH_CAT_ETRANGER</column>
-		<column>NH_DATE_DEBUT_VALID_AUTORIS</column>
-		<column>DATE_DECES</column>
-		<column>NH_DATE_NAISSANCE</column>
-		<column>PP_HABITANT</column>
-		<column>MAJORITE_TRAITEE</column>
-		<column>NH_NOM</column>
-		<column>NH_NUMERO_ASSURE_SOCIAL</column>
-		<column>NUMERO_INDIVIDU</column>
-		<column>NH_NO_OFS_NATIONALITE</column>
-		<column>NH_PRENOM</column>
-		<column>NH_SEXE</column>
 		<column>IDE_DIRTY</column>
 		<column>IDE_DESACTIVE</column>
 		<row>
@@ -66,44 +30,55 @@
 			<null />                                                <!-- COMPLEMENT_NOM -->
 			<value>0</value>                                        <!-- DEBITEUR_INACTIF -->
 			<value>0</value>                                        <!-- INDEX_DIRTY -->
-			<null />                                                <!-- NUMERO_TELECOPIE -->
-			<null />                                                <!-- NUMERO_TEL_PORTABLE -->
-			<null />                                                <!-- NUMERO_TEL_PRIVE -->
-			<null />                                                <!-- NUMERO_TEL_PROF -->
-			<null />                                                <!-- OID -->
-			<null />                                                <!-- PERSONNE_CONTACT -->
-			<null />                                                <!-- REINDEX_ON -->
-			<null />                                                <!-- DATE_LIMITE_EXCLUSION -->
-			<null />                                                <!-- AC_FORME_JURIDIQUE -->
-			<null />                                                <!-- AC_NOM -->
-			<null />                                                <!-- DISTRICT_FISCAL_ID -->
-			<null />                                                <!-- REGION_FISCALE_ID -->
-			<null />                                                <!-- NUMERO_CA -->
-			<null />                                                <!-- CATEGORIE_IMPOT_SOURCE -->
-			<null />                                                <!-- LOGICIEL_ID -->
-			<null />                                                <!-- MODE_COM -->
-			<null />                                                <!-- DPI_NOM1 -->
-			<null />                                                <!-- DPI_NOM2 -->
-			<null />                                                <!-- PERIODE_DECOMPTE -->
-			<null />                                                <!-- PERIODICITE_DECOMPTE -->
-			<null />                                                <!-- SANS_LISTE_RECAP -->
-			<null />                                                <!-- SANS_RAPPEL -->
-			<null />                                                <!-- NUMERO_ETABLISSEMENT -->
-			<null />                                                <!-- ANCIEN_NUMERO_SOURCIER -->
-			<null />                                                <!-- NH_CAT_ETRANGER -->
-			<null />                                                <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
-			<null />                                                <!-- DATE_DECES -->
-			<null />                                                <!-- NH_DATE_NAISSANCE -->
-			<null />                                                <!-- PP_HABITANT -->
-			<null />                                                <!-- MAJORITE_TRAITEE -->
-			<null />                                                <!-- NH_NOM -->
-			<null />                                                <!-- NH_NUMERO_ASSURE_SOCIAL -->
-			<null />                                                <!-- NUMERO_INDIVIDU -->
-			<null />                                                <!-- NH_NO_OFS_NATIONALITE -->
-			<null />                                                <!-- NH_PRENOM -->
-			<null />                                                <!-- NH_SEXE -->
 			<value>0</value>                                        <!-- IDE_DIRTY -->
 			<value>0</value>                                        <!-- IDE_DESACTIVE -->
+		</row>
+		<row>
+			<value>Entreprise</value>                               <!-- TIERS_TYPE -->
+			<value>7</value>                                        <!-- NUMERO -->
+			<null />                                                <!-- ANNULATION_DATE -->
+			<null />                                                <!-- ANNULATION_USER -->
+			<null />                                                <!-- LOG_CDATE -->
+			<null />                                                <!-- LOG_CUSER -->
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>        <!-- LOG_MDATE -->
+			<null />                                                <!-- LOG_MUSER -->
+			<null />                                                <!-- ADRESSE_EMAIL -->
+			<value>1</value>                                        <!-- BLOC_REMB_AUTO -->
+			<null />                                                <!-- COMPLEMENT_NOM -->
+			<value>0</value>                                        <!-- DEBITEUR_INACTIF -->
+			<value>0</value>                                        <!-- INDEX_DIRTY -->
+			<value>0</value>                                        <!-- IDE_DIRTY -->
+			<value>0</value>                                        <!-- IDE_DESACTIVE -->
+		</row>
+	</table>
+	<table name="RAPPORT_ENTRE_TIERS">
+		<column>ID</column>
+		<column>RAPPORT_ENTRE_TIERS_TYPE</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>TIERS_SUJET_ID</column>
+		<column>TIERS_OBJET_ID</column>
+		<column>PRINCIPAL_COMM_HERITIERS</column>
+		<row>
+			<value>1</value>
+			<value>FusionEntreprises</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.920000</value>
+			<value>sirec05</value>
+			<value>2016-12-14 11:01:11.928000</value>
+			<value>sirec05</value>
+			<value>20130303</value>
+			<null />
+			<value>7</value>        <!-- entreprise absorbée -->
+			<value>312</value>      <!-- entreprise absorbante -->
+			<value>0</value>
 		</row>
 	</table>
 	<table name="RF_IMMEUBLE">
@@ -167,6 +142,25 @@
 			<null />
 			<value>173043</value>
 			<value>Ma petite entreprise</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>PersonneMorale</value>
+			<value>343434</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:12:14.967000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:12:14.967000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>123456789</value>
+			<null />
+			<value>34345</value>
+			<value>Ma ancienne entreprise</value>
 			<null />
 			<null />
 			<null />
@@ -253,6 +247,20 @@
 			<value>312</value>
 			<value>264832266</value>
 		</row>
+		<row>
+			<value>12</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:55:03.571000</value>
+			<value>RapprocherTiersRFJob</value>
+			<value>2016-12-14 11:55:03.574000</value>
+			<value>RapprocherTiersRFJob</value>
+			<null />
+			<null />
+			<value>AUTO</value>
+			<value>7</value>
+			<value>343434</value>
+		</row>
 	</table>
 	<table name="ALLEGEMENT_FONCIER">
 		<column>ID</column>
@@ -282,88 +290,144 @@
 		<column>DEG_LL_CARAC_SOCIAL_POURCENT</column>
 		<column>IFONC_POURCENT_EXO</column>
 		<row>
-			<value>264832103</value>
-			<value>ExonerationIFONC</value>
-			<null/>
-			<null/>
-			<value>2016-12-14 11:55:03.571000</value>
-			<value>test</value>
-			<value>2016-12-14 11:55:03.574000</value>
-			<value>test</value>
-			<value>20100101</value>
-			<value>20181231</value>
-			<value>312</value>
-			<value>264310664</value>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<value>45.23</value>
+			<value>264832103</value>                                       		<!-- ID -->
+			<value>ExonerationIFONC</value>                                		<!-- TYPE_ALLEGEMENT -->
+			<null/>                                                        		<!-- ANNULATION_DATE -->
+			<null/>                                                        		<!-- ANNULATION_USER -->
+			<value>2016-12-14 11:55:03.571000</value>                      		<!-- LOG_CDATE -->
+			<value>test</value>                                            		<!-- LOG_CUSER -->
+			<value>2016-12-14 11:55:03.574000</value>                      		<!-- LOG_MDATE -->
+			<value>test</value>                                            		<!-- LOG_MUSER -->
+			<value>20100101</value>                                        		<!-- DATE_DEBUT -->
+			<value>20181231</value>                                        		<!-- DATE_FIN -->
+			<value>312</value>                                             		<!-- CTB_ID -->
+			<value>264310664</value>                                       		<!-- IMMEUBLE_ID -->
+			<null/>                                                        		<!-- DEG_LOC_REVENU -->
+			<null/>                                                        		<!-- DEG_LOC_VOLUME -->
+			<null/>                                                        		<!-- DEG_LOC_SURFACE -->
+			<null/>                                                        		<!-- DEG_LOC_POURCENT -->
+			<null/>                                                        		<!-- DEG_LOC_POURCENT_ARRETE -->
+			<null/>                                                        		<!-- DEG_PRUS_REVENU -->
+			<null/>                                                        		<!-- DEG_PRUS_VOLUME -->
+			<null/>                                                        		<!-- DEG_PRUS_SURFACE -->
+			<null/>                                                        		<!-- DEG_PRUS_POURCENT -->
+			<null/>                                                        		<!-- DEG_PRUS_POURCENT_ARRETE -->
+			<null/>                                                        		<!-- DEG_LL_OCTROI -->
+			<null/>                                                        		<!-- DEG_LL_ECHEANCE -->
+			<null/>                                                        		<!-- DEG_LL_CARAC_SOCIAL_POURCENT -->
+			<value>45.23</value>                                           		<!-- IFONC_POURCENT_EXO -->
 		</row>
 		<row>
-			<value>264832104</value>
-			<value>DegrevementICI</value>
-			<null/>
-			<null/>
-			<value>2016-12-14 11:55:03.571000</value>
-			<value>test</value>
-			<value>2016-12-14 11:55:03.574000</value>
-			<value>test</value>
-			<value>20130322</value>
-			<null/>
-			<value>312</value>
-			<value>264310664</value>
-			<value>12000</value>
-			<value>6500</value>
-			<value>230</value>
-			<value>80</value>
-			<value>60</value>
-			<value>11000</value>
-			<value>5000</value>
-			<value>250</value>
-			<value>20</value>
-			<value>40</value>
-			<value>20150301</value>
-			<value>20200225</value>
-			<value>8.25</value>
-			<null/>
+			<value>264832104</value>                                            <!-- ID -->
+			<value>DegrevementICI</value>                                       <!-- TYPE_ALLEGEMENT -->
+			<null/>                                                             <!-- ANNULATION_DATE -->
+			<null/>                                                             <!-- ANNULATION_USER -->
+			<value>2016-12-14 11:55:03.571000</value>                           <!-- LOG_CDATE -->
+			<value>test</value>                                                 <!-- LOG_CUSER -->
+			<value>2016-12-14 11:55:03.574000</value>                           <!-- LOG_MDATE -->
+			<value>test</value>                                                 <!-- LOG_MUSER -->
+			<value>20130322</value>                                             <!-- DATE_DEBUT -->
+			<null/>                                                             <!-- DATE_FIN -->
+			<value>312</value>                                                  <!-- CTB_ID -->
+			<value>264310664</value>                                            <!-- IMMEUBLE_ID -->
+			<value>12000</value>                                                <!-- DEG_LOC_REVENU -->
+			<value>6500</value>                                                 <!-- DEG_LOC_VOLUME -->
+			<value>230</value>                                                  <!-- DEG_LOC_SURFACE -->
+			<value>80</value>                                                   <!-- DEG_LOC_POURCENT -->
+			<value>60</value>                                                   <!-- DEG_LOC_POURCENT_ARRETE -->
+			<value>11000</value>                                                <!-- DEG_PRUS_REVENU -->
+			<value>5000</value>                                                 <!-- DEG_PRUS_VOLUME -->
+			<value>250</value>                                                  <!-- DEG_PRUS_SURFACE -->
+			<value>20</value>                                                   <!-- DEG_PRUS_POURCENT -->
+			<value>40</value>                                                   <!-- DEG_PRUS_POURCENT_ARRETE -->
+			<value>20150301</value>                                             <!-- DEG_LL_OCTROI -->
+			<value>20200225</value>                                             <!-- DEG_LL_ECHEANCE -->
+			<value>8.25</value>                                                 <!-- DEG_LL_CARAC_SOCIAL_POURCENT -->
+			<null/>                                                             <!-- IFONC_POURCENT_EXO -->
 		</row>
 		<row>
-			<value>264832105</value>
-			<value>DegrevementICI</value>
-			<null/>
-			<null/>
-			<value>2016-12-14 11:55:03.571000</value>
-			<value>test</value>
-			<value>2016-12-14 11:55:03.574000</value>
-			<value>test</value>
-			<value>20150601</value>
-			<value>20150630</value>
-			<value>312</value>
-			<value>264310664</value>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
-			<null/>
+			<value>264832105</value>                                            <!-- ID -->
+			<value>DegrevementICI</value>                                       <!-- TYPE_ALLEGEMENT -->
+			<null/>                                                             <!-- ANNULATION_DATE -->
+			<null/>                                                             <!-- ANNULATION_USER -->
+			<value>2016-12-14 11:55:03.571000</value>                           <!-- LOG_CDATE -->
+			<value>test</value>                                                 <!-- LOG_CUSER -->
+			<value>2016-12-14 11:55:03.574000</value>                           <!-- LOG_MDATE -->
+			<value>test</value>                                                 <!-- LOG_MUSER -->
+			<value>20150601</value>                                             <!-- DATE_DEBUT -->
+			<value>20150630</value>                                             <!-- DATE_FIN -->
+			<value>312</value>                                                  <!-- CTB_ID -->
+			<value>264310664</value>                                            <!-- IMMEUBLE_ID -->
+			<null/>                                                             <!-- DEG_LOC_REVENU -->
+			<null/>                                                             <!-- DEG_LOC_VOLUME -->
+			<null/>                                                             <!-- DEG_LOC_SURFACE -->
+			<null/>                                                             <!-- DEG_LOC_POURCENT -->
+			<null/>                                                             <!-- DEG_LOC_POURCENT_ARRETE -->
+			<null/>                                                             <!-- DEG_PRUS_REVENU -->
+			<null/>                                                             <!-- DEG_PRUS_VOLUME -->
+			<null/>                                                             <!-- DEG_PRUS_SURFACE -->
+			<null/>                                                             <!-- DEG_PRUS_POURCENT -->
+			<null/>                                                             <!-- DEG_PRUS_POURCENT_ARRETE -->
+			<null/>                                                             <!-- DEG_LL_OCTROI -->
+			<null/>                                                             <!-- DEG_LL_ECHEANCE -->
+			<null/>                                                             <!-- DEG_LL_CARAC_SOCIAL_POURCENT -->
+			<null/>                                                             <!-- IFONC_POURCENT_EXO -->
+		</row>
+		<row>
+			<value>11110</value>                                                <!-- ID -->
+			<value>ExonerationIFONC</value>                                     <!-- TYPE_ALLEGEMENT -->
+			<null/>                                                             <!-- ANNULATION_DATE -->
+			<null/>                                                             <!-- ANNULATION_USER -->
+			<value>2016-12-14 11:55:03.571000</value>                           <!-- LOG_CDATE -->
+			<value>test</value>                                                 <!-- LOG_CUSER -->
+			<value>2016-12-14 11:55:03.574000</value>                           <!-- LOG_MDATE -->
+			<value>test</value>                                                 <!-- LOG_MUSER -->
+			<value>20100101</value>                                             <!-- DATE_DEBUT -->
+			<null/>                                                             <!-- DATE_FIN -->
+			<value>7</value>                                                    <!-- CTB_ID -->
+			<value>264310664</value>                                            <!-- IMMEUBLE_ID -->
+			<null/>                                                             <!-- DEG_LOC_REVENU -->
+			<null/>                                                             <!-- DEG_LOC_VOLUME -->
+			<null/>                                                             <!-- DEG_LOC_SURFACE -->
+			<null/>                                                             <!-- DEG_LOC_POURCENT -->
+			<null/>                                                             <!-- DEG_LOC_POURCENT_ARRETE -->
+			<null/>                                                             <!-- DEG_PRUS_REVENU -->
+			<null/>                                                             <!-- DEG_PRUS_VOLUME -->
+			<null/>                                                             <!-- DEG_PRUS_SURFACE -->
+			<null/>                                                             <!-- DEG_PRUS_POURCENT -->
+			<null/>                                                             <!-- DEG_PRUS_POURCENT_ARRETE -->
+			<null/>                                                             <!-- DEG_LL_OCTROI -->
+			<null/>                                                             <!-- DEG_LL_ECHEANCE -->
+			<null/>                                                             <!-- DEG_LL_CARAC_SOCIAL_POURCENT -->
+			<value>12.77</value>                                                <!-- IFONC_POURCENT_EXO -->
+		</row>
+		<row>
+			<value>11111</value>                                                <!-- ID -->
+			<value>DegrevementICI</value>                                       <!-- TYPE_ALLEGEMENT -->
+			<null/>                                                             <!-- ANNULATION_DATE -->
+			<null/>                                                             <!-- ANNULATION_USER -->
+			<value>2016-12-14 11:55:03.571000</value>                           <!-- LOG_CDATE -->
+			<value>test</value>                                                 <!-- LOG_CUSER -->
+			<value>2016-12-14 11:55:03.574000</value>                           <!-- LOG_MDATE -->
+			<value>test</value>                                                 <!-- LOG_MUSER -->
+			<value>20150601</value>                                             <!-- DATE_DEBUT -->
+			<null/>                                                             <!-- DATE_FIN -->
+			<value>7</value>                                                    <!-- CTB_ID -->
+			<value>264310664</value>                                            <!-- IMMEUBLE_ID -->
+			<value>5000</value>                                                 <!-- DEG_LOC_REVENU -->
+			<value>500</value>                                                  <!-- DEG_LOC_VOLUME -->
+			<value>30</value>                                                   <!-- DEG_LOC_SURFACE -->
+			<value>75</value>                                                   <!-- DEG_LOC_POURCENT -->
+			<value>65</value>                                                   <!-- DEG_LOC_POURCENT_ARRETE -->
+			<value>1000</value>                                                 <!-- DEG_PRUS_REVENU -->
+			<value>500</value>                                                  <!-- DEG_PRUS_VOLUME -->
+			<value>50</value>                                                   <!-- DEG_PRUS_SURFACE -->
+			<value>30</value>                                                   <!-- DEG_PRUS_POURCENT -->
+			<value>25</value>                                                   <!-- DEG_PRUS_POURCENT_ARRETE -->
+			<value>20050211</value>                                             <!-- DEG_LL_OCTROI -->
+			<value>20191231</value>                                             <!-- DEG_LL_ECHEANCE -->
+			<value>20.38</value>                                                <!-- DEG_LL_CARAC_SOCIAL_POURCENT -->
+			<null/>                                                             <!-- IFONC_POURCENT_EXO -->
 		</row>
 	</table>
 	<table name="DOCUMENT_FISCAL">

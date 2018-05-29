@@ -3,17 +3,21 @@ package ch.vd.unireg.xml.party.v5;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.xml.party.landtaxlightening.v1.HousingActData;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
-import ch.vd.unireg.xml.party.landtaxlightening.v1.UseData;
+import ch.vd.unireg.foncier.AllegementFoncier;
+import ch.vd.unireg.foncier.AllegementFoncierVirtuel;
 import ch.vd.unireg.foncier.DegrevementICI;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.foncier.DonneesLoiLogement;
 import ch.vd.unireg.foncier.DonneesUtilisation;
 import ch.vd.unireg.foncier.ExonerationIFONC;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.HousingActData;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.RealLandTaxLightening;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.UseData;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.VirtualLandTaxLightening;
 
 public class LandTaxLighteningBuilder {
 
@@ -53,6 +57,19 @@ public class LandTaxLighteningBuilder {
 		return request;
 	}
 
+	@NotNull
+	public static RealLandTaxLightening buildLandTaxLightening(@NotNull AllegementFoncier allegement) {
+		if (allegement instanceof ExonerationIFONC) {
+			return buildIfoncExemption((ExonerationIFONC) allegement);
+		}
+		else if (allegement instanceof DegrevementICI) {
+			return buildIciAbatement((DegrevementICI) allegement);
+		}
+		else {
+			throw new IllegalArgumentException("Type d'allégement foncier inconnu = [" + allegement.getClass() + "]");
+		}
+	}
+
 	@Nullable
 	private static UseData buildUseData(@Nullable DonneesUtilisation utilisation) {
 		if (utilisation == null) {
@@ -78,5 +95,16 @@ public class LandTaxLighteningBuilder {
 		data.setSocialNaturePercent(loi.getPourcentageCaractereSocial());
 		data.setUnderControlOfHousingOffice(loi.getControleOfficeLogement() != null && loi.getControleOfficeLogement());
 		return data;
+	}
+
+	@NotNull
+	public static VirtualLandTaxLightening buildVirtualLandTaxLightening(@NotNull AllegementFoncierVirtuel allegement) {
+		final VirtualLandTaxLightening virtual = new VirtualLandTaxLightening();
+		virtual.setDateFrom(DataHelper.coreToXMLv2(allegement.getDateDebut()));
+		virtual.setDateTo(DataHelper.coreToXMLv2(allegement.getDateFin()));
+		virtual.setImmovablePropertyId(allegement.getReference().getImmeuble().getId());
+		virtual.setInheritedFromId(allegement.getAbsorbeeId());
+		virtual.setReference(buildLandTaxLightening(allegement.getReference()));
+		return virtual;
 	}
 }

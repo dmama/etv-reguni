@@ -1,5 +1,6 @@
 package ch.vd.unireg.registrefoncier;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +29,10 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
+import ch.vd.unireg.foncier.AllegementFoncierVirtuel;
+import ch.vd.unireg.foncier.DegrevementICI;
+import ch.vd.unireg.foncier.DonneesUtilisation;
+import ch.vd.unireg.foncier.ExonerationIFONC;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -3411,6 +3416,86 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 					assertEquals("Achat", serv.getMotifDebut());
 					assertNull(serv.getMotifFin());
 				}
+			}
+		});
+	}
+
+	/**
+	 * [IMM-1206] Ce test vérifie que la méthode determineAllegementsFonciersVirtuels fonctionne bien quand on demande les allégements fonciers virtuels hérités lors d'une relation de fusion d'entreprise.
+	 */
+	@Test
+	public void testDetermineAllegementsFonciersVirtuels() throws Exception {
+
+		final RegDate dateFusion = RegDate.get(2004, 4, 17);
+
+		class Ids {
+			long absorbee;
+			long absorbante;
+			Long alleg0;
+			Long alleg1;
+			Long alleg2;
+		}
+		final Ids ids = new Ids();
+
+		// création de deux entreprises, une absorbée et l'autre absorbante
+		doInNewTransaction(status -> {
+			final Entreprise absorbee = addEntrepriseInconnueAuCivil("Fantôme", RegDate.get(1990, 1, 1));
+			final Entreprise absorbante = addEntrepriseInconnueAuCivil("Pacman", RegDate.get(1990, 1, 1));
+			addFusionEntreprises(absorbante, absorbee, dateFusion);
+			ids.absorbee = absorbee.getNumero();
+			ids.absorbante = absorbante.getNumero();
+			return null;
+		});
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			final Entreprise absorbee = (Entreprise) tiersDAO.get(ids.absorbee);
+
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+
+			// 3 allégements dont 1 qui se termine avant la fusion
+			final ExonerationIFONC alleg0 = addExonerationIFONC(absorbee, immeuble0, date(2000, 1, 1), date(2009, 12, 31), BigDecimal.TEN);
+			final DegrevementICI alleg1 = addDegrevementICI(absorbee, immeuble0, 2000, 2001,
+			                                                new DonneesUtilisation(10000L, 360L, 240L, BigDecimal.valueOf(100), BigDecimal.valueOf(100)),
+			                                                new DonneesUtilisation(10000L, 360L, 240L, BigDecimal.ZERO, BigDecimal.ZERO), null);
+			final DegrevementICI alleg2 = addDegrevementICI(absorbee, immeuble0, 2002, null,
+			                                                new DonneesUtilisation(10000L, 360L, 240L, BigDecimal.valueOf(40), BigDecimal.valueOf(50)),
+			                                                new DonneesUtilisation(10000L, 360L, 240L, BigDecimal.valueOf(50), BigDecimal.valueOf(60)), null);
+
+			ids.alleg0 = alleg0.getId();
+			ids.alleg1 = alleg1.getId();
+			ids.alleg2 = alleg2.getId();
+
+			return null;
+		});
+
+		// on demande les allégements virtuels sur l'entreprise absorbante
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) {
+				final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbante);
+				assertNotNull(ent);
+
+				final List<AllegementFoncierVirtuel> allegementVirtuels = serviceRF.determineAllegementsFonciersVirtuels(ent);
+				assertEquals(2, allegementVirtuels.size()); // l'allégement n°1 se termine avant la fusion et n'est donc pas pris en compte
+
+				// l'allégement virtuel qui correspond à l'allégement n°0
+				final AllegementFoncierVirtuel alleg0 = allegementVirtuels.get(0);
+				assertNotNull(alleg0);
+				assertEquals(ids.absorbee, alleg0.getAbsorbeeId());
+				assertEquals(dateFusion, alleg0.getDateDebut());
+				assertEquals(date(2009, 12, 31), alleg0.getDateFin());
+				assertEquals(ids.alleg0, alleg0.getReference().getId());
+
+				// l'allégement virtuel qui correspond à l'allégement n°2
+				final AllegementFoncierVirtuel alleg1 = allegementVirtuels.get(1);
+				assertNotNull(alleg1);
+				assertEquals(ids.absorbee, alleg1.getAbsorbeeId());
+				assertEquals(dateFusion, alleg1.getDateDebut());
+				assertNull(alleg1.getDateFin());
+				assertEquals(ids.alleg2, alleg1.getReference().getId());
 			}
 		});
 	}
