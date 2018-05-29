@@ -13,9 +13,12 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 
 	private final boolean rappelable;       // si on peut envoyer un rappel
 	private final boolean duplicable;       // si on peut en faire un duplicata
+	private final boolean liberable;        // si on peut liberer le questionnaire
 
-	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, ServiceInfrastructureService infraService, MessageSource messageSource, boolean allowedRappel, boolean allowedDuplicata) {
+	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, ServiceInfrastructureService infraService, MessageSource messageSource, boolean allowedRappel, boolean allowedDuplicata,
+	                                boolean allowedLiberable) {
 		super(questionnaire, infraService, messageSource);
+		this.liberable = allowedLiberable;
 		this.rappelable = allowedRappel && isRappelable(questionnaire);
 		this.duplicable = allowedDuplicata && isDuplicable(questionnaire);
 	}
@@ -46,5 +49,9 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 
 	public boolean isDuplicable() {
 		return duplicable;
+	}
+
+	public boolean isLiberable() {
+		return liberable;
 	}
 }

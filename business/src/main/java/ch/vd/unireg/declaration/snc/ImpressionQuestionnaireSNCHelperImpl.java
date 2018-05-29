@@ -75,11 +75,12 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			final String siege = getNomCommuneOuPays(ffp);
 			final String numCommune = ffp != null ? String.valueOf(ffp.getNumeroOfsAutoriteFiscale()) : StringUtils.EMPTY;
 			final String delaiRetourImprime = RegDateHelper.toIndexString(extractDelaiRetourImprime(questionnaire));
-			final String codeRoutage = String.format("%d-%d", ServiceInfrastructureService.noOIPM, 0);    // TODO changer ce 0 en autre chose... mais quoi ?
+			final String codeRoutage = String.format("%d-%d", ServiceInfrastructureService.noOIPM, questionnaire.getCodeSegment());             final String codeControle = questionnaire.getCodeControle();
 			return new CTypeQuestSNC(XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee())),
 			                         buildAdresse(infraService.getACIOIPM()),
 			                         delaiRetourImprime,
 			                         codeRoutage,
+			                         codeControle,
 			                         siege,
 			                         numCommune,
 			                         buildCodeBarre(questionnaire, extractModeleFeuilleDocumentEditique(questionnaire), ServiceInfrastructureService.noOIPM));

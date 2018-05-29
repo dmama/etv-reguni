@@ -15,6 +15,11 @@
 		<property name="tacheDAO" ref="tacheDAO"/>
 		<property name="ticketService" ref="ticketService"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="questionnaireSNCDAO" ref="questionnaireSNCDAO" />
+		<property name="controllerUtils" ref="controllerUtils" />
+		<property name="sourcesQuittancementAvecLiberationPossible" ref="sourcesQuittancementAvecLiberationPossible"/>
+		<property name="liberationSender" ref="evenementLiberationDeclarationImpotSender" />
+
 	</bean>
 
 </beans>

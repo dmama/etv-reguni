@@ -8,12 +8,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.BusinessTestingConstants;
 import ch.vd.unireg.common.TicketService;
+import ch.vd.unireg.declaration.DeclarationAvecCodeControle;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.PeriodeFiscale;
@@ -38,6 +40,8 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
+
+import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
@@ -1134,4 +1138,183 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 			}
 		});
 	}
+
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGenerationCodeControle() throws Exception {
+
+		final int periode = 2017;
+		final RegDate dateDebut = date(2006, 1, 4);
+		final String codeControle = DeclarationAvecCodeControle.generateCodeControle();
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 3), date(periode, 4, 1), CategorieEntreprise.SP, entreprise, oipm);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise, oipm);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 9, 30), date(periode, 12, 25), CategorieEntreprise.SP, entreprise, oipm);
+			addPeriodeFiscale(periode);
+			return entreprise.getNumero();
+		});
+
+		// lancement du job
+		final RegDate dateTraitement = RegDate.get().addMonths(-1);
+		final EnvoiQuestionnairesSNCEnMasseResults results = doUnderSwitch(tacheSynchronizer, true, () -> processor.run(periode, dateTraitement, null, null));
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNombreEnvoyes());
+		Assert.assertEquals(0, results.getNombreIgnores());
+		Assert.assertEquals(0, results.getNombreErreurs());
+		assertNotNull(results);
+		Assert.assertEquals(1, results.getNombreEnvoyes());
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				{
+					final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+					Assert.assertNotNull(entreprise);
+
+					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+
+					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+					Assert.assertEquals(1, questionnaires.size());
+
+					// le questionnaire lui-même
+					final QuestionnaireSNC questionnaire = questionnaires.get(0);
+					Assert.assertNotNull(questionnaire);
+					Assert.assertFalse(questionnaire.isAnnule());
+					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+
+					Assert.assertNotNull(questionnaire.getCodeControle());
+
+				}
+			}
+		});
+	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testCodeControleSuiteQuestionnaireAnnule() throws Exception {
+
+		final int periode = 2017;
+		final RegDate dateDebut = date(2006, 1, 4);
+		final class IdsEtCodeControle{
+			Long pmid;
+			String codeControle;
+		}
+
+		final IdsEtCodeControle idsEtCode = new IdsEtCodeControle();
+
+
+		// mise en place fiscale
+		idsEtCode.pmid = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 3), date(periode, 4, 1), CategorieEntreprise.SP, entreprise, oipm);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise, oipm);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 9, 30), date(periode, 12, 25), CategorieEntreprise.SP, entreprise, oipm);
+			addPeriodeFiscale(periode);
+			return entreprise.getNumero();
+		});
+
+		// lancement du job
+		final RegDate dateTraitement = RegDate.get().addMonths(-1);
+		final EnvoiQuestionnairesSNCEnMasseResults results = doUnderSwitch(tacheSynchronizer, true, () -> processor.run(periode, dateTraitement, null, null));
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNombreEnvoyes());
+		Assert.assertEquals(0, results.getNombreIgnores());
+		Assert.assertEquals(0, results.getNombreErreurs());
+		assertNotNull(results);
+		Assert.assertEquals(1, results.getNombreEnvoyes());
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				{
+					final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
+					Assert.assertNotNull(entreprise);
+
+					Assert.assertEquals(1, entreprise.getDocumentsFiscaux().size());
+
+					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, true);
+					Assert.assertEquals(1, questionnaires.size());
+
+					// le questionnaire lui-même
+					final QuestionnaireSNC questionnaire = questionnaires.get(0);
+					Assert.assertNotNull(questionnaire);
+					Assert.assertFalse(questionnaire.isAnnule());
+					Assert.assertEquals(date(periode, 1, 1), questionnaire.getDateDebut());
+					Assert.assertEquals(date(periode, 12, 31), questionnaire.getDateFin());
+					Assert.assertEquals(date(periode + 1, 3, 15), questionnaire.getDelaiRetourImprime());
+
+					Assert.assertNotNull(questionnaire.getCodeControle());
+					idsEtCode.codeControle = questionnaire.getCodeControle();
+
+					questionnaire.setAnnulationDate(date(2017, 06, 12).asJavaDate());
+					questionnaire.setAnnulationUser("Mon test");
+
+				}
+			}
+		});
+
+		// On recrée une tâche en instance pour la génération d'un nouveau questionnaire
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				{
+					final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
+					Assert.assertNotNull(entreprise);
+
+					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+					addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise,
+							oipm);
+
+				}
+			}
+		});
+
+		// lancement du job
+		final EnvoiQuestionnairesSNCEnMasseResults results2 = doUnderSwitch(tacheSynchronizer, true, () -> processor.run(periode, dateTraitement, null, null));
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				{
+					final Entreprise entreprise = (Entreprise) tiersDAO.get(idsEtCode.pmid);
+					Assert.assertNotNull(entreprise);
+
+					Assert.assertEquals(2, entreprise.getDocumentsFiscaux().size());
+
+					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode, false);
+					Assert.assertEquals(1, questionnaires.size());
+
+					// le questionnaire lui-même
+					final QuestionnaireSNC questionnaire = questionnaires.get(0);
+
+					Assert.assertNotNull(questionnaire.getCodeControle());
+					Assert.assertEquals(idsEtCode.codeControle,questionnaire.getCodeControle());
+
+				}
+			}
+		});
+	}
+
+
 }

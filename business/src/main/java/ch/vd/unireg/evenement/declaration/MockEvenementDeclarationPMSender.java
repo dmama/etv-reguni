@@ -13,6 +13,16 @@ public class MockEvenementDeclarationPMSender implements EvenementDeclarationPMS
 	}
 
 	@Override
+	public void sendEmissionQSNCEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+
+	}
+
+	@Override
+	public void sendAnnulationQSNCEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+
+	}
+
+	@Override
 	public void sendEmissionDemandeDegrevementICIEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String commune, String numeroParcelle, RegDate delaiRetour) throws EvenementDeclarationException {
 	}
 }

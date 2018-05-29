@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.declaration.DeclarationAvecCodeControle;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -1482,7 +1483,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 	public void testGenerationCodeControleAvecDeclarationPreexistante() throws Exception {
 
 		final int annee = 2011;
-		final String codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
+		final String codeControle = DeclarationAvecCodeControle.generateCodeControle();
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override

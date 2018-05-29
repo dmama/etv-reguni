@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -29,12 +30,15 @@ import ch.vd.unireg.editique.EditiqueCompositionService;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueService;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSender;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalConsolide;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscal;
 import ch.vd.unireg.tiers.TacheDAO;
@@ -63,6 +67,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private ImpressionRappelQuestionnaireSNCHelper impressionRappelHelper;
 	private EvenementFiscalService evenementFiscalService;
 	private RegimeFiscalService regimeFiscalService;
+	private EvenementDeclarationPMSender evenementDeclarationPMSender;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -132,21 +137,29 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		this.regimeFiscalService = regimeFiscalService;
 	}
 
+	public void setEvenementDeclarationPMSender(EvenementDeclarationPMSender evenementDeclarationPMSender) {
+		this.evenementDeclarationPMSender = evenementDeclarationPMSender;
+	}
+
 	@Override
 	public DeterminationQuestionnairesSNCResults determineQuestionnairesAEmettre(int periodeFiscale, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException {
-		final DeterminationQuestionnairesSNCAEmettreProcessor processor = new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeDAO, hibernateTemplate, tiersService,
-		                                                                                                                      adresseService, validationService, tacheDAO, this);
+		final DeterminationQuestionnairesSNCAEmettreProcessor processor =
+				new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeDAO, hibernateTemplate, tiersService,
+						adresseService, validationService, tacheDAO, this);
 		return processor.run(periodeFiscale, dateTraitement, nbThreads, statusManager);
 	}
 
 	@Override
-	public EnvoiQuestionnairesSNCEnMasseResults envoiQuestionnairesSNCEnMasse(int periodeFiscale, RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException {
-		final EnvoiQuestionnairesSNCEnMasseProcessor processor = new EnvoiQuestionnairesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService, tacheDAO, this, periodeFiscaleDAO, ticketService);
+	public EnvoiQuestionnairesSNCEnMasseResults envoiQuestionnairesSNCEnMasse(int periodeFiscale, RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws
+			DeclarationException {
+		final EnvoiQuestionnairesSNCEnMasseProcessor processor =
+				new EnvoiQuestionnairesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService, tacheDAO, this, periodeFiscaleDAO, ticketService);
 		return processor.run(periodeFiscale, dateTraitement, nbMaxEnvois, statusManager);
 	}
 
 	@Override
-	public EnvoiRappelsQuestionnairesSNCResults envoiRappelsQuestionnairesSNCEnMasse(RegDate dateTraitement, @Nullable Integer periodeFiscale, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException {
+	public EnvoiRappelsQuestionnairesSNCResults envoiRappelsQuestionnairesSNCEnMasse(RegDate dateTraitement, @Nullable Integer periodeFiscale, @Nullable Integer nbMaxEnvois,
+	                                                                                 StatusManager statusManager) throws DeclarationException {
 		final EnvoiRappelsQuestionnairesSNCProcessor processor = new EnvoiRappelsQuestionnairesSNCProcessor(transactionManager, hibernateTemplate, questionnaireSNCDAO, delaisService, this);
 		return processor.run(dateTraitement, periodeFiscale, nbMaxEnvois, statusManager);
 	}
@@ -206,7 +219,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 		// découpons maintenant par année civile ce qui nous reste
 		final Set<Integer> periodes = new LinkedHashSet<>();
-		for (int annee = periodeGestionUnireg.getDateDebut().year() ; annee <= RegDate.get().year() ; ++ annee) {
+		for (int annee = periodeGestionUnireg.getDateDebut().year(); annee <= RegDate.get().year(); ++annee) {
 			final DateRange anneeCivile = new DateRangeHelper.Range(RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31));
 			if (DateRangeHelper.intersect(anneeCivile, spVaudois)) {
 				periodes.add(annee);
@@ -220,9 +233,17 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		try {
 			final EditiqueResultat resultat = editiqueCompositionService.imprimeQuestionnaireSNCOnline(questionnaire);
 			evenementFiscalService.publierEvenementFiscalEmissionQuestionnaireSNC(questionnaire, dateEvenement);
+			final ContribuableImpositionPersonnesMorales ctb = questionnaire.getTiers();
+			// envoi du NIP à qui de droit
+			if (StringUtils.isNotBlank(questionnaire.getCodeControle())) {
+				final String codeSegment = questionnaire.getCodeSegment() != null ? Integer.toString(questionnaire.getCodeSegment()) : null;
+
+				evenementDeclarationPMSender.sendEmissionQSNCEvent(ctb.getNumero(), questionnaire.getPeriode().getAnnee(), questionnaire.getNumero(), questionnaire.getCodeControle(), codeSegment);
+			}
+
 			return resultat;
 		}
-		catch (EditiqueException | JMSException e) {
+		catch (EditiqueException | EvenementDeclarationException | JMSException e) {
 			throw new DeclarationException(e);
 		}
 	}
@@ -230,12 +251,19 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	@Override
 	public void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateEvenement) throws DeclarationException {
 		try {
+			final ContribuableImpositionPersonnesMorales snc = questionnaire.getTiers();
 			editiqueCompositionService.imprimerQuestionnaireSNCForBatch(questionnaire);
 			evenementFiscalService.publierEvenementFiscalEmissionQuestionnaireSNC(questionnaire, dateEvenement);
+			if (StringUtils.isNotBlank(questionnaire.getCodeControle())) {
+				final String codeSegment = questionnaire.getCodeSegment() != null ? Integer.toString(questionnaire.getCodeSegment()) : null;
+
+				evenementDeclarationPMSender.sendEmissionQSNCEvent(snc.getNumero(), questionnaire.getPeriode().getAnnee(), questionnaire.getNumero(), questionnaire.getCodeControle(), codeSegment);
+			}
 		}
-		catch (EditiqueException e) {
+		catch (EditiqueException | EvenementDeclarationException e) {
 			throw new DeclarationException(e);
 		}
+
 	}
 
 	@Override
@@ -293,7 +321,22 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	@Override
 	public void annulerQuestionnaire(QuestionnaireSNC questionnaire) throws DeclarationException {
-		questionnaire.setAnnule(true);
-		evenementFiscalService.publierEvenementFiscalAnnulationQuestionnaireSNC(questionnaire);
+
+		try {
+			questionnaire.setAnnule(true);
+			evenementFiscalService.publierEvenementFiscalAnnulationQuestionnaireSNC(questionnaire);
+			if (StringUtils.isNotBlank(questionnaire.getCodeControle())) {
+				//TODO calculer le code routage correctement au niveau de la génération du questionnaire et pas dans le helper d'impression se baser sur la DIPM
+
+				final String codeRoutage = questionnaire.getCodeSegment() != null ? Integer.toString(questionnaire.getCodeSegment()) : null;
+				final Integer pf = questionnaire.getPeriode().getAnnee();
+
+				evenementDeclarationPMSender.sendAnnulationQSNCEvent(questionnaire.getTiers().getNumero(), pf, questionnaire.getNumero(), questionnaire.getCodeControle(), codeRoutage);
+
+			}
+		}
+		catch (EvenementDeclarationException e) {
+			throw new DeclarationException(e);
+		}
 	}
 }

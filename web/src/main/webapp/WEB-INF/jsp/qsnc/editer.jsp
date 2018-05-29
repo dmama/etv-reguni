@@ -153,6 +153,19 @@
 				</c:if>
 			</authz:authorize>
 
+			<!-- Bouton d'impression de duplicata -->
+			<authz:authorize access="hasAnyRole('ROLE_QSNC_DUPLICATA')">
+				<c:if test="${!depuisTache && !questionnaire.annule && questionnaire.duplicable}">
+					<unireg:buttonTo name="Duplicata" action="/qsnc/duplicata.do" method="post" params='{id:${questionnaire.id}}'/>
+				</c:if>
+			</authz:authorize>
+
+			<!-- Libération du questionnaire -->
+			<c:if test="${questionnaire.liberable && !depuisTache}">
+				<unireg:buttonTo name="Libérer le questionnaire" confirm="Voulez-vous vraiment libérer ce questionnaire?"
+								 action="/qsnc/liberer.do" method="post" params='{id:${questionnaire.id}}' />
+			</c:if>
+
 		</div>
 
 	</tiles:put>

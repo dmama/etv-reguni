@@ -16,7 +16,7 @@ public class DeclarationImpotOrdinairePPTest {
 	@Test
 	public void testGenerateCodeControle() throws Exception {
 		for (int i = 0; i < 200 ; ++i) {
-			final String codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
+			final String codeControle = DeclarationAvecCodeControle.generateCodeControle();
 			try {
 				assertCodeControleIsValid(codeControle);
 			}

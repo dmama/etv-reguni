@@ -12,9 +12,15 @@ import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 
 @Entity
 @DiscriminatorValue(value = "QSNC")
-public class QuestionnaireSNC extends DeclarationAvecNumeroSequence {
+public class QuestionnaireSNC extends DeclarationAvecCodeControle {
 
 	private RegDate delaiRetourImprime;
+
+
+	/**
+	 * Première année où le retour par courrier électronique des questionnaires SNC est possible.
+	 */
+	public static final int PREMIERE_ANNEE_RETOUR_ELECTRONIQUE = 2016;
 
 	@Transient
 	@Override

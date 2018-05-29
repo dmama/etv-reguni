@@ -7,7 +7,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.unireg.common.CodeControleHelper;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.type.Qualification;
@@ -25,11 +24,6 @@ public class DeclarationImpotOrdinairePP extends DeclarationImpotOrdinaire {
 
 	private Qualification qualification;
 
-	/**
-	 * [SIFISC-2100] Code de segmentation, ou Code Segment, fourni par TAO et utilisé lors de l'émission de la DI suivante
-	 */
-	private Integer codeSegment;
-
 	@Column(name = "QUALIFICATION", length = LengthConstants.DI_QUALIF)
 	@Type(type = "ch.vd.unireg.hibernate.QualificationUserType")
 	public Qualification getQualification() {
@@ -38,15 +32,6 @@ public class DeclarationImpotOrdinairePP extends DeclarationImpotOrdinaire {
 
 	public void setQualification(Qualification qualification) {
 		this.qualification = qualification;
-	}
-
-	@Column(name = "CODE_SEGMENT")
-	public Integer getCodeSegment() {
-		return codeSegment;
-	}
-
-	public void setCodeSegment(Integer codeSegment) {
-		this.codeSegment = codeSegment;
 	}
 
 	@Column(name = "NO_OFS_FOR_GESTION")
@@ -64,10 +49,4 @@ public class DeclarationImpotOrdinairePP extends DeclarationImpotOrdinaire {
 		return (ContribuableImpositionPersonnesPhysiques) super.getTiers();
 	}
 
-	/**
-	 * @return un nouveau code de contrôle d'une lettre et de cinq chiffres aléatoires
-	 */
-	public static String generateCodeControle() {
-		return CodeControleHelper.generateCodeControleUneLettreCinqChiffres();
-	}
 }

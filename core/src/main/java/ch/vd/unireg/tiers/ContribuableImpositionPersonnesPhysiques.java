@@ -22,6 +22,7 @@ import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationAvecCodeControle;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 
 @Entity
@@ -154,7 +155,7 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 
 					// aucun code déjà utilisé sur cette PF pour le moment, il faut en générer un nouveau
 					if (codeControleUtilise == null) {
-						codeControleUtilise = DeclarationImpotOrdinairePP.generateCodeControle();
+						codeControleUtilise = DeclarationAvecCodeControle.generateCodeControle();
 						if (declarationsExistantes != null) {
 							for (Declaration existante : declarationsExistantes) {
 								// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)

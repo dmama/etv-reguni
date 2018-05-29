@@ -221,6 +221,8 @@
 		<property name="impressionRappelHelper" ref="impressionRappelQSNCHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
+		<property name="evenementDeclarationPMSender" ref="evenementDeclarationPMSender" />
+
 	</bean>
 
 	<bean id="jmsStatsService" class="ch.vd.unireg.stats.StatsServiceGroup">

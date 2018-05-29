@@ -106,6 +106,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * Ce sont les codes des régimes fiscaux vaudois spécifiques aux holdings (11 et 12) et sociétés de base (41C et 42C)
 	 */
 	private static final Set<String> CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING = new HashSet<>(Arrays.asList("11", "12", "41C", "42C"));
+	/**
+	 * Code de regime fiscal pour les sociétés de type SNC
+	 *
+	 */
+	private static final String CODE_REGIME_FISCAL_SNC="80";
 
 	// private final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotServiceImpl.class);
 
@@ -796,6 +801,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		if (CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING.contains(vd.getCode())) {
 			return 4;
 		}
+
+		//PM société en nom Collectif SNC -> "6"
+		if (CODE_REGIME_FISCAL_SNC.equals(vd.getCode())) {
+			return 6;
+		}		
 
 		// PM vaudoise -> "1"
 		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {

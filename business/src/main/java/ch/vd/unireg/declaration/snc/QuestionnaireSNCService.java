@@ -18,6 +18,8 @@ import ch.vd.unireg.tiers.Entreprise;
  */
 public interface QuestionnaireSNCService {
 
+	int codeSegment = 6;
+
 	/**
 	 * @param periodeFiscale la période fiscale à considérer pour la génération des tâches
 	 * @param dateTraitement la date de traitement (doit être postérieure à la fin de la période fiscale)

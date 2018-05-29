@@ -31,6 +31,29 @@ public interface EvenementDeclarationPMSender {
 	void sendAnnulationDIEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException;
 
 	/**
+	 * Envoie un événement d'émission d'un questionnaire SNC avec NIP
+	 * @param numeroContribuable numéro de contribuable de la PM concernée
+	 * @param periodeFiscale période fiscale de la déclaration
+	 * @param numeroSequence numéro du questionnaire dans la période fiscale
+	 * @param codeControle code de contrôle associé au questionnaire (<i>aka</i> NIP pour les intimes)
+	 * @param codeRoutage code de routage associé au questionnaire
+	 * @throws EvenementDeclarationException en cas de problème
+	 */
+	void sendEmissionQSNCEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException;
+
+	/**
+	 * Envoie un événement d'annulation d'un questionnaire SNC avec NIP
+	 * @param numeroContribuable numéro de contribuable de la PM concernée
+	 * @param periodeFiscale période fiscale de la déclaration
+	 * @param numeroSequence numéro de séquence du questionnaire dans la période fiscale
+	 * @param codeControle code de contrôle associé au questionnaire (<i>aka</i> NIP pour les intimes)
+	 * @param codeRoutage code de routage associé au questionnaire
+	 * @throws EvenementDeclarationException en cas de problème
+	 */
+	void sendAnnulationQSNCEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException;
+
+
+	/**
 	 * Envoie un événement d'émission d'un formulaire de demande de dégrèvement ICI avec NIP
 	 * @param numeroContribuable numéro de contribuable de la PM concernée
 	 * @param periodeFiscale période fiscale de la demande

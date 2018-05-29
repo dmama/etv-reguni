@@ -15,7 +15,7 @@ import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 
 @Entity
-public abstract class DeclarationImpotOrdinaire extends DeclarationAvecNumeroSequence {
+public abstract class DeclarationImpotOrdinaire extends DeclarationAvecCodeControle {
 
 	private Date dateImpressionChemiseTaxationOffice;
 
@@ -30,16 +30,6 @@ public abstract class DeclarationImpotOrdinaire extends DeclarationAvecNumeroSeq
 	 * HS)
 	 */
 	private boolean libre;
-
-	/**
-	 * Code pour le contrôle du retour électronique de la DI. L'unicité de ce code de contrôle au travers des différentes DI d'un contribuable
-	 * dépend du type de contribuable :
-	 * <ul>
-	 *     <li>il est différent pour toutes les DI d'un contribuable PM, toutes PF confondues&nbsp;;</li>
-	 *     <li>il est le même sur toutes les déclarations d'une période fiscale et d'un contribuable PP donné.</li>
-	 * </ul>
-	 */
-	private String codeControle;
 
 	@Column(name = "RETOUR_COLL_ADMIN_ID")
 	@ForeignKey(name = "FK_DECL_RET_COLL_ADMIN_ID")
@@ -107,15 +97,6 @@ public abstract class DeclarationImpotOrdinaire extends DeclarationAvecNumeroSeq
 	@Override
 	public Contribuable getTiers() {
 		return (Contribuable) super.getTiers();
-	}
-
-	@Column(name = "CODE_CONTROLE", length = LengthConstants.DI_CODE_CONTROLE)
-	public String getCodeControle() {
-		return codeControle;
-	}
-
-	public void setCodeControle(String codeControle) {
-		this.codeControle = codeControle;
 	}
 
 	@Transient
