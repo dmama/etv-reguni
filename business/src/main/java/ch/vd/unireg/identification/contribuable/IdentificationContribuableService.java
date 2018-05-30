@@ -120,6 +120,11 @@ public interface IdentificationContribuableService {
 	void updateCriteres();
 
 	/**
+	 * Permet de mettre à jour les types de message stockés dans le cache
+	 */
+	void updateTypesMessagesCache();
+
+	/**
 	 * Récupère les valeurs des id emetteurs
 	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return emetteurs ids

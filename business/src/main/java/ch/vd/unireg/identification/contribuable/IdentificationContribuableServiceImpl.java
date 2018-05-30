@@ -1632,6 +1632,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		identificationContribuableCache = cache;
 	}
 
+	@Override
+	public synchronized void updateTypesMessagesCache() {
+		fillNewValuesForTypesMessages(identificationContribuableCache);
+	}
+
 	private interface CustomValueFiller<T> {
 		Map<Etat, List<T>> getValuesParEtat(IdentCtbDAO dao);
 		void fillCache(IdentificationContribuableCache cache, Map<Etat, List<T>> values);

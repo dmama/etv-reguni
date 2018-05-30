@@ -159,6 +159,8 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 					identificationContribuable.setEtat(Etat.A_EXPERTISER_SUSPENDU);
 				}
 			}
+
+			identCtbService.updateTypesMessagesCache();
 		}
 	}
 
@@ -185,6 +187,8 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 					identificationContribuable.setEtat(Etat.A_EXPERTISER);
 				}
 			}
+
+			identCtbService.updateTypesMessagesCache();
 		}
 	}
 
