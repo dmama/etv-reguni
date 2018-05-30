@@ -323,7 +323,10 @@
 						<fmt:message key="label.param.parametres.questionnaires.snc"/>
 					</legend>
 					<a href="pf-edit-snc.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
-
+					<div class="checkbox">
+						<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurRappelQSNC}">checked</c:if>/>
+						<fmt:message key="label.param.code.controle.sur.rappel.snc"/>
+					</div>
 					<table>
 						<tr>
 							<th class="colonneTitreParametres"><fmt:message key="label.param.rappel.reg"/></th>

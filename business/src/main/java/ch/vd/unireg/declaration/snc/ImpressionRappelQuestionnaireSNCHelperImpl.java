@@ -20,6 +20,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.editique.ConstantesEditique;
 import ch.vd.unireg.editique.EditiqueAbstractHelperImpl;
@@ -64,11 +65,20 @@ public class ImpressionRappelQuestionnaireSNCHelperImpl extends EditiqueAbstract
 	}
 
 	private CTypeQuestSNCRappel buildDocumentRappel(QuestionnaireSNC questionnaire) {
-		final Integer annee = questionnaire.getPeriode().getAnnee();
+		final CTypeQuestSNCRappel questSNCRappel = new CTypeQuestSNCRappel();
+		final PeriodeFiscale periode = questionnaire.getPeriode();
+		final Integer annee = periode.getAnnee();
+		questSNCRappel.setPeriodeFiscale(XmlUtils.regdate2xmlcal(RegDate.get(annee)));
 		final ForFiscalPrincipal ffp = getForPrincipalInteressant(questionnaire.getTiers(), annee);
 		final String siege = getNomCommuneOuPays(ffp);
+		questSNCRappel.setSiege(siege);
 		final String raisonSociale = getNomRaisonSociale(questionnaire.getTiers());
-		return new CTypeQuestSNCRappel(XmlUtils.regdate2xmlcal(RegDate.get(annee)), raisonSociale, siege);
+		questSNCRappel.setNomSociete(raisonSociale);
+		if (periode.isShowCodeControleRappelQuestionnaireSNC() && StringUtils.isNotBlank(questionnaire.getCodeControle())) {
+			questSNCRappel.setCodeControleNIP(questionnaire.getCodeControle());
+		}
+
+		return questSNCRappel;
 	}
 
 	@Nullable

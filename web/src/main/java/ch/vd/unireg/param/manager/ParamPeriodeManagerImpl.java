@@ -250,6 +250,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		view.setIdPeriodeFiscale(pf.getId());
 		view.setAnneePeriodeFiscale(pf.getAnnee());
+		view.setCodeControleSurRappelQSNC(pf.isShowCodeControleRappelQuestionnaireSNC());
 
 		final ParametrePeriodeFiscaleSNC data = pf.getParametrePeriodeFiscaleSNC();
 		if (data != null) {
@@ -423,6 +424,8 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		}
 		data.setTermeGeneralRappelEffectif(view.getRappelEffectif());
 		data.setTermeGeneralRappelImprime(view.getRappelReglementaire());
+		pf.setShowCodeControleRappelQuestionnaireSNC(view.isCodeControleSurRappelQSNC());
+
 	}
 
 	@Override

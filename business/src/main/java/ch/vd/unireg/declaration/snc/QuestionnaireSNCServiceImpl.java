@@ -326,9 +326,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 			questionnaire.setAnnule(true);
 			evenementFiscalService.publierEvenementFiscalAnnulationQuestionnaireSNC(questionnaire);
 			if (StringUtils.isNotBlank(questionnaire.getCodeControle())) {
-				//TODO calculer le code routage correctement au niveau de la génération du questionnaire et pas dans le helper d'impression se baser sur la DIPM
-
-				final String codeRoutage = questionnaire.getCodeSegment() != null ? Integer.toString(questionnaire.getCodeSegment()) : null;
+				final String codeRoutage = questionnaire.getCodeSegment() != null ? Integer.toString(questionnaire.getCodeSegment()) : Integer.toString(QuestionnaireSNCService.codeSegment);
 				final Integer pf = questionnaire.getPeriode().getAnnee();
 
 				evenementDeclarationPMSender.sendAnnulationQSNCEvent(questionnaire.getTiers().getNumero(), pf, questionnaire.getNumero(), questionnaire.getCodeControle(), codeRoutage);

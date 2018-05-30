@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.unireg.declaration.view.CodeControlable;
 import ch.vd.unireg.declaration.view.DeclarationView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.type.TypeDocument;
@@ -15,7 +16,7 @@ import ch.vd.unireg.utils.WebContextUtils;
  * Vue d'une déclaration d'impôt (ordinaire)
  */
 @SuppressWarnings("UnusedDeclaration")
-public class DeclarationImpotView extends DeclarationView {
+public class DeclarationImpotView extends DeclarationView implements CodeControlable{
 
 	private final String codeControle;
 	private final TypeDocument typeDocument;
