@@ -47,6 +47,7 @@ import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersMapHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.utils.RegDateEditor;
 import ch.vd.unireg.utils.WebContextUtils;
@@ -274,8 +275,12 @@ public class AutreDocumentFiscalController {
 			throw new IllegalArgumentException("Le document fiscal n°" + id + " n'est pas un document fiscal avec suivi.");
 		}
 
+		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
+		boolean hasRappelEnvoye = (doc instanceof AutreDocumentFiscalAvecSuivi) && (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
+
+		model.addAttribute("isAjoutDelaiAutorise", doc.getDateRetour() == null && !hasRappelEnvoye);
+
 		model.addAttribute("command", view);
-		model.addAttribute("documentRetourne", doc.getDateRetour() != null);
 		return "documentfiscal/editer";
 	}
 
