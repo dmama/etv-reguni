@@ -276,9 +276,8 @@ public class AutreDocumentFiscalController {
 		}
 
 		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
-		boolean hasRappelEnvoye = (doc instanceof AutreDocumentFiscalAvecSuivi) && (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
 
-		model.addAttribute("isAjoutDelaiAutorise", doc.getDateRetour() == null && !hasRappelEnvoye);
+		model.addAttribute("isAjoutDelaiAutorise", isAjoutDelaiAutorise(doc));
 
 		model.addAttribute("command", view);
 		return "documentfiscal/editer";
@@ -309,9 +308,10 @@ public class AutreDocumentFiscalController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		if (doc.getDateRetour() != null) {
-			Flash.warning("Impossible d'ajouter un délai : le document est déjà retourné.");
-			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai.
+		if(!isAjoutDelaiAutorise(doc)) {
+			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
+			return "redirect:/autresdocs/editer.do?id=" + id;
 		}
 
 		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(doc.getDelaiAccordeAu());
@@ -354,9 +354,10 @@ public class AutreDocumentFiscalController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		if (doc.getDateRetour() != null) {
-			Flash.error("Impossible d'ajouter un délai : le document est déjà retourné.");
-			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai.
+		if(!isAjoutDelaiAutorise(doc)) {
+			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
+			return "redirect:/autresdocs/editer.do?id=" + id;
 		}
 
 		// On ajoute le délai
@@ -574,6 +575,17 @@ public class AutreDocumentFiscalController {
 		final RedirectEditLettreBienvenue inbox = new RedirectEditLettreBienvenue(id);
 		final RedirectEditLettreBienvenueApresErreur erreur = new RedirectEditLettreBienvenueApresErreur(id, messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "lb", inbox, null, erreur);
+	}
+
+	/**
+	 * [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
+	 *
+	 * @return true si il est possible d'ajouter un délai sur le document
+	 */
+	private boolean isAjoutDelaiAutorise(AutreDocumentFiscal doc) {
+		boolean hasRappelEnvoye = (doc instanceof AutreDocumentFiscalAvecSuivi) && (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
+
+		return doc.getDateRetour() == null && !hasRappelEnvoye;
 	}
 
 	private static class RedirectEditLettreBienvenue implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> {

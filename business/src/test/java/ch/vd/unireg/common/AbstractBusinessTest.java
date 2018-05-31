@@ -31,6 +31,7 @@ import ch.vd.unireg.declaration.EtatDeclarationHelper;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.documentfiscal.LettreBienvenue;
 import ch.vd.unireg.etiquette.ActionAutoEtiquette;
 import ch.vd.unireg.etiquette.CorrectionSurDate;
 import ch.vd.unireg.etiquette.Decalage;
@@ -38,6 +39,7 @@ import ch.vd.unireg.etiquette.DecalageAvecCorrection;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.UniteDecalageDate;
 import ch.vd.unireg.foncier.DegrevementICI;
+import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.foncier.DonneesLoiLogement;
 import ch.vd.unireg.foncier.DonneesUtilisation;
 import ch.vd.unireg.foncier.ExonerationIFONC;
@@ -141,6 +143,7 @@ import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.type.TypeLettreBienvenue;
 import ch.vd.unireg.type.TypeMandat;
 import ch.vd.unireg.type.TypeRapprochementRF;
 import ch.vd.unireg.type.TypeTiersEtiquette;
@@ -1547,4 +1550,20 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         final AllegementFiscalCommune af = new AllegementFiscalCommune(dateDebut, dateFin, pourcentageAllegement, typeImpot, type, commune != null ? commune.getNoOFS() : null);
         return tiersDAO.addAndSave(entreprise, af);
     }
+
+	protected LettreBienvenue addLettreBienvenue(TypeLettreBienvenue type, Tiers tiers) {
+		final LettreBienvenue document = new LettreBienvenue();
+		document.setType(type);
+		document.setTiers(tiers);
+
+		return hibernateTemplate.merge(document);
+	}
+
+	protected DemandeDegrevementICI addDemandeDegrevement(Tiers tiers, int periodeFiscale) {
+		final DemandeDegrevementICI document = new DemandeDegrevementICI();
+		document.setTiers(tiers);
+		document.setPeriodeFiscale(periodeFiscale);
+
+		return hibernateTemplate.merge(document);
+	}
 }
