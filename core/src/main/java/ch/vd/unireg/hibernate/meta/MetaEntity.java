@@ -33,17 +33,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.hibernate.usertype.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.common.ReflexionUtils;
+import ch.vd.unireg.hibernate.ActionAutoEtiquetteUserType;
 import ch.vd.unireg.hibernate.DayMonthUserType;
 import ch.vd.unireg.hibernate.EnumUserType;
 import ch.vd.unireg.hibernate.IdentifiantAffaireRFUserType;
@@ -239,6 +243,11 @@ public class MetaEntity {
 			return null;
 		}
 
+		// parfois, il y a des user-types hibernate définis sur la classe elle-même et référencés sur les propriétés, on va les chercher maintenant
+		final Map<String, ? extends Class<?>> typeDefs = Stream.of(clazz.getAnnotationsByType(TypeDef.class))
+				.map(TypeDef.class::cast)
+				.collect(Collectors.toMap(TypeDef::name, TypeDef::typeClass));
+
 		// parfois, on a des getters transients qui ne font que rendre plus spécifique le type de retour
 		// d'une variable persistée sous un type plus général dans une classe de base...
 		final Annotation[] fieldAnnotations = readMethod.getAnnotations();
@@ -315,7 +324,12 @@ public class MetaEntity {
 			else if (a instanceof Type) {
 				final Type t = (Type) a;
 				final String userTypeClassname = t.type();
-				final Class<?> userTypeClass = Class.forName(userTypeClassname);
+				// on vérifie en premier si le type a été déclaré sur la classe elle-même
+				Class<?> userTypeClass = typeDefs.get(userTypeClassname);
+				if (userTypeClass == null) {
+					// non, alors on considère qu'il s'agit du nom de la classe du user-type
+					userTypeClass = Class.forName(userTypeClassname);
+				}
 				userType = (UserType) userTypeClass.newInstance();
 			}
 			else if (a instanceof Transient) {
@@ -399,6 +413,9 @@ public class MetaEntity {
 			}
 			else if (userType instanceof IdentifiantDroitRFUserType) {
 				propertyType = new IdentifiantDroitRFPropertyType((IdentifiantDroitRFUserType) userType);
+			}
+			else if (userType instanceof ActionAutoEtiquetteUserType) {
+				propertyType = new ActionAutoEtiquetteUserTypePropertyType((ActionAutoEtiquetteUserType) userType);
 			}
 			else {
 				throw new NotImplementedException("Type de user-type inconnu = [" + userType.getClass().getName() + ']');

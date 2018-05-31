@@ -205,7 +205,7 @@ public class ActionAutoEtiquetteUserType extends GenericUserType implements User
 		}
 	}
 
-	private static final StringRenderer<ActionAutoEtiquette> ACTION_RENDERER = new StringRenderer<ActionAutoEtiquette>() {
+	public static final StringRenderer<ActionAutoEtiquette> ACTION_RENDERER = new StringRenderer<ActionAutoEtiquette>() {
 		@Override
 		public String toString(ActionAutoEtiquette object) {
 			final StringBuilder b = new StringBuilder();

@@ -53,6 +53,7 @@ import ch.vd.unireg.declaration.ParametrePeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.Periodicite;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.etiquette.ActionAutoEtiquette;
 import ch.vd.unireg.etiquette.Etiquette;
 import ch.vd.unireg.etiquette.EtiquetteTiers;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
@@ -62,6 +63,7 @@ import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.unireg.foncier.AllegementFoncier;
+import ch.vd.unireg.hibernate.ActionAutoEtiquetteUserType;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.hibernate.meta.MetaEntity;
@@ -1086,16 +1088,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		// [SIFISC-12519] le texte des remarques des tiers est éditable dans une textarea
 		builders.put(new AttributeKey(Remarque.class, "texte"), (p, value, context) -> new AttributeView("texte", MultilineString.class, value, false, false, false));
 
-		// collectivité administrative associée à une étiquette
-		builders.put(new AttributeKey(Etiquette.class, "collectiviteAdministrative"), (p, value, context) -> {
-			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-			return new AttributeView(p.getName(), "collectivité administrative associée", CollectiviteAdministrative.class, entity, false, false, false);
-		});
-
-		// instance d'étiquette associée au lien daté avec le tiers
-		builders.put(new AttributeKey(EtiquetteTiers.class, "etiquette"), (p, value, context) -> {
-			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Etiquette, (Long) value)));
-			return new AttributeView(p.getName(), "étiquette", Etiquette.class, entity, false, false, false);
+		// [SIFISC-28363] action sur décès liée à une étiquette
+		builders.put(new AttributeKey(Etiquette.class, "actionSurDeces"), (p, value, context) -> {
+			final String valueAsString = value == null ? "" : ActionAutoEtiquetteUserType.ACTION_RENDERER.toString((ActionAutoEtiquette) value);
+			// readonly : il s'agit d'une règle métier qui pourrait être éditer, mais il faudrait une vérification de la syntaxe
+			return new AttributeView(p.getName(), String.class, valueAsString, false, false, true);
 		});
 
 		return builders;
