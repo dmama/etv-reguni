@@ -259,7 +259,7 @@ public class QuittancementDeclarationTest extends BusinessTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DeclarationIdentifier identifier = new DeclarationIdentifier((int) id, pf, null, new DeclarationIdentifier.UnknownSequenceNumber(), null);
-				final DeclarationAck quittance = new DeclarationAck(identifier, "EQSNC", DataHelper.coreToXMLv2(date(pf + 1, 5, 26)));
+				final DeclarationAck quittance = new DeclarationAck(identifier, "E-DIPM", DataHelper.coreToXMLv2(date(pf + 1, 5, 26)));
 				quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
 			}
 		});
@@ -281,7 +281,7 @@ public class QuittancementDeclarationTest extends BusinessTest {
 
 				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
 				assertEquals(date(pf + 1, 5, 26), retour.getDateObtention());
-				assertEquals("EQSNC", retour.getSource());
+				assertEquals("E-DIPM", retour.getSource());
 			}
 		});
 	}
