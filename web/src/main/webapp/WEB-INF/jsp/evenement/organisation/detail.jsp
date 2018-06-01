@@ -238,7 +238,7 @@
             </ul>
         </c:if>
         <display:table name="command.tiersAssocies" id="tiersAssocie" pagesize="25">
-            <display:column titleKey="label.numero.tiers" href="../../tiers/visu.do" paramId="id" paramProperty="numero">
+            <display:column titleKey="label.numero.tiers" href="../tiers/visu.do" paramId="id" paramProperty="numero">
                 <unireg:numCTB numero="${tiersAssocie.numero}"/>
             </display:column>
             <display:column titleKey="label.raison.sociale">
