@@ -914,10 +914,12 @@
     <column>ANNEE</column>
     <column>CODE_CTRL_SOMM_DI_PP</column>
     <column>CODE_CTRL_SOMM_DI_PM</column>
+    <column>CODE_CTRL_RAPPEL_Q_SNC</column>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
       <value>2002</value>
+      <value>0</value>
       <value>0</value>
       <value>0</value>
     </row>
@@ -927,11 +929,13 @@
       <value>2003</value>
       <value>0</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>4</value>
       <value>2004</value>
+      <value>0</value>
       <value>0</value>
       <value>0</value>
     </row>
@@ -941,11 +945,13 @@
       <value>2005</value>
       <value>0</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>6</value>
       <value>2006</value>
+      <value>0</value>
       <value>0</value>
       <value>0</value>
     </row>
@@ -955,11 +961,13 @@
       <value>2007</value>
       <value>0</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>8</value>
       <value>2008</value>
+      <value>0</value>
       <value>0</value>
       <value>0</value>
     </row>

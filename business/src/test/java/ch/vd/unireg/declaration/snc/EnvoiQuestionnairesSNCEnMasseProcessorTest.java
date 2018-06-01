@@ -1203,6 +1203,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 	}
 
 
+	//On doit utiliser le même code de contrôle pour la genération du questionnaire sur une même PF
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCodeControleSuiteQuestionnaireAnnule() throws Exception {

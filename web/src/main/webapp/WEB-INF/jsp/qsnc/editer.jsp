@@ -14,10 +14,12 @@
 
 			<table border="0">
 				<tr class="<unireg:nextRowClass/>" >
-					<td width="25%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
-					<td width="25%">${questionnaire.periodeFiscale}</td>
-					<td width="25%"><fmt:message key="label.etat.courant" />&nbsp;:</td>
-					<td width="25%"><fmt:message key="option.etat.avancement.f.${questionnaire.etat}"/></td>
+					<td width="17%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
+					<td width="17%">${questionnaire.periodeFiscale}</td>
+					<td width="17%"><fmt:message key="label.etat.courant" />&nbsp;:</td>
+					<td width="17%"><fmt:message key="option.etat.avancement.f.${questionnaire.etat}"/></td>
+					<td width="17%"><fmt:message key="label.code.controle" />&nbsp;:</td>
+					<td width="17%">${questionnaire.codeControle}</td>
 				</tr>
 			</table>
 		</fieldset>
