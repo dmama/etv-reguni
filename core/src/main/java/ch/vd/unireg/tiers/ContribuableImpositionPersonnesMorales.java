@@ -21,7 +21,10 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationAvecCodeControle;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.foncier.AllegementFoncier;
 
 @Entity
@@ -84,6 +87,14 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 				di.setCodeControle(generateNewCodeControle(getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true)));
 			}
 		}
+		if (declaration instanceof QuestionnaireSNC) {
+			final QuestionnaireSNC questionnaire = (QuestionnaireSNC) declaration;
+			if (shouldAssignCodeControle(questionnaire)) {
+				final PeriodeFiscale periode = questionnaire.getPeriode();
+				questionnaire.setCodeControle(generateCodeControleForSNC(periode));
+			}
+		}
+
 		super.addDeclaration(declaration);
 	}
 
@@ -94,6 +105,15 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 	public boolean shouldAssignCodeControle(DeclarationImpotOrdinairePM di) {
 		final int pf = di.getPeriode().getAnnee();
 		return pf >= DeclarationImpotOrdinairePM.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && di.getCodeControle() == null;
+	}
+
+	/**
+	 * @param questionnaire nouveau questionnaire en cours d'ajout
+	 * @return <code>true</code> si un code de contrôle doit être généré pour le questionnaire
+	 */
+	public boolean shouldAssignCodeControle(QuestionnaireSNC questionnaire) {
+		final int pf = questionnaire.getPeriode().getAnnee();
+		return pf >= QuestionnaireSNC.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && questionnaire.getCodeControle() == null;
 	}
 
 	/**
@@ -116,6 +136,26 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 		}
 		while (codesExistants.contains(codeControle));
 		return codeControle;
+	}
+
+	public String generateCodeControleForSNC(PeriodeFiscale pf){
+			// pour les SNC, on reprend le même code de contrôle que le questionnaire existant meme si il est annulé
+		final List<QuestionnaireSNC> allQuestionnaires = getDeclarationsDansPeriode(QuestionnaireSNC.class, pf.getAnnee(), true);
+			String codeControleUtilise = null;
+		for (QuestionnaireSNC questionnaire : allQuestionnaires) {
+				codeControleUtilise = questionnaire.getCodeControle();
+				if (codeControleUtilise != null) {
+					break;
+				}
+			}
+
+		// aucun code déjà utilisé sur cette PF pour le moment, il faut en générer un nouveau
+			if (codeControleUtilise == null) {
+				codeControleUtilise = DeclarationAvecCodeControle.generateCodeControle();
+
+			}
+
+			return codeControleUtilise;
 	}
 
 	@Override

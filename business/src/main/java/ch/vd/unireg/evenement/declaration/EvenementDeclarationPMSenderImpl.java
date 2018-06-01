@@ -102,6 +102,24 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 	}
 
 	@Override
+	public void sendEmissionQSNCEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+		if (!enabled) {
+			LOGGER.info("Evénements de déclarations désactivés: l'événement d'émission du questionnaire SNC sur  le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
+			return;
+		}
+		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, TypeDocument.QUEST_SNC, true, serviceDestinationDI, Collections.singletonMap(CODE_ROUTAGE_ATTRIBUTE_NAME, codeRoutage));
+	}
+
+	@Override
+	public void sendAnnulationQSNCEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+		if (!enabled) {
+			LOGGER.info("Evénements de déclarations désactivés: l'événement d'annulation du questionnaire SNC sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
+			return;
+		}
+		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, TypeDocument.QUEST_SNC, false, serviceDestinationDI, Collections.singletonMap(CODE_ROUTAGE_ATTRIBUTE_NAME, codeRoutage));
+	}
+
+	@Override
 	public void sendEmissionDemandeDegrevementICIEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String commune, String numeroParcelle, RegDate delaiRetour) throws EvenementDeclarationException {
 		if (!enabled) {
 			LOGGER.info("Evénements de déclarations désactivés: l'événement d'émission de formulaire de demande de dégrèvement sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");

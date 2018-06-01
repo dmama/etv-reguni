@@ -2789,8 +2789,9 @@ var Decl = {
 		$.getJSON(App.curl("/qsnc/details.do?id=") + id + "&" + new Date().getTime(), function(qsnc) {
 			if (qsnc) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques du questionnaire SNC</span></legend>';
-				info += '<table><tr class="odd"><td width="50%">Date début période&nbsp;:</td><td width="50%">' + RegDate.format(qsnc.dateDebut) + '</td></tr>';
-				info += '<tr class="even"><td width="50%">Date fin période&nbsp;:</td><td width="50%">' + RegDate.format(qsnc.dateFin) + '</td></tr></table></fieldset>\n';
+                info += '<table><tr class="odd"><td width="50%">Code contrôle&nbsp;:</td><td width="50%">' + StringUtils.escapeHTML(qsnc.codeControle) + '</td></tr>';
+				info += '<tr class="even"><td width="50%">Date début période&nbsp;:</td><td width="50%">' + RegDate.format(qsnc.dateDebut) + '</td></tr>';
+				info += '<tr class="odd"><td width="50%">Date fin période&nbsp;:</td><td width="50%">' + RegDate.format(qsnc.dateFin) + '</td></tr></table></fieldset>\n';
 
 				var delais = Decl._buildDelaisPPISTable(qsnc.delais);
 				var etats = Decl._buidlEtatsTable(qsnc.etats, true);

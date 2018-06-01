@@ -25,6 +25,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationAvecCodeControle;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
@@ -1482,7 +1483,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 	public void testGenerationCodeControleAvecDeclarationPreexistante() throws Exception {
 
 		final int annee = 2011;
-		final String codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
+		final String codeControle = DeclarationAvecCodeControle.generateCodeControle();
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override

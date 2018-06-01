@@ -6,6 +6,7 @@ public class ParametrePeriodeFiscaleSNCEditView {
 
 	private Long idPeriodeFiscale;
 	private Integer anneePeriodeFiscale;
+	private boolean codeControleSurRappelQSNC;
 
 	private RegDate rappelReglementaire;
 	private RegDate rappelEffectif;
@@ -40,5 +41,13 @@ public class ParametrePeriodeFiscaleSNCEditView {
 
 	public void setRappelEffectif(RegDate rappelEffectif) {
 		this.rappelEffectif = rappelEffectif;
+	}
+
+	public boolean isCodeControleSurRappelQSNC() {
+		return codeControleSurRappelQSNC;
+	}
+
+	public void setCodeControleSurRappelQSNC(boolean codeControleSurRappelQSNC) {
+		this.codeControleSurRappelQSNC = codeControleSurRappelQSNC;
 	}
 }

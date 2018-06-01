@@ -10,7 +10,6 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.common.CodeControleHelper;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 
 @Entity
@@ -20,10 +19,6 @@ public class DeclarationImpotOrdinairePM extends DeclarationImpotOrdinaire {
 	private RegDate dateDebutExerciceCommercial;
 	private RegDate dateFinExerciceCommercial;
 
-	/**
-	 * Suffixe du code de routage (le X dans 21-X), encore appelé code segment
-	 */
-	private Integer codeSegment;
 
 	/**
 	 * Première année où le retour par courrier électronique des déclarations d'impôt est possible.
@@ -41,12 +36,8 @@ public class DeclarationImpotOrdinairePM extends DeclarationImpotOrdinaire {
 		return new DateRangeHelper.Range(dateDebutExerciceCommercial, dateFinExerciceCommercial);
 	}
 
-	/**
-	 * @return un nouveau code de contrôle d'une lettre et de cinq chiffres aléatoires
-	 */
-	public static String generateCodeControle() {
-		return CodeControleHelper.generateCodeControleUneLettreCinqChiffres();
-	}
+
+
 
 	@Column(name = "DATE_DEBUT_EXERCICE")
 	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
@@ -68,12 +59,4 @@ public class DeclarationImpotOrdinairePM extends DeclarationImpotOrdinaire {
 		this.dateFinExerciceCommercial = dateFinExerciceCommercial;
 	}
 
-	@Column(name = "CODE_SEGMENT")
-	public Integer getCodeSegment() {
-		return codeSegment;
-	}
-
-	public void setCodeSegment(Integer codeSegment) {
-		this.codeSegment = codeSegment;
-	}
 }

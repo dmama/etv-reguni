@@ -14,10 +14,12 @@
 
 			<table border="0">
 				<tr class="<unireg:nextRowClass/>" >
-					<td width="25%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
-					<td width="25%">${questionnaire.periodeFiscale}</td>
-					<td width="25%"><fmt:message key="label.etat.courant" />&nbsp;:</td>
-					<td width="25%"><fmt:message key="option.etat.avancement.f.${questionnaire.etat}"/></td>
+					<td width="17%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
+					<td width="17%">${questionnaire.periodeFiscale}</td>
+					<td width="17%"><fmt:message key="label.etat.courant" />&nbsp;:</td>
+					<td width="17%"><fmt:message key="option.etat.avancement.f.${questionnaire.etat}"/></td>
+					<td width="17%"><fmt:message key="label.code.controle" />&nbsp;:</td>
+					<td width="17%">${questionnaire.codeControle}</td>
 				</tr>
 			</table>
 		</fieldset>
@@ -151,6 +153,14 @@
 						                 action="/qsnc/annuler.do" method="post" params='{id:${questionnaire.id},tacheId:${tacheId}}'/>
 					</c:if>
 				</c:if>
+			</authz:authorize>
+
+			<!-- Libération du questionnaire -->
+			<authz:authorize access="hasAnyRole('ROLE_QSNC_LIBERATION')">
+			<c:if test="${questionnaire.liberable && !depuisTache}">
+				<unireg:buttonTo name="Libérer le questionnaire" confirm="Voulez-vous vraiment libérer ce questionnaire?"
+								 action="/qsnc/liberer.do" method="post" params='{id:${questionnaire.id}}' />
+			</c:if>
 			</authz:authorize>
 
 		</div>

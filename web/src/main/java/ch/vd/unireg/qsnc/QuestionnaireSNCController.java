@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,6 +30,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.EditiqueErrorHelper;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.ObjectNotFoundException;
@@ -40,17 +42,21 @@ import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationGenerationOperation;
 import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEmise;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
 import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
 import ch.vd.unireg.declaration.view.QuestionnaireSNCView;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatErreur;
 import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.evenement.di.EvenementLiberationDeclarationImpotSender;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.parametrage.DelaisService;
@@ -58,6 +64,7 @@ import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
 import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Tache;
 import ch.vd.unireg.tiers.TacheCriteria;
@@ -69,9 +76,11 @@ import ch.vd.unireg.tiers.manager.Autorisations;
 import ch.vd.unireg.transaction.TransactionHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeDocument;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
 import ch.vd.unireg.utils.RegDateEditor;
+import ch.vd.unireg.utils.WebContextUtils;
 
 @Controller
 @RequestMapping("/qsnc")
@@ -89,6 +98,10 @@ public class QuestionnaireSNCController {
 	private TacheDAO tacheDAO;
 	private TicketService ticketService;
 	private ServiceInfrastructureService infraService;
+	private QuestionnaireSNCDAO questionnaireSNCDAO;
+	private ControllerUtils controllerUtils;
+	private Set<String> sourcesQuittancementAvecLiberationPossible = Collections.emptySet();
+	private EvenementLiberationDeclarationImpotSender liberationSender;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -138,7 +151,23 @@ public class QuestionnaireSNCController {
 		this.infraService = infraService;
 	}
 
-	private void checkEditRight(boolean emission, boolean rappel, boolean duplicata, boolean quittancement) throws AccessDeniedException {
+	public void setQuestionnaireSNCDAO(QuestionnaireSNCDAO questionnaireSNCDAO) {
+		this.questionnaireSNCDAO = questionnaireSNCDAO;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
+	public void setSourcesQuittancementAvecLiberationPossible(Set<String> sourcesQuittancementAvecLiberationPossible) {
+		this.sourcesQuittancementAvecLiberationPossible = sourcesQuittancementAvecLiberationPossible;
+	}
+
+	public void setLiberationSender(EvenementLiberationDeclarationImpotSender liberationSender) {
+		this.liberationSender = liberationSender;
+	}
+
+	private void checkEditRight(boolean emission, boolean rappel, boolean duplicata, boolean quittancement, boolean liberation) throws AccessDeniedException {
 		final Set<Role> rolesRequis = EnumSet.noneOf(Role.class);
 		if (emission) {
 			rolesRequis.add(Role.QSNC_EMISSION);
@@ -151,6 +180,9 @@ public class QuestionnaireSNCController {
 		}
 		if (quittancement) {
 			rolesRequis.add(Role.QSNC_QUITTANCEMENT);
+		}
+		if (liberation) {
+			rolesRequis.add(Role.QSNC_LIBERATION);
 		}
 		if (!rolesRequis.isEmpty() && !SecurityHelper.isAnyGranted(securityProvider, rolesRequis.toArray(new Role[rolesRequis.size()]))) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec requis pour effectuer cette opération.");
@@ -238,7 +270,7 @@ public class QuestionnaireSNCController {
 	public String getList(Model model, @RequestParam("tiersId") long tiersId) {
 
 		// un droit d'édition suffit pour arriver ici... mais il en faut un
-		checkEditRight(true, true, true, true);
+		checkEditRight(true, true, true, true, false);
 
 		final Entreprise entreprise = getEntreprise(tiersId);
 		checkEditRightOnEntreprise(entreprise);
@@ -252,7 +284,7 @@ public class QuestionnaireSNCController {
 	@RequestMapping(value = "/choisir.do", method = RequestMethod.GET)
 	public String showChoixPeriodePourNouveauQuestionnaire(Model model, @RequestParam("tiersId") long tiersId) {
 		// il faut le droit d'émission pour arriver ici
-		checkEditRight(true, false, false, false);
+		checkEditRight(true, false, false, false, false);
 
 		final Entreprise entreprise = getEntreprise(tiersId);
 		checkEditRightOnEntreprise(entreprise);
@@ -288,7 +320,7 @@ public class QuestionnaireSNCController {
 	                      @RequestParam("pf") int pf,
 	                      @RequestParam(value = "depuisTache", defaultValue = "false") boolean depuisTache) {
 		// il faut le droit d'émission pour arriver ici
-		checkEditRight(true, false, false, false);
+		checkEditRight(true, false, false, false, false);
 
 		final RegDate delaiAccorde = delaisService.getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(RegDate.get());
 		final QuestionnaireSNCAddView view = new QuestionnaireSNCAddView(tiersId, pf);
@@ -309,7 +341,7 @@ public class QuestionnaireSNCController {
 		}
 
 		// il faut le droit d'émission pour arriver ici
-		checkEditRight(true, false, false, false);
+		checkEditRight(true, false, false, false, false);
 
 		try {
 			final DeclarationGenerationOperation operation = new DeclarationGenerationOperation(view.getEntrepriseId());
@@ -361,7 +393,7 @@ public class QuestionnaireSNCController {
 				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 				questionnaire.addDelai(delai);
 				questionnaire.setDelaiRetourImprime(view.getDelaiAccorde());
-
+				questionnaire.setCodeSegment(QuestionnaireSNCService.codeSegment);
 				entreprise.addDeclaration(questionnaire);
 
 				// s'il y avait une tâche d'envoi en instance, il faut la traiter
@@ -424,7 +456,7 @@ public class QuestionnaireSNCController {
 	                                @RequestParam("id") final long questionnaireId) throws IOException {
 
 		// vérification des droits d'accès
-		checkEditRight(false, false, true, false);
+		checkEditRight(false, false, true, false, false);
 
 		// appel à éditique
 		final EditiqueResultat retourEditique = doInTransaction(new TransactionHelper.ExceptionThrowingCallback<EditiqueResultat, DeclarationException>() {
@@ -475,7 +507,7 @@ public class QuestionnaireSNCController {
 	                                      @RequestParam(value = "tacheId", required = false) Long tacheId) {
 
 		// vérification des droits d'accès
-		checkEditRight(false, true, true, true);
+		checkEditRight(false, true, true, true, false);
 
 		// récupération du questionnaire
 		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
@@ -496,7 +528,7 @@ public class QuestionnaireSNCController {
 		                                                               infraService,
 		                                                               messageSource,
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
-		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA));
+		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA), SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_LIBERATION));
 		model.addAttribute("questionnaire", view);
 		model.addAttribute("depuisTache", tacheId != null);
 		model.addAttribute("tacheId", tacheId);
@@ -508,7 +540,7 @@ public class QuestionnaireSNCController {
 	public String showQuittancer(Model model, @RequestParam("id") long questionnaireId) {
 
 		// vérification des droits d'accès
-		checkEditRight(false, false, false, true);
+		checkEditRight(false, false, false, true, false);
 
 		// récupération du questionnaire
 		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
@@ -538,7 +570,7 @@ public class QuestionnaireSNCController {
 	public String quittanceQuestionnaire(Model model, @Valid @ModelAttribute("quittance") final QuestionnaireSNCQuittancementView view, BindingResult bindingResult) {
 
 		// vérification des droits d'accès
-		checkEditRight(false, false, false, true);
+		checkEditRight(false, false, false, true, false);
 
 		// erreur de saisie ?
 		if (bindingResult.hasErrors()) {
@@ -578,7 +610,7 @@ public class QuestionnaireSNCController {
 	public String annulerQuittance(@RequestParam("id") long idEtatRetour) {
 
 		// vérification des droits d'accès
-		checkEditRight(false, false, false, true);
+		checkEditRight(false, false, false, true, false);
 
 		// récupération de l'état
 		final EtatDeclarationRetournee etat = hibernateTemplate.get(EtatDeclarationRetournee.class, idEtatRetour);
@@ -612,7 +644,7 @@ public class QuestionnaireSNCController {
 	                                   @RequestParam(value = "tacheId", required = false) final Long tacheId) {
 
 		// vérification des droits d'accès
-		checkEditRight(true, false, false, false);
+		checkEditRight(true, false, false, false, false);
 
 		return doInTransaction(new TransactionHelper.ExceptionThrowingCallback<String, DeclarationException>() {
 			@Override
@@ -648,11 +680,50 @@ public class QuestionnaireSNCController {
 		});
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/liberer.do", method = RequestMethod.POST)
+	public String libererQuestionnaire(@RequestParam("id") long idQuestionnaire) {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec de libération des questionnaires SNC.");
+		}
+
+		final QuestionnaireSNC questionnaireSNC = questionnaireSNCDAO.get(idQuestionnaire);
+		if (questionnaireSNC == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.qsnc.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		// vérification des droits d'accès
+		checkEditRight(false, false, false, false, true);
+
+		final Contribuable ctb = questionnaireSNC.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// vérification de la libérabilité de la déclaration
+		if (!isLiberable(questionnaireSNC)) {
+			final String message = messageSource.getMessage("error.qsnc.non.liberable", null, WebContextUtils.getDefaultLocale());
+			Flash.error(message);
+			return "redirect:editer.do?id=" + idQuestionnaire;
+		}
+
+		// envoi de la demande de libération
+		try {
+			liberationSender.demandeLiberationDeclarationImpot(questionnaireSNC.getTiers().getNumero(),
+					questionnaireSNC.getPeriode().getAnnee(),
+					questionnaireSNC.getNumero(),
+					EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
+			Flash.message("La demande de libération du questionnaire SNC a été envoyée au service concerné.");
+			return "redirect:editer.do?id=" + idQuestionnaire;
+		}
+		catch (EvenementDeclarationException e) {
+			throw new ActionException(e.getMessage(), e);
+		}
+	}
+
 	@RequestMapping(value = "/rappel.do", method = RequestMethod.POST)
 	public String envoyerRappelQuestionnaire(HttpServletResponse response, @RequestParam("id") final long questionnaireId) throws IOException {
 
 		// vérification des droits d'accès
-		checkEditRight(false, true, false, false);
+		checkEditRight(false, true, false, false, false);
 
 		// appel à éditique
 		final EditiqueResultat retourEditique = doInTransaction(new TransactionHelper.ExceptionThrowingCallback<EditiqueResultat, DeclarationException>() {
@@ -673,7 +744,7 @@ public class QuestionnaireSNCController {
 				checkEditRightOnEntreprise(entreprise);
 
 				// vérification du côté 'rappelable' du questionnaire, on ne sait jamais
-				final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, infraService, messageSource, true, false);
+				final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, infraService, messageSource, true, false, false);
 				if (!view.isRappelable()) {
 					throw new ActionException("Le questionnaire SNC n'est pas dans un état 'rappelable'.");
 				}
@@ -699,5 +770,15 @@ public class QuestionnaireSNCController {
 		};
 
 		return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "questionnaireSNC", inbox, null, erreur);
+	}
+
+	private boolean isLiberable(QuestionnaireSNC questionnaireSNC) {
+		final List<EtatDeclaration> etatsRetournes = questionnaireSNC.getEtatsDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE, false);
+		final Set<String> sources = new HashSet<>(etatsRetournes.size());
+		for (EtatDeclaration etat : etatsRetournes) {
+			sources.add(((EtatDeclarationRetournee) etat).getSource());
+		}
+		sources.retainAll(sourcesQuittancementAvecLiberationPossible);
+		return !sources.isEmpty();
 	}
 }

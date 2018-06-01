@@ -220,6 +220,7 @@
 		<property name="impressionRappelHelper" ref="impressionRappelQSNCHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="periodeExploitationService" ref="periodeExploitationService"/>
+		<property name="evenementDeclarationPMSender" ref="evenementDeclarationPMSender" />
 	</bean>
 
 	<bean id="periodeExploitationService" class="ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationServiceImpl">

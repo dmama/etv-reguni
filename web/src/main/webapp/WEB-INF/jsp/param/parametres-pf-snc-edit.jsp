@@ -27,6 +27,13 @@
 		<fieldset>
 			<legend><fmt:message key="label.param.parametres-pf-edit" /></legend>
 
+			<div class="checkbox">
+				<c:set var="labelCheckbox">
+					<fmt:message key="label.param.code.controle.sur.rappel.snc"/>
+				</c:set>
+				<form:checkbox path="codeControleSurRappelQSNC" label=" ${labelCheckbox}"/>
+			</div>
+
 			<table>
 			<tr>
 				<th width="30%"><fmt:message key="label.param.rappel.reg"/></th>

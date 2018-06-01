@@ -4,6 +4,7 @@ import javax.jms.JMSException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -25,12 +26,15 @@ import ch.vd.unireg.editique.EditiqueCompositionService;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueService;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
+import ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSender;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService.PeriodeContext;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TiersService;
@@ -55,6 +59,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private ImpressionRappelQuestionnaireSNCHelper impressionRappelHelper;
 	private EvenementFiscalService evenementFiscalService;
 	private PeriodeExploitationService periodeExploitationService;
+	private EvenementDeclarationPMSender evenementDeclarationPMSender;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -124,6 +129,10 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		this.periodeExploitationService = periodeExploitationService;
 	}
 
+	public void setEvenementDeclarationPMSender(EvenementDeclarationPMSender evenementDeclarationPMSender) {
+		this.evenementDeclarationPMSender = evenementDeclarationPMSender;
+	}
+
 	@Override
 	public DeterminationQuestionnairesSNCResults determineQuestionnairesAEmettre(int periodeFiscale, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException {
 		final DeterminationQuestionnairesSNCAEmettreProcessor processor = new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeDAO, hibernateTemplate, tiersService,
@@ -158,9 +167,17 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		try {
 			final EditiqueResultat resultat = editiqueCompositionService.imprimeQuestionnaireSNCOnline(questionnaire);
 			evenementFiscalService.publierEvenementFiscalEmissionQuestionnaireSNC(questionnaire, dateEvenement);
+			final ContribuableImpositionPersonnesMorales ctb = questionnaire.getTiers();
+			// envoi du NIP à qui de droit
+			if (StringUtils.isNotBlank(questionnaire.getCodeControle())) {
+				final String codeSegment = questionnaire.getCodeSegment() != null ? Integer.toString(questionnaire.getCodeSegment()) : null;
+
+				evenementDeclarationPMSender.sendEmissionQSNCEvent(ctb.getNumero(), questionnaire.getPeriode().getAnnee(), questionnaire.getNumero(), questionnaire.getCodeControle(), codeSegment);
+			}
+
 			return resultat;
 		}
-		catch (EditiqueException | JMSException e) {
+		catch (EditiqueException | EvenementDeclarationException | JMSException e) {
 			throw new DeclarationException(e);
 		}
 	}
@@ -168,12 +185,19 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	@Override
 	public void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateEvenement) throws DeclarationException {
 		try {
+			final ContribuableImpositionPersonnesMorales snc = questionnaire.getTiers();
 			editiqueCompositionService.imprimerQuestionnaireSNCForBatch(questionnaire);
 			evenementFiscalService.publierEvenementFiscalEmissionQuestionnaireSNC(questionnaire, dateEvenement);
+			if (StringUtils.isNotBlank(questionnaire.getCodeControle())) {
+				final String codeSegment = questionnaire.getCodeSegment() != null ? Integer.toString(questionnaire.getCodeSegment()) : null;
+
+				evenementDeclarationPMSender.sendEmissionQSNCEvent(snc.getNumero(), questionnaire.getPeriode().getAnnee(), questionnaire.getNumero(), questionnaire.getCodeControle(), codeSegment);
+			}
 		}
-		catch (EditiqueException e) {
+		catch (EditiqueException | EvenementDeclarationException e) {
 			throw new DeclarationException(e);
 		}
+
 	}
 
 	@Override
@@ -222,7 +246,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	}
 
 	@Override
-	public void quittancerQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateRetour, String source) {
+	public void quittancerQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateRetour, String source) throws DeclarationException {
 		final EtatDeclarationRetournee retour = new EtatDeclarationRetournee(dateRetour, source);
 		questionnaire.addEtat(retour);
 
@@ -230,8 +254,21 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	}
 
 	@Override
-	public void annulerQuestionnaire(QuestionnaireSNC questionnaire) {
-		questionnaire.setAnnule(true);
-		evenementFiscalService.publierEvenementFiscalAnnulationQuestionnaireSNC(questionnaire);
+	public void annulerQuestionnaire(QuestionnaireSNC questionnaire) throws DeclarationException {
+
+		try {
+			questionnaire.setAnnule(true);
+			evenementFiscalService.publierEvenementFiscalAnnulationQuestionnaireSNC(questionnaire);
+			if (StringUtils.isNotBlank(questionnaire.getCodeControle())) {
+				final String codeRoutage = questionnaire.getCodeSegment() != null ? Integer.toString(questionnaire.getCodeSegment()) : Integer.toString(QuestionnaireSNCService.codeSegment);
+				final Integer pf = questionnaire.getPeriode().getAnnee();
+
+				evenementDeclarationPMSender.sendAnnulationQSNCEvent(questionnaire.getTiers().getNumero(), pf, questionnaire.getNumero(), questionnaire.getCodeControle(), codeRoutage);
+
+			}
+		}
+		catch (EvenementDeclarationException e) {
+			throw new DeclarationException(e);
+		}
 	}
 }

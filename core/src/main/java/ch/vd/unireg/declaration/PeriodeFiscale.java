@@ -34,6 +34,7 @@ public class PeriodeFiscale extends HibernateEntity {
 	private Set<ParametrePeriodeFiscale> parametrePeriodeFiscale;
 	private boolean showCodeControleSommationDeclarationPP = false;
 	private boolean showCodeControleSommationDeclarationPM = false;
+	private boolean showCodeControleRappelQuestionnaireSNC = false;
 
 	@Transient
 	@Override
@@ -168,6 +169,15 @@ public class PeriodeFiscale extends HibernateEntity {
 
 	public void setShowCodeControleSommationDeclarationPM(boolean showCodeControleSommationDeclarationPM) {
 		this.showCodeControleSommationDeclarationPM = showCodeControleSommationDeclarationPM;
+	}
+
+	@Column(name = "CODE_CTRL_RAPPEL_Q_SNC", nullable = false)
+	public boolean isShowCodeControleRappelQuestionnaireSNC() {
+		return showCodeControleRappelQuestionnaireSNC;
+	}
+
+	public void setShowCodeControleRappelQuestionnaireSNC(boolean showCodeControleRappelQuestionnaireSNC) {
+		this.showCodeControleRappelQuestionnaireSNC = showCodeControleRappelQuestionnaireSNC;
 	}
 
 	/**

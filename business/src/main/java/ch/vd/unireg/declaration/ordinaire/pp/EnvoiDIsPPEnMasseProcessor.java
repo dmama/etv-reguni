@@ -38,6 +38,7 @@ import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.common.TicketTimeoutException;
+import ch.vd.unireg.declaration.DeclarationAvecCodeControle;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationGenerationOperation;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -556,7 +557,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 		if (cache.periode.getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			if (decls == null) {
 				// pas de déclaration : on génère un nouveau code de contrôle
-				codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
+				codeControle = DeclarationAvecCodeControle.generateCodeControle();
 			}
 			else {
 				// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
@@ -568,7 +569,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 				}
 				if (codeControle == null) {
 					// pas de code déjà généré : on en génère un nouveau
-					codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
+					codeControle = DeclarationAvecCodeControle.generateCodeControle();
 					// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
 					for (DeclarationImpotOrdinairePP d : decls) {
 						d.setCodeControle(codeControle);
