@@ -63,6 +63,7 @@ import ch.vd.unireg.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteProcessor;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.unireg.declaration.ordinaire.pp.ProduireListeDIsNonEmisesProcessor;
+import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscalAddAndSaveAccessor;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.unireg.editique.EditiqueCompositionService;
@@ -764,6 +765,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 *     <li>3 : PM HS (Hors Suisse)</li>
 	 *     <li>4 : PM Holding</li>
 	 *     <li>5 : PM HC (Hors Canton)</li>
+	 *     <li>6 : SNC (société en nom collectif)</li>
 	 * </ul>
 	 *
 	 * @param entreprise entreprise considérée
@@ -804,7 +806,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 		//PM société en nom Collectif SNC -> "6"
 		if (CODE_REGIME_FISCAL_SNC.equals(vd.getCode())) {
-			return 6;
+			return QuestionnaireSNCService.codeSegment;
 		}		
 
 		// PM vaudoise -> "1"
