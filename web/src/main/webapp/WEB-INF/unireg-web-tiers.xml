@@ -308,7 +308,8 @@
 		<property name="delaisService" ref="delaisService"/>
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
 		<property name="sessionFactory" ref="sessionFactory"/>
-		<property name="editionValidator" ref="editionAutreDocumentFiscalValidator"/>
+		<property name="ajouterDelaiValidator" ref="ajouterDelaiDocumentFiscalValidator"/>
+		<property name="ajouterQuittanceValidator" ref="ajouterQuittanceDocumentFiscalValidator"/>
 	</bean>
 
 </beans>

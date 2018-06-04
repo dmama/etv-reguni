@@ -3,9 +3,9 @@ package ch.vd.unireg.documentfiscal;
 import ch.vd.registre.base.date.RegDate;
 
 /**
- * @author Raphaël Marmier, 2017-11-30, <raphael.marmier@vd.ch>
+ * Données nécessaires à l'ajout d'un délai sur un document fiscal.
  */
-public class EditionDelaiAutreDocumentFiscalView {
+public class AjouterDelaiDocumentFiscalView {
 
 	private Long tiersId;
 	private int perdiode;
@@ -16,10 +16,10 @@ public class EditionDelaiAutreDocumentFiscalView {
 	// champs du formulaire
 	private Long idDocumentFiscal;
 
-	public EditionDelaiAutreDocumentFiscalView() {
+	public AjouterDelaiDocumentFiscalView() {
 	}
 
-	public EditionDelaiAutreDocumentFiscalView(AutreDocumentFiscal doc, RegDate delaiAccordeAu) {
+	public AjouterDelaiDocumentFiscalView(AutreDocumentFiscal doc, RegDate delaiAccordeAu) {
 		resetDocumentInfo(doc);
 		this.delaiAccordeAu = delaiAccordeAu;
 	}

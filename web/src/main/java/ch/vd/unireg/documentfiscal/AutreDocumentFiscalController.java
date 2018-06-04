@@ -66,7 +66,8 @@ public class AutreDocumentFiscalController {
 	private ServiceInfrastructureService infraService;
 	private DelaisService delaisService;
 
-	private Validator editionValidator;
+	private Validator ajouterDelaiValidator;
+	private Validator ajouterQuittanceValidator;
 
 	private static final Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> TYPES_DOC_ALLOWED = buildTypesDocAllowed();
 
@@ -115,20 +116,24 @@ public class AutreDocumentFiscalController {
 		this.delaisService = delaisService;
 	}
 
-	public void setEditionValidator(Validator editionValidator) {
-		this.editionValidator = editionValidator;
+	public void setAjouterDelaiValidator(Validator ajouterDelaiValidator) {
+		this.ajouterDelaiValidator = ajouterDelaiValidator;
 	}
 
-	@InitBinder(value = "ajouterView")
+	public void setAjouterQuittanceValidator(Validator ajouterQuittanceValidator) {
+		this.ajouterQuittanceValidator = ajouterQuittanceValidator;
+	}
+
+	@InitBinder(value = "ajouterDelai")
 	public void initAjouterDelaiBinder(WebDataBinder binder) {
-		binder.setValidator(editionValidator);
+		binder.setValidator(ajouterDelaiValidator);
 		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 	@InitBinder(value = "ajouterQuittance")
 	public void initAjouterQuittanceBinder(WebDataBinder binder) {
-		binder.setValidator(editionValidator);
+		binder.setValidator(ajouterQuittanceValidator);
 		binder.registerCustomEditor(RegDate.class, "dateRetour", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
@@ -315,7 +320,7 @@ public class AutreDocumentFiscalController {
 		}
 
 		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(doc.getDelaiAccordeAu());
-		model.addAttribute("ajouterView", new EditionDelaiAutreDocumentFiscalView(doc, delaiAccordeAu));
+		model.addAttribute("ajouterDelai", new AjouterDelaiDocumentFiscalView(doc, delaiAccordeAu));
 		return "documentfiscal/delai/ajouter";
 	}
 
@@ -334,7 +339,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
-	public String ajouterDelai(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view, BindingResult result) {
+	public String ajouterDelai(@Valid @ModelAttribute("ajouterDelai") final AjouterDelaiDocumentFiscalView view, BindingResult result) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'un autre document fiscal");
@@ -395,7 +400,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/etat/ajouter-quittance.do", method = RequestMethod.GET)
-	public String ajouterEtat(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+	public String ajouterQuittance(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
@@ -409,7 +414,7 @@ public class AutreDocumentFiscalController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		AjouterEtatAutreDocumentFiscalView view = new AjouterEtatAutreDocumentFiscalView(doc, infraService, messageSource);
+		AjouterQuittanceDocumentFiscalView view = new AjouterQuittanceDocumentFiscalView(doc, infraService, messageSource);
 		if (view.getDateRetour() == null) {
 			view.setDateRetour(RegDate.get());
 		}
@@ -424,7 +429,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/etat/ajouter-quittance.do", method = RequestMethod.POST)
-	public String ajouterEtat(@Valid @ModelAttribute("ajouterQuittance") final AjouterEtatAutreDocumentFiscalView view, BindingResult result) throws AccessDeniedException {
+	public String ajouterQuittance(@Valid @ModelAttribute("ajouterQuittance") final AjouterQuittanceDocumentFiscalView view, BindingResult result) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");

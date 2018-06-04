@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="ajouterQuittance" type="ch.vd.unireg.documentfiscal.AjouterEtatAutreDocumentFiscalView"--%>
+<%--@elvariable id="ajouterQuittance" type="ch.vd.unireg.documentfiscal.AjouterQuittanceDocumentFiscalView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head"/>
@@ -14,7 +14,7 @@
 	</tiles:put>
 	<tiles:put name="body">
 
-		<%--@elvariable id="ajouterQuittance" type="ch.vd.unireg.documentfiscal.AjouterEtatAutreDocumentFiscalView"--%>
+		<%--@elvariable id="ajouterQuittance" type="ch.vd.unireg.documentfiscal.AjouterQuittanceDocumentFiscalView"--%>
 		<form:form method="post" name="theForm" id="formAddEtat" action="ajouter-quittance.do" modelAttribute="ajouterQuittance">
 
 			<form:errors cssClass="error"/>

@@ -12,7 +12,7 @@ import ch.vd.unireg.declaration.view.EtatDocumentFiscalView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
-public class AjouterEtatAutreDocumentFiscalView {
+public class AjouterQuittanceDocumentFiscalView {
 
 	// Données en lecture-seule du formulaire
 	private Long tiersId;
@@ -26,10 +26,10 @@ public class AjouterEtatAutreDocumentFiscalView {
 	// Données modifiables du formulaire
 	private RegDate dateRetour;
 
-	public AjouterEtatAutreDocumentFiscalView() {
+	public AjouterQuittanceDocumentFiscalView() {
 	}
 
-	public AjouterEtatAutreDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public AjouterQuittanceDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		resetDocumentInfo(doc, infraService, messageSource);
 		this.dateRetour = doc.getDateRetour();
 	}

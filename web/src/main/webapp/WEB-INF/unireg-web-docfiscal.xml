@@ -7,7 +7,11 @@
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
 	</bean>
 
-	<bean id="editionAutreDocumentFiscalValidator" class="ch.vd.unireg.documentfiscal.EditionAutreDocumentFiscalValidator">
+	<bean id="ajouterDelaiDocumentFiscalValidator" class="ch.vd.unireg.documentfiscal.AjouterDelaiDocumentFiscalValidator">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
+	<bean id="ajouterQuittanceDocumentFiscalValidator" class="ch.vd.unireg.documentfiscal.AjouterQuittanceDocumentFiscalValidator">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
@@ -21,7 +25,8 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="delaisService" ref="delaisService"/>
-		<property name="editionValidator" ref="editionAutreDocumentFiscalValidator"/>
+		<property name="ajouterDelaiValidator" ref="ajouterDelaiDocumentFiscalValidator"/>
+		<property name="ajouterQuittanceValidator" ref="ajouterQuittanceDocumentFiscalValidator"/>
 	</bean>
 
 	<bean id="autreDocumentFiscalManager" class="ch.vd.unireg.documentfiscal.AutreDocumentFiscalManagerImpl">
