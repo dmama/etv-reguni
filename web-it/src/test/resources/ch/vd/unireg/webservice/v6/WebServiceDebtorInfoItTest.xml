@@ -232,6 +232,7 @@
 		<column>ANNEE</column>
 		<column>CODE_CTRL_SOMM_DI_PP</column>
 		<column>CODE_CTRL_SOMM_DI_PM</column>
+		<column>CODE_CTRL_RAPPEL_Q_SNC</column>
 		<row>
 			<value>1</value>
 			<null />
@@ -241,6 +242,7 @@
 			<value><![CDATA[2011-05-27 10:26:00.462]]></value>
 			<value>[system]</value>
 			<value>2008</value>
+			<value>0</value>
 			<value>0</value>
 			<value>0</value>
 		</row>
@@ -255,6 +257,7 @@
 			<value>2002</value>
 			<value>0</value>
 			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>3</value>
@@ -265,6 +268,7 @@
 			<value><![CDATA[2011-05-27 10:26:00.458]]></value>
 			<value>[system]</value>
 			<value>2003</value>
+			<value>0</value>
 			<value>0</value>
 			<value>0</value>
 		</row>
@@ -279,6 +283,7 @@
 			<value>2004</value>
 			<value>0</value>
 			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>5</value>
@@ -289,6 +294,7 @@
 			<value><![CDATA[2011-05-27 10:26:00.461]]></value>
 			<value>[system]</value>
 			<value>2005</value>
+			<value>0</value>
 			<value>0</value>
 			<value>0</value>
 		</row>
@@ -303,6 +309,7 @@
 			<value>2006</value>
 			<value>0</value>
 			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>7</value>
@@ -315,6 +322,7 @@
 			<value>2007</value>
 			<value>0</value>
 			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>8</value>
@@ -325,6 +333,7 @@
 			<value><![CDATA[2011-05-27 10:26:00.461]]></value>
 			<value>[system]</value>
 			<value>2009</value>
+			<value>0</value>
 			<value>0</value>
 			<value>0</value>
 		</row>
