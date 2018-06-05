@@ -83,7 +83,7 @@ public class ImmeubleRFController {
 		this.registreFoncierService = registreFoncierService;
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.VISU_ALL}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.VISU_IMMEUBLES}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "graph.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String graph(@RequestParam(required = false) String idRF,
@@ -267,7 +267,7 @@ public class ImmeubleRFController {
 		return i.getCommune() + " / " + i.getParcelle();
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.VISU_ALL}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.VISU_IMMEUBLES}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "details.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String details(@RequestParam String elementKey, Model model) {
