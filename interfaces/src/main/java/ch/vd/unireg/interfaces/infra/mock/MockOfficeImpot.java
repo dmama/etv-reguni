@@ -27,7 +27,7 @@ public class MockOfficeImpot extends MockCollectiviteAdministrative implements O
 	public static final MockOfficeImpot OID_VEVEY = new MockOfficeImpot(18, new MockAdresse("Rue du Simplon", "22", new CasePostale(TexteCasePostale.CASE_POSTALE, 1032), "1800", "Vevey 1"), "Office d'impôt du district", "de la Riviera - Pays-d'Enhaut", null, "OID VEVEY", 14, 3);
 	public static final MockOfficeImpot OID_YVERDON = new MockOfficeImpot(19, null, "Office d'impôt du district", "du Jura - Nord vaudois", null, "OID YVERDON", 15, 4);
 	public static final MockOfficeImpot OID_LAUSANNE_VILLE = new MockOfficeImpot(20, new MockAdresse("rue de la Paix", "1", "1000", "Lausanne"), "Office d'impôt des districts de", "Lausanne et Ouest lausannois", null, "OID LAUSANNE (VILLE)", null, null);
-	public static final MockOfficeImpot OID_PM = new MockOfficeImpot(21, null, "Administration cantonale des impôts", "Office d'impôt des Personnes Morales", null, "OI PERSONNES MORALES", null, null);
+	public static final MockOfficeImpot OID_PM = new MockOfficeImpot(21, new MockAdresse("Rue du Nord", "1", "1400", "Yverdon-les-Bains"), "Administration cantonale des impôts", "Office d'impôt des Personnes Morales", null, "OI PERSONNES MORALES", null, null);
 	public static final MockOfficeImpot OID_ST_CROIX = new MockOfficeImpot(121, null, "Office d'impôt du district de Grandson", "Bureau de Sainte-Croix", null, "OID GRANDSON,  STE-CROIX", null, null);
 
 	private Integer identifiantDistrict;
