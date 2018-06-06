@@ -104,7 +104,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 		// Les procédures
 		final String procedureStr = SecurityDebugConfig.getIfoSecBypassProcedures(visa);
 		final List<IfoSecProcedure> listProcedure = new ArrayList<>();
-		for (String procedure : procedureStr.split(", ")) {
+		for (String procedure : procedureStr.split("[, ]")) {
 			procedure = procedure.replace("[", "");
 			procedure = procedure.replace("]", "");
 			final IfoSecProcedureImpl proc = new IfoSecProcedureImpl();
