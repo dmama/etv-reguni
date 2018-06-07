@@ -30,7 +30,7 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 		final String query = "from DroitAcces da where da.tiers.id = :tiersId and da.visaOperateur = :visaOper and da.annulationDate is null and da.dateDebut <= :dateRef and (da.dateFin is null or da.dateFin >= :dateRef) order by da.dateDebut desc";
 		final List<DroitAcces> list = find(query,
 		                                   buildNamedParameters(Pair.of("tiersId", tiersId),
-		                                                        Pair.of("visaOper", visaOperateur),
+		                                                        Pair.of("visaOper", visaOperateur.toLowerCase()),
 		                                                        Pair.of("dateRef", date)),
 		                                   null);
 		if (list.isEmpty()) {
@@ -51,12 +51,12 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 		final String query = "from DroitAcces da where da.visaOperateur = :visaOper order by da.annulationDate desc, da.dateDebut desc, da.id";
 		final List<DroitAcces> list;
 		if (paramPagination == null) {
-			list = find(query, buildNamedParameters(Pair.of("visaOper", visaOperateur)), null);
+			list = find(query, buildNamedParameters(Pair.of("visaOper", visaOperateur.toLowerCase())), null);
 		}
 		else {
 			final Session session = getCurrentSession();
 			final Query q = session.createQuery(query);
-			q.setString("visaOper", visaOperateur);
+			q.setString("visaOper", visaOperateur.toLowerCase());
 			q.setFirstResult(paramPagination.getSqlFirstResult());
 			q.setMaxResults(paramPagination.getSqlMaxResults());
 			list = q.list();
@@ -67,7 +67,7 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 	@Override
 	public Integer getDroitAccesCount(@NotNull String visaOperateur) {
 		return DataAccessUtils.intResult(find("select count(*) from DroitAcces da where da.visaOperateur = :visaOperateur",
-		                                      buildNamedParameters(Pair.of("visaOperateur", visaOperateur)),
+		                                      buildNamedParameters(Pair.of("visaOperateur", visaOperateur.toLowerCase())),
 		                                      null));
 	}
 
@@ -107,7 +107,7 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 	@Override
 	public List<Long> getIdsDroitsAcces(@NotNull String visaOperateur) {
 		final String query = " select da.id from DroitAcces da where da.visaOperateur = :visaOperateur";
-		return find(query, buildNamedParameters(Pair.of("visaOperateur", visaOperateur)), null);
+		return find(query, buildNamedParameters(Pair.of("visaOperateur", visaOperateur.toLowerCase())), null);
 	}
 
 	/**
