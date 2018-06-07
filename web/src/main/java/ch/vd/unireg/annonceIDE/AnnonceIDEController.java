@@ -33,6 +33,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.Flash;
 import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.common.pagination.ParamSorting;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
@@ -66,6 +67,9 @@ public class AnnonceIDEController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnnonceIDEController.class);
 
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de suivi des annonces à l'IDE";
+
+	private static final String DEFAULT_FIELD = "noticeRequestId";
+	private static final String TABLE_NAME = "annonce";
 
 	private TiersMapHelper tiersMapHelper;
 	private ServiceOrganisationService organisationService;
@@ -119,11 +123,11 @@ public class AnnonceIDEController {
 
 		// on interpète la requête
 		final int pageSize = view.getResultsPerPage() == 0 ? 10 : view.getResultsPerPage();
-		final WebParamPagination pagination = new WebParamPagination(request, "annonce", pageSize);
+		final ParamPagination pagination = new WebParamPagination(request, TABLE_NAME, pageSize, DEFAULT_FIELD, false);
+
 		final int pageNumber = pagination.getNumeroPage() - 1;
 		final ParamSorting sorting = pagination.getSorting();
-		final Sort.Order order = StringUtils.isBlank(sorting.getField()) ? null :
-				new Sort.Order(sorting.isAscending() ? Sort.Direction.ASC : Sort.Direction.DESC, sorting.getField());
+		final Sort.Order order = new Sort.Order(sorting.isAscending() ? Sort.Direction.ASC : Sort.Direction.DESC, sorting.getField());
 
 		// on effectue la recherche
 		final Page<AnnonceIDE> annonces;

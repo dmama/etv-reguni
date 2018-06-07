@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
@@ -317,10 +318,92 @@ public class AnnonceIDEControllerTest {
 		final Map<String, Object> model = result.getModelAndView().getModel();
 
 		// on vérifie que l'annonce est bien affichée
-		final AnnonceIDEQueryView query = (AnnonceIDEQueryView) model.get("view");
-		assertNotNull(query);
+		final AnnonceIDEQueryView view = (AnnonceIDEQueryView) model.get("view");
+		assertNotNull(view);
 
-		assertEquals(Long.valueOf(123456789L), query.getCantonalId());
+		assertEquals(Long.valueOf(123456789L), view.getCantonalId());
+	}
+
+	/**
+	 * [SIFISCBS-83] Teste que le controlleur initie un tri par défaut
+	 */
+	@Test
+	public void testDefaultTriColonne() throws Exception {
+		// on crée le contrôleur et le mock MVC
+		final AnnonceIDEController controller = new AnnonceIDEController();
+		controller.setTiersMapHelper(tiersMapHelper);
+		controller.setOrganisationService(new MockServiceOrganisationService(){
+			@NotNull
+			@Override
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
+				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
+			}
+		});
+
+		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// on fait l'appel
+		final ResultActions resActions = m.perform(get("/annonceIDE/find.do"));
+		resActions.andExpect(status().isOk());
+
+		final MvcResult result = resActions.andReturn();
+		assertNotNull(result);
+
+		// vérification que l'annonce est bien affichée
+		final Map<String, Object> model = result.getModelAndView().getModel();
+		final Page<AnnonceIDEView> page = (Page<AnnonceIDEView>) model.get("page");
+		assertNotNull(page);
+		assertNotNull(page.getSort());
+
+		// Vérification du tri par défaut: "noticeRequestId" décroissant
+		Sort.Order order = page.getSort().getOrderFor("noticeRequestId");
+		assertNotNull(order);
+		assertEquals("DESC", order.getDirection().name());
+	}
+
+	/**
+	 * [SIFISCBS-83] Teste que le controlleur traite bien le tri sur une colonne
+	 */
+	@Test
+	public void testTriColonne() throws Exception {
+		// on crée le contrôleur et le mock MVC
+		final AnnonceIDEController controller = new AnnonceIDEController();
+		controller.setTiersMapHelper(tiersMapHelper);
+		controller.setOrganisationService(new MockServiceOrganisationService(){
+			@NotNull
+			@Override
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
+				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
+			}
+		});
+
+		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// Encodage des paramètres passés dans l'url
+		ParamEncoder encoder = new ParamEncoder("annonce");
+		String orderParam = encoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER);
+		String sortParam  = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORT);
+
+		// on fait l'appel (Paramètre ordre : 1 = ASC, 2 = DESC)
+		final ResultActions resActions = m.perform(get("/annonceIDE/find.do")
+				.param(orderParam, "1")
+				.param(sortParam, "date"));
+
+		resActions.andExpect(status().isOk());
+
+		final MvcResult result = resActions.andReturn();
+		assertNotNull(result);
+
+		// vérification que l'annonce est bien affichée
+		final Map<String, Object> model = result.getModelAndView().getModel();
+		final Page<AnnonceIDEView> page = (Page<AnnonceIDEView>) model.get("page");
+		assertNotNull(page);
+		assertNotNull(page.getSort());
+
+		// Vérification du tri par défaut: "noticeRequestId" décroissant
+		Sort.Order order = page.getSort().getOrderFor("date");
+		assertNotNull(order);
+		assertEquals("ASC", order.getDirection().name());
 	}
 
 	public static class MockDummyReferenceAnnonceIDEDAO implements ReferenceAnnonceIDEDAO {

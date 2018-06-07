@@ -120,7 +120,7 @@
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.annonces.trouvees"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.annonces.trouvees"/></span></display:setProperty>
 
-				<display:column titleKey="label.numero.annonce" >
+				<display:column sortable="true" titleKey="label.numero.annonce" sortName="noticeRequestId">
 					${annonce.numero}
 				</display:column>
 				<display:column titleKey="label.numero.tiers.entreprise" >
@@ -143,25 +143,25 @@
 						</c:choose>
 					</c:if>
 				</display:column>
-				<display:column titleKey="label.type.annonce" >
+				<display:column sortable="true" titleKey="label.type.annonce" sortName="typeOfNoticeRequest">
 					<fmt:message key="option.type.annonce.${annonce.type}" />
 				</display:column>
-				<display:column titleKey="label.statut.annonce" >
+				<display:column sortable="true" titleKey="label.statut.annonce" sortName="status">
 					<fmt:message key="option.statut.annonce.${annonce.statut.statut}" />
 				</display:column>
-				<display:column titleKey="label.no.cantonal.annonce" >
+				<display:column sortable="true" titleKey="label.no.cantonal.annonce" sortName="cantonalId">
 					<unireg:cantonalId cantonalId="${annonce.informationOrganisation.numeroSite}"/>
 				</display:column>
 				<display:column titleKey="label.no.ide.annonce" >
 					<unireg:numIDE numeroIDE="${annonce.noIde}"/>
 				</display:column>
-				<display:column titleKey="label.nom.entreprise.annonce" >
+				<display:column sortable="true" titleKey="label.nom.entreprise.annonce" sortName="name">
 					${annonce.contenu.nom}
 				</display:column>
-				<display:column titleKey="label.date.annonce" >
+				<display:column sortable="true" titleKey="label.date.annonce" sortName="date">
 					<fmt:formatDate value="${annonce.dateAnnonce}" pattern="dd.MM.yyyy HH:mm:ss"/>
 				</display:column>
-				<display:column titleKey="label.utilisateur.annonce" >
+				<display:column sortable="true" titleKey="label.utilisateur.annonce" sortName="userId">
 					${annonce.utilisateur.userId}
 				</display:column>
 				<display:column style="action">
