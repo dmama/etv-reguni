@@ -88,7 +88,7 @@
 				    </table>
 			    </display:column>
 		    </display:table>
-
+			<input type="button" name="retourPersonneCommunaute" value="<fmt:message key="label.bouton.retour" />" onclick="Navigation.backTo(['/registrefoncier/communaute/searchTiers.do','/registrefoncier/communaute/showModele.do'], '/rapports-prestation/edit.do', 'id=${modele.ctbId}');" />
 	    </fieldset>
 
 	    <script>

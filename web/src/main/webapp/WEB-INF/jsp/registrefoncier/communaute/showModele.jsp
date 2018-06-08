@@ -128,6 +128,7 @@
 				    <c:out value="${regroupement.immeuble.egrid}"/>
 			    </display:column>
 		    </display:table>
+			<input type="button" name="retourPersonneCommunaute" value="<fmt:message key="label.bouton.retour" />" onclick="Navigation.backTo(['/registrefoncier/communaute/showTiers.do'], '/rapports-prestation/edit.do', 'id=${membre.ctbId}');" />
 	    </fieldset>
 
 	</tiles:put>
