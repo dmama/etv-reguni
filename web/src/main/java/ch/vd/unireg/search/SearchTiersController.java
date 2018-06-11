@@ -5,7 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,8 @@ public class SearchTiersController {
 	private GlobalTiersSearcher searcher;
 	private ApplicationContext applicationContext;
 
+	private static final Pattern PREFIXE_IDE_PATTERN = Pattern.compile("(CHE|ADM)");
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSearcher(GlobalTiersSearcher searcher) {
 		this.searcher = searcher;
@@ -51,10 +55,10 @@ public class SearchTiersController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@ResponseBody
 	public SearchTiersResults quickSearch(@RequestParam(value = "query", required = true) String query,
-	                                 @RequestParam(value = "filterBean", required = false) String filterBean,
-	                                 @RequestParam(value = "filterParams", required = false) String filterParams,
-	                                 @RequestParam(value = "saveQueryTo", required = false) String saveQueryTo,
-	                                 HttpServletRequest request) throws UnsupportedEncodingException {
+	                                      @RequestParam(value = "filterBean", required = false) String filterBean,
+	                                      @RequestParam(value = "filterParams", required = false) String filterParams,
+	                                      @RequestParam(value = "saveQueryTo", required = false) String saveQueryTo,
+	                                      HttpServletRequest request) throws UnsupportedEncodingException {
 
 		SearchTiersResults results;
 
@@ -75,6 +79,9 @@ public class SearchTiersController {
 		}
 		else {
 			try {
+				if (StringUtils.isNotBlank(saveQueryTo) && "simpleSearchQuery".equalsIgnoreCase(saveQueryTo) && PREFIXE_IDE_PATTERN.matcher(query).find()) {
+					query = StringUtils.trimToNull(query.replaceAll("[\\s\\u00a0.-]+", StringUtils.EMPTY).toUpperCase(Locale.ENGLISH));
+				}
 				final TopList<TiersIndexedData> list = searcher.searchTop(query, filter, 200);
 				postFilter(filter, list);
 
@@ -101,12 +108,12 @@ public class SearchTiersController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@ResponseBody
 	public SearchTiersResults fullSearch(@RequestParam(value = "id", required = false) String id,
-	                                @RequestParam(value = "nomRaison", required = false) String nomRaison,
-	                                @RequestParam(value = "localite", required = false) String localite,
-	                                @RequestParam(value = "dateNaissance", required = false) String dateNaissance,
-	                                @RequestParam(value = "noAvs", required = false) String noAvs,
-	                                @RequestParam(value = "filterBean", required = false) String filterBean,
-	                                @RequestParam(value = "filterParams", required = false) String filterParams) {
+	                                     @RequestParam(value = "nomRaison", required = false) String nomRaison,
+	                                     @RequestParam(value = "localite", required = false) String localite,
+	                                     @RequestParam(value = "dateNaissance", required = false) String dateNaissance,
+	                                     @RequestParam(value = "noAvs", required = false) String noAvs,
+	                                     @RequestParam(value = "filterBean", required = false) String filterBean,
+	                                     @RequestParam(value = "filterParams", required = false) String filterParams) {
 
 		SearchTiersResults results;
 
@@ -160,10 +167,7 @@ public class SearchTiersController {
 			catch (TooManyClausesIndexerException e) {
 				results = new SearchTiersResults("Un ou plusieurs mots-clés sont trop généraux.");
 			}
-			catch (NumberFormatException e) {
-				results = new SearchTiersResults("Données erronées : " + e.getMessage());
-			}
-			catch (ParseException e) {
+			catch (NumberFormatException | ParseException e) {
 				results = new SearchTiersResults("Données erronées : " + e.getMessage());
 			}
 		}
@@ -199,7 +203,7 @@ public class SearchTiersController {
 	}
 
 	/**
-	 * @param ide une chaine de caractère pouvant représenter un numéro IDE
+	 * @param ide         une chaine de caractère pouvant représenter un numéro IDE
 	 * @param excludedIds (optionnel) les identifiants des tiers qui ne doivent pas faire partie de la réponse, même si leur IDE est le même
 	 * @return la liste des identifiants des tiers qui ont ce numéro IDE (triée par ordre croissant)
 	 */
