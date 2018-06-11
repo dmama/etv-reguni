@@ -13,14 +13,17 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AddAndSaveHelper;
+import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.DeclarationException;
+import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationRappelee;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscalAddAndSaveAccessor;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.unireg.editique.EditiqueCompositionService;
 import ch.vd.unireg.editique.EditiqueException;
@@ -38,6 +41,7 @@ import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.validation.ValidationService;
 
 public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
@@ -270,5 +274,24 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		catch (EvenementDeclarationException e) {
 			throw new DeclarationException(e);
 		}
+	}
+
+	@Override
+	public Long ajouterDelai(long questionnaireId, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etatDelai) {
+
+		final QuestionnaireSNC qsnc = questionnaireSNCDAO.get(questionnaireId);
+		if (qsnc == null) {
+			throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
+		}
+
+		// on ajoute le délai
+		DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setDateTraitement(RegDate.get());
+		delai.setDateDemande(dateDemande);
+		delai.setEtat(etatDelai);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
+
+		delai = AddAndSaveHelper.addAndSave(qsnc, delai, questionnaireSNCDAO::save, new DelaiDocumentFiscalAddAndSaveAccessor<>());
+		return delai.getId();
 	}
 }

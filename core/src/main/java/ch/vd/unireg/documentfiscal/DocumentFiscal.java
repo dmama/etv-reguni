@@ -339,6 +339,16 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	}
 
 	/**
+	 * @return <code>true</code> si le document supporte le suivi dans son état; <code>false</code> autrement.
+	 */
+	// TODO (msi) : gérer proprement la notion de document fiscal avec suivi  : actuellement, il y a des méthodes de suivi un peu partout dans la hiérarchie des documents (ajout d'une interface ou retravailler la hiérarchie, à voir)
+	@Transient
+	public boolean isAvecSuivi() {
+		// par défaut, pas de suivi
+		return false;
+	}
+
+	/**
 	 * @return <code>true</code> si la déclaration est d'un type qui supporte les sommations
 	 * @see #isRappelable()
 	 */

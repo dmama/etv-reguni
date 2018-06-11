@@ -205,4 +205,10 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 		return this.getPeriode() == null ? null : this.getPeriode().getAnnee();
 	}
 
+	@Transient
+	@Override
+	public boolean isAvecSuivi() {
+		// toutes les déclarations supportent le suivi de leurs états
+		return true;
+	}
 }

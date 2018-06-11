@@ -6,42 +6,31 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.declaration.PeriodeFiscale;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationServiceImpl;
-import ch.vd.unireg.parametrage.MockParameterAppService;
-import ch.vd.unireg.regimefiscal.RegimeFiscalServiceImpl;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
 import ch.vd.unireg.tiers.RegimeFiscal;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
-import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
-import static ch.vd.unireg.common.WithoutSpringTest.date;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class QuestionnaireSNCServiceTest {
+public class QuestionnaireSNCServiceTest extends BusinessTest {
 
 	private QuestionnaireSNCServiceImpl service;
 
 	@Before
 	public void setUp() throws Exception {
-
-		final ProxyServiceInfrastructureService serviceInfra = new ProxyServiceInfrastructureService();
-		serviceInfra.setUpDefault();
-
-		final RegimeFiscalServiceImpl regimeFiscalService = new RegimeFiscalServiceImpl();
-		regimeFiscalService.setServiceInfra(serviceInfra);
-
-		PeriodeExploitationServiceImpl periodeExploitationService = new PeriodeExploitationServiceImpl();
-		periodeExploitationService.setParametreAppService(new MockParameterAppService());
-		periodeExploitationService.setRegimeFiscalService(regimeFiscalService);
-
-		service = new QuestionnaireSNCServiceImpl();
-		service.setPeriodeExploitationService(periodeExploitationService);
+		service = getBean(QuestionnaireSNCServiceImpl.class, "qsncService");
 	}
 
 
@@ -193,5 +182,45 @@ public class QuestionnaireSNCServiceTest {
 		assertTrue(periodes.contains(2016));
 		assertTrue(periodes.contains(2017));
 		assertTrue(periodes.contains(2018));
+	}
+
+	/**
+	 * Ce test vérifie que la méthode 'ajouterDelai' fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testAjouterDelai() throws Exception {
+
+		// on crée un questionnaire SNC
+		final Long qsncId = doInNewTransaction(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			final PeriodeFiscale periode = addPeriodeFiscale(2017);
+			final QuestionnaireSNC qsnc = addQuestionnaireSNC(entreprise, periode);
+			return qsnc.getId();
+		});
+
+		final RegDate delaiAccordeAu = RegDate.get().addMonths(3);
+		final RegDate dateDemande = RegDate.get(2018, 3, 14);
+
+		// on ajoute un délai
+		final Long idDelai = doInNewTransaction(status -> {
+			//noinspection CodeBlock2Expr
+			return service.ajouterDelai(qsncId, dateDemande, delaiAccordeAu, EtatDelaiDocumentFiscal.ACCORDE);
+		});
+
+		// on vérifie que le délai est bien ajouté
+		doInNewTransaction(status -> {
+			final QuestionnaireSNC qsnc = hibernateTemplate.get(QuestionnaireSNC.class, qsncId);
+			assertNotNull(qsnc);
+			final Set<DelaiDocumentFiscal> delais = qsnc.getDelais();
+			assertEquals(1, delais.size());
+
+			final DelaiDocumentFiscal delai0 = delais.iterator().next();
+			assertNotNull(delai0);
+			assertEquals(dateDemande, delai0.getDateDemande());
+			assertEquals(RegDate.get(), delai0.getDateTraitement());
+			assertEquals(delaiAccordeAu, delai0.getDelaiAccordeAu());
+			assertEquals(idDelai, delai0.getId());
+			return null;
+		});
 	}
 }

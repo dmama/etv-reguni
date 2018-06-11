@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
@@ -52,6 +54,8 @@ import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.QuestionnaireSNCDAO;
 import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
 import ch.vd.unireg.declaration.view.QuestionnaireSNCView;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalController;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatErreur;
 import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
@@ -102,6 +106,7 @@ public class QuestionnaireSNCController {
 	private ControllerUtils controllerUtils;
 	private Set<String> sourcesQuittancementAvecLiberationPossible = Collections.emptySet();
 	private EvenementLiberationDeclarationImpotSender liberationSender;
+	private Validator ajouterDelaiValidator;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -165,6 +170,10 @@ public class QuestionnaireSNCController {
 
 	public void setLiberationSender(EvenementLiberationDeclarationImpotSender liberationSender) {
 		this.liberationSender = liberationSender;
+	}
+
+	public void setAjouterDelaiValidator(Validator ajouterDelaiValidator) {
+		this.ajouterDelaiValidator = ajouterDelaiValidator;
 	}
 
 	private void checkEditRight(boolean emission, boolean rappel, boolean duplicata, boolean quittancement, boolean liberation) throws AccessDeniedException {
@@ -532,7 +541,104 @@ public class QuestionnaireSNCController {
 		model.addAttribute("questionnaire", view);
 		model.addAttribute("depuisTache", tacheId != null);
 		model.addAttribute("tacheId", tacheId);
+		model.addAttribute("isAjoutDelaiAutorise", AutreDocumentFiscalController.isAjoutDelaiAutorise(questionnaire));
 		return "qsnc/editer";
+	}
+
+	@InitBinder(value = "ajouterDelai")
+	public void initAjouterDelaiBinder(WebDataBinder binder) {
+		binder.setValidator(ajouterDelaiValidator);
+		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+	}
+
+	/**
+	 * Affiche un écran qui permet de choisir les paramètres pour l'ajout d'une demande de délai
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
+	public String ajouterDelai(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
+			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un délai sur un questionnaire SNC.");
+		}
+
+		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, id);
+		if (questionnaire == null) {
+			throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + id);
+		}
+
+		final Entreprise ctb = (Entreprise) questionnaire.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		if (!AutreDocumentFiscalController.isAjoutDelaiAutorise(questionnaire)) {
+			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
+			return "redirect:/qsnc/editer.do?id=" + id;
+		}
+
+		final RegDate delaiAccorde = delaisService.getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(questionnaire.getDelaiAccordeAu());
+		model.addAttribute("ajouterDelai", new QuestionnaireSNCAjouterDelaiView(questionnaire, delaiAccorde));
+		return "documentfiscal/delai/ajouter";
+	}
+
+	/**
+	 * Ajoute un délai
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
+	public String ajouterDelai(@Valid @ModelAttribute("ajouterDelai") final QuestionnaireSNCAjouterDelaiView view, BindingResult result) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
+			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un délai sur un questionnaire SNC.");
+		}
+
+		if (result.hasErrors()) {
+			return "documentfiscal/delai/ajouter";
+		}
+
+		final Long id = view.getIdDocumentFiscal();
+		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, id);
+		if (questionnaire == null) {
+			throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + id);
+		}
+
+		final Entreprise ctb = (Entreprise) questionnaire.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		if (!AutreDocumentFiscalController.isAjoutDelaiAutorise(questionnaire)) {
+			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
+			return "redirect:/qsnc/editer.do?id=" + id;
+		}
+
+		// On ajoute le délai
+		final RegDate delaiAccordeAu = view.getDelaiAccordeAu();
+		qsncService.ajouterDelai(id, view.getDateDemande(), delaiAccordeAu, EtatDelaiDocumentFiscal.ACCORDE);
+		return "redirect:/qsnc/editer.do?id=" + id;
+	}
+
+	/**
+	 * Annule un délai
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/delai/annuler.do", method = RequestMethod.POST)
+	public String annulerDelai(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
+			throw new AccessDeniedException("vous n'avez pas le droit d'annuler un délai sur un questionnaire SNC.");
+		}
+
+		final DelaiDocumentFiscal delai = hibernateTemplate.get(DelaiDocumentFiscal.class, id);
+		if (delai == null) {
+			throw new IllegalArgumentException("Le délai n°" + id + " n'existe pas.");
+		}
+
+		final Entreprise ctb = (Entreprise) delai.getDocumentFiscal().getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		delai.setAnnule(true);
+
+		return "redirect:/qsnc/editer.do?id=" + delai.getDocumentFiscal().getId();
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)

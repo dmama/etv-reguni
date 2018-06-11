@@ -12,6 +12,7 @@ import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 /**
  * Service autour des questionnaires SNC : génération de tâches en masse, émissions, rappels...
@@ -120,4 +121,14 @@ public interface QuestionnaireSNCService {
 	 */
 	void annulerQuestionnaire(QuestionnaireSNC questionnaire) throws DeclarationException;
 
+	/**
+	 * Ajoute un délai sur un questionnaire SNC.
+	 *
+	 * @param questionnaireId l'id du questionnaire SNC
+	 * @param dateDemande     la date de la demande
+	 * @param delaiAccordeAu  le délai accordé
+	 * @param etatDelai       l'état du délai accordé
+	 * @return l'id du délai ajouté
+	 */
+	Long ajouterDelai(long questionnaireId, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etatDelai);
 }

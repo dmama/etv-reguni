@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.utils.ValidatorUtils;
 
 /**
- * Validateur des données nécessaires à l'ajout d'une quittance sur un document fiscal.
+ * Validateur des données nécessaires à l'ajout d'un délai sur un document fiscal.
  */
 public class AjouterDelaiDocumentFiscalValidator implements Validator {
 
@@ -22,7 +22,7 @@ public class AjouterDelaiDocumentFiscalValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return AjouterDelaiDocumentFiscalView.class.equals(clazz);
+		return AjouterDelaiDocumentFiscalView.class.isAssignableFrom(clazz);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class AjouterDelaiDocumentFiscalValidator implements Validator {
 			return;
 		}
 
-		final AutreDocumentFiscal doc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, view.getIdDocumentFiscal());
+		final DocumentFiscal doc = (DocumentFiscal) sessionFactory.getCurrentSession().get(DocumentFiscal.class, view.getIdDocumentFiscal());
 		if (doc == null) {
 			errors.reject("error.docfisc.inexistant");
 			return;

@@ -583,14 +583,17 @@ public class AutreDocumentFiscalController {
 	}
 
 	/**
-	 * [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
-	 *
 	 * @return true si il est possible d'ajouter un délai sur le document
 	 */
-	private boolean isAjoutDelaiAutorise(AutreDocumentFiscal doc) {
-		boolean hasRappelEnvoye = (doc instanceof AutreDocumentFiscalAvecSuivi) && (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
-
-		return doc.getDateRetour() == null && !hasRappelEnvoye;
+	public static boolean isAjoutDelaiAutorise(@NotNull DocumentFiscal doc) {
+		if (!doc.isAvecSuivi()) {
+			// pas de suivi, pas de délai
+			return false;
+		}
+		final boolean documentRetourne = (doc.getDateRetour() != null);
+		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
+		final boolean rappelEnvoye = (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
+		return !documentRetourne && !rappelEnvoye;
 	}
 
 	private static class RedirectEditLettreBienvenue implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> {

@@ -74,6 +74,13 @@ public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 
 	@Override
 	@Transient
+	public boolean isAvecSuivi() {
+		// par définition, ces documents supportent le suivi
+		return true;
+	}
+
+	@Override
+	@Transient
 	public boolean isRappelable() {
 		return true;
 	}

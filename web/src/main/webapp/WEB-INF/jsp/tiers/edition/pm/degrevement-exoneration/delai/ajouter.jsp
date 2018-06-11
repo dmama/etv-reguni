@@ -8,7 +8,7 @@
 	<tiles:put name="title">
 		<c:set var="titleKey" value="title.enregistrement.demande.delai.docfisc"/>
 		<fmt:message key="${titleKey}">
-			<fmt:param>${ajouterDelai.perdiode}</fmt:param>
+			<fmt:param>${ajouterDelai.periode}</fmt:param>
 			<fmt:param><unireg:numCTB numero="${ajouterDelai.tiersId}"/></fmt:param>
 		</fmt:message>
 	</tiles:put>
@@ -60,42 +60,12 @@
 						<input type="submit" id="ajouter" value="Ajouter">
 					</td>
 					<td width="25%">
+						<!-- TODO (msi) utiliser la page JSP /documentfiscal/delai à la place de celle-ci -->
 						<unireg:buttonTo id="annuler" name="Annuler" action="/degrevement-exoneration/edit-demande-degrevement.do" method="get" params="{id:${ajouterDelai.idDocumentFiscal}}"/>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>
 		</form:form>
 
-		<script type="text/javascript">
-
-			var DelaiPM = {
-
-				verifierDelaiDI: function() {
-					var dateDemande = '${ajouterDelai.dateDemande}';
-					var delaiAccordeAu = $('#delaiAccordeAu').val();
-					if (DateUtils.validate(delaiAccordeAu) && DateUtils.compare(DateUtils.addYear(dateDemande, 1, 'yyyy.MM.dd'), DateUtils.getDate(delaiAccordeAu, 'dd.MM.yyyy')) == -1) {
-						return confirm("Ce délai est située plus d'un an dans le futur à compter de la date d'expédition de la DI. Voulez-vous le sauver ?");
-					}
-					return true;
-				},
-
-				ajouterDelai: function(button, type) {
-					if (!this.verifierDelaiDI()) {
-						return false;
-					}
-
-					$('#typeImpression').val(type);
-					$('.error').hide();         // [SIFISC-18869] il faut enlever les éventuels messages d'erreur de l'affichage
-					$(button).closest("form").submit();
-
-					// On desactive les boutons
-					$('#ajouter, #annuler, #envoi-auto, #envoi-manuel').hide();
-					$('#retour').show();
-
-					return true;
-				}
-			};
-
-		</script>
 	</tiles:put>
 </tiles:insert>

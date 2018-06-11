@@ -5,6 +5,8 @@
 	<tiles:put name="title"><fmt:message key="title.edition.questionnaire.snc" /></tiles:put>
 	<tiles:put name="body">
 
+		<%--@elvariable id="isAjoutDelaiAutorise" type="java.lang.Boolean"--%>
+		<%--@elvariable id="questionnaire" type="ch.vd.unireg.declaration.view.QuestionnaireSNCView"--%>
 		<unireg:nextRowClass reset="1"/>
 		<unireg:bandeauTiers numero="${questionnaire.tiersId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" />
 
@@ -28,6 +30,15 @@
 		<!-- Debut délais -->
 		<fieldset class="information">
 			<legend><span><fmt:message key="label.delais"/></span></legend>
+			<c:if test="${isAjoutDelaiAutorise}">
+				<table border="0">
+					<tr>
+						<td>
+							<unireg:linkTo name="Ajouter" title="Ajouter" action="/qsnc/delai/ajouter.do" params="{id:${questionnaire.id}}" link_class="add"/>
+						</td>
+					</tr>
+				</table>
+			</c:if>
 			<display:table 	name="questionnaire.delais" id="delai" pagesize="10" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column titleKey="label.date.demande" style="width: 30%;">
 					<unireg:regdate regdate="${delai.dateDemande}" />
@@ -40,6 +51,10 @@
 				</display:column>
 				<display:column style="action">
 					<unireg:consulterLog entityNature="DelaiDeclaration" entityId="${delai.id}"/>
+					<c:if test="${(!delai.annule) && (!delai.first)}">
+						<unireg:linkTo name="" title="Annuler le délai"  confirm="Voulez-vous vraiment annuler ce delai ?"
+						               action="/qsnc/delai/annuler.do" method="post" params="{id:${delai.id}}" link_class="delete"/>
+					</c:if>
 				</display:column>
 
 				<display:setProperty name="paging.banner.all_items_found" value=""/>

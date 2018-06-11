@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 public class AjouterDelaiDocumentFiscalView {
 
 	private Long tiersId;
-	private int perdiode;
+	private int periode;
 	private RegDate ancienDelaiAccorde;
 	private RegDate delaiAccordeAu;
 	private RegDate dateDemande;
@@ -16,18 +16,20 @@ public class AjouterDelaiDocumentFiscalView {
 	// champs du formulaire
 	private Long idDocumentFiscal;
 
+	// nécessaire pour Spring
+	@SuppressWarnings("unused")
 	public AjouterDelaiDocumentFiscalView() {
 	}
 
-	public AjouterDelaiDocumentFiscalView(AutreDocumentFiscal doc, RegDate delaiAccordeAu) {
+	public AjouterDelaiDocumentFiscalView(DocumentFiscal doc, RegDate delaiAccordeAu) {
 		resetDocumentInfo(doc);
 		this.delaiAccordeAu = delaiAccordeAu;
 	}
 
-	public void resetDocumentInfo(AutreDocumentFiscal doc) {
+	public void resetDocumentInfo(DocumentFiscal doc) {
 		this.tiersId = doc.getTiers().getId();
 		this.idDocumentFiscal = doc.getId();
-		this.perdiode = doc.getPeriodeFiscale();
+		this.periode = doc.getAnneePeriodeFiscale();
 		this.ancienDelaiAccorde = doc.getDernierDelaiAccorde().getDelaiAccordeAu();
 		this.dateDemande = RegDate.get();
 	}
@@ -40,12 +42,12 @@ public class AjouterDelaiDocumentFiscalView {
 		this.tiersId = tiersId;
 	}
 
-	public int getPerdiode() {
-		return perdiode;
+	public int getPeriode() {
+		return periode;
 	}
 
-	public void setPerdiode(int perdiode) {
-		this.perdiode = perdiode;
+	public void setPeriode(int periode) {
+		this.periode = periode;
 	}
 
 	public RegDate getAncienDelaiAccorde() {
