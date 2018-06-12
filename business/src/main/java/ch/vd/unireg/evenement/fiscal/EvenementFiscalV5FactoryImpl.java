@@ -262,7 +262,7 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 	private static class RemindableTaxDeclarationEventFactory extends OutputDataFactory<EvenementFiscalDeclarationRappelable, RemindableTaxDeclarationEvent> {
 		@NotNull
 		@Override
-		public RemindableTaxDeclarationEvent internalBuild(@NotNull EvenementFiscalDeclarationRappelable evenementFiscal) {
+		public RemindableTaxDeclarationEvent internalBuild(@NotNull EvenementFiscalDeclarationRappelable evenementFiscal) throws NotSupportedInHereException {
 			final Declaration declaration = evenementFiscal.getDeclaration();
 			final RemindableTaxDeclarationEvent instance = instanciateRappelable(declaration);
 			final Tiers tiers = evenementFiscal.getTiers();
@@ -283,7 +283,7 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 		}
 	}
 
-	protected static RemindableTaxDeclarationEventType mapType(EvenementFiscalDeclarationRappelable.TypeAction type) {
+	protected static RemindableTaxDeclarationEventType mapType(EvenementFiscalDeclarationRappelable.TypeAction type) throws NotSupportedInHereException {
 		switch (type) {
 		case ANNULATION:
 			return RemindableTaxDeclarationEventType.CANCELLING;
@@ -293,6 +293,8 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			return RemindableTaxDeclarationEventType.ACKNOWLEDGING;
 		case RAPPEL:
 			return RemindableTaxDeclarationEventType.REMINDING;
+		case ECHEANCE:
+			throw new NotSupportedInHereException();    // événement non-supporté dans la version 5
 		default:
 			throw new IllegalArgumentException("Type d'action sur une déclaration 'rappelable' non-supporté : " + type);
 		}
@@ -779,7 +781,7 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 		try {
 			return factory.build(evt);
 		}
-		catch (EvenementFiscalV5FactoryImpl.NotSupportedInHereException e) {
+		catch (NotSupportedInHereException e) {
 			return null;
 		}
 	}

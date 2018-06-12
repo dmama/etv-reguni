@@ -21,6 +21,7 @@ import ch.vd.unireg.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.unireg.declaration.snc.DeterminationQuestionnairesSNCResults;
+import ch.vd.unireg.declaration.snc.EchoirQuestionnairesSNCResults;
 import ch.vd.unireg.declaration.snc.EnvoiQuestionnairesSNCEnMasseResults;
 import ch.vd.unireg.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.unireg.declaration.source.DeterminerLRsEchuesResults;
@@ -45,6 +46,7 @@ import ch.vd.unireg.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.unireg.document.DumpPeriodesImpositionImpotSourceRapport;
 import ch.vd.unireg.document.EchoirDIsPMRapport;
 import ch.vd.unireg.document.EchoirDIsPPRapport;
+import ch.vd.unireg.document.EchoirQSNCRapport;
 import ch.vd.unireg.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.unireg.document.EnvoiDIsPMRapport;
 import ch.vd.unireg.document.EnvoiDIsPPRapport;
@@ -766,4 +768,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	RattrapageModelesCommunautesRFProcessorRapport generateRapport(RattrapageModelesCommunautesRFProcessorResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch d'échéance des questionnaires SNC.
+	 *
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	EchoirQSNCRapport generateRapport(EchoirQuestionnairesSNCResults results, StatusManager status);
 }

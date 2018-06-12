@@ -13,20 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 public interface DocumentService {
 
 	/**
-	 * Crée un nouveau document.
+	 * Crée un nouveau document qui sera stocké comme fichier sur le disque du serveur et dont les métainformations seront stockés dans la DB Unireg.
 	 *
-	 * @param <T>
-	 *            le type de document voulu
-	 * @param clazz
-	 *            la classe correspondant au type voulu
-	 * @param nom
-	 *            le nom "utilisateur" du document
-	 * @param description
-	 *            une description du document, peut être <b>null</b>
-	 * @param fileExtension
-	 *            l'extension du fichier sur le disque
-	 * @param callback
-	 *            la méthode de remplissage du document
+	 * @param <T>           le type de document voulu
+	 * @param clazz         la classe correspondant au type voulu
+	 * @param nom           le nom "utilisateur" du document
+	 * @param description   une description du document, peut être <b>null</b>
+	 * @param fileExtension l'extension du fichier sur le disque
+	 * @param callback      la méthode de remplissage du document
 	 * @return la référence du nouveau document
 	 */
 	<T extends Document> T newDoc(Class<T> clazz, String nom, String description, String fileExtension, WriteDocCallback<T> callback) throws Exception;
@@ -34,12 +28,9 @@ public interface DocumentService {
 	/**
 	 * Lit le contenu d'un document.
 	 *
-	 * @param <T>
-	 *            le type de document voulu
-	 * @param doc
-	 *            le document considéré
-	 * @param callback
-	 *            la méthode de remplissage du document
+	 * @param <T>      le type de document voulu
+	 * @param doc      le document considéré
+	 * @param callback la méthode de remplissage du document
 	 */
 	<T extends Document> void readDoc(T doc, ReadDocCallback<T> callback) throws Exception;
 

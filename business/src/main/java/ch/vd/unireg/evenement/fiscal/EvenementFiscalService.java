@@ -193,6 +193,14 @@ public interface EvenementFiscalService {
 	void publierEvenementFiscalRappelQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateRappel);
 
 	/**
+	 * Publie un événement fiscal de type 'échéance de questionnaire SNC'
+	 *
+	 * @param qsnc         le questionnaire échu
+	 * @param dateEcheance la date à laquelle le questionnaire est passé à l'état échu
+	 */
+	void publierEvenementFiscalEcheanceQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateEcheance);
+
+	/**
 	 * Publie un événement fiscal de type 'annulation de questionnaire SNC'
 	 *
 	 * @param qsnc le questionnaire SNC

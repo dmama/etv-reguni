@@ -182,6 +182,12 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierEvenementFiscalEcheanceQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateEcheance) {
+		// TODO (msi) : faire une version 6 des événements pour supporter l'échéance des déclarations rappelables
+		saveAndPublish(new EvenementFiscalDeclarationRappelable(dateEcheance, qsnc, EvenementFiscalDeclarationRappelable.TypeAction.ECHEANCE));
+	}
+
+	@Override
 	public void publierEvenementFiscalAnnulationQuestionnaireSNC(QuestionnaireSNC qsnc) {
 		saveAndPublish(new EvenementFiscalDeclarationRappelable(RegDateHelper.get(qsnc.getAnnulationDate()), qsnc, EvenementFiscalDeclarationRappelable.TypeAction.ANNULATION));
 	}

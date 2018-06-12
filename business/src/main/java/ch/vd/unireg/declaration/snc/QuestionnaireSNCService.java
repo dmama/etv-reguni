@@ -131,4 +131,12 @@ public interface QuestionnaireSNCService {
 	 * @return l'id du délai ajouté
 	 */
 	Long ajouterDelai(long questionnaireId, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etatDelai);
+
+	/**
+	 * Fait passer à l'état <i>échu</i> le questionnaire SNC spécifié.
+	 *
+	 * @param qsnc          un questionnaire SNC
+	 * @param dateObtention la date d'obtention de l'état échu
+	 */
+	void echoirQuestionnaire(@NotNull QuestionnaireSNC qsnc, @NotNull RegDate dateObtention);
 }

@@ -113,6 +113,10 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierEvenementFiscalEcheanceQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateEcheance) {
+	}
+
+	@Override
 	public void publierEvenementFiscalAnnulationQuestionnaireSNC(QuestionnaireSNC qsnc) {
 	}
 

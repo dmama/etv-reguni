@@ -27,6 +27,7 @@ public class PdfMajoriteRapport extends PdfRapport {
 	    }
 
 	    // Création du document PDF
+	    // TODO (msi) utiliser this plutôt que de créer un second pdf ! Vérifier les autres rapports aussi
 	    PdfMajoriteRapport document = new PdfMajoriteRapport();
 	    PdfWriter writer = PdfWriter.getInstance(document, os);
 	    document.open();

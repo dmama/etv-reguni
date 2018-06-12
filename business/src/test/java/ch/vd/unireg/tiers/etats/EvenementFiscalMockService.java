@@ -147,6 +147,11 @@ public class EvenementFiscalMockService implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierEvenementFiscalEcheanceQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateEcheance) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void publierEvenementFiscalAnnulationQuestionnaireSNC(QuestionnaireSNC qsnc) {
 		throw new UnsupportedOperationException();
 	}
