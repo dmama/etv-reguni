@@ -10,12 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.common.AnnulableHelper;
+import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.unireg.registrefoncier.CommunauteRFPrincipalInfo;
 import ch.vd.unireg.registrefoncier.DroitProprieteCommunauteRF;
-import ch.vd.unireg.registrefoncier.DroitProprieteRF;
+import ch.vd.unireg.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
@@ -36,36 +37,32 @@ public abstract class CommunityOfOwnersBuilder {
 		if (membreInfo == null) {
 			throw new ProgrammingException("Les informations de la communauté id=[" + communaute.getId() + "] sont nulles.");
 		}
-		final DroitProprieteCommunauteRF droitCommunaute = getDroitProprieteCommunaute(communaute);
+		final List<LandOwnershipRight> droitsCommunaute = buildLandRights(communaute, ctbIdProvider);
+		final LandOwnershipRight dernierDroitCommunaute = (droitsCommunaute.isEmpty() ? null : CollectionsUtils.getLastElement(droitsCommunaute));
 
 		final CommunityOfOwners community = new CommunityOfOwners();
 		community.setId(communaute.getId());
 		community.setType(EnumHelper.coreToXMLv5(communaute.getType()));
 		community.getMembers().addAll(buildMembers(membreInfo));
 		// [SIFISC-24457] on expose le droit de propriété de la communauté
-		community.setLandRight(buildLandRight(droitCommunaute, ctbIdProvider));
+		// [IMM-1215] une communauté peut avoir plusieurs droits, pour garder la compatibilité ascendante, on expose le dernier droit
+		community.setLandRight(dernierDroitCommunaute);
 		community.getLeaders().addAll(buildLeaders(membreInfo.getPrincipaux()));
 		// [SIFISC-28067] on expose l'historique de l'appartenance des membres de la communauté
 		community.getMemberships().addAll(MembershipBuilder.buildCommunityOfOwnerMemberships(membreInfo.getMembresHisto()));
+		// [IMM-1215] on expose les droits de propriété de la communauté
+		community.getLandRights().addAll(droitsCommunaute);
 		return community;
 	}
 
-	@Nullable
-	private static DroitProprieteCommunauteRF getDroitProprieteCommunaute(@NotNull CommunauteRF communaute) {
-
-		final List<DroitProprieteRF> droits = communaute.getDroitsPropriete().stream()
+	@NotNull
+	private static List<LandOwnershipRight> buildLandRights(@NotNull CommunauteRF communaute, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+		return communaute.getDroitsPropriete().stream()
 				.filter(AnnulableHelper::nonAnnule)
+				.map(DroitProprieteCommunauteRF.class::cast)
+				.sorted(new DroitRFRangeMetierComparator())
+				.map(droit -> buildLandRight(droit, ctbIdProvider))
 				.collect(Collectors.toList());
-		if (droits.size() > 1) {
-			throw new IllegalArgumentException("La communauté idRF=[" + communaute.getIdRF() + "] possède plusieurs droits count=[" + droits.size() + "].");
-		}
-
-		final DroitProprieteRF droit = droits.stream().findFirst().orElse(null);
-		if (droit != null && !(droit instanceof DroitProprieteCommunauteRF)) {
-			throw new IllegalArgumentException("La communauté idRF=[" + communaute.getIdRF() + "] possède un droit qui n'est pas du bon type class=[" + droit.getClass().getSimpleName() + "].");
-		}
-
-		return (DroitProprieteCommunauteRF) droit;
 	}
 
 	@Nullable

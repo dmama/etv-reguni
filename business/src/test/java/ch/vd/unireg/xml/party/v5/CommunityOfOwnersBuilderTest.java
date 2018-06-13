@@ -41,6 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class CommunityOfOwnersBuilderTest {
+
 	@Test
 	public void testNewCommunity() throws Exception {
 
@@ -142,6 +143,134 @@ public class CommunityOfOwnersBuilderTest {
 		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(membership1.getDateTo()));
 		assertNull(membership1.getCancellationDate());
 		assertRightHolderParty(2727272, membership1.getRightHolder());
+	}
+
+	/**
+	 * [IMM-1215] Ce test vérifie que le builder supporte de construire une communauté qui possède plusieurs droits propre (= un historique) sur un immeuble.
+	 */
+	@Test
+	public void testNewCommunityAvecHistoriqueDesDroits() throws Exception {
+
+		// les tiers RF et la communauté RF
+		final PersonnePhysiqueRF ppRF = new PersonnePhysiqueRF();
+		ppRF.setDateNaissance(RegDate.get(1922,3,23));
+		ppRF.setPrenom("Arnold");
+		ppRF.setNom("Whitenegger");
+
+		final PersonneMoraleRF pmRF = new PersonneMoraleRF();
+		pmRF.setRaisonSociale("Ma petite entreprise");
+		pmRF.setNumeroRC("CH3823838228");
+
+		final CollectivitePubliqueRF collRF = new CollectivitePubliqueRF();
+		collRF.setRaisonSociale("Mon petit club de foot");
+
+		final CommunauteRF communaute = new CommunauteRF();
+		communaute.setId(234342L);
+		communaute.setIdRF("388289282");
+		communaute.setType(TypeCommunaute.INDIVISION);
+
+		final DroitDistinctEtPermanentRF immeuble = new DroitDistinctEtPermanentRF();
+		immeuble.setIdRF("a8388e8e83");
+		immeuble.setId(123456L);
+
+		// la communauté possède 1/2 de l'immeuble
+		final DroitProprieteCommunauteRF droit1 = new DroitProprieteCommunauteRF();
+		droit1.setId(2332L);
+		droit1.setMasterIdRF("28288228");
+		droit1.setVersionIdRF("1");
+		droit1.setDateDebut(RegDate.get(2016, 11, 3));
+		droit1.setDateFin(RegDate.get(2017, 2, 1));
+		droit1.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit1.setDateFinMetier(RegDate.get(2016, 12, 31));
+		droit1.setMotifDebut("Succession");
+		droit1.setMotifFin("Partage");
+		droit1.setRegime(GenrePropriete.COMMUNE);
+		droit1.setPart(new Fraction(1, 2));
+		droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Succession", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit1.setAyantDroit(communaute);
+		droit1.setImmeuble(immeuble);
+		communaute.addDroitPropriete(droit1);
+
+		// passage à 3/5 le 1er janvier 2017
+		final DroitProprieteCommunauteRF droit2 = new DroitProprieteCommunauteRF();
+		droit2.setId(2333L);
+		droit2.setMasterIdRF("28288228");
+		droit2.setVersionIdRF("1");
+		droit2.setDateDebut(RegDate.get(2017, 2, 2));
+		droit2.setDateFin(RegDate.get(2017, 9, 22));
+		droit2.setDateDebutMetier(RegDate.get(2017, 1, 1));
+		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit2.setMotifDebut("Partage");
+		droit2.setRegime(GenrePropriete.COMMUNE);
+		droit2.setPart(new Fraction(3, 5));
+		droit2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Succession", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2017, 1, 1), "Partage", new IdentifiantAffaireRF(21, 2016, 578, 1)));
+		droit2.setAyantDroit(communaute);
+		droit2.setImmeuble(immeuble);
+		communaute.addDroitPropriete(droit2);
+
+		// les informations sur les membres
+		CommunauteRFAppartenanceInfo appartenance1 = new CommunauteRFAppartenanceInfo(RegDate.get(2016, 9, 22), RegDate.get(2017, 4, 14), null, null, 2727272L);
+		CommunauteRFAppartenanceInfo appartenance2 = new CommunauteRFAppartenanceInfo(RegDate.get(2016, 9, 22), RegDate.get(2004, 8, 29), null, ppRF, null);
+
+		final CommunauteRFMembreInfo membreInfo = new CommunauteRFMembreInfo(Collections.singletonList(2727272L),
+		                                                                     Arrays.asList(ppRF, pmRF, collRF),
+		                                                                     Arrays.asList(appartenance1, appartenance2));
+		membreInfo.setPrincipaux(Collections.singletonList(new CommunauteRFPrincipalInfo(null,
+		                                                                                 null, RegDate.get(2016, 9, 22), RegDate.get(2017, 4, 14), null, 2727272L, false)));
+
+		final CommunityOfOwners community = CommunityOfOwnersBuilder.newCommunity(communaute, id -> null, id -> membreInfo);
+		assertNotNull(community);
+		assertEquals(234342L, community.getId());
+		assertEquals(CommunityOfOwnersType.JOINT_OWNERSHIP, community.getType());
+
+		// [IMM-1215] on expose les deux droits
+		final List<LandOwnershipRight> landRights = community.getLandRights();
+		assertNotNull(landRights);
+		assertEquals(2, landRights.size());
+
+		final LandOwnershipRight landRight0 = landRights.get(0);
+		assertNotNull(landRight0);
+		assertEquals(2332L, landRight0.getId());
+		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, landRight0.getType());
+		assertShare(1, 2, landRight0.getShare());
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landRight0.getDateFrom()));
+		assertEquals(RegDate.get(2016, 12, 31), DataHelper.xmlToCore(landRight0.getDateTo()));
+		assertEquals("Succession", landRight0.getStartReason());
+		assertEquals("Partage", landRight0.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", landRight0.getCaseIdentifier());
+		assertEquals(Long.valueOf(234342L), landRight0.getRightHolder().getCommunityId());
+		assertEquals(123456L, landRight0.getImmovablePropertyId());
+		assertNull(landRight0.getCommunityId());
+
+		final LandOwnershipRight landRight1 = landRights.get(1);
+		assertNotNull(landRight1);
+		assertEquals(2333L, landRight1.getId());
+		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, landRight1.getType());
+		assertShare(3, 5, landRight1.getShare());
+		assertEquals(RegDate.get(2017, 1, 1), DataHelper.xmlToCore(landRight1.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(landRight1.getDateTo()));
+		assertEquals("Partage", landRight1.getStartReason());
+		assertNull(landRight1.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", landRight1.getCaseIdentifier());
+		assertEquals(Long.valueOf(234342L), landRight1.getRightHolder().getCommunityId());
+		assertEquals(123456L, landRight1.getImmovablePropertyId());
+		assertNull(landRight1.getCommunityId());
+
+		// [IMM-1215] on expose le dernier droit (pour être compatible ascendant)
+		final LandOwnershipRight landRight = community.getLandRight();
+		assertNotNull(landRight);
+		assertEquals(2333L, landRight.getId());
+		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, landRight.getType());
+		assertShare(3, 5, landRight.getShare());
+		assertEquals(RegDate.get(2017, 1, 1), DataHelper.xmlToCore(landRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(landRight.getDateTo()));
+		assertEquals("Partage", landRight.getStartReason());
+		assertNull(landRight.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", landRight.getCaseIdentifier());
+		assertEquals(Long.valueOf(234342L), landRight.getRightHolder().getCommunityId());
+		assertEquals(123456L, landRight.getImmovablePropertyId());
+		assertNull(landRight.getCommunityId());
 	}
 
 	private static void assertRightHolderNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder rightHolder) {
