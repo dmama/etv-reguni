@@ -56,19 +56,22 @@
 
 	<!-- La chaine des filtres Spring à appliquer. -->
 	<bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
+		<!-- [SIFISC-29155] Attention ! Les patterns sont case-sensitives depuis Spring 4 ! -->
 		<security:filter-chain-map request-matcher="ant">
 			<security:filter-chain pattern="/403.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />
 			<security:filter-chain pattern="/404.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
 			<security:filter-chain pattern="/error.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<!-- TODO (msi) : je pense que l'URL /logout.do n'est jamais utilisé (on utilise plutôt /logoutIAM.do), à supprimer -->
 			<security:filter-chain pattern="/logout.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/logoutiam.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/logoutIAM.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
 			<security:filter-chain pattern="/errors/**" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
 			<security:filter-chain pattern="/ws/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
 			<security:filter-chain pattern="/remoting/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
-			<security:filter-chain pattern="/chooseoid.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,braveServletFilter,${iam-security-filters}" />
+			<security:filter-chain pattern="/chooseOID.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,braveServletFilter,${iam-security-filters}" />
 			<security:filter-chain pattern="/authenticationFailed.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,braveServletFilter" />
 			<!-- Version IAM + IFOSEC -->
 			<security:filter-chain pattern="/**/*.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,braveServletFilter,logoutFilter,exceptionTranslationFilter,${iam-security-filters},accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter,actionExceptionFilter" />
+			<!-- TODO (msi) : ajouter le remoteHostSpringFilter -->
 			<security:filter-chain pattern="/**" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,braveServletFilter" />
 		</security:filter-chain-map>
 	</bean>
@@ -80,6 +83,7 @@
 		<property name="ifoSecService" ref="ifoSecService" />
 	</bean>
 
+	<!-- TODO (msi) : je pense que ce filtre n'est jamais réellement utilisé (on utilise plutôt /logoutIAM.do), à vérifier et supprimer -->
 	<!-- Filtre de logout: Le securityContextLogoutHandler effectue le logout et invalide la session -->
 	<bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
 		<constructor-arg value="/logoutIAM.do" />
