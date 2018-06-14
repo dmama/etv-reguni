@@ -284,7 +284,7 @@
 	<!-- Les pages d'erreurs et code HTTP associés -->
 	<error-page>
 		<error-code>500</error-code>
-		<location>/error.do</location>
+		<location>/errors/error.do</location>
 	</error-page>
 	<error-page>
 		<error-code>400</error-code>
@@ -292,11 +292,11 @@
 	</error-page>
 	<error-page>
 		<error-code>403</error-code>
-		<location>/403.do</location>
+		<location>/errors/403.do</location>
 	</error-page>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/404.do</location>
+		<location>/errors/404.do</location>
 	</error-page>
 
 	<mime-mapping>

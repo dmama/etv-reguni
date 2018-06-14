@@ -58,20 +58,21 @@
 	<bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
 		<!-- [SIFISC-29155] Attention ! Les patterns sont case-sensitives depuis Spring 4 ! -->
 		<security:filter-chain-map request-matcher="ant">
-			<security:filter-chain pattern="/403.do"                    filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/404.do"                    filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/error.do"                  filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/logoutIAM.do"              filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/errors/**"                 filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/ws/**"                     filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
-			<security:filter-chain pattern="/remoting/**"               filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
-			<security:filter-chain pattern="/chooseOID.do"              filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter,${iam-security-filters}" />
-			<security:filter-chain pattern="/authenticationFailed.do"   filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter" />
-			<!-- Version IAM + IFOSEC -->
-			<security:filter-chain pattern="/**/*.do"                   filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter,
-																				 exceptionTranslationFilter,${iam-security-filters},accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,
-																				 contextHolderAwareRequestFilter,actionExceptionFilter" />
-			<security:filter-chain pattern="/**"                        filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter" />
+			<!-- la page d'erreur 403 ne doit pas vérifier l'adresse IP car c'est vers elle que le remoteHostSpringFilter renvoie quand l'adresse IP n'est pas autorisée -->
+			<security:filter-chain pattern="/errors/403.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/errors/**"     filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter" />
+			<!-- WS et remoting -->
+			<security:filter-chain pattern="/ws/**"         filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
+			<security:filter-chain pattern="/remoting/**"   filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,braveServletFilter" />
+			<!-- login/logout -->
+			<security:filter-chain pattern="/logoutIAM.do"  filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/chooseOID.do"  filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter,${iam-security-filters}" />
+			<!-- les pages normales -->
+			<security:filter-chain pattern="/**/*.do"       filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter,
+																	 exceptionTranslationFilter,${iam-security-filters},accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,
+																	 contextHolderAwareRequestFilter,actionExceptionFilter" />
+			<!-- les ressources statiques -->
+			<security:filter-chain pattern="/**"            filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />
 		</security:filter-chain-map>
 	</bean>
 
@@ -88,12 +89,12 @@
 	<bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
 		<constructor-arg>
 			<bean class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-				<constructor-arg value="/authenticationFailed.do" />
+				<constructor-arg value="/errors/authenticationFailed.do" />
 			</bean>
 		</constructor-arg>
 		<property name="accessDeniedHandler">
 			<bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
-				<property name="errorPage" value="/403.do"/>
+				<property name="errorPage" value="/errors/403.do"/>
 			</bean>
 		</property>
 	</bean>

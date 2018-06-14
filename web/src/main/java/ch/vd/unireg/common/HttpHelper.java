@@ -20,7 +20,7 @@ public abstract class HttpHelper {
 	}
 
 	public static String getRedirectPagePrecedente(HttpServletRequest request) {
-		return getRedirectPagePrecedenteOuDefaut(request, "/404.do");
+		return getRedirectPagePrecedenteOuDefaut(request, "/errors/404.do");
 	}
 
 	public static String getReferrer(HttpServletRequest request) {

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping(value = "/errors")
 public class ErrorsController {
 
 	@RequestMapping(value = "/error.do")
@@ -21,5 +22,10 @@ public class ErrorsController {
 	@RequestMapping(value = "/404.do")
 	public String notFound() throws IOException {
 		return "errors/404";
+	}
+
+	@RequestMapping(value = "/authenticationFailed.do")
+	public String index() {
+		return "security/authenticationFailed";
 	}
 }
