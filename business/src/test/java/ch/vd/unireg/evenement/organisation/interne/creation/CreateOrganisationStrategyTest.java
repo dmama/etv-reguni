@@ -4,6 +4,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.unireg.evenement.organisation.interne.AbstractEvenementOrganisationInterneTest;
+import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.evenement.organisation.interne.MessageSuiviPreExecution;
+import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -14,14 +22,6 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.interne.AbstractEvenementOrganisationInterneTest;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.unireg.evenement.organisation.interne.MessageSuiviPreExecution;
-import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
 import ch.vd.unireg.regimefiscal.RegimeFiscalServiceImpl;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.MockTiersDAO;
@@ -194,12 +194,12 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 
 	@Test
 	public void testCasEntrepriseHCAvecSiegeSecondaireVaud() throws EvenementOrganisationException {
-		// Cas hors Vaud avec un site secondaire sur Vaud
-		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(101220106L, 101220106L + 1000000, 101220106L + 2000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
-		                                                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 1, 2),
-		                                                                    StatusInscriptionRC.ACTIF, date(2015, 9, 4), StatusRegistreIDE.DEFINITIF,
-		                                                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999992", "CHE999999993"));
+		// Cas hors Vaud avec un établissement civil secondaire sur Vaud
+		addOrg(MockOrganisationFactory.createOrganisationAvecEtablissementSecondaire(101220106L, 101220106L + 1000000, 101220106L + 2000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+		                                                                             TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
+		                                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 1, 2),
+		                                                                             StatusInscriptionRC.ACTIF, date(2015, 9, 4), StatusRegistreIDE.DEFINITIF,
+		                                                                             StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999992", "CHE999999993"));
 		tryCreationEventAndCheckResult(101220106L, CreateEntrepriseHorsVD.class);
 	}
 
@@ -220,10 +220,10 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		addOrg(MockOrganisationFactory.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME, null, null, null, null, null, null, "CHE999999995"));
 		tryCreationEventAndCheckResult(222222002L, TraitementManuel.class);
 
-		// Cas hors Vaud aucun site sur Vaud
-		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
-		                                                                    null, null, null, null, null, null, null, null, "CHE999999996", "CHE999999997"));
+		// Cas hors Vaud aucun établissement civil sur Vaud
+		addOrg(MockOrganisationFactory.createOrganisationAvecEtablissementSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+		                                                                             TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
+		                                                                             null, null, null, null, null, null, null, null, "CHE999999996", "CHE999999997"));
 		tryCreationEventAndCheckResult(222222004L, MessageSuiviPreExecution.class);
 
 	}

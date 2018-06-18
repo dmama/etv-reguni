@@ -42,7 +42,7 @@
 						<td width="25%">N° IDE de l'établissement de remplacement&nbsp;:</td>
 						<td width="25%"><unireg:numIDE numeroIDE="${annonce.noIdeRemplacant}"/></td>
 						<td width="25%">N° Cantonal de l'établissement de remplacement&nbsp;:</td>
-						<td width="25%"><unireg:cantonalId cantonalId="${annonce.informationOrganisation.numeroSiteRemplacant}"/></td>
+						<td width="25%"><unireg:cantonalId cantonalId="${annonce.informationOrganisation.numeroEtablissementRemplacant}"/></td>
 					</tr>
 				</c:if>
 			</table>
@@ -53,15 +53,15 @@
 			<table>
 				<tr class="<unireg:nextRowClass/>">
 					<td width="25%">Type d'établissement&nbsp;:</td>
-					<td width="25%"><fmt:message key="option.type.etablissement.${annonce.typeDeSite}"/></td>
+					<td width="25%"><fmt:message key="option.type.etablissement.${annonce.typeEtablissementCivil}"/></td>
 				</tr>
 				<tr class="<unireg:nextRowClass/>">
 					<td width="25%">N° IDE&nbsp;:</td>
 					<td width="25%"><unireg:numIDE numeroIDE="${annonce.noIde}"/></td>
 					<td width="25%">N° Cantonal&nbsp;:</td>
-					<td width="25%"><unireg:cantonalId cantonalId="${annonce.informationOrganisation.numeroSite}"/></td>
+					<td width="25%"><unireg:cantonalId cantonalId="${annonce.informationOrganisation.numeroEtablissement}"/></td>
 				</tr>
-				<c:if test="${annonce.typeDeSite != 'ETABLISSEMENT_PRINCIPAL'}">
+				<c:if test="${annonce.typeEtablissementCivil != 'ETABLISSEMENT_PRINCIPAL'}">
 					<tr class="<unireg:nextRowClass/>">
 						<td width="25%">N° IDE de l'établissement principal&nbsp;:</td>
 						<td width="25%"><unireg:numIDE numeroIDE="${annonce.noIdeEtablissementPrincipal}"/></td>

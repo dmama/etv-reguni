@@ -48,8 +48,8 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.tache.TacheService;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.DomicileEtablissement;
@@ -106,19 +106,19 @@ public class MetierServicePMTest extends BusinessTest {
 		final RegDate dateCreation = date(2001, 5, 4);
 		final RegDate dateRattachement = date(2010, 6, 26);
 		final String nom = "Synergy SA";
-		final String nomSite = "Synergy Etablissement SA";
-		final String nomSite2 = "Synergy Etablissement Aubonne SA";
+		final String nomEtablissement = "Synergy Etablissement SA";
+		final String nomEtablissement2 = "Synergy Etablissement Aubonne SA";
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-		final Long noSite2 = noSite + 1;
+		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEtablissement2 = noEtablissement + 1;
 
 		// mise en place du service mock Organisation
-		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
 		                                                                                 date(2001, 5, 1),
 		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2003, 10, 5), null, nomSite2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, organisation, date(2003, 10, 5), null, nomEtablissement2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                               MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -133,7 +133,7 @@ public class MetierServicePMTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nomSite);
+				etablissement.setRaisonSociale(nomEtablissement);
 				addDomicileEtablissement(etablissement, dateCreation, null, MockCommune.Lausanne);
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
@@ -174,7 +174,7 @@ public class MetierServicePMTest extends BusinessTest {
 
 				final List<DateRanged<Etablissement>> etablissementsPrincipaux = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 				final Etablissement etablissement = CollectionsUtils.getLastElement(etablissementsPrincipaux).getPayload();
-				Assert.assertEquals(noSite, etablissement.getNumeroEtablissement());
+				Assert.assertEquals(noEtablissement, etablissement.getNumeroEtablissement());
 				final DomicileEtablissement domicile = CollectionsUtils.getLastElement(etablissement.getSortedDomiciles(false));
 				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale().intValue());
 				Assert.assertEquals(dateRattachement.getOneDayBefore(), domicile.getDateFin());
@@ -182,10 +182,10 @@ public class MetierServicePMTest extends BusinessTest {
 				// Vérification du résultat
 				Assert.assertEquals(noOrganisation.longValue(), result.getEntrepriseRattachee().getNumeroEntreprise().longValue());
 				Assert.assertEquals(1, result.getEtablissementsRattaches().size());
-				Assert.assertEquals(noSite.longValue(), result.getEtablissementsRattaches().get(0).getNumeroEtablissement().longValue());
+				Assert.assertEquals(noEtablissement.longValue(), result.getEtablissementsRattaches().get(0).getNumeroEtablissement().longValue());
 				Assert.assertTrue(result.getEtablissementsNonRattaches().isEmpty());
-				Assert.assertEquals(1, result.getSitesNonRattaches().size());
-				Assert.assertEquals(noSite2.longValue(), result.getSitesNonRattaches().get(0).getNumeroSite());
+				Assert.assertEquals(1, result.getEtablissementsCivilsNonRattaches().size());
+				Assert.assertEquals(noEtablissement2.longValue(), result.getEtablissementsCivilsNonRattaches().get(0).getNumeroEtablissement());
 			}
 		});
 	}
@@ -196,20 +196,20 @@ public class MetierServicePMTest extends BusinessTest {
 		final RegDate dateCreation = date(2001, 5, 4);
 		final RegDate dateRattachement = date(2010, 6, 26);
 		final String nom = "Synergy SA";
-		final String nomSite = "Synergy Etablissement SA";
-		final String nomSite2 = "Synergy Etablissement Aubonne SA";
-		final String nomSite3 = "Synergy Etablissement Cossonay SA";
+		final String nomEtablissement = "Synergy Etablissement SA";
+		final String nomEtablissement2 = "Synergy Etablissement Aubonne SA";
+		final String nomEtablissement3 = "Synergy Etablissement Cossonay SA";
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-		final Long noSite2 = noSite + 1;
+		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEtablissement2 = noEtablissement + 1;
 
 		// mise en place du service mock Organisation
-		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
 		                                                                                 date(2001, 5, 1),
 		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2003, 10, 5), null, nomSite2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, organisation, date(2003, 10, 5), null, nomEtablissement2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                               MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -228,11 +228,11 @@ public class MetierServicePMTest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nomSite);
+				etablissement.setRaisonSociale(nomEtablissement);
 				addDomicileEtablissement(etablissement, dateCreation, null, MockCommune.Lausanne);
 
 				final Etablissement etablissement3 = addEtablissement();
-				etablissement3.setRaisonSociale(nomSite3);
+				etablissement3.setRaisonSociale(nomEtablissement3);
 				addDomicileEtablissement(etablissement3, dateCreation, null, MockCommune.Cossonay);
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
@@ -278,7 +278,7 @@ public class MetierServicePMTest extends BusinessTest {
 
 				final List<DateRanged<Etablissement>> etablissementsPrincipaux = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 				final Etablissement etablissement = CollectionsUtils.getLastElement(etablissementsPrincipaux).getPayload();
-				Assert.assertEquals(noSite, etablissement.getNumeroEtablissement());
+				Assert.assertEquals(noEtablissement, etablissement.getNumeroEtablissement());
 				final DomicileEtablissement domicile = CollectionsUtils.getLastElement(etablissement.getSortedDomiciles(false));
 				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale().intValue());
 				Assert.assertEquals(dateRattachement.getOneDayBefore(), domicile.getDateFin());
@@ -286,10 +286,10 @@ public class MetierServicePMTest extends BusinessTest {
 				// Vérification du résultat
 				Assert.assertEquals(noOrganisation.longValue(), result.getEntrepriseRattachee().getNumeroEntreprise().longValue());
 				Assert.assertEquals(1, result.getEtablissementsRattaches().size());
-				Assert.assertEquals(noSite.longValue(), result.getEtablissementsRattaches().get(0).getNumeroEtablissement().longValue());
+				Assert.assertEquals(noEtablissement.longValue(), result.getEtablissementsRattaches().get(0).getNumeroEtablissement().longValue());
 				Assert.assertEquals(ids.etablissement3Id, result.getEtablissementsNonRattaches().get(0).getNumero().longValue());
-				Assert.assertEquals(1, result.getSitesNonRattaches().size());
-				Assert.assertEquals(noSite2.longValue(), result.getSitesNonRattaches().get(0).getNumeroSite());
+				Assert.assertEquals(1, result.getEtablissementsCivilsNonRattaches().size());
+				Assert.assertEquals(noEtablissement2.longValue(), result.getEtablissementsCivilsNonRattaches().get(0).getNumeroEtablissement());
 			}
 		});
 	}
@@ -300,19 +300,19 @@ public class MetierServicePMTest extends BusinessTest {
 		final RegDate dateCreation = date(2001, 5, 4);
 		final RegDate dateRattachement = date(2010, 6, 26);
 		final String nom = "Synergy SA";
-		final String nomSite = "Synergy Etablissement SA";
-		final String nomSite2 = "Synergy Etablissement Aubonne SA";
+		final String nomEtablissement = "Synergy Etablissement SA";
+		final String nomEtablissement2 = "Synergy Etablissement Aubonne SA";
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-		final Long noSite2 = noSite + 1;
+		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEtablissement2 = noEtablissement + 1;
 
 		// mise en place du service mock Organisation
-		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
 		                                                                                 date(2001, 5, 1),
 		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2003, 10, 5), null, nomSite2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		MockEtablissementCivilFactory.addEtablissement(noEtablissement2, organisation, date(2003, 10, 5), null, nomEtablissement2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                               MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -326,12 +326,12 @@ public class MetierServicePMTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setRaisonSociale(nomSite);
+				etablissement.setRaisonSociale(nomEtablissement);
 				addDomicileEtablissement(etablissement, dateCreation, null, MockCommune.Lausanne);
 
 				final Etablissement etablissement2 = addEtablissement();
-				etablissement2.setRaisonSociale(nomSite2);
-				etablissement2.setNumeroEtablissement(noSite2);
+				etablissement2.setRaisonSociale(nomEtablissement2);
+				etablissement2.setNumeroEtablissement(noEtablissement2);
 				addDomicileEtablissement(etablissement2, dateCreation, null, MockCommune.Aubonne);
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
@@ -374,7 +374,7 @@ public class MetierServicePMTest extends BusinessTest {
 
 				final List<DateRanged<Etablissement>> etablissementsPrincipaux = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 				final Etablissement etablissement = CollectionsUtils.getLastElement(etablissementsPrincipaux).getPayload();
-				Assert.assertEquals(noSite, etablissement.getNumeroEtablissement());
+				Assert.assertEquals(noEtablissement, etablissement.getNumeroEtablissement());
 				final DomicileEtablissement domicile = CollectionsUtils.getLastElement(etablissement.getSortedDomiciles(false));
 				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale().intValue());
 				Assert.assertEquals(dateRattachement.getOneDayBefore(), domicile.getDateFin());
@@ -382,10 +382,10 @@ public class MetierServicePMTest extends BusinessTest {
 				// Vérification du résultat
 				Assert.assertEquals(noOrganisation.longValue(), result.getEntrepriseRattachee().getNumeroEntreprise().longValue());
 				Assert.assertEquals(2, result.getEtablissementsRattaches().size());
-				Assert.assertEquals(noSite.longValue(), result.getEtablissementsRattaches().get(0).getNumeroEtablissement().longValue());
-				Assert.assertEquals(noSite2.longValue(), result.getEtablissementsRattaches().get(1).getNumeroEtablissement().longValue());
+				Assert.assertEquals(noEtablissement.longValue(), result.getEtablissementsRattaches().get(0).getNumeroEtablissement().longValue());
+				Assert.assertEquals(noEtablissement2.longValue(), result.getEtablissementsRattaches().get(1).getNumeroEtablissement().longValue());
 				Assert.assertTrue(result.getEtablissementsNonRattaches().isEmpty());
-				Assert.assertTrue(result.getSitesNonRattaches().isEmpty());
+				Assert.assertTrue(result.getEtablissementsCivilsNonRattaches().isEmpty());
 			}
 		});
 	}
@@ -1284,10 +1284,10 @@ public class MetierServicePMTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateCreation, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
-				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Grandson.getNoOFS(), StatusInscriptionRC.NON_INSCRIT, null,
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, org, dateCreation, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
+				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                               MockCommune.Grandson.getNoOFS(), StatusInscriptionRC.NON_INSCRIT, null,
+				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 			}
 		});
 
@@ -1416,10 +1416,10 @@ public class MetierServicePMTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateCreation, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
-				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Grandson.getNoOFS(), StatusInscriptionRC.NON_INSCRIT, null,
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, org, dateCreation, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
+				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                               MockCommune.Grandson.getNoOFS(), StatusInscriptionRC.NON_INSCRIT, null,
+				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 			}
 		});
 

@@ -14,9 +14,9 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 
 public interface ServiceOrganisationService {
 
@@ -45,19 +45,19 @@ public interface ServiceOrganisationService {
 
 	/**
 	 * @param noide numéro IDE (sous la forme sans point ni tiret)
-	 * @return les identifiants de l'organisation et de son site qui correspondent à ce numéro IDE
+	 * @return les identifiants de l'organisation et de son établissement civil qui correspondent à ce numéro IDE
 	 * @throws ServiceOrganisationException en cas de souci quelque part
 	 */
 	ServiceOrganisationRaw.Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException;
 
 	/**
-	 * Obtenir un numéro d'organisation à partir d'un numéro de site.
+	 * Obtenir un numéro d'organisation à partir d'un numéro d'établissement civil.
 	 *
-	 * @param noSite Identifiant cantonal du site.
-	 * @return L'identifiant cantonal de l'organisation détenant le site.
+	 * @param noEtablissement Identifiant cantonal de l'établissement civil.
+	 * @return L'identifiant cantonal de l'organisation détenant l'établissement civil.
 	 * @throws ServiceOrganisationException
 	 */
-	Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException;
+	Long getNoOrganisationFromNoEtablissement(Long noEtablissement) throws ServiceOrganisationException;
 
 	/**
 	 * @param noOrganisation l'identifiant cantonal d'une organisation
@@ -67,12 +67,12 @@ public interface ServiceOrganisationService {
 	AdressesCivilesHisto getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException;
 
 	/**
-	 * @param noSite l'identifiant cantonal d'un site
-	 * @return l'historique des adresses de ce site; ou <b>null</b> si le site n'existe pas.
+	 * @param noEtablissement l'identifiant cantonal d'un établissement civil
+	 * @return l'historique des adresses de cet établissement civil; ou <b>null</b> si l'établissement civil n'existe pas.
 	 * @throws ServiceOrganisationException en cas de souci
 	 */
 	@Nullable
-	AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException;
+	AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissement) throws ServiceOrganisationException;
 
 	/**
 	 * Obtenir le contenu et le statut d'une annonce à l'IDE. findAnnoncesIDE() est utilisé en arrière plan avec le paramètre userId=<userId>.
@@ -112,5 +112,5 @@ public interface ServiceOrganisationService {
 	@NotNull
 	String createOrganisationDescription(Organisation organisation, RegDate date);
 
-	String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date);
+	String afficheAttributsEtablissement(@Nullable EtablissementCivil etablissement, @Nullable RegDate date);
 }

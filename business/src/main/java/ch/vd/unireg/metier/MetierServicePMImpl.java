@@ -20,11 +20,6 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.common.CasePostale;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseException;
@@ -42,6 +37,11 @@ import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.common.RueEtNumero;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tache.TacheService;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.CapitalFiscalEntreprise;
@@ -177,8 +177,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 	@Override
 	public RattachementOrganisationResult rattacheOrganisationEntreprise(Organisation organisation, Entreprise entreprise, RegDate date) throws MetierServiceException {
 
-		if (organisation.getSitePrincipal(date) == null) {
-			throw new MetierServiceException(String.format("L'organisation %d n'a pas de sitePrincipal principal à la date demandée %s.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
+		if (organisation.getEtablissementPrincipal(date) == null) {
+			throw new MetierServiceException(String.format("L'organisation %d n'a pas de établissement principal à la date demandée %s.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
 		}
 
 		if (entreprise.getNumeroEntreprise() != null && entreprise.getNumeroEntreprise() != organisation.getNumeroOrganisation()) {
@@ -207,7 +207,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		RattachementOrganisationResult result = new RattachementOrganisationResult(entreprise);
 
 		// Rapprochement de l'établissement principal
-		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(date).getPayload();
+		EtablissementCivil etablissementCivilPrincipal = organisation.getEtablissementPrincipal(date).getPayload();
 		final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 		if (etablissementsPrincipauxEntreprise.isEmpty() || DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, date) == null) {
 			throw new MetierServiceException(String.format("L'entreprise %s ne possède pas d'établissement principal!", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
@@ -225,24 +225,24 @@ public class MetierServicePMImpl implements MetierServicePM {
 		}
 		final DomicileEtablissement domicile = RangeUtil.getAssertLast(sortedDomiciles, date);
 
-		etablissementPrincipal.setNumeroEtablissement(sitePrincipal.getNumeroSite());
+		etablissementPrincipal.setNumeroEtablissement(etablissementCivilPrincipal.getNumeroEtablissement());
 		etablissementPrincipal.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
 		tiersService.closeDomicileEtablissement(domicile, date.getOneDayBefore());
 		result.addEtablissementRattache(etablissementPrincipal);
 
 		// Eliminer les établissements secondaires déjà rattachés des listes.
-		Map<Long, SiteOrganisation> sitestoMatch = new HashMap<>();
+		Map<Long, EtablissementCivil> etablissementsToMatch = new HashMap<>();
 		final List<Etablissement> etablissementsNonEncoreRattaches = new ArrayList<>();
 
-		for (SiteOrganisation siteSecondaire : organisation.getSitesSecondaires(date)) {
-			sitestoMatch.put(siteSecondaire.getNumeroSite(), siteSecondaire);
+		for (EtablissementCivil etablissementsCivilsSecondaire : organisation.getEtablissementsSecondaires(date)) {
+			etablissementsToMatch.put(etablissementsCivilsSecondaire.getNumeroEtablissement(), etablissementsCivilsSecondaire);
 		}
 
 		for (Etablissement etablissementSecondaire : tiersService.getEtablissementsSecondairesEntrepriseSansRange(entreprise)) {
 			if (etablissementSecondaire.isConnuAuCivil()) {
 				final Long numeroEtablissement = etablissementSecondaire.getNumeroEtablissement();
-				if (sitestoMatch.get(numeroEtablissement) != null && sitestoMatch.remove(numeroEtablissement) != null) {
+				if (etablissementsToMatch.get(numeroEtablissement) != null && etablissementsToMatch.remove(numeroEtablissement) != null) {
 					result.addEtablissementRattache(etablissementSecondaire);
 				}
 				else {
@@ -256,8 +256,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		/* Rapprochement des établissements secondaires à proprement parler */
 
-		/* Pour les établissements et les sites, on construit des paires domicile-statut */
-		Map<DomicileStatutKey, List<SiteOrganisation>> keyedSites = buildKeyedSites(date, sitestoMatch);
+		/* Pour les établissements et les établissements civils, on construit des paires domicile-statut */
+		Map<DomicileStatutKey, List<EtablissementCivil>> keyedEtablissementsCivils = buildKeyedEtablissementsCivils(date, etablissementsToMatch);
 		Map<DomicileStatutKey, List<Etablissement>> keyedEtablissements = buildKeyedEtablissements(date, etablissementsNonEncoreRattaches);
 
 		/* TODO: Corréler agressivement par no IDE si disponible? */
@@ -270,33 +270,33 @@ public class MetierServicePMImpl implements MetierServicePM {
 				continue;
 			}
 			// Entrée nulle ou non unique
-			List<SiteOrganisation> sitesForKey = keyedSites.get(etabEntry.getKey());
-			if (sitesForKey == null || sitesForKey.size() != 1) {
+			List<EtablissementCivil> etablissementsCivilsForKey = keyedEtablissementsCivils.get(etabEntry.getKey());
+			if (etablissementsCivilsForKey == null || etablissementsCivilsForKey.size() != 1) {
 				continue;
 			}
 
 			// On peut entrer en matière
 			Etablissement etablissementForKey = etabEntry.getValue().get(0);
-			SiteOrganisation siteForKey = sitesForKey.get(0);
+			EtablissementCivil etablissementCivilForKey = etablissementsCivilsForKey.get(0);
 
-			// Si on a un numéro IDE dans l'établissement et qu'il ne correspond pas à notre site candidat, c'est qu'il y a un soucis.
+			// Si on a un numéro IDE dans l'établissement et qu'il ne correspond pas à notre établissement civil candidat, c'est qu'il y a un soucis.
 			final Set<IdentificationEntreprise> identificationsEntreprise = etablissementForKey.getIdentificationsEntreprise();
 			if (identificationsEntreprise != null && !identificationsEntreprise.isEmpty()) {
 				String noIdeEtablissement = identificationsEntreprise.iterator().next().getNumeroIde();
-				final DateRanged<String> noIdeSiteRange = RangeUtil.getAssertLast(siteForKey.getNumeroIDE(), date);
-				if (noIdeEtablissement != null && noIdeSiteRange != null && !noIdeEtablissement.equals(noIdeSiteRange.getPayload())) {
+				final DateRanged<String> noIdeEtablissementsRange = RangeUtil.getAssertLast(etablissementCivilForKey.getNumeroIDE(), date);
+				if (noIdeEtablissement != null && noIdeEtablissementsRange != null && !noIdeEtablissement.equals(noIdeEtablissementsRange.getPayload())) {
 					continue;
 				}
 			}
 
-			// On a suffisament de certitudes pour rattacher l'établissement au site
-			etablissementForKey.setNumeroEtablissement(siteForKey.getNumeroSite());
+			// On a suffisament de certitudes pour rattacher l'établissement à l'établissement civil
+			etablissementForKey.setNumeroEtablissement(etablissementCivilForKey.getNumeroEtablissement());
 			etablissementForKey.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
 			// Il faut ventiler les participant dans les bonnes listes
 			etablissementsNonEncoreRattaches.remove(etablissementForKey);
 			result.addEtablissementRattache(etablissementForKey);
-			sitestoMatch.remove(siteForKey.getNumeroSite());
+			etablissementsToMatch.remove(etablissementCivilForKey.getNumeroEtablissement());
 
 			// Comme pour l'entreprise, il faut terminer les données civiles Unireg
 
@@ -313,8 +313,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 			result.addEtablissementNonRattache(etabNonRattache);
 		}
 
-		for (Map.Entry<Long, SiteOrganisation> entry : sitestoMatch.entrySet()) {
-			result.addSiteNonRattache(entry.getValue());
+		for (Map.Entry<Long, EtablissementCivil> entry : etablissementsToMatch.entrySet()) {
+			result.addEtablissementCivilNonRattache(entry.getValue());
 		}
 
 		return result;
@@ -333,23 +333,23 @@ public class MetierServicePMImpl implements MetierServicePM {
 		return map;
 	}
 
-	private Map<DomicileStatutKey, List<SiteOrganisation>> buildKeyedSites(RegDate date, Map<Long, SiteOrganisation> sites) {
-		final Map<DomicileStatutKey, List<SiteOrganisation>> map = new HashMap<>();
-		for (SiteOrganisation site : sites.values()) {
-			final DomicileStatutKey key = createSiteKey(date, site);
+	private Map<DomicileStatutKey, List<EtablissementCivil>> buildKeyedEtablissementsCivils(RegDate date, Map<Long, EtablissementCivil> etablissements) {
+		final Map<DomicileStatutKey, List<EtablissementCivil>> map = new HashMap<>();
+		for (EtablissementCivil etablissement : etablissements.values()) {
+			final DomicileStatutKey key = createEtablissementCivilKey(date, etablissement);
 			if (key == null) {
 				continue;
 			}
 			map.computeIfAbsent(key, k -> new ArrayList<>());
-			map.get(key).add(site);
+			map.get(key).add(etablissement);
 		}
 		return map;
 	}
 
 	@Nullable
-	private DomicileStatutKey createSiteKey(RegDate date, SiteOrganisation site) {
-		final Domicile domicile = site.getDomicile(date);
-		return domicile == null ? null : new DomicileStatutKey(domicile.getNumeroOfsAutoriteFiscale(), domicile.getTypeAutoriteFiscale(), site.isActif(date));
+	private DomicileStatutKey createEtablissementCivilKey(RegDate date, EtablissementCivil etablissement) {
+		final Domicile domicile = etablissement.getDomicile(date);
+		return domicile == null ? null : new DomicileStatutKey(domicile.getNumeroOfsAutoriteFiscale(), domicile.getTypeAutoriteFiscale(), etablissement.isActif(date));
 	}
 
 	private DomicileStatutKey createEtablissementKey(RegDate date, Etablissement etablissement) throws MetierServiceException {

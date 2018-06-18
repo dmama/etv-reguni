@@ -37,7 +37,7 @@ public interface BaseAnnonceIDE {
 	/**
 	 * @return le type d'établissement (principal ou secondaire) visé par l'annonce
 	 */
-	TypeDeSite getTypeDeSite();
+	TypeEtablissementCivil getTypeEtablissementCivil();
 
 	/**
 	 * Dans le contexte d'une annonce de création, ce champs représente le numéro IDE provisoire attribué par l'IDE lors de la quittance de l'annonce. Dans les autres contexte,
@@ -153,7 +153,7 @@ public interface BaseAnnonceIDE {
 		/**
 		 * @return le numéro cantonal de l'établissement concerné par l'annonce (nul en cas de création)
 		 */
-		Long getNumeroSite();
+		Long getNumeroEtablissement();
 
 		/**
 		 * @return le numéro cantonal de l'organisation faîtière de l'établissement
@@ -168,7 +168,7 @@ public interface BaseAnnonceIDE {
 		 * @return le numéro de l'établissement qui supplante l'établissement visé par l'annonce de radiation
 		 */
 		@Nullable
-		Long getNumeroSiteRemplacant();
+		Long getNumeroEtablissementRemplacant();
 	}
 
 	interface Contenu {

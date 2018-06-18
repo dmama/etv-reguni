@@ -119,10 +119,10 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 	@Test
 	public void testGetCategoryOrganisationEntreprisePasDeRegime() throws Exception {
 		Long noOrganisation = 1000L;
-		Long noSite = 1001L;
+		Long noEtablissement = 1001L;
 
 		final MockOrganisation organisation =
-				MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 				                                           StatusRegistreIDE.DEFINITIF,
 				                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
@@ -138,7 +138,7 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		final Long noEntreprise = doInNewTransactionAndSession(transactionStatus -> {
 			Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 			Etablissement etablissement = addEtablissement();
-			etablissement.setNumeroEtablissement(noSite);
+			etablissement.setNumeroEtablissement(noEtablissement);
 
 			addActiviteEconomique(entreprise, etablissement, date(2015, 6, 24), null, true);
 
@@ -163,10 +163,10 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 	@Test
 	public void testGetCategoryOrganisationEntrepriseAvecSurchargeEtRegime() throws Exception {
 		Long noOrganisation = 1000L;
-		Long noSite = 1001L;
+		Long noEtablissement = 1001L;
 
 		final MockOrganisation organisation =
-				MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 				                                           StatusRegistreIDE.DEFINITIF,
 				                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
@@ -182,7 +182,7 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		Long noEntreprise = doInNewTransactionAndSession(transactionStatus -> {
 			Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 			Etablissement etablissement = addEtablissement();
-			etablissement.setNumeroEtablissement(noSite);
+			etablissement.setNumeroEtablissement(noEtablissement);
 
 			addActiviteEconomique(entreprise, etablissement, date(2015, 6, 24), null, true);
 
@@ -212,10 +212,10 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 	@Test
 	public void testGetCategoryOrganisationEntrepriseRegimesFors() throws Exception {
 		Long noOrganisation = 1000L;
-		Long noSite = 1001L;
+		Long noEtablissement = 1001L;
 
 		final MockOrganisation organisation =
-				MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 				                                           StatusRegistreIDE.DEFINITIF,
 				                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
@@ -231,7 +231,7 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		Long noEntreprise = doInNewTransactionAndSession(transactionStatus -> {
 			Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 			Etablissement etablissement = addEtablissement();
-			etablissement.setNumeroEtablissement(noSite);
+			etablissement.setNumeroEtablissement(noEtablissement);
 
 			addActiviteEconomique(entreprise, etablissement, date(2015, 6, 24), null, true);
 

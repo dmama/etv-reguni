@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationRCEnt;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationLocation;
 
 public class RCEntOrganisationHelper {
@@ -20,11 +20,11 @@ public class RCEntOrganisationHelper {
 		);
 	}
 
-	private static Map<Long, SiteOrganisation> convertLocations(List<OrganisationLocation> locations, ServiceInfrastructureRaw infraService) {
-		final Map<Long, SiteOrganisation> sites = new HashMap<>();
+	private static Map<Long, EtablissementCivil> convertLocations(List<OrganisationLocation> locations, ServiceInfrastructureRaw infraService) {
+		final Map<Long, EtablissementCivil> etablissements = new HashMap<>();
 		for (OrganisationLocation loc : locations) {
-			sites.put(loc.getCantonalId(), RCEntSiteOrganisationHelper.get(loc, infraService));
+			etablissements.put(loc.getCantonalId(), RCEntEtablissementHelper.get(loc, infraService));
 		}
-		return sites;
+		return etablissements;
 	}
 }

@@ -34,7 +34,7 @@ import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.FormeLegaleConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.LegalFormConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.NoticeRequestAddressConverter;
@@ -42,7 +42,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.NoticeRequestStatus
 import ch.vd.unireg.interfaces.organisation.rcent.converters.RaisonDeRadiationRegistreIDEConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.StatutAnnonceConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeAnnonceConverter;
-import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeDeSiteConverter;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeEtablissementCivilConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfLocationConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfNoticeRequestConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterDeregistrationReasonConverter;
@@ -81,7 +81,7 @@ public class RCEntAnnonceIDEHelper {
 
 	public static final StatutAnnonceConverter STATUS_ANNONCE_CONVERTER = new StatutAnnonceConverter();
 	public static final TypeAnnonceConverter TYPE_ANNONCE_CONVERTER = new TypeAnnonceConverter();
-	public static final TypeDeSiteConverter TYPE_DE_SITE_CONVERTER = new TypeDeSiteConverter();
+	public static final TypeEtablissementCivilConverter TYPE_DE_SITE_CONVERTER = new TypeEtablissementCivilConverter();
 	public static final RaisonDeRadiationRegistreIDEConverter RAISON_DE_RADIATION_REGISTRE_IDE_CONVERTER = new RaisonDeRadiationRegistreIDEConverter();
 	public static final FormeLegaleConverter FORME_LEGALE_CONVERTER = new FormeLegaleConverter();
 
@@ -111,7 +111,7 @@ public class RCEntAnnonceIDEHelper {
 		final Long numero = (noticeRequestId == null  || noticeRequestId.startsWith(DUMMY_TEMPLATE_ID)) ? null : Long.valueOf(noticeRequestId);
 		final TypeAnnonce typeAnnonce = TYPE_OF_NOTICE_CONVERTER.apply(noticeIdent.getTypeOfNoticeRequest());
 		final Date dateAnnonce = noticeIdent.getNoticeRequestDateTime();
-		final TypeDeSite typeDeSite = TYPE_OF_LOCATION_CONVERTER.apply(noticeBody.getTypeOfLocation());
+		final TypeEtablissementCivil typeEtablissementCivil = TYPE_OF_LOCATION_CONVERTER.apply(noticeBody.getTypeOfLocation());
 
 		final RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE = UID_REGISTER_DEREGISTRATION_REASON_CONVERTER.apply(noticeBody.getDeregistrationReason());
 		final String commentaire = noticeHeader.getComment();
@@ -126,11 +126,11 @@ public class RCEntAnnonceIDEHelper {
 
 		// RCEnt meta data
 		final BigInteger cantonalId = noticeBody.getCantonalId();
-		final Long numeroSite = cantonalId == null ? null : cantonalId.longValue();
+		final Long numeroEtablissement = cantonalId == null ? null : cantonalId.longValue();
 		final BigInteger headquarterCantonalId = noticeBody.getHeadquarterCantonalId();
 		final Long numeroOrganisation = headquarterCantonalId == null ? null : headquarterCantonalId.longValue();
 		final BigInteger uidReplacedByCantonalId = noticeBody.getUIDReplacedByCantonalId();
-		final Long numeroSiteRemplacant = uidReplacedByCantonalId == null ? null : uidReplacedByCantonalId.longValue();
+		final Long numeroEtablissementRemplacant = uidReplacedByCantonalId == null ? null : uidReplacedByCantonalId.longValue();
 
 		// Contenu
 		final String nom = noticeBody.getName();
@@ -167,13 +167,13 @@ public class RCEntAnnonceIDEHelper {
 		                                                                       convertErrors(noticeReport));
 
 		if (numero == null) {
-			return createProtoAnnonceIDE(typeAnnonce, dateAnnonce, userId, telephone, typeDeSite, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
-			                             noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse,
+			return createProtoAnnonceIDE(typeAnnonce, dateAnnonce, userId, telephone, typeEtablissementCivil, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
+			                             noIdeEtablissementPrincipal, numeroEtablissement, numeroOrganisation, numeroEtablissementRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse,
 			                             statut, application);
 		}
 		else {
-			return createAnnonceIDE(numero, typeAnnonce, dateAnnonce, userId, telephone, typeDeSite, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
-			                        noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse,
+			return createAnnonceIDE(numero, typeAnnonce, dateAnnonce, userId, telephone, typeEtablissementCivil, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
+			                        noIdeEtablissementPrincipal, numeroEtablissement, numeroOrganisation, numeroEtablissementRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse,
 			                        statut, application);
 		}
 	}
@@ -217,8 +217,8 @@ public class RCEntAnnonceIDEHelper {
 		header.setUserPhoneNumber(utilisateur == null ? null :utilisateur.getTelephone());
 		header.setComment(proto.getCommentaire());
 
-		final TypeDeSite typeDeSite = proto.getTypeDeSite();
-		body.setTypeOfLocation(typeDeSite == null ? null :TYPE_DE_SITE_CONVERTER.convert(typeDeSite));
+		final TypeEtablissementCivil typeEtablissementCivil = proto.getTypeEtablissementCivil();
+		body.setTypeOfLocation(typeEtablissementCivil == null ? null :TYPE_DE_SITE_CONVERTER.convert(typeEtablissementCivil));
 
 		final NumeroIDE noIde = proto.getNoIde();
 		body.setUid(noIde == null ? null : new UidStructure(UidOrganisationIdCategorie.CHE, noIde.getValeurBrute()));
@@ -230,10 +230,10 @@ public class RCEntAnnonceIDEHelper {
 
 		final AnnonceIDEEnvoyee.InformationOrganisation informationOrganisation = proto.getInformationOrganisation();
 		if (informationOrganisation != null) {
-			final Long numeroSite = informationOrganisation.getNumeroSite();
-			body.setCantonalId(numeroSite == null ? null : BigInteger.valueOf(numeroSite));
-			final Long numeroSiteRemplacant = informationOrganisation.getNumeroSiteRemplacant();
-			body.setUIDReplacedByCantonalId(numeroSiteRemplacant == null ? null : BigInteger.valueOf(numeroSiteRemplacant));
+			final Long numeroEtablissement = informationOrganisation.getNumeroEtablissement();
+			body.setCantonalId(numeroEtablissement == null ? null : BigInteger.valueOf(numeroEtablissement));
+			final Long numeroEtablisssementRemplacant = informationOrganisation.getNumeroEtablissementRemplacant();
+			body.setUIDReplacedByCantonalId(numeroEtablisssementRemplacant == null ? null : BigInteger.valueOf(numeroEtablisssementRemplacant));
 			final Long numeroOrganisation = informationOrganisation.getNumeroOrganisation();
 			body.setHeadquarterCantonalId(numeroOrganisation == null ? null : BigInteger.valueOf(numeroOrganisation));
 		}
@@ -265,9 +265,9 @@ public class RCEntAnnonceIDEHelper {
 	}
 
 	@NotNull
-	public static AnnonceIDE createAnnonceIDE(Long numero, TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeDeSite typeDeSite,
+	public static AnnonceIDE createAnnonceIDE(Long numero, TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeEtablissementCivil typeEtablissementCivil,
 	                                          RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
+	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroOrganisation, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
 	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
 		if (numero == null) {
 			throw new IllegalArgumentException("Une annonce à l'IDE ne peut pas avoir un numéro vide.");
@@ -280,19 +280,19 @@ public class RCEntAnnonceIDEHelper {
 		                                             typeAnnonce,
 		                                             dateAnnonce,
 		                                             utilisateur,
-		                                             typeDeSite,
+		                                             typeEtablissementCivil,
 		                                             statut,
 		                                             application
 		);
-		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel,
+		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroEtablissementCivil, numeroOrganisation, numeroEtablissementCivilRemplacant, nom, nomAdditionnel,
 		                      formeLegale, secteurActivite, adresse, annonceIDE);
 		return annonceIDE;
 	}
 
 	@NotNull
-	public static ProtoAnnonceIDE createProtoAnnonceIDE(TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeDeSite typeDeSite,
+	public static ProtoAnnonceIDE createProtoAnnonceIDE(TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeEtablissementCivil typeEtablissementCivil,
 	                                                    RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                                    NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
+	                                                    NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroOrganisation, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
 	                                                    FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
 
 		// SIFISC-23702 Dans les annonces renvoyées par le WS noticeRequestList de RCEnt, le userId peut être nul lorsque l'annonce n'est pas encore traitée à proprement parler par RCEnt.
@@ -301,17 +301,17 @@ public class RCEntAnnonceIDEHelper {
 		final ProtoAnnonceIDE protoAnnonceIDE = new ProtoAnnonceIDE(typeAnnonce,
 		                                                            dateAnnonce,
 		                                                            utilisateur,
-		                                                            typeDeSite,
+		                                                            typeEtablissementCivil,
 		                                                            statut,
 		                                                            application
 		);
-		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel,
+		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroEtablissementCivil, numeroOrganisation, numeroEtablissementCivilRemplacant, nom, nomAdditionnel,
 		                      formeLegale, secteurActivite, adresse, protoAnnonceIDE);
 		return protoAnnonceIDE;
 	}
 
 	private static void fillDetailsAnnonceIDE(RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
+	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroOrganisation, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
 	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData annonceIDEModeleRCEnt) {
 		annonceIDEModeleRCEnt.setRaisonDeRadiation(raisonDeRadiationRegistreIDE);
 		annonceIDEModeleRCEnt.setCommentaire(commentaire);
@@ -323,9 +323,9 @@ public class RCEntAnnonceIDEHelper {
 
 		// RCEnt meta data
 		final AnnonceIDEData.InformationOrganisationImpl informationOrganisationImpl = new AnnonceIDEData.InformationOrganisationImpl(
-				numeroSite,
+				numeroEtablissementCivil,
 				numeroOrganisation,
-				numeroSiteRemplacant
+				numeroEtablissementCivilRemplacant
 		);
 		annonceIDEModeleRCEnt.setInformationOrganisation(informationOrganisationImpl);
 

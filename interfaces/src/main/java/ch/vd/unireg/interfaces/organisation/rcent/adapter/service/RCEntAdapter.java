@@ -177,7 +177,7 @@ public class RCEntAdapter {
 			// autant qu'il en faut pour chaque organisation, l'établissement cible peut ne pas être représenté dans l'événement en cours d'analyse, car
 			// faisant partie d'une autre organisation.
 
-			// Trouver les entrées de journal de l'événement pour le jour, avant et après. Cela implique de trouver le site cible de l'événement.
+			// Trouver les entrées de journal de l'événement pour le jour, avant et après. Cela implique de trouver l'établissement civil cible de l'événement.
 			final ch.vd.evd0022.v3.OrganisationLocation locationBefore = getTargetLocation(before, targetLocationId);
 			final List<CommercialRegisterDiaryEntry> diaryEntriesBefore = getEntriesForTheDay(locationBefore, evtDate);
 

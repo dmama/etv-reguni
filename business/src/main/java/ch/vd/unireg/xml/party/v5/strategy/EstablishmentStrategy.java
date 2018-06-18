@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;
@@ -40,8 +40,8 @@ public class EstablishmentStrategy extends TaxPayerStrategy<Establishment> {
 
 		final Etablissement etb = (Etablissement) from;
 		if (etb.isConnuAuCivil()) {
-			final SiteOrganisation site = context.tiersService.getSiteOrganisationPourEtablissement(etb);
-			to.setName(site.getNom(null));
+			final EtablissementCivil etablissement = context.tiersService.getEtablissementCivil(etb);
+			to.setName(etablissement.getNom(null));
 		}
 		else {
 			to.setName(etb.getRaisonSociale());

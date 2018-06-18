@@ -45,13 +45,13 @@ public class REEIgnoreTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Société de Jeunesse de Ballens", date(2016, 5, 20), null, FormeLegale.N_0109_ASSOCIATION,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Société de Jeunesse de Ballens", date(2016, 5, 20), null, FormeLegale.N_0109_ASSOCIATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 						                                           null, null, null, null, null);
 
@@ -98,13 +98,13 @@ public class REEIgnoreTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Metafun SA", date(2016, 5, 20), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Metafun SA", date(2016, 5, 20), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2016, 5, 15),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
 						                                           null, null, null);
@@ -153,13 +153,13 @@ public class REEIgnoreTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Société de Jeunesse de Ballens", date(2016, 5, 20), null, null,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Société de Jeunesse de Ballens", date(2016, 5, 20), null, null,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 						                                           null, null, null, null, null);
 

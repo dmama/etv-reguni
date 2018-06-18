@@ -66,7 +66,7 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -74,11 +74,11 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 				final RegDate dateInscriptionRC = date(2010, 6, 24);
 				final RegDate dateRadiationRC = date(2012, 1, 26);
 				final MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscriptionRC,
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				final MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				final MockDonneesRC rc = (MockDonneesRC) organisation.getEtablissements().get(0).getDonneesRC();
 				rc.changeInscription(date(2012, 1, 26), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 				                                                          dateInscriptionRC, null,
 				                                                          dateInscriptionRC, dateRadiationRC));
@@ -86,7 +86,7 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 				                                                         dateInscriptionRC, null,
 				                                                         dateInscriptionRC, null));
 
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getEtablissements().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
 				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
 				addOrganisation(organisation);
@@ -172,7 +172,7 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -180,19 +180,19 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 				final RegDate dateInscription = date(2010, 6, 24);
 				final RegDate dateRadiation = date(2012, 1, 26);
 				final MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscription,
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 
-				final MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				final MockDonneesRC rc = (MockDonneesRC) organisation.getEtablissements().get(0).getDonneesRC();
 				rc.changeInscription(date(2012, 1, 26), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 				                                                          dateInscription, null,
 				                                                          dateInscription, dateRadiation));
 				rc.changeInscription(date(2015, 7, 5), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
 				                                                         dateInscription, null,
 				                                                         dateInscription, null));
-				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
+				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getEtablissements().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
 				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
 				addOrganisation(organisation);
@@ -259,7 +259,7 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -267,18 +267,18 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 				final RegDate dateInscription = date(2010, 6, 24);
 				final RegDate dateRadiation = date(2012, 1, 26);
 				final MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscription,
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				final MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				final MockDonneesRC rc = (MockDonneesRC) organisation.getEtablissements().get(0).getDonneesRC();
 				rc.changeInscription(date(2012, 1, 26), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 				                                                          dateInscription, null,
 				                                                          dateInscription, dateRadiation));
 				rc.changeInscription(date(2015, 7, 5), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
 				                                                         dateInscription, null,
 				                                                         dateInscription, null));
-				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
+				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getEtablissements().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
 				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
 				addOrganisation(organisation);

@@ -20,7 +20,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -103,7 +103,7 @@ public class ReponseIDEProcessorTest extends BusinessTest {
 
 		// Validation
 		final AnnonceIDE annonce =
-				RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+				RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 				                                       new NumeroIDE("CHE111111114"), null, null, null, null, null,
 				                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 				                                       RCEntAnnonceIDEHelper
@@ -197,7 +197,7 @@ public class ReponseIDEProcessorTest extends BusinessTest {
 
 		// Validation
 		final AnnonceIDE annonce =
-				RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+				RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 				                                       new NumeroIDE("CHE111111114"), null, null, null, null, null,
 				                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 				                                       RCEntAnnonceIDEHelper
@@ -291,7 +291,7 @@ public class ReponseIDEProcessorTest extends BusinessTest {
 
 		// Validation
 		final AnnonceIDE annonce =
-				RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+				RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 				                                       new NumeroIDE("CHE111111114"), new NumeroIDE("CHE222222224"), null, null, null, null,
 				                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 				                                       RCEntAnnonceIDEHelper

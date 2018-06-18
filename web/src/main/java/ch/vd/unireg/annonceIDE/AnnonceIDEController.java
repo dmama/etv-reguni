@@ -167,8 +167,8 @@ public class AnnonceIDEController {
 					if (noCantonalToUse != null) {
 						final AnnonceIDEQuery query = new AnnonceIDEQuery();
 						query.setCantonalId(noCantonalToUse);
-						final List<AnnonceIDE> annoncesPourSite = organisationService.findAnnoncesIDE(query, null, 0, 1000).getContent();
-						for (AnnonceIDE annonceIDE : annoncesPourSite) {
+						final List<AnnonceIDE> annoncesPourEtablissement = organisationService.findAnnoncesIDE(query, null, 0, 1000).getContent();
+						for (AnnonceIDE annonceIDE : annoncesPourEtablissement) {
 							map.put(annonceIDE.getUniqueKey(), annonceIDE);
 						}
 					}

@@ -21,8 +21,8 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -68,16 +68,16 @@ public class ChangementFormeJuridiqueTest extends AbstractEvenementOrganisationP
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synasso", RegDate.get(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synasso", RegDate.get(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
-				site.changeFormeLegale(RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME);
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().iterator().next();
+				etablissement.changeFormeLegale(RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME);
 				addOrganisation(org);
 
 			}
@@ -230,16 +230,16 @@ public class ChangementFormeJuridiqueTest extends AbstractEvenementOrganisationP
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Banque cantonal dauvoise", RegDate.get(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Banque cantonal dauvoise", RegDate.get(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
-				site.changeFormeLegale(RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME);
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().iterator().next();
+				etablissement.changeFormeLegale(RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME);
 				addOrganisation(org);
 
 			}
@@ -349,16 +349,16 @@ public class ChangementFormeJuridiqueTest extends AbstractEvenementOrganisationP
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Banque cantonal dauvoise", RegDate.get(2010, 6, 26), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Banque cantonal dauvoise", RegDate.get(2010, 6, 26), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
-				site.changeFormeLegale(RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME);
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().iterator().next();
+				etablissement.changeFormeLegale(RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME);
 				addOrganisation(org);
 
 			}
@@ -510,16 +510,16 @@ public class ChangementFormeJuridiqueTest extends AbstractEvenementOrganisationP
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
-				site.changeFormeLegale(RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME);
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().iterator().next();
+				etablissement.changeFormeLegale(RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME);
 				addOrganisation(org);
 
 			}
@@ -616,12 +616,12 @@ public class ChangementFormeJuridiqueTest extends AbstractEvenementOrganisationP
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				addOrganisation(org);
@@ -716,7 +716,7 @@ public class ChangementFormeJuridiqueTest extends AbstractEvenementOrganisationP
 
 		// Mise en place service mock
 		final Long noOrganisation = 101660515L;
-		final Long noSite = 101176364L;
+		final Long noEtablissement = 101176364L;
 		final String numeroIDE = "CHE221179093";
 		final String raisonSociale = "A Rocha Suisse";
 		final String raisonSocialeFiscale = "Association A Rocha Suisse";
@@ -730,11 +730,11 @@ public class ChangementFormeJuridiqueTest extends AbstractEvenementOrganisationP
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, raisonSociale, dateDebutRCEnt, null, FormeLegale.N_0329_ORGANISATION_INTERNATIONALE,
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, raisonSociale, dateDebutRCEnt, null, FormeLegale.N_0329_ORGANISATION_INTERNATIONALE,
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getNoOFS(), null, null,
 				                                                                        statutIDE, TypeOrganisationRegistreIDE.SOCIETE_SIMPLE, numeroIDE);
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
-				site.changeFormeLegale(dateMutationIDE, FormeLegale.N_0109_ASSOCIATION);
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().iterator().next();
+				etablissement.changeFormeLegale(dateMutationIDE, FormeLegale.N_0109_ASSOCIATION);
 				addOrganisation(org);
 			}
 		});

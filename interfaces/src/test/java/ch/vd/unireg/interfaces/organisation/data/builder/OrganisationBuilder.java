@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivilRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationRCEnt;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 
 /**
  * Classe de builder pour la construction facilité d'entités d'organisation. Les autres builders de
@@ -33,8 +33,8 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	private final long numeroOrganisation;
 	private Map<String, List<DateRanged<String>>> autresIdentifiants;
 
-	private Map<Long, List<DateRanged<Long>>> sites;
-	private Map<Long, SiteOrganisation> donneesSites;
+	private Map<Long, List<DateRanged<Long>>> numerosEtablissements;
+	private Map<Long, EtablissementCivil> etablissements;
 
 	public OrganisationBuilder(long numeroOrganisation) {
 		this.numeroOrganisation = numeroOrganisation;
@@ -42,26 +42,26 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	@Override
 	public OrganisationRCEnt build() {
-		return new OrganisationRCEnt(numeroOrganisation, sites, donneesSites);
+		return new OrganisationRCEnt(numeroOrganisation, numerosEtablissements, etablissements);
 	}
 
 	public OrganisationBuilder addSite(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		sites = BuilderHelper.addValueToMapOfList(sites, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		numerosEtablissements = BuilderHelper.addValueToMapOfList(numerosEtablissements, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
-	public OrganisationBuilder addDonneesSite(@NotNull SiteOrganisationRCEnt site) {
-		donneesSites = BuilderHelper.addValueToMap(donneesSites, site.getNumeroSite(), site);
+	public OrganisationBuilder addDonneesSite(@NotNull EtablissementCivilRCEnt etablissement) {
+		etablissements = BuilderHelper.addValueToMap(etablissements, etablissement.getNumeroEtablissement(), etablissement);
 		return this;
 	}
 
-	public OrganisationBuilder withSites(Map<Long, List<DateRanged<Long>>> sites) {
-		this.sites = sites;
+	public OrganisationBuilder withSites(Map<Long, List<DateRanged<Long>>> numerosEtablissements) {
+		this.numerosEtablissements = numerosEtablissements;
 		return this;
 	}
 
-	public OrganisationBuilder withDonneesSites(Map<Long, SiteOrganisation> donneesSites) {
-		this.donneesSites = donneesSites;
+	public OrganisationBuilder withDonneesSites(Map<Long, EtablissementCivil> donneesSites) {
+		this.etablissements = donneesSites;
 		return this;
 	}
 }

@@ -33,9 +33,9 @@ public class OrganisationView implements Serializable {
 		typeSiege = siegePrincipal == null ? null : siegePrincipal.getTypeAutoriteFiscale();
 		formeJuridique = organisation.getFormeLegale(date) == null ? null : organisation.getFormeLegale(date).toString();
 		numeroIDE = organisation.getNumeroIDE().isEmpty() ? null : organisation.getNumeroIDE().get(0).getPayload();
-		final StatusRegistreIDE statusRegistreIDE = organisation.getSitePrincipal(date).getPayload().getDonneesRegistreIDE().getStatus(date);
+		final StatusRegistreIDE statusRegistreIDE = organisation.getEtablissementPrincipal(date).getPayload().getDonneesRegistreIDE().getStatus(date);
 		canceled = statusRegistreIDE != null && statusRegistreIDE == StatusRegistreIDE.RADIE;
-		numeroOrganisationRemplacant = organisation.getSitePrincipal(date).getPayload().getIdeRemplacePar(date);
+		numeroOrganisationRemplacant = organisation.getEtablissementPrincipal(date).getPayload().getIdeRemplacePar(date);
 	}
 
 	@SuppressWarnings("UnusedDeclaration")

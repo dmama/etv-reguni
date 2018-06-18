@@ -16,21 +16,21 @@ import ch.vd.unireg.interfaces.common.Adresse;
  *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
 
  */
-public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
+public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil {
 
 	private static final long serialVersionUID = 7428788715221796719L;
 
 	/**
-	 * Le numéro technique du site pour Unireg
+	 * Le numéro technique de l'établissement civil pour Unireg
 	 */
-	private final long numeroSite;
+	private final long numeroEtablissement;
 
 	private final List<DateRanged<String>> nom;
 	private final List<DateRanged<String>> numeroIDE;
 	private final List<DateRanged<String>> numeroRC;
 
 	private final List<DateRanged<String>> nomAdditionnel;
-	private final List<DateRanged<TypeDeSite>> typeDeSite;
+	private final List<DateRanged<TypeEtablissementCivil>> typeEtablissement;
 	private final List<DateRanged<FormeLegale>> formeLegale;
 
 	private final List<Domicile> domicile;
@@ -48,23 +48,23 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	private final List<DateRanged<Long>> burTransfereA;
 	private final List<DateRanged<Long>> burTransferDe;
 
-	public SiteOrganisationRCEnt(long numeroSite,
-	                             Map<String, List<DateRanged<String>>> autresIdentifiants,
-	                             List<DateRanged<String>> nom,
-	                             List<DateRanged<String>> nomAdditionnel,
-	                             List<DateRanged<TypeDeSite>> typeDeSite,
-	                             List<DateRanged<FormeLegale>> formeLegale,
-	                             List<Domicile> domicile,
-	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction,
-	                             @NotNull DonneesRC rc,
-	                             @NotNull DonneesRegistreIDE ide,
-	                             @NotNull DonneesREE ree,
-	                             List<PublicationBusiness> publications,
-	                             List<DateRanged<Long>> ideRemplacePar,
-	                             List<DateRanged<Long>> ideEnRemplacementDe,
-	                             List<DateRanged<Long>> burTransfereA,
-	                             List<DateRanged<Long>> burTransferDe) {
-		this.numeroSite = numeroSite;
+	public EtablissementCivilRCEnt(long numeroEtablissement,
+	                               Map<String, List<DateRanged<String>>> autresIdentifiants,
+	                               List<DateRanged<String>> nom,
+	                               List<DateRanged<String>> nomAdditionnel,
+	                               List<DateRanged<TypeEtablissementCivil>> typeEtablissement,
+	                               List<DateRanged<FormeLegale>> formeLegale,
+	                               List<Domicile> domicile,
+	                               Map<String, List<DateRanged<FonctionOrganisation>>> fonction,
+	                               @NotNull DonneesRC rc,
+	                               @NotNull DonneesRegistreIDE ide,
+	                               @NotNull DonneesREE ree,
+	                               List<PublicationBusiness> publications,
+	                               List<DateRanged<Long>> ideRemplacePar,
+	                               List<DateRanged<Long>> ideEnRemplacementDe,
+	                               List<DateRanged<Long>> burTransfereA,
+	                               List<DateRanged<Long>> burTransferDe) {
+		this.numeroEtablissement = numeroEtablissement;
 		this.nomAdditionnel = nomAdditionnel;
 		this.formeLegale = formeLegale;
 		this.ideRemplacePar = ideRemplacePar;
@@ -78,7 +78,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		this.ree = ree;
 		this.publications = publications;
 		this.ide = ide;
-		this.typeDeSite = typeDeSite;
+		this.typeEtablissement = typeEtablissement;
 		this.domicile = domicile;
 		this.fonction = fonction;
 		if (this.rc == null) {
@@ -93,8 +93,8 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	@Override
-	public long getNumeroSite() {
-		return numeroSite;
+	public long getNumeroEtablissement() {
+		return numeroEtablissement;
 	}
 
 	@Override
@@ -168,13 +168,13 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	@Override
-	public List<DateRanged<TypeDeSite>> getTypeDeSite() {
-		return typeDeSite;
+	public List<DateRanged<TypeEtablissementCivil>> getTypesEtablissement() {
+		return typeEtablissement;
 	}
 
 	@Override
-	public TypeDeSite getTypeDeSite(RegDate date) {
-		return OrganisationHelper.valueForDate(getTypeDeSite(), date);
+	public TypeEtablissementCivil getTypeEtablissement(RegDate date) {
+		return OrganisationHelper.valueForDate(getTypesEtablissement(), date);
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	@Override
 	public List<Adresse> getAdresses() {
-		return OrganisationHelper.getAdressesPourSite(this);
+		return OrganisationHelper.getAdressesPourEtablissement(this);
 	}
 
 	@Override

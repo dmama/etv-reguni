@@ -13,7 +13,7 @@ public class WrongOrganisationReceivedException extends ServiceOrganisationExcep
 	private static String buildMessage(long askedForId, long receivedId) {
 		return String.format("Incohérence des données retournées détectée: organisation demandée = %d, organisation retournée = %d. " +
 				                     "Verifiez que le numéro soumis est bien l'identifiant cantonal d'une organisation et non " +
-				                     "celui d'un site.",
+				                     "celui d'un établissement civil.",
 		                     askedForId,
 		                     receivedId);
 	}

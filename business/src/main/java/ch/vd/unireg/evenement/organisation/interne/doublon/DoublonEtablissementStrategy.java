@@ -14,8 +14,8 @@ import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 
@@ -52,34 +52,34 @@ public class DoublonEtablissementStrategy extends AbstractOrganisationStrategy {
 
 		final List<EvenementOrganisationInterne> doublons = new ArrayList<>();
 
-		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Long remplaceParAvant = site.getIdeRemplacePar(dateAvant);
-			final Long remplaceParApres = site.getIdeRemplacePar(dateApres);
+		for (EtablissementCivil etablissementCivil : organisation.getEtablissements()) {
+			final Long remplaceParAvant = etablissementCivil.getIdeRemplacePar(dateAvant);
+			final Long remplaceParApres = etablissementCivil.getIdeRemplacePar(dateApres);
 
 			if (remplaceParAvant == null && remplaceParApres!= null) {
 
-				final Etablissement etablissement = context.getTiersService().getEtablissementByNumeroSite(site.getNumeroSite());
-				final Etablissement etablissementRemplacant = context.getTiersService().getEtablissementByNumeroSite(remplaceParApres);
+				final Etablissement etablissement = context.getTiersService().getEtablissementByNumeroEtablissementCivil(etablissementCivil.getNumeroEtablissement());
+				final Etablissement etablissementRemplacant = context.getTiersService().getEtablissementByNumeroEtablissementCivil(remplaceParApres);
 
-				final String message = String.format("Doublon de site à l'IDE. L'établissement %s (civil: %d) est remplacé par l'établissement %s (civil: %d).",
+				final String message = String.format("Doublon d'établissement civil à l'IDE. L'établissement %s (civil: %d) est remplacé par l'établissement %s (civil: %d).",
 				                                     etablissement == null ? "non encore connue d'Unireg" : "n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
-				                                     site.getNumeroSite(),
+				                                     etablissementCivil.getNumeroEtablissement(),
 				                                     etablissementRemplacant == null ? "non encore connue d'Unireg" : "n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissementRemplacant.getNumero()),
 				                                     remplaceParApres);
 				doublons.add(new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis: " + message));
 			}
 
-			final Long enRemplacementDeAvant = site.getIdeEnRemplacementDe(dateAvant);
-			final Long enRemplacementDeApres = site.getIdeEnRemplacementDe(dateApres);
+			final Long enRemplacementDeAvant = etablissementCivil.getIdeEnRemplacementDe(dateAvant);
+			final Long enRemplacementDeApres = etablissementCivil.getIdeEnRemplacementDe(dateApres);
 
 			if (enRemplacementDeAvant == null && enRemplacementDeApres!= null) {
 
-				final Etablissement etablissement = context.getTiersService().getEtablissementByNumeroSite(site.getNumeroSite());
-				final Etablissement etablissementRemplace = context.getTiersService().getEtablissementByNumeroSite(enRemplacementDeApres);
+				final Etablissement etablissement = context.getTiersService().getEtablissementByNumeroEtablissementCivil(etablissementCivil.getNumeroEtablissement());
+				final Etablissement etablissementRemplace = context.getTiersService().getEtablissementByNumeroEtablissementCivil(enRemplacementDeApres);
 
-				final String message = String.format("Doublon de site à l'IDE. L'établissement %s (civil: %d) remplace l'établissement %s (civil: %d).",
+				final String message = String.format("Doublon d'établissement civil à l'IDE. L'établissement %s (civil: %d) remplace l'établissement %s (civil: %d).",
 				                                     etablissement == null ? "non encore connue d'Unireg" : "n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
-				                                     site.getNumeroSite(),
+				                                     etablissementCivil.getNumeroEtablissement(),
 				                                     etablissementRemplace == null ? "non encore connue d'Unireg" : "n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissementRemplace.getNumero()),
 				                                     enRemplacementDeApres);
 				doublons.add(new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis: " + message));

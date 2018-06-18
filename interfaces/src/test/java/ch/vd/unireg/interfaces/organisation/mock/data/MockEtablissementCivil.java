@@ -18,18 +18,18 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationActiviteHelper;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
- * Représente un object mock pour un site d'organisation. Le mock fait plusieurs choses:
+ * Représente un object mock pour un établissement civil d'organisation. Le mock fait plusieurs choses:
  *
  * - Il rend modifiables les champs de l'entité.
  * - Il implémente éventuellement des mutations spécifiques, nécessaires dans un
@@ -45,7 +45,7 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
  *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
  */
-public class MockSiteOrganisation implements SiteOrganisation {
+public class MockEtablissementCivil implements EtablissementCivil {
 
 	private final long numeroSite;
 	private final NavigableMap<RegDate, String> nom = new TreeMap<>();
@@ -53,7 +53,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
 	private final NavigableMap<RegDate, String> rc = new TreeMap<>();
 	private final NavigableMap<RegDate, Pair<TypeAutoriteFiscale, Integer>> domicile = new TreeMap<>();
-	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
+	private final NavigableMap<RegDate, TypeEtablissementCivil> typeDeSite = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
 	private final List<PublicationBusiness> publicationsBusiness = new ArrayList<>();
 	private final MockDonneesRegistreIDE donneesRegistreIDE;
@@ -63,7 +63,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, Long> ideEnRemplacementDe = new TreeMap<>();
 	private final List<Adresse> adresses = new ArrayList<>();
 
-	public MockSiteOrganisation(long numeroSite, MockDonneesRegistreIDE donneesRegistreIDE, MockDonneesRC donneesRC, MockDonneesREE donneesREE) {
+	public MockEtablissementCivil(long numeroSite, MockDonneesRegistreIDE donneesRegistreIDE, MockDonneesRC donneesRC, MockDonneesREE donneesREE) {
 		this.numeroSite = numeroSite;
 		this.donneesRegistreIDE = donneesRegistreIDE;
 		this.donneesRC = donneesRC;
@@ -149,16 +149,16 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		Collections.sort(this.adresses, new DateRangeComparator<>());
 	}
 
-	public void changeTypeDeSite(RegDate date, TypeDeSite nouveauType) {
+	public void changeTypeEtablissement(RegDate date, TypeEtablissementCivil nouveauType) {
 		MockOrganisationHelper.changeRangedData(typeDeSite, date, nouveauType);
 	}
 
-	public void addTypeDeSite(RegDate dateDebut, RegDate dateFin, TypeDeSite nouveauType) {
+	public void addTypeDeSite(RegDate dateDebut, RegDate dateFin, TypeEtablissementCivil nouveauType) {
 		MockOrganisationHelper.addRangedData(typeDeSite, dateDebut, dateFin, nouveauType);
 	}
 
 	@Override
-	public long getNumeroSite() {
+	public long getNumeroEtablissement() {
 		return numeroSite;
 	}
 
@@ -233,16 +233,16 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
-	public List<DateRanged<TypeDeSite>> getTypeDeSite() {
+	public List<DateRanged<TypeEtablissementCivil>> getTypesEtablissement() {
 		return MockOrganisationHelper.getHisto(typeDeSite);
 	}
 
 	@Override
-	public TypeDeSite getTypeDeSite(RegDate date) {
-		return OrganisationHelper.valueForDate(getTypeDeSite(), date);
+	public TypeEtablissementCivil getTypeEtablissement(RegDate date) {
+		return OrganisationHelper.valueForDate(getTypesEtablissement(), date);
 	}
 
-	// Implémentation identique à la classe SiteOrganisation
+	// Implémentation identique à la classe EtablissementCivil
 	@Override
 	public Domicile getDomicile(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getDomiciles(), date);	}
@@ -282,7 +282,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	private Optional<InscriptionRC> getInscriptonRC(RegDate date) {
 		return Optional.of(this)
-				.map(MockSiteOrganisation::getDonneesRC)
+				.map(MockEtablissementCivil::getDonneesRC)
 				.map(MockDonneesRC::getInscription)
 				.map(i -> OrganisationHelper.valueForDate(i, date));
 	}

@@ -9,6 +9,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.evenement.ide.SingleShotMockAnnonceIDESender;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -23,14 +26,11 @@ import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.unireg.evenement.ide.SingleShotMockAnnonceIDESender;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
@@ -60,7 +60,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 		 */
 
 		final Long noOrganisation = 1111L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		// Création de l'entreprise
 		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -68,7 +68,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
 
@@ -91,15 +91,15 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 
 				// l'association existante
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association bidule", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Association bidule", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996"));
 				// Annonce existante
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                            new NumeroIDE("CHE999999996"), null, null, noSite, noOrganisation, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
+						                                            new NumeroIDE("CHE999999996"), null, null, noEtablissement, noOrganisation, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, null,
 						                                            RCEntAnnonceIDEHelper
 								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
@@ -141,7 +141,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 				assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
 
 				assertEquals(TypeAnnonce.MUTATION, annonceIDE.getType());
-				assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeDeSite());
+				assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeEtablissementCivil());
 
 				assertNotNull(annonceIDE.getNoIde());
 				assertEquals("CHE999999996", annonceIDE.getNoIde().getValeur());
@@ -165,9 +165,9 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 				assertNotNull(informationOrganisation);
 				assertNotNull(informationOrganisation.getNumeroOrganisation());
 				assertEquals(noOrganisation, informationOrganisation.getNumeroOrganisation());
-				assertNotNull(informationOrganisation.getNumeroSite());
-				assertEquals(noSite, informationOrganisation.getNumeroSite());
-				assertNull(informationOrganisation.getNumeroSiteRemplacant());
+				assertNotNull(informationOrganisation.getNumeroEtablissement());
+				assertEquals(noEtablissement, informationOrganisation.getNumeroEtablissement());
+				assertNull(informationOrganisation.getNumeroEtablissementRemplacant());
 
 				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
@@ -210,7 +210,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 		 */
 
 		final Long noOrganisation = 1111L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		// Création de l'entreprise
 		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -218,7 +218,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
 
@@ -240,15 +240,15 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 
 				// l'association existante
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association bidule", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Association bidule", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996"));
 				// Annonce existante
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                            new NumeroIDE("CHE999999996"), null, null, noSite, noOrganisation, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
+						                                            new NumeroIDE("CHE999999996"), null, null, noEtablissement, noOrganisation, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, null,
 						                                            RCEntAnnonceIDEHelper
 								                                            .createAdresseAnnonceIDERCEnt("Shawinigan Lake B.C. V0R 2W1", null, null, null, null, null, "2332 Lockspur Road", MockPays.EtatsUnis.getNoOfsEtatSouverain(),
@@ -289,7 +289,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 				assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
 
 				assertEquals(TypeAnnonce.MUTATION, annonceIDE.getType());
-				assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeDeSite());
+				assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeEtablissementCivil());
 
 				assertNotNull(annonceIDE.getNoIde());
 				assertEquals("CHE999999996", annonceIDE.getNoIde().getValeur());
@@ -313,9 +313,9 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 				assertNotNull(informationOrganisation);
 				assertNotNull(informationOrganisation.getNumeroOrganisation());
 				assertEquals(noOrganisation, informationOrganisation.getNumeroOrganisation());
-				assertNotNull(informationOrganisation.getNumeroSite());
-				assertEquals(noSite, informationOrganisation.getNumeroSite());
-				assertNull(informationOrganisation.getNumeroSiteRemplacant());
+				assertNotNull(informationOrganisation.getNumeroEtablissement());
+				assertEquals(noEtablissement, informationOrganisation.getNumeroEtablissement());
+				assertNull(informationOrganisation.getNumeroEtablissementRemplacant());
 
 				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);

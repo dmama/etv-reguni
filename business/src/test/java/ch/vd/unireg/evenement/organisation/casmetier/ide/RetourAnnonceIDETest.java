@@ -28,7 +28,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
@@ -71,7 +71,7 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissementCivil = noOrganisation + 1000000;
 
 		// Création de l'entreprise
 		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -131,18 +131,18 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 				// Annonce existante
 				AnnonceIDE annonce =
 						RCEntAnnonceIDEHelper
-								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 1, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 1, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 								                  new NumeroIDE("CHE999999996"), null, null, null, null, null,
 								                  "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 								                  adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 				this.addAnnonceIDE(annonce, RCEntAnnonceIDEHelper.UNIREG_USER);
 
 				// L'organisation
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Syntruc Asso", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Syntruc Asso", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(),
 				                                                                        null, null,
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) org.getDonneesSites().get(0).getDonneesRegistreIDE();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) org.getEtablissements().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2016, 9, 5), null, MockLocalite.Renens.getNom(), "1", null, MockLocalite.Renens.getNoOrdre(),
 				                                                                 MockLocalite.Renens.getNPA().toString(), null, MockPays.Suisse.getNoOfsEtatSouverain(),
 				                                                                 MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), null, null, null));
@@ -231,7 +231,7 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissementCivil = noOrganisation + 1000000;
 
 		// Création de l'entreprise
 		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -261,7 +261,7 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 				Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissementCivil);
 				addDomicileEtablissement(etablissement, date(2016, 9, 1), date(2016, 9, 4), MockCommune.Renens);
 				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 1), null, true);
 
@@ -292,18 +292,18 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 				// Annonce existante
 				AnnonceIDE annonce =
 						RCEntAnnonceIDEHelper
-								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 1, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 1, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 								                  new NumeroIDE("CHE999999996"), null, null, null, null, null,
 								                  "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 								                  adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 				this.addAnnonceIDE(annonce, RCEntAnnonceIDEHelper.UNIREG_USER);
 
 				// L'organisation
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Syntruc Asso", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Syntruc Asso", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(),
 				                                                                        null, null,
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) org.getDonneesSites().get(0).getDonneesRegistreIDE();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) org.getEtablissements().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2016, 9, 5), null, MockLocalite.Renens.getNom(), "1", null, MockLocalite.Renens.getNoOrdre(),
 				                                                                 MockLocalite.Renens.getNPA().toString(), null, MockPays.Suisse.getNoOfsEtatSouverain(),
 				                                                                 MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), null, null, null));

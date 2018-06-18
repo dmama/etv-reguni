@@ -36,7 +36,7 @@ public class OrganisationEvent {
 	 * </p>
 	 *
 	 * <p>
-	 *     <strong>ATTENTION</strong>: ce site peut ne pas faire partie de l'organisation renvoyée par getPseudoHistory()! Il peut être membre d'une autre organisation
+	 *     <strong>ATTENTION</strong>: cet établissement civil peut ne pas faire partie de l'organisation renvoyée par getPseudoHistory()! Il peut être membre d'une autre organisation
 	 *     ciblée par le même événement RCEnt.
 	 * </p>
 	 *

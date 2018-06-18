@@ -46,7 +46,7 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -126,7 +126,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		final ServiceOrganisationRaw.Identifiers ids = service.getOrganisationByNoIde(IDE_SUCC);
 		assertNotNull(ids);
 		assertEquals(ID_ORGANISATION_SUCC, ids.idCantonalOrganisation);
-		assertEquals(ID_SUCC, ids.idCantonalSite);
+		assertEquals(ID_SUCC, ids.idCantonalEtablissement);
 	}
 
 	@Test(timeout = 30000)
@@ -203,7 +203,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
 				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, MockLocalite.Geneve.getNPA(), null, MockLocalite.Geneve.getNoOrdre(), "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
-		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    null, null, null, null, null, null, "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques",
 		                                                                    adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(proto);
@@ -218,7 +218,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		final ProtoAnnonceIDE proto = new ProtoAnnonceIDE(TypeAnnonce.CREATION,
 		                                                  DateHelper.getCurrentDate(),
 		                                                  new AnnonceIDEData.UtilisateurImpl(RCEntAnnonceIDEHelper.UNIREG_USER, null),
-		                                                  TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+		                                                  TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL,
 		                                                  null,
 		                                                  new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS,
 		                                                                                                     RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG,
@@ -235,7 +235,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		                                                                          DateHelper.getCurrentDate(),
 		                                                                          RCEntAnnonceIDEHelper.UNIREG_USER,
 		                                                                          null,
-		                                                                          TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+		                                                                          TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL,
 		                                                                          null,
 		                                                                          null,
 		                                                                          new NumeroIDE("CHE999999998"),

@@ -8,15 +8,15 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.EvenementTest;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.evenement.EvenementTest;
 
 /**
  * @author Raphaël Marmier, 2016-08-17, <raphael.marmier@vd.ch>
@@ -68,7 +68,7 @@ public class AnnonceIDESenderItTest extends EvenementTest {
 			clearQueue(OUTPUT_QUEUE);
 
 			final AnnonceIDE
-					annonceIDE = new AnnonceIDE(123456L, TypeAnnonce.CREATION, RegDate.get(2016, 8, 19).asJavaDate(), new AnnonceIDEData.UtilisateurImpl("c4zem2", null), TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
+					annonceIDE = new AnnonceIDE(123456L, TypeAnnonce.CREATION, RegDate.get(2016, 8, 19).asJavaDate(), new AnnonceIDEData.UtilisateurImpl("c4zem2", null), TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null,
 					                            new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG));
 			annonceIDE.setCommentaire("Ceci est une annonce de test.");
 			final AnnonceIDEData.ContenuImpl contenu = new AnnonceIDEData.ContenuImpl();

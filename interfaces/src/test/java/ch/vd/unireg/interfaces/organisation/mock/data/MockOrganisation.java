@@ -16,11 +16,11 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 
 /**
  * Représente un object mock pour une organisation. Le mock fait plusieurs choses:
@@ -43,15 +43,15 @@ public class MockOrganisation implements Organisation {
 
 	private final long idOrganisation;
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
-	private final Map<Long, MockSiteOrganisation> sites = new HashMap<>();
+	private final Map<Long, MockEtablissementCivil> etablissements = new HashMap<>();
 	private final List<Adresse> adresses = new ArrayList<>();
 
 	public MockOrganisation(long idOrganisation) {
 		this.idOrganisation = idOrganisation;
 	}
 
-	public void addDonneesSite(MockSiteOrganisation site) {
-		sites.put(site.getNumeroSite(), site);
+	public void addDonneesEtablissement(MockEtablissementCivil etablissement) {
+		etablissements.put(etablissement.getNumeroEtablissement(), etablissement);
 	}
 
 	public void addAdresse(MockAdresse adresse) {
@@ -65,13 +65,13 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public List<SiteOrganisation> getDonneesSites() {
-		return new ArrayList<>(sites.values());
+	public List<EtablissementCivil> getEtablissements() {
+		return new ArrayList<>(etablissements.values());
 	}
 
 	@Override
 	public List<DateRanged<String>> getNumeroIDE() {
-		return OrganisationHelper.getNumerosIDEPrincipaux(sites);
+		return OrganisationHelper.getNumerosIDEPrincipaux(etablissements);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<DateRanged<String>> getNumeroRC() {
-		return OrganisationHelper.getNumerosRCPrincipaux(sites);
+		return OrganisationHelper.getNumerosRCPrincipaux(etablissements);
 	}
 
 	@Override
@@ -95,34 +95,34 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public List<DateRanged<SiteOrganisation>> getSitePrincipaux() {
-		return OrganisationHelper.getSitePrincipaux(this);
+	public List<DateRanged<EtablissementCivil>> getEtablissementsPrincipaux() {
+		return OrganisationHelper.getEtablissementsCivilsPrincipaux(this);
 	}
 
 	// Implémentation identique à la classe Organisation
 	@Override
-	public DateRanged<SiteOrganisation> getSitePrincipal(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(getSitePrincipaux(), date);
+	public DateRanged<EtablissementCivil> getEtablissementPrincipal(RegDate date) {
+		return OrganisationHelper.dateRangeForDate(getEtablissementsPrincipaux(), date);
 	}
 
 	// Implémentation identique à la classe Organisation
 	@Override
-	public List<SiteOrganisation> getSitesSecondaires(RegDate date) {
-		return OrganisationHelper.getSitesSecondaires(this, date);
+	public List<EtablissementCivil> getEtablissementsSecondaires(RegDate date) {
+		return OrganisationHelper.getEtablissementsCivilsSecondaires(this, date);
 	}
 
 	@Override
-	public SiteOrganisation getSiteForNo(Long noSite) {
-		return sites.get(noSite);
+	public EtablissementCivil getEtablissementForNo(Long noEtablissementCivil) {
+		return etablissements.get(noEtablissementCivil);
 	}
 
 	@Override
 	public List<Capital> getCapitaux() {
-		Map<Long, SiteOrganisation> sitesMap = new HashMap<>();
-		for (MockSiteOrganisation mock : sites.values()) {
-			sitesMap.put(mock.getNumeroSite(), mock);
+		Map<Long, EtablissementCivil> map = new HashMap<>();
+		for (MockEtablissementCivil mock : etablissements.values()) {
+			map.put(mock.getNumeroEtablissement(), mock);
 		}
-		return OrganisationHelper.getCapitaux(sitesMap);
+		return OrganisationHelper.getCapitaux(map);
 	}
 
 	@Override
@@ -138,10 +138,10 @@ public class MockOrganisation implements Organisation {
 	@Override
 	public List<Domicile> getSiegesPrincipaux() {
 		final List<Domicile> sieges = new ArrayList<>();
-		for (MockSiteOrganisation site : sites.values()) {
-			for (DateRanged<TypeDeSite> typeSite : site.getTypeDeSite()) {
-				if (typeSite.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
-					sieges.addAll(site.getDomiciles());
+		for (MockEtablissementCivil etablissement : etablissements.values()) {
+			for (DateRanged<TypeEtablissementCivil> typeSite : etablissement.getTypesEtablissement()) {
+				if (typeSite.getPayload() == TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL) {
+					sieges.addAll(etablissement.getDomiciles());
 				}
 			}
 		}
@@ -151,7 +151,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<DateRanged<FormeLegale>> getFormeLegale() {
-		return OrganisationHelper.getFormesLegalesPrincipaux(sites);
+		return OrganisationHelper.getFormesLegalesPrincipaux(etablissements);
 	}
 
 	/**
@@ -167,11 +167,11 @@ public class MockOrganisation implements Organisation {
 	}
 
 	/**
-	 * @return l'historique du nom de l'entreprise, c'est-à-dire le nom du site principal de l'entreprise.
+	 * @return l'historique du nom de l'entreprise, c'est-à-dire le nom de l'établissement civil principal de l'entreprise.
 	 */
 	@Override
 	public List<DateRanged<String>> getNom() {
-		return OrganisationHelper.getNomsPrincipaux(sites);
+		return OrganisationHelper.getNomsPrincipaux(etablissements);
 	}
 
 	/**
@@ -187,11 +187,11 @@ public class MockOrganisation implements Organisation {
 	}
 
 	/**
-	 * @return l'historique du nom additionnel de l'entreprise, c'est-à-dire le nom additionnel du site principal de l'entreprise.
+	 * @return l'historique du nom additionnel de l'entreprise, c'est-à-dire le nom additionnel de l'établissement civil principal de l'entreprise.
 	 */
 	@Override
 	public List<DateRanged<String>> getNomAdditionnel() {
-		return OrganisationHelper.getNomsAdditionnelsPrincipaux(sites);
+		return OrganisationHelper.getNomsAdditionnelsPrincipaux(etablissements);
 	}
 
 	/**
@@ -247,16 +247,16 @@ public class MockOrganisation implements Organisation {
 	 * Indique si un l'organisation possède son siège principal sur Vaud. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
-	public boolean hasSitePrincipalVD(RegDate date) {
-		return OrganisationHelper.hasSitePrincipalVD(this, date);
+	public boolean hasEtablissementPrincipalVD(RegDate date) {
+		return OrganisationHelper.hasEtablissementPrincipalVD(this, date);
 	}
 
 	/**
-	 * @return true si un site de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
+	 * @return true si un établissement civil de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
 	 */
 	@Override
-	public boolean hasSiteVD(RegDate date) {
-		return OrganisationHelper.hasSiteVD(this, date);
+	public boolean hasEtablissementVD(RegDate date) {
+		return OrganisationHelper.hasEtablissementVD(this, date);
 	}
 
 	/**
@@ -310,10 +310,10 @@ public class MockOrganisation implements Organisation {
 	}
 
 	/**
-	 * @return true si un site de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
+	 * @return true si un établissement civil de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
 	 */
 	@Override
-	public List<SiteOrganisation> getSuccursalesRCVD(RegDate date) {
+	public List<EtablissementCivil> getSuccursalesRCVD(RegDate date) {
 		return OrganisationHelper.getSuccursalesRCVD(this, date);
 	}
 }

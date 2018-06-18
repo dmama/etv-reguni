@@ -7,14 +7,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 
 /**
- * Interface d'un site d'organisation (= un établissement, au sens civil du terme)
+ * Interface d'un établissement civil d'organisation (= un établissement, au sens civil du terme)
  */
-public interface SiteOrganisation {
+public interface EtablissementCivil {
 
 	/**
-	 * @return l'identifiant technique du site dans le système source, utilisé comme clé dans Unireg (= id cantonal)
+	 * @return l'identifiant technique de l'établissement civil dans le système source, utilisé comme clé dans Unireg (= id cantonal)
 	 */
-	long getNumeroSite();
+	long getNumeroEtablissement();
 
 	/**
 	 * @return les fonctions associées à cet établissement
@@ -56,21 +56,21 @@ public interface SiteOrganisation {
 	DonneesRC getDonneesRC();
 
 	/**
-	 * @return l'historique des sièges du site (= commune ou pays)
+	 * @return l'historique des sièges de l'établissement civil (= commune ou pays)
 	 */
 	List<Domicile> getDomiciles();
 
 	/**
-	 * @return l'historique des sièges du site (= commune ou pays) durant la période active de l'entreprise
+	 * @return l'historique des sièges de l'établissement civil (= commune ou pays) durant la période active de l'entreprise
 	 */
 	List<Domicile> getDomicilesEnActivite();
 
 	/**
-	 * @return les valeurs historisées du type de site (principal / secondaire)
+	 * @return les valeurs historisées du type d'établissement civil (principal / secondaire)
 	 */
-	List<DateRanged<TypeDeSite>> getTypeDeSite();
+	List<DateRanged<TypeEtablissementCivil>> getTypesEtablissement();
 
-	TypeDeSite getTypeDeSite(RegDate date);
+	TypeEtablissementCivil getTypeEtablissement(RegDate date);
 
 	/**
 	 * Retourne le siege correspondant à la date. Si la date est nulle, la date du jour est utilisée.
@@ -100,7 +100,7 @@ public interface SiteOrganisation {
 	Long getIdeEnRemplacementDe(RegDate date);
 
 	/**
-	 * @return La map des publications concernant le site, indexée par date.
+	 * @return La map des publications concernant l'établissement civil, indexée par date.
 	 */
 	List<PublicationBusiness> getPublications();
 
@@ -115,24 +115,24 @@ public interface SiteOrganisation {
 	List<PublicationBusiness>  getPublications(RegDate date);
 
 	/**
-	 * Détermine la date de premier snapshot du site. C'est à dire à partir de quand le site
+	 * Détermine la date de premier snapshot de l'établissement civil. C'est à dire à partir de quand l'établissement civil
 	 * est connu au civil.
 	 * @return la date du premier snapshot
 	 */
 	RegDate connuAuCivilDepuis();
 
 	/**
-	 * @return true si le site est inscrit au RC à une date donnée (quelle que soit la teneur de l'inscription). Si la date est nulle, la date du jour est utilisée.
+	 * @return true si l'établissement civil est inscrit au RC à une date donnée (quelle que soit la teneur de l'inscription). Si la date est nulle, la date du jour est utilisée.
 	 */
 	boolean isInscritAuRC(RegDate date);
 
 	/**
-	 * @return <code>true</code> si les données connues à la date fournies présentent le site comme inscrit au RC (quel que soit l'état de l'inscription)
+	 * @return <code>true</code> si les données connues à la date fournies présentent l'établissement civil comme inscrit au RC (quel que soit l'état de l'inscription)
 	 */
 	boolean isConnuInscritAuRC(RegDate date);
 
 	/**
-	 * @return true si le site est globallement actif à à une date donnée, c'est à dire qu'il a une existence active chez au moins
+	 * @return true si l'établissement civil est globallement actif à à une date donnée, c'est à dire qu'il a une existence active chez au moins
 	 * un fournisseur (RC, IDE, REE ...). Etre actif signifie être inscrit et non radié.
 	 * .
 	 * Si la date est nulle, la date du jour est utilisée.
@@ -140,12 +140,12 @@ public interface SiteOrganisation {
 	boolean isActif(RegDate date);
 
 	/**
-	 * @return true si le site est radié au RC à à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 * @return true si l'établissement civil est radié au RC à à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	boolean isRadieDuRC(RegDate date);
 
 	/**
-	 * @return true si le site est radié de l'IDE à à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 * @return true si l'établissement civil est radié de l'IDE à à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	boolean isRadieIDE(RegDate date);
 

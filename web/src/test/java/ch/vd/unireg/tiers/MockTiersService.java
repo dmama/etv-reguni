@@ -32,8 +32,8 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
@@ -84,7 +84,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
+	public Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissement) {
 		return null;
 	}
 
@@ -119,7 +119,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public @NotNull Etablissement createEtablissement(Long numeroSite) {
+	public @NotNull Etablissement createEtablissement(Long numeroEtablissementCivil) {
 		return null;
 	}
 
@@ -234,7 +234,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public void apparier(Etablissement etablissement, SiteOrganisation site) {
+	public void apparier(Etablissement etablissement, EtablissementCivil etablissementCivil) {
 
 	}
 
@@ -1253,7 +1253,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public SiteOrganisation getSiteOrganisationPourEtablissement(@NotNull Etablissement etablissement) {
+	public EtablissementCivil getEtablissementCivil(@NotNull Etablissement etablissement) {
 		return null;
 	}
 

@@ -15,9 +15,9 @@ public interface Organisation {
 	Capital getCapital(RegDate date);
 
 	/**
-	 * @return Liste des sites de l'organisation
+	 * @return Liste des établissements civils de l'organisation
 	 */
-	List<SiteOrganisation> getDonneesSites();
+	List<EtablissementCivil> getEtablissements();
 
 	/**
 	 * @return historique des formes juridiques de l'organisation
@@ -94,24 +94,24 @@ public interface Organisation {
 	List<Adresse> getAdresses();
 
 	/**
-	 * @return historique des sites principaux de l'organisation
+	 * @return historique des établissements civils principaux de l'organisation
 	 */
-	List<DateRanged<SiteOrganisation>> getSitePrincipaux();
+	List<DateRanged<EtablissementCivil>> getEtablissementsPrincipaux();
 
 	/**
-	 * @return site principal de l'organisation à une date donnée
+	 * @return établissement civil principal de l'organisation à une date donnée
 	 */
-	DateRanged<SiteOrganisation> getSitePrincipal(RegDate date);
+	DateRanged<EtablissementCivil> getEtablissementPrincipal(RegDate date);
 
 	/**
-	 * @return liste des sites secondaires de l'organisation à une date donnée
+	 * @return liste des établissements civils secondaires de l'organisation à une date donnée
 	 */
-	List<SiteOrganisation> getSitesSecondaires(RegDate date);
+	List<EtablissementCivil> getEtablissementsSecondaires(RegDate date);
 
 	/**
-	 * @return le site de l'organisation correspondant à l'identifiant donné
+	 * @return l'établissement civil de l'organisation correspondant à l'identifiant donné
 	 */
-	SiteOrganisation getSiteForNo(Long noSite);
+	EtablissementCivil getEtablissementForNo(Long noEtablissementCivil);
 
 	/**
 	 * @return true si l'organisation est inscrite au RC à une date donnée (= quel que soit l'état de l'inscription). Si la date est nulle, la date du jour est utilisée.
@@ -141,12 +141,12 @@ public interface Organisation {
 	/**
 	 * @return true si l'organisation possède son siège principal sur Vaud à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
-	boolean hasSitePrincipalVD(RegDate date);
+	boolean hasEtablissementPrincipalVD(RegDate date);
 
 	/**
-	 * @return true si un site de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
+	 * @return true si un établissement civil de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
 	 */
-	boolean hasSiteVD(RegDate date);
+	boolean hasEtablissementVD(RegDate date);
 
 	/**
 	 * Est-ce que l'organisation a une forme juridique constitutive d'une société individuelle?
@@ -184,9 +184,9 @@ public interface Organisation {
 	boolean isInscriptionRCObligatoire(RegDate date);
 
 	/**
-	 * @return liste des sites de l'organisation domiciliés dans le canton de Vaud (principal ou secondaire), inscrit au RC
+	 * @return liste des établissements civils de l'organisation domiciliés dans le canton de Vaud (principal ou secondaire), inscrit au RC
 	 * et non radiés
 	 */
-	List<SiteOrganisation> getSuccursalesRCVD(RegDate date);
+	List<EtablissementCivil> getSuccursalesRCVD(RegDate date);
 
 }

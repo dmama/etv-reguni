@@ -19,9 +19,9 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -60,18 +60,18 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 		try {
 
-			SiteOrganisation sitePrincipal = getSitePrincipal(organisation, dateEvenement);
+			EtablissementCivil etablissementPrincipal = getEtablissementCivilPrincipal(organisation, dateEvenement);
 
 			/*
 			    Organisation hors canton
 			  */
-			final Domicile domicile = sitePrincipal.getDomicile(dateEvenement);
+			final Domicile domicile = etablissementPrincipal.getDomicile(dateEvenement);
 			if (domicile == null) {
 				// Commune de siège non renseignée au civil. Selon toute probabilité l'organisation se trouve hors canton.
-				return handleSiegeVide(event, organisation, context, options, dateEvenement, sitePrincipal);
+				return handleSiegeVide(event, organisation, context, options, dateEvenement, etablissementPrincipal);
 			}
 
-			final Commune communeDomicile = getCommuneByNumeroOfs(organisation, sitePrincipal, context, dateEvenement, domicile);
+			final Commune communeDomicile = getCommuneByNumeroOfs(organisation, etablissementPrincipal, context, dateEvenement, domicile);
 
 			final FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);
 
@@ -115,7 +115,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 			InformationDeDateEtDeCreation info;
 
 			// Organisations VD
-			if (organisation.hasSitePrincipalVD(dateEvenement)) {
+			if (organisation.hasEtablissementPrincipalVD(dateEvenement)) {
 
 				// SIFISC-19723 Pour éviter les doublons lors de la mauvaise identification d'association/fondation créées à la main par l'ACI et simultanément enregistrée par SiTi,
 				// pas de création automatique des association/fondation, sauf lorsque l'inscription provient du RC, qui dans ce cas est nécessairement l'institution émettrice.
@@ -134,8 +134,8 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				return new CreateEntrepriseVD(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 			}
 			// Organisations hors VD avec présence VD
-			else if (organisation.hasSiteVD(dateEvenement)) {
-				final List<SiteOrganisation> succursalesRCVD = organisation.getSuccursalesRCVD(dateEvenement);
+			else if (organisation.hasEtablissementVD(dateEvenement)) {
+				final List<EtablissementCivil> succursalesRCVD = organisation.getSuccursalesRCVD(dateEvenement);
 				// On ne crée l'entreprise que si elle a une présence vaudoise concrétisée par une succursale au RC VD active. Ceci pour éviter les établissements REE.
 				if (succursalesRCVD.isEmpty()){
 					final String message = String.format("L'organisation n°%d n'a pas de succursale active au RC Vaud (inscrite et non radiée). Pas de création.", numeroOrganisation);
@@ -169,7 +169,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 	@NotNull
 	private String getQualificatifLieu(Organisation organisation, RegDate dateEvenement) {
-		return organisation.hasSitePrincipalVD(dateEvenement) ? "vaudoise" : organisation.hasSiteVD(dateEvenement) ? "hors canton avec présence sur VD" :  "strictement hors canton";
+		return organisation.hasEtablissementPrincipalVD(dateEvenement) ? "vaudoise" : organisation.hasEtablissementVD(dateEvenement) ? "hors canton avec présence sur VD" :  "strictement hors canton";
 	}
 
 	@NotNull
@@ -182,33 +182,33 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 	@NotNull
 	private EvenementOrganisationInterne handleSiegeVide(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options,
-	                                                     RegDate dateEvenement, SiteOrganisation sitePrincipal) throws EvenementOrganisationException {
+	                                                     RegDate dateEvenement, EtablissementCivil etablissementPrincipal) throws EvenementOrganisationException {
 		final String message = String.format(
-				"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s, en date du %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
-				sitePrincipal.getNumeroSite(), organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement), RegDateHelper.dateToDisplayString(dateEvenement));
+				"Autorité fiscale (siège) introuvable pour l'établissement civil principal %s de l'organisation %s %s, en date du %s. Etablissement probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
+				etablissementPrincipal.getNumeroEtablissement(), organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement), RegDateHelper.dateToDisplayString(dateEvenement));
 		Audit.info(event.getId(), message);
 		return new TraitementManuel(event, organisation, null, context, options, message);
 	}
 
 	@NotNull
-	private SiteOrganisation getSitePrincipal(Organisation organisation, RegDate dateEvenement) throws EvenementOrganisationException {
-		final DateRanged<SiteOrganisation> sitePrincipalRange = organisation.getSitePrincipal(dateEvenement);
-		if (sitePrincipalRange == null) {
+	private EtablissementCivil getEtablissementCivilPrincipal(Organisation organisation, RegDate dateEvenement) throws EvenementOrganisationException {
+		final DateRanged<EtablissementCivil> etablissementPrincipalRange = organisation.getEtablissementPrincipal(dateEvenement);
+		if (etablissementPrincipalRange == null) {
 			final String message =
-					String.format("Site principal introuvable pour l'organisation n°%d en date du %s.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateEvenement));
+					String.format("Etablissement civil principal introuvable pour l'organisation n°%d en date du %s.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateEvenement));
 			throw new EvenementOrganisationException(message);
 		}
-		return sitePrincipalRange.getPayload();
+		return etablissementPrincipalRange.getPayload();
 	}
 
 	@NotNull
-	private Commune getCommuneByNumeroOfs(Organisation organisation, SiteOrganisation site, EvenementOrganisationContext context, RegDate dateEvenement, Domicile domicile) throws EvenementOrganisationException {
+	private Commune getCommuneByNumeroOfs(Organisation organisation, EtablissementCivil etablissement, EvenementOrganisationContext context, RegDate dateEvenement, Domicile domicile) throws EvenementOrganisationException {
 		try {
 			return context.getServiceInfra().getCommuneByNumeroOfs(domicile.getNumeroOfsAutoriteFiscale(), dateEvenement);
 		}
 		catch (ServiceInfrastructureException e) {
-			final String message = String.format("Une erreur est survenue lors de la récupération des information de la commune n°%d (Ofs) du site n°%d de l'organisation n°%d: %s",
-			                                     domicile.getNumeroOfsAutoriteFiscale(), site.getNumeroSite(), organisation.getNumeroOrganisation(), e.getMessage());
+			final String message = String.format("Une erreur est survenue lors de la récupération des information de la commune n°%d (Ofs) de l'établissement civil n°%d de l'organisation n°%d: %s",
+			                                     domicile.getNumeroOfsAutoriteFiscale(), etablissement.getNumeroEtablissement(), organisation.getNumeroOrganisation(), e.getMessage());
 			throw new EvenementOrganisationException(message);
 		}
 	}

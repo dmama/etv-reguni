@@ -43,7 +43,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.service.mock.MockServiceOrganisationService;
 import ch.vd.unireg.tiers.TiersMapHelper;
@@ -80,15 +80,15 @@ public class AnnonceIDEControllerTest {
 		// la première page de résultats
 		final AnnonceIDEData.UtilisateurImpl testuser = new AnnonceIDEData.UtilisateurImpl("testuser", null);
 		final List<AnnonceIDE> firstPage = Arrays.<AnnonceIDE>asList(
-				new AnnonceIDE(1L, TypeAnnonce.CREATION, DateHelper.getDate(2000, 1, 1), testuser, TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+				new AnnonceIDE(1L, TypeAnnonce.CREATION, DateHelper.getDate(2000, 1, 1), testuser, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL,
 				               new AnnonceIDEData.StatutImpl(StatutAnnonce.ACCEPTE_IDE, DateHelper.getDate(2000, 1, 3), null), SERVICE_UNIREG),
-				new AnnonceIDE(2L, TypeAnnonce.CREATION, DateHelper.getDate(2001, 4, 10), testuser, TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+				new AnnonceIDE(2L, TypeAnnonce.CREATION, DateHelper.getDate(2001, 4, 10), testuser, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL,
 				               new AnnonceIDEData.StatutImpl(StatutAnnonce.REFUSE_IDE, DateHelper.getDate(2001, 4, 23), null), SERVICE_UNIREG)
 		);
 
 		// la seconde page de résultats
 		final List<AnnonceIDE> secondPage = Collections.<AnnonceIDE>singletonList(
-				new AnnonceIDE(3L, TypeAnnonce.MUTATION, DateHelper.getDate(2002, 7, 11), testuser, TypeDeSite.ETABLISSEMENT_SECONDAIRE,
+				new AnnonceIDE(3L, TypeAnnonce.MUTATION, DateHelper.getDate(2002, 7, 11), testuser, TypeEtablissementCivil.ETABLISSEMENT_SECONDAIRE,
 				               new AnnonceIDEData.StatutImpl(StatutAnnonce.REJET_RCENT, DateHelper.getDate(2002, 7, 12), null), SERVICE_UNIREG)
 		);
 
@@ -204,7 +204,7 @@ public class AnnonceIDEControllerTest {
 			@Override
 			public AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) {
 				final AnnonceIDEData.UtilisateurImpl testuser = new AnnonceIDEData.UtilisateurImpl("testuser", null);
-				final AnnonceIDE annonce = new AnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, testuser, TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+				final AnnonceIDE annonce = new AnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, testuser, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL,
 				                                          new AnnonceIDEData.StatutImpl(StatutAnnonce.ACCEPTE_IDE, DateHelper.getDate(2000, 1, 3), null), SERVICE_UNIREG);
 				annonce.setNoIde(NumeroIDE.valueOf(333111333));
 				annonce.setNoIdeRemplacant(NumeroIDE.valueOf(222000555));
@@ -258,7 +258,7 @@ public class AnnonceIDEControllerTest {
 		assertEquals("testuser", annonce.getUtilisateur().getUserId());
 		assertEquals("UNIREG", annonce.getServiceIDE().getApplicationName());
 		assertEquals(StatutAnnonce.ACCEPTE_IDE, annonce.getStatut().getStatut());
-		assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, annonce.getTypeDeSite());
+		assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, annonce.getTypeEtablissementCivil());
 		assertEquals("CHE-333.111.333", annonce.getNoIde());
 		assertEquals("CHE-222.000.555", annonce.getNoIdeRemplacant());
 		assertEquals("CHE-999.444.777", annonce.getNoIdeEtablissementPrincipal());
@@ -266,9 +266,9 @@ public class AnnonceIDEControllerTest {
 		assertEquals("Que voilà un joli commentaire !", annonce.getCommentaire());
 
 		final InformationOrganisationView info = annonce.getInformationOrganisation();
-		assertEquals(Long.valueOf(22334455L), info.getNumeroSite());
+		assertEquals(Long.valueOf(22334455L), info.getNumeroEtablissement());
 		assertEquals(Long.valueOf(22334466L), info.getNumeroOrganisation());
-		assertEquals(Long.valueOf(11003355L), info.getNumeroSiteRemplacant());
+		assertEquals(Long.valueOf(11003355L), info.getNumeroEtablissementRemplacant());
 
 		final ContenuView contenu = annonce.getContenu();
 		assertEquals("Ma petite entreprise", contenu.getNom());

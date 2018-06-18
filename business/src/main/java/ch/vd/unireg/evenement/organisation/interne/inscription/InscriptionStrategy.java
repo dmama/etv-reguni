@@ -10,9 +10,9 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -50,16 +50,16 @@ public class InscriptionStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange != null) {
-			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-			final InscriptionRC inscriptionAvant = sitePrincipalAvant.getDonneesRC().getInscription(dateAvant);
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		if (etablissementPrincipalAvantRange != null) {
+			final EtablissementCivil etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
+			final InscriptionRC inscriptionAvant = etablissementPrincipalAvant.getDonneesRC().getInscription(dateAvant);
 			if (inscriptionAvant == null || !inscriptionAvant.isInscrit()) {
 				final RegDate dateInscriptionRCAvant = inscriptionAvant != null ? inscriptionAvant.getDateInscriptionCH() : null;
 				final RegDate dateRadiationRCAvant = inscriptionAvant != null ? inscriptionAvant.getDateRadiationCH() : null;
 
-				final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
-				final InscriptionRC inscriptionApres = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+				final EtablissementCivil etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
+				final InscriptionRC inscriptionApres = etablissementPrincipalApres.getDonneesRC().getInscription(dateApres);
 				final RegDate dateInscriptionRCApres = inscriptionApres != null ? inscriptionApres.getDateInscriptionCH() : null;
 
 				if (dateInscriptionRCAvant == null && dateRadiationRCAvant == null && dateInscriptionRCApres != null) {

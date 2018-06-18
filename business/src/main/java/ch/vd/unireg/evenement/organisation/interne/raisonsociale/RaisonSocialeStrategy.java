@@ -20,8 +20,8 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 
@@ -55,20 +55,20 @@ public class RaisonSocialeStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange != null) {
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		if (etablissementPrincipalAvantRange != null) {
 
-			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-			final String raisonSocialeAvant = sitePrincipalAvant.getNom(dateAvant);
+			EtablissementCivil etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
+			final String raisonSocialeAvant = etablissementPrincipalAvant.getNom(dateAvant);
 
-			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
-			final String raisonSocialeApres = sitePrincipalApres.getNom(dateApres);
+			final EtablissementCivil etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
+			final String raisonSocialeApres = etablissementPrincipalApres.getNom(dateApres);
 
 			final Map<Etablissement, List<Pair<String, Boolean>>> changementsRaison = new ListOrderedMap<>();
 
-			final Etablissement etablissementPrincipal = context.getTiersDAO().getEtablissementByNumeroSite(sitePrincipalApres.getNumeroSite());
+			final Etablissement etablissementPrincipal = context.getTiersDAO().getEtablissementByNumeroEtablissementCivil(etablissementPrincipalApres.getNumeroEtablissement());
 			final List<Pair<String, Boolean>> pairesPrincipales =
-					traiteEtablissement(sitePrincipalApres.getNumeroSite(), raisonSocialeAvant, raisonSocialeApres, etablissementPrincipal, true);
+					traiteEtablissement(etablissementPrincipalApres.getNumeroEtablissement(), raisonSocialeAvant, raisonSocialeApres, etablissementPrincipal, true);
 			if (!pairesPrincipales.isEmpty()) {
 				changementsRaison.put(etablissementPrincipal, pairesPrincipales);
 			}
@@ -77,8 +77,8 @@ public class RaisonSocialeStrategy extends AbstractOrganisationStrategy {
 			for (DateRanged<Etablissement> range : etablissementsSecondairesRanges) {
 				if (range.isValidAt(dateApres) && range.getPayload().isConnuAuCivil()) {
 					final Etablissement etab = range.getPayload();
-					final SiteOrganisation site = context.getTiersService().getSiteOrganisationPourEtablissement(etab);
-					final List<Pair<String, Boolean>> paires = traiteEtablissement(etab.getNumeroEtablissement(), site.getNom(dateAvant), site.getNom(dateApres), etab, false);
+					final EtablissementCivil etablissement = context.getTiersService().getEtablissementCivil(etab);
+					final List<Pair<String, Boolean>> paires = traiteEtablissement(etab.getNumeroEtablissement(), etablissement.getNom(dateAvant), etablissement.getNom(dateApres), etab, false);
 					if (!paires.isEmpty()) {
 						changementsRaison.put(etab, paires);
 					}
@@ -93,28 +93,28 @@ public class RaisonSocialeStrategy extends AbstractOrganisationStrategy {
 		return null;
 	}
 
-	private List<Pair<String, Boolean>> traiteEtablissement(Long numeroSite, String raisonSocialeSiteAvant, String raisonSocialeSiteApres,
+	private List<Pair<String, Boolean>> traiteEtablissement(Long numeroEtablissementCivil, String raisonSocialeEtablissementAvant, String raisonSocialeEtablissementApres,
 	                                                               Etablissement etablissement, boolean principal) {
 
 		// On ne s'occupe que des établissements connus d'Unireg et qui n'apparaissent ou disparaissent pas.
-		if (etablissement != null && StringUtils.isNotBlank(raisonSocialeSiteAvant) && raisonSocialeSiteApres != null && !raisonSocialeSiteAvant.equals(raisonSocialeSiteApres)) {
+		if (etablissement != null && StringUtils.isNotBlank(raisonSocialeEtablissementAvant) && raisonSocialeEtablissementApres != null && !raisonSocialeEtablissementAvant.equals(raisonSocialeEtablissementApres)) {
 			List<Pair<String, Boolean>> paires = new ArrayList<>();
 
 			String message = String.format("Changement de raison sociale de l'établissement %s n°%s (civil: %d). %s devient %s.",
 			                               principal ? "principal" : "secondaire",
 			                               FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
-			                               numeroSite,
-			                               raisonSocialeSiteAvant,
-			                               raisonSocialeSiteApres);
+			                               numeroEtablissementCivil,
+			                               raisonSocialeEtablissementAvant,
+			                               raisonSocialeEtablissementApres);
 			paires.add(new ImmutablePair<>(message, false));
 
 			final String enseigne = etablissement.getEnseigne();
-			if (StringUtils.isNotBlank(enseigne) && !enseigne.equals(raisonSocialeSiteApres)) {
+			if (StringUtils.isNotBlank(enseigne) && !enseigne.equals(raisonSocialeEtablissementApres)) {
 				String messageWarning = String.format("Avertissement: l'enseigne %s de l'établissement %s n°%s ne correspond pas à la nouvelle raison sociale %s. Veuillez corriger à la main si nécessaire.",
 				                                      enseigne,
 				                                      principal ? "principal" : "secondaire",
 				                                      FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
-				                                      raisonSocialeSiteApres);
+				                                      raisonSocialeEtablissementApres);
 				paires.add(new ImmutablePair<>(messageWarning, true));
 			}
 			return paires;

@@ -185,14 +185,14 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 		}
 	}
 
-	private static class GetSiteOrganisationKey implements Serializable {
+	private static class GetNoOrganisationFromNoEtablissementKey implements Serializable {
 
 		private static final long serialVersionUID = 3198014557405952141L;
 
-		private final long noSite;
+		private final long noEtablissement;
 
-		private GetSiteOrganisationKey(long noSite) {
-			this.noSite = noSite;
+		private GetNoOrganisationFromNoEtablissementKey(long noEtablissement) {
+			this.noEtablissement = noEtablissement;
 		}
 
 		@Override
@@ -200,21 +200,21 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final GetSiteOrganisationKey that = (GetSiteOrganisationKey) o;
+			final GetNoOrganisationFromNoEtablissementKey that = (GetNoOrganisationFromNoEtablissementKey) o;
 
-			return noSite == that.noSite;
+			return noEtablissement == that.noEtablissement;
 
 		}
 
 		@Override
 		public int hashCode() {
-			return (int) (noSite ^ (noSite >>> 32));
+			return (int) (noEtablissement ^ (noEtablissement >>> 32));
 		}
 
 		@Override
 		public String toString() {
-			return "GetSiteOrganisationKey{" +
-					"noSite=" + noSite +
+			return "GetNoOrganisationFromNoEtablissementKey{" +
+					"noEtablissement=" + noEtablissement +
 					'}';
 		}
 	}
@@ -238,15 +238,15 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 	}
 
 	@Override
-	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		final GetSiteOrganisationKey key = new GetSiteOrganisationKey(noSite);
+	public Long getNoOrganisationFromNoEtablissement(Long noEtablissementCivil) throws ServiceOrganisationException {
+		final GetNoOrganisationFromNoEtablissementKey key = new GetNoOrganisationFromNoEtablissementKey(noEtablissementCivil);
 		final Element element = cache.get(key);
 		if (element == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
-			final Long noSiteRecupere = target.getOrganisationPourSite(noSite);
-			Objects.requireNonNull(noSiteRecupere);
-			cache.put(new Element(key, noSiteRecupere));
-			return noSiteRecupere;
+			final Long noEtablissementRecupere = target.getNoOrganisationFromNoEtablissement(noEtablissementCivil);
+			Objects.requireNonNull(noEtablissementRecupere);
+			cache.put(new Element(key, noEtablissementRecupere));
+			return noEtablissementRecupere;
 		}
 		return (Long) element.getObjectValue();
 	}
@@ -340,9 +340,9 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 				final GetOrganisationKey ko = (GetOrganisationKey) k;
 				remove = (ko.noOrganisation == id);
 			}
-			else if (k instanceof GetSiteOrganisationKey) {
-				final GetSiteOrganisationKey ks = (GetSiteOrganisationKey) k;
-				remove = (ks.noSite == id);
+			else if (k instanceof GetNoOrganisationFromNoEtablissementKey) {
+				final GetNoOrganisationFromNoEtablissementKey ks = (GetNoOrganisationFromNoEtablissementKey) k;
+				remove = (ks.noEtablissement == id);
 				if (!remove) {
 					final Element elt = cache.getQuiet(k);
 					final Object value = elt != null ? elt.getObjectValue() : null;

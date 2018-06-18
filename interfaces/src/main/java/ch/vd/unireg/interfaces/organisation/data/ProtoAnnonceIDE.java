@@ -9,9 +9,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ProtoAnnonceIDE extends AnnonceIDEData {
 
-	public ProtoAnnonceIDE(TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeDeSite typeDeSite, Statut statut,
+	public ProtoAnnonceIDE(TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeEtablissementCivil typeEtablissementCivil, Statut statut,
 	                       InfoServiceIDEObligEtendues infoServiceIDEObligEtendues) {
-		super(type, dateAnnonce, utilisateur, typeDeSite, statut, infoServiceIDEObligEtendues);
+		super(type, dateAnnonce, utilisateur, typeEtablissementCivil, statut, infoServiceIDEObligEtendues);
 	}
 
 	public ProtoAnnonceIDE(BaseAnnonceIDE modele, @Nullable Statut statut) {

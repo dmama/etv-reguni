@@ -11,8 +11,8 @@ import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -45,18 +45,18 @@ public class AdresseStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange != null) {
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		if (etablissementPrincipalAvantRange != null) {
 			AdresseEffectiveRCEnt nouvelleAdresseEffective = null;
 			AdresseLegaleRCEnt nouvelleAdresseLegale = null;
 
-			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-			final AdresseEffectiveRCEnt adresseEffectiveAvant = sitePrincipalAvant.getDonneesRegistreIDE().getAdresseEffective(dateAvant);
-			final AdresseLegaleRCEnt adresseLegaleAvant = sitePrincipalAvant.getDonneesRC().getAdresseLegale(dateAvant);
+			EtablissementCivil etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
+			final AdresseEffectiveRCEnt adresseEffectiveAvant = etablissementPrincipalAvant.getDonneesRegistreIDE().getAdresseEffective(dateAvant);
+			final AdresseLegaleRCEnt adresseLegaleAvant = etablissementPrincipalAvant.getDonneesRC().getAdresseLegale(dateAvant);
 
-			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
-			final AdresseEffectiveRCEnt adresseEffectiveApres = sitePrincipalApres.getDonneesRegistreIDE().getAdresseEffective(dateApres);
-			final AdresseLegaleRCEnt adresseLegaleApres = sitePrincipalApres.getDonneesRC().getAdresseLegale(dateApres);
+			final EtablissementCivil etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
+			final AdresseEffectiveRCEnt adresseEffectiveApres = etablissementPrincipalApres.getDonneesRegistreIDE().getAdresseEffective(dateApres);
+			final AdresseLegaleRCEnt adresseLegaleApres = etablissementPrincipalApres.getDonneesRC().getAdresseLegale(dateApres);
 
 			if (adresseEffectiveAvant != adresseEffectiveApres) {
 				nouvelleAdresseEffective = adresseEffectiveApres;

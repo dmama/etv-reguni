@@ -28,17 +28,17 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	private final long numeroOrganisation;
 
 	@NotNull
-	private final Map<Long, List<DateRanged<Long>>> sites;
+	private final Map<Long, List<DateRanged<Long>>> numerosEtablissements;
 
 	@NotNull
-	private final Map<Long, SiteOrganisation> donneesSites;
+	private final Map<Long, EtablissementCivil> donneesEtablissements;
 
 	public OrganisationRCEnt(long numeroOrganisation,
-	                         @NotNull Map<Long, List<DateRanged<Long>>> sites,
-	                         @NotNull Map<Long, SiteOrganisation> donneesSites) {
+	                         @NotNull Map<Long, List<DateRanged<Long>>> numerosEtablissements,
+	                         @NotNull Map<Long, EtablissementCivil> donneesEtablissements) {
 		this.numeroOrganisation = numeroOrganisation;
-		this.sites = sites;
-		this.donneesSites = donneesSites;
+		this.numerosEtablissements = numerosEtablissements;
+		this.donneesEtablissements = donneesEtablissements;
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public List<DateRanged<String>> getNumeroIDE() {
-		return OrganisationHelper.getNumerosIDEPrincipaux(donneesSites);
+		return OrganisationHelper.getNumerosIDEPrincipaux(donneesEtablissements);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public List<DateRanged<String>> getNumeroRC() {
-		return OrganisationHelper.getNumerosRCPrincipaux(donneesSites);
+		return OrganisationHelper.getNumerosRCPrincipaux(donneesEtablissements);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	/**
 	 * Prepare une liste de plages représantant la succession des sièges des établissements principaux
 	 *
-	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * Pour y arriver, pour chaque établissement civil, on parcoure la liste des plages de type (principal ou secondaire)
 	 * et pour chaque plage principale on recherche le siege qui lui est contemporain.
 	 *
 	 * On extraie ensuite toute les plages sièges correspondant à la plage type principal.
@@ -78,7 +78,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	@Override
 	public List<Domicile> getSiegesPrincipaux() {
-		return OrganisationHelper.getSiegesPrincipaux(donneesSites);
+		return OrganisationHelper.getSiegesPrincipaux(donneesEtablissements);
 	}
 
 	/**
@@ -94,11 +94,11 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	/**
-	 * @return l'historique des formes juridique du site principal de l'entreprise.
+	 * @return l'historique des formes juridique de l'établissement civil principal de l'entreprise.
 	 */
 	@Override
 	public List<DateRanged<FormeLegale>> getFormeLegale() {
-		return OrganisationHelper.getFormesLegalesPrincipaux(donneesSites);
+		return OrganisationHelper.getFormesLegalesPrincipaux(donneesEtablissements);
 	}
 
 	/**
@@ -114,11 +114,11 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	/**
-	 * @return l'historique du nom de l'entreprise, c'est-à-dire le nom du site principal de l'entreprise.
+	 * @return l'historique du nom de l'entreprise, c'est-à-dire le nom de l'établissement civil principal de l'entreprise.
 	 */
 	@Override
 	public List<DateRanged<String>> getNom() {
-		return OrganisationHelper.getNomsPrincipaux(donneesSites);
+		return OrganisationHelper.getNomsPrincipaux(donneesEtablissements);
 	}
 
 	/**
@@ -134,11 +134,11 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	/**
-	 * @return l'historique du nom additionnel de l'entreprise, c'est-à-dire le nom additionnel du site principal de l'entreprise.
+	 * @return l'historique du nom additionnel de l'entreprise, c'est-à-dire le nom additionnel de l'établissement civil principal de l'entreprise.
 	 */
 	@Override
 	public List<DateRanged<String>> getNomAdditionnel() {
-		return OrganisationHelper.getNomsAdditionnelsPrincipaux(donneesSites);
+		return OrganisationHelper.getNomsAdditionnelsPrincipaux(donneesEtablissements);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	/**
 	 * Retourne une liste représantant la succession des valeurs de capital de l'entreprise.
 	 *
-	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * Pour y arriver, pour chaque établissement civil, on parcoure la liste des plages de type (principal ou secondaire)
 	 * et pour chaque plage principale on recherche la plage de capital qui lui est contemporaine.
 	 *
 	 * On recrée l'information du capital dans une nouvelle plage aux limites de la plage type principale qui a permis
@@ -166,7 +166,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	@Override
 	public List<Capital> getCapitaux() {
-		return OrganisationHelper.getCapitaux(donneesSites);
+		return OrganisationHelper.getCapitaux(donneesEtablissements);
 	}
 
 	@Override
@@ -176,52 +176,52 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	@NotNull
-	public List<SiteOrganisation> getDonneesSites() {
-		return new ArrayList<>(donneesSites.values());
+	public List<EtablissementCivil> getEtablissements() {
+		return new ArrayList<>(donneesEtablissements.values());
 	}
 
 	@Override
 	public List<Adresse> getAdresses() {
-		return OrganisationHelper.getAdresses(donneesSites);
+		return OrganisationHelper.getAdresses(donneesEtablissements);
 	}
 
 	/**
-	 * Liste des sites principaux
-	 * @return La liste des sites principaux
+	 * Liste des établissements civils principaux
+	 * @return La liste des établissements civils principaux
 	 */
 	@Override
-	public List<DateRanged<SiteOrganisation>> getSitePrincipaux() {
-		return OrganisationHelper.getSitePrincipaux(this);
+	public List<DateRanged<EtablissementCivil>> getEtablissementsPrincipaux() {
+		return OrganisationHelper.getEtablissementsCivilsPrincipaux(this);
 	}
 
 	/**
-	 * Le site principal à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 * L'établissement civil principal à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 * @param date
-	 * @return Le site princpial
+	 * @return L'établissement civil princpial
 	 */
 	@Override
-	public DateRanged<SiteOrganisation> getSitePrincipal(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(getSitePrincipaux(), date);
+	public DateRanged<EtablissementCivil> getEtablissementPrincipal(RegDate date) {
+		return OrganisationHelper.dateRangeForDate(getEtablissementsPrincipaux(), date);
 	}
 
 	/**
-	 * Liste des sites secondaire pour une date donnée. Si la date est nulle, la date du jour est utilisée.
-	 * @param date La date pour laquelle on désire la liste des sites secondaires
-	 * @return La liste des sites secondaire
+	 * Liste des établissements civils secondaire pour une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 * @param date La date pour laquelle on désire la liste des établissements civils secondaires
+	 * @return La liste des établissements civils secondaire
 	 */
 	@Override
-	public List<SiteOrganisation> getSitesSecondaires(RegDate date) {
-		return OrganisationHelper.getSitesSecondaires(this, date);
+	public List<EtablissementCivil> getEtablissementsSecondaires(RegDate date) {
+		return OrganisationHelper.getEtablissementsCivilsSecondaires(this, date);
 	}
 
 	@NotNull
-	public Map<Long, List<DateRanged<Long>>> getSites() {
-		return sites;
+	public Map<Long, List<DateRanged<Long>>> getNumerosEtablissements() {
+		return numerosEtablissements;
 	}
 
 	@Override
-	public SiteOrganisation getSiteForNo(Long noSite) {
-		return donneesSites.get(noSite);
+	public EtablissementCivil getEtablissementForNo(Long noEtablissementCivil) {
+		return donneesEtablissements.get(noEtablissementCivil);
 	}
 
 	/**
@@ -265,16 +265,16 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 * Indique si un l'organisation possède son siège principal sur Vaud. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
-	public boolean hasSitePrincipalVD(RegDate date) {
-		return OrganisationHelper.hasSitePrincipalVD(this, date);
+	public boolean hasEtablissementPrincipalVD(RegDate date) {
+		return OrganisationHelper.hasEtablissementPrincipalVD(this, date);
 	}
 
 	/**
-	 * @return true si un site de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
+	 * @return true si un établissement civil de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
 	 */
 	@Override
-	public boolean hasSiteVD(RegDate date) {
-		return OrganisationHelper.hasSiteVD(this, date);
+	public boolean hasEtablissementVD(RegDate date) {
+		return OrganisationHelper.hasEtablissementVD(this, date);
 	}
 
 	/**
@@ -328,11 +328,11 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	/**
-	 * @return liste des sites de l'organisation domiciliés dans le canton de Vaud (principal ou secondaire), inscrit au RC
+	 * @return liste des établissements civils de l'organisation domiciliés dans le canton de Vaud (principal ou secondaire), inscrit au RC
 	 * et non radiés
 	 */
 	@Override
-	public List<SiteOrganisation> getSuccursalesRCVD(RegDate date) {
+	public List<EtablissementCivil> getSuccursalesRCVD(RegDate date) {
 		return OrganisationHelper.getSuccursalesRCVD(this, date);
 	}
 }

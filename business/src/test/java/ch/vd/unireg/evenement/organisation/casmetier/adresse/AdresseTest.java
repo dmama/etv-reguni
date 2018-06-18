@@ -28,8 +28,8 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -71,21 +71,21 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "1", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Rue du Père Noël", null, null, null));
-				final MockDonneesRC donneesRC = (MockDonneesRC) sitePrincipal.getDonneesRC();
+				final MockDonneesRC donneesRC = (MockDonneesRC) etablissementPrincipal.getDonneesRC();
 				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
 				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
@@ -100,7 +100,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
@@ -184,17 +184,17 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				final MockDonneesRC donneesRC = (MockDonneesRC) sitePrincipal.getDonneesRC();
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockDonneesRC donneesRC = (MockDonneesRC) etablissementPrincipal.getDonneesRC();
 				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
 				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
@@ -209,7 +209,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				AdresseSuisse poursuite = addAdresseSuisse(entreprise, TypeAdresseTiers.POURSUITE, date(2015, 1, 1), null, MockRue.Lausanne.AvenueDeLaGare);
 				poursuite.setPermanente(true);
@@ -295,17 +295,17 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				final MockDonneesRC donneesRC = (MockDonneesRC) sitePrincipal.getDonneesRC();
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockDonneesRC donneesRC = (MockDonneesRC) etablissementPrincipal.getDonneesRC();
 				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
 				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
@@ -320,7 +320,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				AdresseSuisse poursuite = addAdresseSuisse(entreprise, TypeAdresseTiers.POURSUITE, date(2015, 1, 1), null, MockRue.Lausanne.AvenueDeLaGare);
 				poursuite.setPermanente(false);
@@ -405,17 +405,17 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
@@ -430,7 +430,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				AdresseSuisse poursuite = addAdresseSuisse(entreprise, TypeAdresseTiers.POURSUITE, date(2015, 1, 1), null, MockRue.Lausanne.AvenueDeLaGare);
 				poursuite.setPermanente(false);
@@ -520,17 +520,17 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
@@ -545,7 +545,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				AdresseSuisse poursuite = addAdresseSuisse(entreprise, TypeAdresseTiers.POURSUITE, date(2015, 1, 1), null, MockRue.Lausanne.AvenueDeLaGare);
 				poursuite.setPermanente(false);
@@ -655,17 +655,17 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
@@ -680,7 +680,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				AdresseSuisse poursuite = addAdresseSuisse(entreprise, TypeAdresseTiers.POURSUITE, date(2015, 1, 1), null, MockRue.Lausanne.AvenueDeLaGare);
 				poursuite.setPermanente(true);
@@ -769,17 +769,17 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
@@ -794,7 +794,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 

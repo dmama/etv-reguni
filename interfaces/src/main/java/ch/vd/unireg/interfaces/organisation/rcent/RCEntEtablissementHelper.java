@@ -10,7 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesREE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesREERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivilRCEnt;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationLocation;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverters;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.BurRegistrationDataConverter;
@@ -27,7 +27,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterDeregist
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterTypeOfOrganisationConverter;
 
-public class RCEntSiteOrganisationHelper {
+public class RCEntEtablissementHelper {
 
 	private static final TypeOfLocationConverter TYPE_OF_LOCATION_CONVERTER = new TypeOfLocationConverter();
 	private static final OrganisationFunctionConverter FUNCTION_CONVERTER = new OrganisationFunctionConverter();
@@ -44,13 +44,13 @@ public class RCEntSiteOrganisationHelper {
 	private static final Predicate<Capital> CAPITAL_PREDICATE = new CapitalPredicate();
 	private static final BurRegistrationDataConverter BUR_REGISTRATION_DATA_CONVERTER = new BurRegistrationDataConverter();
 
-	public static SiteOrganisationRCEnt get(OrganisationLocation rcEntLocation, ServiceInfrastructureRaw infraService) {
+	public static EtablissementCivilRCEnt get(OrganisationLocation rcEntLocation, ServiceInfrastructureRaw infraService) {
 
 		final OrganisationLocation.RCEntRCData rc = rcEntLocation.getRc();
 		final OrganisationLocation.RCEntUIDData uid = rcEntLocation.getUid();
 		final OrganisationLocation.RCEntBURData bur = rcEntLocation.getBur();
 
-		return new SiteOrganisationRCEnt(
+		return new EtablissementCivilRCEnt(
 				rcEntLocation.getCantonalId(),
 				RCEntHelper.convert(rcEntLocation.getIdentifiers()),
 				RCEntHelper.convert(rcEntLocation.getName()),

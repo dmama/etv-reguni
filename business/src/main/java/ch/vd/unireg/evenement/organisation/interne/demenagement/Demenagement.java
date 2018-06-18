@@ -13,9 +13,9 @@ import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneD
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -32,8 +32,8 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
-	private final SiteOrganisation sitePrincipalAvant;
-	private final SiteOrganisation sitePrincipalApres;
+	private final EtablissementCivil etablissementCivilPrincipalAvant;
+	private final EtablissementCivil etablissementCivilPrincipalApres;
 
 	private final Domicile siegeAvant;
 	private final Domicile siegeApres;
@@ -54,16 +54,16 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		this.siegeAvant = siegeAvant;
 		this.siegeApres = siegeApres;
 
-		final DateRanged<SiteOrganisation> sitePrincipalRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalRange != null) {
-			sitePrincipalAvant = sitePrincipalRange.getPayload();
-			etablissementPrincipalAvant = getEtablissementByNumeroSite(sitePrincipalAvant.getNumeroSite());
+		final DateRanged<EtablissementCivil> etablissementPrincipalRange = organisation.getEtablissementPrincipal(dateAvant);
+		if (etablissementPrincipalRange != null) {
+			etablissementCivilPrincipalAvant = etablissementPrincipalRange.getPayload();
+			etablissementPrincipalAvant = getEtablissementByNumeroEtablissementCivil(etablissementCivilPrincipalAvant.getNumeroEtablissement());
 		} else {
-			sitePrincipalAvant = null;
+			etablissementCivilPrincipalAvant = null;
 			etablissementPrincipalAvant = RangeUtil.getAssertLast(context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise), dateAvant).getPayload();
 		}
-		sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
-		etablissementPrincipalApres = getEtablissementByNumeroSite(sitePrincipalApres.getNumeroSite());
+		etablissementCivilPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
+		etablissementPrincipalApres = getEtablissementByNumeroEtablissementCivil(etablissementCivilPrincipalApres.getNumeroEtablissement());
 	}
 
 	@Override
@@ -162,8 +162,8 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 			throw new IllegalArgumentException("Pas un déménagement de siège, la commune n'a pas changé!");
 		}
 
-		// Si on n'a pas d'établissement principal après, c'est qu'on ne l'a pas trouvé en recherchant avec le numéro de site principal après, donc ce dernier est nouveau.
-		if (!getEtablissementPrincipalAvant().getNumeroEtablissement().equals(sitePrincipalApres.getNumeroSite())) {
+		// Si on n'a pas d'établissement principal après, c'est qu'on ne l'a pas trouvé en recherchant avec le numéro d'établissement civil principal après, donc ce dernier est nouveau.
+		if (!getEtablissementPrincipalAvant().getNumeroEtablissement().equals(etablissementCivilPrincipalApres.getNumeroEtablissement())) {
 			erreurs.addErreur("Changement de siège avec changement d'établissement principal. Veuillez traiter l'événement manuellement.");
 		}
 	}
@@ -184,12 +184,12 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		return siegeApres;
 	}
 
-	public SiteOrganisation getSitePrincipalAvant() {
-		return sitePrincipalAvant;
+	public EtablissementCivil getEtablissementCivilPrincipalAvant() {
+		return etablissementCivilPrincipalAvant;
 	}
 
-	public SiteOrganisation getSitePrincipalApres() {
-		return sitePrincipalApres;
+	public EtablissementCivil getEtablissementCivilPrincipalApres() {
+		return etablissementCivilPrincipalApres;
 	}
 
 	public Etablissement getEtablissementPrincipalAvant() {

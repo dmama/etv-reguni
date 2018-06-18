@@ -1,14 +1,14 @@
 package ch.vd.unireg.evenement.organisation.interne.demenagement;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.TiersService;
@@ -37,8 +37,8 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
 			motifFor = MotifFor.DEPART_HC;
-			if (getSitePrincipalApres().isConnuInscritAuRC(getDateApres())) {
-				final RegDate dateRadiationRCVd = getSitePrincipalApres().getDateRadiationRCVd(getDateApres());
+			if (getEtablissementCivilPrincipalApres().isConnuInscritAuRC(getDateApres())) {
+				final RegDate dateRadiationRCVd = getEtablissementCivilPrincipalApres().getDateRadiationRCVd(getDateApres());
 				if (dateRadiationRCVd == null) {
 					throw new EvenementOrganisationException("Date de radiation au registre vaudois du commerce introuvable pour l'établissement principal en partance.");
 				}
@@ -50,8 +50,8 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			motifFor = MotifFor.ARRIVEE_HC;
-			if (getSitePrincipalApres().isConnuInscritAuRC(getDateApres())) {
-				final RegDate dateInscriptionRCVd = getSitePrincipalApres().getDateInscriptionRCVd(getDateApres());
+			if (getEtablissementCivilPrincipalApres().isConnuInscritAuRC(getDateApres())) {
+				final RegDate dateInscriptionRCVd = getEtablissementCivilPrincipalApres().getDateInscriptionRCVd(getDateApres());
 				if (dateInscriptionRCVd == null) {
 					throw new EvenementOrganisationException("Date d'inscription au registre vaudois du commerce introuvable pour l'établissement principal en arrivée.");
 				}

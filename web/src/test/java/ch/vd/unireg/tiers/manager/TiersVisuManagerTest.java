@@ -250,7 +250,7 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	public void testGetAdresseCivilesEtablissement() throws Exception {
 
-		final long numeroEtablissement = MockOrganisationFactory.TENNIS_CLUB_FOREL_SAVIGNY.getSitePrincipal(null).getPayload().getNumeroSite();
+		final long numeroEtablissement = MockOrganisationFactory.TENNIS_CLUB_FOREL_SAVIGNY.getEtablissementPrincipal(null).getPayload().getNumeroEtablissement();
 
 		// on insère les données du Tennis-Club de Forel-Savigny (dont l'établissement principal possède une boîte postale)
 		serviceOrganisation.setUp(new MockServiceOrganisation() {

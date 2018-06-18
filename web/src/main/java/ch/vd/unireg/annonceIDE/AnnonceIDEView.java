@@ -9,7 +9,7 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 
 /**
  * Vue web d'une annonce à l'IDE.
@@ -22,7 +22,7 @@ public class AnnonceIDEView {
 	private UtilisateurView utilisateur;
 	private ServiceIDEView serviceIDE;
 	private StatutView statut;
-	private TypeDeSite typeDeSite;
+	private TypeEtablissementCivil typeEtablissementCivil;
 	private String noIde;
 	private String noIdeRemplacant;
 	private String noIdeEtablissementPrincipal;
@@ -45,7 +45,7 @@ public class AnnonceIDEView {
 		this.utilisateur = annonce.getUtilisateur() == null ? null : new UtilisateurView(annonce.getUtilisateur());
 		this.serviceIDE = new ServiceIDEView(annonce.getInfoServiceIDEObligEtendues());
 		this.statut = new StatutView(annonce.getStatut());
-		this.typeDeSite = annonce.getTypeDeSite();
+		this.typeEtablissementCivil = annonce.getTypeEtablissementCivil();
 		this.noIde = formatNoIDE(annonce.getNoIde());
 		this.noIdeRemplacant = formatNoIDE(annonce.getNoIdeRemplacant());
 		this.noIdeEtablissementPrincipal = formatNoIDE(annonce.getNoIdeEtablissementPrincipal());
@@ -111,12 +111,12 @@ public class AnnonceIDEView {
 		this.statut = statut;
 	}
 
-	public TypeDeSite getTypeDeSite() {
-		return typeDeSite;
+	public TypeEtablissementCivil getTypeEtablissementCivil() {
+		return typeEtablissementCivil;
 	}
 
-	public void setTypeDeSite(TypeDeSite typeDeSite) {
-		this.typeDeSite = typeDeSite;
+	public void setTypeEtablissementCivil(TypeEtablissementCivil typeEtablissementCivil) {
+		this.typeEtablissementCivil = typeEtablissementCivil;
 	}
 
 	public String getNoIde() {

@@ -7,9 +7,9 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.common.AbstractJobResults;
 import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -32,8 +32,8 @@ public class AppariementEtablissementsSecondairesResults extends AbstractJobResu
 	}
 
 	public enum RaisonAppariement {
-		SEULS_MEME_ENDROIT("Seul couple établissement/site à cet endroit compte tenu du flag actif/inactif."),
-		IDE_MEME_ENDROIT("Etablissement et site partagent le même siège et le même numéro IDE.");
+		SEULS_MEME_ENDROIT("Seul couple établissement/établissement civil à cet endroit compte tenu du flag actif/inactif."),
+		IDE_MEME_ENDROIT("Etablissement et établissement civil partagent le même siège et le même numéro IDE.");
 
 		private final String libelle;
 
@@ -49,15 +49,15 @@ public class AppariementEtablissementsSecondairesResults extends AbstractJobResu
 	public static class AppariementEtablissement extends AppariementInfo implements Comparable<AppariementEtablissement> {
 
 		public final long idEtablissement;
-		public final long idSite;
+		public final long idEtablissementCivil;
 		public final TypeAutoriteFiscale tafSiege;
 		public final Integer ofsSiege;
 		public final RaisonAppariement raison;
 
-		public AppariementEtablissement(long idEntreprise, long idEtablissement, long idSite, TypeAutoriteFiscale tafSiege, Integer ofsSiege, RaisonAppariement raison) {
+		public AppariementEtablissement(long idEntreprise, long idEtablissement, long idEtablissementCivil, TypeAutoriteFiscale tafSiege, Integer ofsSiege, RaisonAppariement raison) {
 			super(idEntreprise);
 			this.idEtablissement = idEtablissement;
-			this.idSite = idSite;
+			this.idEtablissementCivil = idEtablissementCivil;
 			this.tafSiege = tafSiege;
 			this.ofsSiege = ofsSiege;
 			this.raison = raison;
@@ -112,12 +112,12 @@ public class AppariementEtablissementsSecondairesResults extends AbstractJobResu
 		super.end();
 	}
 
-	public void addNouvelAppariementEtablissementCommune(Entreprise entreprise, Etablissement etablissement, SiteOrganisation site, TypeAutoriteFiscale tafSiege, Integer ofsSiege) {
-		appariements.add(new AppariementEtablissement(entreprise.getNumero(), etablissement.getNumero(), site.getNumeroSite(), tafSiege, ofsSiege, RaisonAppariement.SEULS_MEME_ENDROIT));
+	public void addNouvelAppariementEtablissementCommune(Entreprise entreprise, Etablissement etablissement, EtablissementCivil etablissementCivil, TypeAutoriteFiscale tafSiege, Integer ofsSiege) {
+		appariements.add(new AppariementEtablissement(entreprise.getNumero(), etablissement.getNumero(), etablissementCivil.getNumeroEtablissement(), tafSiege, ofsSiege, RaisonAppariement.SEULS_MEME_ENDROIT));
 	}
 
-	public void addNouvelAppariementEtablissementIde(Entreprise entreprise, Etablissement etablissement, SiteOrganisation site, TypeAutoriteFiscale tafSiege, Integer ofsSiege) {
-		appariements.add(new AppariementEtablissement(entreprise.getNumero(), etablissement.getNumero(), site.getNumeroSite(), tafSiege, ofsSiege, RaisonAppariement.IDE_MEME_ENDROIT));
+	public void addNouvelAppariementEtablissementIde(Entreprise entreprise, Etablissement etablissement, EtablissementCivil etablissementCivil, TypeAutoriteFiscale tafSiege, Integer ofsSiege) {
+		appariements.add(new AppariementEtablissement(entreprise.getNumero(), etablissement.getNumero(), etablissementCivil.getNumeroEtablissement(), tafSiege, ofsSiege, RaisonAppariement.IDE_MEME_ENDROIT));
 	}
 
 	public void setInterrupted(boolean interrompu) {

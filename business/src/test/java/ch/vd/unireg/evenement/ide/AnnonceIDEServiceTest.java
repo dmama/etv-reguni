@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
@@ -17,9 +18,8 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.tiers.Etablissement;
 
 /**
@@ -50,7 +50,7 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 				                              null, null);
 
 		final ProtoAnnonceIDE annonce =
-				RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
+				RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
 				                                            "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
 		// l'établissement
@@ -69,7 +69,7 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 		Assert.assertEquals(annonce.getNoIdeRemplacant(), annonceIDE.getNoIdeRemplacant());
 		Assert.assertEquals(annonce.getNoIdeEtablissementPrincipal(), annonceIDE.getNoIdeEtablissementPrincipal());
 		Assert.assertEquals(annonce.getRaisonDeRadiation(), annonceIDE.getRaisonDeRadiation());
-		Assert.assertEquals(annonce.getTypeDeSite(), annonceIDE.getTypeDeSite());
+		Assert.assertEquals(annonce.getTypeEtablissementCivil(), annonceIDE.getTypeEtablissementCivil());
 		Assert.assertEquals(annonce.getCommentaire(), annonceIDE.getCommentaire());
 		Assert.assertEquals(annonce.getStatut(), annonceIDE.getStatut());
 		Assert.assertEquals(annonce.getUtilisateur(), annonceIDE.getUtilisateur());

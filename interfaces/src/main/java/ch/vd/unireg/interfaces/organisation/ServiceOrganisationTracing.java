@@ -76,12 +76,12 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 	}
 
 	@Override
-	public Long getOrganisationPourSite(final Long noSite) throws ServiceOrganisationException {
+	public Long getNoOrganisationFromNoEtablissement(final Long noEtablissementCivil) throws ServiceOrganisationException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final Long noOrganisation = target.getOrganisationPourSite(noSite);
+			final Long noOrganisation = target.getNoOrganisationFromNoEtablissement(noEtablissementCivil);
 			if (noOrganisation != null) {
 				items = 1;
 			}
@@ -92,7 +92,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisationPourSite", items, () -> String.format("noSite=%d", noSite));
+			tracing.end(time, t, "getNoOrganisationFromNoEtablissement", items, () -> String.format("noEtablissementCivil=%d", noEtablissementCivil));
 		}
 	}
 

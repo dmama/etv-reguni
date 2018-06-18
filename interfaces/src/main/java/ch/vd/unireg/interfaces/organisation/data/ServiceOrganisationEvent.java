@@ -13,7 +13,7 @@ public class ServiceOrganisationEvent implements Serializable {
 
 	private final long noEvenement;
 
-	private final Long siteCible;
+	private final Long noEtablissementCivilCible;
 
 	private Long numeroEntreeJournalRC;
 	private RegDate dateEntreeJournalRC;
@@ -23,10 +23,10 @@ public class ServiceOrganisationEvent implements Serializable {
 
 	private final Organisation pseudoHistory;
 
-	public ServiceOrganisationEvent(long noEvenement, Long siteCible, Organisation pseudoHistory) {
+	public ServiceOrganisationEvent(long noEvenement, Long noEtablissementCivilCible, Organisation pseudoHistory) {
 		this.noEvenement = noEvenement;
 		this.pseudoHistory = pseudoHistory;
-		this.siteCible = siteCible;
+		this.noEtablissementCivilCible = noEtablissementCivilCible;
 	}
 
 	public long getNoEvenement() {
@@ -35,18 +35,18 @@ public class ServiceOrganisationEvent implements Serializable {
 
 	/**
 	 * <p>
-	 *     Renvoie le numéro cantonal du site (établissement) ciblé par l'événement.
+	 *     Renvoie le numéro cantonal de l'établissement civil (établissement) ciblé par l'événement.
 	 * </p>
 	 *
 	 * <p>
-	 *     <strong>ATTENTION</strong>: ce site peut ne pas faire partie de l'organisation renvoyée par getPseudoHistory()! Il peut être membre d'une autre organisation
+	 *     <strong>ATTENTION</strong>: cet établissement civil peut ne pas faire partie de l'organisation renvoyée par getPseudoHistory()! Il peut être membre d'une autre organisation
 	 *     ciblée par le même événement RCEnt.
 	 * </p>
 	 *
-	 * @return le numéro cantonal de la site (établissement) ciblé par l'événement.
+	 * @return le numéro cantonal de l'établissement civil ciblé par l'événement.
 	 */
-	public Long getSiteCible() {
-		return siteCible;
+	public Long getNoEtablissementCivilCible() {
+		return noEtablissementCivilCible;
 	}
 
 	public Organisation getPseudoHistory() {

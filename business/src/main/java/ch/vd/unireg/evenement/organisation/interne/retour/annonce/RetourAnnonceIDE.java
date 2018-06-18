@@ -24,9 +24,9 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.DomicileHisto;
 import ch.vd.unireg.tiers.Entreprise;
@@ -50,7 +50,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 	private final AnnonceIDEEnvoyee annonceIDE;
 
-	private final SiteOrganisation sitePrincipal;
+	private final EtablissementCivil etablissementCivilPrincipal;
 
 	private final Etablissement etablissementPrincipal;
 
@@ -66,7 +66,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		this.annonceIDE = annonceIDE;
 		final ReferenceAnnonceIDE referenceAnnonceIDE = evenement.getReferenceAnnonceIDE();
 
-		sitePrincipal = organisation.getSitePrincipal(dateApres).getPayload();
+		etablissementCivilPrincipal = organisation.getEtablissementPrincipal(dateApres).getPayload();
 		etablissementPrincipal = referenceAnnonceIDE.getEtablissement();
 	}
 
@@ -94,13 +94,13 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 			tiersService.apparier(getEntreprise(), getOrganisation(), true);
 
 			// Appariement sans fermeture de surcharge de l'établissement principal, car on doit pouvoir garder le domicile différent.
-			etablissementPrincipal.setNumeroEtablissement(sitePrincipal.getNumeroSite());
+			etablissementPrincipal.setNumeroEtablissement(etablissementCivilPrincipal.getNumeroEtablissement());
 			etablissementPrincipal.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
 			final List<CandidatAppariement> appariements = getContext().getAppariementService().rechercheAppariementsEtablissementsSecondaires(getEntreprise());
 			if (!appariements.isEmpty()) {
 				for (CandidatAppariement appariement : appariements) {
-					tiersService.apparier(appariement.getEtablissement(), appariement.getSite());
+					tiersService.apparier(appariement.getEtablissement(), appariement.getEtablissementCivil());
 				}
 			}
 
@@ -113,7 +113,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 			tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
 		}
 		// Fermeture des surcharges d'adresse, sauf les permanentes. A la condition qu'il doit exister une adresse effective dans RCEnt.
-		final AdresseEffectiveRCEnt adresseEffective = sitePrincipal.getDonneesRegistreIDE().getAdresseEffective(this.dateApres);
+		final AdresseEffectiveRCEnt adresseEffective = etablissementCivilPrincipal.getDonneesRegistreIDE().getAdresseEffective(this.dateApres);
 		if (adresseEffective != null) {
 			final AdresseSupplementaire adresseCourrier = getAdresseTiers(TypeAdresseTiers.COURRIER, this.dateApres);
 			final AdresseSupplementaire adresseRepresentation = getAdresseTiers(TypeAdresseTiers.REPRESENTATION, this.dateApres);

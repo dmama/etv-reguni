@@ -19,8 +19,8 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeFusion;
 import ch.vd.unireg.interfaces.organisation.data.TypeDePublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.EtatEvenementOrganisation;
@@ -52,18 +52,18 @@ public class FusionScissionTest extends AbstractEvenementOrganisationProcessorTe
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, "123456", date(2015, 7, 5),
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) organisation.getEtablissements().get(0);
+				etablissementPrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, "123456", date(2015, 7, 5),
 				                                                             "Blah blah publication FOSC", TypeDeFusion.FUSION_INTERNATIONALE, null, null, null));
 				addOrganisation(organisation);
 
@@ -118,18 +118,18 @@ public class FusionScissionTest extends AbstractEvenementOrganisationProcessorTe
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, "1233634231", date(2015, 7, 5),
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) organisation.getEtablissements().get(0);
+				etablissementPrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, "1233634231", date(2015, 7, 5),
 				                                                             "blah blah publication.", null, null, null, null));
 				addOrganisation(organisation);
 
@@ -182,18 +182,18 @@ public class FusionScissionTest extends AbstractEvenementOrganisationProcessorTe
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, "123456", date(2015, 7, 5),
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) organisation.getEtablissements().get(0);
+				etablissementPrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, "123456", date(2015, 7, 5),
 				                                                             "Blah blah publication FOSC", TypeDeFusion.SCISSION_ART_45_LFUS, null, null, null));
 				addOrganisation(organisation);
 

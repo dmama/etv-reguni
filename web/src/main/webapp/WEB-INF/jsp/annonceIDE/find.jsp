@@ -150,7 +150,7 @@
 					<fmt:message key="option.statut.annonce.${annonce.statut.statut}" />
 				</display:column>
 				<display:column sortable="true" titleKey="label.no.cantonal.annonce" sortName="cantonalId">
-					<unireg:cantonalId cantonalId="${annonce.informationOrganisation.numeroSite}"/>
+					<unireg:cantonalId cantonalId="${annonce.informationOrganisation.numeroEtablissement}"/>
 				</display:column>
 				<display:column titleKey="label.no.ide.annonce" >
 					<unireg:numIDE numeroIDE="${annonce.noIde}"/>

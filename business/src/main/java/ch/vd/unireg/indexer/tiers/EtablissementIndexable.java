@@ -4,63 +4,63 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.Etablissement;
+import ch.vd.unireg.tiers.EtablissementCivilNotFoundException;
 import ch.vd.unireg.tiers.OrganisationNotFoundException;
 import ch.vd.unireg.tiers.RapportEntreTiers;
-import ch.vd.unireg.tiers.SiteOrganisationNotFoundException;
 import ch.vd.unireg.tiers.TiersService;
 
 public class EtablissementIndexable extends ContribuableIndexable<Etablissement> {
 
 	public static final String SUB_TYPE = "etablissement";
 
-	private final SiteOrganisation site;
+	private final EtablissementCivil etablissement;
 
 	public EtablissementIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceInfrastructureService serviceInfra,
 	                              ServiceOrganisationService serviceOrganisation, AvatarService avatarService, Etablissement etablissement) throws IndexerException {
 		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, etablissement);
 
 		if (etablissement.isConnuAuCivil()) {
-			final Long noOrganisation = serviceOrganisation.getOrganisationPourSite(etablissement.getNumeroEtablissement());
+			final Long noOrganisation = serviceOrganisation.getNoOrganisationFromNoEtablissement(etablissement.getNumeroEtablissement());
 			if (noOrganisation != null) {
 				final Organisation organisation = serviceOrganisation.getOrganisationHistory(noOrganisation);
 				if (organisation == null) {
 					throw new OrganisationNotFoundException(noOrganisation);
 				}
 
-				this.site = findSite(organisation, etablissement.getNumeroEtablissement());
-				if (this.site == null) {
-					throw new SiteOrganisationNotFoundException(etablissement);
+				this.etablissement = findEtablissementCivil(organisation, etablissement.getNumeroEtablissement());
+				if (this.etablissement == null) {
+					throw new EtablissementCivilNotFoundException(etablissement);
 				}
 			}
 			else {
-				throw new SiteOrganisationNotFoundException(etablissement);
+				throw new EtablissementCivilNotFoundException(etablissement);
 			}
 		}
 		else {
-			this.site = null;
+			this.etablissement = null;
 		}
 	}
 
 	@Nullable
-	private static SiteOrganisation findSite(Organisation organisation, long noSite) {
-		final List<SiteOrganisation> sites = organisation.getDonneesSites();
-		if (sites == null || sites.isEmpty()) {
+	private static EtablissementCivil findEtablissementCivil(Organisation organisation, long noEtablissement) {
+		final List<EtablissementCivil> etablissements = organisation.getEtablissements();
+		if (etablissements == null || etablissements.isEmpty()) {
 			return null;
 		}
-		for (SiteOrganisation candidat : sites) {
-			if (candidat.getNumeroSite() == noSite) {
+		for (EtablissementCivil candidat : etablissements) {
+			if (candidat.getNumeroEtablissement() == noEtablissement) {
 				return candidat;
 			}
 		}
@@ -76,12 +76,12 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 	@Override
 	protected void fillIdeData(TiersIndexableData data) {
 		// [SIFISC-18106] seul(s) le(s) numéro(s) IDE porté(s) par l'établissement en question doivent être visible ici
-		if (site == null) {
+		if (etablissement == null) {
 			// récupération des données présentes en base de données Unireg
 			super.fillIdeData(data);
 		}
-		else if (site.getNumeroIDE() != null) {
-			for (DateRanged<String> ide : site.getNumeroIDE()) {
+		else if (etablissement.getNumeroIDE() != null) {
+			for (DateRanged<String> ide : etablissement.getNumeroIDE()) {
 				data.addIde(ide.getPayload());
 			}
 		}
@@ -92,13 +92,13 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 		super.fillBaseData(data);
 		data.setConnuAuCivil(tiers.isConnuAuCivil());
 
-		if (site == null) {
+		if (etablissement == null) {
 			data.addAutresNom(tiers.getEnseigne());
 			data.addNomRaison(tiers.getRaisonSociale());
 			data.addNom1(tiers.getRaisonSociale());
 		}
 		else {
-			final List<DateRanged<String>> noms = site.getNom();
+			final List<DateRanged<String>> noms = etablissement.getNom();
 			for (DateRanged<String> nom : noms) {
 				data.addNomRaison(nom.getPayload());
 			}
@@ -113,8 +113,8 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 		}
 
 		// éventuels identifiants RC (en provenance du civil seulement)
-		if (site != null) {
-			final List<DateRanged<String>> all = site.getNumeroRC();
+		if (etablissement != null) {
+			final List<DateRanged<String>> all = etablissement.getNumeroRC();
 			if (all != null) {
 				all.stream()
 						.map(DateRanged::getPayload)

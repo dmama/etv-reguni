@@ -63,7 +63,7 @@ public class ReinscriptionTest extends AbstractEvenementOrganisationProcessorTes
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -72,11 +72,11 @@ public class ReinscriptionTest extends AbstractEvenementOrganisationProcessorTes
 				final RegDate dateRadiation = date(2012, 1, 26);
 
 				final MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", RegDate.get(2010, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscription,
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				final MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				final MockDonneesRC rc = (MockDonneesRC) organisation.getEtablissements().get(0).getDonneesRC();
 				rc.changeInscription(date(2012, 1, 26), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 				                                                          dateInscription, dateRadiation,
 				                                                          dateInscription, dateRadiation));
@@ -84,7 +84,7 @@ public class ReinscriptionTest extends AbstractEvenementOrganisationProcessorTes
 				                                                         dateInscription, dateRadiation,            // dateRadiation, et pas null, car en fait la date persiste dans RCEnt après la réinscription...
 				                                                         dateInscription, dateRadiation));          // dateRadiation, et pas null, car en fait la date persiste dans RCEnt après la réinscription...
 
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getEtablissements().get(0).getDonneesRegistreIDE();
 				// La réinscription n'a pas d'effet immédiat à l'IDE.
 				//donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
 				//donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);

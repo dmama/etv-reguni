@@ -23,14 +23,14 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesREE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.type.TypeAdresseCivil;
 
@@ -58,10 +58,10 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	}
 
 	@Override
-	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
+	public Long getNoOrganisationFromNoEtablissement(Long noEtablissementCivil) throws ServiceOrganisationException {
 		for (Map.Entry<Long, MockOrganisation> organisation : organisationMap.entrySet()) {
-			for (SiteOrganisation site : organisation.getValue().getDonneesSites()) {
-				if (site.getNumeroSite() == noSite) {
+			for (EtablissementCivil etablissement : organisation.getValue().getEtablissements()) {
+				if (etablissement.getNumeroEtablissement() == noEtablissementCivil) {
 					return organisation.getKey();
 				}
 			}
@@ -72,11 +72,11 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	@Override
 	public Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
 		for (Map.Entry<Long, MockOrganisation> organisation : organisationMap.entrySet()) {
-			for (SiteOrganisation site : organisation.getValue().getDonneesSites()) {
-				if (site.getNumeroIDE() != null) {
-					for (DateRanged<String> candidat : site.getNumeroIDE()) {
+			for (EtablissementCivil etablissement : organisation.getValue().getEtablissements()) {
+				if (etablissement.getNumeroIDE() != null) {
+					for (DateRanged<String> candidat : etablissement.getNumeroIDE()) {
 						if (noide != null && noide.equals(candidat.getPayload())) {
-							return new Identifiers(organisation.getKey(), site.getNumeroSite());
+							return new Identifiers(organisation.getKey(), etablissement.getNumeroEtablissement());
 						}
 					}
 				}
@@ -142,20 +142,20 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 		return org;
 	}
 
-	protected MockSiteOrganisation addSite(MockOrganisation organisation, long cantonalId, RegDate dateCreation,
-	                                       MockDonneesRegistreIDE donneesRegistreIDE, MockDonneesRC donneesRC, MockDonneesREE donneesREE) {
-		final MockSiteOrganisation site = new MockSiteOrganisation(cantonalId, donneesRegistreIDE, donneesRC, donneesREE);
-		organisation.addDonneesSite(site);
-		return site;
+	protected MockEtablissementCivil addEtablissmeent(MockOrganisation organisation, long cantonalId, RegDate dateCreation,
+	                                                  MockDonneesRegistreIDE donneesRegistreIDE, MockDonneesRC donneesRC, MockDonneesREE donneesREE) {
+		final MockEtablissementCivil etablissement = new MockEtablissementCivil(cantonalId, donneesRegistreIDE, donneesRC, donneesREE);
+		organisation.addDonneesEtablissement(etablissement);
+		return etablissement;
 	}
 
 	protected void addNumeroIDE(MockOrganisation organisation, String numeroIDE, RegDate dateDebut, RegDate dateFin) {
-		MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-		site.addNumeroIDE(dateDebut, dateFin, numeroIDE);
+		MockEtablissementCivil etablissement = (MockEtablissementCivil) organisation.getEtablissements().get(0);
+		etablissement.addNumeroIDE(dateDebut, dateFin, numeroIDE);
 	}
 
-	protected void addNumeroIDE(MockSiteOrganisation site, String numeroIDE, RegDate dateDebut, RegDate dateFin) {
-		site.addNumeroIDE(dateDebut, dateFin, numeroIDE);
+	protected void addNumeroIDE(MockEtablissementCivil etablissement, String numeroIDE, RegDate dateDebut, RegDate dateFin) {
+		etablissement.addNumeroIDE(dateDebut, dateFin, numeroIDE);
 	}
 
 	protected MockAdresse addAdresse(MockOrganisation organisation, TypeAdresseCivil type, MockRue rue, RegDate dateDebut, @Nullable RegDate dateFin) {

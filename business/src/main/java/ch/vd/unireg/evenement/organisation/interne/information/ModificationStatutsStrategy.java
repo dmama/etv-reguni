@@ -11,8 +11,8 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 import static ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
@@ -50,13 +50,13 @@ public class ModificationStatutsStrategy extends AbstractOrganisationStrategy {
 
 		RegDate statutsAvant = null;
 		RegDate statutsApres = null;
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange != null) {
-			DateRanged<RegDate> statutsAvantDateRanged = DateRangeHelper.rangeAt(sitePrincipalAvantRange.getPayload().getDonneesRC().getDateStatuts(), dateAvant);
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		if (etablissementPrincipalAvantRange != null) {
+			DateRanged<RegDate> statutsAvantDateRanged = DateRangeHelper.rangeAt(etablissementPrincipalAvantRange.getPayload().getDonneesRC().getDateStatuts(), dateAvant);
 			if (statutsAvantDateRanged != null) {
 				statutsAvant = statutsAvantDateRanged.getPayload();
 			}
-			final DateRanged<RegDate> statutsApresDateRanged = DateRangeHelper.rangeAt(organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC().getDateStatuts(), dateApres);
+			final DateRanged<RegDate> statutsApresDateRanged = DateRangeHelper.rangeAt(organisation.getEtablissementPrincipal(dateApres).getPayload().getDonneesRC().getDateStatuts(), dateApres);
 			if (statutsApresDateRanged != null) {
 				statutsApres = statutsApresDateRanged.getPayload();
 			}

@@ -1089,7 +1089,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void throwMultipleTiersException(long numeroOrganisation, long[] noEtablissement) {
-			throw new PlusieursEtablissementsAvecMemeNumeroSitesException(numeroOrganisation, noEtablissement);
+			throw new PlusieursEtablissementsAvecMemesNumeroCivilsException(numeroOrganisation, noEtablissement);
 		}
 	};
 
@@ -1101,14 +1101,14 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	 *     Ne retourne que les tiers Etablissement, et dans le cas où un tiers d'un autre type existerait, null est retourné quand même.
 	 * </p>
 	 *
-	 * @param numeroSite Le numéro RCEnt
+	 * @param numeroEtablissementCivil Le numéro RCEnt
 	 * @return L'établissement correspondant au numéro, ou null si aucun Etablissement n'est trouvé pour ce numéro.
 	 */
 	@Override
-	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
+	public Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissementCivil) {
 		// on passe par le numéro de tiers pour pouvoir factoriser l'algorithme dans la recherche du tiers, en espérant que les performances n'en seront pas trop affectées
 
-		final Long id = getNumeroTiersByNumeroCantonal(PARAMETRE_ETABLISSEMENT, numeroSite);
+		final Long id = getNumeroTiersByNumeroCantonal(PARAMETRE_ETABLISSEMENT, numeroEtablissementCivil);
 		final Etablissement etablissement;
 		if (id != null) {
 			etablissement = (Etablissement) get(id); // Par la magie d'Hibernate, si on a un numéro, c'est qu'on a un Etablissement.

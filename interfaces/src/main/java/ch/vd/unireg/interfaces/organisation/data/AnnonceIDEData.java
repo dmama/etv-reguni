@@ -24,9 +24,9 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 	private final Statut statut;
 
 	/**
-	 * Indique si on a affaire à un site principal ou secondaire.
+	 * Indique si on a affaire à un établissement civil principal ou secondaire.
 	 */
-	private final TypeDeSite typeDeSite;
+	private final TypeEtablissementCivil typeEtablissementCivil;
 
 	/**
 	 * Numéro IDE (temporaire ou non) de l'entreprise.
@@ -47,7 +47,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 	private NumeroIDE noIdeEtablissementPrincipal;
 
 	/**
-	 * La raison pour laquelle on demande la radiation du site.
+	 * La raison pour laquelle on demande la radiation de l'établissement civil.
 	 */
 	private RaisonDeRadiationRegistreIDE raisonDeRadiation;
 
@@ -68,17 +68,17 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 	private Contenu contenu;
 
 
-	public AnnonceIDEData(TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeDeSite typeDeSite, Statut statut, InfoServiceIDEObligEtendues infoServiceIDEObligEtendues) {
+	public AnnonceIDEData(TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeEtablissementCivil typeEtablissementCivil, Statut statut, InfoServiceIDEObligEtendues infoServiceIDEObligEtendues) {
 		this.type = type;
 		this.dateAnnonce = dateAnnonce;
 		this.utilisateur = utilisateur;
-		this.typeDeSite = typeDeSite;
+		this.typeEtablissementCivil = typeEtablissementCivil;
 		this.statut = statut;
 		this.infoServiceIDEObligEtendues = infoServiceIDEObligEtendues;
 	}
 
 	public AnnonceIDEData(BaseAnnonceIDE modele, @Nullable Statut statut) {
-		this(modele.getType(), modele.getDateAnnonce(), modele.getUtilisateur(), modele.getTypeDeSite(), statut == null ? modele.getStatut() : statut, modele.getInfoServiceIDEObligEtendues());
+		this(modele.getType(), modele.getDateAnnonce(), modele.getUtilisateur(), modele.getTypeEtablissementCivil(), statut == null ? modele.getStatut() : statut, modele.getInfoServiceIDEObligEtendues());
 		this.informationOrganisation = modele.getInformationOrganisation();
 		this.noIde = modele.getNoIde();
 		this.noIdeRemplacant = modele.getNoIdeRemplacant();
@@ -116,8 +116,8 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 
 	@Override
-	public TypeDeSite getTypeDeSite() {
-		return typeDeSite;
+	public TypeEtablissementCivil getTypeEtablissementCivil() {
+		return typeEtablissementCivil;
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		if (getUtilisateur() != null ? !getUtilisateur().equals(that.getUtilisateur()) : that.getUtilisateur() != null) return false;
 		if (getInfoServiceIDEObligEtendues() != null ? !getInfoServiceIDEObligEtendues().equals(that.getInfoServiceIDEObligEtendues()) : that.getInfoServiceIDEObligEtendues() != null) return false;
 		if (getStatut() != null ? !getStatut().equals(that.getStatut()) : that.getStatut() != null) return false;
-		if (getTypeDeSite() != that.getTypeDeSite()) return false;
+		if (getTypeEtablissementCivil() != that.getTypeEtablissementCivil()) return false;
 		if (getNoIde() != null ? !getNoIde().equals(that.getNoIde()) : that.getNoIde() != null) return false;
 		if (getNoIdeRemplacant() != null ? !getNoIdeRemplacant().equals(that.getNoIdeRemplacant()) : that.getNoIdeRemplacant() != null) return false;
 		if (getNoIdeEtablissementPrincipal() != null ? !getNoIdeEtablissementPrincipal().equals(that.getNoIdeEtablissementPrincipal()) : that.getNoIdeEtablissementPrincipal() != null) return false;
@@ -219,7 +219,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		result = 31 * result + (getUtilisateur() != null ? getUtilisateur().hashCode() : 0);
 		result = 31 * result + (getInfoServiceIDEObligEtendues() != null ? getInfoServiceIDEObligEtendues().hashCode() : 0);
 		result = 31 * result + (getStatut() != null ? getStatut().hashCode() : 0);
-		result = 31 * result + (getTypeDeSite() != null ? getTypeDeSite().hashCode() : 0);
+		result = 31 * result + (getTypeEtablissementCivil() != null ? getTypeEtablissementCivil().hashCode() : 0);
 		result = 31 * result + (getNoIde() != null ? getNoIde().hashCode() : 0);
 		result = 31 * result + (getNoIdeRemplacant() != null ? getNoIdeRemplacant().hashCode() : 0);
 		result = 31 * result + (getNoIdeEtablissementPrincipal() != null ? getNoIdeEtablissementPrincipal().hashCode() : 0);
@@ -405,7 +405,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		/**
 		 * Numéro cantonal de l'établissement à modifier (nul en cas de création)
 		 */
-		private Long numeroSite;
+		private Long numeroEtablissement;
 
 		/**
 		 * Numéro cantonal de l'entreprise faîtière à laquelle l'établissement est rattaché.
@@ -417,19 +417,19 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		 * Numéro cantonal de l'établissement de remplacement (optionnel).
 		 */
 		@Nullable
-		private Long numeroSiteRemplacant;
+		private Long numeroEtablissementRemplacant;
 
 		public InformationOrganisationImpl() {}
 
-		public InformationOrganisationImpl(Long numeroSite, @Nullable Long numeroOrganisation, @Nullable Long numeroSiteRemplacant) {
-			this.numeroSite = numeroSite;
+		public InformationOrganisationImpl(Long numeroEtablissement, @Nullable Long numeroOrganisation, @Nullable Long numeroEtablissementRemplacant) {
+			this.numeroEtablissement = numeroEtablissement;
 			this.numeroOrganisation = numeroOrganisation;
-			this.numeroSiteRemplacant = numeroSiteRemplacant;
+			this.numeroEtablissementRemplacant = numeroEtablissementRemplacant;
 		}
 
 		@Override
-		public Long getNumeroSite() {
-			return numeroSite;
+		public Long getNumeroEtablissement() {
+			return numeroEtablissement;
 		}
 
 		@Override
@@ -440,8 +440,8 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 		@Override
 		@Nullable
-		public Long getNumeroSiteRemplacant() {
-			return numeroSiteRemplacant;
+		public Long getNumeroEtablissementRemplacant() {
+			return numeroEtablissementRemplacant;
 		}
 
 		@Override
@@ -451,17 +451,17 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 			final InformationOrganisationImpl that = (InformationOrganisationImpl) o;
 
-			if (getNumeroSite() != null ? !getNumeroSite().equals(that.getNumeroSite()) : that.getNumeroSite() != null) return false;
+			if (getNumeroEtablissement() != null ? !getNumeroEtablissement().equals(that.getNumeroEtablissement()) : that.getNumeroEtablissement() != null) return false;
 			if (getNumeroOrganisation() != null ? !getNumeroOrganisation().equals(that.getNumeroOrganisation()) : that.getNumeroOrganisation() != null) return false;
-			return getNumeroSiteRemplacant() != null ? getNumeroSiteRemplacant().equals(that.getNumeroSiteRemplacant()) : that.getNumeroSiteRemplacant() == null;
+			return getNumeroEtablissementRemplacant() != null ? getNumeroEtablissementRemplacant().equals(that.getNumeroEtablissementRemplacant()) : that.getNumeroEtablissementRemplacant() == null;
 
 		}
 
 		@Override
 		public int hashCode() {
-			int result = getNumeroSite() != null ? getNumeroSite().hashCode() : 0;
+			int result = getNumeroEtablissement() != null ? getNumeroEtablissement().hashCode() : 0;
 			result = 31 * result + (getNumeroOrganisation() != null ? getNumeroOrganisation().hashCode() : 0);
-			result = 31 * result + (getNumeroSiteRemplacant() != null ? getNumeroSiteRemplacant().hashCode() : 0);
+			result = 31 * result + (getNumeroEtablissementRemplacant() != null ? getNumeroEtablissementRemplacant().hashCode() : 0);
 			return result;
 		}
 	}

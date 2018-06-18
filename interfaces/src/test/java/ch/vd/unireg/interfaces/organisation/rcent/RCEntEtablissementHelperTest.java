@@ -18,26 +18,26 @@ import ch.vd.evd0022.v3.UidRegisterStatus;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Ranged;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusREE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationData;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationFunction;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationLocation;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
-import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Raphaël Marmier, 2015-11-05
  */
-public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
+public class RCEntEtablissementHelperTest extends WithoutSpringTest {
 
 	private final MockServiceInfrastructureService serviceInfra = new MockServiceInfrastructureService() {
 		@Override
@@ -96,16 +96,16 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, bur, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
 
 		// Conversion
-		final SiteOrganisation site = RCEntSiteOrganisationHelper.get(loc, serviceInfra);
+		final EtablissementCivil etablissement = RCEntEtablissementHelper.get(loc, serviceInfra);
 
-		assertEquals(4567, site.getNumeroSite());
-		assertEquals("Ma boîte", site.getNom().get(0).getPayload());
-		assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, site.getTypeDeSite().get(0).getPayload());
-		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNumeroOfsAutoriteFiscale());
-		assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getInscription().get(0).getPayload().getStatus());
-		assertEquals(StatusRegistreIDE.DEFINITIF, site.getDonneesRegistreIDE().getStatus().get(0).getPayload());
+		assertEquals(4567, etablissement.getNumeroEtablissement());
+		assertEquals("Ma boîte", etablissement.getNom().get(0).getPayload());
+		assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, etablissement.getTypesEtablissement().get(0).getPayload());
+		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), etablissement.getDomiciles().get(0).getNumeroOfsAutoriteFiscale());
+		assertEquals(StatusInscriptionRC.ACTIF, etablissement.getDonneesRC().getInscription().get(0).getPayload().getStatus());
+		assertEquals(StatusRegistreIDE.DEFINITIF, etablissement.getDonneesRegistreIDE().getStatus().get(0).getPayload());
 
-		assertEquals(100000L, site.getDonneesRC().getCapital().get(0).getCapitalLibere().longValue());
+		assertEquals(100000L, etablissement.getDonneesRC().getCapital().get(0).getCapitalLibere().longValue());
 	}
 
 	@Test
@@ -150,30 +150,30 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, bur, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
 
 		// Conversion
-		final SiteOrganisation site = RCEntSiteOrganisationHelper.get(loc, serviceInfra);
+		final EtablissementCivil etablissement = RCEntEtablissementHelper.get(loc, serviceInfra);
 
-		assertEquals(4567, site.getNumeroSite());
-		assertEquals("Ma boîte", site.getNom().get(0).getPayload());
-		assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, site.getTypeDeSite().get(0).getPayload());
-		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNumeroOfsAutoriteFiscale());
-		assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getInscription().get(0).getPayload().getStatus());
-		assertEquals(StatusRegistreIDE.DEFINITIF, site.getDonneesRegistreIDE().getStatus().get(0).getPayload());
-		assertEquals(StatusREE.ACTIF, site.getDonneesREE().getInscriptionREE().get(0).getPayload().getStatus());
-		assertEquals(refDate.getOneDayBefore(), site.getDonneesREE().getInscriptionREE().get(0).getPayload().getDateInscription());
+		assertEquals(4567, etablissement.getNumeroEtablissement());
+		assertEquals("Ma boîte", etablissement.getNom().get(0).getPayload());
+		assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, etablissement.getTypesEtablissement().get(0).getPayload());
+		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), etablissement.getDomiciles().get(0).getNumeroOfsAutoriteFiscale());
+		assertEquals(StatusInscriptionRC.ACTIF, etablissement.getDonneesRC().getInscription().get(0).getPayload().getStatus());
+		assertEquals(StatusRegistreIDE.DEFINITIF, etablissement.getDonneesRegistreIDE().getStatus().get(0).getPayload());
+		assertEquals(StatusREE.ACTIF, etablissement.getDonneesREE().getInscriptionREE().get(0).getPayload().getStatus());
+		assertEquals(refDate.getOneDayBefore(), etablissement.getDonneesREE().getInscriptionREE().get(0).getPayload().getDateInscription());
 
-		assertTrue(site.getDonneesRC().getCapital().isEmpty());
+		assertTrue(etablissement.getDonneesRC().getCapital().isEmpty());
 	}
 
 	@Test
 	public void testDomicilesRadieeInscritRC() {
-		final long noSite = 10000;
+		final long noEtablissement = 10000;
 
 		final RegDate dateInscriptionRC = date(2010, 6, 24);
 		final RegDate dateRadiationRC = date(2015, 7, 5);
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 27), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 27), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		mockSite.getDonneesRC().changeInscription(date(2015, 7, 8), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 		                                                                              dateInscriptionRC, dateRadiationRC,
 		                                                                              dateInscriptionRC, dateRadiationRC));
@@ -190,11 +190,11 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 
 	@Test
 	public void testFiltrageEntreesJournalRC() {
-		final long noSite = 10000;
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 27), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		final long noEtablissement = 10000;
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 27), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		{
 			final PublicationFOSC publicationFOSC = new PublicationFOSC(date(2010, 6, 27), "77777", "Nouvelle inscription journal RC.");
 			final EntreeJournalRC entreeJournalRC = new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, date(2010, 6, 24), 111111L, publicationFOSC);

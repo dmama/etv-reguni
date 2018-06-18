@@ -15,8 +15,8 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -115,20 +115,20 @@ public abstract class MockOrganisationFactory {
 
 		final MockOrganisation mockOrg = new MockOrganisation(cantonalId);
 
-		MockSiteOrganisationFactory.addSite(cantonalIdSitePrincipal,
-		                                    mockOrg,
-		                                    dateDebut,
-		                                    dateFin,
-		                                    nom,
-		                                    formeLegale,
-		                                    true,
-		                                    typeAutoriteFiscaleSiegePrincipal,
-		                                    noOfsSiegePrincipal,
-		                                    statusInscriptionRC,
-		                                    dateInscriptionRC,
-		                                    statusIde,
-		                                    typeIde,
-		                                    numeroIDE);
+		MockEtablissementCivilFactory.addEtablissement(cantonalIdSitePrincipal,
+		                                               mockOrg,
+		                                               dateDebut,
+		                                               dateFin,
+		                                               nom,
+		                                               formeLegale,
+		                                               true,
+		                                               typeAutoriteFiscaleSiegePrincipal,
+		                                               noOfsSiegePrincipal,
+		                                               statusInscriptionRC,
+		                                               dateInscriptionRC,
+		                                               statusIde,
+		                                               typeIde,
+		                                               numeroIDE);
 
 		return mockOrg;
 	}
@@ -151,79 +151,79 @@ public abstract class MockOrganisationFactory {
 
 		final MockOrganisation mockOrg = new MockOrganisation(cantonalId);
 
-		MockSiteOrganisationFactory.addSite(cantonalIdSitePrincipal,
-		                                    mockOrg,
-		                                    dateDebut,
-		                                    dateFin,
-		                                    nom,
-		                                    formeLegale,
-		                                    true,
-		                                    typeAutoriteFiscaleSiegePrincipal,
-		                                    noOfsSiegePrincipal,
-		                                    statusInscriptionRC,
-		                                    dateInscriptionRC,
-		                                    statusIde,
-		                                    typeIde,
-		                                    numeroIDE,
-		                                    capitalAmount,
-		                                    capitalCurrency);
+		MockEtablissementCivilFactory.addEtablissement(cantonalIdSitePrincipal,
+		                                               mockOrg,
+		                                               dateDebut,
+		                                               dateFin,
+		                                               nom,
+		                                               formeLegale,
+		                                               true,
+		                                               typeAutoriteFiscaleSiegePrincipal,
+		                                               noOfsSiegePrincipal,
+		                                               statusInscriptionRC,
+		                                               dateInscriptionRC,
+		                                               statusIde,
+		                                               typeIde,
+		                                               numeroIDE,
+		                                               capitalAmount,
+		                                               capitalCurrency);
 
 		return mockOrg;
 	}
 
-	public static MockOrganisation createOrganisationAvecSiteSecondaire(long cantonalId,
-	                                                                    long cantonalIdSitePrincipal,
-	                                                                    long cantonalIdSiteSecondaire,
-	                                                                    String nom,
-	                                                                    RegDate dateDebut,
-	                                                                    RegDate dateFin,
-	                                                                    @Nullable FormeLegale formeLegale,
-	                                                                    @Nullable TypeAutoriteFiscale tafSiegePrincipal,
-	                                                                    @Nullable Integer noOfsSiegePrincipal,
-	                                                                    @Nullable TypeAutoriteFiscale tafDomicileSecondaire,
-	                                                                    @Nullable Integer noOfsDomicileSecondaire,
-	                                                                    @Nullable StatusInscriptionRC statusInscriptionRCPrincipal,
-	                                                                    @Nullable RegDate dateInscriptionRCPrincipal,
-	                                                                    @Nullable StatusInscriptionRC statusInscriptionRCSecondaire,
-	                                                                    @Nullable RegDate dateInscriptionRCSecondaire,
-	                                                                    @Nullable StatusRegistreIDE statusIdePrincipal,
-	                                                                    @Nullable StatusRegistreIDE statusIdeSecondaire,
-	                                                                    @Nullable TypeOrganisationRegistreIDE typeIdePrincipal,
-	                                                                    @Nullable TypeOrganisationRegistreIDE typeIdeSecondaire,
-	                                                                    @Nullable String numeroIDEPrincipal,
-	                                                                    @Nullable String numeroIDESecondaire) {
+	public static MockOrganisation createOrganisationAvecEtablissementSecondaire(long cantonalId,
+	                                                                             long cantonalIdSitePrincipal,
+	                                                                             long cantonalIdSiteSecondaire,
+	                                                                             String nom,
+	                                                                             RegDate dateDebut,
+	                                                                             RegDate dateFin,
+	                                                                             @Nullable FormeLegale formeLegale,
+	                                                                             @Nullable TypeAutoriteFiscale tafSiegePrincipal,
+	                                                                             @Nullable Integer noOfsSiegePrincipal,
+	                                                                             @Nullable TypeAutoriteFiscale tafDomicileSecondaire,
+	                                                                             @Nullable Integer noOfsDomicileSecondaire,
+	                                                                             @Nullable StatusInscriptionRC statusInscriptionRCPrincipal,
+	                                                                             @Nullable RegDate dateInscriptionRCPrincipal,
+	                                                                             @Nullable StatusInscriptionRC statusInscriptionRCSecondaire,
+	                                                                             @Nullable RegDate dateInscriptionRCSecondaire,
+	                                                                             @Nullable StatusRegistreIDE statusIdePrincipal,
+	                                                                             @Nullable StatusRegistreIDE statusIdeSecondaire,
+	                                                                             @Nullable TypeOrganisationRegistreIDE typeIdePrincipal,
+	                                                                             @Nullable TypeOrganisationRegistreIDE typeIdeSecondaire,
+	                                                                             @Nullable String numeroIDEPrincipal,
+	                                                                             @Nullable String numeroIDESecondaire) {
 
 		final MockOrganisation mockOrg = new MockOrganisation(cantonalId);
 
-		MockSiteOrganisationFactory.addSite(cantonalIdSitePrincipal,
-		                                    mockOrg,
-		                                    dateDebut,
-		                                    dateFin,
-		                                    nom,
-		                                    formeLegale,
-		                                    true,
-		                                    tafSiegePrincipal,
-		                                    noOfsSiegePrincipal,
-		                                    statusInscriptionRCPrincipal,
-		                                    dateInscriptionRCPrincipal,
-		                                    statusIdePrincipal,
-		                                    typeIdePrincipal,
-		                                    numeroIDEPrincipal);
+		MockEtablissementCivilFactory.addEtablissement(cantonalIdSitePrincipal,
+		                                               mockOrg,
+		                                               dateDebut,
+		                                               dateFin,
+		                                               nom,
+		                                               formeLegale,
+		                                               true,
+		                                               tafSiegePrincipal,
+		                                               noOfsSiegePrincipal,
+		                                               statusInscriptionRCPrincipal,
+		                                               dateInscriptionRCPrincipal,
+		                                               statusIdePrincipal,
+		                                               typeIdePrincipal,
+		                                               numeroIDEPrincipal);
 
-		MockSiteOrganisationFactory.addSite(cantonalIdSiteSecondaire,
-		                                    mockOrg,
-		                                    dateDebut,
-		                                    dateFin,
-		                                    nom,
-		                                    formeLegale,
-		                                    false,
-		                                    tafDomicileSecondaire,
-		                                    noOfsDomicileSecondaire,
-		                                    statusInscriptionRCSecondaire,
-		                                    dateInscriptionRCSecondaire,
-		                                    statusIdeSecondaire,
-		                                    typeIdeSecondaire,
-		                                    numeroIDESecondaire);
+		MockEtablissementCivilFactory.addEtablissement(cantonalIdSiteSecondaire,
+		                                               mockOrg,
+		                                               dateDebut,
+		                                               dateFin,
+		                                               nom,
+		                                               formeLegale,
+		                                               false,
+		                                               tafDomicileSecondaire,
+		                                               noOfsDomicileSecondaire,
+		                                               statusInscriptionRCSecondaire,
+		                                               dateInscriptionRCSecondaire,
+		                                               statusIdeSecondaire,
+		                                               typeIdeSecondaire,
+		                                               numeroIDESecondaire);
 
 		return mockOrg;
 	}
@@ -245,7 +245,7 @@ public abstract class MockOrganisationFactory {
 		                                                RegDate.get(1996, 12, 15),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
 		                                                "CHE101237723");
-		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().get(0);
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Entre-Deux-Villes", MockLocalite.Vevey, dateDebut, null));
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, new CasePostale(TexteCasePostale.CASE_POSTALE, 352), "pa Myriam Steiner", MockLocalite.Vevey, dateDebut, null));
 		return org;
@@ -267,7 +267,7 @@ public abstract class MockOrganisationFactory {
 		                                                RegDate.get(1883, 1, 2),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
 		                                                "CHE105934376");
-		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().get(0);
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Place Saint-François 14", MockLocalite.Lausanne, dateDebut, null));
 		return org;
 	}
@@ -285,7 +285,7 @@ public abstract class MockOrganisationFactory {
 		                                                RegDate.get(1900, 12, 28),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
 		                                                "CHE269292664");
-		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().get(0);
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Badenerstrasse 172", MockLocalite.Zurich8004, dateDebut, null));
 		return org;
 	}
@@ -303,7 +303,7 @@ public abstract class MockOrganisationFactory {
 		                                                RegDate.get(1900, 12, 28),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
 		                                                "CHE107060819");
-		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().get(0);
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Grabenstrasse 15", MockLocalite.Chur, dateDebut, null));
 		return org;
 	}
@@ -321,7 +321,7 @@ public abstract class MockOrganisationFactory {
 		                                                RegDate.get(1975, 12, 23),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
 		                                                "CHE102392906");
-		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().get(0);
 
 		final MockAdresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminMessidor, null, dateDebut, null);
 		adresse.setNumero("5");
@@ -343,10 +343,10 @@ public abstract class MockOrganisationFactory {
 		                                                RegDate.get(1971, 3, 20),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
 		                                                "CHE101390939");
-		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().get(0);
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Paradestrasse 2", MockLocalite.Bale, dateDebut, null));
-		final MockSiteOrganisation siteOrganisation = (MockSiteOrganisation) org.getDonneesSites().get(0);
-		siteOrganisation.addNomAdditionnel(dateDebut, null, "Banque Coop SA");
+		final MockEtablissementCivil etablissementCivil = (MockEtablissementCivil) org.getEtablissements().get(0);
+		etablissementCivil.addNomAdditionnel(dateDebut, null, "Banque Coop SA");
 		return org;
 	}
 
@@ -371,12 +371,12 @@ public abstract class MockOrganisationFactory {
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, "Route de Vevey", MockLocalite.ForelLavaux, dateDemenagement, null));
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.CASE_POSTALE, new CasePostale(TexteCasePostale.CASE_POSTALE, 38), null, MockLocalite.Savigny, RegDate.get(2016, 12, 15), null));
 
-		final MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
-		site.changeDomicile(dateDemenagement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.ForelLavaux.getNoOFS());
+		final MockEtablissementCivil etablissement = (MockEtablissementCivil) org.getEtablissements().get(0);
+		etablissement.changeDomicile(dateDemenagement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.ForelLavaux.getNoOFS());
 
-		site.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, null, MockLocalite.Savigny, dateDebut, dateDemenagement.getOneDayBefore()));
-		site.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, "Route de Vevey", MockLocalite.ForelLavaux, dateDemenagement, null));
-		site.addAdresse(new MockAdresse(TypeAdresseCivil.CASE_POSTALE, new CasePostale(TexteCasePostale.CASE_POSTALE, 38), null, MockLocalite.Savigny, RegDate.get(2016, 12, 15), null));
+		etablissement.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, null, MockLocalite.Savigny, dateDebut, dateDemenagement.getOneDayBefore()));
+		etablissement.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, "Route de Vevey", MockLocalite.ForelLavaux, dateDemenagement, null));
+		etablissement.addAdresse(new MockAdresse(TypeAdresseCivil.CASE_POSTALE, new CasePostale(TexteCasePostale.CASE_POSTALE, 38), null, MockLocalite.Savigny, RegDate.get(2016, 12, 15), null));
 
 		return org;
 	}

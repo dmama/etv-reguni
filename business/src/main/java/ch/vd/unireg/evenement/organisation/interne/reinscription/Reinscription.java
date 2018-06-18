@@ -12,9 +12,9 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurColl
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -29,8 +29,8 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
-	private final SiteOrganisation sitePrincipalAvant;
-	private final SiteOrganisation sitePrincipalApres;
+	private final EtablissementCivil etablissementPrincipalAvant;
+	private final EtablissementCivil etablissementPrincipalApres;
 
 	private final StatusInscriptionRC statusInscriptionAvant;
 	private final StatusInscriptionRC statusInscriptionApres;
@@ -48,11 +48,11 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
 
-		sitePrincipalAvant = organisation.getSitePrincipal(dateAvant).getPayload();
-		sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
+		etablissementPrincipalAvant = organisation.getEtablissementPrincipal(dateAvant).getPayload();
+		etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
 
-		final InscriptionRC inscriptionAvant = sitePrincipalAvant.getDonneesRC().getInscription(dateAvant);
-		final InscriptionRC inscriptionApres = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+		final InscriptionRC inscriptionAvant = etablissementPrincipalAvant.getDonneesRC().getInscription(dateAvant);
+		final InscriptionRC inscriptionApres = etablissementPrincipalApres.getDonneesRC().getInscription(dateApres);
 
 		statusInscriptionAvant = inscriptionAvant != null ? inscriptionAvant.getStatus() : null;
 		statusInscriptionApres = inscriptionApres != null ? inscriptionApres.getStatus() : null;
@@ -116,12 +116,12 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		return dateApres;
 	}
 
-	public SiteOrganisation getSitePrincipalAvant() {
-		return sitePrincipalAvant;
+	public EtablissementCivil getEtablissementPrincipalAvant() {
+		return etablissementPrincipalAvant;
 	}
 
-	public SiteOrganisation getSitePrincipalApres() {
-		return sitePrincipalApres;
+	public EtablissementCivil getEtablissementPrincipalApres() {
+		return etablissementPrincipalApres;
 	}
 
 	public RegDate getDateRadiationAvant() {

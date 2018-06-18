@@ -13,8 +13,8 @@ import ch.vd.unireg.interfaces.organisation.data.builder.AdresseLegaleBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
+import ch.vd.unireg.interfaces.organisation.data.builder.EtablissementBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.OrganisationBuilder;
-import ch.vd.unireg.interfaces.organisation.data.builder.SiteOrganisationBuilder;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static ch.vd.unireg.interfaces.infra.mock.MockLocalite.Lausanne;
@@ -38,7 +38,7 @@ public class OrganisationRCEntTest {
 				.addSite(12345678L, RegDate.get(2015, 5, 30), null, 12345678L)
 
 				.addDonneesSite(
-						new SiteOrganisationBuilder(101072613L)
+						new EtablissementBuilder(101072613L)
 								.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
@@ -54,8 +54,8 @@ public class OrganisationRCEntTest {
 
 								.addSiege(new Domicile(RegDate.get(2015, 4, 29), null, MockCommune.Leysin))
 
-								.addTypeDeSite(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), TypeDeSite.ETABLISSEMENT_PRINCIPAL)
-								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeDeSite.ETABLISSEMENT_SECONDAIRE)
+								.addTypeDeSite(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL)
+								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeEtablissementCivil.ETABLISSEMENT_SECONDAIRE)
 
 								.withRC(
 										new DonneesRCBuilder()
@@ -115,7 +115,7 @@ public class OrganisationRCEntTest {
 								)
 								.build())
 				.addDonneesSite(
-						new SiteOrganisationBuilder(101072656L)
+						new EtablissementBuilder(101072656L)
 								.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
@@ -124,7 +124,7 @@ public class OrganisationRCEntTest {
 
 								.addSiege(new Domicile(RegDate.get(2015, 4, 29), null, MockCommune.Lausanne))
 
-								.addTypeDeSite(RegDate.get(2015, 4, 29), null, TypeDeSite.ETABLISSEMENT_SECONDAIRE)
+								.addTypeDeSite(RegDate.get(2015, 4, 29), null, TypeEtablissementCivil.ETABLISSEMENT_SECONDAIRE)
 
 								.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
 								.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
@@ -167,7 +167,7 @@ public class OrganisationRCEntTest {
 								)
 								.build())
 				.addDonneesSite(
-						new SiteOrganisationBuilder(12345678L)
+						new EtablissementBuilder(12345678L)
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
@@ -175,7 +175,7 @@ public class OrganisationRCEntTest {
 
 								.addSiege(new Domicile(RegDate.get(2015, 5, 30), null, MockCommune.Zurich))
 
-								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL)
+								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL)
 
 								.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
 								.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)

@@ -20,8 +20,8 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -57,30 +57,30 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 2100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 		final long noOrganisationRemplacante = 4096L;
-		final Long noSiteRemplacant = noOrganisationRemplacante + 1000000;
+		final Long noEtablissementRemplacant = noOrganisationRemplacante + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
-				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) organisation.getEtablissements().iterator().next();
 				addOrganisation(organisation);
 
 				MockOrganisation organisationRemplacante =
-						MockOrganisationFactory.createOrganisation(noOrganisationRemplacante, noSiteRemplacant, "Synergy Remplacante SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisationRemplacante, noEtablissementRemplacant, "Synergy Remplacante SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 						                                           StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation siteRemplacant = (MockSiteOrganisation) organisationRemplacante.getDonneesSites().iterator().next();
+				MockEtablissementCivil etablissementRemplacant = (MockEtablissementCivil) organisationRemplacante.getEtablissements().iterator().next();
 				addOrganisation(organisationRemplacante);
 
-				site.addIdeRemplacePar(date(2015, 7, 5), null, noSiteRemplacant);
-				//siteRemplacant.addIdeEnRemplacementDe(date(2015, 7, 5), null, noSite);
+				etablissement.addIdeRemplacePar(date(2015, 7, 5), null, noEtablissementRemplacant);
+				//etablissementRemplacant.addIdeEnRemplacementDe(date(2015, 7, 5), null, noEtablissement);
 			}
 		});
 
@@ -90,7 +90,7 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				return etablissement.getNumero();
 			}
@@ -113,7 +113,7 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSiteRemplacant);
+				etablissement.setNumeroEtablissement(noEtablissementRemplacant);
 
 				return etablissement.getNumero();
 			}
@@ -176,30 +176,30 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisationRemplaceePar = 2100L;
-		final Long noSiteRemplaceePar = noOrganisationRemplaceePar + 1000000;
+		final Long noEtablissementRemplaceePar = noOrganisationRemplaceePar + 1000000;
 		final long noOrganisation = 4096L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisationRemplaceePar =
-						MockOrganisationFactory.createOrganisation(noOrganisationRemplaceePar, noSiteRemplaceePar, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisationRemplaceePar, noEtablissementRemplaceePar, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
-				MockSiteOrganisation siteRemplaceePar = (MockSiteOrganisation) organisationRemplaceePar.getDonneesSites().iterator().next();
+				MockEtablissementCivil etablissementRemplaceePar = (MockEtablissementCivil) organisationRemplaceePar.getEtablissements().iterator().next();
 				addOrganisation(organisationRemplaceePar);
 
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy Remplacante SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy Remplacante SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 						                                           StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) organisation.getEtablissements().iterator().next();
 				addOrganisation(organisation);
 
-				//site.addIdeRemplacePar(date(2015, 7, 5), null, noSiteRemplacant);
-				site.addIdeEnRemplacementDe(date(2015, 7, 5), null, noSiteRemplaceePar);
+				//etablissement.addIdeRemplacePar(date(2015, 7, 5), null, noEtablissementRemplacant);
+				etablissement.addIdeEnRemplacementDe(date(2015, 7, 5), null, noEtablissementRemplaceePar);
 			}
 		});
 
@@ -209,7 +209,7 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSiteRemplaceePar);
+				etablissement.setNumeroEtablissement(noEtablissementRemplaceePar);
 
 				return etablissement.getNumero();
 			}
@@ -232,7 +232,7 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				return etablissement.getNumero();
 			}
@@ -295,19 +295,19 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-		final long noSiteRemplacant = 4096321L;
+		final Long noEtablissement = noOrganisation + 1000000;
+		final long noEtablissementRemplacant = 4096321L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
-				site.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, noSiteRemplacant);
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) organisation.getEtablissements().iterator().next();
+				etablissement.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, noEtablissementRemplacant);
 				addOrganisation(organisation);
 			}
 		});
@@ -318,7 +318,7 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				return etablissement.getNumero();
 			}
@@ -364,9 +364,9 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals(String.format("Traitement manuel requis: Doublon de site à l'IDE. L'établissement n°%s (civil: %d) est remplacé par l'établissement non encore connue d'Unireg (civil: %d).",
+				                             Assert.assertEquals(String.format("Traitement manuel requis: Doublon d'établissement civil à l'IDE. L'établissement n°%s (civil: %d) est remplacé par l'établissement non encore connue d'Unireg (civil: %d).",
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(etablissementId),
-				                                                               noSite, noSiteRemplacant),
+				                                                               noEtablissement, noEtablissementRemplacant),
 				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
@@ -379,19 +379,19 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-		final long noSiteRemplacant = 4096321L;
+		final Long noEtablissement = noOrganisation + 1000000;
+		final long noEtablissementRemplacant = 4096321L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
-				site.addIdeEnRemplacementDe(RegDate.get(2015, 7, 5), null, noSiteRemplacant);
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) organisation.getEtablissements().iterator().next();
+				etablissement.addIdeEnRemplacementDe(RegDate.get(2015, 7, 5), null, noEtablissementRemplacant);
 				addOrganisation(organisation);
 			}
 		});
@@ -402,7 +402,7 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissement);
 
 				return etablissement.getNumero();
 			}
@@ -448,9 +448,9 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals(String.format("Traitement manuel requis: Doublon de site à l'IDE. L'établissement n°%s (civil: %d) remplace l'établissement non encore connue d'Unireg (civil: %d).",
+				                             Assert.assertEquals(String.format("Traitement manuel requis: Doublon d'établissement civil à l'IDE. L'établissement n°%s (civil: %d) remplace l'établissement non encore connue d'Unireg (civil: %d).",
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(etablissementId),
-				                                                               noSite, noSiteRemplacant),
+				                                                               noEtablissement, noEtablissementRemplacant),
 				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
@@ -463,19 +463,19 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-		final long noSiteRemplacant = 4096321L;
+		final Long noEtablissement = noOrganisation + 1000000;
+		final long noEtablissementRemplacant = 4096321L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
-				site.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, noSiteRemplacant);
+				MockEtablissementCivil etablissement = (MockEtablissementCivil) organisation.getEtablissements().iterator().next();
+				etablissement.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, noEtablissementRemplacant);
 				addOrganisation(organisation);
 			}
 		});
@@ -519,7 +519,7 @@ public class DoublonsTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals(String.format("Traitement manuel requis: Doublon de site à l'IDE. L'établissement non encore connue d'Unireg (civil: %d) est remplacé par l'établissement non encore connue d'Unireg (civil: %d).", noSite, noSiteRemplacant),
+				                             Assert.assertEquals(String.format("Traitement manuel requis: Doublon d'établissement civil à l'IDE. L'établissement non encore connue d'Unireg (civil: %d) est remplacé par l'établissement non encore connue d'Unireg (civil: %d).", noEtablissement, noEtablissementRemplacant),
 				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }

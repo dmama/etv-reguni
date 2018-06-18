@@ -13,6 +13,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
+import ch.vd.unireg.cache.CacheStats;
+import ch.vd.unireg.cache.ObjectKey;
+import ch.vd.unireg.cache.PersistentCache;
+import ch.vd.unireg.cache.UniregCacheInterface;
+import ch.vd.unireg.cache.UniregCacheManager;
+import ch.vd.unireg.data.CivilDataEventListener;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
@@ -21,13 +28,6 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.cache.CacheStats;
-import ch.vd.unireg.cache.ObjectKey;
-import ch.vd.unireg.cache.PersistentCache;
-import ch.vd.unireg.cache.UniregCacheInterface;
-import ch.vd.unireg.cache.UniregCacheManager;
-import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.stats.StatsService;
 
 public class ServiceOrganisationPersistentCache implements ServiceOrganisationRaw, UniregCacheInterface, CivilDataEventListener, InitializingBean, DisposableBean, ServiceOrganisationServiceWrapper {
@@ -37,7 +37,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	public static final String CACHE_NAME = "ServiceOrganisationPersistent";
 
 	private PersistentCache<OrganisationDataCache> cache;
-	private PersistentCache<Long> siteCache;
+	private PersistentCache<Long> etablissementCache;
 	private ServiceOrganisationRaw target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
@@ -53,8 +53,8 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setSiteCache(PersistentCache<Long> siteCache) {
-		this.siteCache = siteCache;
+	public void setEtablissementCache(PersistentCache<Long> etablissementCache) {
+		this.etablissementCache = etablissementCache;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -116,7 +116,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	@Override
 	public void reset() {
 		cache.clear();
-		siteCache.clear();
+		etablissementCache.clear();
 	}
 
 	private static class GetOrganisationHistoryKey implements ObjectKey {
@@ -160,19 +160,19 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 		return value.getOrganisation();
 	}
 
-	private static class GetOrganisationForSiteKey implements ObjectKey {
+	private static class GetNoOrganisationFromNoEtablissementKey implements ObjectKey {
 
 		private static final long serialVersionUID = 5394436700031462099L;
 
-		private final long noSite;
+		private final long noEtablissement;
 
-		private GetOrganisationForSiteKey(long noSite) {
-			this.noSite = noSite;
+		private GetNoOrganisationFromNoEtablissementKey(long noEtablissement) {
+			this.noEtablissement = noEtablissement;
 		}
 
 		@Override
 		public long getId() {
-			return noSite;
+			return noEtablissement;
 		}
 
 		@Override
@@ -182,17 +182,17 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	}
 
 	@Override
-	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
+	public Long getNoOrganisationFromNoEtablissement(Long noEtablissementCivil) throws ServiceOrganisationException {
 
 		Long noOrganisation;
 
-		final GetOrganisationForSiteKey key = new GetOrganisationForSiteKey(noSite);
-		final Long value = siteCache.get(key);
+		final GetNoOrganisationFromNoEtablissementKey key = new GetNoOrganisationFromNoEtablissementKey(noEtablissementCivil);
+		final Long value = etablissementCache.get(key);
 		if (value == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
-			noOrganisation = target.getOrganisationPourSite(noSite);
-			Objects.requireNonNull(noOrganisation, String.format("Aucun numéro d'organisation retourné par le service pour le no de site: %s", noSite));
-			siteCache.put(key, noOrganisation);
+			noOrganisation = target.getNoOrganisationFromNoEtablissement(noEtablissementCivil);
+			Objects.requireNonNull(noOrganisation, String.format("Aucun numéro d'organisation retourné par le service pour le no d'établissement civil: %s", noEtablissementCivil));
+			etablissementCache.put(key, noOrganisation);
 
 			return noOrganisation;
 		}
@@ -237,8 +237,8 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 			LOGGER.info("Eviction des données cachées pour l'organisation n° " + numero);
 		}
 		cache.removeAll(numero);
-		siteCache.removeAll(numero);
-		siteCache.removeValues(new Predicate<Long>() {
+		etablissementCache.removeAll(numero);
+		etablissementCache.removeValues(new Predicate<Long>() {
 			@Override
 			public boolean evaluate(Long object) {
 				return numero == object;

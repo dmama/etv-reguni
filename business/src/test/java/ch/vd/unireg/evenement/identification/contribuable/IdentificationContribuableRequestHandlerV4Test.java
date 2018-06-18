@@ -22,9 +22,9 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.tiers.Entreprise;
@@ -382,10 +382,10 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 			@Override
 			protected void init() {
 				final MockOrganisation organisation = addOrganisation(noCivilPM);
-				MockSiteOrganisation site = MockSiteOrganisationFactory.addSite(noCivilPM+9876, organisation, date(1989, 7, 7), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
-				                                                         true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                                         MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(1989, 7, 4), StatusRegistreIDE.DEFINITIF,
-				                                                         TypeOrganisationRegistreIDE.SITE, ide, BigDecimal.valueOf(50000), "CHF");
+				MockEtablissementCivil etablissement = MockEtablissementCivilFactory.addEtablissement(noCivilPM+9876, organisation, date(1989, 7, 7), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
+				                                                                             true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                             MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(1989, 7, 4), StatusRegistreIDE.DEFINITIF,
+				                                                                             TypeOrganisationRegistreIDE.SITE, ide, BigDecimal.valueOf(50000), "CHF");
 			}
 		});
 

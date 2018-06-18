@@ -28,16 +28,16 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -244,10 +244,10 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			throw new ServiceIDEException(message, e);
 		}
 
-		final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
-		if (site != null) {
-			if (site.getTypeDeSite(date) != TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
-				final String message = String.format("Entreprise n°%s: le site apparié à l'établissement n°%s n'est pas un établissement principal.",
+		final EtablissementCivil etablissementCivil = tiersService.getEtablissementCivil(etablissement);
+		if (etablissementCivil != null) {
+			if (etablissementCivil.getTypeEtablissement(date) != TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL) {
+				final String message = String.format("Entreprise n°%s: l'établissement civil apparié à l'établissement n°%s n'est pas un établissement principal.",
 				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 				                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()));
 				Audit.error(message);
@@ -255,7 +255,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			}
 		}
 
-		final StatusRegistreIDE statusRegistreIDE = site == null ? null : site.getDonneesRegistreIDE().getStatus(date);
+		final StatusRegistreIDE statusRegistreIDE = etablissementCivil == null ? null : etablissementCivil.getDonneesRegistreIDE().getStatus(date);
 		final String numeroIDEFiscalEntreprise = getNumeroIDEFiscalActuel(entreprise);
 
 		final EtatEntreprise etatActuel = entreprise.getEtatActuel();
@@ -296,33 +296,33 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		/*
 			L'établissement est apparié à RCEnt
 		 */
-		if (site != null) {
-			final String numeroIDESite = site.getNumeroIDE(date);
+		if (etablissementCivil != null) {
+			final String numeroIDEEtablissement = etablissementCivil.getNumeroIDE(date);
 			/*
 				Etablissement est connnu de RCEnt pour être à l'IDE
 			 */
-			if (numeroIDESite != null) {
+			if (numeroIDEEtablissement != null) {
 				if (numeroIDEFiscalEntreprise != null) {
 					/*
 						Comme Unireg connait le numéro IDE, on vérifie qu'il est bien identique à celui du civil. Sinon on arrête tout.
 					 */
-					if (!numeroIDEFiscalEntreprise.equals(numeroIDESite)) {
+					if (!numeroIDEFiscalEntreprise.equals(numeroIDEEtablissement)) {
 						final String message = String.format("Entreprise n°%s: le numéro IDE dans Unireg [%s] et celui au registre civil [%s] ne correspondent pas pour l'établissement n°%s! " +
 								                                     "Soit il s'agit du numéro IDE provisoire qui aurait été oublié dans Unireg, à effacer. Soit nous sommes en présence d'une erreur d'appariement.",
 						                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-						                                     numeroIDEFiscalEntreprise, numeroIDESite,
+						                                     numeroIDEFiscalEntreprise, numeroIDEEtablissement,
 						                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
 						);
 						Audit.error(message);
 						throw new ServiceIDEException(message);
 					}
-					noIde = numeroIDESite;
+					noIde = numeroIDEEtablissement;
 				}
 				else {
 					/*
 						Cas nominal: on n'est pas censé garder un numéro IDE dans Unireg une fois apparié à RCEnt
 					 */
-					noIde = numeroIDESite;
+					noIde = numeroIDEEtablissement;
 				}
 
 				/*
@@ -444,7 +444,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final AdresseAnnonceIDERCEnt adresseActuelle = getAdresseAnnonceIDERCEnt(adresseEnvoiDetaillee);
 
 		ProtoAnnonceIDE protoActuel =
-				RCEntAnnonceIDEHelper.createProtoAnnonceIDE(typeAnnonce, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, raisonDeRadiationRegistreIDE, null,
+				RCEntAnnonceIDEHelper.createProtoAnnonceIDE(typeAnnonce, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, raisonDeRadiationRegistreIDE, null,
 				                                            noIde == null ? null : new NumeroIDE(noIde), null, null, etablissement.getNumeroEtablissement(), entreprise.getNumeroEntreprise(), null,
 				                                            raisonSocialeActuelle, null, formeLegaleActuelle, secteurActiviteActuel, adresseActuelle, null,
 				                                            RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);

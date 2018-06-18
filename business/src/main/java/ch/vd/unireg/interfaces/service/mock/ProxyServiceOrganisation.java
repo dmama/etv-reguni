@@ -15,9 +15,9 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationImpl;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -60,9 +60,9 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	}
 
 	@Override
-	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
+	public Long getNoOrganisationFromNoEtablissement(Long noEtablissement) throws ServiceOrganisationException {
 		assertTargetNotNull();
-		return service.getOrganisationPourSite(noSite);
+		return service.getNoOrganisationFromNoEtablissement(noEtablissement);
 	}
 
 	@Override
@@ -73,9 +73,9 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 
 	@Nullable
 	@Override
-	public AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
+	public AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissement) throws ServiceOrganisationException {
 		assertTargetNotNull();
-		return service.getAdressesSiteOrganisationHisto(noSite);
+		return service.getAdressesEtablissementCivilHisto(noEtablissement);
 	}
 
 	@Nullable
@@ -106,8 +106,8 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	}
 
 	@Override
-	public String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date) {
-		return service.afficheAttributsSite(site, date);
+	public String afficheAttributsEtablissement(@Nullable EtablissementCivil etablissement, @Nullable RegDate date) {
+		return service.afficheAttributsEtablissement(etablissement, date);
 	}
 
 	private void assertTargetNotNull() {

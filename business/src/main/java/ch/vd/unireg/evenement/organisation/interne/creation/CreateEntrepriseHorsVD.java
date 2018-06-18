@@ -4,11 +4,6 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
@@ -17,6 +12,11 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurColl
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.CategorieEntreprise;
@@ -33,23 +33,23 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 	private RegDate dateDeCreation;
 	private final boolean isCreation;
 
-	private final SiteOrganisation sitePrincipal;
-	private final List<SiteOrganisation> succursalesRCVD;
+	private final EtablissementCivil etablissementPrincipal;
+	private final List<EtablissementCivil> succursalesRCVD;
 	private final Domicile autoriteFiscalePrincipale;
 
 	protected CreateEntrepriseHorsVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                 EvenementOrganisationContext context,
 	                                 EvenementOrganisationOptions options,
 	                                 boolean isCreation,
-	                                 List<SiteOrganisation> succursalesRCVD) {
+	                                 List<EtablissementCivil> succursalesRCVD) {
 		super(evenement, organisation, entreprise, context, options);
 
 		this.isCreation = isCreation;
 		this.succursalesRCVD = succursalesRCVD;
 
-		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
+		etablissementPrincipal = organisation.getEtablissementPrincipal(getDateEvt()).getPayload();
 
-		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
+		autoriteFiscalePrincipale = etablissementPrincipal.getDomicile(getDateEvt());
 	}
 
 	@Override
@@ -68,17 +68,17 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 			throw new EvenementOrganisationException(String.format("L'organisation %s hors canton (%s) n'est pas encore connu d'Unireg, mais a déjà plus d'une succursale au RC VD: %s. " +
 					                                                       "Comme un événement n'en apporte qu'une nouvelle à la fois, un problème de données ou d'appariement est à craindre. Veuiller traiter à la main.",
 			                                                       getOrganisation().getNumeroOrganisation(),
-			                                                       getDescriptionSiteOrganisation(getOrganisation().getSitePrincipal(getDateEvt()).getPayload()),
-			                                                       getDescriptionSitesOrganisation(succursalesRCVD)
+			                                                       getDescriptionEtablissement(getOrganisation().getEtablissementPrincipal(getDateEvt()).getPayload()),
+			                                                       getDescriptionEtablissements(succursalesRCVD)
 			                                                       ));
 		}
 
-		final SiteOrganisation succursaleACreer = succursalesRCVD.get(0);
+		final EtablissementCivil succursaleACreer = succursalesRCVD.get(0);
 		final RegDate dateDeCreation = succursaleACreer.getDateInscriptionRCVd(getDateEvt());
 
 		if (dateDeCreation == null) {
 			throw new EvenementOrganisationException(String.format("Date d'inscription au RC VD introuvable pour la succursale au RC VD n°%s.",
-			                                                       succursaleACreer.getNumeroSite()
+			                                                       succursaleACreer.getNumeroEtablissement()
 			));
 		}
 
@@ -93,7 +93,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 						              RegDateHelper.dateToDisplayString(dateDeCreation),
 						              surchargeCorrectiveRange.getEtendue(),
 						              OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC,
-						              getDescriptionSiteOrganisation(succursaleACreer))
+						              getDescriptionEtablissement(succursaleACreer))
 				);
 			}
 		}
@@ -102,7 +102,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		createEntreprise(dateDeCreation, suivis);
 
 		// Création de l'établissement principal
-		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeCreation, suivis);
+		createAddEtablissement(etablissementPrincipal.getNumeroEtablissement(), autoriteFiscalePrincipale, true, dateDeCreation, suivis);
 
 		// Application de la surcharge corrective sur l'entreprise, si besoin
 		if (dateDeCreation.isBefore(getDateEvt())) {
@@ -157,37 +157,37 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		}
 	}
 
-	private Commune getCommuneDomicile(SiteOrganisation site) {
-		final Domicile domicile = site.getDomicile(getDateEvt());
+	private Commune getCommuneDomicile(EtablissementCivil etablissement) {
+		final Domicile domicile = etablissement.getDomicile(getDateEvt());
 		if (domicile != null) {
 			return getContext().getServiceInfra().getCommuneByNumeroOfs(domicile.getNumeroOfsAutoriteFiscale(), getDateEvt());
 		}
 		return null;
 	}
 
-	private String getDescriptionSitesOrganisation(List<SiteOrganisation> sites) throws EvenementOrganisationException {
+	private String getDescriptionEtablissements(List<EtablissementCivil> etablissements) throws EvenementOrganisationException {
 		StringBuilder sb = new StringBuilder();
-		for (SiteOrganisation site : sites) {
+		for (EtablissementCivil etablissement : etablissements) {
 			sb.append("[");
-			sb.append(getDescriptionSiteOrganisation(site));
+			sb.append(getDescriptionEtablissement(etablissement));
 			sb.append("]");
 		}
 		return sb.toString();
 	}
 
-	private String getDescriptionSiteOrganisation(SiteOrganisation site) throws EvenementOrganisationException {
+	private String getDescriptionEtablissement(EtablissementCivil etablissement) throws EvenementOrganisationException {
 		String descriptionCommune = "(inconnue)";
-		final Commune communeDomicile = getCommuneDomicile(site);
+		final Commune communeDomicile = getCommuneDomicile(etablissement);
 		if (communeDomicile != null) {
 			descriptionCommune = communeDomicile.getNomOfficielAvecCanton();
 		}
-		final RegDate dateInscriptionRCVd = site.getDateInscriptionRCVd(getDateEvt());
+		final RegDate dateInscriptionRCVd = etablissement.getDateInscriptionRCVd(getDateEvt());
 		if (dateInscriptionRCVd == null) {
 			throw new EvenementOrganisationException(String.format("Date d'inscription au RC VD introuvable pour la succursale au RC VD n°%s à %s",
-			                                                       site.getNumeroSite(),
+			                                                       etablissement.getNumeroEtablissement(),
 			                                                       descriptionCommune
 			));
 		}
-		return String.format("%s (civil: n°%s) à %s inscription RC VD le %s", site.getNom(getDateEvt()), site.getNumeroSite(), descriptionCommune, RegDateHelper.dateToDisplayString(dateInscriptionRCVd));
+		return String.format("%s (civil: n°%s) à %s inscription RC VD le %s", etablissement.getNom(getDateEvt()), etablissement.getNumeroEtablissement(), descriptionCommune, RegDateHelper.dateToDisplayString(dateInscriptionRCVd));
 	}
 }

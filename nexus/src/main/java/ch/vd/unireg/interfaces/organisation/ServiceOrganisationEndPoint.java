@@ -41,10 +41,10 @@ public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, Deta
 	}
 
 	@Override
-	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		loadMeter.start(new MethodCallDescriptor("getOrganisationPourSite", "noSite", noSite));
+	public Long getNoOrganisationFromNoEtablissement(Long noEtablissementCivil) throws ServiceOrganisationException {
+		loadMeter.start(new MethodCallDescriptor("getNoOrganisationFromNoEtablissement", "noEtablissementCivil", noEtablissementCivil));
 		try {
-			return target.getOrganisationPourSite(noSite);
+			return target.getNoOrganisationFromNoEtablissement(noEtablissementCivil);
 		}
 		finally {
 			loadMeter.end();

@@ -21,12 +21,12 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
-import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.Entreprise;
@@ -56,7 +56,7 @@ public class AppariementServiceImpl implements AppariementService {
 
 		// ça y est, on a une organisation avec ses établissements et une entreprise, face à face...
 		final Map<Long, Pair<Etablissement, List<DateRange>>> tousEtablissementsSecondaires = extractEtablissementsSecondaires(entreprise);
-		final Map<Long, Pair<SiteOrganisation, List<DateRange>>> tousSitesSecondaires = extractSitesSecondaires(organisation);
+		final Map<Long, Pair<EtablissementCivil, List<DateRange>>> tousEtablissementsCivilsSecondaires = extractEtablissementsCivilsSecondaires(organisation);
 
 		// 1. récupération des établissements non-appariés de l'entreprise et des numéros cantonaux déjà connus (= à ne pas ré-utiliser...)
 
@@ -72,13 +72,13 @@ public class AppariementServiceImpl implements AppariementService {
 			}
 		}
 
-		// 2. récupération de la liste des sites secondaires de l'organisation qui ne sont pas encore appariés à un établissement de chez nous
+		// 2. récupération de la liste des établissements civils secondaires de l'organisation qui ne sont pas encore appariés à un établissement de chez nous
 
-		final Map<Long, Pair<SiteOrganisation, List<DateRange>>> sitesSecondairesDisponibles = new HashMap<>(tousSitesSecondaires);
-		sitesSecondairesDisponibles.keySet().removeAll(idsCantonauxApparies);
+		final Map<Long, Pair<EtablissementCivil, List<DateRange>>> etablissementsSecondairesDisponibles = new HashMap<>(tousEtablissementsCivilsSecondaires);
+		etablissementsSecondairesDisponibles.keySet().removeAll(idsCantonauxApparies);
 
 		// s'il n'y a rien à faire, il n'y a rien à faire
-		if (etbsSecondairesNonApparies.isEmpty() || sitesSecondairesDisponibles.isEmpty()) {
+		if (etbsSecondairesNonApparies.isEmpty() || etablissementsSecondairesDisponibles.isEmpty()) {
 			return Collections.emptyList();
 		}
 
@@ -86,11 +86,11 @@ public class AppariementServiceImpl implements AppariementService {
 
 		// 3. recherche par numéro IDE d'abord...
 
-		candidats.addAll(appariementsParNumeroIDE(etbsSecondairesNonApparies, sitesSecondairesDisponibles));
+		candidats.addAll(appariementsParNumeroIDE(etbsSecondairesNonApparies, etablissementsSecondairesDisponibles));
 
 		// 4. ceux qui restent sont ensuite comparés par commune, raison sociale...
 
-		candidats.addAll(appariementsParLocalisationEtRaisonSociale(etbsSecondairesNonApparies, sitesSecondairesDisponibles));
+		candidats.addAll(appariementsParLocalisationEtRaisonSociale(etbsSecondairesNonApparies, etablissementsSecondairesDisponibles));
 
 		// et retour
 		return candidats;
@@ -99,21 +99,21 @@ public class AppariementServiceImpl implements AppariementService {
 	/**
 	 * Algorithme d'appariement basé sur le numéro IDE
 	 * @param etbsSecondairesNonApparies map des établissements secondaires disponibles à l'appariement (en sortie, cette map peut avoir été amputée des établissements appariés)
-	 * @param sitesSecondairesDisponibles map des sites secondaires disponibles à l'appariement (en sortie, cette map peut avoir été amputée des sites appariés)
+	 * @param etablissementSecondairesDisponibles map des établissements civils secondaires disponibles à l'appariement (en sortie, cette map peut avoir été amputée des établissements civils appariés)
 	 * @return une liste des appariements proposés
 	 */
 	@NotNull
 	private List<CandidatAppariement> appariementsParNumeroIDE(Map<Long, Pair<Etablissement, List<DateRange>>> etbsSecondairesNonApparies,
-	                                                           Map<Long, Pair<SiteOrganisation, List<DateRange>>> sitesSecondairesDisponibles) {
+	                                                           Map<Long, Pair<EtablissementCivil, List<DateRange>>> etablissementSecondairesDisponibles) {
 
 		// récupération de tous les numéros IDE connus de part et d'autre
 		final Map<String, Etablissement> etablissementsParIde = buildMapEtablissementParNumeroIDE(etbsSecondairesNonApparies.values());
-		final Map<String, SiteOrganisation> sitesParIde = buildMapSiteParNumeroIDE(sitesSecondairesDisponibles.values());
+		final Map<String, EtablissementCivil> etablissementsCivilsParIde = buildMapEtablissementsCivilsParNumeroIDE(etablissementSecondairesDisponibles.values());
 
 		// seuls nous intéressent ici les IDE qui sont des deux côtés...
-		final Set<String> idesCommuns = new HashSet<>(etablissementsParIde.size() + sitesParIde.size());
+		final Set<String> idesCommuns = new HashSet<>(etablissementsParIde.size() + etablissementsCivilsParIde.size());
 		idesCommuns.addAll(etablissementsParIde.keySet());
-		idesCommuns.retainAll(sitesParIde.keySet());
+		idesCommuns.retainAll(etablissementsCivilsParIde.keySet());
 
 		// il y a des communs ?
 		if (idesCommuns.isEmpty()) {
@@ -125,15 +125,15 @@ public class AppariementServiceImpl implements AppariementService {
 		// oui, il y en a.., prenons-les un par un...
 		for (String ide : idesCommuns) {
 			final Etablissement etb = etablissementsParIde.get(ide);
-			final SiteOrganisation site = sitesParIde.get(ide);
+			final EtablissementCivil etablissementCivil = etablissementsCivilsParIde.get(ide);
 
 			final Localisation localisationEtablissement = extractDerniereLocalisation(etb);
-			final Localisation localisationSite = extractDerniereLocalisation(site);
-			if (areCompatible(localisationSite, localisationEtablissement)) {
+			final Localisation localisationEtablissementCivil = extractDerniereLocalisation(etablissementCivil);
+			if (areCompatible(localisationEtablissementCivil, localisationEtablissement)) {
 				// on ajoute un candidat et on n'oublie pas de retirer les heureux élus des listes de disponibles
-				candidats.add(new CandidatAppariement(etb, site, CandidatAppariement.CritereDecisif.IDE, localisationEtablissement));
+				candidats.add(new CandidatAppariement(etb, etablissementCivil, CandidatAppariement.CritereDecisif.IDE, localisationEtablissement));
 				etbsSecondairesNonApparies.remove(etb.getNumero());
-				sitesSecondairesDisponibles.remove(site.getNumeroSite());
+				etablissementSecondairesDisponibles.remove(etablissementCivil.getNumeroEtablissement());
 			}
 		}
 
@@ -152,8 +152,8 @@ public class AppariementServiceImpl implements AppariementService {
 	}
 
 	@Nullable
-	private static Localisation extractDerniereLocalisation(SiteOrganisation siteOrganisation) {
-		final List<Domicile> domiciles = siteOrganisation.getDomicilesEnActivite();
+	private static Localisation extractDerniereLocalisation(EtablissementCivil etablissementCivil) {
+		final List<Domicile> domiciles = etablissementCivil.getDomicilesEnActivite();
 		if (domiciles == null || domiciles.isEmpty()) {
 			return null;
 		}
@@ -240,19 +240,19 @@ public class AppariementServiceImpl implements AppariementService {
 	/**
 	 * Algorithme d'appariement basé sur les localisations et, potentiellement, les raisons sociales
 	 * @param etbsSecondairesNonApparies map des établissements secondaires disponibles à l'appariement (en sortie, cette map peut avoir été amputée des établissements appariés)
-	 * @param sitesSecondairesDisponibles map des sites secondaires disponibles à l'appariement (en sortie, cette map peut avoir été amputée des sites appariés)
+	 * @param etablissementsSecondairesDisponibles map des établissements civils secondaires disponibles à l'appariement (en sortie, cette map peut avoir été amputée des établissements civils appariés)
 	 * @return une liste des appariements proposés
 	 */
 	@NotNull
 	private List<CandidatAppariement> appariementsParLocalisationEtRaisonSociale(Map<Long, Pair<Etablissement, List<DateRange>>> etbsSecondairesNonApparies,
-	                                                                             Map<Long, Pair<SiteOrganisation, List<DateRange>>> sitesSecondairesDisponibles) {
+	                                                                             Map<Long, Pair<EtablissementCivil, List<DateRange>>> etablissementsSecondairesDisponibles) {
 
 		final DataExtractor<Etablissement, Localisation> etbLocalisationExtractor = AppariementServiceImpl::extractDerniereLocalisation;
-		final DataExtractor<SiteOrganisation, Localisation> siteLocalisationExtractor = AppariementServiceImpl::extractDerniereLocalisation;
+		final DataExtractor<EtablissementCivil, Localisation> etablissementLocalisationExtractor = AppariementServiceImpl::extractDerniereLocalisation;
 
-		// on va regrouper les établissements et les sites par dernière localisation
+		// on va regrouper les établissements et les établissements civils par dernière localisation
 		final Map<Boolean, Map<Localisation, List<Etablissement>>> etbsParLocalisationEtActivite = extractAccordingToLocalisationActivityState(etbsSecondairesNonApparies.values(), etbLocalisationExtractor);
-		final Map<Boolean, Map<Localisation, List<SiteOrganisation>>> sitesParLocalisationEtActivite = extractAccordingToLocalisationActivityState(sitesSecondairesDisponibles.values(), siteLocalisationExtractor);
+		final Map<Boolean, Map<Localisation, List<EtablissementCivil>>> etablissementsCivilsParLocalisationEtActivite = extractAccordingToLocalisationActivityState(etablissementsSecondairesDisponibles.values(), etablissementLocalisationExtractor);
 
 		// le container résultant
 		final List<CandidatAppariement> candidats = new LinkedList<>();
@@ -263,31 +263,31 @@ public class AppariementServiceImpl implements AppariementService {
 		for (Boolean active : Arrays.asList(Boolean.FALSE, Boolean.TRUE)) {
 
 			final Map<Localisation, List<Etablissement>> etbsParLocalisation = etbsParLocalisationEtActivite.get(active);
-			final Map<Localisation, List<SiteOrganisation>> sitesParLocalisation = sitesParLocalisationEtActivite.get(active);
+			final Map<Localisation, List<EtablissementCivil>> etablissementCivilParLocalisation = etablissementsCivilsParLocalisationEtActivite.get(active);
 
 			for (Map.Entry<Localisation, List<Etablissement>> etbEntry : etbsParLocalisation.entrySet()) {
 
-				// on va construire une liste des sites à la localisation compatible
-				final List<SiteOrganisation> sitesCompatibles = new ArrayList<>(sitesSecondairesDisponibles.size());
-				for (Map.Entry<Localisation, List<SiteOrganisation>> siteEntry : sitesParLocalisation.entrySet()) {
-					if (areCompatible(siteEntry.getKey(), etbEntry.getKey())) {
-						sitesCompatibles.addAll(siteEntry.getValue());
+				// on va construire une liste des établissements civils à la localisation compatible
+				final List<EtablissementCivil> etablissementsCivilsCompatibles = new ArrayList<>(etablissementsSecondairesDisponibles.size());
+				for (Map.Entry<Localisation, List<EtablissementCivil>> etablissementEntry : etablissementCivilParLocalisation.entrySet()) {
+					if (areCompatible(etablissementEntry.getKey(), etbEntry.getKey())) {
+						etablissementsCivilsCompatibles.addAll(etablissementEntry.getValue());
 					}
 				}
 
 				// si on en a un de chaque côté, on ne va pas plus loin, on apparie !
 				final List<Etablissement> etablissementsCompatibles = etbEntry.getValue();
-				if (sitesCompatibles.size() == 1 && etablissementsCompatibles.size() == 1) {
+				if (etablissementsCivilsCompatibles.size() == 1 && etablissementsCompatibles.size() == 1) {
 					final Etablissement etbCandidat = etablissementsCompatibles.get(0);
-					final SiteOrganisation siteCandidat = sitesCompatibles.get(0);
+					final EtablissementCivil etablissementCivilCandidat = etablissementsCivilsCompatibles.get(0);
 
-					candidats.add(new CandidatAppariement(etbCandidat, siteCandidat, CandidatAppariement.CritereDecisif.LOCALISATION, etbEntry.getKey()));
+					candidats.add(new CandidatAppariement(etbCandidat, etablissementCivilCandidat, CandidatAppariement.CritereDecisif.LOCALISATION, etbEntry.getKey()));
 					etbsSecondairesNonApparies.remove(etbCandidat.getNumero());
-					sitesSecondairesDisponibles.remove(siteCandidat.getNumeroSite());
+					etablissementsSecondairesDisponibles.remove(etablissementCivilCandidat.getNumeroEtablissement());
 
-					// il faut également enlever le site élu de la map des sites par localisation
-					final Localisation localisationSiteElu = siteLocalisationExtractor.extract(siteCandidat);
-					sitesParLocalisation.remove(localisationSiteElu);
+					// il faut également enlever l'établissement civil élu de la map des établissements civils par localisation
+					final Localisation localisationEtablissementElu = etablissementLocalisationExtractor.extract(etablissementCivilCandidat);
+					etablissementCivilParLocalisation.remove(localisationEtablissementElu);
 				}
 			}
 		}
@@ -339,12 +339,12 @@ public class AppariementServiceImpl implements AppariementService {
 	}
 
 	@NotNull
-	private static <T> Map<String, SiteOrganisation> buildMapSiteParNumeroIDE(Collection<Pair<SiteOrganisation, T>> col) {
+	private static <T> Map<String, EtablissementCivil> buildMapEtablissementsCivilsParNumeroIDE(Collection<Pair<EtablissementCivil, T>> col) {
 		final Set<String> badIDEs = new HashSet<>(col.size());
-		final Map<String, SiteOrganisation> parIde = new HashMap<>(col.size());
-		for (Pair<SiteOrganisation, T> pair : col) {
-			final SiteOrganisation site = pair.getLeft();
-			final List<DateRanged<String>> ides = site.getNumeroIDE();
+		final Map<String, EtablissementCivil> parIde = new HashMap<>(col.size());
+		for (Pair<EtablissementCivil, T> pair : col) {
+			final EtablissementCivil etablissementCivil = pair.getLeft();
+			final List<DateRanged<String>> ides = etablissementCivil.getNumeroIDE();
 			if (ides != null && !ides.isEmpty()) {
 				final Set<String> localIdes = new HashSet<>(ides.size());
 				for (DateRanged<String> rangedIde : ides) {
@@ -357,7 +357,7 @@ public class AppariementServiceImpl implements AppariementService {
 							badIDEs.add(ide);
 							parIde.remove(ide);
 						}
-						parIde.put(ide, site);
+						parIde.put(ide, etablissementCivil);
 					}
 				}
 			}
@@ -398,27 +398,27 @@ public class AppariementServiceImpl implements AppariementService {
 	}
 
 	@NotNull
-	private static Map<Long, Pair<SiteOrganisation, List<DateRange>>> extractSitesSecondaires(Organisation organisation) {
-		final List<SiteOrganisation> sites = organisation.getDonneesSites();
-		final Map<Long, Pair<SiteOrganisation, List<DateRange>>> map = new HashMap<>(sites.size());
-		for (SiteOrganisation site : sites) {
-			final List<DateRange> periodesSecondaires = getPeriodesSiteSecondaire(site);
+	private static Map<Long, Pair<EtablissementCivil, List<DateRange>>> extractEtablissementsCivilsSecondaires(Organisation organisation) {
+		final List<EtablissementCivil> etablissements = organisation.getEtablissements();
+		final Map<Long, Pair<EtablissementCivil, List<DateRange>>> map = new HashMap<>(etablissements.size());
+		for (EtablissementCivil etablissement : etablissements) {
+			final List<DateRange> periodesSecondaires = getPeriodesEtablissementSecondaire(etablissement);
 			if (!periodesSecondaires.isEmpty()) {
-				map.put(site.getNumeroSite(), Pair.of(site, periodesSecondaires));
+				map.put(etablissement.getNumeroEtablissement(), Pair.of(etablissement, periodesSecondaires));
 			}
 		}
 		return map;
 	}
 
 	@NotNull
-	private static List<DateRange> getPeriodesSiteSecondaire(SiteOrganisation site) {
-		final List<DateRanged<TypeDeSite>> typesDeSite = site.getTypeDeSite();
-		if (typesDeSite == null || typesDeSite.isEmpty()) {
+	private static List<DateRange> getPeriodesEtablissementSecondaire(EtablissementCivil etablissement) {
+		final List<DateRanged<TypeEtablissementCivil>> typesEtablissement = etablissement.getTypesEtablissement();
+		if (typesEtablissement == null || typesEtablissement.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<DateRange> ranges = new ArrayList<>(typesDeSite.size());
-		for (DateRanged<TypeDeSite> type : typesDeSite) {
-			if (type.getPayload() == TypeDeSite.ETABLISSEMENT_SECONDAIRE) {
+		final List<DateRange> ranges = new ArrayList<>(typesEtablissement.size());
+		for (DateRanged<TypeEtablissementCivil> type : typesEtablissement) {
+			if (type.getPayload() == TypeEtablissementCivil.ETABLISSEMENT_SECONDAIRE) {
 				ranges.add(type);
 			}
 		}

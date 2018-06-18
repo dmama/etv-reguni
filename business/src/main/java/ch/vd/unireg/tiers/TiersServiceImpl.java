@@ -116,11 +116,11 @@ import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -315,8 +315,8 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	@Override
-	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
-		return tiersDAO.getEtablissementByNumeroSite(numeroSite);
+	public Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissement) {
+		return tiersDAO.getEtablissementByNumeroEtablissementCivil(numeroEtablissement);
 	}
 
 	@Override
@@ -401,9 +401,9 @@ public class TiersServiceImpl implements TiersService {
 
 		final long noOrganisation = evt.getNoOrganisation();
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
-		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvt).getPayload();
+		final EtablissementCivil etablissementPrincipal = organisation.getEtablissementPrincipal(dateEvt).getPayload();
 
-		final InscriptionRC inscriptionRC = sitePrincipal.getDonneesRC().getInscription(dateEvt);
+		final InscriptionRC inscriptionRC = etablissementPrincipal.getDonneesRC().getInscription(dateEvt);
 		final RegDate dateInscriptionVd = inscriptionRC != null ? inscriptionRC.getDateInscriptionVD() : null;
 		if (dateInscriptionVd != null && dateInscriptionVd.isAfter(dateEvt.addDays(- OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 			dateCreation = dateInscriptionVd.getOneDayAfter();
@@ -419,7 +419,7 @@ public class TiersServiceImpl implements TiersService {
 			changeEtatEntreprise(TypeEtatEntreprise.FONDEE, entreprise, dateCreation, TypeGenerationEtatEntreprise.MANUELLE);
 		}
 
-		final Etablissement etablissement = createEtablissement(sitePrincipal.getNumeroSite());
+		final Etablissement etablissement = createEtablissement(etablissementPrincipal.getNumeroEtablissement());
 
 		// L'activité économique
 		addRapport(new ActiviteEconomique(dateCreation, null, entreprise, etablissement, true), entreprise, etablissement);
@@ -456,20 +456,20 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * Créer un établissement pour le numéro de site fourni. La méthode refuse de le créer si un établissement est déjà associé au site.
+	 * Créer un établissement pour le numéro d'établissement civil fourni. La méthode refuse de le créer si un établissement est déjà associé à l'établissement civil.
 	 *
-	 * @param numeroSite
+	 * @param numeroEtablissementCivil
 	 * @return L'établissement créé.
 	 */
 	@NotNull
 	@Override
-	public Etablissement createEtablissement(Long numeroSite) {
-		Etablissement etablissement = tiersDAO.getEtablissementByNumeroSite(numeroSite);
+	public Etablissement createEtablissement(Long numeroEtablissementCivil) {
+		Etablissement etablissement = tiersDAO.getEtablissementByNumeroEtablissementCivil(numeroEtablissementCivil);
 		if (etablissement != null) {
-			throw new IllegalStateException(String.format("Il existe déjà un établissement pour le site %s", numeroSite));
+			throw new IllegalStateException(String.format("Il existe déjà un établissement pour l'établissement civil %s", numeroEtablissementCivil));
 		}
 		etablissement = new Etablissement();
-		etablissement.setNumeroEtablissement(numeroSite);
+		etablissement.setNumeroEtablissement(numeroEtablissementCivil);
 		return (Etablissement) tiersDAO.save(etablissement);
 	}
 
@@ -4950,8 +4950,8 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public String getDerniereRaisonSociale(Etablissement etablissement) {
 	    if (etablissement.isConnuAuCivil()) {
-		    SiteOrganisation siteOrganisation = getSiteOrganisationPourEtablissement(etablissement);
-		    final List<DateRanged<String>> nom = siteOrganisation.getNom();
+		    EtablissementCivil etablissementCivil = getEtablissementCivil(etablissement);
+		    final List<DateRanged<String>> nom = etablissementCivil.getNom();
 		    return nom.get(nom.size() - 1).getPayload();
 	    }
 	    else {
@@ -6320,23 +6320,23 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final long numeroSIteOrganisation = etablissement.getNumeroEtablissement();
-		return serviceOrganisationService.getOrganisationHistory(serviceOrganisationService.getOrganisationPourSite(numeroSIteOrganisation));
+		return serviceOrganisationService.getOrganisationHistory(serviceOrganisationService.getNoOrganisationFromNoEtablissement(numeroSIteOrganisation));
 	}
 
 	@Override
-	public SiteOrganisation getSiteOrganisationPourEtablissement(@NotNull Etablissement etablissement) {
+	public EtablissementCivil getEtablissementCivil(@NotNull Etablissement etablissement) {
 		Organisation organisation = getOrganisationPourEtablissement(etablissement);
 		if (organisation != null) {
-			final SiteOrganisation siteForNo = organisation.getSiteForNo(etablissement.getNumeroEtablissement());
-			if (siteForNo == null) {
+			final EtablissementCivil etablissementForNo = organisation.getEtablissementForNo(etablissement.getNumeroEtablissement());
+			if (etablissementForNo == null) {
 				// Sérieux problème d'appariement avec le registre civil.
-				throw new SiteOrganisationNotFoundException(etablissement);
+				throw new EtablissementCivilNotFoundException(etablissement);
 			}
-			if (!Objects.equals(etablissement.getNumeroEtablissement(), siteForNo.getNumeroSite())) {
+			if (!Objects.equals(etablissement.getNumeroEtablissement(), etablissementForNo.getNumeroEtablissement())) {
 				throw new IllegalArgumentException();
 			}
 
-			return siteForNo;
+			return etablissementForNo;
 		}
 		return null;
 	}
@@ -6346,7 +6346,7 @@ public class TiersServiceImpl implements TiersService {
 		// la date d'inscription RC (en provenance du civil)
 		final Organisation organisation = getOrganisation(entreprise);
 		if (organisation != null) {
-			final RegDate inscriptionRC = organisation.getSitePrincipal(null).getPayload().getDateInscriptionRC(null);
+			final RegDate inscriptionRC = organisation.getEtablissementPrincipal(null).getPayload().getDateInscriptionRC(null);
 			if (inscriptionRC != null) {
 				return inscriptionRC;
 			}
@@ -6395,9 +6395,9 @@ public class TiersServiceImpl implements TiersService {
 	@Nullable
 	@Override
 	public String getNumeroIDE(@NotNull Etablissement etablissement) {
-		final SiteOrganisation site = getSiteOrganisationPourEtablissement(etablissement);
-		if (site != null) {
-			final List<DateRanged<String>> liste = site.getNumeroIDE();
+		final EtablissementCivil etablissementCivil = getEtablissementCivil(etablissement);
+		if (etablissementCivil != null) {
+			final List<DateRanged<String>> liste = etablissementCivil.getNumeroIDE();
 			if (liste != null && ! liste.isEmpty()) {
 				liste.sort(new DateRangeComparator<>());
 				DateRanged<String> last = CollectionsUtils.getLastElement(liste);
@@ -6681,16 +6681,16 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	private List<DomicileHisto> extractDomicilesCivilsEtablissement(Etablissement etablissement, boolean enActivite) {
-		SiteOrganisation siteOrganisation = getSiteOrganisationPourEtablissement(etablissement);
-		if (siteOrganisation == null) {
+		EtablissementCivil etablissementCivil = getEtablissementCivil(etablissement);
+		if (etablissementCivil == null) {
 			return Collections.emptyList();
 		}
 		final List<DomicileHisto> domiciles = new ArrayList<>();
 		List<Domicile> domicilesCivils;
 		if (enActivite) {
-			domicilesCivils = siteOrganisation.getDomicilesEnActivite();
+			domicilesCivils = etablissementCivil.getDomicilesEnActivite();
 		} else {
-			domicilesCivils = siteOrganisation.getDomiciles();
+			domicilesCivils = etablissementCivil.getDomiciles();
 		}
 		if (domicilesCivils == null) {
 			return Collections.emptyList();
@@ -6828,13 +6828,13 @@ public class TiersServiceImpl implements TiersService {
 
 		/* Récupération des données civiles pour la date. */
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
-		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateValeur);
-		if (sitePrincipal == null) {
-			throw new TiersException(String.format("L'organisation %d n'a pas de sitePrincipal principal à la date demandée %s.", organisation.getNumeroOrganisation(), RegDateHelper
+		final DateRanged<EtablissementCivil> etablissementCivilPrincipal = organisation.getEtablissementPrincipal(dateValeur);
+		if (etablissementCivilPrincipal == null) {
+			throw new TiersException(String.format("L'organisation %d n'a pas d'établissement civil principal à la date demandée %s.", organisation.getNumeroOrganisation(), RegDateHelper
 					.dateToDisplayString(dateValeur)));
 		}
 
-		final Etablissement etablissementPrincipal = tiersDAO.getEtablissementByNumeroSite(sitePrincipal.getPayload().getNumeroSite());
+		final Etablissement etablissementPrincipal = tiersDAO.getEtablissementByNumeroEtablissementCivil(etablissementCivilPrincipal.getPayload().getNumeroEtablissement());
 
 		final Domicile domicileCivil = organisation.getSiegePrincipal(dateValeur);
 		final List<DomicileEtablissement> domicilesFiscaux = etablissementPrincipal.getSortedDomiciles(false);
@@ -6892,14 +6892,14 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		/* Récupération des données civiles pour la date. */
-		final Long noOrganisationPourSite = serviceOrganisationService.getOrganisationPourSite(etablissement.getNumeroEtablissement());
-		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisationPourSite);
-		final SiteOrganisation site = organisation.getSiteForNo(etablissement.getNumeroEtablissement());
-		if (site == null) {
-			throw new TiersException(String.format("Le site %d n'a pas été trouvé!", etablissement.getNumeroEtablissement()));
+		final Long noOrganisation = serviceOrganisationService.getNoOrganisationFromNoEtablissement(etablissement.getNumeroEtablissement());
+		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
+		final EtablissementCivil etablissementCivil = organisation.getEtablissementForNo(etablissement.getNumeroEtablissement());
+		if (etablissementCivil == null) {
+			throw new TiersException(String.format("L'établissement civil %d n'a pas été trouvé!", etablissement.getNumeroEtablissement()));
 		}
 
-		final Domicile domicileCivil = site.getDomicile(dateValeur);
+		final Domicile domicileCivil = etablissementCivil.getDomicile(dateValeur);
 		final List<DomicileEtablissement> domicilesFiscaux = etablissement.getSortedDomiciles(false);
 		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
 		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
@@ -7003,13 +7003,13 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void apparier(Etablissement etablissement, SiteOrganisation site) {
-		final List<Domicile> domiciles = site.getDomicilesEnActivite();
+	public void apparier(Etablissement etablissement, EtablissementCivil etablissementCivil) {
+		final List<Domicile> domiciles = etablissementCivil.getDomicilesEnActivite();
 		final RegDate debutCivil = domiciles.isEmpty() ? RegDate.get() : domiciles.get(0).getDateDebut();
 		final RegDate finFiscale = debutCivil.getOneDayBefore();
 
 		// mise à jour du numéro cantonal
-		etablissement.setNumeroEtablissement(site.getNumeroSite());
+		etablissement.setNumeroEtablissement(etablissementCivil.getNumeroEtablissement());
 		etablissement.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 		etablissement.setRaisonSociale(null);       // [SIFISC-22336] la raison sociale est maintenant fournie par RCEnt
 

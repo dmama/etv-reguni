@@ -42,7 +42,7 @@ public class Adresse extends EvenementOrganisationInterneDeTraitement {
 		this.nouvelleAdresseEffective = nouvelleAdresseEffective;
 		this.nouvelleAdresseLegale = nouvelleAdresseLegale;
 
-		this.adresseLegaleApres = organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC().getAdresseLegale(dateApres);
+		this.adresseLegaleApres = organisation.getEtablissementPrincipal(dateApres).getPayload().getDonneesRC().getAdresseLegale(dateApres);
 
 	}
 

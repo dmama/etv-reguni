@@ -22,10 +22,10 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 
 public class ServiceOrganisationImpl implements ServiceOrganisationService {
 
@@ -68,8 +68,8 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	@Override
-	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		return target.getOrganisationPourSite(noSite);
+	public Long getNoOrganisationFromNoEtablissement(Long noEtablissement) throws ServiceOrganisationException {
+		return target.getNoOrganisationFromNoEtablissement(noEtablissement);
 	}
 
 	@Override
@@ -102,12 +102,12 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 
 	@Nullable
 	@Override
-	public AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
-		final SiteOrganisation site = getOrganisationHistory(getOrganisationPourSite(noSite)).getSiteForNo(noSite);
-		if (site == null) {
+	public AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissement) throws ServiceOrganisationException {
+		final EtablissementCivil etablissement = getOrganisationHistory(getNoOrganisationFromNoEtablissement(noEtablissement)).getEtablissementForNo(noEtablissement);
+		if (etablissement == null) {
 			return null;
 		}
-		final List<Adresse> adresses =  site.getAdresses();
+		final List<Adresse> adresses =  etablissement.getAdresses();
 
 		return getAdressesCivilesHistoriques(adresses);
 	}
@@ -174,21 +174,21 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	/**
-	 * Produire un résumé affichable des attributs civil d'un site RCEnt. La raison sociale, le lieu et le numéro IDE si existant sont affichés. Si des données manquent,
+	 * Produire un résumé affichable des attributs civil d'un établissement civil RCEnt. La raison sociale, le lieu et le numéro IDE si existant sont affichés. Si des données manquent,
 	 * un message explicatif est rendu à la place.
-	 * @param site Le site RCEnt
+	 * @param etablissement L'établissement civil RCEnt
 	 * @param date La date de validité demandée pour la recherche des attributs
 	 * @return Une synthèse des principaux attributs civils.
 	 */
 	@Override
-	public String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date) {
-		if (site == null) {
-			return "<site introuvable>";
+	public String afficheAttributsEtablissement(@Nullable EtablissementCivil etablissement, @Nullable RegDate date) {
+		if (etablissement == null) {
+			return "<établissement civil introuvable>";
 		}
 		final RegDate dateToUse = date == null ? RegDate.get() : date;
-		final String raisonSociale = site.getNom(dateToUse);
-		final String numeroIDE = site.getNumeroIDE(dateToUse);
-		final Domicile domicile = site.getDomicile(dateToUse);
+		final String raisonSociale = etablissement.getNom(dateToUse);
+		final String numeroIDE = etablissement.getNumeroIDE(dateToUse);
+		final Domicile domicile = etablissement.getDomicile(dateToUse);
 		final Integer noOfsDomicile = domicile.getNumeroOfsAutoriteFiscale();
 		final Commune commune = serviceInfra.getCommuneByNumeroOfs(noOfsDomicile, dateToUse);
 		return String.format("%s, à %s%s",

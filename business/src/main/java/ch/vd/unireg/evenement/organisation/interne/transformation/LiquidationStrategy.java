@@ -11,10 +11,10 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.tiers.Entreprise;
@@ -46,12 +46,12 @@ public class LiquidationStrategy extends AbstractOrganisationStrategy {
 		}
 
 		final RegDate dateApres = event.getDateEvenement();
-		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateApres).getPayload();
+		final EtablissementCivil etablissementPrincipal = organisation.getEtablissementPrincipal(dateApres).getPayload();
 
-		final List<PublicationBusiness> publicationBusinessesDuJour = sitePrincipal.getPublications(event.getDateEvenement());
-		final InscriptionRC inscriptionRC = sitePrincipal.getDonneesRC().getInscription(dateApres);
+		final List<PublicationBusiness> publicationBusinessesDuJour = etablissementPrincipal.getPublications(event.getDateEvenement());
+		final InscriptionRC inscriptionRC = etablissementPrincipal.getDonneesRC().getInscription(dateApres);
 		final StatusInscriptionRC statusInscription = inscriptionRC != null ? inscriptionRC.getStatus() : null;
-		final StatusRegistreIDE statusRegistreIDE = sitePrincipal.getDonneesRegistreIDE().getStatus(dateApres);
+		final StatusRegistreIDE statusRegistreIDE = etablissementPrincipal.getDonneesRegistreIDE().getStatus(dateApres);
 
 		if (statusInscription == StatusInscriptionRC.EN_LIQUIDATION
 				&& statusRegistreIDE == StatusRegistreIDE.RADIE

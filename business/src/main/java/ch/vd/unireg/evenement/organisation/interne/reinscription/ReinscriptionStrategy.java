@@ -12,9 +12,9 @@ import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 
@@ -49,20 +49,20 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
 
-		if (sitePrincipalAvantRange == null) {
+		if (etablissementPrincipalAvantRange == null) {
 			if (isExisting(organisation, dateApres)) {
-				final String message = String.format("Site principal introuvable sur organisation n°%s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant));
+				final String message = String.format("Etablissement civil principal introuvable sur organisation n°%s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant));
 				Audit.info(event.getId(), message);
 				return new TraitementManuel(event, organisation, entreprise, context, options, message);
 			}
 		} else {
-			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
+			final EtablissementCivil etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
+			final EtablissementCivil etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
 
-			final InscriptionRC rcAvant = sitePrincipalAvant.getDonneesRC().getInscription(dateAvant);
-			final InscriptionRC rcApres = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+			final InscriptionRC rcAvant = etablissementPrincipalAvant.getDonneesRC().getInscription(dateAvant);
+			final InscriptionRC rcApres = etablissementPrincipalApres.getDonneesRC().getInscription(dateApres);
 			final RegDate dateRadiationRCApres = rcApres != null ? rcApres.getDateRadiationCH() : null;
 			final StatusInscriptionRC statusInscriptionAvant = rcAvant != null ? rcAvant.getStatus() : null;
 			final StatusInscriptionRC statusInscriptionApres = rcApres != null ? rcApres.getStatus() : null;

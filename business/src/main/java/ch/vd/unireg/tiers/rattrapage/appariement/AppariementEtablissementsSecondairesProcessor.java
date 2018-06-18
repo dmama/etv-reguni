@@ -107,7 +107,7 @@ public class AppariementEtablissementsSecondairesProcessor {
 		if (!appariements.isEmpty()) {
 			if (!simulation) {
 				for (CandidatAppariement appariement : appariements) {
-					tiersService.apparier(appariement.getEtablissement(), appariement.getSite());
+					tiersService.apparier(appariement.getEtablissement(), appariement.getEtablissementCivil());
 				}
 			}
 			pushToRapport(entreprise, appariements, rapport);
@@ -118,10 +118,10 @@ public class AppariementEtablissementsSecondairesProcessor {
 		for (CandidatAppariement appariement : appariements) {
 			switch (appariement.getCritere()) {
 			case LOCALISATION:
-				rapport.addNouvelAppariementEtablissementCommune(entreprise, appariement.getEtablissement(), appariement.getSite(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
+				rapport.addNouvelAppariementEtablissementCommune(entreprise, appariement.getEtablissement(), appariement.getEtablissementCivil(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
 				break;
 			case IDE:
-				rapport.addNouvelAppariementEtablissementIde(entreprise, appariement.getEtablissement(), appariement.getSite(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
+				rapport.addNouvelAppariementEtablissementIde(entreprise, appariement.getEtablissement(), appariement.getEtablissementCivil(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
 				break;
 			default:
 				throw new IllegalArgumentException("Type de critère décisif inconnu : " + appariement.getCritere());

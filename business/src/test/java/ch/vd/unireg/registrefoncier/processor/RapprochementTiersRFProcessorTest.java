@@ -21,10 +21,10 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.MockRapprochementManuelTiersRFService;
 import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
@@ -691,12 +691,12 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateDebut, null, null, null);
-				sitePrincipal.changeNumeroRC(dateDebut, numeroRC);
-				sitePrincipal.changeTypeDeSite(dateDebut, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
-				sitePrincipal.changeDomicile(dateDebut, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
-				sitePrincipal.changeFormeLegale(dateDebut, FormeLegale.N_0106_SOCIETE_ANONYME);
-				sitePrincipal.changeNom(dateDebut, "Machin bidule truc SA");
+				final MockEtablissementCivil etablissementPrincipal = addEtablissmeent(org, noCantonalEtablissementPrincipal, dateDebut, null, null, null);
+				etablissementPrincipal.changeNumeroRC(dateDebut, numeroRC);
+				etablissementPrincipal.changeTypeEtablissement(dateDebut, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL);
+				etablissementPrincipal.changeDomicile(dateDebut, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+				etablissementPrincipal.changeFormeLegale(dateDebut, FormeLegale.N_0106_SOCIETE_ANONYME);
+				etablissementPrincipal.changeNom(dateDebut, "Machin bidule truc SA");
 			}
 		});
 

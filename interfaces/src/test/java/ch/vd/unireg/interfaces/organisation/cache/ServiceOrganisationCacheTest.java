@@ -13,6 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.cache.UniregCacheManagerImpl;
+import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.data.CivilDataEventListener;
+import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
@@ -27,10 +31,6 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.cache.UniregCacheManagerImpl;
-import ch.vd.unireg.common.WithoutSpringTest;
-import ch.vd.unireg.data.CivilDataEventListener;
-import ch.vd.unireg.data.CivilDataEventService;
 import ch.vd.unireg.stats.MockStatsService;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
@@ -75,8 +75,8 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		}
 
 		@Override
-		public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-			return target.getOrganisationPourSite(noSite);
+		public Long getNoOrganisationFromNoEtablissement(Long noEtablissementCivil) throws ServiceOrganisationException {
+			return target.getNoOrganisationFromNoEtablissement(noEtablissementCivil);
 		}
 
 		@Override

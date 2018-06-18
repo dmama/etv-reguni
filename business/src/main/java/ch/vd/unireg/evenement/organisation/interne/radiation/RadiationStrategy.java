@@ -11,10 +11,10 @@ import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -48,17 +48,17 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateApres = event.getDateEvenement();
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 
-		final SiteOrganisation sitePrincipalAvant = getSitePrincipal(organisation, dateAvant);
-		if (sitePrincipalAvant != null) {
+		final EtablissementCivil etablissementPrincipalAvant = getEtablissementCivilPrincipal(organisation, dateAvant);
+		if (etablissementPrincipalAvant != null) {
 
-			final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
+			final EtablissementCivil etablissementPrincipalApres = getEtablissementCivilPrincipal(organisation, dateApres);
 
-			final boolean enCoursDeRadiationRC = sitePrincipalAvant.isConnuInscritAuRC(dateAvant) && !sitePrincipalAvant.isRadieDuRC(dateAvant) && sitePrincipalApres.isRadieDuRC(dateApres);
+			final boolean enCoursDeRadiationRC = etablissementPrincipalAvant.isConnuInscritAuRC(dateAvant) && !etablissementPrincipalAvant.isRadieDuRC(dateAvant) && etablissementPrincipalApres.isRadieDuRC(dateApres);
 
 			final FormeLegale formeLegale = organisation.getFormeLegale(dateApres);
 
 			if (enCoursDeRadiationRC) {
-				final InscriptionRC inscriptionRC = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+				final InscriptionRC inscriptionRC = etablissementPrincipalApres.getDonneesRC().getInscription(dateApres);
 				final RegDate dateRadiation = inscriptionRC != null ? inscriptionRC.getDateRadiationCH() : null;
 				if (dateRadiation == null) {
 					final String message = String.format("Traitement manuel requis: l'entreprise n°%s est radiée du RC mais la date de radiation est introuvable!",
@@ -82,8 +82,8 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 		return null;
 	}
 
-	protected SiteOrganisation getSitePrincipal(Organisation organisation, RegDate dateAvant) {
-		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateAvant);
-		return sitePrincipal == null ? null : sitePrincipal.getPayload();
+	protected EtablissementCivil getEtablissementCivilPrincipal(Organisation organisation, RegDate dateAvant) {
+		final DateRanged<EtablissementCivil> etablissementPrincipal = organisation.getEtablissementPrincipal(dateAvant);
+		return etablissementPrincipal == null ? null : etablissementPrincipal.getPayload();
 	}
 }

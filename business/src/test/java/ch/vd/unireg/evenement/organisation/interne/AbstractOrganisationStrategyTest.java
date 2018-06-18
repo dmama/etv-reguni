@@ -14,8 +14,8 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.type.EtatEvenementOrganisation;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
@@ -147,9 +147,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 		 */
 		{
 			final MockOrganisation org = createRcVd(10001L, 90001L, date(2010, 12, 4), FormeLegale.N_0106_SOCIETE_ANONYME, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, MockCommune.Zurich.getNoOFS());
-			final MockSiteOrganisation siteOrganisation = (MockSiteOrganisation) org.getDonneesSites().get(0);
-			siteOrganisation.changeDomicile(date(2016, 10, 1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
-			final MockDonneesRC donneesRC = siteOrganisation.getDonneesRC();
+			final MockEtablissementCivil etablissementCivil = (MockEtablissementCivil) org.getEtablissements().get(0);
+			etablissementCivil.changeDomicile(date(2016, 10, 1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+			final MockDonneesRC donneesRC = etablissementCivil.getDonneesRC();
 			donneesRC.addInscription(date(2016, 10, 1), null, new InscriptionRC(StatusInscriptionRC.ACTIF, null, date(2016, 9, 27), null, date(2010, 12, 4), null));
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
@@ -187,9 +187,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 		 */
 		{
 			final MockOrganisation org = createRcVd(10001L, 90001L, date(2010, 12, 4), FormeLegale.N_0109_ASSOCIATION, TypeOrganisationRegistreIDE.ASSOCIATION, MockCommune.Zurich.getNoOFS());
-			final MockSiteOrganisation siteOrganisation = (MockSiteOrganisation) org.getDonneesSites().get(0);
-			siteOrganisation.changeDomicile(date(2016, 10, 1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
-			final MockDonneesRC donneesRC = siteOrganisation.getDonneesRC();
+			final MockEtablissementCivil etablissementCivil = (MockEtablissementCivil) org.getEtablissements().get(0);
+			etablissementCivil.changeDomicile(date(2016, 10, 1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+			final MockDonneesRC donneesRC = etablissementCivil.getDonneesRC();
 			donneesRC.addInscription(date(2016, 10, 1), null, new InscriptionRC(StatusInscriptionRC.ACTIF, null, date(2016, 9, 27), null, date(2010, 12, 4), null));
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
@@ -227,9 +227,9 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 		 */
 		{
 			final MockOrganisation org = createNonRcVd(10001L, 90001L, date(2010, 12, 4), FormeLegale.N_0109_ASSOCIATION, TypeOrganisationRegistreIDE.ASSOCIATION, MockCommune.Zurich.getNoOFS());
-			final MockSiteOrganisation siteOrganisation = (MockSiteOrganisation) org.getDonneesSites().get(0);
-			siteOrganisation.changeDomicile(date(2016, 10, 1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
-			final MockDonneesRC donneesRC = siteOrganisation.getDonneesRC();
+			final MockEtablissementCivil etablissementCivil = (MockEtablissementCivil) org.getEtablissements().get(0);
+			etablissementCivil.changeDomicile(date(2016, 10, 1), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+			final MockDonneesRC donneesRC = etablissementCivil.getDonneesRC();
 			donneesRC.addInscription(date(2016, 10, 1), null, new InscriptionRC(StatusInscriptionRC.ACTIF, null, date(2016, 9, 27), null, date(2010, 12, 4), null));
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
@@ -257,31 +257,31 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 		}
 	}
 
-	protected MockOrganisation createRcVd(long cantonalId, long cantonalIdSitePrincipal, RegDate dateEvt, FormeLegale formeJuridique, TypeOrganisationRegistreIDE formeJuridiqueIde,
+	protected MockOrganisation createRcVd(long cantonalId, long cantonalIdEtablissementPrincipal, RegDate dateEvt, FormeLegale formeJuridique, TypeOrganisationRegistreIDE formeJuridiqueIde,
 	                                      int noOFSCommune) {
-		return MockOrganisationFactory.createOrganisation(cantonalId, cantonalIdSitePrincipal, "Synergy SA", dateEvt, null, formeJuridique,
+		return MockOrganisationFactory.createOrganisation(cantonalId, cantonalIdEtablissementPrincipal, "Synergy SA", dateEvt, null, formeJuridique,
 		                                                  TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, noOFSCommune, StatusInscriptionRC.ACTIF, dateEvt.addDays(-3),
 		                                                  StatusRegistreIDE.DEFINITIF, formeJuridiqueIde, "CHE999999996");
 	}
 
-	protected MockOrganisation createRcNonVD(long cantonalId, long cantonalIdSitePrincipal, RegDate dateEvt, FormeLegale formeJuridique, TypeOrganisationRegistreIDE formeJuridiqueIde,
+	protected MockOrganisation createRcNonVD(long cantonalId, long cantonalIdEtablissementPrincipal, RegDate dateEvt, FormeLegale formeJuridique, TypeOrganisationRegistreIDE formeJuridiqueIde,
 	                                         int noOFSCommune) {
-		return MockOrganisationFactory.createOrganisation(cantonalId, cantonalIdSitePrincipal, "Synergy SA", dateEvt, null, formeJuridique,
+		return MockOrganisationFactory.createOrganisation(cantonalId, cantonalIdEtablissementPrincipal, "Synergy SA", dateEvt, null, formeJuridique,
 		                                                  TypeAutoriteFiscale.COMMUNE_HC, noOFSCommune, StatusInscriptionRC.ACTIF, dateEvt.addDays(-3),
 		                                                  StatusRegistreIDE.DEFINITIF, formeJuridiqueIde, "CHE999999996");
 	}
 
 
-	protected MockOrganisation createNonRcVd(long cantonalId, long cantonalIdSitePrincipal, RegDate dateEvt, FormeLegale formeJuridique, TypeOrganisationRegistreIDE formeJuridiqueIde,
+	protected MockOrganisation createNonRcVd(long cantonalId, long cantonalIdEtablissementPrincipal, RegDate dateEvt, FormeLegale formeJuridique, TypeOrganisationRegistreIDE formeJuridiqueIde,
 	                                         int noOFSCommune) {
-		return MockOrganisationFactory.createOrganisation(cantonalId, cantonalIdSitePrincipal, "Synergy SA", dateEvt, null, formeJuridique,
+		return MockOrganisationFactory.createOrganisation(cantonalId, cantonalIdEtablissementPrincipal, "Synergy SA", dateEvt, null, formeJuridique,
 		                                                  TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, noOFSCommune, null, null,
 		                                                  StatusRegistreIDE.DEFINITIF, formeJuridiqueIde, "CHE999999996");
 	}
 
-	protected MockOrganisation createNonRcNonVd(long cantonalId, long cantonalIdSitePrincipal, RegDate dateEvt, FormeLegale formeJuridique, TypeOrganisationRegistreIDE formeJuridiqueIde,
+	protected MockOrganisation createNonRcNonVd(long cantonalId, long cantonalIdEtablissementPrincipal, RegDate dateEvt, FormeLegale formeJuridique, TypeOrganisationRegistreIDE formeJuridiqueIde,
 	                                            int noOFSCommune) {
-		return MockOrganisationFactory.createOrganisation(cantonalId, cantonalIdSitePrincipal, "Synergy SA", dateEvt, null, formeJuridique,
+		return MockOrganisationFactory.createOrganisation(cantonalId, cantonalIdEtablissementPrincipal, "Synergy SA", dateEvt, null, formeJuridique,
 		                                                  TypeAutoriteFiscale.COMMUNE_HC, noOFSCommune, null, null,
 		                                                  StatusRegistreIDE.DEFINITIF, formeJuridiqueIde, "CHE999999996");
 	}

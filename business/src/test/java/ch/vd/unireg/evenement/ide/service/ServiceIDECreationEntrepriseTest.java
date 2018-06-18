@@ -9,6 +9,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.evenement.ide.ServiceIDEException;
+import ch.vd.unireg.evenement.ide.SingleShotMockAnnonceIDESender;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -24,14 +29,9 @@ import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.unireg.evenement.ide.ServiceIDEException;
-import ch.vd.unireg.evenement.ide.SingleShotMockAnnonceIDESender;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
@@ -89,7 +89,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            null, null, null, null, null, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            RCEntAnnonceIDEHelper
@@ -132,7 +132,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
 
 				assertEquals(TypeAnnonce.CREATION, annonceIDE.getType());
-				assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeDeSite());
+				assertEquals(TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeEtablissementCivil());
 
 				assertNull(annonceIDE.getNoIde());
 				assertNull(annonceIDE.getNoIdeRemplacant());
@@ -154,8 +154,8 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				final BaseAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
 				assertNotNull(informationOrganisation);
 				assertNull(informationOrganisation.getNumeroOrganisation());
-				assertNull(informationOrganisation.getNumeroSite());
-				assertNull(informationOrganisation.getNumeroSiteRemplacant());
+				assertNull(informationOrganisation.getNumeroEtablissement());
+				assertNull(informationOrganisation.getNumeroEtablissementRemplacant());
 
 				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
@@ -257,7 +257,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				// Annonce existante
 				AnnonceIDE annonce =
-						RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                       new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                       adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
@@ -265,7 +265,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                            "Rienavoir Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);

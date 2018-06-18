@@ -2,12 +2,6 @@ package ch.vd.unireg.evenement.organisation.interne;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationAbortException;
 import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
@@ -16,6 +10,12 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
@@ -112,10 +112,10 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 		final RegDate datePasseeTropAncienne = getDateEvt().getOneDayBefore().addDays(-OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
 		// On a besoin du vrai historique pour savoir cela.
 		final Organisation organisationHistory = getContext().getServiceOrganisation().getOrganisationHistory(getOrganisation().getNumeroOrganisation());
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisationHistory.getSitePrincipal(datePasseeTropAncienne);
-		if (sitePrincipalAvantRange != null) {
-			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-			final Domicile domicilePasse = sitePrincipalAvant.getDomicile(datePasseeTropAncienne);
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisationHistory.getEtablissementPrincipal(datePasseeTropAncienne);
+		if (etablissementPrincipalAvantRange != null) {
+			EtablissementCivil etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
+			final Domicile domicilePasse = etablissementPrincipalAvant.getDomicile(datePasseeTropAncienne);
 			if (domicilePasse != null) {
 				if (domicilePasse.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 					final Commune commune = getCommune(domicilePasse.getNumeroOfsAutoriteFiscale(), datePasseeTropAncienne);

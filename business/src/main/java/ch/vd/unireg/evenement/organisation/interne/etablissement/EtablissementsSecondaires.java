@@ -19,9 +19,9 @@ import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneD
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -38,7 +38,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	private final RegDate dateApres;
 
 	private final List<Etablissement> etablissementsAFermer;
-	private final List<SiteOrganisation> sitesACreer;
+	private final List<EtablissementCivil> etablissementsCivilsACreer;
 
 	private final List<EtablissementsSecondaires.Demenagement> demenagements;
 
@@ -46,7 +46,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	                                 EvenementOrganisationContext context,
 	                                 EvenementOrganisationOptions options,
 	                                 List<Etablissement> etablissementsAFermer,
-	                                 List<SiteOrganisation> sitesACreer,
+	                                 List<EtablissementCivil> etablissementsCivilsACreer,
 	                                 List<EtablissementsSecondaires.Demenagement> demenagements) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
@@ -54,7 +54,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 		dateAvant = dateApres.getOneDayBefore();
 
 		this.etablissementsAFermer = etablissementsAFermer;
-		this.sitesACreer = sitesACreer;
+		this.etablissementsCivilsACreer = etablissementsCivilsACreer;
 
 		this.demenagements = demenagements;
 	}
@@ -67,20 +67,20 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		for (Etablissement aFermer : etablissementsAFermer) {
-			SiteOrganisation siteQuiFerme = getOrganisation().getSiteForNo(aFermer.getNumeroEtablissement());
+			EtablissementCivil etablissementQuiFerme = getOrganisation().getEtablissementForNo(aFermer.getNumeroEtablissement());
 			RegDate dateFermeture = dateApres;
 
 			/* Si l'établissement est inscrit au RC, c'est la date de radiation du RC qui nous intéresse. A certaines conditions. */
-			if (siteQuiFerme.isConnuInscritAuRC(dateApres)) {
-				RegDate dateRadiation = siteQuiFerme.getDateRadiationRC(dateApres); // Vaudois ou HC, il doit être radié au niveau global.
+			if (etablissementQuiFerme.isConnuInscritAuRC(dateApres)) {
+				RegDate dateRadiation = etablissementQuiFerme.getDateRadiationRC(dateApres); // Vaudois ou HC, il doit être radié au niveau global.
 
 				// exception APM
 
 				if (dateRadiation == null) {
 					throw new EvenementOrganisationException(
 							String.format("Impossible de déterminer la date de fin d'activité de l'établissement n°%d (%s): la date de radiation au RC CH n'est pas disponible.",
-							              siteQuiFerme.getNumeroSite(),
-							              afficheAttributsSite(siteQuiFerme, dateApres))
+							              etablissementQuiFerme.getNumeroEtablissement(),
+							              afficheAttributsEtablissement(etablissementQuiFerme, dateApres))
 					);
 				}
 				/* A-t-on à faire à une véritable fin d'activité, ou sommes-nous dans un cas de radiation autorisée? */
@@ -90,13 +90,13 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			}
 			closeEtablissement(aFermer, dateFermeture, warnings, suivis);
 		}
-		for (SiteOrganisation aCreer : sitesACreer) {
+		for (EtablissementCivil aCreer : etablissementsCivilsACreer) {
 			final Domicile domicile = aCreer.getDomicile(dateApres);
 			/* On ne traite que des établissements VD. SIFISC-19086 */
 			if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				suivis.addSuivi(String.format("L'établissement secondaire civil n°%d (%s) est hors canton et ne sera donc pas créé dans Unireg.",
-				                              aCreer.getNumeroSite(),
-				                              afficheAttributsSite(aCreer, dateApres)));
+				                              aCreer.getNumeroEtablissement(),
+				                              afficheAttributsEtablissement(aCreer, dateApres)));
 				continue;
 			}
 			/*
@@ -104,14 +104,14 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			 */
 			if (!aCreer.isSuccursale(getDateEvt())) {
 				suivis.addSuivi(String.format("L'établissement secondaire civil n°%d (%s) n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.",
-				                              aCreer.getNumeroSite(),
-				                              afficheAttributsSite(aCreer, dateApres)));
+				                              aCreer.getNumeroEtablissement(),
+				                              afficheAttributsEtablissement(aCreer, dateApres)));
 				raiseStatusTo(HandleStatus.TRAITE);
 				continue;
 			}
 
-			// Vérifier que le site à créer n'existe pas déjà.
-			final Etablissement etablissement = getContext().getTiersDAO().getEtablissementByNumeroSite(aCreer.getNumeroSite());
+			// Vérifier que l'établissement civil à créer n'existe pas déjà.
+			final Etablissement etablissement = getContext().getTiersDAO().getEtablissementByNumeroEtablissementCivil(aCreer.getNumeroEtablissement());
 			if (etablissement == null) {
 				RegDate dateCreation = dateApres;
 				if (aCreer.isConnuInscritAuRC(dateApres)) {
@@ -135,8 +135,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 					} else {
 						String message = String.format("Refus de créer dans Unireg l'établissement n°%d (%s) dont la fondation / déménagement remonte à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
 								                               "Il y a probablement une erreur d'identification ou un problème de date.",
-						                               aCreer.getNumeroSite(),
-						                               afficheAttributsSite(aCreer, dateApres),
+						                               aCreer.getNumeroEtablissement(),
+						                               afficheAttributsEtablissement(aCreer, dateApres),
 						                               RegDateHelper.dateToDisplayString(dateCreation),
 						                               surchargeCorrectiveRange.getEtendue(),
 						                               OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
@@ -154,16 +154,16 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				if (ancienNom != null) {
 					warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire n°%d (%s) est préexistant au civil (depuis le %s) mais inconnu d'Unireg à ce jour. " +
 							                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
-					                                  aCreer.getNumeroSite(),
-					                                  afficheAttributsSite(aCreer, dateApres),
+					                                  aCreer.getNumeroEtablissement(),
+					                                  afficheAttributsEtablissement(aCreer, dateApres),
 					                                  RegDateHelper.dateToDisplayString(aCreer.connuAuCivilDepuis()),
 					                                  RegDateHelper.dateToDisplayString(dateCreation)));
 				}
 
 			} else {
 				suivis.addSuivi(String.format("Nouvel établissement secondaire civil n°%d (%s) déjà connu de Unireg en tant que tiers n°%s. Ne sera pas créé.",
-				                              aCreer.getNumeroSite(),
-				                              afficheAttributsSite(aCreer, dateApres),
+				                              aCreer.getNumeroEtablissement(),
+				                              afficheAttributsEtablissement(aCreer, dateApres),
 				                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
 			}
 		}
@@ -175,16 +175,16 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			if (ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
 					&& nouveauDomicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				throw new EvenementOrganisationException(String.format("Le déménagement HC/HS d'une succursale [n°%d, %s] n'est pas censé se produire.",
-				                                                       demenagement.getSite().getNumeroSite(),
-				                                                       afficheAttributsSite(demenagement.getSite(), dateApres)
+				                                                       demenagement.getEtablissementCivil().getNumeroEtablissement(),
+				                                                       afficheAttributsEtablissement(demenagement.getEtablissementCivil(), dateApres)
 				));
 			}
 			/* Arrivee HC */
 			else if (ancienDomicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
 					&& nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				throw new EvenementOrganisationException(String.format("L'arrivée HC/HS d'une succursale [n°%d, %s] n'est pas censé se produire.",
-				                                                       demenagement.getSite().getNumeroSite(),
-				                                                       afficheAttributsSite(demenagement.getSite(), dateApres)
+				                                                       demenagement.getEtablissementCivil().getNumeroEtablissement(),
+				                                                       afficheAttributsEtablissement(demenagement.getEtablissementCivil(), dateApres)
 				));
 			}
 			/* On ne traite que des établissements VD. SIFISC-19086 */
@@ -192,7 +192,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				continue;
 			}
 /* Si des fois ça peut quand même se produire, le code pour l'application des surcharges est là.
-			SiteOrganisation quiDemenage = getOrganisation().getSiteForNo(demenagement.getEtablissement().getNumeroEtablissement());
+			EtablissementCivil quiDemenage = getOrganisation().getEtablissementForNo(demenagement.getEtablissement().getNumeroEtablissement());
 			if (quiDemenage.isInscritAuRC(dateApres)) {
 
 				if (ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
@@ -202,7 +202,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 						dateDemenagement = dateRadiationRCVd;
 					} else {
 						throw new EvenementOrganisationException(String.format("Date de radiation du RC VD introuvable pour l'établissement %d.",
-						                                                       quiDemenage.getNumeroSite())
+						                                                       quiDemenage.getNumeroEtablissement())
 						);
 					}
 					if (dateDemenagement.isBefore(dateApres)) {
@@ -217,7 +217,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 						dateDemenagement = dateInscriptionRCVd;
 					} else {
 						throw new EvenementOrganisationException(String.format("Date d'inscription au RC VD introuvable pour l'établissement %d.",
-						                                                       quiDemenage.getNumeroSite())
+						                                                       quiDemenage.getNumeroEtablissement())
 						);
 					}
 					if (dateDemenagement.isBefore(dateApres)) {
@@ -228,17 +228,17 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 */
 			// On peut y aller
 
-			final SiteOrganisation site = demenagement.getSite();
+			final EtablissementCivil etablissement = demenagement.getEtablissementCivil();
 
 			RegDate dateDemenagement = null;
-			if (site.isConnuInscritAuRC(getDateEvt()) && !site.isRadieDuRC(getDateEvt())) {
-				final List<EntreeJournalRC> entreesJournal = site.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
+			if (etablissement.isConnuInscritAuRC(getDateEvt()) && !etablissement.isRadieDuRC(getDateEvt())) {
+				final List<EntreeJournalRC> entreesJournal = etablissement.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 				if (entreesJournal.isEmpty()) {
 					throw new EvenementOrganisationException(
 							String.format("Entrée de journal au RC introuvable dans l'établissement n°%s (civil: %d, %s). Impossible de traiter le déménagement.",
 							              FormatNumeroHelper.numeroCTBToDisplay(demenagement.getEtablissement().getNumero()),
-							              site.getNumeroSite(),
-							              afficheAttributsSite(site, dateApres)));
+							              etablissement.getNumeroEtablissement(),
+							              afficheAttributsEtablissement(etablissement, dateApres)));
 				}
 				// On prend la première entrée qui vient car il devrait y en avoir qu'une seule. S'il devait vraiment y en avoir plusieurs, on considère qu'elles renverraient toutes vers le même jour.
 				dateDemenagement = entreesJournal.iterator().next().getDate();
@@ -258,8 +258,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				} else {
 					String message = String.format("Refus de créer une surcharge corrective pour l'établissement n°%d (%s) dont la date déménagement remonte à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
 							                               "Il y a probablement une erreur d'identification ou un problème de date.",
-					                               site.getNumeroSite(),
-					                               afficheAttributsSite(site, dateApres),
+					                               etablissement.getNumeroEtablissement(),
+					                               afficheAttributsEtablissement(etablissement, dateApres),
 					                               RegDateHelper.dateToDisplayString(dateDemenagement),
 					                               surchargeCorrectiveRange.getEtendue(),
 					                               OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
@@ -320,8 +320,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 		return demenagements;
 	}
 
-	public List<SiteOrganisation> getSitesACreer() {
-		return sitesACreer;
+	public List<EtablissementCivil> getEtablissementsCivilsACreer() {
+		return etablissementsCivilsACreer;
 	}
 
 	public List<Etablissement> getEtablissementsAFermer() {
@@ -330,14 +330,14 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 
 	public static class Demenagement {
 		private final Etablissement etablissement;
-		private final SiteOrganisation site;
+		private final EtablissementCivil etablissementCivil;
 		private final Domicile ancienDomicile;
 		private final Domicile nouveauDomicile;
 		private final RegDate date;
 
-		public Demenagement(Etablissement etablissement, SiteOrganisation site, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate date) {
+		public Demenagement(Etablissement etablissement, EtablissementCivil etablissementCivil, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate date) {
 			this.etablissement = etablissement;
-			this.site = site;
+			this.etablissementCivil = etablissementCivil;
 			this.ancienDomicile = ancienDomicile;
 			this.nouveauDomicile = nouveauDomicile;
 			this.date = date;
@@ -347,8 +347,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			return etablissement;
 		}
 
-		public SiteOrganisation getSite() {
-			return site;
+		public EtablissementCivil getEtablissementCivil() {
+			return etablissementCivil;
 		}
 
 		public Domicile getAncienDomicile() {

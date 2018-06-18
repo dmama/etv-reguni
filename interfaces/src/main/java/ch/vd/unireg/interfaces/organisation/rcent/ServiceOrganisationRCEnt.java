@@ -61,9 +61,9 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	}
 
 	@Override
-	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
+	public Long getNoOrganisationFromNoEtablissement(Long noEtablissementCivil) throws ServiceOrganisationException {
 		try {
-			final ch.vd.unireg.interfaces.organisation.rcent.adapter.model.Organisation received = adapter.getLocation(noSite);
+			final ch.vd.unireg.interfaces.organisation.rcent.adapter.model.Organisation received = adapter.getLocation(noEtablissementCivil);
 			if (received == null) {
 				return null;
 			}

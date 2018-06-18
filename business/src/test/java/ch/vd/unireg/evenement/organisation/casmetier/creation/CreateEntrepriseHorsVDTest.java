@@ -26,8 +26,8 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.tiers.Bouclement;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -71,19 +71,19 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 		final Long noOrganisation = 101202100L;
 		final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 27), null,
 		                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Zurich);
-		MockSiteOrganisationFactory.addSite(1012021001234L,
-		                                    org,
-		                                    RegDate.get(2015, 6, 27),
-		                                    null,
-		                                    "Robert Alkan et autres",
-		                                    FormeLegale.N_0106_SOCIETE_ANONYME,
-		                                    false,
-		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                    MockCommune.Lausanne.getNoOFS(),
-		                                    StatusInscriptionRC.ACTIF,
-		                                    date(2015, 6, 24),
-		                                    StatusRegistreIDE.DEFINITIF,
-		                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		MockEtablissementCivilFactory.addEtablissement(1012021001234L,
+		                                               org,
+		                                               RegDate.get(2015, 6, 27),
+		                                               null,
+		                                               "Robert Alkan et autres",
+		                                               FormeLegale.N_0106_SOCIETE_ANONYME,
+		                                               false,
+		                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                               MockCommune.Lausanne.getNoOFS(),
+		                                               StatusInscriptionRC.ACTIF,
+		                                               date(2015, 6, 24),
+		                                               StatusRegistreIDE.DEFINITIF,
+		                                               TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -215,19 +215,19 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 		final Long noOrganisation = 101202100L;
 		final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres fous", RegDate.get(2015, 6, 27), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
 		                                                                              MockCommune.Zurich);
-		MockSiteOrganisationFactory.addSite(1012021001234L,
-		                                    org,
-		                                    RegDate.get(2015, 6, 27),
-		                                    null,
-		                                    "Robert Alkan et autres fous",
-		                                    FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
-		                                    false,
-		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                    MockCommune.Lausanne.getNoOFS(),
-		                                    StatusInscriptionRC.ACTIF,
-		                                    date(2015, 6, 24),
-		                                    StatusRegistreIDE.DEFINITIF,
-		                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		MockEtablissementCivilFactory.addEtablissement(1012021001234L,
+		                                               org,
+		                                               RegDate.get(2015, 6, 27),
+		                                               null,
+		                                               "Robert Alkan et autres fous",
+		                                               FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
+		                                               false,
+		                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                               MockCommune.Lausanne.getNoOFS(),
+		                                               StatusInscriptionRC.ACTIF,
+		                                               date(2015, 6, 24),
+		                                               StatusRegistreIDE.DEFINITIF,
+		                                               TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -395,25 +395,25 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 	}
 
 	@Test(timeout = 10000L)
-	public void testCreationHorsVDPMNouveauSiteVD() throws Exception {
+	public void testCreationHorsVDPMNouvelEtablissementVD() throws Exception {
 
 			// Mise en place service mock
 			final Long noOrganisation = 101202100L;
 			final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(1920, 1, 5), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 			                                                                              MockCommune.Zurich);
-			MockSiteOrganisationFactory.addSite(1012021001234L,
-			                                    org,
-			                                    RegDate.get(2015, 6, 27),
-			                                    null,
-			                                    "Robert Alkan et autres",
-			                                    FormeLegale.N_0106_SOCIETE_ANONYME,
-			                                    false,
-			                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-			                                    MockCommune.Lausanne.getNoOFS(),
-			                                    StatusInscriptionRC.ACTIF,
-			                                    date(2015, 6, 24),
-			                                    StatusRegistreIDE.DEFINITIF,
-			                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+			MockEtablissementCivilFactory.addEtablissement(1012021001234L,
+			                                               org,
+			                                               RegDate.get(2015, 6, 27),
+			                                               null,
+			                                               "Robert Alkan et autres",
+			                                               FormeLegale.N_0106_SOCIETE_ANONYME,
+			                                               false,
+			                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+			                                               MockCommune.Lausanne.getNoOFS(),
+			                                               StatusInscriptionRC.ACTIF,
+			                                               date(2015, 6, 24),
+			                                               StatusRegistreIDE.DEFINITIF,
+			                                               TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 			serviceOrganisation.setUp(new MockServiceOrganisation() {
 				@Override

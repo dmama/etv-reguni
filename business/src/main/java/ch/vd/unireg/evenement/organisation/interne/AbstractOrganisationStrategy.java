@@ -9,10 +9,10 @@ import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.unireg.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.creation.CreateEntreprise;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEvenementOrganisation;
@@ -207,9 +207,9 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	 */
 	private static boolean nouveauAuRc(Organisation organisation, RegDate date) throws EvenementOrganisationException {
 		if (organisation.isConnueInscriteAuRC(date)) {
-			final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(date).getPayload();
+			final EtablissementCivil etablissementPrincipal = organisation.getEtablissementPrincipal(date).getPayload();
 			/* Les données avec lesquelles on travaille */
-			final InscriptionRC inscriptionRC = sitePrincipal.getDonneesRC().getInscription(date);
+			final InscriptionRC inscriptionRC = etablissementPrincipal.getDonneesRC().getInscription(date);
 			final RegDate dateInscriptionCh = inscriptionRC != null ? inscriptionRC.getDateInscriptionCH() : null;
 			final RegDate dateInscriptionVd = inscriptionRC != null ? inscriptionRC.getDateInscriptionVD() : null;
 
@@ -256,8 +256,8 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	protected static InformationDeDateEtDeCreation extraireInformationDeDateEtDeCreation(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
 		final RegDate dateEvenement = event.getDateEvenement();
 
-		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
-		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
+		EtablissementCivil etablissementPrincipal = organisation.getEtablissementPrincipal(dateEvenement).getPayload();
+		final Domicile siege = etablissementPrincipal.getDomicile(dateEvenement);
 		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 		final boolean inscritAuRC = organisation.isInscriteAuRC(dateEvenement);
 		final RegDate dateInscriptionRCVd;
@@ -266,11 +266,11 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		final RegDate dateOuvertureFiscale;
 		final boolean isCreation;
 		if (inscritAuRC) {
-			dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
+			dateInscriptionRCVd = etablissementPrincipal.getDateInscriptionRCVd(dateEvenement);
 			if (isVaudoise && dateInscriptionRCVd == null) {
 				throw new PasDeDateInscriptionRCVD();
 			}
-			dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
+			dateInscriptionRC = etablissementPrincipal.getDateInscriptionRC(dateEvenement);
 			isCreation = isCreation(event.getType(), organisation, dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
 			if (isCreation) {
 				if (isVaudoise) {

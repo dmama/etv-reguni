@@ -71,8 +71,8 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.dao.DecisionAciDAO;
@@ -9320,7 +9320,7 @@ debut PF                                                                        
 	public void testGetCapitaux() throws Exception {
 
 		final long noOrganisation = 48518745L;
-		final long noSite = 346742L;
+		final long noEtablissement = 346742L;
 		final RegDate dateDebut = date(2000, 1, 4);
 		final RegDate dateDebutSurchargeCapital = date(2005, 3, 1);
 		final RegDate dateFinSurchargeCapital = date(2012, 6, 30);
@@ -9330,11 +9330,11 @@ debut PF                                                                        
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noOrganisation);
-				MockSiteOrganisationFactory.addSite(noSite, org, dateDebut, null, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, true,
-				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-				                                    StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996",
-				                                    BigDecimal.valueOf(10000000L), MontantMonetaire.CHF);
+				MockEtablissementCivilFactory.addEtablissement(noEtablissement, org, dateDebut, null, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, true,
+				                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
+				                                               StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
+				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996",
+				                                               BigDecimal.valueOf(10000000L), MontantMonetaire.CHF);
 			}
 		});
 

@@ -31,8 +31,8 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
@@ -84,12 +84,12 @@ public interface TiersService {
     Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
 
 	/**
-	 * Renvoie l'établissement (fiscal, donc) correspondant au numéro de site (civil) passé en paramètre.
+	 * Renvoie l'établissement (fiscal, donc) correspondant au numéro d'établissement civil passé en paramètre.
 	 *
-	 * @param numeroSite le numéro du site
+	 * @param numeroEtablissement le numéro de l'établissement civil
 	 * @return l'établissement (tiers non-annulé) correspondant au numéro d'organisation passé en paramètre, ou <b>null</b>.
 	 */
-	Etablissement getEtablissementByNumeroSite(long numeroSite);
+	Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissement);
 
     /**
      * @param entreprise entreprise
@@ -137,13 +137,13 @@ public interface TiersService {
     Entreprise createEntreprise(long noOrganisation);
 
     /**
-     * Créer un établissement pour le numéro de site fourni. La méthode refuse de le créer si un établissement est déjà associé au site.
+     * Créer un établissement pour le numéro d'établissement civil fourni. La méthode refuse de le créer si un établissement est déjà associé à l'établissement civil.
      *
-     * @param numeroSite
+     * @param numeroEtablissementCivil
      * @return L'établissement créé.
      */
     @NotNull
-    Etablissement createEtablissement(Long numeroSite);
+    Etablissement createEtablissement(Long numeroEtablissementCivil);
 
     /**
      * @param etablissement établissement ciblé
@@ -316,12 +316,12 @@ public interface TiersService {
 	void apparier(Entreprise entreprise, Organisation organisation, boolean fermerSurcharges);
 
 	/**
-	 * Associe un établissement à un site du registre civil. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
+	 * Associe un établissement à un établissement civil du registre civil. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
 	 * et supprime le numéro IDE du registre fiscal.
 	 * @param etablissement l'établissement à apparier
-	 * @param site le site cible de l'appariement
+	 * @param etablissementCivil l'établissement civil cible de l'appariement
 	 */
-	void apparier(Etablissement etablissement, SiteOrganisation site);
+	void apparier(Etablissement etablissement, EtablissementCivil etablissementCivil);
 
 	/**
 	 * Ferme ou annule les surcharges civiles à la date fournie.
@@ -2228,11 +2228,11 @@ public interface TiersService {
     Organisation getOrganisationPourEtablissement(@NotNull Etablissement etablissement);
 
 	/**
-	 * Renvoie le site d'organisation RCEnt correspondant à l'établissement.
+	 * Renvoie l'établissement civil d'organisation RCEnt correspondant à l'établissement.
 	 * @param etablissement L'établissement connu au civil
-	 * @return Le site correspondant
+	 * @return L'établissement civil correspondant
 	 */
-	SiteOrganisation getSiteOrganisationPourEtablissement(@NotNull Etablissement etablissement);
+	EtablissementCivil getEtablissementCivil(@NotNull Etablissement etablissement);
 
 	/**
 	 * @param entreprise une entreprise

@@ -12,8 +12,8 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviColle
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.MotifFor;
 
@@ -37,12 +37,12 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 
 		// Si on est une organisation inscrite au RC, la date de déménagement correspond à la date de l'entrée au régistre journalier.
 		if (getOrganisation().isInscriteAuRC(getDateEvt()) && !getOrganisation().isRadieeDuRC(getDateEvt())) {
-			final SiteOrganisation sitePrincipal = getOrganisation().getSitePrincipal(getDateEvt()).getPayload();
-			final List<EntreeJournalRC> entreesJournal = sitePrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
+			final EtablissementCivil etablissementPrincipal = getOrganisation().getEtablissementPrincipal(getDateEvt()).getPayload();
+			final List<EntreeJournalRC> entreesJournal = etablissementPrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 			if (entreesJournal.isEmpty()) {
 				throw new EvenementOrganisationException(
 						String.format("Entrée de journal au RC introuvable dans l'établissement principal (civil: %s). Impossible de traiter le déménagement.",
-						              sitePrincipal.getNumeroSite()));
+						              etablissementPrincipal.getNumeroEtablissement()));
 			}
 			// On prend la première entrée qui vient car il devrait y en avoir qu'une seule. S'il devait vraiment y en avoir plusieurs, on considère qu'elles renverraient toutes vers le même jour.
 			dateDemenagement = entreesJournal.iterator().next().getDate();
@@ -67,7 +67,7 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 
 		// Erreurs techniques fatale
 		// On doit avoir deux autorités fiscales
-		if (getSitePrincipalApres() == null || getSiegeAvant() == null || getSiegeApres() == null) {
+		if (getEtablissementCivilPrincipalApres() == null || getSiegeAvant() == null || getSiegeApres() == null) {
 			throw new IllegalArgumentException();
 		}
 

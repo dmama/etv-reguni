@@ -1865,7 +1865,7 @@ public class AdresseServiceImpl implements AdresseService {
 			throw new OrganisationNotFoundException(etablissement);
 		}
 
-		return serviceOrganisationService.getAdressesSiteOrganisationHisto(etablissement.getNumeroEtablissement());
+		return serviceOrganisationService.getAdressesEtablissementCivilHisto(etablissement.getNumeroEtablissement());
 	}
 
 	private AdressesCiviles getAdressesCiviles(Entreprise entreprise, RegDate date) throws AdresseDataException {

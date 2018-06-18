@@ -20,7 +20,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
@@ -308,7 +308,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 	public void testNouvelAssujettissementPMVDInscriteRC() throws Exception {
 
 		final long noOrganisation = 4327324L;
-		final long noSitePrincipal = 4372L;
+		final long noEtablissementPrincipal = 4372L;
 		final RegDate dateDebut = date(2016, 1, 7);
 
 		// mise en place civile
@@ -316,11 +316,11 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockOrganisation org = addOrganisation(noOrganisation);
-				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi & Co SA", FormeLegale.N_0106_SOCIETE_ANONYME,
-				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996",
-				                                    BigDecimal.valueOf(50000), MontantMonetaire.CHF);
+				MockEtablissementCivilFactory.addEtablissement(noEtablissementPrincipal, org, dateDebut, null, "Titi & Co SA", FormeLegale.N_0106_SOCIETE_ANONYME,
+				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                               MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
+				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996",
+				                                               BigDecimal.valueOf(50000), MontantMonetaire.CHF);
 			}
 		});
 
@@ -382,7 +382,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 	public void testNouvelAssujettissementAPMVDInscriteRC() throws Exception {
 
 		final long noOrganisation = 4327324L;
-		final long noSitePrincipal = 4372L;
+		final long noEtablissementPrincipal = 4372L;
 		final RegDate dateDebut = date(2016, 1, 7);
 
 		// mise en place civile
@@ -390,10 +390,10 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockOrganisation org = addOrganisation(noOrganisation);
-				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
-				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
+				MockEtablissementCivilFactory.addEtablissement(noEtablissementPrincipal, org, dateDebut, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
+				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                               MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
+				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 			}
 		});
 
@@ -517,7 +517,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 	public void testNouvelAssujettissementAPMVDNonInscriteRC() throws Exception {
 
 		final long noOrganisation = 4327324L;
-		final long noSitePrincipal = 4372L;
+		final long noEtablissementPrincipal = 4372L;
 		final RegDate dateDebut = date(2016, 1, 4);
 
 		// mise en place civile
@@ -525,10 +525,10 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockOrganisation org = addOrganisation(noOrganisation);
-				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
-				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
-				                                    TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
+				MockEtablissementCivilFactory.addEtablissement(noEtablissementPrincipal, org, dateDebut, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
+				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                               MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
+				                                               TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 			}
 		});
 

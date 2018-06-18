@@ -11,8 +11,8 @@ import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -46,20 +46,20 @@ public class DoublonEntrepriseRemplaceeParStrategy extends AbstractOrganisationS
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final Long remplaceParSiteAvant;
-		final Long remplaceParSiteApres = organisation.getSitePrincipal(dateApres).getPayload().getIdeRemplacePar(dateApres);
+		final Long remplaceEtablissementAvant;
+		final Long remplaceEtablissementApres = organisation.getEtablissementPrincipal(dateApres).getPayload().getIdeRemplacePar(dateApres);
 
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange != null) {
-			remplaceParSiteAvant = sitePrincipalAvantRange.getPayload().getIdeRemplacePar(dateAvant);
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		if (etablissementPrincipalAvantRange != null) {
+			remplaceEtablissementAvant = etablissementPrincipalAvantRange.getPayload().getIdeRemplacePar(dateAvant);
 		}
 		else {
-			remplaceParSiteAvant = null;
+			remplaceEtablissementAvant = null;
 		}
 
-		if (remplaceParSiteAvant == null && remplaceParSiteApres != null) {
+		if (remplaceEtablissementAvant == null && remplaceEtablissementApres != null) {
 			final Entreprise entrepriseRemplacante;
-			final Long noOrganisationRemplacante = context.getServiceOrganisation().getOrganisationPourSite(remplaceParSiteApres);
+			final Long noOrganisationRemplacante = context.getServiceOrganisation().getNoOrganisationFromNoEtablissement(remplaceEtablissementApres);
 			if (noOrganisationRemplacante != null) {
 				entrepriseRemplacante = context.getTiersService().getEntrepriseByNumeroOrganisation(noOrganisationRemplacante);
 			}

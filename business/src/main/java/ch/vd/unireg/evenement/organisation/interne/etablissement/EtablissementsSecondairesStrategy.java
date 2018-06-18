@@ -17,8 +17,8 @@ import ch.vd.unireg.evenement.organisation.interne.MessageWarningPreExectution;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 
@@ -54,10 +54,10 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 
 
 		final List<Etablissement> etablissementsAFermer = new ArrayList<>();
-		final List<SiteOrganisation> sitesACreer = new ArrayList<>();
+		final List<EtablissementCivil> etablissementsACreer = new ArrayList<>();
 
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange == null) {
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		if (etablissementPrincipalAvantRange == null) {
 			Audit.info("Organisation nouvelle au civil mais déjà connue d'Unireg. Des établissements secondaires ont peut-être changé.");
 			// FIXME: Cela pose la question de savoir si on ne devrait pas utiliser Unireg comme "avant" dans ces cas là?
 			return new MessageWarningPreExectution(event, organisation, null, context, options,
@@ -66,19 +66,19 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		}
 		else {
 
-			final List<SiteOrganisation> sitesVDAvant = uniquementSitesActifs(organisation.getSitesSecondaires(dateAvant), dateAvant);
-			final List<SiteOrganisation> sitesVDApres = uniquementSitesActifs(organisation.getSitesSecondaires(dateApres), dateApres);
+			final List<EtablissementCivil> etablissementsVDAvant = uniquementEtablissementsActifs(organisation.getEtablissementsSecondaires(dateAvant), dateAvant);
+			final List<EtablissementCivil> etablissementsVDApres = uniquementEtablissementsActifs(organisation.getEtablissementsSecondaires(dateApres), dateApres);
 
-			determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
+			determineChangementsEtablissements(etablissementsVDAvant, etablissementsVDApres, etablissementsAFermer, etablissementsACreer, context);
 
 			try {
-				List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(sitesVDAvant, sitesVDApres, dateApres, context);
+				List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(etablissementsVDAvant, etablissementsVDApres, dateApres, context);
 
-				if (!etablissementsAFermer.isEmpty() || !sitesACreer.isEmpty() || !demenagements.isEmpty()) {
+				if (!etablissementsAFermer.isEmpty() || !etablissementsACreer.isEmpty() || !demenagements.isEmpty()) {
 					final String message = String.format("Modification des établissements secondaires de l'entreprise %s (civil: %d).",
 					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation());
 					Audit.info(event.getId(), message);
-					return new EtablissementsSecondaires(event, organisation, entreprise, context, options, etablissementsAFermer, sitesACreer, demenagements);
+					return new EtablissementsSecondaires(event, organisation, entreprise, context, options, etablissementsAFermer, etablissementsACreer, demenagements);
 				}
 			}
 			catch (EvenementOrganisationException e) {
@@ -92,68 +92,68 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		return null;
 	}
 
-	private List<SiteOrganisation> uniquementSitesActifs(List<SiteOrganisation> sitesSecondaires, RegDate date) {
-		List<SiteOrganisation> filtre = new ArrayList<>(sitesSecondaires.size());
-		for (SiteOrganisation site : sitesSecondaires) {
-			Domicile domicile = site.getDomicile(date);
+	private List<EtablissementCivil> uniquementEtablissementsActifs(List<EtablissementCivil> etablissementsSecondaires, RegDate date) {
+		List<EtablissementCivil> filtre = new ArrayList<>(etablissementsSecondaires.size());
+		for (EtablissementCivil etablissement : etablissementsSecondaires) {
+			Domicile domicile = etablissement.getDomicile(date);
 			if (domicile != null
-					&& site.isActif(date)) {
-				filtre.add(site);
+					&& etablissement.isActif(date)) {
+				filtre.add(etablissement);
 			}
 		}
 		return filtre;
 	}
 
-	protected void determineChangementsEtablissements(List<SiteOrganisation> sitesAvant, List<SiteOrganisation> sitesApres, List<Etablissement> etablissementsAFermer, List<SiteOrganisation> siteACreer, EvenementOrganisationContext context) {
+	protected void determineChangementsEtablissements(List<EtablissementCivil> etablissementsAvant, List<EtablissementCivil> etablissementsApres, List<Etablissement> etablissementsAFermer, List<EtablissementCivil> etablissementACreer, EvenementOrganisationContext context) {
 
-		// Determiner les sites qui ont disparus
-		for (SiteOrganisation ancienSite : sitesAvant) {
+		// Determiner les établissements civils qui ont disparus
+		for (EtablissementCivil ancienEtablissement : etablissementsAvant) {
 			boolean disparu = true;
-			for (SiteOrganisation presentSite : sitesApres) {
-				if (ancienSite.getNumeroSite() == presentSite.getNumeroSite()) {
+			for (EtablissementCivil presentEtablissement : etablissementsApres) {
+				if (ancienEtablissement.getNumeroEtablissement() == presentEtablissement.getNumeroEtablissement()) {
 					disparu = false;
 					break;
 				}
 			}
 			if (disparu) {
-				Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(ancienSite.getNumeroSite());
+				Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroEtablissementCivil(ancienEtablissement.getNumeroEtablissement());
 				if (etablissement != null) {
 					etablissementsAFermer.add(etablissement);
 				}
 			}
 		}
 
-		for (SiteOrganisation presentSite : sitesApres) {
+		for (EtablissementCivil presentEtablissement : etablissementsApres) {
 			boolean nouveau = true;
-			for (SiteOrganisation ancienSite : sitesAvant) {
-				if (presentSite.getNumeroSite() == ancienSite.getNumeroSite()) {
+			for (EtablissementCivil ancienEtablissement : etablissementsAvant) {
+				if (presentEtablissement.getNumeroEtablissement() == ancienEtablissement.getNumeroEtablissement()) {
 					nouveau = false;
 					break;
 				}
 			}
 			if (nouveau) {
-				siteACreer.add(presentSite);
+				etablissementACreer.add(presentEtablissement);
 			}
 		}
 	}
 
-	protected List<EtablissementsSecondaires.Demenagement> determineChangementsDomiciles(List<SiteOrganisation> sitesAvant, List<SiteOrganisation> sitesApres, RegDate date, EvenementOrganisationContext context) {
+	protected List<EtablissementsSecondaires.Demenagement> determineChangementsDomiciles(List<EtablissementCivil> etablissementsAvant, List<EtablissementCivil> etablissementsApres, RegDate date, EvenementOrganisationContext context) {
 
 		final List<EtablissementsSecondaires.Demenagement> demenagements = new ArrayList<>();
 
-		// Determiner les sites qui ont déménagé.
-		for (SiteOrganisation ancienSite : sitesAvant) {
-			for (SiteOrganisation presentSite : sitesApres) {
-				if (ancienSite.getNumeroSite() == presentSite.getNumeroSite()) { // On ne retient que les cas ou l'établissement n'a pas changé.
+		// Determiner les établissements civils qui ont déménagé.
+		for (EtablissementCivil ancienEtablissmeent : etablissementsAvant) {
+			for (EtablissementCivil presentEtablissement : etablissementsApres) {
+				if (ancienEtablissmeent.getNumeroEtablissement() == presentEtablissement.getNumeroEtablissement()) { // On ne retient que les cas ou l'établissement n'a pas changé.
 
 					// On compare les domiciles tels que les voit RCEnt
-					final Domicile domicileAvant = ancienSite.getDomicile(date.getOneDayBefore());
-					final Domicile domicileApres = presentSite.getDomicile(date);
+					final Domicile domicileAvant = ancienEtablissmeent.getDomicile(date.getOneDayBefore());
+					final Domicile domicileApres = presentEtablissement.getDomicile(date);
 
 					// On considère qu'on est en présence d'un déménagement que si on connait déjà l'établissement dans Unireg.
-					Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(ancienSite.getNumeroSite());
+					Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroEtablissementCivil(ancienEtablissmeent.getNumeroEtablissement());
 					if (etablissement != null && !Objects.equals(domicileAvant.getNumeroOfsAutoriteFiscale(), domicileApres.getNumeroOfsAutoriteFiscale())) {
-						demenagements.add(new EtablissementsSecondaires.Demenagement(etablissement, presentSite, domicileAvant, domicileApres, date));
+						demenagements.add(new EtablissementsSecondaires.Demenagement(etablissement, presentEtablissement, domicileAvant, domicileApres, date));
 					}
 				}
 			}

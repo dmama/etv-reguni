@@ -51,13 +51,13 @@ public class AutresCommunautesTest extends AbstractEvenementOrganisationProcesso
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
+		final Long noEtablissement = noOrganisation + 1000000;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Correia Pinto, Jardinage et Paysagisme", date(2010, 6, 26), null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Correia Pinto, Jardinage et Paysagisme", date(2010, 6, 26), null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ENTREPRISE_INDIVIDUELLE, "CHE999999996" , null, null);

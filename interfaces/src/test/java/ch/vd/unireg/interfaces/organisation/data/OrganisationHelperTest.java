@@ -33,14 +33,14 @@ public class OrganisationHelperTest {
 		donneesIde.addAdresseEffective(new AdresseEffectiveRCEnt(RegDate.get(2001, 1, 1), null, "Morges", null, null, 254, "1110", null, null, "Rue des Alpes", null, null, null));
 		donneesIde.addAdresseBoitePostale(new AdresseBoitePostaleRCEnt(RegDate.get(2002, 1, 1), null, "Romainmôtier", null, null, 564, "1323", null, null, "Rue du Bourg", null, null, null));
 
-		final SiteOrganisationRCEnt site = new SiteOrganisationRCEnt(10L, null, null, null,
-		                                                             Collections.singletonList(new DateRanged<>(null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL)), null, null, null,
-		                                                             donneesRc, donneesIde, donneesRee, null, null, null, null, null);
+		final EtablissementCivilRCEnt etablissement = new EtablissementCivilRCEnt(10L, null, null, null,
+		                                                                 Collections.singletonList(new DateRanged<>(null, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL)), null, null, null,
+		                                                                 donneesRc, donneesIde, donneesRee, null, null, null, null, null);
 
-		final Map<Long, SiteOrganisation> sites = new HashMap<>();
-		sites.put(1L, site);
+		final Map<Long, EtablissementCivil> etablissements = new HashMap<>();
+		etablissements.put(1L, etablissement);
 
-		final List<Adresse> adresses = OrganisationHelper.getAdresses(sites);
+		final List<Adresse> adresses = OrganisationHelper.getAdresses(etablissements);
 		assertNotNull(adresses);
 		assertEquals(3, adresses.size());
 		assertAdresse(TypeAdresseCivil.PRINCIPALE, RegDate.get(2000, 1, 1), null, "Avenue de la Gare", "Lausanne", adresses.get(0));
@@ -61,11 +61,11 @@ public class OrganisationHelperTest {
 		donneesIde.addAdresseEffective(new AdresseEffectiveRCEnt(RegDate.get(2001, 1, 1), null, "Morges", null, null, 254, "1110", null, null, "Rue des Alpes", null, null, null));
 		donneesIde.addAdresseBoitePostale(new AdresseBoitePostaleRCEnt(RegDate.get(2002, 1, 1), null, "Romainmôtier", null, null, 564, "1323", null, null, "Rue du Bourg", null, null, null));
 
-		final SiteOrganisationRCEnt site = new SiteOrganisationRCEnt(10L, null, null, null,
-		                                                             Collections.singletonList(new DateRanged<>(null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL)), null, null, null,
-		                                                             donneesRc, donneesIde, donneesRee, null, null, null, null, null);
+		final EtablissementCivilRCEnt etablissement = new EtablissementCivilRCEnt(10L, null, null, null,
+		                                                                 Collections.singletonList(new DateRanged<>(null, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL)), null, null, null,
+		                                                                 donneesRc, donneesIde, donneesRee, null, null, null, null, null);
 
-		final List<Adresse> adresses = OrganisationHelper.getAdressesPourSite(site);
+		final List<Adresse> adresses = OrganisationHelper.getAdressesPourEtablissement(etablissement);
 		assertNotNull(adresses);
 		assertEquals(3, adresses.size());
 		assertAdresse(TypeAdresseCivil.PRINCIPALE, RegDate.get(2000, 1, 1), null, "Avenue de la Gare", "Lausanne", adresses.get(0));

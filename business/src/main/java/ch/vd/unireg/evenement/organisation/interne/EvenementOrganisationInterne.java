@@ -28,9 +28,9 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCol
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.metier.AjustementForsSecondairesResult;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
@@ -446,8 +446,8 @@ public abstract class EvenementOrganisationInterne {
 		return assujettissement != null;
 	}
 
-	protected Etablissement getEtablissementByNumeroSite(long numeroSite) {
-		return context.getTiersDAO().getEtablissementByNumeroSite(numeroSite);
+	protected Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissementCivil) {
+		return context.getTiersDAO().getEtablissementByNumeroEtablissementCivil(numeroEtablissementCivil);
 	}
 
 	protected void programmeReindexation(Entreprise pm, EvenementOrganisationSuiviCollector suivis) {
@@ -568,45 +568,44 @@ public abstract class EvenementOrganisationInterne {
 	 * Méthode de convenance à utiliser de préférence pour la création de nouveaux établissements.
 	 * Cette méthode effectue certains contrôles supplémentaires.
 	 *
-	 * @param site
+	 * @param etablissementCivil
 	 * @param warnings
 	 * @param suivis
 	 * @return l'établissement créé
 	 * @throws EvenementOrganisationException
 	 */
-	protected Etablissement addEtablissementSecondaire(SiteOrganisation site, RegDate dateDebut, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		long numeroSite = site.getNumeroSite();
-		Etablissement etablissement = getEtablissementByNumeroSite(numeroSite);
+	protected Etablissement addEtablissementSecondaire(EtablissementCivil etablissementCivil, RegDate dateDebut, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		long numeroEtablissement = etablissementCivil.getNumeroEtablissement();
+		Etablissement etablissement = getEtablissementByNumeroEtablissementCivil(numeroEtablissement);
 		if (etablissement != null) {
 			throw new EvenementOrganisationException(
 					String.format("%s existe déjà pour l'organisation en création n°%d(%s). Impossible de continuer.",
 					              etablissement, getNoOrganisation(), getOrganisation().getNom(dateDebut)));
 		}
 
-		final Domicile autoriteFiscale = site.getDomicile(getDateEvt());
+		final Domicile autoriteFiscale = etablissementCivil.getDomicile(getDateEvt());
 		if (autoriteFiscale == null) {
 			throw new EvenementOrganisationException(
 					String.format(
-							"Autorité fiscale (siège) introuvable pour le site secondaire %d de l'organisation n°%d %s. Impossible de créer le domicile de l'établissement secondaire.",
-							site.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
+							"Autorité fiscale (siège) introuvable pour l'établissement civil secondaire %d de l'organisation n°%d %s. Impossible de créer le domicile de l'établissement secondaire.",
+							etablissementCivil.getNumeroEtablissement(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
 		}
 
-		return createAddEtablissement(site.getNumeroSite(), autoriteFiscale, false, dateDebut, suivis);
+		return createAddEtablissement(etablissementCivil.getNumeroEtablissement(), autoriteFiscale, false, dateDebut, suivis);
 	}
 
 	/**
 	 * Créer un établissement, avec toutes ses caractéristiques usuelles, et le rattacher à l'entreprise en cours au
 	 * moyen d'un rapport entre tiers d'activité économique.
-	 * @param numeroSite Le numéro du site sur lequel porte l'établissement
+	 * @param numeroEtablissementCivil Le numéro de l'établissement civil sur lequel porte l'établissement
 	 * @param autoriteFiscale La commune politique de domicile de l'établissement
 	 * @param principal Si l'établissement est principal ou secondaire
 	 * @param suivis       Le collector pour le suivi
 	 * @param dateDebut Date de début
 	 * @return l'établissement créé
 	 */
-	protected Etablissement createAddEtablissement(Long numeroSite, Domicile autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) throws
-			EvenementOrganisationException {
-		if (numeroSite == null) {
+	protected Etablissement createAddEtablissement(Long numeroEtablissementCivil, Domicile autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		if (numeroEtablissementCivil == null) {
 			throw new IllegalArgumentException();
 		}
 		if (autoriteFiscale == null) {
@@ -617,16 +616,16 @@ public abstract class EvenementOrganisationInterne {
 		}
 
 		// L'établissement
-		Etablissement etablissement = context.getTiersService().createEtablissement(numeroSite);
+		Etablissement etablissement = context.getTiersService().createEtablissement(numeroEtablissementCivil);
 		// L'activité économique
 		context.getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, principal), getEntreprise(), etablissement);
 
 		final Commune commune = getCommune(autoriteFiscale.getNumeroOfsAutoriteFiscale(), dateDebut);
 
-		suivis.addSuivi(String.format("Etablissement %s créé avec le numéro %s pour le site %d, domicile %s (ofs: %d), à partir du %s",
+		suivis.addSuivi(String.format("Etablissement %s créé avec le numéro %s pour l'établissement civil %d, domicile %s (ofs: %d), à partir du %s",
 		                              principal ? "principal" : "secondaire",
 		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
-		                              numeroSite,
+		                              numeroEtablissementCivil,
 		                              commune.getNomOfficielAvecCanton(),
 		                              autoriteFiscale.getNumeroOfsAutoriteFiscale(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
@@ -957,7 +956,7 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	private boolean isPremierSnapshot() {
-		return organisation.getSitePrincipal(getDateEvt().getOneDayBefore()) == null;
+		return organisation.getEtablissementPrincipal(getDateEvt().getOneDayBefore()) == null;
 	}
 
 	/**
@@ -1021,8 +1020,8 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
-	protected String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date) {
-		return getContext().getServiceOrganisation().afficheAttributsSite(site, date);
+	protected String afficheAttributsEtablissement(@Nullable EtablissementCivil etablissement, @Nullable RegDate date) {
+		return getContext().getServiceOrganisation().afficheAttributsEtablissement(etablissement, date);
 	}
 
 	protected static class SurchargeCorrectiveRange extends DateRangeHelper.Range {

@@ -24,19 +24,19 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.tiers.Bouclement;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.Entreprise;
@@ -230,20 +230,20 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 
 		// Mise en place service mock
 		final long noOrganisation = 101202100L;
-		final long noSitePrincipal = noOrganisation + 1000000;
-		final long noSiteSecondaire = 9999999L;
+		final long noEtablissementPrincipal = noOrganisation + 1000000;
+		final long noEtablissementSecondaire = 9999999L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation organisationAvecSiteSecondaire =
-						MockOrganisationFactory.createOrganisationAvecSiteSecondaire(noOrganisation, noSitePrincipal, noSiteSecondaire, "Synergy SA", RegDate.get(2015, 6, 26), null,
-						                                                             FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
-						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-						                                                             StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
-						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
-						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995", "CHE999999996");
+						MockOrganisationFactory.createOrganisationAvecEtablissementSecondaire(noOrganisation, noEtablissementPrincipal, noEtablissementSecondaire, "Synergy SA", RegDate.get(2015, 6, 26), null,
+						                                                                      FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                                                      TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
+						                                                                      TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
+						                                                                      StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
+						                                                                      StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
+						                                                                      TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995", "CHE999999996");
 				addOrganisation(organisationAvecSiteSecondaire);
 			}
 		});
@@ -382,20 +382,20 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 
 		// Mise en place service mock
 		final long noOrganisation = 101202100L;
-		final long noSitePrincipal = noOrganisation + 1000000;
-		final long noSiteSecondaire = 9999999L;
+		final long noEtablissementPrincipal = noOrganisation + 1000000;
+		final long noEtablissementSecondaire = 9999999L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation organisationAvecSiteSecondaire =
-						MockOrganisationFactory.createOrganisationAvecSiteSecondaire(noOrganisation, noSitePrincipal, noSiteSecondaire, "Synergy SA", RegDate.get(2015, 6, 26), null,
-						                                                             FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                                             TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(),
-						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-						                                                             StatusInscriptionRC.ACTIF, date(2015, 1, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
-						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
-						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995", "CHE999999996");
+						MockOrganisationFactory.createOrganisationAvecEtablissementSecondaire(noOrganisation, noEtablissementPrincipal, noEtablissementSecondaire, "Synergy SA", RegDate.get(2015, 6, 26), null,
+						                                                                      FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                                                      TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(),
+						                                                                      TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
+						                                                                      StatusInscriptionRC.ACTIF, date(2015, 1, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
+						                                                                      StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
+						                                                                      TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995", "CHE999999996");
 				addOrganisation(organisationAvecSiteSecondaire);
 			}
 		});
@@ -535,20 +535,20 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 
 		// Mise en place service mock
 		final long noOrganisation = 101202100L;
-		final long noSitePrincipal = noOrganisation + 1000000;
-		final long noSiteSecondaire = 9999999L;
+		final long noEtablissementPrincipal = noOrganisation + 1000000;
+		final long noEtablissementSecondaire = 9999999L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation organisationAvecSiteSecondaire =
-						MockOrganisationFactory.createOrganisationAvecSiteSecondaire(noOrganisation, noSitePrincipal, noSiteSecondaire, "SiAsso", RegDate.get(2015, 6, 26), null,
-						                                                             FormeLegale.N_0109_ASSOCIATION,
-						                                                             TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(),
-						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-						                                                             null, null, null, null,
-						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
-						                                                             TypeOrganisationRegistreIDE.ASSOCIATION, TypeOrganisationRegistreIDE.SITE, "CHE999999996", "CHE999999997");
+						MockOrganisationFactory.createOrganisationAvecEtablissementSecondaire(noOrganisation, noEtablissementPrincipal, noEtablissementSecondaire, "SiAsso", RegDate.get(2015, 6, 26), null,
+						                                                                      FormeLegale.N_0109_ASSOCIATION,
+						                                                                      TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(),
+						                                                                      TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
+						                                                                      null, null, null, null,
+						                                                                      StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
+						                                                                      TypeOrganisationRegistreIDE.ASSOCIATION, TypeOrganisationRegistreIDE.SITE, "CHE999999996", "CHE999999997");
 				addOrganisation(
 						organisationAvecSiteSecondaire);
 			}
@@ -691,25 +691,25 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 
 		// Mise en place service mock
 		final long noOrganisation = 101202100L;
-		final long noSitePrincipal = noOrganisation + 1000000;
-		final long noSiteSecondaire1 = 9999998L;
-		final long noSiteSecondaire2 = 9999999L;
+		final long noEtablissementPrincipal = noOrganisation + 1000000;
+		final long noEtablissementSecondaire1 = 9999998L;
+		final long noEtablissementSecondaire2 = 9999999L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				final MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisationAvecSiteSecondaire(noOrganisation, noSitePrincipal, noSiteSecondaire1, "Synergy SA", RegDate.get(2015, 6, 26), null,
-						                                                             FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
-						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
-						                                                             StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
-						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
-						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", "CHE999999996");
-				MockSiteOrganisation siteSec = MockSiteOrganisationFactory.addSite(noSiteSecondaire2, organisation, RegDate.get(2015, 6, 26), null, "Synergy Plus Plus SA", FormeLegale.N_0106_SOCIETE_ANONYME,
-				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
-				                                    StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusRegistreIDE.DEFINITIF,
-				                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997", null, null);
+						MockOrganisationFactory.createOrganisationAvecEtablissementSecondaire(noOrganisation, noEtablissementPrincipal, noEtablissementSecondaire1, "Synergy SA", RegDate.get(2015, 6, 26), null,
+						                                                                      FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                                                      TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
+						                                                                      TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
+						                                                                      StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
+						                                                                      StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
+						                                                                      TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", "CHE999999996");
+				MockEtablissementCivil etablissementSec = MockEtablissementCivilFactory.addEtablissement(noEtablissementSecondaire2, organisation, RegDate.get(2015, 6, 26), null, "Synergy Plus Plus SA", FormeLegale.N_0106_SOCIETE_ANONYME,
+				                                                                                false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
+				                                                                                StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusRegistreIDE.DEFINITIF,
+				                                                                                TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997", null, null);
 				addOrganisation(organisation);
 			}
 		});
@@ -846,7 +846,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-		final MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
+		final MockDonneesRC rc = (MockDonneesRC) org.getEtablissements().get(0).getDonneesRC();
 		rc.changeInscription(date(2015, 6, 26), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
 		                                                          date(2015, 6, 20), null,
 		                                                          date(2015, 6, 24), null));
@@ -977,7 +977,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-		final MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
+		final MockDonneesRC rc = (MockDonneesRC) org.getEtablissements().get(0).getDonneesRC();
 		rc.changeInscription(date(2012, 4, 16), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
 		                                                          date(2012, 4, 12), null,
 		                                                          date(2010, 6, 24), null));
@@ -1396,8 +1396,8 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 						                                                 MockCommune.Lausanne);
 				addOrganisation(
 						simpleEntrepriseRC);
-				final SiteOrganisation siteOrganisation = simpleEntrepriseRC.getDonneesSites().get(0);
-				final MockDonneesRC donneesRC = (MockDonneesRC) siteOrganisation.getDonneesRC();
+				final EtablissementCivil etablissementCivil = simpleEntrepriseRC.getEtablissements().get(0);
+				final MockDonneesRC donneesRC = (MockDonneesRC) etablissementCivil.getDonneesRC();
 				donneesRC.addEntreeJournal(new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, dateEntreeJournal, 123456L, new PublicationFOSC(datePublication, "998877", "Nouvelle entreprise blah blah")));
 			}
 		});

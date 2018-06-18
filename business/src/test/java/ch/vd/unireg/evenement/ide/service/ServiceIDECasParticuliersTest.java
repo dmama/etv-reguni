@@ -7,6 +7,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.adresse.AdresseSuisse;
+import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.unireg.evenement.ide.ServiceIDEException;
+import ch.vd.unireg.evenement.ide.SingleShotMockAnnonceIDESender;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -20,17 +25,12 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.adresse.AdresseSuisse;
-import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.unireg.evenement.ide.ServiceIDEException;
-import ch.vd.unireg.evenement.ide.SingleShotMockAnnonceIDESender;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
@@ -112,7 +112,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            null, null, null, null, null, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            RCEntAnnonceIDEHelper
@@ -223,7 +223,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		 */
 
 		final Long noOrganisation = 100L;
-		final Long noSite = noOrganisation + 100;
+		final Long noEtablissementCivil = noOrganisation + 100;
 
 		// Création de l'entreprise
 		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -251,7 +251,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 				Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+				etablissement.setNumeroEtablissement(noEtablissementCivil);
 				addDomicileEtablissement(etablissement, date(2016, 9, 5), date(2016, 9, 7), MockCommune.Renens);
 				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
 
@@ -260,7 +260,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
-		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy Assoc", date(2016, 9, 8), null, FormeLegale.N_0109_ASSOCIATION,
+		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy Assoc", date(2016, 9, 8), null, FormeLegale.N_0109_ASSOCIATION,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, date(2016, 9, 5),
 		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
 		serviceOrganisation.setUp(new MockServiceOrganisation() {

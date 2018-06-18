@@ -66,14 +66,14 @@ public class OrganisationActiviteHelper {
 	 *     </ul>
 	 * </p>
 	 *
-	 * @param site le site concernée
-	 * @return la période où le site a été en activité (sous forme de liste, mais en l'état de l'implémentation, elle est toujours unique).
+	 * @param etablissement l'établissement civil concernée
+	 * @return la période où l'établissement civil a été en activité (sous forme de liste, mais en l'état de l'implémentation, elle est toujours unique).
 	 */
-	public static List<DateRange> activite(SiteOrganisation site) {
+	public static List<DateRange> activite(EtablissementCivil etablissement) {
 
 		// trouvons la première information d'inscription
 		InscriptionRC first = null;
-		final List<DateRanged<InscriptionRC>> inscriptions = site.getDonneesRC().getInscription();
+		final List<DateRanged<InscriptionRC>> inscriptions = etablissement.getDonneesRC().getInscription();
 		if (inscriptions != null) {
 			for (DateRanged<InscriptionRC> inscription : inscriptions) {
 				if (inscription.getPayload().isInscrit()) {
@@ -85,14 +85,14 @@ public class OrganisationActiviteHelper {
 
 		final RegDate dateCreation;
 		if (first == null) {
-			dateCreation = site.getNom().get(0).getDateDebut(); // Postulat: une organisation commence toujours par être active. (pas d'inscription en inactivité)(attention REE est-ce toujours vrai?)
+			dateCreation = etablissement.getNom().get(0).getDateDebut(); // Postulat: une organisation commence toujours par être active. (pas d'inscription en inactivité)(attention REE est-ce toujours vrai?)
 		}
 		else if (first.getDateInscriptionVD() != null && first.getDateInscriptionCH() == null) {
 			// Cas de la date RC vide quand la date RC VD est renseignée. Impossible de déterminer quoi que ce soit dans ce cas
-			throw new RuntimeException(String.format("Impossible de trouver la date d'inscription au RC pour le site %s", site.getNumeroSite()));
+			throw new RuntimeException(String.format("Impossible de trouver la date d'inscription au RC pour l'établissement civil %s", etablissement.getNumeroEtablissement()));
 		}
 		else {
-			dateCreation = RegDateHelper.minimum(site.getNom().get(0).getDateDebut(), first.getDateInscriptionCH(), NullDateBehavior.LATEST);
+			dateCreation = RegDateHelper.minimum(etablissement.getNom().get(0).getDateDebut(), first.getDateInscriptionCH(), NullDateBehavior.LATEST);
 		}
 
 		/* Une période théorique d'activité continue non terminée. */
@@ -102,8 +102,8 @@ public class OrganisationActiviteHelper {
 
 		final List<DateRange> datesRadiation = new ArrayList<>();
 		List<DateRange> nonRadiation = Collections.emptyList();
-		if (!site.getDonneesRC().getDateRadiation().isEmpty()) {
-			for (DateRanged<RegDate> dateRadiation : site.getDonneesRC().getDateRadiation()) {
+		if (!etablissementCivil.getDonneesRC().getDateRadiation().isEmpty()) {
+			for (DateRanged<RegDate> dateRadiation : etablissementCivil.getDonneesRC().getDateRadiation()) {
 				final RegDate dateEffective = dateRadiation.getPayload();
 				if (dateEffective != dateRadiation.getDateDebut()) {
 					datesRadiation.add(new DateRangeHelper.Range(dateEffective, dateRadiation.getDateFin()));
@@ -116,8 +116,8 @@ public class OrganisationActiviteHelper {
 
 		final List<DateRange> datesRadiationVd = new ArrayList<>();
 		List<DateRange> nonRadiationVd = Collections.emptyList();
-		if (!site.getDonneesRC().getDateRadiationVd().isEmpty()) {
-			for (DateRanged<RegDate> dateRadiationVd : site.getDonneesRC().getDateRadiationVd()) {
+		if (!etablissementCivil.getDonneesRC().getDateRadiationVd().isEmpty()) {
+			for (DateRanged<RegDate> dateRadiationVd : etablissementCivil.getDonneesRC().getDateRadiationVd()) {
 				final RegDate dateEffectiveVd = dateRadiationVd.getPayload();
 				if (dateEffectiveVd != dateRadiationVd.getDateDebut()) {
 					datesRadiationVd.add(new DateRangeHelper.Range(dateEffectiveVd, dateRadiationVd.getDateFin()));
@@ -129,14 +129,14 @@ public class OrganisationActiviteHelper {
 		}
 */
 
-		final List<DateRanged<StatusRegistreIDE>> periodesStatusIde = site.getDonneesRegistreIDE().getStatus();
+		final List<DateRanged<StatusRegistreIDE>> periodesStatusIde = etablissement.getDonneesRegistreIDE().getStatus();
 		final List<DateRange> datesRadieIde = new ArrayList<>();
 		List<DateRange> activiteIde = Collections.emptyList();
 		if (periodesStatusIde != null && !periodesStatusIde.isEmpty()) {
 			final DateRanged<StatusRegistreIDE> dernierePeriode = CollectionsUtils.getLastElement(periodesStatusIde); // FIXME: Postulat excessif: la dernière période n'est pas nécessairement celle de la radiation.
 			final StatusRegistreIDE status = dernierePeriode.getPayload();
 			if (dernierePeriode.getDateFin() == null && (status == StatusRegistreIDE.RADIE || status == StatusRegistreIDE.DEFINITIVEMENT_RADIE)) {
-				final RegDate dateRadiationRC = site.getDateRadiationRC(dernierePeriode.getDateDebut());
+				final RegDate dateRadiationRC = etablissement.getDateRadiationRC(dernierePeriode.getDateDebut());
 				if (dateRadiationRC != null && !dateRadiationRC.isBefore(dernierePeriode.getDateDebut().addDays( - OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 					datesRadieIde.add(new DateRangeHelper.Range(dateRadiationRC.getOneDayAfter(), dernierePeriode.getDateFin()));
 				} else {
@@ -146,14 +146,14 @@ public class OrganisationActiviteHelper {
 			activiteIde = DateRangeHelper.subtract(activite, datesRadieIde); // Compromis. Si par erreur il est radié à l'IDE mais pas au RC, on va quand même mettre la date de fin de l'IDE, ce qui serait faux.
 		}
 
-		final List<DateRanged<InscriptionREE>> periodesStatusRee = site.getDonneesREE().getInscriptionREE();
+		final List<DateRanged<InscriptionREE>> periodesStatusRee = etablissement.getDonneesREE().getInscriptionREE();
 		final List<DateRange> datesRadieRee = new ArrayList<>();
 		List<DateRange> activiteRee = Collections.emptyList();
 		if (periodesStatusRee != null && !periodesStatusRee.isEmpty()) {
 			final DateRanged<InscriptionREE> dernierePeriode = CollectionsUtils.getLastElement(periodesStatusRee); // FIXME: Postulat excessif: la dernière période n'est pas nécessairement celle de la radiation.
 			final StatusREE status = dernierePeriode.getPayload().getStatus();
 			if (dernierePeriode.getDateFin() == null && status == StatusREE.RADIE) { // et status == StatusREE.INACTIF aussi (??) contrairement au commentaire au bas du SIFISC-18739
-				final RegDate dateRadiationRC = site.getDateRadiationRC(dernierePeriode.getDateDebut());
+				final RegDate dateRadiationRC = etablissement.getDateRadiationRC(dernierePeriode.getDateDebut());
 				if (dateRadiationRC != null && !dateRadiationRC.isBefore(dernierePeriode.getDateDebut().addDays( - OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 					datesRadieRee.add(new DateRangeHelper.Range(dateRadiationRC.getOneDayAfter(), dernierePeriode.getDateFin()));
 				} else {
@@ -176,27 +176,27 @@ public class OrganisationActiviteHelper {
 
 		final List<DateRange> activiteDeterminee = DateRangeHelper.merge(tousActivite);
 		if (activiteDeterminee.size() > 1) {
-			LOGGER.warn(String.format("Le calcul de l'activité pour le site RCEnt %d a retourné plus d'une période.", site.getNumeroSite()));
+			LOGGER.warn(String.format("Le calcul de l'activité pour l'établissement civil RCEnt %d a retourné plus d'une période.", etablissement.getNumeroEtablissement()));
 		}
 		return activiteDeterminee;
 	}
 
 	/**
-	 * Dire si un site est globallement actif, c'est à dire qu'il a une existence à la date fournie chez au
+	 * Dire si un établissement civil est globallement actif, c'est à dire qu'il a une existence à la date fournie chez au
 	 * moins un fournisseur primaire (RC, IDE). Etre actif signifie être inscrit et non radié.
 	 *
-	 * @param site le site
-	 * @param date la date pour laquelle on veut connaitre la situation du site
+	 * @param etablissement l'établissement civil
+	 * @param date la date pour laquelle on veut connaitre la situation de l'établissement civil
 	 * @return true si actif, false sinon
 	 */
-	public static boolean isActif(SiteOrganisation site, RegDate date) {
-		if (OrganisationHelper.isConnuInscritAuRC(site, date) && !OrganisationHelper.isRadieDuRC(site, date)) {
+	public static boolean isActif(EtablissementCivil etablissement, RegDate date) {
+		if (OrganisationHelper.isConnuInscritAuRC(etablissement, date) && !OrganisationHelper.isRadieDuRC(etablissement, date)) {
 			return true;
 		}
-		else if (OrganisationHelper.isInscritIDE(site, date) && !OrganisationHelper.isRadieIDE(site, date)) {
+		else if (OrganisationHelper.isInscritIDE(etablissement, date) && !OrganisationHelper.isRadieIDE(etablissement, date)) {
 			return true;
 		}
-		else if (OrganisationHelper.isConnuInscritREE(site, date) && !OrganisationHelper.isRadieREE(site, date)) {
+		else if (OrganisationHelper.isConnuInscritREE(etablissement, date) && !OrganisationHelper.isRadieREE(etablissement, date)) {
 			return true;
 		}
 		return false;

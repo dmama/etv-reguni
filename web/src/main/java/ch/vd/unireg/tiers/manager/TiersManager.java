@@ -1089,7 +1089,7 @@ public class TiersManager implements MessageSourceAware {
 		if (!etb.isConnuAuCivil()) {
 			return Collections.emptyList();
 		}
-		final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesSiteOrganisationHisto(etb.getNumeroEtablissement());
+		final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesEtablissementCivilHisto(etb.getNumeroEtablissement());
 		if (histo == null) {
 			return Collections.emptyList();
 		}

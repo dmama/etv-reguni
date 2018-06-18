@@ -129,7 +129,7 @@ public class PdfAppariementEtablissementsSecondairesRapport extends PdfRapport {
 				public boolean fillLine(CsvHelper.LineFiller b, AppariementEtablissementsSecondairesResults.AppariementEtablissement elt) {
 					b.append(elt.idEntreprise).append(COMMA);
 					b.append(elt.idEtablissement).append(COMMA);
-					b.append(elt.idSite).append(COMMA);
+					b.append(elt.idEtablissementCivil).append(COMMA);
 					b.append(elt.tafSiege).append(COMMA);
 					b.append(elt.ofsSiege).append(COMMA);
 					b.append(CsvHelper.escapeChars(elt.raison.getLibelle()));

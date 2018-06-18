@@ -181,7 +181,7 @@ public class MockTiersDAO implements TiersDAO {
 		throw new NotImplementedException();
 	}
 
-	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
+	public Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissementCivil) {
 		throw new NotImplementedException();
 	}
 

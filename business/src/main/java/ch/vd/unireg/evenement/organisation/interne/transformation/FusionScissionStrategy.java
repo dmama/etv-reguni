@@ -43,7 +43,7 @@ public class FusionScissionStrategy extends AbstractOrganisationStrategy {
 
 		final RegDate dateApres = event.getDateEvenement();
 
-		final List<PublicationBusiness> publicationBusinessesPourDate = organisation.getSitePrincipal(dateApres).getPayload().getPublications(event.getDateEvenement());
+		final List<PublicationBusiness> publicationBusinessesPourDate = organisation.getEtablissementPrincipal(dateApres).getPayload().getPublications(event.getDateEvenement());
 		if (publicationBusinessesPourDate != null && !publicationBusinessesPourDate.isEmpty()) {
 			for (PublicationBusiness publication : publicationBusinessesPourDate) { // Partant du principe qu'un seul type de fusion ne peut avoir lieu sur un même jour, on renvoie le premier trouvé.
 				if (publication.getTypeDeFusion() != null) {

@@ -31,22 +31,22 @@ import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
-import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfNoticeConverter;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfNoticeConverter;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
 import ch.vd.unireg.type.EtatEvenementOrganisation;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * Listener des événements organisation envoyés par RCEnt au travers de l'ESB
@@ -310,7 +310,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	private FormeJuridiqueEntreprise extractFormeJuridique(NoticeOrganisation org) {
 		final Optional<String> codeFormeLegale =
 				org.getOrganisation().getOrganisationLocation().stream()
-						.filter(site -> site.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL && site.getLegalForm() != null)
+						.filter(etablissement -> etablissement.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL && etablissement.getLegalForm() != null)
 						.map(f -> f.getLegalForm().value())
 						.findFirst();
 		if (codeFormeLegale.isPresent()) {

@@ -6,10 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.common.WithoutSpringTest;
 
 /**
  * @author Raphaël Marmier, 2016-09-02, <raphael.marmier@vd.ch>
@@ -26,7 +26,7 @@ public class AnnonceIDETest extends WithoutSpringTest {
 				                              null, null);
 
 		final AnnonceIDE annonce1 =
-				RCEntAnnonceIDEHelper.createAnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
+				RCEntAnnonceIDEHelper.createAnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
 				                                       "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce1, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
 
@@ -36,7 +36,7 @@ public class AnnonceIDETest extends WithoutSpringTest {
 				                              null, null);
 
 		final AnnonceIDE annonce2 =
-				RCEntAnnonceIDEHelper.createAnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
+				RCEntAnnonceIDEHelper.createAnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
 				                                       "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce2, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
 		Assert.assertEquals(annonce2, annonce1);

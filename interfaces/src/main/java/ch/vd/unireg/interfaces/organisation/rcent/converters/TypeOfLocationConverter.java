@@ -3,18 +3,18 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.TypeOfLocation;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 
-public class TypeOfLocationConverter extends BaseEnumConverter<TypeOfLocation, TypeDeSite> {
+public class TypeOfLocationConverter extends BaseEnumConverter<TypeOfLocation, TypeEtablissementCivil> {
 
 	@Override
 	@NotNull
-	protected TypeDeSite convert(@NotNull TypeOfLocation value) {
+	protected TypeEtablissementCivil convert(@NotNull TypeOfLocation value) {
 		switch (value) {
 		case ETABLISSEMENT_PRINCIPAL:
-			return TypeDeSite.ETABLISSEMENT_PRINCIPAL;
+			return TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL;
 		case ETABLISSEMENT_SECONDAIRE:
-			return TypeDeSite.ETABLISSEMENT_SECONDAIRE;
+			return TypeEtablissementCivil.ETABLISSEMENT_SECONDAIRE;
 		default:
 			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}

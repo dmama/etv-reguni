@@ -71,13 +71,13 @@ public class CappingEnErrorTest extends AbstractEvenementOrganisationProcessorTe
 
 		// Mise en place service mock
 		final long noOrganisation = 101202100L;
-		final long noSitePrincipal = noOrganisation + 1000000L;
+		final long noEtablissementPrincipal = noOrganisation + 1000000L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noSitePrincipal, "Synergy SA", RegDate.get(2015, 6, 27), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noEtablissementPrincipal, "Synergy SA", RegDate.get(2015, 6, 27), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -171,7 +171,7 @@ public class CappingEnErrorTest extends AbstractEvenementOrganisationProcessorTe
 					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(4);
 					                             Assert.assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
 
-					                             final Pattern pattern = Pattern.compile("Etablissement principal créé avec le numéro ([0-9.]+) pour le site " + noSitePrincipal + Pattern.quote(", domicile Lausanne (VD) (ofs: 5586), à partir du 24.06.2015"));
+					                             final Pattern pattern = Pattern.compile("Etablissement principal créé avec le numéro ([0-9.]+) pour l'établissement civil " + noEtablissementPrincipal + Pattern.quote(", domicile Lausanne (VD) (ofs: 5586), à partir du 24.06.2015"));
 					                             final Matcher matcher = pattern.matcher(erreur.getMessage());
 					                             Assert.assertTrue(matcher.matches());
 

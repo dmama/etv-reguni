@@ -13,9 +13,9 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviColle
 import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -31,8 +31,8 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
-	private SiteOrganisation sitePrincipalAvant = null;
-	private final SiteOrganisation sitePrincipalApres;
+	private EtablissementCivil etablissementPrincipalAvant = null;
+	private final EtablissementCivil etablissementPrincipalApres;
 
 	private StatusInscriptionRC statusInscriptionAvant = null;
 	private final StatusInscriptionRC statusInscriptionApres;
@@ -53,12 +53,12 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
 
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
 
-		if (sitePrincipalAvantRange != null) {
-			sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-			final InscriptionRC inscriptionAvant = sitePrincipalAvant.getDonneesRC().getInscription(dateAvant);
+		if (etablissementPrincipalAvantRange != null) {
+			etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
+			final InscriptionRC inscriptionAvant = etablissementPrincipalAvant.getDonneesRC().getInscription(dateAvant);
 			if (inscriptionAvant != null) {
 				statusInscriptionAvant = inscriptionAvant.getStatus();
 				dateInscriptionAvant = inscriptionAvant.getDateInscriptionCH();
@@ -66,7 +66,7 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 			}
 		}
 
-		final InscriptionRC inscriptionApres = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+		final InscriptionRC inscriptionApres = etablissementPrincipalApres.getDonneesRC().getInscription(dateApres);
 		if (inscriptionApres != null) {
 			statusInscriptionApres = inscriptionApres.getStatus();
 			dateInscriptionApres = inscriptionApres.getDateInscriptionCH();

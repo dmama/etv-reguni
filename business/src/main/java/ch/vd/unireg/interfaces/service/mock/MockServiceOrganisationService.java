@@ -14,9 +14,9 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 
 /**
@@ -39,7 +39,7 @@ public class MockServiceOrganisationService implements ServiceOrganisationServic
 	}
 
 	@Override
-	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
+	public Long getNoOrganisationFromNoEtablissement(Long noEtablissement) throws ServiceOrganisationException {
 		return null;
 	}
 
@@ -50,7 +50,7 @@ public class MockServiceOrganisationService implements ServiceOrganisationServic
 
 	@Nullable
 	@Override
-	public AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
+	public AdressesCivilesHisto getAdressesEtablissementCivilHisto(long noEtablissement) throws ServiceOrganisationException {
 		return null;
 	}
 
@@ -79,7 +79,7 @@ public class MockServiceOrganisationService implements ServiceOrganisationServic
 	}
 
 	@Override
-	public String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date) {
+	public String afficheAttributsEtablissement(@Nullable EtablissementCivil etablissement, @Nullable RegDate date) {
 		return null;
 	}
 }

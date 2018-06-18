@@ -70,10 +70,10 @@ import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
@@ -107,7 +107,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 	private static final StringRenderer<String> NO_IDE_RENDERER = FormatNumeroHelper::formatNumIDE;
 
-	private static final StringRenderer<SiteOrganisation> SITE_RENDERER = site -> String.format("n°%d", site.getNumeroSite());
+	private static final StringRenderer<EtablissementCivil> ETABLISSEMENT_RENDERER = etablissement -> String.format("n°%d", etablissement.getNumeroEtablissement());
 
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceInfrastructureService serviceInfrastructureService;
@@ -502,7 +502,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		final RegDate dateEvenement = event.getDateEvenement();
 
 		final Organisation organisationHistory = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
-		final SiteOrganisation sitePrincipal = organisationHistory.getSitePrincipal(dateEvenement).getPayload();
+		final EtablissementCivil etablissementPrincipal = organisationHistory.getEtablissementPrincipal(dateEvenement).getPayload();
 		final Domicile siegePrincipalAvant = organisationHistory.getSiegePrincipal(dateEvenement.getOneDayBefore());
 		final Domicile siegePrincipalApres = organisationHistory.getSiegePrincipal(dateEvenement);
 
@@ -515,7 +515,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		final boolean evtIDEIncriptionMutation = event.getType() == TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION || event.getType() == TypeEvenementOrganisation.IDE_MUTATION;
 
 		// On s'attend à une nouvelle inscription au RC (Vaudois, cf. condition de lieu ci-dessous), donc il faut être inscrit et non radié.
-		final boolean actifAuRC = sitePrincipal.isConnuInscritAuRC(dateEvenement) && !sitePrincipal.isRadieDuRC(dateEvenement);
+		final boolean actifAuRC = etablissementPrincipal.isConnuInscritAuRC(dateEvenement) && !etablissementPrincipal.isRadieDuRC(dateEvenement);
 
 		// Ne pas avoir d'historique avant aujourd'hui au civil. C'est-à-dire être une nouvelle inscription RC VD, soit par fondation, soit par arrivée. On contrôle aussi l'absence d'événements.
 		final boolean estNouveauCivil = organisationHistory.getNom(dateEvenement.getOneDayBefore()) == null &&
@@ -600,7 +600,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			final Domicile siegePrincipal = organisation.getSiegePrincipal(dateEvenement);
 			if (siegePrincipal == null) {
 				throw new EvenementOrganisationException(
-						String.format("Donnée RCEnt invalide: Site principal introuvable pour l'organisation no civil: %d",
+						String.format("Donnée RCEnt invalide: Etablissement civil principal introuvable pour l'organisation no civil: %d",
 						              organisation.getNumeroOrganisation()));
 			}
 			StringBuilder champs = new StringBuilder();
@@ -614,10 +614,10 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			if (formeLegale == null && (organisation.isInscriteAuRC(dateEvenement))) {
 				champs.append("[legalForm] ");
 			}
-			for (SiteOrganisation site : organisation.getDonneesSites()) {
-				String nom = site.getNom(dateEvenement); // Le nom (obligatoire de par le xsd) nous permet de déduire si le site est existant pour la date données.
-				if (nom != null && site.getDomiciles().isEmpty()) {
-					champs.append(String.format("[Etablissement n°%d: seat] ", site.getNumeroSite()));
+			for (EtablissementCivil etablissement : organisation.getEtablissements()) {
+				String nom = etablissement.getNom(dateEvenement); // Le nom (obligatoire de par le xsd) nous permet de déduire si l'établissement civil est existant pour la date données.
+				if (nom != null && etablissement.getDomiciles().isEmpty()) {
+					champs.append(String.format("[Etablissement n°%d: seat] ", etablissement.getNumeroEtablissement()));
 				}
 			}
 			if (champs.length() > 0) {
@@ -647,15 +647,15 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				String etablissementsNonRattaches = CollectionsUtils.toString(result.getEtablissementsNonRattaches(), TIERS_NO_RENDERER, ", ");
 					messageEtablissementsNonRattaches = String.format(" Cependant, certains établissements n'ont pas trouvé d'équivalent civil: %s.", etablissementsNonRattaches);
 				}
-				String messageSitesNonRattaches = null;
-				if (!result.getSitesNonRattaches().isEmpty()) {
-					String sitesNonRattaches = CollectionsUtils.toString(result.getSitesNonRattaches(), SITE_RENDERER, ", ");
-					messageSitesNonRattaches = String.format(" Aussi des sites civils secondaires n'ont pas pu être rattachés et seront éventuellement créés: %s", sitesNonRattaches);
+				String messageEtablissementsCivilsNonRattaches = null;
+				if (!result.getEtablissementsCivilsNonRattaches().isEmpty()) {
+					String etablissementsNonRattaches = CollectionsUtils.toString(result.getEtablissementsCivilsNonRattaches(), ETABLISSEMENT_RENDERER, ", ");
+					messageEtablissementsCivilsNonRattaches = String.format(" Aussi des établissements civils secondaires n'ont pas pu être rattachés et seront éventuellement créés: %s", etablissementsNonRattaches);
 				}
 
 				return new MessageSuiviPreExecution(event, organisation, entreprise, context, options,
 				                                    String.format("Organisation civile n°%d rattachée à l'entreprise n°%s.%s%s",
-						              organisation.getNumeroOrganisation(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), messageEtablissementsNonRattaches == null ? "" : messageEtablissementsNonRattaches, messageSitesNonRattaches == null ? "" : messageSitesNonRattaches));
+						              organisation.getNumeroOrganisation(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), messageEtablissementsNonRattaches == null ? "" : messageEtablissementsNonRattaches, messageEtablissementsCivilsNonRattaches == null ? "" : messageEtablissementsCivilsNonRattaches));
 			} else {
 				return new MessageSuiviPreExecution(event, organisation, entreprise, context, options,
 				                                    String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%s, avec tous ses établissements.",

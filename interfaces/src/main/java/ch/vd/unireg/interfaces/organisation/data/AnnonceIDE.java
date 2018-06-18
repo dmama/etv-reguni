@@ -18,8 +18,8 @@ public class AnnonceIDE extends AnnonceIDEData implements AnnonceIDEEnvoyee, Ser
 	 */
 	private final Long numero;
 
-	public AnnonceIDE(Long numero, TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeDeSite typeDeSite, Statut statut, InfoServiceIDEObligEtendues infos) {
-		super(type, dateAnnonce, utilisateur, typeDeSite, statut, infos);
+	public AnnonceIDE(Long numero, TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeEtablissementCivil typeEtablissementCivil, Statut statut, InfoServiceIDEObligEtendues infos) {
+		super(type, dateAnnonce, utilisateur, typeEtablissementCivil, statut, infos);
 		// SIFISC-23702 Dans les annonces renvoyées par le WS noticeRequestList de RCEnt, le userId peut être nul lorsque l'annonce n'est pas encore traitée à proprement parler par RCEnt.
 		//sanityCheck(numero, utilisateur);
 		Objects.requireNonNull(numero, "Impossible de créer une annonce à l'IDE sans lui donner un numéro.");

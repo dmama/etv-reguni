@@ -106,7 +106,7 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Retourne la forme juridique du site principal à la date donnée, ou à la date du jour si pas de date.
+	 * Retourne la forme juridique de l'établissement civil principal à la date donnée, ou à la date du jour si pas de date.
 	 *
 	 * @param date La date de référence
 	 * @return La forme legale, ou null si absente
@@ -126,41 +126,41 @@ public abstract class OrganisationHelper {
 		return DateRangeHelper.rangeAt(organisation.getSiegesPrincipaux(), defaultDate(date).getOneDayBefore());
 	}
 
-	public static DateRanged<SiteOrganisation> getSitePrincipal(Organisation organisation, @Nullable RegDate date) {
-		return DateRangeHelper.rangeAt(organisation.getSitePrincipaux(), defaultDate(date));
+	public static DateRanged<EtablissementCivil> getEtablissementCivilPrincipal(Organisation organisation, @Nullable RegDate date) {
+		return DateRangeHelper.rangeAt(organisation.getEtablissementsPrincipaux(), defaultDate(date));
 	}
 
 	/**
-	 * Liste des sites principaux
-	 * @return La liste des sites principaux
+	 * Liste des établissements civils principaux
+	 * @return La liste des établissements civils principaux
 	 */
-	public static List<DateRanged<SiteOrganisation>> getSitePrincipaux(Organisation organisation) {
-		List<DateRanged<SiteOrganisation>> sitePrincipaux = new ArrayList<>();
-		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {
-				if (siteRange != null && siteRange.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
-					sitePrincipaux.add(new DateRanged<>(siteRange.getDateDebut(), siteRange.getDateFin(), site));
+	public static List<DateRanged<EtablissementCivil>> getEtablissementsCivilsPrincipaux(Organisation organisation) {
+		List<DateRanged<EtablissementCivil>> etablissementsPrincipaux = new ArrayList<>();
+		for (EtablissementCivil etablissement : organisation.getEtablissements()) {
+			for (DateRanged<TypeEtablissementCivil> etablissementRange : etablissement.getTypesEtablissement()) {
+				if (etablissementRange != null && etablissementRange.getPayload() == TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL) {
+					etablissementsPrincipaux.add(new DateRanged<>(etablissementRange.getDateDebut(), etablissementRange.getDateFin(), etablissement));
 				}
 			}
 		}
-		return sitePrincipaux;
+		return etablissementsPrincipaux;
 	}
 
 	/**
-	 * Liste des sites secondaire pour une date donnée. Si la date est nulle, la date du jour est utilisée.
-	 * @param date La date pour laquelle on désire la liste des sites secondaires
-	 * @return La liste des sites secondaire
+	 * Liste des établissements civils secondaire pour une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 * @param date La date pour laquelle on désire la liste des établissements civils secondaires
+	 * @return La liste des établissements civils secondaire
 	 */
-	public static List<SiteOrganisation> getSitesSecondaires(Organisation organisation, @Nullable RegDate date) {
-		List<SiteOrganisation> siteSecondaires = new ArrayList<>();
-		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {
-				if (siteRange != null && siteRange.getPayload() == TypeDeSite.ETABLISSEMENT_SECONDAIRE && siteRange.isValidAt(defaultDate(date))) {
-					siteSecondaires.add(site);
+	public static List<EtablissementCivil> getEtablissementsCivilsSecondaires(Organisation organisation, @Nullable RegDate date) {
+		List<EtablissementCivil> etablissementsSecondaires = new ArrayList<>();
+		for (EtablissementCivil etablissement : organisation.getEtablissements()) {
+			for (DateRanged<TypeEtablissementCivil> etablissementRange : etablissement.getTypesEtablissement()) {
+				if (etablissementRange != null && etablissementRange.getPayload() == TypeEtablissementCivil.ETABLISSEMENT_SECONDAIRE && etablissementRange.isValidAt(defaultDate(date))) {
+					etablissementsSecondaires.add(etablissement);
 				}
 			}
 		}
-		return siteSecondaires;
+		return etablissementsSecondaires;
 	}
 
 	@SafeVarargs
@@ -181,11 +181,11 @@ public abstract class OrganisationHelper {
 		return liste;
 	}
 
-	public static List<Adresse> getAdresses(Map<Long, ? extends SiteOrganisation> donneesSites) {
+	public static List<Adresse> getAdresses(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
 		// on récupère les adresses
-		final List<AdresseLegaleRCEnt> rcLegale = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseLegale);
-		final List<AdresseEffectiveRCEnt> ideEffective = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseEffective);
-		final List<AdresseBoitePostaleRCEnt> casePostale = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseCasePostale);
+		final List<AdresseLegaleRCEnt> rcLegale = extractDataFromEtablissementsPrincipaux(donneesEtablissements, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseLegale);
+		final List<AdresseEffectiveRCEnt> ideEffective = extractDataFromEtablissementsPrincipaux(donneesEtablissements, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseEffective);
+		final List<AdresseBoitePostaleRCEnt> casePostale = extractDataFromEtablissementsPrincipaux(donneesEtablissements, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseCasePostale);
 
 		// on les trie pour faire bon genre
 		final List<Adresse> adresses = concat(rcLegale, ideEffective, casePostale);
@@ -193,11 +193,11 @@ public abstract class OrganisationHelper {
 		return adresses;
 	}
 
-	public static List<Adresse> getAdressesPourSite(SiteOrganisation site) {
+	public static List<Adresse> getAdressesPourEtablissement(EtablissementCivil etablissement) {
 		// on récupère les adresses
-		final List<AdresseLegaleRCEnt> rcLegale = getAdresseLegale(site);
-		final List<AdresseEffectiveRCEnt> ideEffective = getAdresseEffective(site);
-		final List<AdresseBoitePostaleRCEnt> casePostale = getAdresseCasePostale(site);
+		final List<AdresseLegaleRCEnt> rcLegale = getAdresseLegale(etablissement);
+		final List<AdresseEffectiveRCEnt> ideEffective = getAdresseEffective(etablissement);
+		final List<AdresseBoitePostaleRCEnt> casePostale = getAdresseCasePostale(etablissement);
 
 		// on les trie pour faire bon genre
 		final List<Adresse> adresses = concat(rcLegale, ideEffective, casePostale);
@@ -206,24 +206,24 @@ public abstract class OrganisationHelper {
 	}
 
 	@Nullable
-	private static List<AdresseLegaleRCEnt> getAdresseLegale(SiteOrganisation site) {
-		return site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
+	private static List<AdresseLegaleRCEnt> getAdresseLegale(EtablissementCivil etablissement) {
+		return etablissement.getDonneesRC() == null ? null : etablissement.getDonneesRC().getAdresseLegale();
 	}
 
 	@Nullable
-	private static List<AdresseEffectiveRCEnt> getAdresseEffective(SiteOrganisation site) {
-		return site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
+	private static List<AdresseEffectiveRCEnt> getAdresseEffective(EtablissementCivil etablissement) {
+		return etablissement.getDonneesRegistreIDE() == null ? null : etablissement.getDonneesRegistreIDE().getAdresseEffective();
 	}
 
 	@Nullable
-	private static List<AdresseBoitePostaleRCEnt> getAdresseCasePostale(SiteOrganisation site) {
-		return site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseBoitePostale();
+	private static List<AdresseBoitePostaleRCEnt> getAdresseCasePostale(EtablissementCivil etablissement) {
+		return etablissement.getDonneesRegistreIDE() == null ? null : etablissement.getDonneesRegistreIDE().getAdresseBoitePostale();
 	}
 
 	/**
 	 * Retourne une liste représantant la succession des valeurs de capital de l'entreprise.
 	 *
-	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * Pour y arriver, pour chaque établissement civil, on parcoure la liste des plages de type (principal ou secondaire)
 	 * et pour chaque plage principale on recherche la plage de capital qui lui est contemporaine.
 	 *
 	 * On recrée l'information du capital dans une nouvelle plage aux limites de la plage type principale qui a permis
@@ -231,11 +231,11 @@ public abstract class OrganisationHelper {
 	 *
 	 * @return La succession de plage contenant l'information de capital.
 	 */
-	public static List<Capital> getCapitaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), new SiteDataExtractor<List<Capital>>() {
+	public static List<Capital> getCapitaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
+		return extractDataFromEtablissementsPrincipaux(donneesEtablissements, new DateRangeLimitatorImpl<>(), new EtablissementDataExtractor<List<Capital>>() {
 			@Override
-			public List<Capital> extractData(SiteOrganisation site) {
-				return site.getDonneesRC() != null ? site.getDonneesRC().getCapital() : null;
+			public List<Capital> extractData(EtablissementCivil etablissement) {
+				return etablissement.getDonneesRC() != null ? etablissement.getDonneesRC().getCapital() : null;
 			}
 		});
 	}
@@ -247,63 +247,63 @@ public abstract class OrganisationHelper {
 	/**
 	 * Prepare une liste de plages représantant la succession des sièges des établissements principaux
 	 *
-	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * Pour y arriver, pour chaque établissement civil, on parcoure la liste des plages de type (principal ou secondaire)
 	 * et pour chaque plage principale on recherche le siege qui lui est contemporain.
 	 *
 	 * On extraie ensuite toute les plages sièges correspondant à la plage type principal.
 	 *
 	 * @return La succession de plage contenant l'information de siege.
 	 */
-	public static List<Domicile> getSiegesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), SiteOrganisation::getDomiciles);
+	public static List<Domicile> getSiegesPrincipaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
+		return extractDataFromEtablissementsPrincipaux(donneesEtablissements, new DateRangeLimitatorImpl<>(), EtablissementCivil::getDomiciles);
 	}
 
 	/**
 	 * Prepare une liste de plages représantant la succession des noms des établissements principaux
 	 *
-	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * Pour y arriver, pour chaque établissement civil, on parcoure la liste des plages de type (principal ou secondaire)
 	 * et pour chaque plage principale on recherche le nom qui lui est contemporain.
 	 *
 	 * On extraie ensuite toute les plages noms correspondant à la plage type principal.
 	 *
 	 * @return La succession de plage contenant l'information de nom.
 	 */
-	public static List<DateRanged<String>> getNomsPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getNom);
+	public static List<DateRanged<String>> getNomsPrincipaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
+		return extractRangedDataFromEtablissementsPrincipaux(donneesEtablissements, EtablissementCivil::getNom);
 	}
 
 	/**
 	 * Prepare une liste de plages représantant la succession des noms additionnels des établissements principaux
 	 *
-	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * Pour y arriver, pour chaque établissement civil, on parcoure la liste des plages de type (principal ou secondaire)
 	 * et pour chaque plage principale on recherche le nom additionnel qui lui est contemporain.
 	 *
 	 * On extraie ensuite toute les plages noms additionnels correspondant à la plage type principal.
 	 *
 	 * @return La succession de plage contenant l'information de nom.
 	 */
-	public static List<DateRanged<String>> getNomsAdditionnelsPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getNomAdditionnel);
+	public static List<DateRanged<String>> getNomsAdditionnelsPrincipaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
+		return extractRangedDataFromEtablissementsPrincipaux(donneesEtablissements, EtablissementCivil::getNomAdditionnel);
 	}
 
 	/**
 	 * Prepare une liste de plages représantant la succession des formes legales des établissements principaux
 	 *
-	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * Pour y arriver, pour chaque établissement civil, on parcoure la liste des plages de type (principal ou secondaire)
 	 * et pour chaque plage principale on recherche la forme legale qui lui est contemporain.
 	 *
 	 * On extraie ensuite toute les plages formes legales correspondant à la plage type principal.
 	 *
 	 * @return La succession de plage contenant l'information de forme legale.
 	 */
-	public static List<DateRanged<FormeLegale>> getFormesLegalesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getFormeLegale);
+	public static List<DateRanged<FormeLegale>> getFormesLegalesPrincipaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
+		return extractRangedDataFromEtablissementsPrincipaux(donneesEtablissements, EtablissementCivil::getFormeLegale);
 	}
 
 	/**
 	 * Prepare une liste de plages représantant la succession des numéros IDE des établissements principaux
 	 *
-	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * Pour y arriver, pour chaque établissement civil, on parcoure la liste des plages de type (principal ou secondaire)
 	 * et pour chaque plage principale on recherche le numéro IDE qui lui est contemporain.
 	 *
 	 * On extraie ensuite toute les plages numéros IDE correspondant à la plage type principal.
@@ -311,18 +311,18 @@ public abstract class OrganisationHelper {
 	 * @return La succession de plage contenant l'information des numéros IDE.
 	 */
 	@NotNull
-	public static List<DateRanged<String>> getNumerosIDEPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getNumeroIDE);
+	public static List<DateRanged<String>> getNumerosIDEPrincipaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
+		return extractRangedDataFromEtablissementsPrincipaux(donneesEtablissements, EtablissementCivil::getNumeroIDE);
 	}
 
 	/**
 	 * Prépare une liste de plages temporelles avec la succession des numéros RC des établissements principaux
-	 * @param donneesSites données des établissements connus
+	 * @param donneesEtablissements données des établissements connus
 	 * @return la liste des plages temporelles des numéros RC
 	 */
 	@NotNull
-	public static List<DateRanged<String>> getNumerosRCPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getNumeroRC);
+	public static List<DateRanged<String>> getNumerosRCPrincipaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements) {
+		return extractRangedDataFromEtablissementsPrincipaux(donneesEtablissements, EtablissementCivil::getNumeroRC);
 	}
 
 	/**
@@ -347,19 +347,19 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Détermine la date de premier snapshot du site. C'est à dire à partir de quand le site
+	 * Détermine la date de premier snapshot de l'établissement civil. C'est à dire à partir de quand l'établissement civil
 	 * est connu au civil.
-	 * @param site le site visé
+	 * @param etablissement l'établissement civil visé
 	 * @return la date du premier snapshot
 	 */
-	public static RegDate connuAuCivilDepuis(SiteOrganisation site) {
-		final List<DateRanged<String>> nom = site.getNom();
+	public static RegDate connuAuCivilDepuis(EtablissementCivil etablissement) {
+		final List<DateRanged<String>> nom = etablissement.getNom();
 		nom.sort(new DateRangeComparator<>());
 		return nom.get(0).getDateDebut();
 	}
 
 	/**
-	 * Une organisation est réputée inscrite au RC à la date fournie si le statut de son site principal n'est ni INCONNU, ni NON_INSCRIT.
+	 * Une organisation est réputée inscrite au RC à la date fournie si le statut de son établissement civil principal n'est ni INCONNU, ni NON_INSCRIT.
 	 * (<i>inscrite</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
  	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
@@ -368,10 +368,10 @@ public abstract class OrganisationHelper {
 	public static boolean isInscriteAuRC(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
 
-		// il n'y a aucun site principal avant la date de chargement initial de RCEnt... mais parfois, la date demandée est elle-même
+		// il n'y a aucun établissement civil principal avant la date de chargement initial de RCEnt... mais parfois, la date demandée est elle-même
 		// antérieure à cette date de chargement, il faut donc ruser un peu et regarder les dates...
-		for (DateRanged<SiteOrganisation> sitePrincipal : organisation.getSitePrincipaux()) {
-			if (isInscritAuRC(sitePrincipal.getPayload(), dateEffective)) {
+		for (DateRanged<EtablissementCivil> etablissementPrincipal : organisation.getEtablissementsPrincipaux()) {
+			if (isInscritAuRC(etablissementPrincipal.getPayload(), dateEffective)) {
 				return true;
 			}
 		}
@@ -387,19 +387,19 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isConnueInscriteAuRC(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
-		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
-		return sitePrincipal != null && isConnuInscritAuRC(sitePrincipal.getPayload(), dateEffective);
+		final DateRanged<EtablissementCivil> etablissementPrincipal = organisation.getEtablissementPrincipal(dateEffective);
+		return etablissementPrincipal != null && isConnuInscritAuRC(etablissementPrincipal.getPayload(), dateEffective);
 	}
 
 	/**
-	 * Un site est réputé inscrit au RC à la date fournie si son statut n'est ni INCONNU, ni NON_INSCRIT.
+	 * Un établissement civil est réputé inscrit au RC à la date fournie si son statut n'est ni INCONNU, ni NON_INSCRIT.
 	 * (<i>inscrit</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
-	 * @param site le site
+	 * @param etablissement l'établissement civil
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
 	 * @return true si inscrite, false sinon
 	 */
-	public static boolean isInscritAuRC(SiteOrganisation site, RegDate date) {
-		final DonneesRC donneesRC = site.getDonneesRC();
+	public static boolean isInscritAuRC(EtablissementCivil etablissement, RegDate date) {
+		final DonneesRC donneesRC = etablissement.getDonneesRC();
 		if (donneesRC == null || donneesRC.getInscription() == null) {
 			return false;
 		}
@@ -424,13 +424,13 @@ public abstract class OrganisationHelper {
 	/**
 	 * Un établissement est "connu comme inscrit au RC" à une date si la donnée de l'inscription RC connue à cette date existe et le décrit comme inscrit
 	 * (au sens de <i>possède une inscription</i>, quelle qu'elle soit)
-	 * @param site le site
+	 * @param etablissement l'établissement civil
 	 * @param date la date pour laquelle on se pose la question
 	 * @return true si connue comme inscrite, false sinon
 	 */
-	public static boolean isConnuInscritAuRC(SiteOrganisation site, RegDate date) {
+	public static boolean isConnuInscritAuRC(EtablissementCivil etablissement, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
-		final DonneesRC donneesRC = site.getDonneesRC();
+		final DonneesRC donneesRC = etablissement.getDonneesRC();
 		if (donneesRC == null || donneesRC.getInscription() == null) {
 			return false;
 		}
@@ -439,7 +439,7 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Une organisation est réputée inscrite à l'IDE à la date fournie si le statut de son site principal n'est ni AUTRE, ni ANNULE.
+	 * Une organisation est réputée inscrite à l'IDE à la date fournie si le statut de son établissement civil principal n'est ni AUTRE, ni ANNULE.
 	 * (<i>inscrite</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
@@ -447,19 +447,19 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isInscriteIDE(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
-		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
-		return sitePrincipal != null && isInscritIDE(sitePrincipal.getPayload(), dateEffective);
+		final DateRanged<EtablissementCivil> etablissementPrincipal = organisation.getEtablissementPrincipal(dateEffective);
+		return etablissementPrincipal != null && isInscritIDE(etablissementPrincipal.getPayload(), dateEffective);
 	}
 
 	/**
-	 * Un site est réputé inscrit à l'IDE à la date fournie si son statut n'est ni AUTRE, ni ANNULE.
+	 * Un établissement civil est réputé inscrit à l'IDE à la date fournie si son statut n'est ni AUTRE, ni ANNULE.
 	 *
-	 * @param site le site
+	 * @param etablissement l'établissement civil
 	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
 	 * @return true si inscrite, false sinon
 	 */
-	public static boolean isInscritIDE(SiteOrganisation site, RegDate date) {
-		final DonneesRegistreIDE donneesIDE = site.getDonneesRegistreIDE();
+	public static boolean isInscritIDE(EtablissementCivil etablissement, RegDate date) {
+		final DonneesRegistreIDE donneesIDE = etablissement.getDonneesRegistreIDE();
 		if (donneesIDE == null) {
 			return false;
 		}
@@ -468,7 +468,7 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Une organisation est réputée inscrite au REE à la date fournie si le statut de son site principal n'est pas vide.
+	 * Une organisation est réputée inscrite au REE à la date fournie si le statut de son établissement civil principal n'est pas vide.
 	 * (<i>inscrite</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut connaitre la situation au REE
@@ -476,22 +476,22 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isInscriteREE(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
-		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
-		return sitePrincipal != null && isInscritREE(sitePrincipal.getPayload(), dateEffective);
+		final DateRanged<EtablissementCivil> etablissementPrincipal = organisation.getEtablissementPrincipal(dateEffective);
+		return etablissementPrincipal != null && isInscritREE(etablissementPrincipal.getPayload(), dateEffective);
 	}
 
 	/**
-	 * Un site est réputé inscrit au REE à la date fournie s'il a un statut non vide.
+	 * Un établissement civil est réputé inscrit au REE à la date fournie s'il a un statut non vide.
 	 *
 	 * Voir SIFISC-18739: INCONNU == inscrit dont le REE ne connais pas la situation exacte entre "actif" et "inactif", qui eux-mêmes
 	 * concerne la présence ou non d'employés dans l'entité.
 	 *
-	 * @param site le site
+	 * @param etablissement l'établissement civil
 	 * @param date la date pour laquelle on veut connaitre la situation au l'REE
 	 * @return true si inscrite, false sinon
 	 */
-	public static boolean isInscritREE(SiteOrganisation site, RegDate date) {
-		final DonneesREE donneesREE = site.getDonneesREE();
+	public static boolean isInscritREE(EtablissementCivil etablissement, RegDate date) {
+		final DonneesREE donneesREE = etablissement.getDonneesREE();
 		if (donneesREE == null || donneesREE.getInscriptionREE() == null) {
 			return false;
 		}
@@ -510,9 +510,9 @@ public abstract class OrganisationHelper {
 		return false;
 	}
 
-	public static boolean isConnuInscritREE(SiteOrganisation site, RegDate date) {
+	public static boolean isConnuInscritREE(EtablissementCivil etablissement, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
-		final DonneesREE donneesREE = site.getDonneesREE();
+		final DonneesREE donneesREE = etablissement.getDonneesREE();
 		if (donneesREE == null || donneesREE.getInscriptionREE() == null) {
 			return false;
 		}
@@ -521,19 +521,19 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Un site est réputé être une succursale à la date fournie s'il est inscrit au RC, si son statut n'est
+	 * Un établissement civil est réputé être une succursale à la date fournie s'il est inscrit au RC, si son statut n'est
 	 * ni INCONNU, ni NON_INSCRIT et qu'il n'est pas radié du RC.
 	 *
-	 * @param site le site
+	 * @param etablissement l'établissement civil
 	 * @param date la date pour laquelle on veut connaitre l'état de succursale
 	 * @return
 	 */
-	public static boolean isSuccursale(SiteOrganisation site, RegDate date) {
-		return site.getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_SECONDAIRE && isConnuInscritAuRC(site, date) && !isRadieDuRC(site, date);
+	public static boolean isSuccursale(EtablissementCivil etablissement, RegDate date) {
+		return etablissement.getTypeEtablissement(date) == TypeEtablissementCivil.ETABLISSEMENT_SECONDAIRE && isConnuInscritAuRC(etablissement, date) && !isRadieDuRC(etablissement, date);
 	}
 
 	/**
-	 * Une organisation est réputée radiée du RC à la date fournie si le statut de son site principal RADIE.
+	 * Une organisation est réputée radiée du RC à la date fournie si le statut de son établissement civil principal RADIE.
 	 *
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
@@ -541,25 +541,25 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isRadieeDuRC(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
-		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
-		return sitePrincipal != null && isRadieDuRC(sitePrincipal.getPayload(), dateEffective);
+		final DateRanged<EtablissementCivil> etablissementPrincipal = organisation.getEtablissementPrincipal(dateEffective);
+		return etablissementPrincipal != null && isRadieDuRC(etablissementPrincipal.getPayload(), dateEffective);
 	}
 
 	/**
-	 * Un site est réputé radié du RC à la date fournie si son statut est RADIE
+	 * Un établissement civil est réputé radié du RC à la date fournie si son statut est RADIE
 	 *
-	 * @param site le site
+	 * @param etablissement l'établissement civil
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
 	 * @return true si radié, false sinon
 	 */
-	public static boolean isRadieDuRC(SiteOrganisation site, RegDate date) {
-		final DonneesRC donneesRC = site.getDonneesRC();
+	public static boolean isRadieDuRC(EtablissementCivil etablissement, RegDate date) {
+		final DonneesRC donneesRC = etablissement.getDonneesRC();
 		final InscriptionRC inscription = donneesRC.getInscription(defaultDate(date));
 		return inscription != null && inscription.getStatus() == StatusInscriptionRC.RADIE;
 	}
 
 	/**
-	 * Une organisation est réputée radiée de l'IDE à la date fournie si le statut de son site principal RADIE ou DEFINITIVEMENT_RADIE.
+	 * Une organisation est réputée radiée de l'IDE à la date fournie si le statut de son établissement civil principal RADIE ou DEFINITIVEMENT_RADIE.
 	 *
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
@@ -567,19 +567,19 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isRadieeIDE(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
-		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
-		return sitePrincipal != null && isRadieIDE(sitePrincipal.getPayload(), dateEffective);
+		final DateRanged<EtablissementCivil> etablissementPrincipal = organisation.getEtablissementPrincipal(dateEffective);
+		return etablissementPrincipal != null && isRadieIDE(etablissementPrincipal.getPayload(), dateEffective);
 	}
 
 	/**
-	 * Un site est réputé radié de l'IDE à la date fournie si son statut est RADIE ou DEFINITIVEMENT_RADIE
+	 * Un établissement civil est réputé radié de l'IDE à la date fournie si son statut est RADIE ou DEFINITIVEMENT_RADIE
 	 *
-	 * @param site le site
+	 * @param etablissement l'établissement civil
 	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
 	 * @return true si radié, false sinon
 	 */
-	public static boolean isRadieIDE(SiteOrganisation site, RegDate date) {
-		final DonneesRegistreIDE donneesIDE = site.getDonneesRegistreIDE();
+	public static boolean isRadieIDE(EtablissementCivil etablissement, RegDate date) {
+		final DonneesRegistreIDE donneesIDE = etablissement.getDonneesRegistreIDE();
 		if (donneesIDE != null && donneesIDE.getStatus() != null && ! donneesIDE.getStatus().isEmpty()) {
 			final RegDate dateEffective = defaultDate(date);
 			final StatusRegistreIDE statusIde = donneesIDE.getStatus(dateEffective);
@@ -589,7 +589,7 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Une organisation est réputée radiée du REE à la date fournie si le statut de son site principal RADIE ou TRANSFERE.
+	 * Une organisation est réputée radiée du REE à la date fournie si le statut de son établissement civil principal RADIE ou TRANSFERE.
 	 *
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut connaitre la situation au REE
@@ -597,12 +597,12 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isRadieREE(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
-		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
-		return sitePrincipal != null && isRadieREE(sitePrincipal.getPayload(), dateEffective);
+		final DateRanged<EtablissementCivil> etablissementPrincipal = organisation.getEtablissementPrincipal(dateEffective);
+		return etablissementPrincipal != null && isRadieREE(etablissementPrincipal.getPayload(), dateEffective);
 	}
 
 	/**
-	 * Un site est réputé radié du REE à la date fournie si son statut est RADIE ou TRANSFERE
+	 * Un établissement civil est réputé radié du REE à la date fournie si son statut est RADIE ou TRANSFERE
 	 *
 	 * Repris SIFISC-18739 pour la documentation du statut REE (citation de Gabrielle Servoz, RCEnt):
 	 *
@@ -615,12 +615,12 @@ public abstract class OrganisationHelper {
 	 * </ul>
 	 * => pour être binaire : un établissement est pour moi actif si son statut REE vaut "actif", "inactif" ou "inconnu". Un établissement est pour moi radié si son statut vaut "radié" ou "transféré".
 	 *
-	 * @param site le site
+	 * @param etablissement l'établissement civil
 	 * @param date la date pour laquelle on veut connaitre la situation au REE
 	 * @return true si radié, false sinon
 	 */
-	public static boolean isRadieREE(SiteOrganisation site, RegDate date) {
-		final DonneesREE donneesREE = site.getDonneesREE();
+	public static boolean isRadieREE(EtablissementCivil etablissement, RegDate date) {
+		final DonneesREE donneesREE = etablissement.getDonneesREE();
 		if (donneesREE != null) {
 			final InscriptionREE inscription = donneesREE.getInscriptionREE(defaultDate(date));
 			if (inscription != null) {
@@ -631,51 +631,51 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Détermine si l'organisation a son site principal (siège) domicilié sur Vaud.
+	 * Détermine si l'organisation a son établissement civil principal (siège) domicilié sur Vaud.
 	 *
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut l'information
-	 * @return true si le site principal est domicilié dans le canton de Vaud, false sinon
+	 * @return true si l'établissement civil principal est domicilié dans le canton de Vaud, false sinon
 	 */
-	public static boolean hasSitePrincipalVD(Organisation organisation, RegDate date) {
+	public static boolean hasEtablissementPrincipalVD(Organisation organisation, RegDate date) {
 		Domicile siegePrincipal = organisation.getSiegePrincipal(defaultDate(date));
 		return siegePrincipal != null && siegePrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
 	/**
-	 * Renvoie la liste des sites domiciliés sur Vaud (principal ou secondaires) qui sont
+	 * Renvoie la liste des établissements civils domiciliés sur Vaud (principal ou secondaires) qui sont
 	 * des succursales inscrites au RC et non radiées.
 	 *
 	 * Pour éviter les établissements REE, le critère est l'inscription au RC.
 	 *
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut l'information
-	 * @return la liste des sites domiciliés sur Vaud inscrits au RC
+	 * @return la liste des établissements civils domiciliés sur Vaud inscrits au RC
 	 */
-	public static List<SiteOrganisation> getSuccursalesRCVD(Organisation organisation, RegDate date) {
-		List<SiteOrganisation> sitesVD = new ArrayList<>();
-		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Domicile domicile = site.getDomicile(defaultDate(date));
+	public static List<EtablissementCivil> getSuccursalesRCVD(Organisation organisation, RegDate date) {
+		List<EtablissementCivil> etablissementsVD = new ArrayList<>();
+		for (EtablissementCivil etablissement : organisation.getEtablissements()) {
+			final Domicile domicile = etablissement.getDomicile(defaultDate(date));
 			if (domicile != null &&
 					domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-					site.isSuccursale(date)) {
-				sitesVD.add(site);
+					etablissement.isSuccursale(date)) {
+				etablissementsVD.add(etablissement);
 			}
 		}
-		return sitesVD;
+		return etablissementsVD;
 	}
 
 	/**
-	 * Détermine si l'organisation a un intérêt sur VD sous la forme d'un site principal ou secondaire
+	 * Détermine si l'organisation a un intérêt sur VD sous la forme d'un établissement civil principal ou secondaire
 	 * domicilié sur Vaud.
 	 *
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut l'information
-	 * @return true si un site est domicilié dans le canton de Vaud, false sinon
+	 * @return true si un établissement civil est domicilié dans le canton de Vaud, false sinon
 	 */
-	public static boolean hasSiteVD(Organisation organisation, RegDate date) {
-		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Domicile domicile = site.getDomicile(defaultDate(date));
+	public static boolean hasEtablissementVD(Organisation organisation, RegDate date) {
+		for (EtablissementCivil etablissement : organisation.getEtablissements()) {
+			final Domicile domicile = etablissement.getDomicile(defaultDate(date));
 			if (domicile != null && domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				return true;
 			}
@@ -684,10 +684,10 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Donne l'historique des domiciles réels, c'est à dire qui se termine lorsque le site ferme.
+	 * Donne l'historique des domiciles réels, c'est à dire qui se termine lorsque l'établissement civil ferme.
 	 */
-	public static List<Domicile> getDomicilesReels(SiteOrganisation site, List<Domicile> domiciles) {
-		final List<DateRange> activite = OrganisationActiviteHelper.activite(site);
+	public static List<Domicile> getDomicilesReels(EtablissementCivil etablissement, List<Domicile> domiciles) {
+		final List<DateRange> activite = OrganisationActiviteHelper.activite(etablissement);
 		if (domiciles == null || domiciles.isEmpty() || activite == null || activite.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -779,8 +779,8 @@ public abstract class OrganisationHelper {
 		return date != null ? date : RegDate.get();
 	}
 
-	private interface SiteDataExtractor<T> {
-		T extractData(SiteOrganisation site);
+	private interface EtablissementDataExtractor<T> {
+		T extractData(EtablissementCivil etablissement);
 	}
 
 	private interface DateRangeLimitator<T extends DateRange> {
@@ -794,14 +794,14 @@ public abstract class OrganisationHelper {
 	}
 
 	@NotNull
-	private static <T> List<DateRanged<T>> extractRangedDataFromSitesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites, SiteDataExtractor<List<DateRanged<T>>> extractor) {
+	private static <T> List<DateRanged<T>> extractRangedDataFromEtablissementsPrincipaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements, EtablissementDataExtractor<List<DateRanged<T>>> extractor) {
 		final List<DateRanged<T>> extracted = new ArrayList<>();
-		for (Map.Entry<Long, ? extends SiteOrganisation> entry : donneesSites.entrySet()) {
-			final SiteOrganisation site = entry.getValue();
-			final List<DateRanged<T>> toExtract = extractor.extractData(site);
+		for (Map.Entry<Long, ? extends EtablissementCivil> entry : donneesEtablissements.entrySet()) {
+			final EtablissementCivil etablissement = entry.getValue();
+			final List<DateRanged<T>> toExtract = extractor.extractData(etablissement);
 			if (toExtract != null && !toExtract.isEmpty()) {
-				for (DateRanged<TypeDeSite> type : site.getTypeDeSite()) {
-					if (type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+				for (DateRanged<TypeEtablissementCivil> type : etablissement.getTypesEtablissement()) {
+					if (type.getPayload() == TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL) {
 						final List<DateRanged<T>> extractedData = DateRangeHelper.extract(toExtract,
 						                                                                  type.getDateDebut(),
 						                                                                  type.getDateFin(),
@@ -823,14 +823,14 @@ public abstract class OrganisationHelper {
 	}
 
 	@NotNull
-	private static <T extends DateRange> List<T> extractDataFromSitesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites, final DateRangeLimitator<T> limitator, SiteDataExtractor<List<T>> extractor) {
+	private static <T extends DateRange> List<T> extractDataFromEtablissementsPrincipaux(Map<Long, ? extends EtablissementCivil> donneesEtablissements, final DateRangeLimitator<T> limitator, EtablissementDataExtractor<List<T>> extractor) {
 		final List<T> extracted = new ArrayList<>();
-		for (Map.Entry<Long, ? extends SiteOrganisation> entry : donneesSites.entrySet()) {
-			final SiteOrganisation site = entry.getValue();
-			final List<T> toExtract = extractor.extractData(site);
+		for (Map.Entry<Long, ? extends EtablissementCivil> entry : donneesEtablissements.entrySet()) {
+			final EtablissementCivil etablissement = entry.getValue();
+			final List<T> toExtract = extractor.extractData(etablissement);
 			if (toExtract != null && !toExtract.isEmpty()) {
-				for (DateRanged<TypeDeSite> type : site.getTypeDeSite()) {
-					if (type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+				for (DateRanged<TypeEtablissementCivil> type : etablissement.getTypesEtablissement()) {
+					if (type.getPayload() == TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL) {
 						final List<T> extractedData = DateRangeHelper.extract(toExtract,
 						                                                      type.getDateDebut(),
 						                                                      type.getDateFin(),

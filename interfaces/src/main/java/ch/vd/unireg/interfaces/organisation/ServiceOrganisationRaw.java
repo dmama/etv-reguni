@@ -17,7 +17,7 @@ import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 public interface ServiceOrganisationRaw {
 
 	/**
-	 * Container des identifiants d'une organisation et de l'un de ses sites
+	 * Container des identifiants d'une organisation et de l'un de ses établissements civils
 	 * (qui peut être principal ou pas)
 	 */
 	class Identifiers implements Serializable {
@@ -25,11 +25,11 @@ public interface ServiceOrganisationRaw {
 		private static final long serialVersionUID = 348072279122408475L;
 
 		public final long idCantonalOrganisation;
-		public final long idCantonalSite;
+		public final long idCantonalEtablissement;
 
-		public Identifiers(long idCantonalOrganisation, long idCantonalSite) {
+		public Identifiers(long idCantonalOrganisation, long idCantonalEtablissement) {
 			this.idCantonalOrganisation = idCantonalOrganisation;
-			this.idCantonalSite = idCantonalSite;
+			this.idCantonalEtablissement = idCantonalEtablissement;
 		}
 	}
 
@@ -45,17 +45,17 @@ public interface ServiceOrganisationRaw {
 	Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException;
 
 	/**
-	 * Obtenir un numéro d'organisation à partir d'un numéro de site.
+	 * Obtenir un numéro d'organisation à partir d'un numéro d'établissement civil.
 	 *
-	 * @param noSite Identifiant cantonal du site.
-	 * @return L'identifiant cantonal de l'organisation détenant le site.
+	 * @param noEtablissementCivil Identifiant cantonal de l'établissement civil.
+	 * @return L'identifiant cantonal de l'organisation détenant l'établissement civil.
 	 * @throws ServiceOrganisationException
 	 */
-	Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException;
+	Long getNoOrganisationFromNoEtablissement(Long noEtablissementCivil) throws ServiceOrganisationException;
 
 	/**
 	 * @param noide numéro IDE (sous la forme sans point ni tiret)
-	 * @return les identifiants de l'organisation et de son site qui correspondent à ce numéro IDE
+	 * @return les identifiants de l'organisation et de son établissement civil qui correspondent à ce numéro IDE
 	 * @throws ServiceOrganisationException en cas de souci quelque part
 	 */
 	Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException;

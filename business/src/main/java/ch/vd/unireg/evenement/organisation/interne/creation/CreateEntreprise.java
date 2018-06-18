@@ -17,9 +17,9 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCol
 import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 
@@ -33,7 +33,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	final private RegDate dateDeCreation;
 	final private RegDate dateOuvertureFiscale;
 	final private boolean isCreation;
-	final private SiteOrganisation sitePrincipal;
+	final private EtablissementCivil etablissementPrincipal;
 	final private Domicile autoriteFiscalePrincipale;
 
 	protected CreateEntreprise(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
@@ -44,7 +44,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	                           boolean isCreation) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
-		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
+		etablissementPrincipal = organisation.getEtablissementPrincipal(getDateEvt()).getPayload();
 		if (dateDeCreation == null) {
 			throw new EvenementOrganisationException("Date nulle pour la création d'une entreprise. Probablement une erreur de programmation à ce stade..");
 		}
@@ -53,7 +53,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		this.isCreation = isCreation;
 
 
-		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
+		autoriteFiscalePrincipale = etablissementPrincipal.getDomicile(getDateEvt());
 
 		// TODO: Générer événements fiscaux
 
@@ -74,8 +74,8 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	}
 
 	@NotNull
-	public SiteOrganisation getSitePrincipal() {
-		return sitePrincipal;
+	public EtablissementCivil getEtablissementPrincipal() {
+		return etablissementPrincipal;
 	}
 
 	@NotNull
@@ -87,7 +87,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		// SIFISC-19700: Contrôle que la date d'inscription au RC rapportée par RCEnt correspond à celle de l'entrée de journal au RC. (il y a eu des erreurs de transcription au RC!)
 		if (isCreation() && getOrganisation().isInscriteAuRC(getDateEvt())) {
-			final List<EntreeJournalRC> entreesJournalPourDatePublication = sitePrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
+			final List<EntreeJournalRC> entreesJournalPourDatePublication = etablissementPrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 			/*
 			 On part du principe que lors d'une inscription d'une nouvelle entreprise au RC, on a une et une seule publication FOSC portant sur une entrée de journal.
 			 S'il y a plusieurs entrées, c'est qu'on n'est pas vraiment dans un cas de création d'entreprise, en tout cas pas un cas standard. On ignore.
@@ -125,15 +125,15 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		createEntreprise(dateDeCreation, suivis);
 
 		// Création de l'établissement principal
-		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeCreation, suivis);
+		createAddEtablissement(etablissementPrincipal.getNumeroEtablissement(), autoriteFiscalePrincipale, true, dateDeCreation, suivis);
 
 		if (dateDeCreation.isBefore(getDateEvt())) {
 			appliqueDonneesCivilesSurPeriode(getEntreprise(), surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
 		}
 
 		// Création des établissement secondaires
-		for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {
-			Etablissement etablissementSecondaire = addEtablissementSecondaire(site, dateDeCreation, warnings, suivis);
+		for (EtablissementCivil etablissement : getOrganisation().getEtablissementsSecondaires(getDateEvt())) {
+			Etablissement etablissementSecondaire = addEtablissementSecondaire(etablissement, dateDeCreation, warnings, suivis);
 			if (dateDeCreation.isBefore(getDateEvt())) {
 				appliqueDonneesCivilesSurPeriode(etablissementSecondaire, surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
 			}
@@ -162,7 +162,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		 Problèmes métiers empêchant la progression
 		  */
 
-		if (sitePrincipal == null) {
+		if (etablissementPrincipal == null) {
 			erreurs.addErreur(String.format("Aucun établissement principal trouvé pour la date du %s. [no organisation: %d]",
 			                                RegDateHelper.dateToDisplayString(getDateDeCreation()), getOrganisation().getNumeroOrganisation()));
 		}

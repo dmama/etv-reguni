@@ -8,10 +8,11 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntEtablissementHelperTest;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
@@ -21,7 +22,7 @@ import static org.junit.Assert.assertNull;
 /**
  * Classe de test de {@link OrganisationActiviteHelper}, helper spécialisé dans le calcul de l'activité des entreprises et établissements.
  *
- * 6 tests existants déplacés de {@link ch.vd.unireg.interfaces.organisation.rcent.RCEntSiteOrganisationHelperTest} le 2017-08-14.
+ * 6 tests existants déplacés de {@link RCEntEtablissementHelperTest} le 2017-08-14.
  *
  * @author Raphaël Marmier, 2017-08-14, <raphael.marmier@vd.ch>
  */
@@ -40,11 +41,11 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		final long noEtablissement = 10000;
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		List<DateRange> activite = OrganisationActiviteHelper.activite(mockSite);
 
 		assertFalse(activite.isEmpty());
@@ -64,11 +65,11 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), null, null,
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		final long noEtablissement = 10000;
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), null, null,
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		List<DateRange> activite = OrganisationActiviteHelper.activite(mockSite);
 
 		assertFalse(activite.isEmpty());
@@ -88,13 +89,13 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
+		final long noEtablissement = 10000;
 		final RegDate dateInscriptionRC = date(2010, 6, 24);
 		final RegDate dateRadiationRC = date(2015, 7, 5);
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		mockSite.getDonneesRC().changeInscription(date(2015, 7, 8), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 		                                                                              dateInscriptionRC, dateRadiationRC,
 		                                                                              dateInscriptionRC, dateRadiationRC));
@@ -119,11 +120,11 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), null, null,
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		final long noEtablissement = 10000;
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), null, null,
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		mockSite.getDonneesRegistreIDE().changeStatus(date(2015, 7, 8), StatusRegistreIDE.RADIE);
 
 		List<DateRange> activite = OrganisationActiviteHelper.activite(mockSite);
@@ -148,14 +149,14 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
+		final long noEtablissement = 10000;
 		final RegDate dateInscriptionRC = date(2010, 6, 24);
 		final RegDate dateRadiationRC = date(2012, 2, 5);
 
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		mockSite.getDonneesRC().changeInscription(date(2012, 2, 8), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 		                                                                              dateInscriptionRC, dateRadiationRC,
 		                                                                              dateInscriptionRC, dateRadiationRC));
@@ -185,14 +186,14 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
+		final long noEtablissement = 10000;
 
 		final RegDate dateInscriptionRC = date(2010, 6, 24);
 		final RegDate dateRadiationRC = date(2012, 3, 1);
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		mockSite.getDonneesRC().changeInscription(date(2012, 3, 4), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 		                                                                              dateInscriptionRC, dateRadiationRC,
 		                                                                              dateInscriptionRC, dateRadiationRC));
@@ -220,11 +221,11 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), null, null,
-		                                                                     null, null, "CHE999999996", null, null);
+		final long noEtablissement = 10000;
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), null, null,
+		                                                                         null, null, "CHE999999996", null, null);
 		mockSite.getDonneesREE().changeInscriptionREE(date(2010, 6, 26), new InscriptionREE(StatusREE.ACTIF, date(2010, 6, 24)) );
 		mockSite.getDonneesREE().changeInscriptionREE(date(2015, 7, 8), new InscriptionREE(StatusREE.RADIE, date(2015, 7, 4)));
 
@@ -248,13 +249,13 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
+		final long noEtablissement = 10000;
 
 		final RegDate dateInscriptionRC = date(2010, 6, 24);
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		mockSite.getDonneesRegistreIDE().changeStatus(date(2015, 7, 8), StatusRegistreIDE.RADIE);
 
 		List<DateRange> activite = OrganisationActiviteHelper.activite(mockSite);
@@ -278,11 +279,11 @@ public class OrganisationActiviteHelperTest extends WithoutSpringTest {
 	     *              +-----------------------------+
 		 */
 
-		final long noSite = 10000;
-		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                                                     MockCommune.Aubonne.getNoOFS(), null, null,
-		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		final long noEtablissement = 10000;
+		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                         MockCommune.Aubonne.getNoOFS(), null, null,
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		mockSite.getDonneesRegistreIDE().changeStatus(date(2015, 7, 8), StatusRegistreIDE.RADIE);
 		mockSite.getDonneesREE().changeInscriptionREE(date(2010, 6, 26), new InscriptionREE(StatusREE.ACTIF, date(2010, 6, 24)) );
 		mockSite.getDonneesREE().changeInscriptionREE(date(2015, 7, 10), new InscriptionREE(StatusREE.RADIE, date(2015, 7, 6)));

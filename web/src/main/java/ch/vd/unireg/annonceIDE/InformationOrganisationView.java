@@ -9,28 +9,28 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
  * Vue web des informations sur les établissements concernés par une annonce à l'IDE.
  */
 public class InformationOrganisationView {
-	private Long numeroSite;
+	private Long numeroEtablissement;
 	private Long numeroOrganisation;
-	private Long numeroSiteRemplacant;
+	private Long numeroEtablissementRemplacant;
 
-	public InformationOrganisationView(Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant) {
-		this.numeroSite = numeroSite;
+	public InformationOrganisationView(Long numeroEtablissement, Long numeroOrganisation, Long numeroEtablissementRemplacant) {
+		this.numeroEtablissement = numeroEtablissement;
 		this.numeroOrganisation = numeroOrganisation;
-		this.numeroSiteRemplacant = numeroSiteRemplacant;
+		this.numeroEtablissementRemplacant = numeroEtablissementRemplacant;
 	}
 
 	public InformationOrganisationView(@NotNull BaseAnnonceIDE.InformationOrganisation info) {
-		this.numeroSite = info.getNumeroSite();
+		this.numeroEtablissement = info.getNumeroEtablissement();
 		this.numeroOrganisation = info.getNumeroOrganisation();
-		this.numeroSiteRemplacant = info.getNumeroSiteRemplacant();
+		this.numeroEtablissementRemplacant = info.getNumeroEtablissementRemplacant();
 	}
 
-	public Long getNumeroSite() {
-		return numeroSite;
+	public Long getNumeroEtablissement() {
+		return numeroEtablissement;
 	}
 
-	public void setNumeroSite(Long numeroSite) {
-		this.numeroSite = numeroSite;
+	public void setNumeroEtablissement(Long numeroEtablissement) {
+		this.numeroEtablissement = numeroEtablissement;
 	}
 
 	public Long getNumeroOrganisation() {
@@ -41,12 +41,12 @@ public class InformationOrganisationView {
 		this.numeroOrganisation = numeroOrganisation;
 	}
 
-	public Long getNumeroSiteRemplacant() {
-		return numeroSiteRemplacant;
+	public Long getNumeroEtablissementRemplacant() {
+		return numeroEtablissementRemplacant;
 	}
 
-	public void setNumeroSiteRemplacant(Long numeroSiteRemplacant) {
-		this.numeroSiteRemplacant = numeroSiteRemplacant;
+	public void setNumeroEtablissementRemplacant(Long numeroEtablissementRemplacant) {
+		this.numeroEtablissementRemplacant = numeroEtablissementRemplacant;
 	}
 
 	@Nullable

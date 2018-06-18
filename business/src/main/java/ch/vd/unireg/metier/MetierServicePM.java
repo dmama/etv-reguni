@@ -45,25 +45,25 @@ public interface MetierServicePM {
 	 *     trop importante.
 	 * </p>
 	 * <p>
-	 *     Les établissements secondaires sont rattachés dans la mesure du possible. Les établissements et les sites sont catégorisés en fonction
+	 *     Les établissements secondaires sont rattachés dans la mesure du possible. Les établissements et les établissements civils sont catégorisés en fonction
 	 *     de la paire domicile - statut d'activité.
 	 * </p>
 	 * <ul>
-	 *     <li>Un site civil est réputé actif s'il est rapporté par au moins une source comme étant en activité (non radié, etc...)</li>
+	 *     <li>Un établissement civil est réputé actif s'il est rapporté par au moins une source comme étant en activité (non radié, etc...)</li>
 	 *     <li>Un établissement Unireg est réputé actif s'il est rattaché à l'entreprise par un rapport d'activité économique à la date</li>
 	 * </ul>
 	 * <p>
 	 *     L'algorithme suivant est appliqué:
 	 * </p>
 	 * <ul>
-	 *     <li>Les sites et les établissements sont indexé dans des listes avec comme clé la paire domicile - statut d'activité. Les établissements sans domicile
+	 *     <li>Les établissements civils et les établissements sont indexé dans des listes avec comme clé la paire domicile - statut d'activité. Les établissements sans domicile
 	 *     sont écartés d'emblée</li>
-	 *     <li>Les paires porteuses de plus d'un site ou établissement sont éliminées</li>
-	 *     <li>Les établissements et les sites restant sont rapprochés. Si un numéro IDE est présent coté Unireg, on vérifie qu'il correspond</li>
-	 *     <li>Si le rapprochement est concluant, l'établissement est rattaché au site civil</li>
+	 *     <li>Les paires porteuses de plus d'un établissement civil ou établissement sont éliminées</li>
+	 *     <li>Les établissements et les établissements civils restant sont rapprochés. Si un numéro IDE est présent coté Unireg, on vérifie qu'il correspond</li>
+	 *     <li>Si le rapprochement est concluant, l'établissement est rattaché à l'établissement civil</li>
 	 * </ul>
 	 * <p>
-	 *     Les établissements et les sites qui n'ont pas été rattaché sont rapportés dans le résultat.
+	 *     Les établissements et les établissements civils qui n'ont pas été rattaché sont rapportés dans le résultat.
 	 * </p>
 	 * <p>
 	 *     La méthode n'effectue aucune création et ne s'occupe que d'entreprises et d'établissements existants.

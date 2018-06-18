@@ -43,7 +43,7 @@ public class DissolutionStrategy extends AbstractOrganisationStrategy {
 
 		final RegDate dateApres = event.getDateEvenement();
 
-		final DonneesRC donneesRC = organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC();
+		final DonneesRC donneesRC = organisation.getEtablissementPrincipal(dateApres).getPayload().getDonneesRC();
 		final InscriptionRC inscriptionRC = donneesRC.getInscription(dateApres);
 		final RaisonDeDissolutionRC raisonDeDissolution = inscriptionRC != null ? inscriptionRC.getRaisonDissolutionVD() : null;
 		if (raisonDeDissolution != null) {
