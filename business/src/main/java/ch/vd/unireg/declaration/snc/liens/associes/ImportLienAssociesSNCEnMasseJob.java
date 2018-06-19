@@ -54,7 +54,7 @@ public class ImportLienAssociesSNCEnMasseJob extends JobDefinition {
 
 
 	public ImportLienAssociesSNCEnMasseJob(int sortOrder, String description) {
-		super(NAME, JobCategory.IMPORT_LIENS_TIERS_SNC, sortOrder, description);
+		super(NAME, JobCategory.RAPPORT_ENTRE_TIERS, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();
