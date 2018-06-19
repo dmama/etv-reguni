@@ -15,7 +15,7 @@
 
 	<bean id="entreprisePersistentCache" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
 		<property name="homeDirectory" value="${extprop.organisation.cache.homedir}/entreprises" />
-		<property name="clazz" value="ch.vd.unireg.interfaces.organisation.cache.EntrepriseDataCache" />
+		<property name="clazz" value="ch.vd.unireg.interfaces.entreprise.cache.EntrepriseDataCache" />
 		<property name="cachePercent" value="${extprop.organisation.cache.cachePercent}" />
 		<property name="lockTimeout" value="${extprop.organisation.cache.lockTimeout}" />
 	</bean>

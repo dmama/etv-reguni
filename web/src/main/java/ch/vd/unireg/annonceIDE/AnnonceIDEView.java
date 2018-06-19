@@ -5,11 +5,11 @@ import java.util.Date;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
-import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.data.NumeroIDE;
+import ch.vd.unireg.interfaces.entreprise.data.RaisonDeRadiationRegistreIDE;
+import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.TypeEtablissementCivil;
 
 /**
  * Vue web d'une annonce à l'IDE.

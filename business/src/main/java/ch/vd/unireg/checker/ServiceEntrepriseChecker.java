@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
-import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseRaw;
+import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
 
 public class ServiceEntrepriseChecker implements StatusChecker {
 

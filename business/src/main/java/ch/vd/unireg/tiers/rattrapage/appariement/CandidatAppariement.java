@@ -1,6 +1,6 @@
 package ch.vd.unireg.tiers.rattrapage.appariement;
 
-import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.LocalizedDateRange;
 import ch.vd.unireg.type.TypeAutoriteFiscale;

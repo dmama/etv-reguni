@@ -4,11 +4,11 @@ import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.common.Rerangeable;
+import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 
 /**
  * @author Raphaël Marmier, 2016-01-07, <raphael.marmier@vd.ch>

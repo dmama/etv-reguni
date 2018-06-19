@@ -9,7 +9,7 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollec
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.RegimeFiscal;
 

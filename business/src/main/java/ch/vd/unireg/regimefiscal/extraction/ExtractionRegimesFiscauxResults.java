@@ -10,9 +10,9 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.tiers.RegimeFiscal;
 
 public class ExtractionRegimesFiscauxResults extends AbstractJobResults<Long, ExtractionRegimesFiscauxResults> {

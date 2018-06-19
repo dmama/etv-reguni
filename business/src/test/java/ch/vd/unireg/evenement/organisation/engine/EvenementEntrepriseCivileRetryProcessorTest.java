@@ -23,8 +23,8 @@ import ch.vd.unireg.evenement.organisation.EvenementEntrepriseBasicInfo;
 import ch.vd.unireg.evenement.organisation.EvenementEntrepriseDAO;
 import ch.vd.unireg.evenement.organisation.EvenementEntrepriseProcessingMode;
 import ch.vd.unireg.evenement.organisation.engine.processor.EvenementEntrepriseProcessor;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
+import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 

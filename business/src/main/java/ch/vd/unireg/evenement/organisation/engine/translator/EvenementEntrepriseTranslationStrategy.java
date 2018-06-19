@@ -4,7 +4,7 @@ package ch.vd.unireg.evenement.organisation.engine.translator;
 import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
 import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
 import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterne;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 
 public interface EvenementEntrepriseTranslationStrategy {

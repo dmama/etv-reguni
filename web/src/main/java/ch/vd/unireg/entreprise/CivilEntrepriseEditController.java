@@ -25,7 +25,7 @@ import ch.vd.unireg.common.LiteralStringHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.tiers.CapitalFiscalEntreprise;
 import ch.vd.unireg.tiers.DegreAssociationRegistreCivil;

@@ -1,9 +1,9 @@
 package ch.vd.unireg.evenement.ide;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.ProtoAnnonceIDE;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**

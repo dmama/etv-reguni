@@ -3,9 +3,9 @@ package ch.vd.unireg.organisation;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.entreprise.data.Domicile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**

@@ -17,11 +17,11 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollect
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
-import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.data.Domicile;
+import ch.vd.unireg.interfaces.entreprise.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseHelper;
+import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.RapportEntreTiers;

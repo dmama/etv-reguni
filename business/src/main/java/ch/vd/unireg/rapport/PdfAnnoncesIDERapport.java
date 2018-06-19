@@ -12,8 +12,8 @@ import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.evenement.ide.AnnonceIDEJobResults;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
 
 /**
  * Rapport PDF contenant les résultats de l'évaluation et de l'envoi des annonces à l'IDE pour les entreprises sous contrôle de l'ACI.

@@ -22,7 +22,7 @@
 
 	<!-- Service Entreprise -->
 
-	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceEntrepriseCache">
+	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.entreprise.cache.ServiceEntrepriseCache">
 		<property name="target" ref="serviceEntrepriseTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceEntreprise" />

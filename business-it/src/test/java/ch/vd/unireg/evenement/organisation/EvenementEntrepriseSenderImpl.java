@@ -29,8 +29,8 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
 import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseConstants;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseConstants;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 

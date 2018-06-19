@@ -9,9 +9,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;

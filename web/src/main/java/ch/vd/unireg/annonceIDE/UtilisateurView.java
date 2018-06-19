@@ -2,7 +2,7 @@ package ch.vd.unireg.annonceIDE;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
 
 /**
  * Vue web des informations concernant l'annonceur d'une annonce à l'IDE.

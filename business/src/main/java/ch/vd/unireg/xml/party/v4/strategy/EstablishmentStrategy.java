@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.xml.Context;

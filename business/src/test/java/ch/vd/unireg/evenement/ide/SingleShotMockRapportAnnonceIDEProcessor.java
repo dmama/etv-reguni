@@ -1,6 +1,6 @@
 package ch.vd.unireg.evenement.ide;
 
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
 
 /**
  * @author Raphaël Marmier, 2016-10-07, <raphael.marmier@vd.ch>

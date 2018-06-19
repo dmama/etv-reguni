@@ -3,8 +3,8 @@ package ch.vd.unireg.annonceIDE;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 
 /**
  * Vue web du contenu du annonce à l'IDE.

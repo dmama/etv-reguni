@@ -8,15 +8,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivileEvent;
+import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
-import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException;
-import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseRaw;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivileEvent;
-import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 
 /**

@@ -15,10 +15,10 @@ import ch.vd.unireg.evenement.organisation.interne.AbstractEntrepriseStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterne;
 import ch.vd.unireg.evenement.organisation.interne.MessageWarningPreExectution;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
-import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
+import ch.vd.unireg.interfaces.entreprise.data.Domicile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 

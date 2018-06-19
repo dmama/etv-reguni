@@ -32,23 +32,23 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw;
+import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEData;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.NumeroIDE;
+import ch.vd.unireg.interfaces.entreprise.data.ProtoAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.TypeEtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
-import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseRaw;
-import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
-import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.type.TypeAdresseCivil;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -83,7 +83,7 @@ public class ServiceEntrepriseRCEntItTest extends BusinessItTest {
 	// Entreprise civile de l'échantillon fichier
 	private static final long ID_BOMACO = 101636326L;
 	private static final String BOMACO_SARL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
-	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/unireg/interfaces/organisation-bomaco-history.xml";
+	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/unireg/interfaces/entreprise-bomaco-history.xml";
 
 	// annonce à l'IDE sur RCEnt
 	private static final String USER_ID = "unireg";

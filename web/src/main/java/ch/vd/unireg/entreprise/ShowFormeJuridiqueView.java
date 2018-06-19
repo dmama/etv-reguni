@@ -2,8 +2,8 @@ package ch.vd.unireg.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.tiers.FormeLegaleHisto;
 import ch.vd.unireg.tiers.Source;
 import ch.vd.unireg.tiers.Sourced;

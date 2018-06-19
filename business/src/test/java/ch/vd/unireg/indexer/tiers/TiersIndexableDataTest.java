@@ -12,12 +12,12 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.indexer.GlobalIndex;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
 import ch.vd.unireg.indexer.SearchCallback;
 import ch.vd.unireg.indexer.lucene.FSIndexProvider;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.CategorieImpotSource;

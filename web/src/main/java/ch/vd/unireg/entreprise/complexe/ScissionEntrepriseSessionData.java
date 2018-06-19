@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.tiers.TiersIndexedDataView;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 

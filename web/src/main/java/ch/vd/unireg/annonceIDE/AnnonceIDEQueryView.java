@@ -3,9 +3,9 @@ package ch.vd.unireg.annonceIDE;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
-import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEQuery;
+import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
 
 /**
  * Vue web qui contient les paramètres de recherche pour les annonces à l'IDE.

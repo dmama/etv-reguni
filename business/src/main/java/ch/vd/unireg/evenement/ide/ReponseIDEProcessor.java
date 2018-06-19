@@ -1,6 +1,6 @@
 package ch.vd.unireg.evenement.ide;
 
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
 
 /**
  * Classe chargé du traitement métier des réponses reçues à la suite de l'émission d'annonce à l'IDE.

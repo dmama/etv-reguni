@@ -48,7 +48,7 @@ import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidator;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.DomicileHisto;

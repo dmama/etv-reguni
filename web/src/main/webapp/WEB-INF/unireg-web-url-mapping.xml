@@ -95,7 +95,7 @@
 				<!-- En cas de problème de connexion, on renvoie vers la JSP jdbcConnection.jsp -->
 				<entry key="org.springframework.jdbc.UncategorizedSQLException" value="errors/jdbcConnection" />
 				<entry key="ch.vd.unireg.interfaces.civil.ServiceCivilException" value="errors/errorServiceCivil" />
-				<entry key="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException" value="errors/errorServiceEntreprise" />
+				<entry key="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException" value="errors/errorServiceEntreprise" />
 				<entry key="ch.vd.unireg.type.TypePermisInvalideException" value="errors/permisInvalide" />
 				<entry key="ch.vd.unireg.interfaces.infra.ServiceInfrastructureException" value="errors/errorServiceInfrastructure" />
 				<entry key="ch.vd.unireg.interfaces.service.ServiceSecuriteException" value="errors/errorServiceSecurite" />

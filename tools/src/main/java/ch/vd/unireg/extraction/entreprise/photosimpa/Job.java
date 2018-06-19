@@ -54,7 +54,7 @@ import ch.vd.unireg.common.BatchIterator;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StandardBatchIterator;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.utils.WebServiceV7Helper;
 import ch.vd.unireg.webservice.fidor.v5.FidorClient;
 import ch.vd.unireg.webservice.fidor.v5.FidorClientImpl;

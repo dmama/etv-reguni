@@ -3,8 +3,8 @@ package ch.vd.unireg.entreprise.complexe;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.tiers.TiersIndexedDataView;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 

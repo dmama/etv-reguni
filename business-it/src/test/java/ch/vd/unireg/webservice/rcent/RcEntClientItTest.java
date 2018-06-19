@@ -14,7 +14,7 @@ import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationLocation;
 import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.unireg.common.BusinessItTest;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;

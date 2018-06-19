@@ -7,10 +7,10 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
 

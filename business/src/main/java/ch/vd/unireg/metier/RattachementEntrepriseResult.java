@@ -3,7 +3,7 @@ package ch.vd.unireg.metier;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 

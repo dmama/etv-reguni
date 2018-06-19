@@ -3,10 +3,10 @@ package ch.vd.unireg.entreprise;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.tiers.DegreAssociationRegistreCivil;
 import ch.vd.unireg.tiers.view.EtatEntrepriseView;
 

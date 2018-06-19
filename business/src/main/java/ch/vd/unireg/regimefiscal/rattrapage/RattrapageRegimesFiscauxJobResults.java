@@ -7,8 +7,8 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.regimefiscal.RegimeFiscalConsolide;
 
 public class RattrapageRegimesFiscauxJobResults extends AbstractJobResults<Long, RattrapageRegimesFiscauxJobResults> {

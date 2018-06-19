@@ -6,7 +6,7 @@ import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
 import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 
 import static ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;

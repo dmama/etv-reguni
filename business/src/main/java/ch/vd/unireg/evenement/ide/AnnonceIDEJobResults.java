@@ -6,8 +6,8 @@ import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.common.AbstractJobResults;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
 
 public class AnnonceIDEJobResults extends AbstractJobResults<Long, AnnonceIDEJobResults> {
 

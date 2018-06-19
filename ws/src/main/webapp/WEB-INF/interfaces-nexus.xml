@@ -36,12 +36,12 @@
 
 	<bean id="serviceEntrepriseRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceEntreprise.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseRaw" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw" />
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
 
-	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseTracing">
+	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseTracing">
 		<property name="target" ref="serviceEntrepriseRemote" />
 		<property name="statsService" ref="statsService" />
 	</bean>

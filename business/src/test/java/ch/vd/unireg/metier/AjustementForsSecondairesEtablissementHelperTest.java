@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.interfaces.entreprise.data.Domicile;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.tiers.ForFiscalPrincipalPM;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.type.MotifFor;

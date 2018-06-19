@@ -13,9 +13,9 @@ import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollect
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
 import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
-import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.AdresseEffectiveRCEnt;
+import ch.vd.unireg.interfaces.entreprise.data.AdresseLegaleRCEnt;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**

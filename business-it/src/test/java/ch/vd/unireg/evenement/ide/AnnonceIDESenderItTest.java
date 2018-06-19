@@ -10,13 +10,13 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.EvenementTest;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEData;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.TypeEtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntSchemaHelper;
 
 /**
  * @author Raphaël Marmier, 2016-08-17, <raphael.marmier@vd.ch>

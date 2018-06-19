@@ -17,8 +17,8 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.utils.LogLevel;
 

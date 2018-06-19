@@ -6,8 +6,8 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
 
 /**
  * Vue web du statut d'une annonce à l'IDE.

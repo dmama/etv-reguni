@@ -11,15 +11,15 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.common.WithoutSpringTest;
+import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.ProtoAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.TypeEtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.tiers.Etablissement;
 
 /**

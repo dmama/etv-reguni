@@ -3,7 +3,7 @@ package ch.vd.unireg.evenement.organisation.interne;
 import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
 import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
 import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**

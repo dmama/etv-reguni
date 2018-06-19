@@ -10,12 +10,12 @@ import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
 import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
+import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
+import ch.vd.unireg.interfaces.entreprise.data.Domicile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseHelper;
+import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
-import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 

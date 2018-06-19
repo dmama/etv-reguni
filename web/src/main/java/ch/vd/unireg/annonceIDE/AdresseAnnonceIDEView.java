@@ -3,7 +3,7 @@ package ch.vd.unireg.annonceIDE;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.AdresseAnnonceIDE;
 
 /**
  * Vue web d'une adresse d'annonce à l'IDE.

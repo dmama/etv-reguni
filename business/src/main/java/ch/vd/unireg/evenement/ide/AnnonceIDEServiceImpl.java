@@ -3,8 +3,8 @@ package ch.vd.unireg.evenement.ide;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
 import ch.vd.unireg.tiers.Etablissement;
 
 /**

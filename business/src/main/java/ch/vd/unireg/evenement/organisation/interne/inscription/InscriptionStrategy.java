@@ -9,10 +9,10 @@ import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
 import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
 import ch.vd.unireg.evenement.organisation.interne.AbstractEntrepriseStrategy;
 import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterne;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
-import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
+import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.data.InscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**

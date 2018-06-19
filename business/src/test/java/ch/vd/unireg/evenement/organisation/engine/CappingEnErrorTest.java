@@ -25,10 +25,10 @@ import ch.vd.unireg.evenement.organisation.engine.translator.EvenementEntreprise
 import ch.vd.unireg.evenement.organisation.engine.translator.NiveauCappingEtat;
 import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.unireg.metier.MetierServicePM;
 import ch.vd.unireg.parametrage.ParametreAppService;

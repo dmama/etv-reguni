@@ -21,7 +21,7 @@ import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.regimefiscal.extraction.ExtractionRegimesFiscauxResults;
 import ch.vd.unireg.tiers.RegimeFiscal;
 

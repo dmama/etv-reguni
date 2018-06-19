@@ -5,13 +5,13 @@ import org.junit.Test;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
-import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.hibernate.HibernateTemplateImpl;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.entreprise.data.NumeroIDE;
+import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
+import ch.vd.unireg.interfaces.entreprise.data.TypeAnnonce;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

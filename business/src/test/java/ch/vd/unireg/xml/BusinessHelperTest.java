@@ -7,8 +7,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
+import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
 

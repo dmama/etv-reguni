@@ -25,16 +25,16 @@ import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.entreprise.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.entreprise.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 /**
  * @author Raphaël Marmier, 2016-08-22, <raphael.marmier@vd.ch>

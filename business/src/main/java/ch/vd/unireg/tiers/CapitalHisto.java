@@ -4,10 +4,10 @@ import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.common.Duplicable;
 import ch.vd.unireg.common.Rerangeable;
+import ch.vd.unireg.interfaces.entreprise.data.Capital;
 
 public class CapitalHisto implements Sourced<Source>, CollatableDateRange<CapitalHisto>, Duplicable<CapitalHisto>, Annulable, Rerangeable<CapitalHisto> {
 

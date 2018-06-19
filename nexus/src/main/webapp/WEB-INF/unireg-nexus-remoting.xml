@@ -13,7 +13,7 @@
 
 	<bean name="serviceEntrepriseRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
 		<property name="service" ref="serviceEntrepriseRaw"/>
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseRaw"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseRaw"/>
 	</bean>
 
 	<bean name="serviceUpiRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">

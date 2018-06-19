@@ -37,7 +37,7 @@ import ch.vd.unireg.entreprise.complexe.FusionEntreprisesHelper;
 import ch.vd.unireg.entreprise.complexe.ScissionEntrepriseHelper;
 import ch.vd.unireg.entreprise.complexe.TransfertPatrimoineHelper;
 import ch.vd.unireg.fourreNeutre.FourreNeutreService;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
 import ch.vd.unireg.security.SecurityProviderInterface;

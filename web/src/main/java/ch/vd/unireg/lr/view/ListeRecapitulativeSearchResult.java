@@ -15,7 +15,7 @@ import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.ModeCommunication;

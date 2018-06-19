@@ -20,7 +20,7 @@ import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.general.manager.UtilisateurManager;
 import ch.vd.unireg.general.view.UtilisateurView;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException;
+import ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseException;
 import ch.vd.unireg.security.DroitAccesConflit;
 import ch.vd.unireg.security.DroitAccesConflitAvecDonneesContribuable;
 import ch.vd.unireg.security.DroitAccesDAO;

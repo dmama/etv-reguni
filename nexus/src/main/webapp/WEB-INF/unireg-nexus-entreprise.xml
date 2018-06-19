@@ -5,26 +5,26 @@
 
 	<!-- Adapteur RCEnt -->
 
-	<bean id="organisationHistorizer" class="ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.OrganisationHistorizer"/>
+	<bean id="organisationHistorizer" class="ch.vd.unireg.interfaces.entreprise.rcent.adapter.historizer.OrganisationHistorizer"/>
 
-	<bean id="rcEntAdapter" class="ch.vd.unireg.interfaces.organisation.rcent.adapter.service.RCEntAdapter">
+	<bean id="rcEntAdapter" class="ch.vd.unireg.interfaces.entreprise.rcent.adapter.service.RCEntAdapter">
 		<constructor-arg ref="rcEntClient"/>
 		<constructor-arg ref="organisationHistorizer"/>
 	</bean>
 
 	<!-- Service Entreprise -->
-	<bean id="serviceEntrepriseRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceEntrepriseRCEnt">
+	<bean id="serviceEntrepriseRCEnt" class="ch.vd.unireg.interfaces.entreprise.rcent.ServiceEntrepriseRCEnt">
 		<constructor-arg ref="rcEntAdapter"/>
 		<constructor-arg ref="rcEntClient"/>
 		<constructor-arg ref="serviceInfrastructureRaw"/>
 	</bean>
 
-	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseTracing">
+	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseTracing">
 		<property name="target" ref="serviceEntrepriseRCEnt" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceEntreprisePersistentCache">
+	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.entreprise.cache.ServiceEntreprisePersistentCache">
 		<property name="target" ref="serviceEntrepriseTracing" />
 		<property name="cache" ref="entreprisePersistentCache" />
 		<property name="etablissementCache" ref="etablissementCivilPersistentCache" />
@@ -33,7 +33,7 @@
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<bean id="serviceEntrepriseEndPoint" class="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseEndPoint">
+	<bean id="serviceEntrepriseEndPoint" class="ch.vd.unireg.interfaces.entreprise.ServiceEntrepriseEndPoint">
 		<property name="target" ref="serviceEntrepriseCache" />
 	</bean>
 

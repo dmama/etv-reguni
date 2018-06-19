@@ -36,7 +36,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.BatchIterator;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StandardBatchIterator;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.utils.WebServiceV7Helper;
 import ch.vd.unireg.webservice.fidor.v5.FidorClient;
