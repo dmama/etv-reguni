@@ -47,7 +47,7 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 
 	enum SourceType {
 		CIVILE_PERS(false),
-		CIVILE_ORG(false),
+		CIVILE_ENT(false),
 		FISCALE(false),
 		REPRESENTATION(true),
 		TUTELLE(true),

@@ -2,20 +2,20 @@ package ch.vd.unireg.evenement.organisation.interne;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationAbortException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseAbortException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
@@ -30,24 +30,24 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  *     <li>On a encore accès aux données civiles de RCEnt à ce stade. (Par opposition au valideur d'Unireg)</li>
  *     <li>On n'a pas encore vraiment commencé à traiter</li>
  *     <li>On a la possibilité de conserver les messages de traitements précédant, en particulier ceux émis par
- *         la phase initiale, en utilisant une {@link ValideurDebutDeTraitementException} plutôt qu'une {@link EvenementOrganisationException}</li>
+ *         la phase initiale, en utilisant une {@link ValideurDebutDeTraitementException} plutôt qu'une {@link EvenementEntrepriseException}</li>
  * </ul>
  */
-public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTraitement {
+public class ValideurDebutDeTraitement extends EvenementEntrepriseInterneDeTraitement {
 
 	/**
 	 * Exception lancée dans le cadre de la validation de debut de traitement et qui demande implicitement de
 	 * conserver les messages du traitement.
 	 */
-	public static class ValideurDebutDeTraitementException extends EvenementOrganisationAbortException {
+	public static class ValideurDebutDeTraitementException extends EvenementEntrepriseAbortException {
 		public ValideurDebutDeTraitementException(String message) {
 			super(message);
 		}
 	}
 
-	public ValideurDebutDeTraitement(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                                 EvenementOrganisationContext context, EvenementOrganisationOptions options) {
-		super(evenement, organisation, entreprise, context, options);
+	public ValideurDebutDeTraitement(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
+	                                 EvenementEntrepriseContext context, EvenementEntrepriseOptions options) {
+		super(evenement, entrepriseCivile, entreprise, context, options);
 	}
 
 	@Override
@@ -56,21 +56,21 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		// rien à signaler, c'est plus tard qu'on va se manifester...
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
 		// Vérification que l'événement n'est pas un événement de correction, c'est à dire un événement qui survient avant le dernier événement de l'historique
 		// des données civiles tel qu'on le connait actellement.
-		checkEvenementDansPasse(getEvenement(), getOrganisation());
+		checkEvenementDansPasse(getEvenement(), getEntrepriseCivile());
 
 		// On doit connaître la catégorie pour continuer en mode automatique
-		final Organisation organisation = getOrganisation();
+		final EntrepriseCivile entrepriseCivile = getEntrepriseCivile();
 		final RegDate dateEvt = getDateEvt();
-		if (getEntreprise() == null && (!organisation.isSocieteIndividuelle(dateEvt) && !organisation.isSocieteSimple(dateEvt))) {
+		if (getEntreprise() == null && (!entrepriseCivile.isSocieteIndividuelle(dateEvt) && !entrepriseCivile.isSocieteSimple(dateEvt))) {
 			// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
 			verifieNonPreexistanteVD();
 		}
@@ -83,36 +83,36 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 	 * on lève une erreur.
 	 *
 	 * @param event l'événement à inspecter
-	 * @param organisation l'organisation concernée, dont le numéro d'organisation doit correspondre à celui stocké dans l'événement
-	 * @throws EvenementOrganisationException au cas où on est en présence d'un événement dans le passé
+	 * @param entrepriseCivile l'entreprise civile concernée, dont le numéro d'entreprise civile doit correspondre à celui stocké dans l'événement
+	 * @throws EvenementEntrepriseException au cas où on est en présence d'un événement dans le passé
 	 */
-	protected void checkEvenementDansPasse(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
+	protected void checkEvenementDansPasse(EvenementEntreprise event, EntrepriseCivile entrepriseCivile) throws EvenementEntrepriseException {
 
-		final String message = "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d %s. Traitement automatique impossible.";
+		final String message = "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'entreprise civile %d %s. Traitement automatique impossible.";
 		final String fragmentMessage;
 
 		if (event.getCorrectionDansLePasse()) {
 			fragmentMessage = "est marqué comme événement de correction dans le passé";
-			throw new EvenementOrganisationException(
-					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
+			throw new EvenementEntrepriseException(
+					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), entrepriseCivile.getNumeroEntreprise(), fragmentMessage)
 			);
 		}
 
-		final boolean evenementDateValeurDansLePasse = getContext().getEvenementOrganisationService().isEvenementDateValeurDansLePasse(event);
+		final boolean evenementDateValeurDansLePasse = getContext().getEvenementEntrepriseService().isEvenementDateValeurDansLePasse(event);
 		if (evenementDateValeurDansLePasse) {
 			fragmentMessage = "possède une date de valeur antérieure à la date portée par un autre événement reçu avant";
-			throw new EvenementOrganisationException(
-					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
+			throw new EvenementEntrepriseException(
+					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), entrepriseCivile.getNumeroEntreprise(), fragmentMessage)
 			);
 		}
 	}
 
 	// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
-	protected void verifieNonPreexistanteVD() throws EvenementOrganisationException {
-		final RegDate datePasseeTropAncienne = getDateEvt().getOneDayBefore().addDays(-OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+	protected void verifieNonPreexistanteVD() throws EvenementEntrepriseException {
+		final RegDate datePasseeTropAncienne = getDateEvt().getOneDayBefore().addDays(-EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
 		// On a besoin du vrai historique pour savoir cela.
-		final Organisation organisationHistory = getContext().getServiceOrganisation().getOrganisationHistory(getOrganisation().getNumeroOrganisation());
-		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisationHistory.getEtablissementPrincipal(datePasseeTropAncienne);
+		final EntrepriseCivile entrepriseCivileHistory = getContext().getServiceEntreprise().getEntrepriseHistory(getEntrepriseCivile().getNumeroEntreprise());
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = entrepriseCivileHistory.getEtablissementPrincipal(datePasseeTropAncienne);
 		if (etablissementPrincipalAvantRange != null) {
 			EtablissementCivil etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
 			final Domicile domicilePasse = etablissementPrincipalAvant.getDomicile(datePasseeTropAncienne);
@@ -121,9 +121,9 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 					final Commune commune = getCommune(domicilePasse.getNumeroOfsAutoriteFiscale(), datePasseeTropAncienne);
 					throw new ValideurDebutDeTraitementException(
 							String.format(
-									"L'organisation n°%d est présente sur Vaud (%s) depuis plus de %d jours et devrait être déjà connue d'Unireg. L'identification n'a probablement pas fonctionné. Veuillez traiter le cas à la main.",
-									organisationHistory.getNumeroOrganisation(), commune != null ? commune.getNomOfficielAvecCanton() : "",
-									OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
+									"L'entreprise civile n°%d est présente sur Vaud (%s) depuis plus de %d jours et devrait être déjà connue d'Unireg. L'identification n'a probablement pas fonctionné. Veuillez traiter le cas à la main.",
+									entrepriseCivileHistory.getNumeroEntreprise(), commune != null ? commune.getNomOfficielAvecCanton() : "",
+									EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
 					);
 				}
 			}

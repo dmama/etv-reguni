@@ -324,9 +324,9 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testGetEntrepriseByNumeroOrganisation() throws Exception {
+	public void testGetEntrepriseByEntrepriseCivile() throws Exception {
 
-		final Long noOrganisation = 12345654123L;
+		final Long noEntrepriseCivile = 12345654123L;
 
 		/*
 		Cas nominal
@@ -335,7 +335,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Entreprise entreprise = new Entreprise();
-				entreprise.setNumeroEntreprise(noOrganisation);
+				entreprise.setNumeroEntreprise(noEntrepriseCivile);
 
 				dao.save(entreprise);
 				return null;
@@ -343,10 +343,10 @@ public class TiersDAOTest extends CoreDAOTest {
 		});
 
 		// On a bien récupéré le tiers
-		Entreprise tiers = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
+		Entreprise tiers = dao.getEntrepriseByNoEntrepriseCivile(noEntrepriseCivile);
 		assertNotNull(tiers);
 		final Long numeroEntreprise = tiers.getNumero();
-		assertTrue(tiers.getNumeroEntreprise().equals(noOrganisation));
+		assertTrue(tiers.getNumeroEntreprise().equals(noEntrepriseCivile));
 
 		/*
 		Ajout d'une entrée en doublon
@@ -355,7 +355,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Entreprise entreprise = new Entreprise();
-				entreprise.setNumeroEntreprise(noOrganisation);
+				entreprise.setNumeroEntreprise(noEntrepriseCivile);
 
 				dao.save(entreprise);
 				return null;
@@ -363,11 +363,11 @@ public class TiersDAOTest extends CoreDAOTest {
 		});
 
 		try {
-			Entreprise tiersNonUnique = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
+			Entreprise tiersNonUnique = dao.getEntrepriseByNoEntrepriseCivile(noEntrepriseCivile);
 		} catch (Exception e) {
 			// On a bien l'exception correspondant à la situation de doublon
-			assertTrue(e instanceof PlusieursEntreprisesAvecMemeNumeroOrganisationException);
-			assertTrue(e.getMessage().startsWith(String.format("Plusieurs entreprises non-annulées partagent le même numéro d'organisation %d: ", noOrganisation)));
+			assertTrue(e instanceof PlusieursEntreprisesAvecMemeNumeroCivilException);
+			assertTrue(e.getMessage().startsWith(String.format("Plusieurs entreprises non-annulées partagent le même numéro d'entreprise %d: ", noEntrepriseCivile)));
 		}
 
 		/*
@@ -385,10 +385,10 @@ public class TiersDAOTest extends CoreDAOTest {
 		});
 
 		// Une des deux entrées étant annulé, on doit recevoir l'entrée valide sans encombre
-		Entreprise tiersNonAnnule = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
+		Entreprise tiersNonAnnule = dao.getEntrepriseByNoEntrepriseCivile(noEntrepriseCivile);
 		assertNotNull(tiersNonAnnule);
 		assertTrue(tiersNonAnnule.getNumero() != numeroEntreprise.longValue());
-		assertTrue(tiersNonAnnule.getNumeroEntreprise().equals(noOrganisation));
+		assertTrue(tiersNonAnnule.getNumeroEntreprise().equals(noEntrepriseCivile));
 	}
 
 	@Test

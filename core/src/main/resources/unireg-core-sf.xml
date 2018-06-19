@@ -88,8 +88,8 @@
 		<value>ch.vd.unireg.evenement.fiscal.registrefoncier.EvenementFiscalServitude</value>
 		<value>ch.vd.unireg.evenement.civil.ech.EvenementCivilEch</value>
 		<value>ch.vd.unireg.evenement.civil.ech.EvenementCivilEchErreur</value>
-		<value>ch.vd.unireg.evenement.organisation.EvenementOrganisation</value>
-		<value>ch.vd.unireg.evenement.organisation.EvenementOrganisationErreur</value>
+		<value>ch.vd.unireg.evenement.organisation.EvenementEntreprise</value>
+		<value>ch.vd.unireg.evenement.organisation.EvenementEntrepriseErreur</value>
 		<value>ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP</value>
 		<value>ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPErreur</value>
 		<value>ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable</value>

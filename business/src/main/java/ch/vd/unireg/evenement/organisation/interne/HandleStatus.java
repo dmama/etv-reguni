@@ -1,6 +1,6 @@
 package ch.vd.unireg.evenement.organisation.interne;
 
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 
 public enum HandleStatus {
 
@@ -10,8 +10,8 @@ public enum HandleStatus {
 	 */
 	TRAITE(1) {
 		@Override
-		public EtatEvenementOrganisation toEtat() {
-			return EtatEvenementOrganisation.TRAITE;
+		public EtatEvenementEntreprise toEtat() {
+			return EtatEvenementEntreprise.TRAITE;
 		}
 	},
 	/**
@@ -19,8 +19,8 @@ public enum HandleStatus {
 	 */
 	REDONDANT(0) {
 		@Override
-		public EtatEvenementOrganisation toEtat() {
-			return EtatEvenementOrganisation.REDONDANT;
+		public EtatEvenementEntreprise toEtat() {
+			return EtatEvenementEntreprise.REDONDANT;
 		}
 	};
 
@@ -41,5 +41,5 @@ public enum HandleStatus {
 		return this;
 	}
 
-	public abstract EtatEvenementOrganisation toEtat();
+	public abstract EtatEvenementEntreprise toEtat();
 }

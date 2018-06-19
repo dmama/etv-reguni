@@ -81,12 +81,12 @@ public interface TiersEditManager {
 	TiersEditView creePersonne();
 
 	/**
-	 * Cree une nouvelle instance de TiersView correspondant a une organisation
+	 * Cree une nouvelle instance de TiersView correspondant a une entreprise
 	 *
 	 * @return un objet TiersView
 	 */
 	@Transactional(readOnly = true)
-	TiersEditView creeOrganisation();
+	TiersEditView creeEntreprise();
 
 	/**
 	 * Sauvegarde du débiteur IS

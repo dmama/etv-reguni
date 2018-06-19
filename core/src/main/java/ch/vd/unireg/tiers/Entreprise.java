@@ -148,7 +148,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	public void addDonneeCivile(DonneeCivileEntreprise donnee) {
 		if (donnee.getEntreprise() != null && donnee.getEntreprise() != this) {
-			throw new IllegalArgumentException("Ces données ont déjà été associées à une autre enteprise");
+			throw new IllegalArgumentException("Ces données ont déjà été associées à une autre entreprise");
 		}
 
 		if (this.donneesCiviles == null) {

@@ -7,7 +7,7 @@ import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.type.TypeEvenementErreur;
 
 /**
- * Interface de génération découplée d'erreurs lors du traitement des événements des registres civil et organisation
+ * Interface de génération découplée d'erreurs lors du traitement des événements des registres civil et entreprise
  */
 public abstract class EvenementRegistreErreurFactory<T extends EvenementErreur> {
 

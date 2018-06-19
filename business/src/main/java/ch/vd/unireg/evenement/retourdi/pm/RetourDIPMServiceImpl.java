@@ -229,7 +229,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 		//retour
 		// Y a-t-il des choses à faire au niveau du mandataire général de l'entreprise ?
-		//SIFISC-28705 le traitement du mandataire ne doit pas s'appliquer pour le moment sur des entreprise de type APM
+		//SIFISC-28705 le traitement du mandataire ne doit pas s'appliquer pour le moment sur des entreprises de type APM
 		//Pour l'instant on ne recoit pas le contenu de la DI pour les APM.
 		if (CategorieEntreprise.APM != tiersService.getCategorieEntreprise(entreprise, null)) {
 

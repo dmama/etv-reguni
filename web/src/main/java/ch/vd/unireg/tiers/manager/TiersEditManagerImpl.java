@@ -320,12 +320,12 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	}
 
 	/**
-	 * Cree une nouvelle instance de TiersView correspondant a une organisation
+	 * Cree une nouvelle instance de TiersView correspondant a une entreprise
 	 *
 	 * @return un objet TiersView
 	 */
 	@Override
-	public TiersEditView creeOrganisation() {
+	public TiersEditView creeEntreprise() {
 		TiersEditView tiersView = new TiersEditView();
 		AutreCommunaute autreCommunaute = new AutreCommunaute();
 		tiersView.setTiers(autreCommunaute);

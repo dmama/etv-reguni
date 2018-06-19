@@ -52,9 +52,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.AutreCommunaute;
@@ -1309,7 +1309,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetParty() throws Exception {
 
-		final long noOrganisation = 423672L;
+		final long noEntrepriseCivile = 423672L;
 		final long noIndividu = 2114324L;
 		final RegDate dateNaissance = date(1964, 8, 31);
 		final RegDate datePermisC = date(1990, 4, 21);
@@ -1329,12 +1329,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1011, "Au petit coin", pmActivityStartDate, null,
-				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne, "CHE123456788");
-				addOrganisation(org);
+				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1011, "Au petit coin", pmActivityStartDate, null,
+				                                                                                FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne, "CHE123456788");
+				addEntreprise(ent);
 			}
 		});
 
@@ -1356,7 +1356,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur IS", mc, dateDebutContactIS);
 				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(noOrganisation);
+				final Entreprise pm = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				addRegimeFiscalVD(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
@@ -3400,15 +3400,15 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetParties() throws Exception {
 
-		final long noOrganisation = 423672L;
+		final long noEntrepriseCivile = 423672L;
 		final RegDate pmActivityStartDate = date(2000, 1, 1);
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1011, "Au petit coin", pmActivityStartDate, null,
-				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne, "CHE123456788");
-				addOrganisation(org);
+				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1011, "Au petit coin", pmActivityStartDate, null,
+				                                                                                FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne, "CHE123456788");
+				addEntreprise(ent);
 			}
 		});
 
@@ -3434,7 +3434,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				da.setTiers(ppProtege);
 				hibernateTemplate.merge(da);
 
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
 				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
 				ac.setFormeJuridique(FormeJuridique.ASS);

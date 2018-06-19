@@ -16,7 +16,7 @@ import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
@@ -173,7 +173,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -259,7 +259,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -444,7 +444,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -554,7 +554,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -765,7 +765,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -875,7 +875,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -1059,7 +1059,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -1138,7 +1138,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -1221,7 +1221,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...
@@ -1424,7 +1424,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// y compris au niveau des entreprises...
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// ... complètement vierge...

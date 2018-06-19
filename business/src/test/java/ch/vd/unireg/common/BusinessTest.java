@@ -6,8 +6,8 @@ import ch.vd.unireg.evenement.ide.AnnonceIDEService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceEntreprise;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.mock.ProxyServiceOrganisation;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.scheduler.JobDefinition;
 
@@ -16,7 +16,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	// private static final Logger LOGGER = LoggerFactory.getLogger(BusinessTest.class);
 
 	protected ProxyServiceCivil serviceCivil;
-	protected ProxyServiceOrganisation serviceOrganisation;
+	protected ProxyServiceEntreprise serviceEntreprise;
 	protected ProxyServiceInfrastructureService serviceInfra;
 	protected AnnonceIDEService annonceIDEService;
 	protected RegimeFiscalService regimeFiscalService;
@@ -25,7 +25,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	public void onSetUp() throws Exception {
 
 		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
-		serviceOrganisation = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
+		serviceEntreprise = getBean(ProxyServiceEntreprise.class, "serviceEntreprise");
 		serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
 		regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 		serviceInfra.setUpDefault();

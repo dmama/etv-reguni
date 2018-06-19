@@ -59,7 +59,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 	/**
 	 * Informations ayant trait à l'identification de l'entreprise dans le régistre cantonal
 	 */
-	private InformationOrganisation informationOrganisation;
+	private InformationEntreprise informationEntreprise;
 
 	/**
 	 * La charge utile de l'annonce, avec les différentes propriétés applicables. Peut être nulle en cas
@@ -79,7 +79,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 	public AnnonceIDEData(BaseAnnonceIDE modele, @Nullable Statut statut) {
 		this(modele.getType(), modele.getDateAnnonce(), modele.getUtilisateur(), modele.getTypeEtablissementCivil(), statut == null ? modele.getStatut() : statut, modele.getInfoServiceIDEObligEtendues());
-		this.informationOrganisation = modele.getInformationOrganisation();
+		this.informationEntreprise = modele.getInformationEntreprise();
 		this.noIde = modele.getNoIde();
 		this.noIdeRemplacant = modele.getNoIdeRemplacant();
 		this.noIdeEtablissementPrincipal = modele.getNoIdeEtablissementPrincipal();
@@ -171,12 +171,12 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 	@Override
 	@Nullable
-	public InformationOrganisation getInformationOrganisation() {
-		return informationOrganisation;
+	public BaseAnnonceIDE.InformationEntreprise getInformationEntreprise() {
+		return informationEntreprise;
 	}
 
-	public void setInformationOrganisation(InformationOrganisation informationOrganisation) {
-		this.informationOrganisation = informationOrganisation;
+	public void setInformationEntreprise(InformationEntreprise informationEntreprise) {
+		this.informationEntreprise = informationEntreprise;
 	}
 
 	@Nullable
@@ -207,7 +207,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		if (getNoIdeEtablissementPrincipal() != null ? !getNoIdeEtablissementPrincipal().equals(that.getNoIdeEtablissementPrincipal()) : that.getNoIdeEtablissementPrincipal() != null) return false;
 		if (getRaisonDeRadiation() != that.getRaisonDeRadiation()) return false;
 		if (getCommentaire() != null ? !getCommentaire().equals(that.getCommentaire()) : that.getCommentaire() != null) return false;
-		if (getInformationOrganisation() != null ? !getInformationOrganisation().equals(that.getInformationOrganisation()) : that.getInformationOrganisation() != null) return false;
+		if (getInformationEntreprise() != null ? !getInformationEntreprise().equals(that.getInformationEntreprise()) : that.getInformationEntreprise() != null) return false;
 		return getContenu() != null ? getContenu().equals(that.getContenu()) : that.getContenu() == null;
 
 	}
@@ -225,7 +225,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		result = 31 * result + (getNoIdeEtablissementPrincipal() != null ? getNoIdeEtablissementPrincipal().hashCode() : 0);
 		result = 31 * result + (getRaisonDeRadiation() != null ? getRaisonDeRadiation().hashCode() : 0);
 		result = 31 * result + (getCommentaire() != null ? getCommentaire().hashCode() : 0);
-		result = 31 * result + (getInformationOrganisation() != null ? getInformationOrganisation().hashCode() : 0);
+		result = 31 * result + (getInformationEntreprise() != null ? getInformationEntreprise().hashCode() : 0);
 		result = 31 * result + (getContenu() != null ? getContenu().hashCode() : 0);
 		return result;
 	}
@@ -398,7 +398,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		}
 	}
 
-	public static class InformationOrganisationImpl implements InformationOrganisation, Serializable {
+	public static class InformationEntrepriseImpl implements InformationEntreprise, Serializable {
 
 		private static final long serialVersionUID = -5539575958482798119L;
 
@@ -411,7 +411,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		 * Numéro cantonal de l'entreprise faîtière à laquelle l'établissement est rattaché.
 		 */
 		@Nullable
-		private Long numeroOrganisation;
+		private Long numeroEntreprise;
 
 		/**
 		 * Numéro cantonal de l'établissement de remplacement (optionnel).
@@ -419,11 +419,11 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		@Nullable
 		private Long numeroEtablissementRemplacant;
 
-		public InformationOrganisationImpl() {}
+		public InformationEntrepriseImpl() {}
 
-		public InformationOrganisationImpl(Long numeroEtablissement, @Nullable Long numeroOrganisation, @Nullable Long numeroEtablissementRemplacant) {
+		public InformationEntrepriseImpl(Long numeroEtablissement, @Nullable Long numeroEntreprise, @Nullable Long numeroEtablissementRemplacant) {
 			this.numeroEtablissement = numeroEtablissement;
-			this.numeroOrganisation = numeroOrganisation;
+			this.numeroEntreprise = numeroEntreprise;
 			this.numeroEtablissementRemplacant = numeroEtablissementRemplacant;
 		}
 
@@ -434,8 +434,8 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 		@Override
 		@Nullable
-		public Long getNumeroOrganisation() {
-			return numeroOrganisation;
+		public Long getNumeroEntreprise() {
+			return numeroEntreprise;
 		}
 
 		@Override
@@ -449,10 +449,10 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final InformationOrganisationImpl that = (InformationOrganisationImpl) o;
+			final InformationEntrepriseImpl that = (InformationEntrepriseImpl) o;
 
 			if (getNumeroEtablissement() != null ? !getNumeroEtablissement().equals(that.getNumeroEtablissement()) : that.getNumeroEtablissement() != null) return false;
-			if (getNumeroOrganisation() != null ? !getNumeroOrganisation().equals(that.getNumeroOrganisation()) : that.getNumeroOrganisation() != null) return false;
+			if (getNumeroEntreprise() != null ? !getNumeroEntreprise().equals(that.getNumeroEntreprise()) : that.getNumeroEntreprise() != null) return false;
 			return getNumeroEtablissementRemplacant() != null ? getNumeroEtablissementRemplacant().equals(that.getNumeroEtablissementRemplacant()) : that.getNumeroEtablissementRemplacant() == null;
 
 		}
@@ -460,7 +460,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		@Override
 		public int hashCode() {
 			int result = getNumeroEtablissement() != null ? getNumeroEtablissement().hashCode() : 0;
-			result = 31 * result + (getNumeroOrganisation() != null ? getNumeroOrganisation().hashCode() : 0);
+			result = 31 * result + (getNumeroEntreprise() != null ? getNumeroEntreprise().hashCode() : 0);
 			result = 31 * result + (getNumeroEtablissementRemplacant() != null ? getNumeroEtablissementRemplacant().hashCode() : 0);
 			return result;
 		}

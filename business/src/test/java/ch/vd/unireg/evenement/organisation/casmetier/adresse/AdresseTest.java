@@ -11,9 +11,9 @@ import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.adresse.AdresseTiers;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationErreur;
-import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseErreur;
+import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementEntrepriseCivileProcessorTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -24,31 +24,31 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAdresseTiers;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementEntreprise;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
-import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementEntreprise.A_TRAITER;
 
 /**
  * @author Raphaël Marmier, 2016-04-11
  */
-public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
+public class AdresseTest extends AbstractEvenementEntrepriseCivileProcessorTest {
 
 	public AdresseTest() {
 		setWantIndexationTiers(true);
@@ -70,17 +70,17 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 	public void testChangementAdressesRienAFaire() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementsPrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "1", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
@@ -89,7 +89,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
 				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -98,7 +98,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -119,24 +119,24 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertNotNull(etablissementPrincipal);
@@ -162,7 +162,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
+				                             final List<EvenementEntrepriseErreur> erreurs = evt.getErreurs();
 				                             Assert.assertEquals(5, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
@@ -183,22 +183,22 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 	public void testChangementAdressesLegalePoursuitePermanente() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementsPrincipaux().get(0).getPayload();
 				final MockDonneesRC donneesRC = (MockDonneesRC) etablissementPrincipal.getDonneesRC();
 				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
 				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -207,7 +207,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -231,24 +231,24 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertNotNull(etablissementPrincipal);
@@ -277,7 +277,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
+				                             final List<EvenementEntrepriseErreur> erreurs = evt.getErreurs();
 				                             Assert.assertEquals(3, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
@@ -294,22 +294,22 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 	public void testChangementAdressesLegalePoursuiteNonPermanente() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementsPrincipaux().get(0).getPayload();
 				final MockDonneesRC donneesRC = (MockDonneesRC) etablissementPrincipal.getDonneesRC();
 				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
 				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -318,7 +318,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -342,24 +342,24 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertNotNull(etablissementPrincipal);
@@ -387,7 +387,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
+				                             final List<EvenementEntrepriseErreur> erreurs = evt.getErreurs();
 				                             Assert.assertEquals(3, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
@@ -404,22 +404,22 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 	public void testChangementAdressesEffectivePasDeLegalePoursuiteNonPermanente() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementsPrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -428,7 +428,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -452,24 +452,24 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertNotNull(etablissementPrincipal);
@@ -497,7 +497,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
+				                             final List<EvenementEntrepriseErreur> erreurs = evt.getErreurs();
 				                             Assert.assertEquals(5, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
@@ -519,22 +519,22 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 	public void testChangementAdressesEffectivePasDeLegalePoursuiteNonPermanente2foisMemeJour() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementsPrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -543,7 +543,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -568,7 +568,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		final long evtid_1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -576,24 +576,24 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		final long evtid_2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement2, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement2, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 				                             {
-					                             final EvenementOrganisation evt1 = evtOrganisationService.get(evtid_1);
+					                             final EvenementEntreprise evt1 = evtEntrepriseService.get(evtid_1);
 					                             Assert.assertNotNull(evt1);
-					                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt1.getEtat());
+					                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt1.getEtat());
 
-					                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt1.getNoOrganisation());
+					                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt1.getNoEntrepriseCivile());
 
 					                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 					                             Assert.assertNotNull(etablissementPrincipal);
@@ -622,7 +622,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 					                             Assert.assertNotNull(evtsFiscaux);
 					                             Assert.assertEquals(0, evtsFiscaux.size());
 
-					                             final List<EvenementOrganisationErreur> erreurs = evt1.getErreurs();
+					                             final List<EvenementEntrepriseErreur> erreurs = evt1.getErreurs();
 					                             Assert.assertEquals(5, erreurs.size());
 					                             Assert.assertEquals("Mutation : Changement d'adresse",
 					                                                 erreurs.get(1).getMessage());
@@ -635,11 +635,11 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 							                             erreurs.get(4).getMessage());
 				                             }
 				                             {
-					                             final EvenementOrganisation evt2 = evtOrganisationService.get(evtid_2);
+					                             final EvenementEntreprise evt2 = evtEntrepriseService.get(evtid_2);
 					                             Assert.assertNotNull(evt2);
-					                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt2.getEtat());
+					                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt2.getEtat());
 
-					                             final List<EvenementOrganisationErreur> erreurs2 = evt2.getErreurs();
+					                             final List<EvenementEntrepriseErreur> erreurs2 = evt2.getErreurs();
 					                             Assert.assertEquals(5, erreurs2.size());
 					                             Assert.assertEquals("L'adresse de poursuite a changé suite au changement de l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).",
 					                                                 evt2.getErreurs().get(4).getMessage());
@@ -654,22 +654,22 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 	public void testChangementAdressesEffectivePasDeLegalePoursuitePermanente() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementsPrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -678,7 +678,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -702,24 +702,24 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertNotNull(etablissementPrincipal);
@@ -747,7 +747,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
+				                             final List<EvenementEntrepriseErreur> erreurs = evt.getErreurs();
 				                             Assert.assertEquals(5, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
@@ -768,22 +768,22 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 	public void testChangementAdressesEffectivePasDeLegale() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementsPrincipaux().get(0).getPayload();
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementsPrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) etablissementPrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
 				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
 				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -792,7 +792,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -813,24 +813,24 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertNotNull(etablissementPrincipal);
@@ -856,7 +856,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
+				                             final List<EvenementEntrepriseErreur> erreurs = evt.getErreurs();
 				                             Assert.assertEquals(5, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());

@@ -9,18 +9,6 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.adresse.AdresseCivile;
 import ch.vd.unireg.adresse.AdresseEtrangere;
 import ch.vd.unireg.adresse.AdresseServiceImpl;
@@ -39,10 +27,22 @@ import ch.vd.unireg.indexer.tiers.MenageCommunIndexable;
 import ch.vd.unireg.indexer.tiers.NonHabitantIndexable;
 import ch.vd.unireg.indexer.tiers.TiersIndexable;
 import ch.vd.unireg.indexer.tiers.TiersIndexableData;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.unireg.interfaces.service.mock.ProxyServiceOrganisation;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceEntreprise;
 import ch.vd.unireg.metier.assujettissement.AssujettissementServiceImpl;
 import ch.vd.unireg.regimefiscal.RegimeFiscalServiceImpl;
 import ch.vd.unireg.tiers.AppartenanceMenage;
@@ -85,7 +85,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private TiersServiceImpl tiersService;
 	private AvatarServiceImpl avatarService;
 	private ProxyServiceCivil serviceCivil;
-	private ProxyServiceOrganisation serviceOrganisation;
+	private ProxyServiceEntreprise serviceEntreprise;
 	private ServiceInfrastructureService serviceInfra;
 	private MockTiersDAO tiersDAO;
 	private LocaliteInvalideMatcherService localiteInvalideMatcherService;
@@ -117,15 +117,15 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			}
 		});
 
-		serviceOrganisation = new ProxyServiceOrganisation(serviceInfra);
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise = new ProxyServiceEntreprise(serviceInfra);
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(784512L, 7845121001L, "Pittet Levage S.A.R.L", date(1924, 4, 1), null,
-				                                                                              FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Lausanne, "CHE123456788");
-				addOrganisation(org);
+				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(784512L, 7845121001L, "Pittet Levage S.A.R.L", date(1924, 4, 1), null,
+				                                                                                FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Lausanne, "CHE123456788");
+				addEntreprise(ent);
 
-				addOrganisation(MockOrganisationFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.BCV);
 			}
 		});
 
@@ -150,7 +150,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersService.setServiceCivilService(serviceCivil);
 		tiersService.setServiceCivilCacheWarmer(warmer);
 		tiersService.setTiersDAO(tiersDAO);
-		tiersService.setServiceOrganisationService(serviceOrganisation);
+		tiersService.setServiceEntreprise(serviceEntreprise);
 		tiersService.setValidationService(null);
 		tiersService.setAssujettissementService(assujettissementService);
 		tiersService.setRegimeFiscalService(regimeFiscalService);
@@ -164,7 +164,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		adresseService.setServiceInfra(serviceInfra);
 		adresseService.setServiceCivilService(serviceCivil);
 		adresseService.setTiersService(tiersService);
-		adresseService.setServiceOrganisationService(serviceOrganisation);
+		adresseService.setServiceEntreprise(serviceEntreprise);
 		adresseService.setLocaliteInvalideMatcherService(localiteInvalideMatcherService);
 	}
 
@@ -304,7 +304,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceEntreprise, serviceInfra, avatarService, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -345,7 +345,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nhab.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceEntreprise, serviceInfra, avatarService, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -368,7 +368,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	public void testDebiteurImpotSourceEntrepriseIndexable() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.setNumeroEntreprise(MockOrganisationFactory.BCV.getNumeroOrganisation());
+		entreprise.setNumeroEntreprise(MockEntrepriseFactory.BCV.getNumeroEntreprise());
 		entreprise.setNumero(20222L);
 		tiersDAO.save(entreprise);
 
@@ -384,7 +384,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		entreprise.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		final DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
+		final DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceEntreprise, serviceInfra, avatarService, dpi);
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
 
@@ -422,7 +422,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		ac.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceEntreprise, serviceInfra, avatarService, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());

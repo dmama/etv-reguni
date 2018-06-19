@@ -13,15 +13,15 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.unireg.interfaces.infra.data.Logiciel;
-import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
-import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
-import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.common.ApplicationConfig;
 import ch.vd.unireg.common.CommonMapHelper;
 import ch.vd.unireg.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.unireg.documentfiscal.TypeAutreDocumentFiscalEmettableManuellement;
 import ch.vd.unireg.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.unireg.interfaces.infra.data.Logiciel;
+import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
+import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
+import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.reqdes.EtatTraitement;
 import ch.vd.unireg.tiers.TiersCriteria.TypeRecherche;
@@ -34,7 +34,7 @@ import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.EtatCivil;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.EtatEvenementCivil;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.FormeJuridique;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.GenreImpot;
@@ -57,7 +57,7 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.type.TypeEvenementCivil;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
-import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementEntreprise;
 import ch.vd.unireg.type.TypeFlagEntreprise;
 import ch.vd.unireg.type.TypeLettreBienvenue;
 import ch.vd.unireg.type.TypeMandat;
@@ -94,8 +94,8 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeEvenementCivilEch, String> mapTypeEvenementCivilEch;
 	private Map<ActionEvenementCivilEch, String> mapActionEvenementCivilEch;
 	private Map<EtatEvenementCivil, String> mapStatusEvenementCivil;
-	private Map<TypeEvenementOrganisation, String> mapTypeEvenementOrganisation;
-	private Map<EtatEvenementOrganisation, String> mapEtatEvenementOrganisation;
+	private Map<TypeEvenementEntreprise, String> mapTypeEvenementEntreprise;
+	private Map<EtatEvenementEntreprise, String> mapEtatEvenementEntreprise;
 	private Map<TypeRapportEntreTiers, String> mapTypeRapportEntreTiers;
 	private Map<EtatEvenementCivil, String> mapEtatsEvenementCivil;
 	private Map<TypeEtatDocumentFiscal, String> mapTypeEtatListeRecapitulative;
@@ -456,27 +456,27 @@ public class TiersMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Initialise la map des types d'evenements civils organisation
+	 * Initialise la map des types d'evenements civils entreprise
 	 *
 	 * @return une map
 	 */
-	public Map<TypeEvenementOrganisation, String> getMapTypeEvenementOrganisation() {
-		if (mapTypeEvenementOrganisation == null) {
-			mapTypeEvenementOrganisation = initMapEnum(ApplicationConfig.masterKeyTypeEvenementOrganisation, TypeEvenementOrganisation.class);
+	public Map<TypeEvenementEntreprise, String> getMapTypeEvenementEntreprise() {
+		if (mapTypeEvenementEntreprise == null) {
+			mapTypeEvenementEntreprise = initMapEnum(ApplicationConfig.masterKeyTypeEvenementEntreprise, TypeEvenementEntreprise.class);
 		}
-		return mapTypeEvenementOrganisation;
+		return mapTypeEvenementEntreprise;
 	}
 
 	/**
-	 * Initialise la map de etats des evts organisation
+	 * Initialise la map de etats des evts entreprise
 	 *
 	 * @return une map
 	 */
-	public Map<EtatEvenementOrganisation, String> getMapEtatsEvenementOrganisation() {
-		if (mapEtatEvenementOrganisation == null) {
-			mapEtatEvenementOrganisation = initMapEnum(ApplicationConfig.masterKeyEtatEvenementOrganisation, EtatEvenementOrganisation.class);
+	public Map<EtatEvenementEntreprise, String> getMapEtatsEvenementEntreprise() {
+		if (mapEtatEvenementEntreprise == null) {
+			mapEtatEvenementEntreprise = initMapEnum(ApplicationConfig.masterKeyEtatEvenementEntreprise, EtatEvenementEntreprise.class);
 		}
-		return mapEtatEvenementOrganisation;
+		return mapEtatEvenementEntreprise;
 	}
 
 	/**

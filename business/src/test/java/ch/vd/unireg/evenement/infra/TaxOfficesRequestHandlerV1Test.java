@@ -4,8 +4,17 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
+import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.situationfamille.SituationFamilleService;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesRequest;
 import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesResponse;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
@@ -13,15 +22,6 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
-import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.unireg.evenement.RequestHandlerResult;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
-import ch.vd.unireg.iban.IbanValidator;
-import ch.vd.unireg.metier.assujettissement.AssujettissementService;
-import ch.vd.unireg.situationfamille.SituationFamilleService;
-import ch.vd.unireg.xml.DataHelper;
 
 public class TaxOfficesRequestHandlerV1Test extends BusinessTest {
 
@@ -39,7 +39,7 @@ public class TaxOfficesRequestHandlerV1Test extends BusinessTest {
 		handler.setIbanValidator(getBean(IbanValidator.class, "ibanValidator"));
 		handler.setInfraService(serviceInfra);
 		handler.setServiceCivil(serviceCivil);
-		handler.setServiceOrganisation(serviceOrganisation);
+		handler.setServiceEntreprise(serviceEntreprise);
 		handler.setSituationService(getBean(SituationFamilleService.class, "situationFamilleService"));
 		handler.setTiersDAO(tiersDAO);
 		handler.setTiersService(tiersService);

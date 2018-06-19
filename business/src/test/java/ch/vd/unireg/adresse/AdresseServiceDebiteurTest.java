@@ -8,12 +8,12 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.tiers.ContactImpotSource;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -53,7 +53,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(false);
 
 		// Instanciation du service à la main pour pouvoir taper dans les méthodes protégées.
-		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceOrganisation, serviceCivil, localiteInvalideMatcherService);
+		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceEntreprise, serviceCivil, localiteInvalideMatcherService);
 	}
 
 	@Override

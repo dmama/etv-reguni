@@ -2600,9 +2600,9 @@ var EvtOrg = {
 
 	/**
 	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de l'annonce dont l'id est passé en paramètre.
-	 * @param idEvt l'id de l'événement organisation
-	 * @param precedentEvtId l'id de l'événement organisation précédent dans la liste
-	 * @param suivantEvtId l'id de l'événement organisation suivant dans la liste
+	 * @param idEvt l'id de l'événement entreprise
+	 * @param precedentEvtId l'id de l'événement entreprise précédent dans la liste
+	 * @param suivantEvtId l'id de l'événement entreprise suivant dans la liste
 	 */
 	open_details: function(idEvt, precedentEvtId, suivantEvtId) {
 
@@ -2651,9 +2651,9 @@ var EvtCivil = {
 
 	/**
 	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de l'annonce dont l'id est passé en paramètre.
-	 * @param idEvt l'id de l'événement organisation
-	 * @param precedentEvtId l'id de l'événement organisation précédent dans la liste
-	 * @param suivantEvtId l'id de l'événement organisation suivant dans la liste
+	 * @param idEvt l'id de l'événement entreprise
+	 * @param precedentEvtId l'id de l'événement entreprise précédent dans la liste
+	 * @param suivantEvtId l'id de l'événement entreprise suivant dans la liste
 	 */
 	open_details: function(idEvt, precedentEvtId, suivantEvtId) {
 

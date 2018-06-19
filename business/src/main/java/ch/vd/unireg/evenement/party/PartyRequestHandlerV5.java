@@ -18,8 +18,8 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
@@ -91,8 +91,8 @@ public class PartyRequestHandlerV5 implements RequestHandlerV2<PartyRequest> {
 		context.serviceCivilService = service;
 	}
 
-	public void setServiceOrganisation(ServiceOrganisationService service) {
-		context.serviceOrganisationService = service;
+	public void setServiceEntreprise(ServiceEntreprise service) {
+		context.serviceEntreprise = service;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate template) {

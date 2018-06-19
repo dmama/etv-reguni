@@ -36,7 +36,7 @@ import ch.vd.unireg.efacture.DocumentEFactureDAO;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Entreprise;
@@ -99,7 +99,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final RegDate delaiRetour = dateEnvoiDocument.addMonths(3);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -177,7 +177,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final RegDate delaiRetour = dateEnvoiDocument.addMonths(3);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -250,7 +250,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final RegDate dateRappel = today;
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -325,7 +325,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final int anneeDeclaration = 2016;
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien ni personne
@@ -403,7 +403,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 		final int anneeDeclaration = 2016;
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien ni personne

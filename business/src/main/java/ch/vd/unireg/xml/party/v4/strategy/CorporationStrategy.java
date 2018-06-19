@@ -16,8 +16,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.AllegementFiscal;
 import ch.vd.unireg.tiers.CapitalHisto;
@@ -67,8 +67,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		// L'exposition du numéro IDE
 		if (entreprise.isConnueAuCivil()) {
-			final Organisation organisation = context.serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
-			final List<DateRanged<String>> numeros = organisation.getNumeroIDE();
+			final EntrepriseCivile entrepriseCivile = context.serviceEntreprise.getEntrepriseHistory(entreprise.getNumeroEntreprise());
+			final List<DateRanged<String>> numeros = entrepriseCivile.getNumeroIDE();
 			if (numeros != null && !numeros.isEmpty()) {
 				to.setUidNumbers(new UidNumberList(Collections.singletonList(numeros.get(numeros.size() - 1).getPayload())));
 			}

@@ -25,11 +25,11 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -104,7 +104,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 
@@ -189,7 +189,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 
@@ -222,14 +222,14 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 			Une nouvelle association a été crée par inscripton au RC. De part son type elle ne doit pas être annoncé.
 		 */
 
-		final Long noOrganisation = 100L;
-		final Long noEtablissementCivil = noOrganisation + 100;
+		final Long noEntrepriseCivile = 100L;
+		final Long noEtablissementCivil = noEntrepriseCivile + 100;
 
 		// Création de l'entreprise
 		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
 				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), date(2016, 9, 7), "Synergy Assoc");
 				addFormeJuridique(entreprise, date(2016, 9, 5), date(2016, 9, 7), FormeJuridiqueEntreprise.ASSOCIATION);
@@ -260,14 +260,14 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		});
 
 		// Mise en place annonce à l'IDE RCEnt
-		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy Assoc", date(2016, 9, 8), null, FormeLegale.N_0109_ASSOCIATION,
+		final MockEntrepriseCivile ent = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy Assoc", date(2016, 9, 8), null, FormeLegale.N_0109_ASSOCIATION,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, date(2016, 9, 5),
-		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		                                                                        StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.ASSOCIATION, "CHE999999996");
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 
-				addOrganisation(org);
+				addEntreprise(ent);
 
 				// Annonce existante
 				// Validation

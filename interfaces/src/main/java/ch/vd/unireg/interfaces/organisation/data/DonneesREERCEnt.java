@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 /**
  *   Utilisez les méthodes des helpers pour produire les données des accesseurs.
  *
- *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   EntrepriseHelper fournit les méthodes nécessaires à l'accès par date:
  *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
  */
 public class DonneesREERCEnt implements DonneesREE, Serializable {
@@ -28,6 +28,6 @@ public class DonneesREERCEnt implements DonneesREE, Serializable {
 
 	@Override
 	public InscriptionREE getInscriptionREE(RegDate date) {
-		return OrganisationHelper.valueForDate(inscription, date);
+		return EntrepriseHelper.valueForDate(inscription, date);
 	}
 }

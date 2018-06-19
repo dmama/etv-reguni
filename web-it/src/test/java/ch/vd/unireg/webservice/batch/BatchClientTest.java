@@ -75,7 +75,7 @@ public class BatchClientTest extends WebitTest {
 		assertEquals("EvenementExterneHandlerJob", list.get(i++));
 //		assertEquals("EvenementCivilEchCorrectionDumpJob", list.get(i++));      // pas la peine de le mettre, il n'est visible qu'en dev...
 		assertEquals("EvenementReqDesHandlerJob", list.get(i++));
-		assertEquals("EvenementOrganisationHandlerJob", list.get(i++));
+		assertEquals("EvenementEntrepriseHandlerJob", list.get(i++));
 		assertEquals("EditiqueListeRecapJob", list.get(i++));
 		assertEquals("EditiqueSommationLRJob", list.get(i++));
 		assertEquals("ReinitialiserBaremeDoubleGainJob", list.get(i++));

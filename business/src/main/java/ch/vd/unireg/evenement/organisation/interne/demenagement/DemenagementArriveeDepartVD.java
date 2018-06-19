@@ -1,14 +1,14 @@
 package ch.vd.unireg.evenement.organisation.interne.demenagement;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.TiersService;
@@ -20,16 +20,16 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  */
 public class DemenagementArriveeDepartVD extends Demenagement {
 
-	public DemenagementArriveeDepartVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                                   EvenementOrganisationContext context,
-	                                   EvenementOrganisationOptions options,
+	public DemenagementArriveeDepartVD(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
+	                                   EvenementEntrepriseContext context,
+	                                   EvenementEntrepriseOptions options,
 	                                   Domicile siegeAvant,
-	                                   Domicile siegeApres) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options, siegeAvant, siegeApres);
+	                                   Domicile siegeApres) throws EvenementEntrepriseException {
+		super(evenement, entrepriseCivile, entreprise, context, options, siegeAvant, siegeApres);
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
 		MotifFor motifFor;
 		RegDate dateDebutNouveauSiege;
@@ -40,7 +40,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			if (getEtablissementCivilPrincipalApres().isConnuInscritAuRC(getDateApres())) {
 				final RegDate dateRadiationRCVd = getEtablissementCivilPrincipalApres().getDateRadiationRCVd(getDateApres());
 				if (dateRadiationRCVd == null) {
-					throw new EvenementOrganisationException("Date de radiation au registre vaudois du commerce introuvable pour l'établissement principal en partance.");
+					throw new EvenementEntrepriseException("Date de radiation au registre vaudois du commerce introuvable pour l'établissement principal en partance.");
 				}
 				dateDebutNouveauSiege = dateRadiationRCVd;
 			} else {
@@ -53,7 +53,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			if (getEtablissementCivilPrincipalApres().isConnuInscritAuRC(getDateApres())) {
 				final RegDate dateInscriptionRCVd = getEtablissementCivilPrincipalApres().getDateInscriptionRCVd(getDateApres());
 				if (dateInscriptionRCVd == null) {
-					throw new EvenementOrganisationException("Date d'inscription au registre vaudois du commerce introuvable pour l'établissement principal en arrivée.");
+					throw new EvenementEntrepriseException("Date d'inscription au registre vaudois du commerce introuvable pour l'établissement principal en arrivée.");
 				}
 				dateDebutNouveauSiege = dateInscriptionRCVd;
 			} else {
@@ -63,7 +63,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 				regleDateDebutPremierExerciceCommercial(getEntreprise(), getDateApres(), suivis);
 			}
 		} else
-			throw new EvenementOrganisationException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
+			throw new EvenementEntrepriseException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
 		}
 
 		final TiersService tiersService = getContext().getTiersService();

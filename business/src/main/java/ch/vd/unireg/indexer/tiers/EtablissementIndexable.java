@@ -9,15 +9,15 @@ import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.ActiviteEconomique;
+import ch.vd.unireg.tiers.EntrepriseNotFoundException;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.EtablissementCivilNotFoundException;
-import ch.vd.unireg.tiers.OrganisationNotFoundException;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.TiersService;
 
@@ -28,18 +28,18 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 	private final EtablissementCivil etablissement;
 
 	public EtablissementIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceInfrastructureService serviceInfra,
-	                              ServiceOrganisationService serviceOrganisation, AvatarService avatarService, Etablissement etablissement) throws IndexerException {
+	                              ServiceEntreprise serviceEntreprise, AvatarService avatarService, Etablissement etablissement) throws IndexerException {
 		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, etablissement);
 
 		if (etablissement.isConnuAuCivil()) {
-			final Long noOrganisation = serviceOrganisation.getNoOrganisationFromNoEtablissement(etablissement.getNumeroEtablissement());
-			if (noOrganisation != null) {
-				final Organisation organisation = serviceOrganisation.getOrganisationHistory(noOrganisation);
-				if (organisation == null) {
-					throw new OrganisationNotFoundException(noOrganisation);
+			final Long noEntrepriseCivil = serviceEntreprise.getNoEntrepriseCivileFromNoEtablissementCivil(etablissement.getNumeroEtablissement());
+			if (noEntrepriseCivil != null) {
+				final EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(noEntrepriseCivil);
+				if (entrepriseCivile == null) {
+					throw new EntrepriseNotFoundException(noEntrepriseCivil);
 				}
 
-				this.etablissement = findEtablissementCivil(organisation, etablissement.getNumeroEtablissement());
+				this.etablissement = findEtablissementCivil(entrepriseCivile, etablissement.getNumeroEtablissement());
 				if (this.etablissement == null) {
 					throw new EtablissementCivilNotFoundException(etablissement);
 				}
@@ -54,8 +54,8 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 	}
 
 	@Nullable
-	private static EtablissementCivil findEtablissementCivil(Organisation organisation, long noEtablissement) {
-		final List<EtablissementCivil> etablissements = organisation.getEtablissements();
+	private static EtablissementCivil findEtablissementCivil(EntrepriseCivile entrepriseCivile, long noEtablissement) {
+		final List<EtablissementCivil> etablissements = entrepriseCivile.getEtablissements();
 		if (etablissements == null || etablissements.isEmpty()) {
 			return null;
 		}

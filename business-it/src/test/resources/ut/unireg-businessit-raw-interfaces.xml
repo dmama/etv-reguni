@@ -26,34 +26,34 @@
 	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
 
 
-	<!-- Service Organisation -->
+	<!-- Service Entreprise -->
 
-	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
+	<bean id="serviceEntrepriseRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceEntrepriseRCEnt">
 		<constructor-arg ref="rcEntAdapter"/>
 		<constructor-arg ref="rcEntClientRaw"/>
 		<constructor-arg ref="serviceInfrastructureRaw"/>
 	</bean>
 
-	<bean id="serviceOrganisationTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
-		<property name="target" ref="serviceOrganisationRCEnt" />
+	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseTracing">
+		<property name="target" ref="serviceEntrepriseRCEnt" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceOrganisationCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceOrganisationCache">
-		<property name="target" ref="serviceOrganisationTracing" />
+	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceEntrepriseCache">
+		<property name="target" ref="serviceEntrepriseTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceOrganisation" />
+		<property name="cacheName" value="serviceEntreprise" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<alias alias="serviceOrganisationRaw" name="serviceOrganisationCache"/>
+	<alias alias="serviceEntrepriseRaw" name="serviceEntrepriseCache"/>
 
-	<bean id="serviceOrganisation" class="ch.vd.unireg.interfaces.service.ServiceOrganisationImpl">
-		<property name="target" ref="serviceOrganisationRaw"/>
+	<bean id="serviceEntreprise" class="ch.vd.unireg.interfaces.service.ServiceEntrepriseImpl">
+		<property name="target" ref="serviceEntrepriseRaw"/>
 	</bean>
-	<alias name="serviceOrganisation" alias="serviceOrganisationService"/>
+	<alias name="serviceEntreprise" alias="serviceEntreprise"/>
 
 
 	<!-- Service UPI -->

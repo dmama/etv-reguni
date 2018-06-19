@@ -25,7 +25,7 @@
 			classpath*:/unireg-business-jobs.xml,
 			classpath*:/unireg-business-interfaces.xml,
 			classpath*:/unireg-business-evtcivil.xml,
-			classpath*:/unireg-business-evtorganisation.xml,
+			classpath*:/unireg-business-evtentreprise.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
 			classpath*:/unireg-business-annonce-ide.xml,
 			classpath*:/unireg-business-jobs4webit.xml,

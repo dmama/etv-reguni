@@ -52,7 +52,7 @@
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.organisation"/> :</td>
-						<td id="serviceOrganisationStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
+						<td id="serviceEntrepriseStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.infra"/> :</td>
@@ -91,8 +91,8 @@
 				$.get('<c:url value="/admin/status/civil.do"/>?' + new Date().getTime(), function(status) {
 					updateServiceStatus('#serviceCivilStatus', status);
 				});
-				$.get('<c:url value="/admin/status/organisation.do"/>?' + new Date().getTime(), function(status) {
-					updateServiceStatus('#serviceOrganisationStatus', status);
+				$.get('<c:url value="/admin/status/entreprise.do"/>?' + new Date().getTime(), function(status) {
+					updateServiceStatus('#serviceEntrepriseStatus', status);
 				});
 				$.get('<c:url value="/admin/status/infra.do"/>?' + new Date().getTime(), function(status) {
 					updateServiceStatus('#serviceInfraStatus', status);

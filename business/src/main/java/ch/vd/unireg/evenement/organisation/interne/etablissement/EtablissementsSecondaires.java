@@ -8,20 +8,20 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -31,7 +31,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 /**
  * @author Raphaël Marmier, 2016-02-26
  */
-public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTraitement {
+public class EtablissementsSecondaires extends EvenementEntrepriseInterneDeTraitement {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtablissementsSecondaires.class);
 	private final RegDate dateAvant;
@@ -42,13 +42,13 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 
 	private final List<EtablissementsSecondaires.Demenagement> demenagements;
 
-	public EtablissementsSecondaires(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                                 EvenementOrganisationContext context,
-	                                 EvenementOrganisationOptions options,
+	public EtablissementsSecondaires(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
+	                                 EvenementEntrepriseContext context,
+	                                 EvenementEntrepriseOptions options,
 	                                 List<Etablissement> etablissementsAFermer,
 	                                 List<EtablissementCivil> etablissementsCivilsACreer,
-	                                 List<EtablissementsSecondaires.Demenagement> demenagements) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	                                 List<EtablissementsSecondaires.Demenagement> demenagements) throws EvenementEntrepriseException {
+		super(evenement, entrepriseCivile, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
@@ -65,9 +65,9 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		for (Etablissement aFermer : etablissementsAFermer) {
-			EtablissementCivil etablissementQuiFerme = getOrganisation().getEtablissementForNo(aFermer.getNumeroEtablissement());
+			EtablissementCivil etablissementQuiFerme = getEntrepriseCivile().getEtablissementForNo(aFermer.getNumeroEtablissement());
 			RegDate dateFermeture = dateApres;
 
 			/* Si l'établissement est inscrit au RC, c'est la date de radiation du RC qui nous intéresse. A certaines conditions. */
@@ -77,14 +77,14 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				// exception APM
 
 				if (dateRadiation == null) {
-					throw new EvenementOrganisationException(
+					throw new EvenementEntrepriseException(
 							String.format("Impossible de déterminer la date de fin d'activité de l'établissement n°%d (%s): la date de radiation au RC CH n'est pas disponible.",
 							              etablissementQuiFerme.getNumeroEtablissement(),
 							              afficheAttributsEtablissement(etablissementQuiFerme, dateApres))
 					);
 				}
 				/* A-t-on à faire à une véritable fin d'activité, ou sommes-nous dans un cas de radiation autorisée? */
-				if (dateRadiation.isAfterOrEqual(dateApres.addDays( - OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
+				if (dateRadiation.isAfterOrEqual(dateApres.addDays( - EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 					dateFermeture = dateRadiation;
 				}
 			}
@@ -139,7 +139,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 						                               afficheAttributsEtablissement(aCreer, dateApres),
 						                               RegDateHelper.dateToDisplayString(dateCreation),
 						                               surchargeCorrectiveRange.getEtendue(),
-						                               OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+						                               EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
 
 						warnings.addWarning(message);
 					}
@@ -174,17 +174,17 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			/* Départ VD */
 			if (ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
 					&& nouveauDomicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				throw new EvenementOrganisationException(String.format("Le déménagement HC/HS d'une succursale [n°%d, %s] n'est pas censé se produire.",
-				                                                       demenagement.getEtablissementCivil().getNumeroEtablissement(),
-				                                                       afficheAttributsEtablissement(demenagement.getEtablissementCivil(), dateApres)
+				throw new EvenementEntrepriseException(String.format("Le déménagement HC/HS d'une succursale [n°%d, %s] n'est pas censé se produire.",
+				                                                     demenagement.getEtablissementCivil().getNumeroEtablissement(),
+				                                                     afficheAttributsEtablissement(demenagement.getEtablissementCivil(), dateApres)
 				));
 			}
 			/* Arrivee HC */
 			else if (ancienDomicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
 					&& nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				throw new EvenementOrganisationException(String.format("L'arrivée HC/HS d'une succursale [n°%d, %s] n'est pas censé se produire.",
-				                                                       demenagement.getEtablissementCivil().getNumeroEtablissement(),
-				                                                       afficheAttributsEtablissement(demenagement.getEtablissementCivil(), dateApres)
+				throw new EvenementEntrepriseException(String.format("L'arrivée HC/HS d'une succursale [n°%d, %s] n'est pas censé se produire.",
+				                                                     demenagement.getEtablissementCivil().getNumeroEtablissement(),
+				                                                     afficheAttributsEtablissement(demenagement.getEtablissementCivil(), dateApres)
 				));
 			}
 			/* On ne traite que des établissements VD. SIFISC-19086 */
@@ -192,7 +192,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				continue;
 			}
 /* Si des fois ça peut quand même se produire, le code pour l'application des surcharges est là.
-			EtablissementCivil quiDemenage = getOrganisation().getEtablissementForNo(demenagement.getEtablissement().getNumeroEtablissement());
+			EtablissementCivil quiDemenage = getEntrepriseCivile().getEtablissementForNo(demenagement.getEtablissement().getNumeroEtablissement());
 			if (quiDemenage.isInscritAuRC(dateApres)) {
 
 				if (ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
@@ -201,7 +201,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 					if (dateRadiationRCVd != null) {
 						dateDemenagement = dateRadiationRCVd;
 					} else {
-						throw new EvenementOrganisationException(String.format("Date de radiation du RC VD introuvable pour l'établissement %d.",
+						throw new EvenementEntrepriseException(String.format("Date de radiation du RC VD introuvable pour l'établissement %d.",
 						                                                       quiDemenage.getNumeroEtablissement())
 						);
 					}
@@ -216,7 +216,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 					if (dateInscriptionRCVd != null) {
 						dateDemenagement = dateInscriptionRCVd;
 					} else {
-						throw new EvenementOrganisationException(String.format("Date d'inscription au RC VD introuvable pour l'établissement %d.",
+						throw new EvenementEntrepriseException(String.format("Date d'inscription au RC VD introuvable pour l'établissement %d.",
 						                                                       quiDemenage.getNumeroEtablissement())
 						);
 					}
@@ -234,7 +234,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			if (etablissement.isConnuInscritAuRC(getDateEvt()) && !etablissement.isRadieDuRC(getDateEvt())) {
 				final List<EntreeJournalRC> entreesJournal = etablissement.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 				if (entreesJournal.isEmpty()) {
-					throw new EvenementOrganisationException(
+					throw new EvenementEntrepriseException(
 							String.format("Entrée de journal au RC introuvable dans l'établissement n°%s (civil: %d, %s). Impossible de traiter le déménagement.",
 							              FormatNumeroHelper.numeroCTBToDisplay(demenagement.getEtablissement().getNumero()),
 							              etablissement.getNumeroEtablissement(),
@@ -262,7 +262,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 					                               afficheAttributsEtablissement(etablissement, dateApres),
 					                               RegDateHelper.dateToDisplayString(dateDemenagement),
 					                               surchargeCorrectiveRange.getEtendue(),
-					                               OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+					                               EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
 
 					warnings.addWarning(message);
 				}
@@ -278,7 +278,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		/*
 		 Erreurs techniques fatale
 		  */

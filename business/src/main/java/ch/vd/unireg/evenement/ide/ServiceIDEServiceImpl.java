@@ -24,23 +24,23 @@ import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DomicileHisto;
 import ch.vd.unireg.tiers.Entreprise;
@@ -65,7 +65,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
 	private AdresseService adresseService;
 	private ServiceInfrastructureService infraService;
-	private ServiceOrganisationService serviceOrganisation;
+	private ServiceEntreprise serviceEntreprise;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -87,8 +87,8 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		this.infraService = serviceInfra;
 	}
 
-	public void setServiceOrganisation(ServiceOrganisationService serviceOrganisation) {
-		this.serviceOrganisation = serviceOrganisation;
+	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
+		this.serviceEntreprise = serviceEntreprise;
 	}
 
 	@Override
@@ -148,8 +148,8 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	}
 
 	private boolean isActifAuRC(Entreprise entreprise, RegDate date) {
-		final Organisation organisation = tiersService.getOrganisation(entreprise);
-		return organisation != null && OrganisationHelper.isInscriteAuRC(organisation, date) && !OrganisationHelper.isRadieeDuRC(organisation, date);
+		final EntrepriseCivile entrepriseCivile = tiersService.getEntrepriseCivile(entreprise);
+		return entrepriseCivile != null && EntrepriseHelper.isInscriteAuRC(entrepriseCivile, date) && !EntrepriseHelper.isRadieeDuRC(entrepriseCivile, date);
 	}
 
 	@Override
@@ -266,7 +266,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final AnnonceIDEEnvoyee derniereAnnonceEmise;
 		final ReferenceAnnonceIDE derniereReferenceAnnonceIDE = referenceAnnonceIDEDAO.getLastReferenceAnnonceIDE(etablissement.getNumero());
 		if (derniereReferenceAnnonceIDE != null) {
-			derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(derniereReferenceAnnonceIDE.getId(), RCEntAnnonceIDEHelper.UNIREG_USER);
+			derniereAnnonceEmise = serviceEntreprise.getAnnonceIDE(derniereReferenceAnnonceIDE.getId(), RCEntAnnonceIDEHelper.UNIREG_USER);
 		}
 		else {
 			derniereAnnonceEmise = null;
@@ -515,7 +515,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	@Override
 	public void validerAnnonceIDE(BaseAnnonceIDE proto, Entreprise entreprise) throws ServiceIDEException {
 		try {
-			final BaseAnnonceIDE.Statut statut = serviceOrganisation.validerAnnonceIDE(proto);
+			final BaseAnnonceIDE.Statut statut = serviceEntreprise.validerAnnonceIDE(proto);
 
 			// Workaround du SIREF-9364, où le statut est "sans erreur" même lorsqu'il y en a.
 			if (statut.getErreurs() != null && !statut.getErreurs().isEmpty()) {
@@ -537,7 +537,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				Audit.error(message);
 				throw new ServiceIDEException(message);
 			}
-		} catch (ServiceOrganisationException e) {
+		} catch (ServiceEntrepriseException e) {
 			final String message = "Un problème est survenu lors de la validation du prototype de l'annonce: " + e.getMessage();
 			Audit.error(message);
 			throw new ServiceIDEException(message, e);

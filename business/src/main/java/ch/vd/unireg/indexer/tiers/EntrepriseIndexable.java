@@ -4,21 +4,21 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.DomicileHisto;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EntrepriseNotFoundException;
 import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.FormeLegaleHisto;
-import ch.vd.unireg.tiers.OrganisationNotFoundException;
 import ch.vd.unireg.tiers.RaisonSocialeHisto;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.TiersService;
@@ -29,22 +29,22 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesIndexable<Entreprise> {
 
-	public static final String SUB_TYPE = "entreprise";
+	public static final String SUB_TYPE = "organisation";
 
-	private final Organisation organisation;
+	private final EntrepriseCivile entrepriseCivile;
 
 	public EntrepriseIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceInfrastructureService serviceInfra,
-	                           ServiceOrganisationService serviceOrganisationService, AvatarService avatarService, Entreprise entreprise) throws IndexerException {
+	                           ServiceEntreprise serviceEntreprise, AvatarService avatarService, Entreprise entreprise) throws IndexerException {
 		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, entreprise);
 
 		if (entreprise.isConnueAuCivil()) {
-			this.organisation = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
-			if (this.organisation == null) {
-				throw new OrganisationNotFoundException(entreprise);
+			this.entrepriseCivile = serviceEntreprise.getEntrepriseHistory(entreprise.getNumeroEntreprise());
+			if (this.entrepriseCivile == null) {
+				throw new EntrepriseNotFoundException(entreprise);
 			}
 		}
 		else {
-			this.organisation = null;
+			this.entrepriseCivile = null;
 		}
 	}
 
@@ -69,8 +69,8 @@ public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesI
 		}
 
 		// l'historique du nom additionnel (en provenance du civil seulement)
-		if (organisation != null) {
-			final List<DateRanged<String>> historiqueNomAdditionnel = organisation.getNomAdditionnel();
+		if (entrepriseCivile != null) {
+			final List<DateRanged<String>> historiqueNomAdditionnel = entrepriseCivile.getNomAdditionnel();
 			if (historiqueNomAdditionnel != null && !historiqueNomAdditionnel.isEmpty()) {
 				for (DateRanged<String> nomAdditionnel : historiqueNomAdditionnel) {
 					data.addAutresNom(nomAdditionnel.getPayload());
@@ -156,8 +156,8 @@ public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesI
 		data.setCorporationTransferedPatrimony(hasTransferedPatrimony);
 
 		// éventuels identifiants RC (en provenance du civil seulement)
-		if (organisation != null) {
-			final List<DateRanged<String>> all = organisation.getNumeroRC();
+		if (entrepriseCivile != null) {
+			final List<DateRanged<String>> all = entrepriseCivile.getNumeroRC();
 			if (all != null) {
 				all.stream()
 						.map(DateRanged::getPayload)
@@ -170,8 +170,8 @@ public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesI
 
 	@Override
 	protected void fillIdeData(TiersIndexableData data) {
-		if (organisation != null) {
-			for (DateRanged<String> ide : organisation.getNumeroIDE()) {
+		if (entrepriseCivile != null) {
+			for (DateRanged<String> ide : entrepriseCivile.getNumeroIDE()) {
 				data.addIde(ide.getPayload());
 			}
 		}

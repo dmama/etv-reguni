@@ -127,7 +127,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 			errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.pas.dans.periode.fiscale");
 		}
 		else if (view.getDateDebutPeriodeImposition() != null) {
-			// cas spécial pour les entreprise, la période d'imposition choisie pour la DI
+			// cas spécial pour les entreprises, la période d'imposition choisie pour la DI
 			// ne doit pas être à cheval sur plusieurs exercices commerciaux
 			if (ctb instanceof Entreprise) {
 				final ExerciceCommercial exerciceDebut = tiersService.getExerciceCommercialAt((Entreprise) ctb, view.getDateDebutPeriodeImposition());

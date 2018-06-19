@@ -64,7 +64,7 @@
 			<form:input  path="numeroOrganisationFormatte" id="numeroOrganisationFormatte" cssClass="number"/>
 			<form:errors path="numeroOrganisationFormatte" cssClass="error"/>
 		</td>
-		<td width="25%">Recherche lot d'événements pour l'organisation <span id="num_indiv"></span></td>
+		<td width="25%">Recherche lot d'événements pour l'entreprise <span id="num_indiv"></span></td>
 		<td width="25%">
 			<form:checkbox path="modeLotEvenement" id="modeLotEvenement" cssClass="boolean"/>
 		</td>

@@ -144,7 +144,7 @@ import ch.vd.unireg.role.before2016.ProduireRolesPMCommunesResults;
 import ch.vd.unireg.role.before2016.ProduireRolesPPCommunesResults;
 import ch.vd.unireg.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.unireg.situationfamille.ReinitialiserBaremeDoubleGainResults;
-import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsOrganisationsResults;
+import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsEntreprisesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsPersonnesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsIdentificationContribuableResults;
@@ -470,7 +470,7 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsPersonnesResults civilsPersonnes,
-	                                              StatsEvenementsCivilsOrganisationsResults civilsOrganisations,
+	                                              StatsEvenementsCivilsEntreprisesResults civilsEntreprises,
 	                                              StatsEvenementsExternesResults externes,
 	                                              StatsEvenementsIdentificationContribuableResults identCtb,
 	                                              StatsEvenementsNotairesResults notaires,

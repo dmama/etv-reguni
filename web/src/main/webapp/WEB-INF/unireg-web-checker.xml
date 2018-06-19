@@ -18,7 +18,7 @@
 		<property name="criticalCheckers">
 			<list>
 				<ref bean="serviceCivilChecker" />
-				<ref bean="serviceOrganisationChecker" />
+				<ref bean="serviceEntrepriseChecker" />
 				<ref bean="serviceInfraChecker" />
 				<ref bean="serviceSecuriteChecker" />
 			</list>
@@ -35,8 +35,8 @@
 		<property name="serviceCivilRaw" ref="serviceCivilServiceTracing" />
 	</bean>
 
-	<bean id="serviceOrganisationChecker" class="ch.vd.unireg.checker.ServiceOrganisationChecker">
-		<property name="serviceOrganisationRaw" ref="serviceOrganisationTracing" />
+	<bean id="serviceEntrepriseChecker" class="ch.vd.unireg.checker.ServiceEntrepriseChecker">
+		<property name="serviceEntrepriseRaw" ref="serviceEntrepriseTracing" />
 	</bean>
 
 	<bean id="serviceInfraChecker" class="ch.vd.unireg.checker.ServiceInfraChecker">

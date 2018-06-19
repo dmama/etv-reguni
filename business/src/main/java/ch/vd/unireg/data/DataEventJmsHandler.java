@@ -24,6 +24,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalException;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalSender;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.jms.EsbMessageHandler;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 import ch.vd.unireg.xml.event.data.v1.BatimentChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.CommunauteChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
@@ -39,13 +46,6 @@ import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
-import ch.vd.unireg.common.AuthenticationHelper;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalException;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalSender;
-import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.jms.EsbMessageHandler;
-import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 /**
  * Bean qui traite les messages JMS de modification de la database pour propager l'information au database service
@@ -76,7 +76,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		addToMap(map, DatabaseTruncateEvent.class, new DatabaseTruncateEventHandler());
 		addToMap(map, DroitAccesChangeEvent.class, new DroitAccesChangeEventHandler());
 		addToMap(map, IndividuChangeEvent.class, new IndividuChangeEventHandler());
-		addToMap(map, OrganisationChangeEvent.class, new OrganisationChangeEventHandler());
+		addToMap(map, OrganisationChangeEvent.class, new EntrepriseChangeEventHandler());
 		addToMap(map, TiersChangeEvent.class, new TiersChangeEventHandler());
 		addToMap(map, RelationChangeEvent.class, new RelationChangeEventHandler());
 		addToMap(map, ImmeubleChangeEvent.class, new ImmeubleChangeEventHandler());
@@ -145,13 +145,13 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		}
 	}
 
-	private final class OrganisationChangeEventHandler implements Handler<OrganisationChangeEvent> {
+	private final class EntrepriseChangeEventHandler implements Handler<OrganisationChangeEvent> {
 		@Override
 		public void onEvent(OrganisationChangeEvent event) throws Exception {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Traitement d'un événement db de changement sur l'organisation n°" + event.getId());
+				LOGGER.debug("Traitement d'un événement db de changement sur l'entreprise n°" + event.getId());
 			}
-			dataEventService.onOrganisationChange(event.getId());
+			dataEventService.onEntrepriseChange(event.getId());
 		}
 	}
 

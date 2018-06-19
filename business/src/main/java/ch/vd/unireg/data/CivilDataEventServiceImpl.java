@@ -34,7 +34,7 @@ public class CivilDataEventServiceImpl implements CivilDataEventService, CivilDa
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		dispatch(listener -> listener.onOrganisationChange(id));
+	public void onEntrepriseChange(long id) {
+		dispatch(listener -> listener.onEntrepriseChange(id));
 	}
 }

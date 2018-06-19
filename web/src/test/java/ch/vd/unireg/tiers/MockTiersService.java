@@ -24,7 +24,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.linkedentity.LinkedEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.declaration.Periodicite;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -32,8 +32,8 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
@@ -79,7 +79,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
+	public Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile) {
 		return null;
 	}
 
@@ -109,12 +109,12 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt) throws TiersException {
+	public Entreprise createEntreprisePourEvenement(EvenementEntreprise evt) throws TiersException {
 		return null;
 	}
 
 	@Override
-	public @NotNull Entreprise createEntreprise(long noOrganisation) {
+	public @NotNull Entreprise createEntreprise(long noEntrepriseCivile) {
 		return null;
 	}
 
@@ -229,7 +229,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public void apparier(Entreprise entreprise, Organisation organisation, boolean fermerSurcharges) {
+	public void apparier(Entreprise entreprise, EntrepriseCivile entrepriseCivile, boolean fermerSurcharges) {
 
 	}
 
@@ -1243,12 +1243,12 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public Organisation getOrganisation(@NotNull Entreprise entreprise) {
+	public EntrepriseCivile getEntrepriseCivile(@NotNull Entreprise entreprise) {
 		return null;
 	}
 
 	@Override
-	public Organisation getOrganisationPourEtablissement(@NotNull Etablissement etablissement) {
+	public EntrepriseCivile getEntrepriseCivileByEtablissement(@NotNull Etablissement etablissement) {
 		return null;
 	}
 

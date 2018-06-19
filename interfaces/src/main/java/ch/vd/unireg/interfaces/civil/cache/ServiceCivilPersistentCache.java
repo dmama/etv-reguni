@@ -18,12 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
-import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.cache.CacheStats;
 import ch.vd.unireg.cache.CompletePartsCallback;
 import ch.vd.unireg.cache.ObjectKey;
@@ -33,6 +27,12 @@ import ch.vd.unireg.cache.UniregCacheManager;
 import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.data.CivilDataEventListener;
 import ch.vd.unireg.data.CivilDataEventService;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
+import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.stats.StatsService;
 
 /**
@@ -287,7 +287,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
+	public void onEntrepriseChange(long id) {
 		// rien à faire
 	}
 

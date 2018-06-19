@@ -13,11 +13,11 @@
 	</bean>
 	<alias alias="serviceCivilService" name="serviceCivilServiceMock"/>
 
-	<!-- Bean client ServiceOrganisation MOCK -->
-	<bean id="serviceOrganisationServiceMock" class="ch.vd.unireg.interfaces.service.mock.ProxyServiceOrganisation">
+	<!-- Bean client ServiceEntreprise MOCK -->
+	<bean id="serviceEntrepriseMock" class="ch.vd.unireg.interfaces.service.mock.ProxyServiceEntreprise">
 		<constructor-arg index="0" ref="serviceInfrastructureService"/>
 	</bean>
-	<alias alias="serviceOrganisationService" name="serviceOrganisationServiceMock"/>
+	<alias alias="serviceEntreprise" name="serviceEntrepriseMock"/>
 
 	<!-- Service UPI -->
 	<bean id="serviceUpiMock" class="ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi"/>

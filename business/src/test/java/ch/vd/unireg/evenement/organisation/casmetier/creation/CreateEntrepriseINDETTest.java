@@ -10,16 +10,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementEntrepriseCivileProcessorTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.Bouclement;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -28,19 +28,19 @@ import ch.vd.unireg.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.type.DayMonth;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeEtatEntreprise;
-import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementEntreprise;
 
-import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementEntreprise.A_TRAITER;
 
 /**
  * @author Raphaël Marmier, 2017-03-27
  */
-public class CreateEntrepriseINDETTest extends AbstractEvenementOrganisationProcessorTest {
+public class CreateEntrepriseINDETTest extends AbstractEvenementEntrepriseCivileProcessorTest {
 
 	public CreateEntrepriseINDETTest() {
 		setWantIndexationTiers(true);
@@ -54,17 +54,17 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementOrganisationProc
 	public void testCreationDroitPublic() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
+		final Long noEntrepriseCivile = 101202100L;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory
-						                .createOrganisation(noOrganisation, noOrganisation + 1000000, "CorpoPub", RegDate.get(2015, 6, 26), null,
-						                                    FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
-						                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
-						                                    StatusRegistreIDE.DEFINITIF,
-						                                    TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996", BigDecimal.valueOf(100000), "CHF"));
+				addEntreprise(MockEntrepriseFactory
+						                .createEntreprise(noEntrepriseCivile, noEntrepriseCivile + 1000000, "CorpoPub", RegDate.get(2015, 6, 26), null,
+						                                  FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
+						                                  TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
+						                                  StatusRegistreIDE.DEFINITIF,
+						                                  TypeEntrepriseRegistreIDE.ASSOCIATION, "CHE999999996", BigDecimal.valueOf(100000), "CHF"));
 			}
 		});
 
@@ -75,25 +75,25 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementOrganisationProc
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
 				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
@@ -149,17 +149,17 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementOrganisationProc
 	public void testCreationDroitPublicNonRC() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
+		final Long noEntrepriseCivile = 101202100L;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory
-						                .createOrganisation(noOrganisation, noOrganisation + 1000000, "CorpoPub", RegDate.get(2015, 6, 24), null,
-						                                    FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
-						                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
-						                                    StatusRegistreIDE.DEFINITIF,
-						                                    TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996", BigDecimal.valueOf(100000), "CHF"));
+				addEntreprise(MockEntrepriseFactory
+						                .createEntreprise(noEntrepriseCivile, noEntrepriseCivile + 1000000, "CorpoPub", RegDate.get(2015, 6, 24), null,
+						                                  FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
+						                                  TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
+						                                  StatusRegistreIDE.DEFINITIF,
+						                                  TypeEntrepriseRegistreIDE.ASSOCIATION, "CHE999999996", BigDecimal.valueOf(100000), "CHF"));
 			}
 		});
 
@@ -170,25 +170,25 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementOrganisationProc
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.REE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.REE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
 				                             Assert.assertEquals(TypeEtatEntreprise.FONDEE, entreprise.getEtatActuel().getType());
@@ -232,14 +232,14 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementOrganisationProc
 	public void testCreationFondPlacement() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
+		final Long noEntrepriseCivile = 101202100L;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 27), null,
-						                                                 FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX, MockCommune.Lausanne));
+				addEntreprise(
+						MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1000000, "Kramer Placements", RegDate.get(2015, 6, 27), null,
+						                                               FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX, MockCommune.Lausanne));
 			}
 		});
 
@@ -250,24 +250,24 @@ public class CreateEntrepriseINDETTest extends AbstractEvenementOrganisationProc
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
 

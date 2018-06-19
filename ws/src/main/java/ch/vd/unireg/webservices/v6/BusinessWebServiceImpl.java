@@ -70,8 +70,8 @@ import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.jms.BamMessageHelper;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -201,8 +201,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		context.serviceCivilService = service;
 	}
 
-	public void setServiceOrganisation(ServiceOrganisationService service) {
-		context.serviceOrganisationService = service;
+	public void setServiceEntreprise(ServiceEntreprise service) {
+		context.serviceEntreprise = service;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate template) {

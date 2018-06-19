@@ -21,5 +21,5 @@ public interface DonneesRegistreIDE {
 
 	StatusRegistreIDE getStatus(RegDate date);
 
-	List<DateRanged<TypeOrganisationRegistreIDE>> getTypeOrganisation();
+	List<DateRanged<TypeEntrepriseRegistreIDE>> getTypeEntreprise();
 }

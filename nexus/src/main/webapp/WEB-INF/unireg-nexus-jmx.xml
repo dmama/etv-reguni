@@ -126,7 +126,7 @@
 				<entry key="ServiceCivil" value-ref="serviceCivilEndPoint"/>
 				<entry key="ServiceUpi" value-ref="serviceUpiEndPoint"/>
 				<entry key="ServiceInfra" value-ref="serviceInfrastructureEndPoint"/>
-				<entry key="ServiceOrganisation" value-ref="serviceOrganisationEndPoint"/>
+				<entry key="ServiceEntreprise" value-ref="serviceEntrepriseEndPoint"/>
 			</map>
 		</property>
 	</bean>

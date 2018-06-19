@@ -12,13 +12,12 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.tiers.DonneeCivileEntreprise;
-import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.IdentificationEntreprise;
 import ch.vd.unireg.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.unireg.tiers.Tiers;
 
 /**
- * Utilisable dans les adresses, pour désigner soit une personne physique, soit une organisation
+ * Utilisable dans les adresses, pour désigner soit une personne physique, soit une entreprise
  */
 public abstract class DestinataireAdresse {
 
@@ -46,9 +45,9 @@ public abstract class DestinataireAdresse {
 	}
 
 	/**
-	 * Destinataire organisation
+	 * Destinataire entreprise
 	 */
-	public static final class Organisation extends DestinataireAdresse {
+	public static final class Entreprise extends DestinataireAdresse {
 
 		private final String numeroIDE;
 		private final String raisonSociale1;
@@ -56,7 +55,7 @@ public abstract class DestinataireAdresse {
 		private final String raisonSociale3;
 		private final String contact;
 
-		public Organisation(String numeroIDE, String raisonSociale1, String raisonSociale2, String raisonSociale3, String contact) {
+		public Entreprise(String numeroIDE, String raisonSociale1, String raisonSociale2, String raisonSociale3, String contact) {
 			this.numeroIDE = StringUtils.trimToNull(numeroIDE);
 			this.raisonSociale1 = StringUtils.trimToNull(raisonSociale1);
 			this.raisonSociale2 = StringUtils.trimToNull(raisonSociale2);
@@ -107,7 +106,7 @@ public abstract class DestinataireAdresse {
 			/**
 			 * Tiers bidon qui ne contient que ces deux données, au maximum...
 			 */
-			return new Entreprise() {
+			return new ch.vd.unireg.tiers.Entreprise() {
 				@Override
 				public Set<DonneeCivileEntreprise> getDonneesCiviles() {
 					return donneesCiviles;

@@ -30,7 +30,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 	public static final String NAME = "StatistiquesEvenementsJob";
 
 	private static final String EVTS_CIVILS = "EVTS_CIVILS";
-	private static final String EVTS_ORG = "EVTS_ORG";
+	private static final String EVTS_ENTREPRISE = "EVTS_ENTREPRISES";
 	private static final String EVTS_EXTERNES = "EVTS_EXTERNES";
 	private static final String EVTS_IDENT_CTB = "EVTS_IDENT_CTB";
 	private static final String EVTS_NOTAIRES = "EVTS_NOTAIRES";
@@ -50,8 +50,8 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 
 		{
 			final JobParam param = new JobParam();
-			param.setDescription("Evénements civils (organisations)");
-			param.setName(EVTS_ORG);
+			param.setDescription("Evénements civils (entreprises)");
+			param.setName(EVTS_ENTREPRISE);
 			param.setMandatory(false);
 			param.setType(new JobParamBoolean());
 			addParameterDefinition(param, Boolean.FALSE);
@@ -111,7 +111,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 
 		// allons chercher les paramètres
 		final boolean civils = getBooleanValue(params, EVTS_CIVILS);
-		final boolean organisations = getBooleanValue(params, EVTS_ORG);
+		final boolean evenements = getBooleanValue(params, EVTS_ENTREPRISE);
 		final boolean externes = getBooleanValue(params, EVTS_EXTERNES);
 		final boolean identCtb = getBooleanValue(params, EVTS_IDENT_CTB);
 		final boolean notaires = getBooleanValue(params, EVTS_NOTAIRES);
@@ -120,7 +120,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 
 		// lancement des extractions
 		final StatsEvenementsCivilsPersonnesResults resultatsCivilsPersonnes = civils ? service.getStatistiquesEvenementsCivilsPersonnes(debutActivite) : null;
-		final StatsEvenementsCivilsOrganisationsResults resultatsOrganisations = organisations ? service.getStatistiquesEvenementsCivilsOrganisations(debutActivite) : null;
+		final StatsEvenementsCivilsEntreprisesResults resultatsEntreprises = evenements ? service.getStatistiquesEvenementsCivilsEntreprises(debutActivite) : null;
 		final StatsEvenementsExternesResults resultatsExternes = externes ? service.getStatistiquesEvenementsExternes() : null;
 		final StatsEvenementsIdentificationContribuableResults resultatsIdentCtb = identCtb ? service.getStatistiquesEvenementsIdentificationContribuable(debutActivite) : null;
 		final StatsEvenementsNotairesResults resultatsNotaires = notaires ? service.getStatistiquesEvenementsNotaires(debutActivite) : null;
@@ -131,7 +131,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final StatistiquesEvenementsRapport rapport = template.execute(new TransactionCallback<StatistiquesEvenementsRapport>() {
 			@Override
 			public StatistiquesEvenementsRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(resultatsCivilsPersonnes, resultatsOrganisations, resultatsExternes, resultatsIdentCtb, resultatsNotaires, debutActivite, getStatusManager());
+				return rapportService.generateRapport(resultatsCivilsPersonnes, resultatsEntreprises, resultatsExternes, resultatsIdentCtb, resultatsNotaires, debutActivite, getStatusManager());
 			}
 		});
 

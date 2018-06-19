@@ -13,10 +13,10 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseBoitePostaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
 
 /**
  * @author Raphaël Marmier, 2015-11-10
@@ -24,18 +24,18 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 
 	private NavigableMap<RegDate, StatusRegistreIDE> status = new TreeMap<>();
-	private NavigableMap<RegDate, TypeOrganisationRegistreIDE> typeOrganisation = new TreeMap<>();
+	private NavigableMap<RegDate, TypeEntrepriseRegistreIDE> typeEntreprise = new TreeMap<>();
 	private NavigableMap<RegDate, AdresseEffectiveRCEnt> adresseEffective = new TreeMap<>();
 	private NavigableMap<RegDate, AdresseBoitePostaleRCEnt> adresseBoitePostale = new TreeMap<>();
 	private NavigableMap<RegDate, RaisonDeRadiationRegistreIDE> raisonDeLiquidation = new TreeMap<>();
 
 	public MockDonneesRegistreIDE() {}
 
-	public MockDonneesRegistreIDE(NavigableMap<RegDate, StatusRegistreIDE> status, NavigableMap<RegDate, TypeOrganisationRegistreIDE> typeOrganisation,
+	public MockDonneesRegistreIDE(NavigableMap<RegDate, StatusRegistreIDE> status, NavigableMap<RegDate, TypeEntrepriseRegistreIDE> typeEntreprise,
 	                              NavigableMap<RegDate, AdresseEffectiveRCEnt> adresseEffective, NavigableMap<RegDate, AdresseBoitePostaleRCEnt> adresseBoitePostale,
 	                              NavigableMap<RegDate, RaisonDeRadiationRegistreIDE> raisonDeLiquidation) {
 		this.status = status;
-		this.typeOrganisation = typeOrganisation;
+		this.typeEntreprise = typeEntreprise;
 		this.adresseEffective = adresseEffective;
 		this.adresseBoitePostale = adresseBoitePostale;
 		this.raisonDeLiquidation = raisonDeLiquidation;
@@ -62,7 +62,7 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 			                                                                               previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
 			                                                                               previous.getTitre(), previous.getEgid(), previous.getCasePostale())));
 		}
-		MockOrganisationHelper.addRangedData(adresseBoitePostale, dateDebut, dateFin, nouvelleAdresseBoitePostale);
+		MockEntrepriseHelper.addRangedData(adresseBoitePostale, dateDebut, dateFin, nouvelleAdresseBoitePostale);
 	}
 
 	@Override
@@ -86,57 +86,57 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 			                                                                         previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
 			                                                                         previous.getTitre(), previous.getEgid(), previous.getCasePostale())));
 		}
-		MockOrganisationHelper.addRangedData(adresseEffective, dateDebut, dateFin, nouvelleAdresseEffective);
+		MockEntrepriseHelper.addRangedData(adresseEffective, dateDebut, dateFin, nouvelleAdresseEffective);
 	}
 
 	@Override
 	public AdresseEffectiveRCEnt getAdresseEffective(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(getAdresseEffective(), date);
+		return EntrepriseHelper.dateRangeForDate(getAdresseEffective(), date);
 	}
 
 	@Override
 	public List<DateRanged<RaisonDeRadiationRegistreIDE>> getRaisonDeLiquidation() {
-		return MockOrganisationHelper.getHisto(raisonDeLiquidation);
+		return MockEntrepriseHelper.getHisto(raisonDeLiquidation);
 	}
 
 	public void changeRaisonDeLiquidation(RegDate date, RaisonDeRadiationRegistreIDE nouvelleRaisonDeLiquidation) {
-		MockOrganisationHelper.changeRangedData(raisonDeLiquidation, date, nouvelleRaisonDeLiquidation);
+		MockEntrepriseHelper.changeRangedData(raisonDeLiquidation, date, nouvelleRaisonDeLiquidation);
 	}
 
 	public void addRaisonDeLiquidation(RegDate dateDebut, RegDate dateFin, RaisonDeRadiationRegistreIDE nouvelleRaisonDeLiquidation) {
-		MockOrganisationHelper.addRangedData(raisonDeLiquidation, dateDebut, dateFin, nouvelleRaisonDeLiquidation);
+		MockEntrepriseHelper.addRangedData(raisonDeLiquidation, dateDebut, dateFin, nouvelleRaisonDeLiquidation);
 	}
 
 	@NotNull
 	@Override
 	public List<DateRanged<StatusRegistreIDE>> getStatus() {
-		return MockOrganisationHelper.getHisto(status);
+		return MockEntrepriseHelper.getHisto(status);
 	}
 
 	@Override
 	public StatusRegistreIDE getStatus(RegDate date) {
-		return OrganisationHelper.valueForDate(getStatus(), date);
+		return EntrepriseHelper.valueForDate(getStatus(), date);
 	}
 
 	public void changeStatus(RegDate date, StatusRegistreIDE nouveauStatus) {
-		MockOrganisationHelper.changeRangedData(status, date, nouveauStatus);
+		MockEntrepriseHelper.changeRangedData(status, date, nouveauStatus);
 	}
 
 	public void addStatus(RegDate dateDebut, RegDate dateFin, StatusRegistreIDE nouveauStatus) {
-		MockOrganisationHelper.addRangedData(status, dateDebut, dateFin, nouveauStatus);
+		MockEntrepriseHelper.addRangedData(status, dateDebut, dateFin, nouveauStatus);
 	}
 
 	@Override
-	public List<DateRanged<TypeOrganisationRegistreIDE>> getTypeOrganisation() {
-		return MockOrganisationHelper.getHisto(typeOrganisation);
+	public List<DateRanged<TypeEntrepriseRegistreIDE>> getTypeEntreprise() {
+		return MockEntrepriseHelper.getHisto(typeEntreprise);
 	}
 
-	public void changeTypeOrganisation(RegDate date, TypeOrganisationRegistreIDE nouveauType) {
-		MockOrganisationHelper.changeRangedData(typeOrganisation, date, nouveauType);
+	public void changeTypeEntreprise(RegDate date, TypeEntrepriseRegistreIDE nouveauType) {
+		MockEntrepriseHelper.changeRangedData(typeEntreprise, date, nouveauType);
 	}
 
-	public void addTypeOrganisation(RegDate dateDebut, RegDate dateFin, TypeOrganisationRegistreIDE nouveauType) {
-		MockOrganisationHelper.addRangedData(typeOrganisation, dateDebut, dateFin, nouveauType);
+	public void addTypeEntreprise(RegDate dateDebut, RegDate dateFin, TypeEntrepriseRegistreIDE nouveauType) {
+		MockEntrepriseHelper.addRangedData(typeEntreprise, dateDebut, dateFin, nouveauType);
 	}
 
 }

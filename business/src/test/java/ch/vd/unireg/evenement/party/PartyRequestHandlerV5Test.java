@@ -71,7 +71,7 @@ public class PartyRequestHandlerV5Test extends BusinessTest {
 		handler.setIbanValidator(getBean(IbanValidator.class, "ibanValidator"));
 		handler.setInfraService(serviceInfra);
 		handler.setServiceCivil(serviceCivil);
-		handler.setServiceOrganisation(serviceOrganisation);
+		handler.setServiceEntreprise(serviceEntreprise);
 		handler.setSituationService(getBean(SituationFamilleService.class, "situationFamilleService"));
 		handler.setTiersDAO(tiersDAO);
 		handler.setTiersService(tiersService);

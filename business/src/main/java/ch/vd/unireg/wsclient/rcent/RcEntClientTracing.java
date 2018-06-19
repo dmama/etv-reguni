@@ -13,9 +13,6 @@ import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.wsclient.rcent.RcEntClient;
-import ch.vd.unireg.wsclient.rcent.RcEntClientException;
-import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
 import ch.vd.unireg.stats.ServiceTracing;
 import ch.vd.unireg.stats.StatsService;
 
@@ -68,7 +65,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisation", items, () -> String.format("id=%d, referenceDate=%s, history=%s", id, ServiceTracing.toString(referenceDate), withHistory));
+			tracing.end(time, t, "getEntrepriseCivile", items, () -> String.format("id=%d, referenceDate=%s, history=%s", id, ServiceTracing.toString(referenceDate), withHistory));
 		}
 	}
 

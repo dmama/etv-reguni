@@ -13,9 +13,9 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalConsolide;
@@ -139,7 +139,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 	}
 
 	private static TypeContribuable computeTypeContribuable(Entreprise pm, RegDate dateFinPeriode, Assujettissement assujettissement) {
-		// [SIFISC-18113] séparation des entreprise LIASF dans une population différente
+		// [SIFISC-18113] séparation des entreprises LIASF dans une population différente
 		final FlagEntreprise flag = DateRangeHelper.rangeAt(pm.getFlagsNonAnnulesTries(), dateFinPeriode);
 		if (flag != null && flag.getType() == TypeFlagEntreprise.UTILITE_PUBLIQUE) {
 			return TypeContribuable.UTILITE_PUBLIQUE;

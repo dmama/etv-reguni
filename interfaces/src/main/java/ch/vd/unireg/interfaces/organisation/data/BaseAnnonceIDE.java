@@ -84,7 +84,7 @@ public interface BaseAnnonceIDE {
 	 * @return les informations ayant trait à l'identification de l'entreprise dans le registre cantonal (RCEnt)
 	 */
 	@Nullable
-	InformationOrganisation getInformationOrganisation();
+	BaseAnnonceIDE.InformationEntreprise getInformationEntreprise();
 
 	/**
 	 * @return Les données à proprement parler de l'entreprise
@@ -148,7 +148,7 @@ public interface BaseAnnonceIDE {
 		String getApplicationName();
 	}
 
-	interface InformationOrganisation {
+	interface InformationEntreprise {
 
 		/**
 		 * @return le numéro cantonal de l'établissement concerné par l'annonce (nul en cas de création)
@@ -156,10 +156,10 @@ public interface BaseAnnonceIDE {
 		Long getNumeroEtablissement();
 
 		/**
-		 * @return le numéro cantonal de l'organisation faîtière de l'établissement
+		 * @return le numéro cantonal de l'entreprise faîtière de l'établissement
 		 */
 		@Nullable
-		Long getNumeroOrganisation();
+		Long getNumeroEntreprise();
 
 		/**
 		 * Dans un contexte de radiation, lorsqu'un établissement en supplante un autre, il faut transmettre

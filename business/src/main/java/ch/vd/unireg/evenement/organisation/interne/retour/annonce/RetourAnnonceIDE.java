@@ -10,23 +10,23 @@ import ch.vd.unireg.adresse.AdresseSupplementaire;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.DomicileHisto;
 import ch.vd.unireg.tiers.Entreprise;
@@ -43,7 +43,7 @@ import ch.vd.unireg.utils.RangeUtil;
  *
  * @author Raphaël Marmier, 2016-09-22
  */
-public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
+public class RetourAnnonceIDE extends EvenementEntrepriseInterneDeTraitement {
 
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
@@ -54,11 +54,11 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 	private final Etablissement etablissementPrincipal;
 
-	public RetourAnnonceIDE(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                        EvenementOrganisationContext context,
-	                        EvenementOrganisationOptions options,
-	                        AnnonceIDEEnvoyee annonceIDE) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	public RetourAnnonceIDE(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
+	                        EvenementEntrepriseContext context,
+	                        EvenementEntrepriseOptions options,
+	                        AnnonceIDEEnvoyee annonceIDE) throws EvenementEntrepriseException {
+		super(evenement, entrepriseCivile, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
@@ -66,7 +66,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		this.annonceIDE = annonceIDE;
 		final ReferenceAnnonceIDE referenceAnnonceIDE = evenement.getReferenceAnnonceIDE();
 
-		etablissementCivilPrincipal = organisation.getEtablissementPrincipal(dateApres).getPayload();
+		etablissementCivilPrincipal = entrepriseCivile.getEtablissementPrincipal(dateApres).getPayload();
 		etablissementPrincipal = referenceAnnonceIDE.getEtablissement();
 	}
 
@@ -76,7 +76,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		suivis.addSuivi(
 				String.format(
 						"Retour de l'annonce à l'IDE n°%s du %s concernant l'entreprise n°%s suite à création ou modification dans Unireg. L'état à l'IDE est maintenant aligné sur celui d'Unireg.",
@@ -91,7 +91,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		// Rattacher ?
 		if (getEntreprise().getNumeroEntreprise() == null) {
 			// apparier et fermer les surcharges civiles
-			tiersService.apparier(getEntreprise(), getOrganisation(), true);
+			tiersService.apparier(getEntreprise(), getEntrepriseCivile(), true);
 
 			// Appariement sans fermeture de surcharge de l'établissement principal, car on doit pouvoir garder le domicile différent.
 			etablissementPrincipal.setNumeroEtablissement(etablissementCivilPrincipal.getNumeroEtablissement());
@@ -105,8 +105,8 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 			}
 
 			suivis.addSuivi(
-					String.format("Organisation civile n°%d rattachée à l'entreprise n°%s.",
-					              getOrganisation().getNumeroOrganisation(), FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero()))
+					String.format("EntrepriseCivile civile n°%d rattachée à l'entreprise n°%s.",
+					              getEntrepriseCivile().getNumeroEntreprise(), FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero()))
 			);
 		} else {
 			// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
@@ -236,7 +236,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		// Erreurs techniques fatale
 		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {
 			throw new IllegalArgumentException();

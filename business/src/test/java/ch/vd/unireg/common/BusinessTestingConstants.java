@@ -10,12 +10,12 @@ public class BusinessTestingConstants {
 	public static final String UNIREG_BUSINESS_REGISTREFONCIER = "classpath:unireg-business-registrefoncier.xml";
 	public static final String UNIREG_BUSINESS_REGISTREFONCIER_IMPORT = "classpath:unireg-business-registrefoncier-import.xml";
 	public static final String UNIREG_BUSINESS_EVT_CIVIL = "classpath:unireg-business-evtcivil.xml";
-	public static final String UNIREG_BUSINESS_EVT_ORGANISATION = "classpath:unireg-business-evtorganisation.xml";
+	public static final String UNIREG_BUSINESS_EVT_ENTREPRISE = "classpath:unireg-business-evtentreprise.xml";
 	public static final String UNIREG_BUSINESS_EVT_FISCAL= "classpath:unireg-business-evtfiscal.xml";
 	public static final String UNIREG_BUSINESS_ANNONCE_IDE = "classpath:unireg-business-annonce-ide.xml";
 	public static final String UNIREG_BUSINESS_JOBS = "classpath:unireg-business-jobs.xml";
 	public static final String UNIREG_BUSINESS_UT_CACHE = "classpath:ut/unireg-businessut-cache.xml";
-	public static final String UNIREG_BUSINESS_UT_EVT_ORGANISATION = "classpath:ut/unireg-businessut-evtorganisation.xml";
+	public static final String UNIREG_BUSINESS_UT_EVT_ENTREPRISE = "classpath:ut/unireg-businessut-evtentreprise.xml";
 	public static final String UNIREG_BUSINESS_UT_SERVICES = "classpath:ut/unireg-businessut-services.xml";
 	public static final String UNIREG_BUSINESS_UT_INTERFACES = "classpath:ut/unireg-businessut-interfaces.xml";
 	public static final String UNIREG_BUSINESS_UT_JMS = "classpath:ut/unireg-businessut-jms.xml";

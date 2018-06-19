@@ -892,7 +892,7 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
-	 * @param entreprise Une entreprise
+	 * @param entreprise une entreprise
 	 * @return la liste des questionnaires SNC existants, non-annulés, triés
 	 */
 	private static List<QuestionnaireSNC> getQuestionnairesSNCExistants(Entreprise entreprise) {

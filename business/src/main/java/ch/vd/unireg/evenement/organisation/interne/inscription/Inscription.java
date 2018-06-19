@@ -4,18 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -25,7 +25,7 @@ import ch.vd.unireg.type.TypeEtatEntreprise;
 /**
  * @author Raphaël Marmier, 2016-02-23
  */
-public class Inscription extends EvenementOrganisationInterneDeTraitement {
+public class Inscription extends EvenementEntrepriseInterneDeTraitement {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Inscription.class);
 	private final RegDate dateAvant;
@@ -45,16 +45,16 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
 	private final Etablissement etablissementPrincipal;
 
-	public Inscription(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                   EvenementOrganisationContext context,
-	                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	public Inscription(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
+	                   EvenementEntrepriseContext context,
+	                   EvenementEntrepriseOptions options) throws EvenementEntrepriseException {
+		super(evenement, entrepriseCivile, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
 
-		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
-		etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = entrepriseCivile.getEtablissementPrincipal(dateAvant);
+		etablissementPrincipalApres = entrepriseCivile.getEtablissementPrincipal(dateApres).getPayload();
 
 		if (etablissementPrincipalAvantRange != null) {
 			etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
@@ -88,7 +88,7 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
 		final TiersService tiersService = getContext().getTiersService();
 
@@ -101,7 +101,7 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
 		// Erreurs techniques fatale
 		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {
@@ -117,7 +117,7 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 		if (statusInscriptionApres != StatusInscriptionRC.ACTIF && statusInscriptionApres != StatusInscriptionRC.EN_LIQUIDATION) {
 			throw new IllegalArgumentException();
 		}
-		if (getOrganisation().isConnueInscriteAuRC(dateAvant)) {
+		if (getEntrepriseCivile().isConnueInscriteAuRC(dateAvant)) {
 			throw new IllegalArgumentException();
 		}
 		if (dateRadiationApres != null) {

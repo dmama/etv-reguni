@@ -6,10 +6,6 @@ import java.util.List;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesRequest;
-import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesResponse;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
@@ -20,8 +16,8 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -37,6 +33,10 @@ import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesRequest;
+import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesResponse;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.infra.v1.TaxOfficesBuilder;
 
 public class TaxOfficesRequestHandlerV1 implements RequestHandler<TaxOfficesRequest> {
@@ -79,8 +79,8 @@ public class TaxOfficesRequestHandlerV1 implements RequestHandler<TaxOfficesRequ
 		context.serviceCivilService = service;
 	}
 
-	public void setServiceOrganisation(ServiceOrganisationService service) {
-		context.serviceOrganisationService = service;
+	public void setServiceEntreprise(ServiceEntreprise service) {
+		context.serviceEntreprise = service;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate template) {

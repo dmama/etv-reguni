@@ -42,7 +42,7 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition>
 			isAssujetti = forFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !modeImpositionNonConforme;
 		}
 		else {
-			// les entreprise ne sont pas encore supportées par ce service...!
+			// les entreprises ne sont pas encore supportées par ce service...!
 			isAssujetti = false;
 			modeImpositionNonConforme = false;
 		}

@@ -9,34 +9,34 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementEntrepriseCivileProcessorTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementEntreprise;
 
-import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementEntreprise.A_TRAITER;
 
 /**
  * @author Raphaël Marmier, 2016-05-18
  */
-public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTest {
+public class RaisonSocialeTest extends AbstractEvenementEntrepriseCivileProcessorTest {
 
 	public RaisonSocialeTest() {
 		setWantIndexationTiers(true);
@@ -55,28 +55,28 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 	public void testSimpleChgmtRaisonSociale() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 1012021L;
-		final Long noEtablissement = noOrganisation + 100;
-		final Long noEtablissement2 = noOrganisation + 200;
+		final Long noEntrepriseCivile = 1012021L;
+		final Long noEtablissement = noEntrepriseCivile + 100;
+		final Long noEtablissement2 = noEntrepriseCivile + 200;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-				final MockEtablissementCivil etablissementSecondaire = MockEtablissementCivilFactory.addEtablissement(noEtablissement2, org, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-				                                                                                             FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                                                                             MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
-				                                                                                             StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
+				final MockEtablissementCivil etablissementSecondaire = MockEtablissementCivilFactory.addEtablissement(noEtablissement2, ent, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+				                                                                                                      FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                                                      MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
+				                                                                                                      StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
 
-				final MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementPrincipal(date(2010, 6, 26)).getPayload();
+				final MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementPrincipal(date(2010, 6, 26)).getPayload();
 
 				etablissementPrincipal.changeNom(date(2015, 7, 5), "Energol SA");
 				etablissementSecondaire.changeNom(date(2015, 7, 5), "Energol creation Aubonne SA");
-				addOrganisation(org);
+				addEntreprise(ent);
 
 			}
 		});
@@ -88,7 +88,7 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 			public Map<Long, Long> doInTransaction(TransactionStatus transactionStatus) {
 				Map<Long, Long> idMap = new HashMap<>();
 
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
@@ -120,22 +120,22 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
 				                             Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement)),
@@ -156,28 +156,28 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 	public void testChgmtRaisonSocialeAvecEnseigne() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 1012021L;
-		final Long noEtablissement = noOrganisation + 100;
-		final Long noEtablissement2 = noOrganisation + 200;
+		final Long noEntrepriseCivile = 1012021L;
+		final Long noEtablissement = noEntrepriseCivile + 100;
+		final Long noEtablissement2 = noEntrepriseCivile + 200;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-				final MockEtablissementCivil etablissementSecondaire = MockEtablissementCivilFactory.addEtablissement(noEtablissement2, org, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-				                                                                                             FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                                                                             MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
-				                                                                                             StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
+				final MockEtablissementCivil etablissementSecondaire = MockEtablissementCivilFactory.addEtablissement(noEtablissement2, ent, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+				                                                                                                      FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                                                      MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
+				                                                                                                      StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
 
-				final MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementPrincipal(date(2010, 6, 26)).getPayload();
+				final MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementPrincipal(date(2010, 6, 26)).getPayload();
 
 				etablissementPrincipal.changeNom(date(2015, 7, 5), "Energol SA");
 				etablissementSecondaire.changeNom(date(2015, 7, 5), "Energol creation Aubonne SA");
-				addOrganisation(org);
+				addEntreprise(ent);
 
 			}
 		});
@@ -189,7 +189,7 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 			public Map<Long, Long> doInTransaction(TransactionStatus transactionStatus) {
 				Map<Long, Long> idMap = new HashMap<>();
 
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
@@ -222,22 +222,22 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
 				                             Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(idMap.get(noEtablissement)),
@@ -263,27 +263,27 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 	public void testChgmtRaisonSocialeEnseigneCorrespond() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 1012021L;
-		final Long noEtablissement = noOrganisation + 100;
-		final Long noEtablissement2 = noOrganisation + 200;
+		final Long noEntrepriseCivile = 1012021L;
+		final Long noEtablissement = noEntrepriseCivile + 100;
+		final Long noEtablissement2 = noEntrepriseCivile + 200;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995");
+				final MockEntrepriseCivile ent =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
+						                                       StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995");
 
-				final MockEtablissementCivil etablissementSecondaire = MockEtablissementCivilFactory.addEtablissement(noEtablissement2, org, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
-				                                                                                             FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                                                                             MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
-				                                                                                             StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				final MockEtablissementCivil etablissementSecondaire = MockEtablissementCivilFactory.addEtablissement(noEtablissement2, ent, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+				                                                                                                      FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                                                      MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
+				                                                                                                      StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-				final MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) org.getEtablissementPrincipal(date(2010, 6, 26)).getPayload();
+				final MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) ent.getEtablissementPrincipal(date(2010, 6, 26)).getPayload();
 
 				etablissementPrincipal.changeNom(date(2015, 7, 5), "Energol SA");
-				addOrganisation(org);
+				addEntreprise(ent);
 
 			}
 		});
@@ -295,7 +295,7 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 			public Map<Long, Long> doInTransaction(TransactionStatus transactionStatus) {
 				Map<Long, Long> idMap = new HashMap<>();
 
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noEtablissement);
@@ -328,22 +328,22 @@ public class RaisonSocialeTest extends AbstractEvenementOrganisationProcessorTes
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
 				                             Assert.assertEquals(3, evt.getErreurs().size());
 				                             Assert.assertEquals(String.format("Changement de raison sociale de l'établissement principal n°%s (civil: %d). Synergy SA devient Energol SA.",

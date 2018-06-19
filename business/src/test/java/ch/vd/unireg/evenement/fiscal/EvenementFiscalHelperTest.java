@@ -10,7 +10,7 @@ public class EvenementFiscalHelperTest extends WithoutSpringTest {
 	@Test
 	public void testExtractBusinessUser() throws Exception {
 		Assert.assertEquals("unireg", EvenementFiscalHelper.getBusinessUser("EvtCivil-24657432567"));
-		Assert.assertEquals("unireg", EvenementFiscalHelper.getBusinessUser("EvtOrganisation-158414515"));
+		Assert.assertEquals("unireg", EvenementFiscalHelper.getBusinessUser("EvtEntreprise-158414515"));
 		Assert.assertEquals("unireg", EvenementFiscalHelper.getBusinessUser("JMS-Turlututu"));
 		Assert.assertEquals("unireg", EvenementFiscalHelper.getBusinessUser("JMS-EvtDeclaration"));
 		Assert.assertEquals("unireg", EvenementFiscalHelper.getBusinessUser("Récupération-démarrage"));

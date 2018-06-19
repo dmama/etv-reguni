@@ -7,16 +7,16 @@ import java.util.Set;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.IndexerFormatHelper;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -39,7 +39,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 
 	private final ContribuableIndexable ctbIndexable;
 
-	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceCivilService serviceCivil, ServiceOrganisationService serviceOrganisation,
+	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceCivilService serviceCivil, ServiceEntreprise serviceEntreprise,
 	                                            ServiceInfrastructureService serviceInfra, AvatarService avatarService, DebiteurPrestationImposable dpi) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, avatarService, dpi);
 
@@ -59,10 +59,10 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 				}
 			}
 			else if (ctb instanceof Entreprise) {
-				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, assujettissementService, serviceInfra, serviceOrganisation, avatarService, (Entreprise) ctb);
+				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, assujettissementService, serviceInfra, serviceEntreprise, avatarService, (Entreprise) ctb);
 			}
 			else if (ctb instanceof Etablissement) {
-				ctbIndexable = new EtablissementIndexable(adresseService, tiersService, assujettissementService, serviceInfra, serviceOrganisation, avatarService, (Etablissement) ctb);
+				ctbIndexable = new EtablissementIndexable(adresseService, tiersService, assujettissementService, serviceInfra, serviceEntreprise, avatarService, (Etablissement) ctb);
 			}
 			else if (ctb instanceof AutreCommunaute) {
 				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, (AutreCommunaute) ctb);

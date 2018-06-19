@@ -73,7 +73,7 @@ public class OrganisationLocation {
 	}
 
 	/**
-	 * Historique des personnes associées à l'organisation dans le cadre d'une fonction. L'historique
+	 * Historique des personnes associées à l'entreprise dans le cadre d'une fonction. L'historique
 	 * de chaque personne est séparé et indexé par son nom.
 	 *
 	 * Pourquoi son nom? Parce que c'est le seul champ obligatoire dont on dispose. L'historique d'une personne sera donc

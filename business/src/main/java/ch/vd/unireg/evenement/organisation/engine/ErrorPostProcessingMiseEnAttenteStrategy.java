@@ -7,17 +7,17 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.audit.Audit;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseBasicInfo;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseDAO;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 
 public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProcessingStrategy<Object> {
 
-	private final EvenementOrganisationDAO evtOrganisationDAO;
+	private final EvenementEntrepriseDAO evtEntrepriseDAO;
 
-	public ErrorPostProcessingMiseEnAttenteStrategy(EvenementOrganisationDAO dao) {
-		evtOrganisationDAO = dao;
+	public ErrorPostProcessingMiseEnAttenteStrategy(EvenementEntrepriseDAO dao) {
+		evtEntrepriseDAO = dao;
 	}
 
 	@Override
@@ -27,11 +27,11 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 
 	@NotNull
 	@Override
-	public List<EvenementOrganisationBasicInfo> doCollectPhase(List<EvenementOrganisationBasicInfo> remainingEvents, Mutable<Object> customData) {
-		final List<EvenementOrganisationBasicInfo> remaining = new ArrayList<>(remainingEvents.size());
-		for (EvenementOrganisationBasicInfo info : remainingEvents) {
-			final EvenementOrganisation evt = evtOrganisationDAO.get(info.getId());
-			if (evt.getEtat() == EtatEvenementOrganisation.A_TRAITER) {
+	public List<EvenementEntrepriseBasicInfo> doCollectPhase(List<EvenementEntrepriseBasicInfo> remainingEvents, Mutable<Object> customData) {
+		final List<EvenementEntrepriseBasicInfo> remaining = new ArrayList<>(remainingEvents.size());
+		for (EvenementEntrepriseBasicInfo info : remainingEvents) {
+			final EvenementEntreprise evt = evtEntrepriseDAO.get(info.getId());
+			if (evt.getEtat() == EtatEvenementEntreprise.A_TRAITER) {
 				setEnAttente(evt);
 			}
 			else {
@@ -41,8 +41,8 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 		return remaining;
 	}
 
-	private static void setEnAttente(EvenementOrganisation evt) {
-		evt.setEtat(EtatEvenementOrganisation.EN_ATTENTE);
+	private static void setEnAttente(EvenementEntreprise evt) {
+		evt.setEtat(EtatEvenementEntreprise.EN_ATTENTE);
 		Audit.info(evt.getNoEvenement(), String.format("Mise en attente de %s", evt.toString()));
 	}
 

@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * La fonction d'une personne physique dans l'entreprise d'une entreprise.
+ */
 public class FonctionOrganisation implements Serializable {
 
 	private static final long serialVersionUID = 4996250856949474474L;

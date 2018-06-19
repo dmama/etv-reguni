@@ -17,10 +17,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.tiers.DomicileEtablissement;
 import ch.vd.unireg.tiers.Entreprise;
@@ -56,15 +56,15 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, org, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
+				MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, ent, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999995", null, null);
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire, org, dateDebut, null, "Toto Lausanne", null,
+				                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.SITE, "CHE999999995", null, null);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire, ent, dateDebut, null, "Toto Lausanne", null,
 				                                               false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
 				                                               null, null, "CHE999999996", null, null);
@@ -148,15 +148,15 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		}
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, org, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
+				MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, ent, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire, org, dateDebut, null, "Toto Lausanne", null,
+				                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.SITE, "CHE999999996", null, null);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire, ent, dateDebut, null, "Toto Lausanne", null,
 				                                               false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
 				                                               null, null, "CHE999999997", null, null);
@@ -236,21 +236,21 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		final String ide = "CHE101390939";
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, org, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
+				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, ent, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
+				                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.SITE, "CHE999999996", null, null);
 
-				final MockEtablissementCivil sec = MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire1, org, dateDebut, null, "Toto Lausanne 1", null,
+				final MockEtablissementCivil sec = MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire1, ent, dateDebut, null, "Toto Lausanne 1", null,
 				                                                                                  false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                                  MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
 				                                                                                  null, null, ide, null, null);
 
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire2, org, dateDebut, null, "Toto Lausanne 2", null,
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire2, ent, dateDebut, null, "Toto Lausanne 2", null,
 				                                               false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
 				                                               null, null, "CHE999999998", null, null);
@@ -395,21 +395,21 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		final RegDate dateDemenagementFiscal = dateDebutCivile.addMonths(-2);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, org, dateDebutCivile, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
+				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, ent, dateDebutCivile, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebutCivile.addDays(-3),
-				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
+				                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.SITE, "CHE999999996", null, null);
 
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire1, org, dateDebutCivile, null, "Toto Lausanne", null,
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire1, ent, dateDebutCivile, null, "Toto Lausanne", null,
 				                                               false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, null,
 				                                               null, null, "CHE999999997", null, null);
 
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire2, org, dateDebutCivile, null, "Toto Renens", null,
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire2, ent, dateDebutCivile, null, "Toto Renens", null,
 				                                               false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Renens.getNoOFS(), StatusInscriptionRC.INCONNU, null,
 				                                               null, null, "CHE999999997", null, null);
@@ -581,16 +581,16 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		final RegDate dateDemenagementFiscal2 = dateDebutCivile.addMonths(2);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, org, dateDebutCivile, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
+				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementPrincipal, ent, dateDebutCivile, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                               true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebutCivile.addDays(-3),
-				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
+				                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.SITE, "CHE999999996", null, null);
 
-				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire1, org, dateDebutCivile, null, "Toto Lausanne", null,
+				MockEtablissementCivilFactory.addEtablissement(noCantonalEtablissementSecondaire1, ent, dateDebutCivile, null, "Toto Lausanne", null,
 				                                               false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                               MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, null,
 				                                               null, null, "CHE999999997", null, null);

@@ -158,7 +158,7 @@ import ch.vd.unireg.role.before2016.ProduireRolesPMCommunesResults;
 import ch.vd.unireg.role.before2016.ProduireRolesPPCommunesResults;
 import ch.vd.unireg.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.unireg.situationfamille.ReinitialiserBaremeDoubleGainResults;
-import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsOrganisationsResults;
+import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsEntreprisesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsPersonnesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsIdentificationContribuableResults;
@@ -1002,7 +1002,7 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 
 	@Override
 	public StatistiquesEvenementsRapport generateRapport(final StatsEvenementsCivilsPersonnesResults civilsPersonnes,
-	                                                     final StatsEvenementsCivilsOrganisationsResults civilsOrganisations,
+	                                                     final StatsEvenementsCivilsEntreprisesResults civilsEntreprises,
 	                                                     final StatsEvenementsExternesResults externes,
 	                                                     final StatsEvenementsIdentificationContribuableResults identCtb,
 	                                                     final StatsEvenementsNotairesResults notaires,
@@ -1018,7 +1018,7 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 				@Override
 				public void writeDoc(StatistiquesEvenementsRapport doc, OutputStream os) throws Exception {
 					final PdfStatistiquesEvenementsRapport document = new PdfStatistiquesEvenementsRapport();
-					document.write(civilsPersonnes, civilsOrganisations, externes, identCtb, notaires, dateReference, nom, description, dateGeneration, os, status);
+					document.write(civilsPersonnes, civilsEntreprises, externes, identCtb, notaires, dateReference, nom, description, dateGeneration, os, status);
 				}
 			});
 		}

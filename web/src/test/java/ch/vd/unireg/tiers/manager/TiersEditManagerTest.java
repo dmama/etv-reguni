@@ -114,14 +114,14 @@ public class TiersEditManagerTest extends WebTest {
 	}
 
 	/**
-	 * Teste la methode creeOrganisation
+	 * Teste la methode creeEntreprise
 	 */
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testCreeOrganisation() {
+	public void testCreeEntreprise() {
 
-		TiersEditView view = tiersEditManager.creeOrganisation();
+		TiersEditView view = tiersEditManager.creeEntreprise();
 		Tiers tiers = view.getTiers();
 		AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
 		assertNotNull(autreCommunaute);

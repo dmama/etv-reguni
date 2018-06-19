@@ -107,7 +107,7 @@
 		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
 		<property name="webCivilService" ref="webCivilService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
-		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="entrepriseService" ref="entrepriseService"/>
 		<property name="adresseService" ref="adresseService" />
 		<property name="adresseManager" ref="adresseManager" />

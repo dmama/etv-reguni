@@ -155,6 +155,7 @@ public class CivilEntrepriseEditController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addRaisonSociale(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
+
 		final Entreprise entreprise = (Entreprise) tiersDAO.get(tiersId);
 		if (entreprise == null) {
 			throw new ObjectNotFoundException("L'entreprise avec l'id=" + tiersId + " n'existe pas.");

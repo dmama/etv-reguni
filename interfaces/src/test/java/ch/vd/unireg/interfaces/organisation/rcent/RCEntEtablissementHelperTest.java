@@ -30,8 +30,8 @@ import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusREE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationData;
@@ -173,7 +173,7 @@ public class RCEntEtablissementHelperTest extends WithoutSpringTest {
 		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 27), null, "Synergy Conception Aubonne SA",
 		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscriptionRC,
-		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		mockSite.getDonneesRC().changeInscription(date(2015, 7, 8), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 		                                                                              dateInscriptionRC, dateRadiationRC,
 		                                                                              dateInscriptionRC, dateRadiationRC));
@@ -194,7 +194,7 @@ public class RCEntEtablissementHelperTest extends WithoutSpringTest {
 		MockEtablissementCivil mockSite = MockEtablissementCivilFactory.mockSite(noEtablissement, date(2010, 6, 27), null, "Synergy Conception Aubonne SA",
 		                                                                         FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                                                         MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-		                                                                         StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
+		                                                                         StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", null, null);
 		{
 			final PublicationFOSC publicationFOSC = new PublicationFOSC(date(2010, 6, 27), "77777", "Nouvelle inscription journal RC.");
 			final EntreeJournalRC entreeJournalRC = new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, date(2010, 6, 24), 111111L, publicationFOSC);

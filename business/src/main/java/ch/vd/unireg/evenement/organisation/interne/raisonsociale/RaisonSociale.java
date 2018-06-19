@@ -5,17 +5,17 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterne;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
 import ch.vd.unireg.evenement.organisation.interne.HandleStatus;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 
@@ -23,20 +23,20 @@ import ch.vd.unireg.tiers.Etablissement;
  * Cette classe n'a de sens que pour expliciter l'existance de mutations portant sur la raison sociale de l'entreprise.
  *
  * Elle ne fait que stocker les messages à l'utilisateur concernant chaque établissement. Mais le faire ici permet d'avoir
- * une liste complète des mutations identifiées via les {@link EvenementOrganisationInterne}.
+ * une liste complète des mutations identifiées via les {@link EvenementEntrepriseInterne}.
  *
  * @author Raphaël Marmier, 2016-05-18
  */
-public class RaisonSociale extends EvenementOrganisationInterneDeTraitement {
+public class RaisonSociale extends EvenementEntrepriseInterneDeTraitement {
 
 	/**
 	 * Chaque paire représente un message de changement de raison sociale de l'établissement associé à l'état de warning désiré.
 	 */
 	private final Map<Etablissement, List<Pair<String, Boolean>>> changementsRaison;
 
-	public RaisonSociale(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context,
-	                     EvenementOrganisationOptions options, Map<Etablissement, List<Pair<String, Boolean>>> changementsRaison) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	public RaisonSociale(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise, EvenementEntrepriseContext context,
+	                     EvenementEntrepriseOptions options, Map<Etablissement, List<Pair<String, Boolean>>> changementsRaison) throws EvenementEntrepriseException {
+		super(evenement, entrepriseCivile, entreprise, context, options);
 		this.changementsRaison = changementsRaison;
 	}
 
@@ -46,7 +46,7 @@ public class RaisonSociale extends EvenementOrganisationInterneDeTraitement {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		for (List<Pair<String, Boolean>> paires : changementsRaison.values()) {
 			for (Pair<String, Boolean> paire : paires) {
 				if (paire.getRight()) {
@@ -60,6 +60,6 @@ public class RaisonSociale extends EvenementOrganisationInterneDeTraitement {
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 	}
 }

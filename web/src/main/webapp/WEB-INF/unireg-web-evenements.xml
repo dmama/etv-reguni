@@ -7,7 +7,7 @@
 	<bean id="evtCivCriteriaValidator" class="ch.vd.unireg.evenement.common.EvenementCivilCriteriaValidator" />
 
 	<bean id="evtCivEchCriteriaValidator" class="ch.vd.unireg.evenement.ech.EvenementCivilEchCriteriaValidator" />
-	<bean id="evtOrganisationCriteriaValidator" class="ch.vd.unireg.evenement.organisation.EvenementOrganisationCriteriaValidator" />
+	<bean id="evtEntrepriseCriteriaValidator" class="ch.vd.unireg.evenement.organisation.EvenementEntrepriseCriteriaValidator" />
 
 	<bean id="evtCivController" abstract="true" class="ch.vd.unireg.evenement.common.AbstractEvenementCivilController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
@@ -32,10 +32,10 @@
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="evtOrganisationController" class="ch.vd.unireg.evenement.organisation.EvenementOrganisationController" parent="evtCivController">
-		<property name="validator" ref="evtOrganisationCriteriaValidator" />
-		<property name="manager" ref="evtOrganisationManager" />
-		<property name="cappingLevelProvider" ref="evenementOrganisationTraitementCapping"/>
+	<bean id="evtEntrepriseController" class="ch.vd.unireg.evenement.organisation.EvenementEntrepriseController" parent="evtCivController">
+		<property name="validator" ref="evtEntrepriseCriteriaValidator" />
+		<property name="manager" ref="evtEntrepriseManager" />
+		<property name="cappingLevelProvider" ref="evenementEntrepriseTraitementCapping"/>
 	</bean>
 
 	<bean id="evtCivRegPPManager" class="ch.vd.unireg.evenement.regpp.manager.EvenementCivilRegPPManagerImpl" parent="evtCivManager">
@@ -49,15 +49,15 @@
 		<property name="evenementProcessor" ref="evtCivilEchProcessor" />
 	</bean>
 
-	<bean id="evtOrganisationManager" class="ch.vd.unireg.evenement.organisation.manager.EvenementOrganisationManagerImpl">
-		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+	<bean id="evtEntrepriseManager" class="ch.vd.unireg.evenement.organisation.manager.EvenementEntrepriseManagerImpl">
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="messageSource" ref="messageSource" />
-		<property name="evenementService" ref="evtOrganisationService" />
-		<property name="evenementNotificationQueue" ref="evtOrganisationNotificationQueue" />
-		<property name="evenementProcessor" ref="evtOrganisationProcessor" />
+		<property name="evenementService" ref="evtEntrepriseService" />
+		<property name="evenementNotificationQueue" ref="evtEntrepriseNotificationQueue" />
+		<property name="evenementProcessor" ref="evtEntrepriseProcessor" />
 	</bean>
 
 	<!-- Evénements notaires -->

@@ -3,17 +3,17 @@ package ch.vd.unireg.evenement.organisation.interne.demenagement;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.MotifFor;
 
@@ -22,25 +22,25 @@ import ch.vd.unireg.type.MotifFor;
  */
 public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagement {
 
-	public DemenagementSansChangementDeTypeAutoriteFiscale(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                                                       EvenementOrganisationContext context,
-	                                                       EvenementOrganisationOptions options,
+	public DemenagementSansChangementDeTypeAutoriteFiscale(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
+	                                                       EvenementEntrepriseContext context,
+	                                                       EvenementEntrepriseOptions options,
 	                                                       Domicile siegeAvant,
-	                                                       Domicile siegeApres) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options, siegeAvant, siegeApres);
+	                                                       Domicile siegeApres) throws EvenementEntrepriseException {
+		super(evenement, entrepriseCivile, entreprise, context, options, siegeAvant, siegeApres);
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
 		RegDate dateDemenagement;
 
-		// Si on est une organisation inscrite au RC, la date de déménagement correspond à la date de l'entrée au régistre journalier.
-		if (getOrganisation().isInscriteAuRC(getDateEvt()) && !getOrganisation().isRadieeDuRC(getDateEvt())) {
-			final EtablissementCivil etablissementPrincipal = getOrganisation().getEtablissementPrincipal(getDateEvt()).getPayload();
+		// Si on est une entreprise inscrite au RC, la date de déménagement correspond à la date de l'entrée au régistre journalier.
+		if (getEntrepriseCivile().isInscriteAuRC(getDateEvt()) && !getEntrepriseCivile().isRadieeDuRC(getDateEvt())) {
+			final EtablissementCivil etablissementPrincipal = getEntrepriseCivile().getEtablissementPrincipal(getDateEvt()).getPayload();
 			final List<EntreeJournalRC> entreesJournal = etablissementPrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 			if (entreesJournal.isEmpty()) {
-				throw new EvenementOrganisationException(
+				throw new EvenementEntrepriseException(
 						String.format("Entrée de journal au RC introuvable dans l'établissement principal (civil: %s). Impossible de traiter le déménagement.",
 						              etablissementPrincipal.getNumeroEtablissement()));
 			}
@@ -62,7 +62,7 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		super.validateSpecific(erreurs, warnings, suivis);
 
 		// Erreurs techniques fatale

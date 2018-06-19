@@ -42,18 +42,18 @@ public class CivilDataEventTracing implements CivilDataEventListener, Initializi
 	}
 
 	@Override
-	public void onOrganisationChange(final long id) {
+	public void onEntrepriseChange(final long id) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			target.onOrganisationChange(id);
+			target.onEntrepriseChange(id);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "onOrganisationChange", () -> String.format("id=%d", id));
+			tracing.end(time, t, "onEntrepriseChange", () -> String.format("id=%d", id));
 		}
 	}
 

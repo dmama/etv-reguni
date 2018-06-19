@@ -17,10 +17,10 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.tiers.CapitalHisto;
 import ch.vd.unireg.tiers.DomicileHisto;
 import ch.vd.unireg.tiers.Entreprise;
@@ -38,12 +38,12 @@ import ch.vd.unireg.tiers.view.EtatEntrepriseView;
  */
 public class EntrepriseServiceImpl implements EntrepriseService {
 
-	private ServiceOrganisationService serviceOrganisationService;
+	private ServiceEntreprise serviceEntreprise;
 	private TiersService tiersService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
-		this.serviceOrganisationService = serviceOrganisationService;
+	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
+		this.serviceEntreprise = serviceEntreprise;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -71,13 +71,13 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		if (numeroEntreprise != null) {
 
-			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(numeroEntreprise);
 
-			final List<DateRanged<String>> nomsAdditionnels = organisation.getNomAdditionnel();
+			final List<DateRanged<String>> nomsAdditionnels = entrepriseCivile.getNomAdditionnel();
 			nomsAdditionnels.sort(new DateRangeComparator<>());
 			entrepriseView.setNomsAdditionnels(nomsAdditionnels);
 
-			final DonneesRC donneesRC = organisation.getEtablissementPrincipal(null).getPayload().getDonneesRC();
+			final DonneesRC donneesRC = entrepriseCivile.getEtablissementPrincipal(null).getPayload().getDonneesRC();
 			final InscriptionRC inscriptionRC = getLastElementPayload(donneesRC.getInscription());
 			if (inscriptionRC != null) {
 				entrepriseView.setDateInscriptionRC(inscriptionRC.getDateInscriptionCH());
@@ -87,7 +87,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 				entrepriseView.setDateRadiationRC(inscriptionRC.getDateRadiationCH());
 			}
 
-			final DonneesRegistreIDE donneesRegistreIDE = organisation.getEtablissementPrincipal(null).getPayload().getDonneesRegistreIDE();
+			final DonneesRegistreIDE donneesRegistreIDE = entrepriseCivile.getEtablissementPrincipal(null).getPayload().getDonneesRegistreIDE();
 			//entrepriseView.setDateInscritpionIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getDateInscription()).getPayload()); // TODO: apporter la date d'inscription Ide en 16L1
 			entrepriseView.setStatusIde(getLastElementPayload(donneesRegistreIDE.getStatus()));
 		}

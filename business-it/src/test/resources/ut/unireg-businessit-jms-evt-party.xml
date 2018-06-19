@@ -98,7 +98,7 @@
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="parametreService" ref="parametreAppService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="lrService" ref="lrService" />
@@ -119,7 +119,7 @@
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="parametreService" ref="parametreAppService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="lrService" ref="lrService" />
@@ -140,7 +140,7 @@
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="parametreService" ref="parametreAppService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="lrService" ref="lrService" />
@@ -163,7 +163,7 @@
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="parametreService" ref="parametreAppService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="lrService" ref="lrService" />
@@ -186,7 +186,7 @@
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="parametreService" ref="parametreAppService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="lrService" ref="lrService" />
@@ -261,7 +261,7 @@
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="parametreService" ref="parametreAppService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="lrService" ref="lrService" />

@@ -50,7 +50,7 @@ public class MockDataEventService implements DataEventService {
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
+	public void onEntrepriseChange(long id) {
 
 	}
 

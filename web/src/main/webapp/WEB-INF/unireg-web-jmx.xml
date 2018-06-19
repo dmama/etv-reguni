@@ -27,7 +27,7 @@
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsEchJmxBean" />
-				<entry key="ch.vd.unireg-web:type=Monitoring,name=EvenementsOrganisation" value-ref="evenementsOrganisationJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=EvenementsEntreprise" value-ref="evenementsEntrepriseJmxBean" />
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=IndexationOnTheFly" value-ref="onTheFlyTiersIndexerJmxBean"/>
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
@@ -61,7 +61,7 @@
 				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsEfacture" value-ref="evenementEfactureListener"/>
 				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsEfactureResponse" value-ref="eFactureResponseListener"/>
 				<entry key="ch.vd.unireg-web:type=JmsListeners,name=ReqDes" value-ref="reqdesEventListener"/>
-				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsOrganisation" value-ref="evtOrganisationListener"/>
+				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsEntreprise" value-ref="evtEntrepriseListener"/>
 				<entry key="ch.vd.unireg-web:type=JmsListeners,name=RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
 				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsImportRf" value-ref="evtRFImportEventListener"/>
 				<entry key="ch.vd.unireg-web:type=JmsListeners,name=EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>
@@ -127,10 +127,10 @@
 		<property name="processor" ref="evtCivilEchProcessor"/>
 	</bean>
 
-	<bean name="evenementsOrganisationJmxBean" class="ch.vd.unireg.jmx.EvenementsOrganisationJmxBeanImpl">
-		<property name="monitor" ref="evtOrganisationReceptionHandler"/>
-		<property name="processor" ref="evtOrganisationProcessor"/>
-		<property name="cappingSwitch" ref="evenementOrganisationTraitementCapping"/>
+	<bean name="evenementsEntrepriseJmxBean" class="ch.vd.unireg.jmx.EvenementsEntrepriseJmxBeanImpl">
+		<property name="monitor" ref="evtEntrepriseReceptionHandler"/>
+		<property name="processor" ref="evtEntrepriseProcessor"/>
+		<property name="cappingSwitch" ref="evenementEntrepriseTraitementCapping"/>
 	</bean>
 
 	<bean name="retourImpressionJmxBean" class="ch.vd.unireg.jmx.RetourImpressionJmxBeanImpl">
@@ -188,7 +188,7 @@
 				<entry key="EvenementsEfacture" value-ref="evenementEfactureListener"/>
 				<entry key="EvenementsEfactureResponse" value-ref="eFactureResponseListener"/>
 				<entry key="ReqDes" value-ref="reqdesEventListener"/>
-				<entry key="EvenementsOrganisation" value-ref="evtOrganisationListener"/>
+				<entry key="EvenementsEntreprise" value-ref="evtEntrepriseListener"/>
 				<entry key="RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
 				<entry key="EvenementsImportRf" value-ref="evtRFImportEventListener"/>
 				<entry key="EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>

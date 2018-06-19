@@ -68,11 +68,11 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.service.ServiceCivilImpl;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.dao.DecisionAciDAO;
@@ -4062,10 +4062,10 @@ debut PF                                                                        
 	public void testGetRapportActiviteEconomiqueAvecTiersReferentPM() throws Exception {
 
 		// mise en place du service PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
@@ -4076,7 +4076,7 @@ debut PF                                                                        
 			etb.setComplementNom("Titi");
 
 			// on indique le tiers référent
-			final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 			tiersService.addActiviteEconomique(etb, pm, date(2009, 1, 1), false);
 
 			return etb.getNumero();
@@ -4122,10 +4122,10 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentPM() throws Exception {
 
 		// mise en place du service PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
@@ -4137,7 +4137,7 @@ debut PF                                                                        
 			dpi.setComplementNom("Titi");
 
 			// on indique le tiers référent
-			final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+			final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 			tiersService.addContactImpotSource(dpi, pm, date(2009, 1, 1));
 
 			return dpi.getNumero();
@@ -4149,7 +4149,7 @@ debut PF                                                                        
 			final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
 			Assert.assertNotNull(raisonSociale);
 			Assert.assertEquals(1, raisonSociale.size());
-			Assert.assertEquals(MockOrganisationFactory.NESTLE.getNom().get(0).getPayload(), raisonSociale.get(0));
+			Assert.assertEquals(MockEntrepriseFactory.NESTLE.getNom().get(0).getPayload(), raisonSociale.get(0));
 			return null;
 		});
 	}
@@ -9319,28 +9319,28 @@ debut PF                                                                        
 	@Test
 	public void testGetCapitaux() throws Exception {
 
-		final long noOrganisation = 48518745L;
+		final long noEntrepriseCivile = 48518745L;
 		final long noEtablissement = 346742L;
 		final RegDate dateDebut = date(2000, 1, 4);
 		final RegDate dateDebutSurchargeCapital = date(2005, 3, 1);
 		final RegDate dateFinSurchargeCapital = date(2012, 6, 30);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noOrganisation);
-				MockEtablissementCivilFactory.addEtablissement(noEtablissement, org, dateDebut, null, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, true,
+				final MockEntrepriseCivile ent = addEntreprise(noEntrepriseCivile);
+				MockEtablissementCivilFactory.addEtablissement(noEtablissement, ent, dateDebut, null, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, true,
 				                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
 				                                               StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                               StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996",
+				                                               StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.SITE, "CHE999999996",
 				                                               BigDecimal.valueOf(10000000L), MontantMonetaire.CHF);
 			}
 		});
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(status -> {
-			final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 			addCapitalEntreprise(entreprise, dateDebutSurchargeCapital, dateFinSurchargeCapital, new MontantMonetaire(42L, MontantMonetaire.CHF));
 			return entreprise.getNumero();
 		});

@@ -235,11 +235,11 @@
 		<property name="processor" ref="evtReqDesRetryProcessor"/>
 	</bean>
 
-    <!-- Job qui re-traite les événements organisation -->
-    <bean id="evenementOrganisationHandlerJob" parent="schedulerJob" class="ch.vd.unireg.evenement.organisation.engine.EvenementOrganisationHandlerJob">
+    <!-- Job qui re-traite les événements entreprise -->
+    <bean id="evenementEntrepriseHandlerJob" parent="schedulerJob" class="ch.vd.unireg.evenement.organisation.engine.EvenementEntrepriseHandlerJob">
         <constructor-arg value="205"/>
-        <constructor-arg value="Traitement (ou retraitement) des événements organisation"/>
-        <property name="processorOrganisation" ref="evtOrganisationProcessorRetry"/>
+        <constructor-arg value="Traitement (ou retraitement) des événements entreprise"/>
+        <property name="processorEntreprise" ref="evtEntrepriseProcessorRetry"/>
     </bean>
 
 	<bean id="editiqueListeRecapJob" parent="schedulerJob" class="ch.vd.unireg.editique.batch.EditiqueListeRecapJob">

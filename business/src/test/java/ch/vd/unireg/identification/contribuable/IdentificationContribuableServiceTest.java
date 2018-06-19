@@ -19,20 +19,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
-import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.interfaces.upi.ServiceUpiException;
-import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
-import ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi;
-import ch.vd.unireg.interfaces.upi.mock.MockServiceUpi;
-import ch.vd.unireg.interfaces.upi.mock.ServiceUpiProxy;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
@@ -57,7 +43,21 @@ import ch.vd.unireg.indexer.tiers.MenageCommunIndexable;
 import ch.vd.unireg.indexer.tiers.NonHabitantIndexable;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.indexer.tiers.TopList;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.interfaces.upi.ServiceUpiException;
+import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
+import ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi;
+import ch.vd.unireg.interfaces.upi.mock.MockServiceUpi;
+import ch.vd.unireg.interfaces.upi.mock.ServiceUpiProxy;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.Entreprise;
@@ -4811,16 +4811,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParIde() throws Exception {
 
 		// mise en place des PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
-		final String ideCoop = MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
+		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -4830,9 +4830,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 				addIdentificationEntreprise(ppBidon, ideCoop);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				return pm.getNumero();
 			}
 		});
@@ -4858,16 +4858,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParIdeInconnu() throws Exception {
 
 		// mise en place des PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
-		final String ideCoop = MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
+		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -4877,9 +4877,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 				addIdentificationEntreprise(ppBidon, ideCoop);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				return pm.getNumero();
 			}
 		});
@@ -4905,16 +4905,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParIdeAvecNomNonConforme() throws Exception {
 
 		// mise en place des PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
-		final String ideCoop = MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
+		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -4924,9 +4924,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 				addIdentificationEntreprise(ppBidon, ideCoop);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				return pm.getNumero();
 			}
 		});
@@ -4953,16 +4953,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSociale() throws Exception {
 
 		// mise en place des PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
-		final String ideCoop = MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
+		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -4971,9 +4971,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
 				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				return pm.getNumero();
 			}
 		});
@@ -4999,16 +4999,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSocialeAvecIdeNonConforme() throws Exception {
 
 		// mise en place des PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
-		final String ideCoop = MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
+		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -5017,9 +5017,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
 				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				return pm.getNumero();
 			}
 		});
@@ -5046,16 +5046,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSocialeAvecMotsCles() throws Exception {
 
 		// mise en place des PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
-		final String ideCoop = MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
+		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -5064,9 +5064,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				// personne physique avec le même nom que la banque coop de Bâle (pour vérifier que seules les entreprises sont prises en compte dans la recherche)
 				final PersonnePhysique ppBidon = addNonHabitant("Albert", "Coop", null, Sexe.MASCULIN);
 
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				return pm.getNumero();
 			}
 		});
@@ -5092,16 +5092,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSocialeAvecFrancisationNecessaire() throws Exception {
 
 		// mise en place des PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
-		final String ideCoop = MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
+		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -5112,9 +5112,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 				final AutreCommunaute ac = addAutreCommunaute("Mueller GmbH");
 
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				return ac.getNumero();
 			}
 		});
@@ -5140,16 +5140,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testIdentificationEntrepriseParRaisonSocialeEtNPA() throws Exception {
 
 		// mise en place des PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
-		final String ideCoop = MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
+		final String ideCoop = MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getPayload();
 
 		// mise en place fiscale
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -5163,9 +5163,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final AutreCommunaute two = addAutreCommunaute("Favre & Co AG");
 				addAdresseSuisse(two, TypeAdresseTiers.COURRIER, date(2013, 4, 12), null, MockRue.Lausanne.AvenueDeLaGare);
 
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				return one.getNumero();
 			}
 		});

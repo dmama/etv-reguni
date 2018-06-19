@@ -20,8 +20,8 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.HistoFlag;
@@ -211,10 +211,10 @@ public class TiersVisuManagerTest extends WebTest {
 	public void testGetAdresseCivilesEntreprise() throws Exception {
 
 		// on insère les données du Tennis-Club de Forel-Savigny (qui possède une boîte postale)
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.TENNIS_CLUB_FOREL_SAVIGNY);
+				addEntreprise(MockEntrepriseFactory.TENNIS_CLUB_FOREL_SAVIGNY);
 			}
 		});
 
@@ -250,13 +250,13 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	public void testGetAdresseCivilesEtablissement() throws Exception {
 
-		final long numeroEtablissement = MockOrganisationFactory.TENNIS_CLUB_FOREL_SAVIGNY.getEtablissementPrincipal(null).getPayload().getNumeroEtablissement();
+		final long numeroEtablissement = MockEntrepriseFactory.TENNIS_CLUB_FOREL_SAVIGNY.getEtablissementPrincipal(null).getPayload().getNumeroEtablissement();
 
 		// on insère les données du Tennis-Club de Forel-Savigny (dont l'établissement principal possède une boîte postale)
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.TENNIS_CLUB_FOREL_SAVIGNY);
+				addEntreprise(MockEntrepriseFactory.TENNIS_CLUB_FOREL_SAVIGNY);
 			}
 		});
 

@@ -10,46 +10,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.common.PollingThread;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
-import ch.vd.unireg.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseBasicInfo;
+import ch.vd.unireg.evenement.organisation.engine.EvenementEntrepriseNotificationQueue;
 
 /**
  * Thread de traitement
  *
  */
-class ProcessorThread extends PollingThread<EvenementOrganisationNotificationQueue.Batch> {
+class ProcessorThread extends PollingThread<EvenementEntrepriseNotificationQueue.Batch> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationProcessorFacade.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementEntrepriseProcessorFacade.class);
 
-	private final EvenementOrganisationNotificationQueue eventQueue;
+	private final EvenementEntrepriseNotificationQueue eventQueue;
 
 	private final ProcessorPublisher publisher;
 
 	private final ProcessorInternal processor;
 
-	ProcessorThread(EvenementOrganisationNotificationQueue eventQueue, ProcessorInternal processor, ProcessorPublisher publisher) {
-		super("EvtOrganisation");
+	ProcessorThread(EvenementEntrepriseNotificationQueue eventQueue, ProcessorInternal processor, ProcessorPublisher publisher) {
+		super("EvtEntreprise");
 		this.eventQueue = eventQueue;
 		this.processor = processor;
 		this.publisher = publisher;
 	}
 
 	@Override
-	protected EvenementOrganisationNotificationQueue.Batch poll(@NotNull Duration timeout) throws InterruptedException {
+	protected EvenementEntrepriseNotificationQueue.Batch poll(@NotNull Duration timeout) throws InterruptedException {
 		return eventQueue.poll(timeout);
 	}
 
 	@Override
-	protected void processElement(@NotNull EvenementOrganisationNotificationQueue.Batch element) {
+	protected void processElement(@NotNull EvenementEntrepriseNotificationQueue.Batch element) {
 		if (element.contenu.size() > 0) {
-			processEvents(element.noOrganisation, element.contenu);
+			processEvents(element.noEntrepriseCivile, element.contenu);
 		}
 	}
 
 	@Override
-	protected void onElementProcessed(@NotNull EvenementOrganisationNotificationQueue.Batch element, @Nullable Throwable t) {
+	protected void onElementProcessed(@NotNull EvenementEntrepriseNotificationQueue.Batch element, @Nullable Throwable t) {
 		super.onElementProcessed(element, t);
-		publisher.notifyTraitementOrganisation(element.noOrganisation);
+		publisher.notifyTraitementEntreprise(element.noEntrepriseCivile);
 	}
 
 	@Override
@@ -60,15 +60,15 @@ class ProcessorThread extends PollingThread<EvenementOrganisationNotificationQue
 
 	/**
 	 * Prend les événements dans l'ordre et essaie de les traiter. S'arrête à la première erreur.
-	 * @param noOrganisation identifiant de l'individu pour lequel des événements doivent être traités
+	 * @param noEntrepriseCivile identifiant de l'individu pour lequel des événements doivent être traités
 	 * @param evts descriptifs des événements à traiter
 	 */
-	private void processEvents(long noOrganisation, List<EvenementOrganisationBasicInfo> evts) {
+	private void processEvents(long noEntrepriseCivile, List<EvenementEntrepriseBasicInfo> evts) {
 		int pointer = 0;
 		final long start = System.nanoTime();
 		try {
-			LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'organisation n°%d", evts.size(), noOrganisation));
-			for (EvenementOrganisationBasicInfo evt : evts) {
+			LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'entreprise n°%d", evts.size(), noEntrepriseCivile));
+			for (EvenementEntrepriseBasicInfo evt : evts) {
 				if (!shouldStop()) {
 					if (!processor.processEventAndDoPostProcessingOnError(evt, evts, pointer)) {
 						break;
@@ -78,7 +78,7 @@ class ProcessorThread extends PollingThread<EvenementOrganisationNotificationQue
 			}
 		}
 		catch (Exception e) {
-			LOGGER.error(String.format("Erreur lors du traitement de l'événement organisation n°%d (rcent: %d)", evts.get(pointer).getId(), evts.get(pointer).getNoEvenement()), e);
+			LOGGER.error(String.format("Erreur lors du traitement de l'événement entreprise n°%d (rcent: %d)", evts.get(pointer).getId(), evts.get(pointer).getNoEvenement()), e);
 		}
 		finally {
 			final long end = System.nanoTime();

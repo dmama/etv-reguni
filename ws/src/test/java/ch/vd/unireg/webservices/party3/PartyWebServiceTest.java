@@ -38,9 +38,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -1381,14 +1381,14 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final long noPM = 20151L;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noPM, noPM + 1011, "Fiduciaire Galper S.A.", date(1993, 7, 23), null,
-				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay);
-				addOrganisation(org);
-				addAdresse(org, TypeAdresseCivil.PRINCIPALE, null, "3bis", null, MockLocalite.CossonayVille, date(1993, 7, 23), date(1999, 12, 31));
-				addAdresse(org, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, "3bis", null, MockLocalite.CossonayVille, date(2000, 1, 1), null);
+				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noPM, noPM + 1011, "Fiduciaire Galper S.A.", date(1993, 7, 23), null,
+				                                                                                FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay);
+				addEntreprise(ent);
+				addAdresse(ent, TypeAdresseCivil.PRINCIPALE, null, "3bis", null, MockLocalite.CossonayVille, date(1993, 7, 23), date(1999, 12, 31));
+				addAdresse(ent, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, "3bis", null, MockLocalite.CossonayVille, date(2000, 1, 1), null);
 			}
 		});
 
@@ -1830,21 +1830,21 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetCorporationWithoutAutomaticReimbursementInfo() throws Exception {
 
-		final long idOrganisation = 12345L;
+		final long idEntrepriseCivile = 12345L;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(idOrganisation, idOrganisation + 1011, "Biscottes Duchmole", date(1990, 4, 5), null,
-				                                                                              FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Cossonay);
-				addOrganisation(org);
+				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(idEntrepriseCivile, idEntrepriseCivile + 1011, "Biscottes Duchmole", date(1990, 4, 5), null,
+				                                                                                FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Cossonay);
+				addEntreprise(ent);
 			}
 		});
 
 		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				final Entreprise ent = addEntrepriseConnueAuCivil(idOrganisation);
+				final Entreprise ent = addEntrepriseConnueAuCivil(idEntrepriseCivile);
 				ent.setBlocageRemboursementAutomatique(null);
 				return ent.getId();
 			}

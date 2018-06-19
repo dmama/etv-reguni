@@ -30,8 +30,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.parametrage.ParametreEnum;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -80,11 +80,11 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			long idBcv;
 		}
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
-				addOrganisation(MockOrganisationFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BCV);
 			}
 		});
 
@@ -98,8 +98,8 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise nestle = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
-				final Entreprise bcv = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
+				final Entreprise nestle = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+				final Entreprise bcv = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
 				final Ids ids = new Ids();
 				ids.idBcv = bcv.getNumero();
 				ids.idNestle = nestle.getNumero();
@@ -970,17 +970,17 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testSearchEntreprise() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
 			}
 		});
 
 		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
 				addNonHabitant("Roger", "Rabbit", null, Sexe.MASCULIN);
 				return entreprise.getNumero();
 			}

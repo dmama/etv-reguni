@@ -36,7 +36,7 @@ public class OrganisationEvent {
 	 * </p>
 	 *
 	 * <p>
-	 *     <strong>ATTENTION</strong>: cet établissement civil peut ne pas faire partie de l'organisation renvoyée par getPseudoHistory()! Il peut être membre d'une autre organisation
+	 *     <strong>ATTENTION</strong>: cet établissement civil peut ne pas faire partie de l'entreprise renvoyée par getPseudoHistory()! Il peut être membre d'une autre entreprise
 	 *     ciblée par le même événement RCEnt.
 	 * </p>
 	 *
@@ -47,7 +47,7 @@ public class OrganisationEvent {
 	}
 
 	/**
-	 * @return l'historique partiel de l'organisation.
+	 * @return l'historique partiel de l'entreprise.
 	 */
 	public Organisation getPseudoHistory() {
 		return pseudoHistory;

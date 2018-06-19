@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesREE;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionREE;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 
 /**
  * @author Raphaël Marmier, 2015-11-10
@@ -31,19 +31,19 @@ public class MockDonneesREE implements DonneesREE {
 	@NotNull
 	@Override
 	public List<DateRanged<InscriptionREE>> getInscriptionREE() {
-		return MockOrganisationHelper.getHisto(inscriptionREE);
+		return MockEntrepriseHelper.getHisto(inscriptionREE);
 	}
 
 	@Override
 	public InscriptionREE getInscriptionREE(RegDate date) {
-		return OrganisationHelper.valueForDate(getInscriptionREE(), date);
+		return EntrepriseHelper.valueForDate(getInscriptionREE(), date);
 	}
 
 	public void changeInscriptionREE(RegDate date, InscriptionREE nouvelleInscription) {
-		MockOrganisationHelper.changeRangedData(inscriptionREE, date, nouvelleInscription);
+		MockEntrepriseHelper.changeRangedData(inscriptionREE, date, nouvelleInscription);
 	}
 
 	public void addInscriptionREE(RegDate dateDebut, @Nullable RegDate dateFin, InscriptionREE nouvelleInscription) {
-		MockOrganisationHelper.addRangedData(inscriptionREE, dateDebut, dateFin, nouvelleInscription);
+		MockEntrepriseHelper.addRangedData(inscriptionREE, dateDebut, dateFin, nouvelleInscription);
 	}
 }

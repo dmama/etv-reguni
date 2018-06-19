@@ -43,7 +43,7 @@
         overflowToDisk="false"
         />
 
-    <cache name="serviceOrganisation"
+    <cache name="serviceEntreprise"
            maxElementsInMemory="2500"
            eternal="false"
            timeToIdleSeconds="500"

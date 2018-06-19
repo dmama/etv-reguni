@@ -53,7 +53,7 @@ public interface ServiceIDEService {
 	ProtoAnnonceIDE simuleSynchronisationIDE(Entreprise entreprise) throws ServiceIDEException;
 
 	/**
-	 * Valider le modèle d'annonce. Le service civil organisation est utilisé pour cela.
+	 * Valider le modèle d'annonce. Le service civil entreprise est utilisé pour cela.
 	 *
 	 * @param proto le prototype à faire valider.
 	 * @param entreprise l'entreprise pour laquelle l'annonce est effectuée

@@ -16,34 +16,34 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalInformationComplementaire;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseBasicInfo;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementEntreprise;
 
-import static ch.vd.unireg.type.EtatEvenementOrganisation.A_VERIFIER;
-import static ch.vd.unireg.type.EtatEvenementOrganisation.EN_ERREUR;
+import static ch.vd.unireg.type.EtatEvenementEntreprise.A_VERIFIER;
+import static ch.vd.unireg.type.EtatEvenementEntreprise.EN_ERREUR;
 
 /**
  * @author Raphaël Marmier, 2015-11-10
  */
-public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest {
+public class ForcedEventTest extends AbstractEvenementEntrepriseCivileProcessorTest {
 
 	public ForcedEventTest() {
 		setWantIndexationTiers(true);
@@ -65,20 +65,20 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 	public void testForcerNeCreePasForEnvoieEvtFiscaux() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				final RegDate dateInscriptionRC = date(2010, 6, 24);
 				final RegDate dateRadiationRC = date(2012, 1, 26);
-				final MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscriptionRC,
-						                                           StatusRegistreIDE.RADIE,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				final MockDonneesRC rc = (MockDonneesRC) organisation.getEtablissements().get(0).getDonneesRC();
+				final MockEntrepriseCivile entreprise =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscriptionRC,
+						                                       StatusRegistreIDE.RADIE,
+						                                       TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
+				final MockDonneesRC rc = (MockDonneesRC) entreprise.getEtablissements().get(0).getDonneesRC();
 				rc.changeInscription(date(2012, 1, 26), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 				                                                          dateInscriptionRC, null,
 				                                                          dateInscriptionRC, dateRadiationRC));
@@ -86,10 +86,10 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 				                                                         dateInscriptionRC, null,
 				                                                         dateInscriptionRC, null));
 
-				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getEtablissements().get(0).getDonneesRegistreIDE();
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) entreprise.getEtablissements().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
 				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
-				addOrganisation(organisation);
+				addEntreprise(entreprise);
 			}
 		});
 
@@ -98,7 +98,7 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
@@ -110,28 +110,28 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		EvenementOrganisation evt = doInNewTransactionAndSession(new TransactionCallback<EvenementOrganisation>() {
+		EvenementEntreprise evt = doInNewTransactionAndSession(new TransactionCallback<EvenementEntreprise>() {
 			@Override
-			public EvenementOrganisation doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event =
-						createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT, RegDate.get(2015, 7, 5), EN_ERREUR);
+			public EvenementEntreprise doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementEntreprise event =
+						createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT, RegDate.get(2015, 7, 5), EN_ERREUR);
 				return hibernateTemplate.merge(event);
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		processor.forceEvenement(new EvenementOrganisationBasicInfo(evt, evt.getNoOrganisation()));
+		processor.forceEvenement(new EvenementEntrepriseBasicInfo(evt, evt.getNoEntrepriseCivile()));
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.FORCE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.FORCE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             // Si la réinscription devait être traitée et non forcée, on trouverait un for.
 				                             Assert.assertEquals(0, entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).size());
@@ -171,31 +171,31 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 	public void testForcerNeCreePasForAucunEvtFiscauxAEnvoyer() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
 				final RegDate dateRadiation = date(2012, 1, 26);
-				final MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscription,
-						                                           StatusRegistreIDE.RADIE,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
+				final MockEntrepriseCivile entreprise =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscription,
+						                                       StatusRegistreIDE.RADIE,
+						                                       TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 
-				final MockDonneesRC rc = (MockDonneesRC) organisation.getEtablissements().get(0).getDonneesRC();
+				final MockDonneesRC rc = (MockDonneesRC) entreprise.getEtablissements().get(0).getDonneesRC();
 				rc.changeInscription(date(2012, 1, 26), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 				                                                          dateInscription, null,
 				                                                          dateInscription, dateRadiation));
 				rc.changeInscription(date(2015, 7, 5), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
 				                                                         dateInscription, null,
 				                                                         dateInscription, null));
-				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getEtablissements().get(0).getDonneesRegistreIDE();
+				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) entreprise.getEtablissements().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
 				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
-				addOrganisation(organisation);
+				addEntreprise(entreprise);
 			}
 		});
 
@@ -204,7 +204,7 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
@@ -216,28 +216,28 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		EvenementOrganisation evt = doInNewTransactionAndSession(new TransactionCallback<EvenementOrganisation>() {
+		EvenementEntreprise evt = doInNewTransactionAndSession(new TransactionCallback<EvenementEntreprise>() {
 			@Override
-			public EvenementOrganisation doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event =
-						createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), EN_ERREUR);
+			public EvenementEntreprise doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementEntreprise event =
+						createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), EN_ERREUR);
 				return hibernateTemplate.merge(event);
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		processor.forceEvenement(new EvenementOrganisationBasicInfo(evt, evt.getNoOrganisation()));
+		processor.forceEvenement(new EvenementEntrepriseBasicInfo(evt, evt.getNoEntrepriseCivile()));
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.FORCE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.FORCE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             // Si la réinscription devait être traitée et non forcée, on trouverait un for.
 				                             Assert.assertEquals(0, entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).size());
@@ -258,30 +258,30 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 	public void testForcerAVERIFIERNeRienFaire() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noEtablissement = noOrganisation + 1000000;
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				final RegDate dateInscription = date(2010, 6, 24);
 				final RegDate dateRadiation = date(2012, 1, 26);
-				final MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscription,
-						                                           StatusRegistreIDE.RADIE,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
-				final MockDonneesRC rc = (MockDonneesRC) organisation.getEtablissements().get(0).getDonneesRC();
+				final MockEntrepriseCivile entreprise =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.RADIE, dateInscription,
+						                                       StatusRegistreIDE.RADIE,
+						                                       TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
+				final MockDonneesRC rc = (MockDonneesRC) entreprise.getEtablissements().get(0).getDonneesRC();
 				rc.changeInscription(date(2012, 1, 26), new InscriptionRC(StatusInscriptionRC.RADIE, null,
 				                                                          dateInscription, null,
 				                                                          dateInscription, dateRadiation));
 				rc.changeInscription(date(2015, 7, 5), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
 				                                                         dateInscription, null,
 				                                                         dateInscription, null));
-				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getEtablissements().get(0).getDonneesRegistreIDE();
+				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) entreprise.getEtablissements().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
 				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
-				addOrganisation(organisation);
+				addEntreprise(entreprise);
 			}
 		});
 
@@ -290,7 +290,7 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
@@ -301,16 +301,16 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 		final Long noEvenement = 12344321L;
 
 		// Persistence événement
-		final EvenementOrganisation evt = doInNewTransactionAndSession(new TransactionCallback<EvenementOrganisation>() {
+		final EvenementEntreprise evt = doInNewTransactionAndSession(new TransactionCallback<EvenementEntreprise>() {
 			@Override
-			public EvenementOrganisation doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event =
-						createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT, RegDate.get(2015, 7, 5), A_VERIFIER);
+			public EvenementEntreprise doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementEntreprise event =
+						createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT, RegDate.get(2015, 7, 5), A_VERIFIER);
 				return hibernateTemplate.merge(event);
 			}
 		});
 
-		processor.forceEvenement(new EvenementOrganisationBasicInfo(evt, evt.getNoOrganisation()));
+		processor.forceEvenement(new EvenementEntrepriseBasicInfo(evt, evt.getNoEntrepriseCivile()));
 
 
 		// Vérification du traitement de l'événement
@@ -318,11 +318,11 @@ public class ForcedEventTest extends AbstractEvenementOrganisationProcessorTest 
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.FORCE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.FORCE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 
 				                             // Si la réinscription devait être traitée et non forcée, on trouverait un for.
 				                             Assert.assertEquals(0, entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).size());

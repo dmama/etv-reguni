@@ -27,14 +27,14 @@ import ch.vd.unireg.evenement.externe.EtatEvenementExterne;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.unireg.reqdes.EtatTraitement;
 import ch.vd.unireg.stats.evenements.StatistiqueEvenementInfo;
-import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsOrganisationsResults;
+import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsEntreprisesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsCivilsPersonnesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.unireg.stats.evenements.StatsEvenementsNotairesResults;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
 
 /**
@@ -53,7 +53,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 	}
 
 	public void write(final StatsEvenementsCivilsPersonnesResults civilsPersonnes,
-	                  final StatsEvenementsCivilsOrganisationsResults civilsOrganisations,
+	                  final StatsEvenementsCivilsEntreprisesResults civilsEntreprises,
 	                  final StatsEvenementsExternesResults externes,
 	                  final StatsEvenementsIdentificationContribuableResults identCtb,
 	                  final StatsEvenementsNotairesResults notaires,
@@ -78,7 +78,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		{
 			addTableSimple(2, table -> {
 				table.addLigne("Evénements civils (personnes):", String.valueOf(civilsPersonnes != null));
-				table.addLigne("Evénements civils (organisations):", String.valueOf(civilsOrganisations != null));
+				table.addLigne("Evénements civils (entreprises):", String.valueOf(civilsEntreprises != null));
 				table.addLigne("Evénements externes:", String.valueOf(externes != null));
 				table.addLigne("Evénements identification:", String.valueOf(identCtb != null));
 				table.addLigne("Evénements notaires:", String.valueOf(notaires != null));
@@ -174,10 +174,10 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			}
 		}
 
-		if (civilsOrganisations != null) {
+		if (civilsEntreprises != null) {
 
 			newPage();
-			addTitrePrincipal("Evénements civils (organisations)");
+			addTitrePrincipal("Evénements civils (entreprises)");
 
 			// Evénements civils : états
 			addEntete1("Répartition par état");
@@ -187,9 +187,9 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 					table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
 					table.setHeaderRows(1);
 
-					final Map<EtatEvenementOrganisation, Integer> etats = civilsOrganisations.getEtats();
-					final Map<EtatEvenementOrganisation, Integer> etatsNouveaux = civilsOrganisations.getEtatsNouveaux();
-					for (EtatEvenementOrganisation etat : EtatEvenementOrganisation.values()) {
+					final Map<EtatEvenementEntreprise, Integer> etats = civilsEntreprises.getEtats();
+					final Map<EtatEvenementEntreprise, Integer> etatsNouveaux = civilsEntreprises.getEtatsNouveaux();
+					for (EtatEvenementEntreprise etat : EtatEvenementEntreprise.values()) {
 						final Integer nombre = etats.get(etat);
 						final Integer nombreNouveaux = etatsNouveaux.get(etat);
 
@@ -202,31 +202,31 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 			// erreurs
 			{
-				final String filename = "erreurs_organisations.csv";
-				final String titre = "Erreurs des événements civils (organisations)";
+				final String filename = "erreurs_entreprises.csv";
+				final String titre = "Erreurs des événements civils (entreprises)";
 				final String listeVide = "(aucune)";
-				try (TemporaryFile contenu = asCsvStatFile(civilsOrganisations.getErreurs(), filename, status)) {
+				try (TemporaryFile contenu = asCsvStatFile(civilsEntreprises.getErreurs(), filename, status)) {
 					addListeDetaillee(writer, titre, listeVide, filename, contenu);
 				}
 			}
 
 			// événements en souffrance depuis plus de 15 jours
 			{
-				final String filename = "en_souffrance_organisations.csv";
-				final String titre = "Evénements civils (organisations) reçus il y a plus de 15 jours et encore en souffrance";
+				final String filename = "en_souffrance_entreprises.csv";
+				final String titre = "Evénements civils (entreprises) reçus il y a plus de 15 jours et encore en souffrance";
 				final String listeVide = "(aucun)";
-				try (TemporaryFile contenu = asCsvStatFile(civilsOrganisations.getEnSouffrance(), filename, status)) {
+				try (TemporaryFile contenu = asCsvStatFile(civilsEntreprises.getEnSouffrance(), filename, status)) {
 					addListeDetaillee(writer, titre, listeVide, filename, contenu);
 				}
 			}
 
 			// mutations traitées
 			{
-				final String filename = "mutations_traitees_organisations.csv";
-				final String titre = "Statistique des mutations traitées (organisations)";
+				final String filename = "mutations_traitees_entreprises.csv";
+				final String titre = "Statistique des mutations traitées (entreprises)";
 				final String listeVide = "(aucune)";
-				try (TemporaryFile contenu = asCsvFile(civilsOrganisations.getMutationsTraitees(),
-				                                       civilsOrganisations.getMutationsRecentesTraitees(),
+				try (TemporaryFile contenu = asCsvFile(civilsEntreprises.getMutationsTraitees(),
+				                                       civilsEntreprises.getMutationsRecentesTraitees(),
 				                                       filename,
 				                                       dateReference,
 				                                       status)) {
@@ -236,10 +236,10 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 			// détail des mutations traitées
 			{
-				final String filename = "details_mutations_traitees_organisations.csv";
-				final String titre = "Détails des mutations traitées (organisations) depuis le " + RegDateHelper.dateToDisplayString(dateReference);
+				final String filename = "details_mutations_traitees_entreprises.csv";
+				final String titre = "Détails des mutations traitées (entreprises) depuis le " + RegDateHelper.dateToDisplayString(dateReference);
 				final String listeVide = "(aucune)";
-				try (TemporaryFile contenu = asCsvStatFile(civilsOrganisations.getDetailsMutationsTraiteesRecentes(), filename, status)) {
+				try (TemporaryFile contenu = asCsvStatFile(civilsEntreprises.getDetailsMutationsTraiteesRecentes(), filename, status)) {
 					addListeDetaillee(writer, titre, listeVide, filename, contenu);
 				}
 			}
@@ -552,8 +552,8 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private TemporaryFile asCsvFile(final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> statsGlobales,
-	                                final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> statsRecentes,
+	private TemporaryFile asCsvFile(final Map<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> statsGlobales,
+	                                final Map<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> statsRecentes,
 	                                String fileName,
 	                                final RegDate dateDebutActivite,
 	                                StatusManager statusManager) {
@@ -564,12 +564,12 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			statusManager.setMessage("Génération du fichier " + fileName);
 
 			// récupération des clés disponibles
-			final Set<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey> keys = new LinkedHashSet<>();
+			final Set<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey> keys = new LinkedHashSet<>();
 			keys.addAll(statsGlobales.keySet());
 			keys.addAll(statsRecentes.keySet());
 
 			// remplissage des fichiers
-			contenu = CsvHelper.asCsvTemporaryFile(keys, fileName, statusManager, new CsvHelper.FileFiller<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey>() {
+			contenu = CsvHelper.asCsvTemporaryFile(keys, fileName, statusManager, new CsvHelper.FileFiller<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("TYPE_MUTATION").append(COMMA);
@@ -579,7 +579,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey key) {
+				public boolean fillLine(CsvHelper.LineFiller b, StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey key) {
 					final Integer global = statsGlobales.get(key);
 					final Integer recent = statsRecentes.get(key);
 					b.append(asCsvField(key.getDescription())).append(COMMA);

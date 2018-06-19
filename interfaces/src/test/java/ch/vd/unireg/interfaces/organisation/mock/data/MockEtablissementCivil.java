@@ -18,18 +18,18 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseActiviteHelper;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationActiviteHelper;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
- * Représente un object mock pour un établissement civil d'organisation. Le mock fait plusieurs choses:
+ * Représente un object mock pour un établissement civil d'entreprise. Le mock fait plusieurs choses:
  *
  * - Il rend modifiables les champs de l'entité.
  * - Il implémente éventuellement des mutations spécifiques, nécessaires dans un
@@ -39,10 +39,10 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
  *   présent (Mock), les données sont stockées sous formes d'instantanés. C'est pratique pour la
  *   construction de l'objet, mais nécessite que l'on reconstitue les données sous forme de range.
  *
- *   Les méthodes MockOrganisationHelper.getHisto() et MockOrganisationHelper.reconstitueMultiValeur() sont
+ *   Les méthodes MockEntrepriseHelper.getHisto() et MockEntrepriseHelper.reconstitueMultiValeur() sont
  *   là pour ça.
  *
- *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   EntrepriseHelper fournit les méthodes nécessaires à l'accès par date:
  *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
  */
 public class MockEtablissementCivil implements EtablissementCivil {
@@ -71,43 +71,43 @@ public class MockEtablissementCivil implements EtablissementCivil {
 	}
 
 	public void changeNom(RegDate date, String nouveauNom) {
-		MockOrganisationHelper.changeRangedData(nom, date, nouveauNom);
+		MockEntrepriseHelper.changeRangedData(nom, date, nouveauNom);
 	}
 
 	public void addNom(RegDate dateDebut, RegDate dateFin, String nouveauNom) {
-		MockOrganisationHelper.addRangedData(nom, dateDebut, dateFin, nouveauNom);
+		MockEntrepriseHelper.addRangedData(nom, dateDebut, dateFin, nouveauNom);
 	}
 
 	public void changeNomAdditionnel(RegDate date, String nouveauNom) {
-		MockOrganisationHelper.changeRangedData(nomAdditionnel, date, nouveauNom);
+		MockEntrepriseHelper.changeRangedData(nomAdditionnel, date, nouveauNom);
 	}
 
 	public void addNomAdditionnel(RegDate dateDebut, RegDate dateFin, String nouveauNom) {
-		MockOrganisationHelper.addRangedData(nomAdditionnel, dateDebut, dateFin, nouveauNom);
+		MockEntrepriseHelper.addRangedData(nomAdditionnel, dateDebut, dateFin, nouveauNom);
 	}
 
 	public void changeFormeLegale(RegDate date, FormeLegale nouvelleFormeLegale) {
-		MockOrganisationHelper.changeRangedData(formeLegale, date, nouvelleFormeLegale);
+		MockEntrepriseHelper.changeRangedData(formeLegale, date, nouvelleFormeLegale);
 	}
 
 	public void addFormeLegale(RegDate dateDebut, @Nullable RegDate dateFin, FormeLegale nouvelleFormeLegale) {
-		MockOrganisationHelper.addRangedData(formeLegale, dateDebut, dateFin, nouvelleFormeLegale);
+		MockEntrepriseHelper.addRangedData(formeLegale, dateDebut, dateFin, nouvelleFormeLegale);
 	}
 
 	public void changeNumeroIDE(RegDate date, String nouveauNumeroIDE) {
-		MockOrganisationHelper.changeRangedData(ide, date, nouveauNumeroIDE);
+		MockEntrepriseHelper.changeRangedData(ide, date, nouveauNumeroIDE);
 	}
 
 	public void addNumeroIDE(RegDate dateDebut, RegDate dateFin, String nouveauNumeroIDE) {
-		MockOrganisationHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
+		MockEntrepriseHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
 	}
 
 	public void changeNumeroRC(RegDate date, String nouveauNumeroRC) {
-		MockOrganisationHelper.changeRangedData(rc, date, nouveauNumeroRC);
+		MockEntrepriseHelper.changeRangedData(rc, date, nouveauNumeroRC);
 	}
 
 	public void addNumeroRC(RegDate dateDebut, RegDate dateFin, String nouveauNumeroRC) {
-		MockOrganisationHelper.addRangedData(rc, dateDebut, dateFin, nouveauNumeroRC);
+		MockEntrepriseHelper.addRangedData(rc, dateDebut, dateFin, nouveauNumeroRC);
 	}
 
 	public void addPublicationBusiness(PublicationBusiness nouvellePublicationBusiness) {
@@ -115,11 +115,11 @@ public class MockEtablissementCivil implements EtablissementCivil {
 	}
 
 	public void addIdeRemplacePar(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauRemplacePar) {
-		MockOrganisationHelper.addRangedData(ideRemplacePar, dateDebut, dateFin, nouveauRemplacePar);
+		MockEntrepriseHelper.addRangedData(ideRemplacePar, dateDebut, dateFin, nouveauRemplacePar);
 	}
 
 	public void addIdeEnRemplacementDe(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauEnRemplacementDe) {
-		MockOrganisationHelper.addRangedData(ideEnRemplacementDe, dateDebut, dateFin, nouveauEnRemplacementDe);
+		MockEntrepriseHelper.addRangedData(ideEnRemplacementDe, dateDebut, dateFin, nouveauEnRemplacementDe);
 	}
 
 	public void changeDomicile(RegDate date, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
@@ -127,21 +127,21 @@ public class MockEtablissementCivil implements EtablissementCivil {
 		if (typeAutoriteFiscale != null && ofs != null) {
 			payload = Pair.of(typeAutoriteFiscale, ofs);
 		}
-		MockOrganisationHelper.changeRangedData(domicile, date, payload);
+		MockEntrepriseHelper.changeRangedData(domicile, date, payload);
 	}
 
 	@Override
 	public List<DateRanged<FormeLegale>> getFormeLegale() {
-		return MockOrganisationHelper.getHisto(formeLegale);
+		return MockEntrepriseHelper.getHisto(formeLegale);
 	}
 
 	@Override
 	public FormeLegale getFormeLegale(RegDate date) {
-		return OrganisationHelper.valueForDate(getFormeLegale(), date);
+		return EntrepriseHelper.valueForDate(getFormeLegale(), date);
 	}
 
 	public void addSiege(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
-		MockOrganisationHelper.addRangedData(domicile, dateDebut, dateFin, Pair.of(typeAutoriteFiscale, ofs));
+		MockEntrepriseHelper.addRangedData(domicile, dateDebut, dateFin, Pair.of(typeAutoriteFiscale, ofs));
 	}
 
 	public void addAdresse(MockAdresse adresse) {
@@ -150,11 +150,11 @@ public class MockEtablissementCivil implements EtablissementCivil {
 	}
 
 	public void changeTypeEtablissement(RegDate date, TypeEtablissementCivil nouveauType) {
-		MockOrganisationHelper.changeRangedData(typeDeSite, date, nouveauType);
+		MockEntrepriseHelper.changeRangedData(typeDeSite, date, nouveauType);
 	}
 
 	public void addTypeDeSite(RegDate dateDebut, RegDate dateFin, TypeEtablissementCivil nouveauType) {
-		MockOrganisationHelper.addRangedData(typeDeSite, dateDebut, dateFin, nouveauType);
+		MockEntrepriseHelper.addRangedData(typeDeSite, dateDebut, dateFin, nouveauType);
 	}
 
 	@Override
@@ -169,17 +169,17 @@ public class MockEtablissementCivil implements EtablissementCivil {
 
 	@Override
 	public List<DateRanged<String>> getNumeroIDE() {
-		return MockOrganisationHelper.getHisto(ide);
+		return MockEntrepriseHelper.getHisto(ide);
 	}
 
 	@Override
 	public String getNumeroIDE(RegDate date) {
-		return OrganisationHelper.valueForDate(getNumeroIDE(), date);
+		return EntrepriseHelper.valueForDate(getNumeroIDE(), date);
 	}
 
 	@Override
 	public List<DateRanged<String>> getNumeroRC() {
-		return MockOrganisationHelper.getHisto(rc);
+		return MockEntrepriseHelper.getHisto(rc);
 	}
 
 	@Override
@@ -189,22 +189,22 @@ public class MockEtablissementCivil implements EtablissementCivil {
 
 	@Override
 	public List<DateRanged<String>> getNom() {
-		return MockOrganisationHelper.getHisto(nom);
+		return MockEntrepriseHelper.getHisto(nom);
 	}
 
 	@Override
 	public String getNom(RegDate date) {
-		return OrganisationHelper.valueForDate(getNom(), date);
+		return EntrepriseHelper.valueForDate(getNom(), date);
 	}
 
 	@Override
 	public List<DateRanged<String>> getNomAdditionnel() {
-		return MockOrganisationHelper.getHisto(nomAdditionnel);
+		return MockEntrepriseHelper.getHisto(nomAdditionnel);
 	}
 
 	@Override
 	public String getNomAdditionnel(RegDate date) {
-		return OrganisationHelper.valueForDate(getNom(), date);
+		return EntrepriseHelper.valueForDate(getNom(), date);
 	}
 
 	@Override
@@ -219,7 +219,7 @@ public class MockEtablissementCivil implements EtablissementCivil {
 
 	@Override
 	public List<Domicile> getDomiciles() {
-		final List<DateRanged<Pair<TypeAutoriteFiscale, Integer>>> brutto = MockOrganisationHelper.getHisto(domicile);
+		final List<DateRanged<Pair<TypeAutoriteFiscale, Integer>>> brutto = MockEntrepriseHelper.getHisto(domicile);
 		final List<Domicile> domiciles = new ArrayList<>(brutto.size());
 		for (DateRanged<Pair<TypeAutoriteFiscale, Integer>> ranged : brutto) {
 			domiciles.add(new Domicile(ranged.getDateDebut(), ranged.getDateFin(), ranged.getPayload().getLeft(), ranged.getPayload().getRight()));
@@ -229,27 +229,27 @@ public class MockEtablissementCivil implements EtablissementCivil {
 
 	@Override
 	public List<Domicile> getDomicilesEnActivite() {
-		return OrganisationHelper.getDomicilesReels(this, getDomiciles());
+		return EntrepriseHelper.getDomicilesReels(this, getDomiciles());
 	}
 
 	@Override
 	public List<DateRanged<TypeEtablissementCivil>> getTypesEtablissement() {
-		return MockOrganisationHelper.getHisto(typeDeSite);
+		return MockEntrepriseHelper.getHisto(typeDeSite);
 	}
 
 	@Override
 	public TypeEtablissementCivil getTypeEtablissement(RegDate date) {
-		return OrganisationHelper.valueForDate(getTypesEtablissement(), date);
+		return EntrepriseHelper.valueForDate(getTypesEtablissement(), date);
 	}
 
 	// Implémentation identique à la classe EtablissementCivil
 	@Override
 	public Domicile getDomicile(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(getDomiciles(), date);	}
+		return EntrepriseHelper.dateRangeForDate(getDomiciles(), date);	}
 
 	@Override
 	public boolean isSuccursale(RegDate date) {
-		return OrganisationHelper.isSuccursale(this, date);
+		return EntrepriseHelper.isSuccursale(this, date);
 	}
 
 	@Override
@@ -284,7 +284,7 @@ public class MockEtablissementCivil implements EtablissementCivil {
 		return Optional.of(this)
 				.map(MockEtablissementCivil::getDonneesRC)
 				.map(MockDonneesRC::getInscription)
-				.map(i -> OrganisationHelper.valueForDate(i, date));
+				.map(i -> EntrepriseHelper.valueForDate(i, date));
 	}
 
 	@Override
@@ -294,22 +294,22 @@ public class MockEtablissementCivil implements EtablissementCivil {
 
 	@Override
 	public List<DateRanged<Long>> getIdeRemplacePar() {
-		return MockOrganisationHelper.getHisto(ideRemplacePar);
+		return MockEntrepriseHelper.getHisto(ideRemplacePar);
 	}
 
 	@Override
 	public Long getIdeRemplacePar(RegDate date) {
-		return OrganisationHelper.valueForDate(getIdeRemplacePar(), date);
+		return EntrepriseHelper.valueForDate(getIdeRemplacePar(), date);
 	}
 
 	@Override
 	public List<DateRanged<Long>> getIdeEnRemplacementDe() {
-		return MockOrganisationHelper.getHisto(ideEnRemplacementDe);
+		return MockEntrepriseHelper.getHisto(ideEnRemplacementDe);
 	}
 
 	@Override
 	public Long getIdeEnRemplacementDe(RegDate date) {
-		return OrganisationHelper.valueForDate(getIdeEnRemplacementDe(), date);
+		return EntrepriseHelper.valueForDate(getIdeEnRemplacementDe(), date);
 	}
 
 	@Override
@@ -319,36 +319,36 @@ public class MockEtablissementCivil implements EtablissementCivil {
 
 	@Override
 	public List<PublicationBusiness> getPublications(RegDate date) {
-			return OrganisationHelper.getPublications(publicationsBusiness, date);
+			return EntrepriseHelper.getPublications(publicationsBusiness, date);
 	}
 
 	@Override
 	public RegDate connuAuCivilDepuis() {
-		return OrganisationHelper.connuAuCivilDepuis(this);
+		return EntrepriseHelper.connuAuCivilDepuis(this);
 	}
 
 	@Override
 	public boolean isInscritAuRC(RegDate date) {
-		return OrganisationHelper.isInscritAuRC(this, date);
+		return EntrepriseHelper.isInscritAuRC(this, date);
 	}
 
 	@Override
 	public boolean isConnuInscritAuRC(RegDate date) {
-		return OrganisationHelper.isConnuInscritAuRC(this, date);
+		return EntrepriseHelper.isConnuInscritAuRC(this, date);
 	}
 
 	@Override
 	public boolean isActif(RegDate date) {
-		return OrganisationActiviteHelper.isActif(this, date);
+		return EntrepriseActiviteHelper.isActif(this, date);
 	}
 
 	@Override
 	public boolean isRadieDuRC(RegDate date) {
-		return OrganisationHelper.isRadieDuRC(this, date);
+		return EntrepriseHelper.isRadieDuRC(this, date);
 	}
 
 	@Override
 	public boolean isRadieIDE(RegDate date) {
-		return OrganisationHelper.isRadieIDE(this, date);
+		return EntrepriseHelper.isRadieIDE(this, date);
 	}
 }

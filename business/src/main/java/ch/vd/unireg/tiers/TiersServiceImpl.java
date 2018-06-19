@@ -91,9 +91,9 @@ import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.evenement.ide.ServiceIDEService;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationErreur;
-import ch.vd.unireg.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseErreur;
+import ch.vd.unireg.evenement.organisation.engine.processor.EvenementEntrepriseProcessorInternal;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.indexer.IndexerException;
@@ -116,14 +116,14 @@ import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -184,7 +184,7 @@ public class TiersServiceImpl implements TiersService {
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
-	private ServiceOrganisationService serviceOrganisationService;
+	private ServiceEntreprise serviceEntreprise;
 	private ServiceIDEService serviceIDEService;
 	private RegimeFiscalService regimeFiscalService;
 	private TacheService tacheService;
@@ -233,8 +233,8 @@ public class TiersServiceImpl implements TiersService {
         this.serviceCivilService = serviceCivil;
     }
 
-	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
-		this.serviceOrganisationService = serviceOrganisationService;
+	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
+		this.serviceEntreprise = serviceEntreprise;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -306,12 +306,12 @@ public class TiersServiceImpl implements TiersService {
 	/**
      * Renvoie l'entreprise correspondant au numéro d'individu passé en paramètre.
      *
-     * @param numeroOrganisation le numéro de l'organisation.
-     * @return l'entreprise correspondante au numéro d'organisation passé en paramètre, ou <b>null</b> s'il n'existe pas.
+     * @param numeroEntrepriseCivile le numéro de l'entrepriseCivile.
+     * @return l'entreprise correspondante au numéro d'entrepriseCivile passé en paramètre, ou <b>null</b> s'il n'existe pas.
      */
     @Override
-    public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
-        return tiersDAO.getEntrepriseByNumeroOrganisation(numeroOrganisation);
+    public Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile) {
+        return tiersDAO.getEntrepriseByNoEntrepriseCivile(numeroEntrepriseCivile);
     }
 
 	@Override
@@ -385,35 +385,35 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * Créée une nouvelle entreprise pour l'organisation de l'événement dont l'id est passé en paramètre.
+	 * Créée une nouvelle entreprise pour l'entrepriseCivile de l'événement dont l'id est passé en paramètre.
 	 * Rapporte cette création dans une entrée "suivi" dans les erreurs de l'événement.
 	 *
 	 * <p>
 	 *     La méthode vérifie que l'entreprise n'existe pas déjà et lance une {@link IllegalStateException} si c'est le cas.
 	 * </p>
-	 * @param evt L'événement organisation
+	 * @param evt L'événement entrepriseCivile
 	 * @return L'entreprise créé
 	 */
 	@Override
-	public Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt) throws TiersException {
+	public Entreprise createEntreprisePourEvenement(EvenementEntreprise evt) throws TiersException {
 		final RegDate dateEvt = evt.getDateEvenement();
 		final RegDate dateCreation;
 
-		final long noOrganisation = evt.getNoOrganisation();
-		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
-		final EtablissementCivil etablissementPrincipal = organisation.getEtablissementPrincipal(dateEvt).getPayload();
+		final long noEntrepriseCivile = evt.getNoEntrepriseCivile();
+		final EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(noEntrepriseCivile);
+		final EtablissementCivil etablissementPrincipal = entrepriseCivile.getEtablissementPrincipal(dateEvt).getPayload();
 
 		final InscriptionRC inscriptionRC = etablissementPrincipal.getDonneesRC().getInscription(dateEvt);
 		final RegDate dateInscriptionVd = inscriptionRC != null ? inscriptionRC.getDateInscriptionVD() : null;
-		if (dateInscriptionVd != null && dateInscriptionVd.isAfter(dateEvt.addDays(- OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
+		if (dateInscriptionVd != null && dateInscriptionVd.isAfter(dateEvt.addDays(- EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 			dateCreation = dateInscriptionVd.getOneDayAfter();
 		}
 		else {
 			dateCreation = dateEvt.getOneDayAfter();
 		}
 
-		final Entreprise entreprise = createEntreprise(noOrganisation);
-		if (organisation.isInscriteAuRC(dateCreation)) {
+		final Entreprise entreprise = createEntreprise(noEntrepriseCivile);
+		if (entrepriseCivile.isInscriteAuRC(dateCreation)) {
 			changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, dateCreation, TypeGenerationEtatEntreprise.MANUELLE);
 		} else {
 			changeEtatEntreprise(TypeEtatEntreprise.FONDEE, entreprise, dateCreation, TypeGenerationEtatEntreprise.MANUELLE);
@@ -430,28 +430,28 @@ public class TiersServiceImpl implements TiersService {
 
 		// NOTE: C'est volontaire si le domicile n'est pas créé. Ca permet de le différencier d'un établissement préexistant dans Unireg.
 
-		final EvenementOrganisationErreur evtErreur = new EvenementOrganisationErreur();
+		final EvenementEntrepriseErreur evtErreur = new EvenementEntrepriseErreur();
 		evtErreur.setType(TypeEvenementErreur.SUIVI);
-		evtErreur.setMessage(String.format("Entreprise créée manuellement avec le numéro de contribuable %s et l'état initial %s pour l'organisation %s", entreprise.getNumero(), entreprise.getEtatActuel(), noOrganisation));
+		evtErreur.setMessage(String.format("Entreprise créée manuellement avec le numéro de contribuable %s et l'état initial %s pour l'entreprise civile %s", entreprise.getNumero(), entreprise.getEtatActuel(), noEntrepriseCivile));
 		evt.getErreurs().add(evtErreur);
 		return entreprise;
 	}
 
 	/**
-	 * Créer une entreprise pour le numéro d'organisation fourni. La méthode refuse de la créer si une entreprise est déjà associée à l'organisation.
+	 * Créer une entreprise pour le numéro d'entreprise civile fourni. La méthode refuse de la créer si une entreprise est déjà associée à l'entrepriseCivile.
 	 *
-	 * @param noOrganisation
+	 * @param noEntrepriseCivile
 	 * @return L'entreprise créée.
 	 */
 	@NotNull
 	@Override
-	public Entreprise createEntreprise(long noOrganisation) {
-		Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(noOrganisation);
+	public Entreprise createEntreprise(long noEntrepriseCivile) {
+		Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(noEntrepriseCivile);
 		if (entreprise != null) {
-			throw new IllegalStateException(String.format("Il existe déjà une entreprise pour l'organisation %s", noOrganisation));
+			throw new IllegalStateException(String.format("Il existe déjà une entreprise pour l'entreprise civile %s", noEntrepriseCivile));
 		}
 		entreprise = new Entreprise();
-		entreprise.setNumeroEntreprise(noOrganisation);
+		entreprise.setNumeroEntreprise(noEntrepriseCivile);
 		return (Entreprise) tiersDAO.save(entreprise);
 	}
 
@@ -6296,38 +6296,38 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public Organisation getOrganisation(@NotNull Entreprise entreprise) {
+	public EntrepriseCivile getEntrepriseCivile(@NotNull Entreprise entreprise) {
 		// inconnue au registre civil, pas difficile...
 		if (!entreprise.isConnueAuCivil()) {
 			return null;
 		}
 
-		final long numeroOrganisation = entreprise.getNumeroEntreprise();
-		final Organisation organisationHistory = serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
-		if (organisationHistory == null) {
+		final long noEntrepriseCivile = entreprise.getNumeroEntreprise();
+		final EntrepriseCivile entrepriseCivileHistory = serviceEntreprise.getEntrepriseHistory(noEntrepriseCivile);
+		if (entrepriseCivileHistory == null) {
 			// Sérieux problème d'appariement avec le registre civil.
-			throw new OrganisationNotFoundException(entreprise);
+			throw new EntrepriseNotFoundException(entreprise);
 		}
-		return organisationHistory;
+		return entrepriseCivileHistory;
 	}
 
 	@Override
-	public Organisation getOrganisationPourEtablissement(@NotNull Etablissement etablissement) {
+	public EntrepriseCivile getEntrepriseCivileByEtablissement(@NotNull Etablissement etablissement) {
 
 		// inconnue au registre civil, pas difficile...
 		if (!etablissement.isConnuAuCivil()) {
 			return null;
 		}
 
-		final long numeroSIteOrganisation = etablissement.getNumeroEtablissement();
-		return serviceOrganisationService.getOrganisationHistory(serviceOrganisationService.getNoOrganisationFromNoEtablissement(numeroSIteOrganisation));
+		final long noEtablissementCivil = etablissement.getNumeroEtablissement();
+		return serviceEntreprise.getEntrepriseHistory(serviceEntreprise.getNoEntrepriseCivileFromNoEtablissementCivil(noEtablissementCivil));
 	}
 
 	@Override
 	public EtablissementCivil getEtablissementCivil(@NotNull Etablissement etablissement) {
-		Organisation organisation = getOrganisationPourEtablissement(etablissement);
-		if (organisation != null) {
-			final EtablissementCivil etablissementForNo = organisation.getEtablissementForNo(etablissement.getNumeroEtablissement());
+		EntrepriseCivile entrepriseCivile = getEntrepriseCivileByEtablissement(etablissement);
+		if (entrepriseCivile != null) {
+			final EtablissementCivil etablissementForNo = entrepriseCivile.getEtablissementForNo(etablissement.getNumeroEtablissement());
 			if (etablissementForNo == null) {
 				// Sérieux problème d'appariement avec le registre civil.
 				throw new EtablissementCivilNotFoundException(etablissement);
@@ -6344,9 +6344,9 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public RegDate getDateCreation(@NotNull Entreprise entreprise) {
 		// la date d'inscription RC (en provenance du civil)
-		final Organisation organisation = getOrganisation(entreprise);
-		if (organisation != null) {
-			final RegDate inscriptionRC = organisation.getEtablissementPrincipal(null).getPayload().getDateInscriptionRC(null);
+		final EntrepriseCivile entrepriseCivile = getEntrepriseCivile(entreprise);
+		if (entrepriseCivile != null) {
+			final RegDate inscriptionRC = entrepriseCivile.getEtablissementPrincipal(null).getPayload().getDateInscriptionRC(null);
 			if (inscriptionRC != null) {
 				return inscriptionRC;
 			}
@@ -6371,8 +6371,8 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public String getNumeroIDE(@NotNull Entreprise entreprise) {
 		if (entreprise.isConnueAuCivil()) {
-			final Organisation org = getOrganisation(entreprise);
-			final List<DateRanged<String>> liste = org.getNumeroIDE();
+			final EntrepriseCivile ent = getEntrepriseCivile(entreprise);
+			final List<DateRanged<String>> liste = ent.getNumeroIDE();
 			if (liste != null && ! liste.isEmpty()) {
 				liste.sort(new DateRangeComparator<>());
 				DateRanged<String> last = CollectionsUtils.getLastElement(liste);
@@ -6425,9 +6425,9 @@ public class TiersServiceImpl implements TiersService {
 
 	@NotNull
 	private List<CapitalHisto> extractCapitauxCivils(@NotNull Entreprise entreprise) {
-		final Organisation org = getOrganisation(entreprise);
-		if (org != null) {
-			final List<Capital> capitaux = org.getCapitaux();
+		final EntrepriseCivile ent = getEntrepriseCivile(entreprise);
+		if (ent != null) {
+			final List<Capital> capitaux = ent.getCapitaux();
 			if (capitaux != null && !capitaux.isEmpty()) {
 				final List<CapitalHisto> liste = new ArrayList<>(capitaux.size());
 				for (Capital capital : capitaux) {
@@ -6488,9 +6488,9 @@ public class TiersServiceImpl implements TiersService {
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 
 		if (numeroEntreprise != null) {
-			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			final EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(numeroEntreprise);
 			final List<FormeLegaleHisto> formes = new ArrayList<>();
-			final List<DateRanged<FormeLegale>> formeLegalesCiviles = organisation.getFormeLegale();
+			final List<DateRanged<FormeLegale>> formeLegalesCiviles = entrepriseCivile.getFormeLegale();
 			if (formeLegalesCiviles == null) {
 				return Collections.emptyList();
 			}
@@ -6554,9 +6554,9 @@ public class TiersServiceImpl implements TiersService {
 		Long numeroEntreprise = entreprise.getNumeroEntreprise();
 
 		if (numeroEntreprise != null) {
-			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			final EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(numeroEntreprise);
 			final List<RaisonSocialeHisto> raisonsSociales = new ArrayList<>();
-			final List<DateRanged<String>> nomsCivils = organisation.getNom();
+			final List<DateRanged<String>> nomsCivils = entrepriseCivile.getNom();
 			if (nomsCivils == null) {
 				return Collections.emptyList();
 			}
@@ -6599,9 +6599,9 @@ public class TiersServiceImpl implements TiersService {
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 
 		if (numeroEntreprise != null) {
-			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			final EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(numeroEntreprise);
 			final List<DomicileHisto> sieges = new ArrayList<>();
-			for (Domicile siege: organisation.getSiegesPrincipaux()) {
+			for (Domicile siege: entrepriseCivile.getSiegesPrincipaux()) {
 				sieges.add(new DomicileHisto(siege));
 			}
 			sieges.sort(new DateRangeComparator<>());
@@ -6730,7 +6730,7 @@ public class TiersServiceImpl implements TiersService {
 					de regarder quel utilisateur l'a créé. Une telle surcharge est nécessairement créée pendant le traitement automatique
 					et ce dernier n'a pas d'autre occasion de créer des surcharges de domicile.
 				 */
-				if (domicile.getLogCreationUser() != null && domicile.getLogCreationUser().startsWith(EvenementOrganisationProcessorInternal.EVT_ORGANISATION_PRINCIPAL)) {
+				if (domicile.getLogCreationUser() != null && domicile.getLogCreationUser().startsWith(EvenementEntrepriseProcessorInternal.EVT_ENTREPRISE_PRINCIPAL)) {
 					final Commune commune = serviceInfra.getCommuneByNumeroOfs(domicile.getNumeroOfsAutoriteFiscale(), domicile.getDateDebut());
 					final Domicile pseudoCivil =
 							new Domicile(domicile.getDateDebut(), domicile.getDateFin(), commune);
@@ -6747,9 +6747,9 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public boolean isInscriteRC(@NotNull Entreprise entreprise, RegDate dateReference) {
-		final Organisation organisation = getOrganisation(entreprise);
-		if (organisation != null) {
-			return organisation.isInscriteAuRC(dateReference);
+		final EntrepriseCivile entrepriseCivile = getEntrepriseCivile(entreprise);
+		if (entrepriseCivile != null) {
+			return entrepriseCivile.isInscriteAuRC(dateReference);
 		}
 		else {
 			final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
@@ -6764,9 +6764,9 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public boolean hasInscriptionActiveRC(@NotNull Entreprise entreprise, RegDate dateReference) {
-		final Organisation organisation = getOrganisation(entreprise);
-		if (organisation != null) {
-			return organisation.isInscriteAuRC(dateReference) && !organisation.isRadieeDuRC(dateReference);
+		final EntrepriseCivile entrepriseCivile = getEntrepriseCivile(entreprise);
+		if (entrepriseCivile != null) {
+			return entrepriseCivile.isInscriteAuRC(dateReference) && !entrepriseCivile.isRadieeDuRC(dateReference);
 		}
 		else {
 			final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
@@ -6827,16 +6827,16 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		/* Récupération des données civiles pour la date. */
-		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
-		final DateRanged<EtablissementCivil> etablissementCivilPrincipal = organisation.getEtablissementPrincipal(dateValeur);
+		final EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(entreprise.getNumeroEntreprise());
+		final DateRanged<EtablissementCivil> etablissementCivilPrincipal = entrepriseCivile.getEtablissementPrincipal(dateValeur);
 		if (etablissementCivilPrincipal == null) {
-			throw new TiersException(String.format("L'organisation %d n'a pas d'établissement civil principal à la date demandée %s.", organisation.getNumeroOrganisation(), RegDateHelper
+			throw new TiersException(String.format("L'entreprise civile %d n'a pas d'établissement civil principal à la date demandée %s.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper
 					.dateToDisplayString(dateValeur)));
 		}
 
 		final Etablissement etablissementPrincipal = tiersDAO.getEtablissementByNumeroEtablissementCivil(etablissementCivilPrincipal.getPayload().getNumeroEtablissement());
 
-		final Domicile domicileCivil = organisation.getSiegePrincipal(dateValeur);
+		final Domicile domicileCivil = entrepriseCivile.getSiegePrincipal(dateValeur);
 		final List<DomicileEtablissement> domicilesFiscaux = etablissementPrincipal.getSortedDomiciles(false);
 		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
 		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
@@ -6846,7 +6846,7 @@ public class TiersServiceImpl implements TiersService {
 			tiersDAO.addAndSave(etablissementPrincipal, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNumeroOfsAutoriteFiscale(), etablissementPrincipal));
 		}
 
-		final String raisonSocialeCivile = organisation.getNom(dateValeur);
+		final String raisonSocialeCivile = entrepriseCivile.getNom(dateValeur);
 		final List<RaisonSocialeFiscaleEntreprise> raisonsSocialesFiscales = entreprise.getRaisonsSocialesNonAnnuleesTriees();
 		Set<RaisonSocialeFiscaleEntreprise> raisonsSocialesASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, raisonsSocialesFiscales, "raison sociale");
 		for (RaisonSocialeFiscaleEntreprise raisonSociale : raisonsSocialesASauver) {
@@ -6856,7 +6856,7 @@ public class TiersServiceImpl implements TiersService {
 			tiersDAO.addAndSave(entreprise, new RaisonSocialeFiscaleEntreprise(range.getDateDebut(), range.getDateFin(), raisonSocialeCivile));
 		}
 
-		final FormeLegale formeLegaleCivile = organisation.getFormeLegale(dateValeur);
+		final FormeLegale formeLegaleCivile = entrepriseCivile.getFormeLegale(dateValeur);
 		final List<FormeJuridiqueFiscaleEntreprise> formesJuridiquesFiscales = entreprise.getFormesJuridiquesNonAnnuleesTriees();
 		Set<FormeJuridiqueFiscaleEntreprise> formesJuridiquesASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, formesJuridiquesFiscales, "forme juridique");
 		for (FormeJuridiqueFiscaleEntreprise formeJuridique : formesJuridiquesASauver) {
@@ -6866,7 +6866,7 @@ public class TiersServiceImpl implements TiersService {
 			tiersDAO.addAndSave(entreprise, new FormeJuridiqueFiscaleEntreprise(range.getDateDebut(), range.getDateFin(), FormeJuridiqueEntreprise.fromCode(formeLegaleCivile.getCode())));
 		}
 
-		final Capital capitalCivil = organisation.getCapital(dateValeur);
+		final Capital capitalCivil = entrepriseCivile.getCapital(dateValeur);
 		final List<CapitalFiscalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
 		Set<CapitalFiscalEntreprise> capitauxASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, capitaux, "capital");
 		for (CapitalFiscalEntreprise capitalFiscal : capitauxASauver) {
@@ -6892,9 +6892,9 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		/* Récupération des données civiles pour la date. */
-		final Long noOrganisation = serviceOrganisationService.getNoOrganisationFromNoEtablissement(etablissement.getNumeroEtablissement());
-		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
-		final EtablissementCivil etablissementCivil = organisation.getEtablissementForNo(etablissement.getNumeroEtablissement());
+		final Long noEntrepriseCivile = serviceEntreprise.getNoEntrepriseCivileFromNoEtablissementCivil(etablissement.getNumeroEtablissement());
+		final EntrepriseCivile entrepriseCivile = serviceEntreprise.getEntrepriseHistory(noEntrepriseCivile);
+		final EtablissementCivil etablissementCivil = entrepriseCivile.getEtablissementForNo(etablissement.getNumeroEtablissement());
 		if (etablissementCivil == null) {
 			throw new TiersException(String.format("L'établissement civil %d n'a pas été trouvé!", etablissement.getNumeroEtablissement()));
 		}
@@ -6936,13 +6936,13 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void apparier(Entreprise entreprise, Organisation organisation, boolean fermerSurcharges) {
-		final List<DateRanged<FormeLegale>> formesLegales = organisation.getFormeLegale();
+	public void apparier(Entreprise entreprise, EntrepriseCivile entrepriseCivile, boolean fermerSurcharges) {
+		final List<DateRanged<FormeLegale>> formesLegales = entrepriseCivile.getFormeLegale();
 		final RegDate debutCivil = formesLegales.isEmpty() ? RegDate.get() : formesLegales.get(0).getDateDebut();
 		final RegDate finFiscale = debutCivil.getOneDayBefore();
 
 		// mise à jour du numéro cantonal
-		entreprise.setNumeroEntreprise(organisation.getNumeroOrganisation());
+		entreprise.setNumeroEntreprise(entrepriseCivile.getNumeroEntreprise());
 		entreprise.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
 		if (fermerSurcharges) {

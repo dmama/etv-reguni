@@ -9,13 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.ModeCommunication;
@@ -64,7 +64,7 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 			final List<String> nomCourrier = adresseService.getNomCourrier(dpi, null, false);
 			return Pair.of(nomCourrier, null);
 		}
-		catch (ServiceOrganisationException e) {
+		catch (ServiceEntrepriseException e) {
 			LOGGER.error("Exception levée à la récupération du nom associé au débiteur " + dpi.getNumero(), e);
 			return Pair.of(null, "Erreur lors de l'appel au service civil des entreprises (" + e.getMessage() + ")");
 		}

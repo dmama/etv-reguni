@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.unireg.evenement.organisation.view.EvenementOrganisationDetailView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.evenement.organisation.view.EvenementEntrepriseDetailView"--%>
 
 <unireg:nextRowClass reset="1"/>
 <!-- Debut Caracteristiques generales -->
@@ -12,7 +12,7 @@
             <td width="25%"><fmt:message key="label.numero.evenement"/> :</td>
             <td width="25%">
                     ${command.noEvenement}
-                <unireg:consulterLog entityNature="EvenementOrganisation" entityId="${command.evtId}"/>
+                <unireg:consulterLog entityNature="EvenementEntreprise" entityId="${command.evtId}"/>
                 <c:if test="${command.correctionDansLePasse == true}">
                     <a href="#" class="alert" title="<fmt:message key="label.correction.passe"/>"></a>
                 </c:if>
@@ -117,7 +117,7 @@
 </c:if>
 <!-- Fin FOSC -->
 
-<!-- Debut Organisation -->
+<!-- Debut Entreprise -->
 <fieldset>
     <legend><span><fmt:message key="label.organisation"/></span></legend>
     <table>
@@ -224,7 +224,7 @@
         </tr>
     </table>
 </fieldset>
-<!-- Fin Organisation -->
+<!-- Fin Entreprise -->
 
 <!-- Debut List tiers -->
 
@@ -320,7 +320,7 @@
 			<form:form method="post" action="creer-entreprise.do" style="display: inline">
 				<input type="hidden" name="id" value="${command.evtId}"/>
 				<fmt:message key="label.bouton.creer" var="labelBoutonCreer"/>
-				<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="return confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement organisation?');"/>
+				<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="return confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement entreprise?');"/>
 			</form:form>
 		</c:if>
 	</c:when>

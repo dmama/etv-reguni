@@ -18,10 +18,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.CategorieEntreprise;
@@ -117,26 +117,26 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetCategoryOrganisationEntreprisePasDeRegime() throws Exception {
-		Long noOrganisation = 1000L;
+	public void testGetCategoryEntreprisePasDeRegime() throws Exception {
+		Long noEntrepriseCivile = 1000L;
 		Long noEtablissement = 1001L;
 
-		final MockOrganisation organisation =
-				MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
-				                                           StatusRegistreIDE.DEFINITIF,
-				                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
+		final MockEntrepriseCivile entrepriseCivile =
+				MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
+				                                       StatusRegistreIDE.DEFINITIF,
+				                                       TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(organisation);
+				addEntreprise(entrepriseCivile);
 			}
 		});
 
 		// Création de l'entreprise
 		final Long noEntreprise = doInNewTransactionAndSession(transactionStatus -> {
-			Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 			Etablissement etablissement = addEtablissement();
 			etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -161,26 +161,26 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetCategoryOrganisationEntrepriseAvecSurchargeEtRegime() throws Exception {
-		Long noOrganisation = 1000L;
+	public void testGetCategoryEntrepriseAvecSurchargeEtRegime() throws Exception {
+		Long noEntrepriseCivile = 1000L;
 		Long noEtablissement = 1001L;
 
-		final MockOrganisation organisation =
-				MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
-				                                           StatusRegistreIDE.DEFINITIF,
-				                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
+		final MockEntrepriseCivile entrepriseCivile =
+				MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
+				                                       StatusRegistreIDE.DEFINITIF,
+				                                       TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(organisation);
+				addEntreprise(entrepriseCivile);
 			}
 		});
 
 		// Création de l'entreprise
 		Long noEntreprise = doInNewTransactionAndSession(transactionStatus -> {
-			Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 			Etablissement etablissement = addEtablissement();
 			etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -210,26 +210,26 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetCategoryOrganisationEntrepriseRegimesFors() throws Exception {
-		Long noOrganisation = 1000L;
+	public void testGetCategoryEntrepriseRegimesFors() throws Exception {
+		Long noEntrepriseCivile = 1000L;
 		Long noEtablissement = 1001L;
 
-		final MockOrganisation organisation =
-				MockOrganisationFactory.createOrganisation(noOrganisation, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
-				                                           StatusRegistreIDE.DEFINITIF,
-				                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
+		final MockEntrepriseCivile entrepriseCivile =
+				MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Synergy SA", date(2015, 6, 27), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
+				                                       StatusRegistreIDE.DEFINITIF,
+				                                       TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(organisation);
+				addEntreprise(entrepriseCivile);
 			}
 		});
 
 		// Création de l'entreprise
 		Long noEntreprise = doInNewTransactionAndSession(transactionStatus -> {
-			Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 			Etablissement etablissement = addEtablissement();
 			etablissement.setNumeroEtablissement(noEtablissement);
 
@@ -263,7 +263,7 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		final RegDate dateDebut = date(2010, 3, 1);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide

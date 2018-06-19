@@ -24,6 +24,7 @@ import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0022.v3.UidDeregistrationReason;
 import ch.vd.evd0022.v3.UidRegisterStatus;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.Equalator;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.builders.OrganisationBuilder;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.builders.OrganisationLocationBuilder;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.collector.IndexedDataCollector;
@@ -61,7 +62,6 @@ import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.extractor.U
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationData;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.service.RCEntAdapterException;
-import ch.vd.unireg.common.Equalator;
 
 public class OrganisationHistorizer {
 
@@ -85,12 +85,12 @@ public class OrganisationHistorizer {
 			// Reconnaître lorsqu'il y a duplication de snapshot (SIFISC-25252).
 			if (e.getMessage().startsWith("Duplicate key Organisation")) {
 				String noOrganisation = snapshots.isEmpty() ? "" : snapshots.get(0).getOrganisation().getCantonalId().toString();
-				throw new RCEntAdapterException(String.format("Deux snapshots pour la même date ont été trouvés dans les données RCEnt de l'organisation n°%s. Impossible de générer son historique civil!", noOrganisation), e);
+				throw new RCEntAdapterException(String.format("Deux snapshots pour la même date ont été trouvés dans les données RCEnt de l'entreprise n°%s. Impossible de générer son historique civil!", noOrganisation), e);
 			}
 			throw e;
 		}
 
-		// on enregistre les data collectors au niveau de l'organisation faîtière (= l'entreprise)
+		// on enregistre les data collectors au niveau de l'entreprise faîtière (= l'entreprise)
 		final ListDataCollector<Organisation, NamedOrganisationId> organisationIdentifiersCollector = new MultiValueDataCollector<>(o -> o.getIdentifier().stream(),
 		                                                                                                                            new NamedOrganisationIdEqualator(),
 		                                                                                                                            Function.identity()
@@ -255,7 +255,7 @@ public class OrganisationHistorizer {
 				locationBurRegistrationDataCollector.getCollectedData()
 		);
 
-		// Entreprise / Organisation
+		// Entreprise / EntrepriseCivile
 		final OrganisationBuilder orgaBuilder = new OrganisationBuilder(
 				organisationMap.entrySet().stream().findFirst().get().getValue().getCantonalId(),
 				organisationIdentifiersCollector.getCollectedData(),

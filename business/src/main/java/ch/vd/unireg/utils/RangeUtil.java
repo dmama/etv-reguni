@@ -13,7 +13,7 @@ import ch.vd.unireg.common.CollectionsUtils;
 public class RangeUtil {
 	/**
 	 * Obtenir le dernier range, en s'assurant que la date fournie en fait partie. Cela permet de garantir qu'on
-	 * ne travail pas dans le passé lorsqu'on traite, par exemple, un événement organisation. Si une ou des périodes existes
+	 * ne travail pas dans le passé lorsqu'on traite, par exemple, un événement entreprise. Si une ou des périodes existes
 	 * ultérieurement à la date fournie, cela signifie que la situation a évolué depuis la date et qu'on ne peut plus opérer
 	 * sur la base de celle-ci.
 	 * @return le dernier range

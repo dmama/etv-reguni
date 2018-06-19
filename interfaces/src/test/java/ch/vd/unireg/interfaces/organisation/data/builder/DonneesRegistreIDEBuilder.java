@@ -12,12 +12,12 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
 
 public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE> {
 
 	private List<DateRanged<StatusRegistreIDE>> status;
-	private List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
+	private List<DateRanged<TypeEntrepriseRegistreIDE>> typeEntreprise;
 	private List<AdresseEffectiveRCEnt> adresseEffective;
 	private List<AdresseBoitePostaleRCEnt> adresseBoitePostale;
 	private List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation;
@@ -30,7 +30,7 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 
 	@Override
 	public DonneesRegistreIDE build() {
-		return new DonneesRegistreIDERCEnt(adresseBoitePostale, status, typeOrganisation, adresseEffective, raisonDeLiquidation);
+		return new DonneesRegistreIDERCEnt(adresseBoitePostale, status, typeEntreprise, adresseEffective, raisonDeLiquidation);
 	}
 
 	public DonneesRegistreIDEBuilder addStatus(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusRegistreIDE valeur) {
@@ -38,8 +38,8 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder addTypeOrganisation(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull TypeOrganisationRegistreIDE valeur) {
-		typeOrganisation = BuilderHelper.addValueToList(typeOrganisation, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public DonneesRegistreIDEBuilder addTypeEntreprise(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull TypeEntrepriseRegistreIDE valeur) {
+		typeEntreprise = BuilderHelper.addValueToList(typeEntreprise, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -73,8 +73,8 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder withTypeOrganisation(List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation) {
-		this.typeOrganisation = typeOrganisation;
+	public DonneesRegistreIDEBuilder withTypeEntreprise(List<DateRanged<TypeEntrepriseRegistreIDE>> typeEntreprise) {
+		this.typeEntreprise = typeEntreprise;
 		return this;
 	}
 }

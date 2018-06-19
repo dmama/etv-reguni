@@ -42,9 +42,9 @@ public class RCEntAdapter {
 	}
 
 	/**
-	 * Recherche l'état d'organisation aujourd'hui.
+	 * Recherche l'état d'entreprise aujourd'hui.
 	 *
-	 * @param id Identifiant cantonal de l'organisation
+	 * @param id Identifiant cantonal de l'entreprise
 	 * @return les données retournées par RCEnt
 	 */
 	public Organisation getOrganisation(long id) {
@@ -53,9 +53,9 @@ public class RCEntAdapter {
     }
 
 	/**
-	 * Recherche l'état d'une organisation à la date indiquée.
+	 * Recherche l'état d'une entreprise à la date indiquée.
 	 *
-	 * @param id Identifiant cantonal de l'organisation
+	 * @param id Identifiant cantonal de l'entreprise
 	 * @param date la date. Optionel. Comportement par défaut de RCEnt si null.
 	 * @return les données retournées par RCEnt
 	 */
@@ -65,9 +65,9 @@ public class RCEntAdapter {
 	}
 
 	/**
-	 * Recherche tous les états d'une organisation.
+	 * Recherche tous les états d'une entreprise.
 	 *
-	 * @param id Identifiant cantonal de l'organisation
+	 * @param id Identifiant cantonal de l'entreprise
 	 * @return les données retournées par RCEnt
 	 */
 	public Organisation getOrganisationHistory(long id) {
@@ -80,7 +80,7 @@ public class RCEntAdapter {
 	 * @param noide le numéro IDE en question (format sans points ni tiret)
 	 * @param date date de référence (on prendra la date du jour si <code>null</code>)
 	 * @return les données retournées par RCEnt (<b>attention !</b> si le numéro IDE est spécifique à un établissement secondaire de l'entreprise dans RCEnt,
-	 *         alors l'organisation retournée ne comprendra pas les autres établissements secondaires de l'entreprise)
+	 *         alors l'entreprise retournée ne comprendra pas les autres établissements secondaires de l'entreprise)
 	 */
 	@Nullable
 	public Organisation getOrganisationByNoIde(String noide, RegDate date) {
@@ -92,7 +92,7 @@ public class RCEntAdapter {
 	 * Récupère l'historique des états de l'entreprise connue par son numéro IDE
 	 * @param noide le numéro IDE en question (format sans points ni tiret)
 	 * @return les données retournées par RCEnt (<b>attention !</b> si le numéro IDE est spécifique à un établissement secondaire de l'entreprise dans RCEnt,
-	 *         alors l'organisation retournée ne comprendra pas les autres établissements secondaires de l'entreprise)
+	 *         alors l'entreprise retournée ne comprendra pas les autres établissements secondaires de l'entreprise)
 	 */
 	@Nullable
 	public Organisation getOrganisationHistoryByNoIde(String noide) {
@@ -102,7 +102,7 @@ public class RCEntAdapter {
 
 	/**
 	 * Recherche les états avant et après de l'événement RCEnt et contruit le pseudo historique correspondant.
-	 * les pseudo historiques des organisations touchées par l'événement, indexés par no cantonal d'organisation
+	 * les pseudo historiques des entreprises touchées par l'événement, indexés par no cantonal d'entreprise
 	 *
  	 * @param eventId Identifiant de l'événement RCEnt
 	 * @return une map d'événements, un par organisation touchée par l'événement orginal
@@ -140,7 +140,7 @@ public class RCEntAdapter {
 			}
 		}
 
-		// Collecter les snapshots et les identifiants de toutes les organisations touchées
+		// Collecter les snapshots et les identifiants de toutes les entreprises touchées
 		if (before != null) {
 			for (NoticeOrganisation noticeOrg : before.getOrganisation()) {
 				final long cantonalId = noticeOrg.getOrganisation().getCantonalId().longValue();
@@ -154,7 +154,7 @@ public class RCEntAdapter {
 			afterMap.put(cantonalId, noticeOrg);
 		}
 
-		// Pour chaque organisation, passer les données avant/après dans l'historizer et créer l'objet de résultat avec les metadonnées
+		// Pour chaque entreprise, passer les données avant/après dans l'historizer et créer l'objet de résultat avec les metadonnées
 		for (Long cantonalId : resultMap.keySet()) {
 			// Génération du snapshot "avant", si applicable
 			OrganisationSnapshot snapBefore = null;
@@ -174,8 +174,8 @@ public class RCEntAdapter {
 			final OrganisationEvent eventResult = new OrganisationEvent(eventId, targetLocationId, pseudoHistory);
 
 			// Ajout des métadonnées. NOTE: actuellement, l'établissement cible est unique pour un evt. RCEnt. Comme on sépare un événement RCEnt en
-			// autant qu'il en faut pour chaque organisation, l'établissement cible peut ne pas être représenté dans l'événement en cours d'analyse, car
-			// faisant partie d'une autre organisation.
+			// autant qu'il en faut pour chaque entreprise, l'établissement cible peut ne pas être représenté dans l'événement en cours d'analyse, car
+			// faisant partie d'une autre entreprise.
 
 			// Trouver les entrées de journal de l'événement pour le jour, avant et après. Cela implique de trouver l'établissement civil cible de l'événement.
 			final ch.vd.evd0022.v3.OrganisationLocation locationBefore = getTargetLocation(before, targetLocationId);
@@ -309,7 +309,7 @@ public class RCEntAdapter {
 	/**
 	 * Recherche l'état d'un établissement aujourd'hui.
 	 *
-	 * NOTE: La structure renvoiée est bien celle d'une organisation mais qui ne contient QUE
+	 * NOTE: La structure renvoiée est bien celle d'une entreprise mais qui ne contient QUE
 	 * l'établissement demandé.
 	 * @param id
 	 * @return
@@ -322,7 +322,7 @@ public class RCEntAdapter {
 	/**
 	 * Recherche l'état d'un établissement à la date indiquée.
 	 *
-	 * NOTE: La structure renvoiée est bien celle d'une organisation mais qui ne contient QUE
+	 * NOTE: La structure renvoiée est bien celle d'une entreprise mais qui ne contient QUE
 	 * l'établissement demandé.
 	 * @param id
 	 * @param date
@@ -336,7 +336,7 @@ public class RCEntAdapter {
 	/**
 	 * Recherche tous les états d'un établissement.
 	 *
-	 * NOTE: La structure renvoiée est bien celle d'une organisation mais qui ne contient QUE
+	 * NOTE: La structure renvoiée est bien celle d'une entreprise mais qui ne contient QUE
 	 * l'établissement demandé.
 	 * @param id
 	 * @return

@@ -40,10 +40,10 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.model.AdressesCiviles;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -51,10 +51,10 @@ import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.EntrepriseNotFoundException;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
 import ch.vd.unireg.tiers.MenageCommun;
-import ch.vd.unireg.tiers.OrganisationNotFoundException;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.RepresentationLegale;
@@ -89,7 +89,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
 	private ServiceInfrastructureService serviceInfra;
-	private ServiceOrganisationService serviceOrganisationService;
+	private ServiceEntreprise serviceEntreprise;
 	private ServiceCivilService serviceCivilService;
 	private LocaliteInvalideMatcherService localiteInvalideMatcherService;
 	private PlatformTransactionManager transactionManager;
@@ -108,8 +108,8 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisation) {
-		this.serviceOrganisationService = serviceOrganisation;
+	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
+		this.serviceEntreprise = serviceEntreprise;
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
@@ -132,11 +132,11 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	protected AdresseServiceImpl(TiersService tiersService, TiersDAO tiersDAO, ServiceInfrastructureService serviceInfra,
-	                             ServiceOrganisationService serviceOrganisationService, ServiceCivilService serviceCivilService, LocaliteInvalideMatcherService localiteInvalideMatcherService) {
+	                             ServiceEntreprise serviceEntreprise, ServiceCivilService serviceCivilService, LocaliteInvalideMatcherService localiteInvalideMatcherService) {
 		this.tiersService = tiersService;
 		this.tiersDAO = tiersDAO;
 		this.serviceInfra = serviceInfra;
-		this.serviceOrganisationService = serviceOrganisationService;
+		this.serviceEntreprise = serviceEntreprise;
 		this.serviceCivilService = serviceCivilService;
 		this.localiteInvalideMatcherService = localiteInvalideMatcherService;
 	}
@@ -921,7 +921,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Retourne la raison sociale pour l'adressage de l'entreprise spécifiée.
 	 *
 	 * @param entreprise une entreprise
-	 * @return la raison sociale de l'enteprise sur une seule ligne
+	 * @return la raison sociale de l'entreprise sur une seule ligne
 	 */
 	private String getRaisonSociale(Entreprise entreprise) {
 		return tiersService.getDerniereRaisonSociale(entreprise);
@@ -1085,7 +1085,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	private static AdresseGenerique.Source getSourceCivilePourTiers(Tiers tiers) {
-		final SourceType sourceType = (tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ORG : SourceType.CIVILE_PERS;
+		final SourceType sourceType = (tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ENT : SourceType.CIVILE_PERS;
 		return new AdresseGenerique.Source(sourceType, tiers);
 	}
 
@@ -1851,21 +1851,21 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	private AdressesCivilesHisto getAdressesCivilesHisto(Entreprise entreprise) {
-		final Organisation organisation = tiersService.getOrganisation(entreprise);
-		if (organisation == null) {
-			throw new OrganisationNotFoundException(entreprise);
+		final EntrepriseCivile entrepriseCivile = tiersService.getEntrepriseCivile(entreprise);
+		if (entrepriseCivile == null) {
+			throw new EntrepriseNotFoundException(entreprise);
 		}
 
-		return serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
+		return serviceEntreprise.getAdressesEntrepriseHisto(entreprise.getNumeroEntreprise());
 	}
 
 	private AdressesCivilesHisto getAdressesCivilesHisto(Etablissement etablissement) {
-		final Organisation organisation = tiersService.getOrganisationPourEtablissement(etablissement);
-		if (organisation == null) {
-			throw new OrganisationNotFoundException(etablissement);
+		final EntrepriseCivile entrepriseCivile = tiersService.getEntrepriseCivileByEtablissement(etablissement);
+		if (entrepriseCivile == null) {
+			throw new EntrepriseNotFoundException(etablissement);
 		}
 
-		return serviceOrganisationService.getAdressesEtablissementCivilHisto(etablissement.getNumeroEtablissement());
+		return serviceEntreprise.getAdressesEtablissementCivilHisto(etablissement.getNumeroEtablissement());
 	}
 
 	private AdressesCiviles getAdressesCiviles(Entreprise entreprise, RegDate date) throws AdresseDataException {

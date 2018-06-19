@@ -63,8 +63,8 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		civil.onOrganisationChange(id);
+	public void onEntrepriseChange(long id) {
+		civil.onEntrepriseChange(id);
 	}
 
 	@Override

@@ -4,17 +4,17 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.interne.AbstractEntrepriseStrategy;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 
@@ -23,23 +23,23 @@ import ch.vd.unireg.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2015-11-11.
  */
-public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
+public class ReinscriptionStrategy extends AbstractEntrepriseStrategy {
 
 	/**
 	 * @param context le context d'exécution de l'événement
 	 * @param options des options de traitement
 	 */
-	public ReinscriptionStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+	public ReinscriptionStrategy(EvenementEntrepriseContext context, EvenementEntrepriseOptions options) {
 		super(context, options);
 	}
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event un événement organisation reçu de RCEnt
+	 * @param event un événement entreprise civile reçu de RCEnt
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
+	public EvenementEntrepriseInterne matchAndCreate(EvenementEntreprise event, final EntrepriseCivile entrepriseCivile, Entreprise entreprise) throws EvenementEntrepriseException {
 
 		// On ne s'occupe que d'entités déjà connues
 		if (entreprise == null) {
@@ -49,17 +49,17 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = entrepriseCivile.getEtablissementPrincipal(dateAvant);
 
 		if (etablissementPrincipalAvantRange == null) {
-			if (isExisting(organisation, dateApres)) {
-				final String message = String.format("Etablissement civil principal introuvable sur organisation n°%s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant));
+			if (isExisting(entrepriseCivile, dateApres)) {
+				final String message = String.format("Etablissement civil principal introuvable sur entreprise civile n°%s en date du %s", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateAvant));
 				Audit.info(event.getId(), message);
-				return new TraitementManuel(event, organisation, entreprise, context, options, message);
+				return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, message);
 			}
 		} else {
 			final EtablissementCivil etablissementPrincipalAvant = etablissementPrincipalAvantRange.getPayload();
-			final EtablissementCivil etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
+			final EtablissementCivil etablissementPrincipalApres = entrepriseCivile.getEtablissementPrincipal(dateApres).getPayload();
 
 			final InscriptionRC rcAvant = etablissementPrincipalAvant.getDonneesRC().getInscription(dateAvant);
 			final InscriptionRC rcApres = etablissementPrincipalApres.getDonneesRC().getInscription(dateApres);
@@ -69,11 +69,11 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 
 			if (statusInscriptionAvant == StatusInscriptionRC.RADIE && (statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION)) {
 				final String message = String.format("Réinscription au RC de l'entreprise n°%s (civil: %d).%s",
-				                                    FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-				                                    organisation.getNumeroOrganisation(),
-				                                    dateRadiationRCApres != null ? " Cependant, l'ancienne date de radiation persiste dans RCEnt: " + RegDateHelper.dateToDisplayString(dateRadiationRCApres) + "." : "");
+				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+				                                     entrepriseCivile.getNumeroEntreprise(),
+				                                     dateRadiationRCApres != null ? " Cependant, l'ancienne date de radiation persiste dans RCEnt: " + RegDateHelper.dateToDisplayString(dateRadiationRCApres) + "." : "");
 				Audit.info(event.getId(), message);
-				return new Reinscription(event, organisation, entreprise, context, options);
+				return new Reinscription(event, entrepriseCivile, entreprise, context, options);
 			}
 		}
 		return null;

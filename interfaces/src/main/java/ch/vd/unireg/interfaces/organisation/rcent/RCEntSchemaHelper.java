@@ -8,7 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 /**
- * Classe utilitaire aidant au chargement du schema xml du service organisation RCEnt.
+ * Classe utilitaire aidant au chargement du schema xml du service entreprise RCEnt.
  */
 public class RCEntSchemaHelper {
 

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ProcessorPublisher {
 
-	private final Map<Long, EvenementOrganisationProcessor.Listener> listeners = new LinkedHashMap<>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
+	private final Map<Long, EvenementEntrepriseProcessor.Listener> listeners = new LinkedHashMap<>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
 
 	private interface Sequencer {
 		long next();
@@ -27,7 +27,7 @@ public class ProcessorPublisher {
 	/**
 	 * Classe interne des handles utilisés lors de l'enregistrement de listeners
 	 */
-	private final class ListenerHandleImpl implements EvenementOrganisationProcessor.ListenerHandle {
+	private final class ListenerHandleImpl implements EvenementEntrepriseProcessor.ListenerHandle {
 		private final long id;
 		private ListenerHandleImpl(long id) {
 			this.id = id;
@@ -44,15 +44,15 @@ public class ProcessorPublisher {
 	}
 
 	/**
-	 * Appelé par le thread de traitement à chaque fois que les événements organisation d'une organisation ont été traités
-	 * @param noOrganisation numéro de l'organisation dont les événements viennent d'être traités
+	 * Appelé par le thread de traitement à chaque fois que les événements entreprise d'une entreprise ont été traités
+	 * @param noEntrepriseCivile numéro de l'entreprise dont les événements viennent d'être traités
 	 */
-	void notifyTraitementOrganisation(long noOrganisation) {
+	void notifyTraitementEntreprise(long noEntrepriseCivile) {
 		synchronized (listeners) {
 			if (listeners.size() > 0) {
-				for (EvenementOrganisationProcessor.Listener listener : listeners.values()) {
+				for (EvenementEntrepriseProcessor.Listener listener : listeners.values()) {
 					try {
-						listener.onOrganisationTraite(noOrganisation);
+						listener.onEntrepriseTraitee(noEntrepriseCivile);
 					}
 					catch (Exception e) {
 						// pas grave...
@@ -68,7 +68,7 @@ public class ProcessorPublisher {
 	void notifyStop() {
 		synchronized (listeners) {
 			if (listeners.size() > 0) {
-				for (EvenementOrganisationProcessor.Listener listener : listeners.values()) {
+				for (EvenementEntrepriseProcessor.Listener listener : listeners.values()) {
 					try {
 						listener.onStop();
 					}
@@ -81,7 +81,7 @@ public class ProcessorPublisher {
 	}
 
 	@NotNull
-	protected EvenementOrganisationProcessor.ListenerHandle registerListener(EvenementOrganisationProcessor.Listener listener) {
+	protected EvenementEntrepriseProcessor.ListenerHandle registerListener(EvenementEntrepriseProcessor.Listener listener) {
 		if (listener == null) {
 			throw new NullPointerException("listener");
 		}

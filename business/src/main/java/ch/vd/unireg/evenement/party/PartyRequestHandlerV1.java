@@ -7,15 +7,6 @@ import java.util.Set;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.party.v1.PartyRequest;
-import ch.vd.unireg.xml.event.party.party.v1.PartyResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
-import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.source.ListeRecapService;
@@ -24,8 +15,8 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanValidator;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
@@ -45,7 +36,16 @@ import ch.vd.unireg.xml.BusinessHelper;
 import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.party.v1.PartyRequest;
+import ch.vd.unireg.xml.event.party.party.v1.PartyResponse;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
+import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyBuilder;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 
 public class PartyRequestHandlerV1 implements RequestHandlerV1<PartyRequest> {
 
@@ -97,8 +97,8 @@ public class PartyRequestHandlerV1 implements RequestHandlerV1<PartyRequest> {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceOrganisation(ServiceOrganisationService service) {
-		context.serviceOrganisationService = service;
+	public void setServiceEntreprise(ServiceEntreprise service) {
+		context.serviceEntreprise = service;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

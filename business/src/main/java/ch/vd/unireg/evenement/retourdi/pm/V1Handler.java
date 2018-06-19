@@ -13,8 +13,16 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.retourdi.RetourDiHandler;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.type.FormulePolitesse;
+import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.AddressInformation;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.DeclarationIBC;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.DeclarationImpots;
@@ -31,14 +39,6 @@ import ch.vd.unireg.xml.event.taxation.ibc.v1.TypNumeroIdeAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.TypSiegeEtAdministrationEffective;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.TypTelephoneAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v1.TypTxtMax40Attr;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.StringRenderer;
-import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.evenement.retourdi.RetourDiHandler;
-import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.jms.EsbBusinessException;
-import ch.vd.unireg.type.FormulePolitesse;
-import ch.vd.unireg.type.TexteCasePostale;
 
 @SuppressWarnings("Duplicates")
 public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandler<DeclarationIBC> {
@@ -212,11 +212,11 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 			final String contactTitle = organisation.getTitle();
 			final String civilite = CIVILITE_MAPPING.getOrDefault(contactTitle, contactTitle);
 			final String contact = buildContact(civilite, organisation.getFirstName(), organisation.getLastName());
-			final DestinataireAdresse.Organisation org = new DestinataireAdresse.Organisation(extractFromElement(organisation.getNumeroIde()),
-			                                                                                  organisation.getOrganisationName(),
-			                                                                                  organisation.getOrganisationNameAddOn1(),
-			                                                                                  organisation.getOrganisationNameAddOn2(),
-			                                                                                  contact);
+			final DestinataireAdresse.Entreprise org = new DestinataireAdresse.Entreprise(extractFromElement(organisation.getNumeroIde()),
+			                                                                              organisation.getOrganisationName(),
+			                                                                              organisation.getOrganisationNameAddOn1(),
+			                                                                              organisation.getOrganisationNameAddOn2(),
+			                                                                              contact);
 			return org.isEmpty() ? null : org;
 		}
 		final PersonMailAddressInfo person = adresse.getPerson();
@@ -256,7 +256,7 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 		final String indicatifTel = extractTelephone(info.getContactMandataireTelephoneIndicatif());
 		final String noTel = extractTelephone(info.getContactMandataireTelephoneNumero());
 		final InformationMandataire.AdresseCourrier adresseMandataire = info.getAdresseCourrier();
-		final String ideMandataire = null;      // Consigne PMD 07.11.2016: one n'utilise pas ce numéro IDE (attention si un jour on doit l'utiliser, il peut être à deux endroits : dans l'adresse courrier et dans l'organisation de l'adresse structurée)
+		final String ideMandataire = null;      // Consigne PMD 07.11.2016: one n'utilise pas ce numéro IDE (attention si un jour on doit l'utiliser, il peut être à deux endroits : dans l'adresse courrier et dans l'entreprise de l'adresse structurée)
 		final TypAdresse adresse = adresseMandataire != null ? adresseMandataire.getAdresseMandataire() : null;
 		return new InformationsMandataire(ideMandataire,
 		                                  extractAdresse(adresse, info.getAdresseCourrierStructuree(), false),

@@ -24,8 +24,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.DomicileEtablissement;
@@ -49,14 +49,14 @@ public class AppariementServiceImpl implements AppariementService {
 	@NotNull
 	@Override
 	public List<CandidatAppariement> rechercheAppariementsEtablissementsSecondaires(Entreprise entreprise) {
-		final Organisation organisation = tiersService.getOrganisation(entreprise);
-		if (organisation == null) {
+		final EntrepriseCivile entrepriseCivile = tiersService.getEntrepriseCivile(entreprise);
+		if (entrepriseCivile == null) {
 			return Collections.emptyList();
 		}
 
-		// ça y est, on a une organisation avec ses établissements et une entreprise, face à face...
+		// ça y est, on a une entreprise civile avec ses établissements et une entreprise, face à face...
 		final Map<Long, Pair<Etablissement, List<DateRange>>> tousEtablissementsSecondaires = extractEtablissementsSecondaires(entreprise);
-		final Map<Long, Pair<EtablissementCivil, List<DateRange>>> tousEtablissementsCivilsSecondaires = extractEtablissementsCivilsSecondaires(organisation);
+		final Map<Long, Pair<EtablissementCivil, List<DateRange>>> tousEtablissementsCivilsSecondaires = extractEtablissementsCivilsSecondaires(entrepriseCivile);
 
 		// 1. récupération des établissements non-appariés de l'entreprise et des numéros cantonaux déjà connus (= à ne pas ré-utiliser...)
 
@@ -72,7 +72,7 @@ public class AppariementServiceImpl implements AppariementService {
 			}
 		}
 
-		// 2. récupération de la liste des établissements civils secondaires de l'organisation qui ne sont pas encore appariés à un établissement de chez nous
+		// 2. récupération de la liste des établissements civils secondaires de l'entreprise civile qui ne sont pas encore appariés à un établissement de chez nous
 
 		final Map<Long, Pair<EtablissementCivil, List<DateRange>>> etablissementsSecondairesDisponibles = new HashMap<>(tousEtablissementsCivilsSecondaires);
 		etablissementsSecondairesDisponibles.keySet().removeAll(idsCantonauxApparies);
@@ -398,8 +398,8 @@ public class AppariementServiceImpl implements AppariementService {
 	}
 
 	@NotNull
-	private static Map<Long, Pair<EtablissementCivil, List<DateRange>>> extractEtablissementsCivilsSecondaires(Organisation organisation) {
-		final List<EtablissementCivil> etablissements = organisation.getEtablissements();
+	private static Map<Long, Pair<EtablissementCivil, List<DateRange>>> extractEtablissementsCivilsSecondaires(EntrepriseCivile entrepriseCivile) {
+		final List<EtablissementCivil> etablissements = entrepriseCivile.getEtablissements();
 		final Map<Long, Pair<EtablissementCivil, List<DateRange>>> map = new HashMap<>(etablissements.size());
 		for (EtablissementCivil etablissement : etablissements) {
 			final List<DateRange> periodesSecondaires = getPeriodesEtablissementSecondaire(etablissement);

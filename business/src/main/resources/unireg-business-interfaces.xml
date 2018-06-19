@@ -19,10 +19,10 @@
 		<property name="target" ref="serviceCivilRaw"/>
 	</bean>
 
-	<!-- Service Organisation -->
+	<!-- Service Entreprise -->
 
-	<bean id="serviceOrganisationService" class="ch.vd.unireg.interfaces.service.ServiceOrganisationImpl">
-		<property name="target" ref="serviceOrganisationRaw"/>
+	<bean id="serviceEntreprise" class="ch.vd.unireg.interfaces.service.ServiceEntrepriseImpl">
+		<property name="target" ref="serviceEntrepriseRaw"/>
 		<property name="serviceInfra" ref="serviceInfrastructureService"/>
 	</bean>
 

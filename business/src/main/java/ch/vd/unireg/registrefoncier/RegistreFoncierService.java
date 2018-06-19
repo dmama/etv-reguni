@@ -54,7 +54,7 @@ public interface RegistreFoncierService {
 	/**
 	 * Détermine les allégements fonciers virtuels qui découlent d'une fusion d'entreprise (et seulement les allégements virtuels).
 	 *
-	 * @param entreprise un entreprise
+	 * @param entreprise une entreprise
 	 * @return une liste des allégements fonciers virtuels; ou une liste vide si aucune fusion n'existe pour cette entreprise.
 	 */
 	@NotNull

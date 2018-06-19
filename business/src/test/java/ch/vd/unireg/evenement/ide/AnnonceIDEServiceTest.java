@@ -73,7 +73,7 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 		Assert.assertEquals(annonce.getCommentaire(), annonceIDE.getCommentaire());
 		Assert.assertEquals(annonce.getStatut(), annonceIDE.getStatut());
 		Assert.assertEquals(annonce.getUtilisateur(), annonceIDE.getUtilisateur());
-		Assert.assertEquals(annonce.getInformationOrganisation(), annonceIDE.getInformationOrganisation());
+		Assert.assertEquals(annonce.getInformationEntreprise(), annonceIDE.getInformationEntreprise());
 		Assert.assertEquals(annonce.getContenu(), annonceIDE.getContenu());
 
 		Assert.assertEquals(1, mockReferenceAnnonceIDEDAO.getTableReference().size());

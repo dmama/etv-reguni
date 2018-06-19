@@ -16,7 +16,7 @@ import ch.vd.unireg.documentfiscal.AutreDocumentFiscalServiceImpl;
 import ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalRappele;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
@@ -61,7 +61,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 	public void testPopulationInspecteeSurBaseVide() throws Exception {
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// personne
@@ -83,7 +83,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien
@@ -157,7 +157,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien
@@ -349,7 +349,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien
@@ -456,7 +456,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien

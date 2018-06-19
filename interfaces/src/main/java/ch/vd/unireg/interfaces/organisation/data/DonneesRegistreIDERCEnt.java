@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 /**
  *   Utilisez les méthodes des helpers pour produire les données des accesseurs.
  *
- *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   EntrepriseHelper fournit les méthodes nécessaires à l'accès par date:
  *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
  */
 public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable {
@@ -16,19 +16,19 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 	private static final long serialVersionUID = 8992760212437586681L;
 
 	private final List<DateRanged<StatusRegistreIDE>> status;
-	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
+	private final List<DateRanged<TypeEntrepriseRegistreIDE>> typeEntreprise;
 	private final List<AdresseEffectiveRCEnt> adresseEffective;
 	private final List<AdresseBoitePostaleRCEnt> adresseBoitePostale;
 	private final List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation;
 
 	public DonneesRegistreIDERCEnt(List<AdresseBoitePostaleRCEnt> adresseBoitePostale,
 	                          List<DateRanged<StatusRegistreIDE>> status,
-	                          List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation,
+	                          List<DateRanged<TypeEntrepriseRegistreIDE>> typeEntreprise,
 	                          List<AdresseEffectiveRCEnt> adresseEffective,
 	                          List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation) {
 		this.adresseBoitePostale = adresseBoitePostale;
 		this.status = status;
-		this.typeOrganisation = typeOrganisation;
+		this.typeEntreprise = typeEntreprise;
 		this.adresseEffective = adresseEffective;
 		this.raisonDeLiquidation = raisonDeLiquidation;
 	}
@@ -45,7 +45,7 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 
 	@Override
 	public AdresseEffectiveRCEnt getAdresseEffective(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(adresseEffective, date);
+		return EntrepriseHelper.dateRangeForDate(adresseEffective, date);
 	}
 
 	@Override
@@ -60,11 +60,11 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 
 	@Override
 	public StatusRegistreIDE getStatus(RegDate date) {
-		return OrganisationHelper.valueForDate(status, date);
+		return EntrepriseHelper.valueForDate(status, date);
 	}
 
 	@Override
-	public List<DateRanged<TypeOrganisationRegistreIDE>> getTypeOrganisation() {
-		return typeOrganisation;
+	public List<DateRanged<TypeEntrepriseRegistreIDE>> getTypeEntreprise() {
+		return typeEntreprise;
 	}
 }

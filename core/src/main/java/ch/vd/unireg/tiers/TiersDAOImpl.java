@@ -1030,7 +1030,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	private interface ParametreTiers {
 		String getTiersType();
 		String getIdProperty();
-		void throwMultipleTiersException(long numeroOrganisation, long[] noEntreprises);
+		void throwMultipleTiersException(long numeroEntrepriseCivile, long[] noEntreprises);
 	}
 
 	private static final ParametreTiers PARAMETRE_ENTREPRISE = new ParametreTiers() {
@@ -1045,27 +1045,27 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void throwMultipleTiersException(long numeroOrganisation, long[] noEntreprises) {
-			throw new PlusieursEntreprisesAvecMemeNumeroOrganisationException(numeroOrganisation, noEntreprises);
+		public void throwMultipleTiersException(long numeroEntrepriseCivile, long[] noEntreprises) {
+			throw new PlusieursEntreprisesAvecMemeNumeroCivilException(numeroEntrepriseCivile, noEntreprises);
 		}
 	};
 
 	/**
 	 * <p>
-	 *     Recherche l'Entreprise par son numéro d'organisation au registre des entreprises qui tient compte des annulations, désactivations et réactivations.
+	 *     Recherche l'Entreprise par son numéro d'entreprise au registre des entreprises qui tient compte des annulations, désactivations et réactivations.
 	 * </p>
 	 * <p>
 	 *     Ne retourne que les tiers Entreprise, et dans le cas où un tiers d'un autre type existerait, null est retourné quand même.
 	 * </p>
 	 *
-	 * @param numeroOrganisation Le numéro RCEnt
+	 * @param numeroEntrepriseCivile Le numéro RCEnt
 	 * @return L'entreprise correspondant au numéro, ou null si aucune Entreprise n'est trouvée pour ce numéro.
 	 */
-	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
+	public Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile) {
 
 		// on passe par le numéro de tiers pour pouvoir factoriser l'algorithme dans la recherche du tiers, en espérant que les performances n'en seront pas trop affectées
 
-		final Long id = getNumeroTiersByNumeroCantonal(PARAMETRE_ENTREPRISE, numeroOrganisation);
+		final Long id = getNumeroTiersByNumeroCantonal(PARAMETRE_ENTREPRISE, numeroEntrepriseCivile);
 		final Entreprise entreprise;
 		if (id != null) {
 			entreprise = (Entreprise) get(id); // Par la magie d'Hibernate, si on a un numéro, c'est qu'on a une Entreprise.
@@ -1088,14 +1088,14 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void throwMultipleTiersException(long numeroOrganisation, long[] noEtablissement) {
-			throw new PlusieursEtablissementsAvecMemesNumeroCivilsException(numeroOrganisation, noEtablissement);
+		public void throwMultipleTiersException(long numeroEntrepriseCivile, long[] noEtablissement) {
+			throw new PlusieursEtablissementsAvecMemesNumeroCivilsException(numeroEntrepriseCivile, noEtablissement);
 		}
 	};
 
 	/**
 	 * <p>
-	 *     Recherche l'Etablissement par son numéro d'organisation au registre des entreprises qui tient compte des annulations, désactivations et réactivations.
+	 *     Recherche l'Etablissement par son numéro d'entreprise au registre des entreprises qui tient compte des annulations, désactivations et réactivations.
 	 * </p>
 	 * <p>
 	 *     Ne retourne que les tiers Etablissement, et dans le cas où un tiers d'un autre type existerait, null est retourné quand même.

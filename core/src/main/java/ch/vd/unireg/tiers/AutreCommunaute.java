@@ -24,7 +24,7 @@ public class AutreCommunaute extends ContribuableImpositionPersonnesMorales {
 	public static final int CAAC_GEN_LAST_ID = 2999999;
 
 	/**
-	 * Nom de l'entreprise, de l'organisation ou de l'autorité.
+	 * Nom de l'entreprise, de l'entreprise ou de l'autorité.
 	 * Est appelé dans certains contextes raison sociale ou raison de commerce.
 	 * Par exemple, "Soladest SA" ou "Département fédéral des finances"
 	 */

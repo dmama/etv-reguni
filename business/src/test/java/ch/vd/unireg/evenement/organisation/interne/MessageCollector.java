@@ -4,10 +4,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.evenement.common.EvenementErreur;
 import ch.vd.unireg.evenement.common.EvenementRegistreErreurFactory;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationMessageCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseMessageCollector;
 import ch.vd.unireg.type.TypeEvenementErreur;
 
-public class MessageCollector extends EvenementOrganisationMessageCollector<MessageCollector.Msg> {
+public class MessageCollector extends EvenementEntrepriseMessageCollector<MessageCollector.Msg> {
 
 	public static final class Msg implements EvenementErreur {
 

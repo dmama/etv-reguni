@@ -4,19 +4,19 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.type.CategorieEntreprise;
@@ -28,7 +28,7 @@ import ch.vd.unireg.type.MotifRattachement;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraitement {
+public class CreateEntrepriseHorsVD extends EvenementEntrepriseInterneDeTraitement {
 
 	private RegDate dateDeCreation;
 	private final boolean isCreation;
@@ -37,17 +37,17 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 	private final List<EtablissementCivil> succursalesRCVD;
 	private final Domicile autoriteFiscalePrincipale;
 
-	protected CreateEntrepriseHorsVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                                 EvenementOrganisationContext context,
-	                                 EvenementOrganisationOptions options,
+	protected CreateEntrepriseHorsVD(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
+	                                 EvenementEntrepriseContext context,
+	                                 EvenementEntrepriseOptions options,
 	                                 boolean isCreation,
 	                                 List<EtablissementCivil> succursalesRCVD) {
-		super(evenement, organisation, entreprise, context, options);
+		super(evenement, entrepriseCivile, entreprise, context, options);
 
 		this.isCreation = isCreation;
 		this.succursalesRCVD = succursalesRCVD;
 
-		etablissementPrincipal = organisation.getEtablissementPrincipal(getDateEvt()).getPayload();
+		etablissementPrincipal = entrepriseCivile.getEtablissementPrincipal(getDateEvt()).getPayload();
 
 		autoriteFiscalePrincipale = etablissementPrincipal.getDomicile(getDateEvt());
 	}
@@ -58,18 +58,18 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
 		final String messageWarning = "Une vérification est requise pour une nouvelle entreprise de catégorie « %s » dont le siège est hors canton avec présence sur VD.";
 
 		// Déterminer la date de création
 
 		if (succursalesRCVD.size() > 1) { // En réalité, on ne supporte qu'un seul établissement VD à la création, car c'est le scénario qui doit se produire à l'exclusion de tout autre.
-			throw new EvenementOrganisationException(String.format("L'organisation %s hors canton (%s) n'est pas encore connu d'Unireg, mais a déjà plus d'une succursale au RC VD: %s. " +
+			throw new EvenementEntrepriseException(String.format("L'entreprise %s hors canton (%s) n'est pas encore connu d'Unireg, mais a déjà plus d'une succursale au RC VD: %s. " +
 					                                                       "Comme un événement n'en apporte qu'une nouvelle à la fois, un problème de données ou d'appariement est à craindre. Veuiller traiter à la main.",
-			                                                       getOrganisation().getNumeroOrganisation(),
-			                                                       getDescriptionEtablissement(getOrganisation().getEtablissementPrincipal(getDateEvt()).getPayload()),
-			                                                       getDescriptionEtablissements(succursalesRCVD)
+			                                                     getEntrepriseCivile().getNumeroEntreprise(),
+			                                                     getDescriptionEtablissement(getEntrepriseCivile().getEtablissementPrincipal(getDateEvt()).getPayload()),
+			                                                     getDescriptionEtablissements(succursalesRCVD)
 			                                                       ));
 		}
 
@@ -77,8 +77,8 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		final RegDate dateDeCreation = succursaleACreer.getDateInscriptionRCVd(getDateEvt());
 
 		if (dateDeCreation == null) {
-			throw new EvenementOrganisationException(String.format("Date d'inscription au RC VD introuvable pour la succursale au RC VD n°%s.",
-			                                                       succursaleACreer.getNumeroEtablissement()
+			throw new EvenementEntrepriseException(String.format("Date d'inscription au RC VD introuvable pour la succursale au RC VD n°%s.",
+			                                                     succursaleACreer.getNumeroEtablissement()
 			));
 		}
 
@@ -87,12 +87,12 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		if (dateDeCreation.isBefore(getDateEvt())) {
 			surchargeCorrectiveRange = new SurchargeCorrectiveRange(dateDeCreation, getDateEvt().getOneDayBefore());
 			if (!surchargeCorrectiveRange.isAcceptable()) {
-				throw new EvenementOrganisationException(
+				throw new EvenementEntrepriseException(
 						String.format("Refus de créer dans Unireg une entreprise HC avec une date de création remontant à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
 								              "Il y a probablement une erreur d'identification, une erreur dans l'établissement VD retenu %s ou un problème de date.",
 						              RegDateHelper.dateToDisplayString(dateDeCreation),
 						              surchargeCorrectiveRange.getEtendue(),
-						              OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC,
+						              EntrepriseHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC,
 						              getDescriptionEtablissement(succursaleACreer))
 				);
 			}
@@ -117,7 +117,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 			appliqueDonneesCivilesSurPeriode(etablissementSecondaire, surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
 		}
 
-		openRegimesFiscauxParDefautCHVD(getEntreprise(), getOrganisation(), dateDeCreation, suivis);
+		openRegimesFiscauxParDefautCHVD(getEntreprise(), getEntrepriseCivile(), dateDeCreation, suivis);
 
 		final CategorieEntreprise categorieEntreprise = getContext().getTiersService().getCategorieEntreprise(getEntreprise(), getDateEvt());
 		final boolean isSocieteDePersonnes = categorieEntreprise == CategorieEntreprise.SP;
@@ -130,7 +130,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		                       warnings, suivis);
 
 		if (isSocieteDePersonnes) {
-			warnings.addWarning(String.format("Nouvelle société de personnes, date de début à contrôler%s.", getOrganisation().isInscriteAuRC(getDateEvt()) ? " (Publication FOSC)" : ""));
+			warnings.addWarning(String.format("Nouvelle société de personnes, date de début à contrôler%s.", getEntrepriseCivile().isInscriteAuRC(getDateEvt()) ? " (Publication FOSC)" : ""));
 		}
 		else {
 			// Réglages exercice commercial
@@ -146,10 +146,10 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
-		if (getOrganisation().isSocieteIndividuelle(getDateEvt()) || getOrganisation().isSocieteSimple(getDateEvt())) {
-			throw new EvenementOrganisationException(String.format("Genre d'entreprise non supportée!: %s", getOrganisation().getFormeLegale(getDateEvt()).getLibelle()));
+		if (getEntrepriseCivile().isSocieteIndividuelle(getDateEvt()) || getEntrepriseCivile().isSocieteSimple(getDateEvt())) {
+			throw new EvenementEntrepriseException(String.format("Genre d'entreprise non supportée!: %s", getEntrepriseCivile().getFormeLegale(getDateEvt()).getLibelle()));
 		}
 
 		if (succursalesRCVD.size() == 0) {
@@ -165,7 +165,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		return null;
 	}
 
-	private String getDescriptionEtablissements(List<EtablissementCivil> etablissements) throws EvenementOrganisationException {
+	private String getDescriptionEtablissements(List<EtablissementCivil> etablissements) throws EvenementEntrepriseException {
 		StringBuilder sb = new StringBuilder();
 		for (EtablissementCivil etablissement : etablissements) {
 			sb.append("[");
@@ -175,7 +175,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		return sb.toString();
 	}
 
-	private String getDescriptionEtablissement(EtablissementCivil etablissement) throws EvenementOrganisationException {
+	private String getDescriptionEtablissement(EtablissementCivil etablissement) throws EvenementEntrepriseException {
 		String descriptionCommune = "(inconnue)";
 		final Commune communeDomicile = getCommuneDomicile(etablissement);
 		if (communeDomicile != null) {
@@ -183,9 +183,9 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		}
 		final RegDate dateInscriptionRCVd = etablissement.getDateInscriptionRCVd(getDateEvt());
 		if (dateInscriptionRCVd == null) {
-			throw new EvenementOrganisationException(String.format("Date d'inscription au RC VD introuvable pour la succursale au RC VD n°%s à %s",
-			                                                       etablissement.getNumeroEtablissement(),
-			                                                       descriptionCommune
+			throw new EvenementEntrepriseException(String.format("Date d'inscription au RC VD introuvable pour la succursale au RC VD n°%s à %s",
+			                                                     etablissement.getNumeroEtablissement(),
+			                                                     descriptionCommune
 			));
 		}
 		return String.format("%s (civil: n°%s) à %s inscription RC VD le %s", etablissement.getNom(getDateEvt()), etablissement.getNumeroEtablissement(), descriptionCommune, RegDateHelper.dateToDisplayString(dateInscriptionRCVd));

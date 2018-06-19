@@ -35,8 +35,8 @@ public class EtablissementCivilTest extends WithoutSpringTest {
 				.addNomAdditionnel(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
 				.addNomAdditionnel(RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
 
-				.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
-				.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE982034234")
+				.addIdentifiant(EntrepriseConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
+				.addIdentifiant(EntrepriseConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE982034234")
 
 				.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
 				.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
@@ -72,7 +72,7 @@ public class EtablissementCivilTest extends WithoutSpringTest {
 				)
 				.withIde(
 						new DonneesRegistreIDEBuilder()
-								.addTypeOrganisation(RegDate.get(2015, 4, 29), null, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE)
+								.addTypeEntreprise(RegDate.get(2015, 4, 29), null, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE)
 								.addStatus(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 								.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
 								.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonDeRadiationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
@@ -115,8 +115,8 @@ public class EtablissementCivilTest extends WithoutSpringTest {
 				.addNomAdditionnel(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
 				.addNomAdditionnel(RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
 
-				.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
-				.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE982034234")
+				.addIdentifiant(EntrepriseConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
+				.addIdentifiant(EntrepriseConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE982034234")
 
 				.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
 				.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
@@ -153,7 +153,7 @@ public class EtablissementCivilTest extends WithoutSpringTest {
 				)
 				.withIde(
 						new DonneesRegistreIDEBuilder()
-								.addTypeOrganisation(RegDate.get(2015, 4, 29), null, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE)
+								.addTypeEntreprise(RegDate.get(2015, 4, 29), null, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE)
 								.addStatus(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 								.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
 								.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonDeRadiationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)

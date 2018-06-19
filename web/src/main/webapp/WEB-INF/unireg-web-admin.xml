@@ -51,7 +51,7 @@
 				<entry key="evenementsEfactureResponse" value-ref="eFactureResponseListener"/>
 				<entry key="evenementsImportRf" value-ref="evtRFImportEventListener"/>
 				<entry key="reqDes" value-ref="reqdesEventListener"/>
-				<entry key="evenementOrganisation" value-ref="evtOrganisationListener"/>
+				<entry key="evenementEntreprise" value-ref="evtEntrepriseListener"/>
 				<entry key="rapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
 				<entry key="evenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>
 				<entry key="retourQuittancementAnnonceDocumentSortant" value-ref="retourDocumentSortantListener"/>

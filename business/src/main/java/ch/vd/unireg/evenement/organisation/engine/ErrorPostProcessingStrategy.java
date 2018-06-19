@@ -5,11 +5,11 @@ import java.util.List;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseBasicInfo;
 
 /**
  * Interface implémentée par les stratégies de post-processing du reliquat des événements
- * non encore traités d'une queue pour une organisation suite à la levée d'une erreur plus tôt dans la queue.
+ * non encore traités d'une queue pour une entreprise suite à la levée d'une erreur plus tôt dans la queue.
  * <p/>
  * Le framework va d'abord appeler {@link #doCollectPhase(List, Mutable)},
  * charge à la stratégie de collecter les éléments nécessaire à son traitement (à placer dans le paramètre <b>customData</b>).
@@ -32,7 +32,7 @@ public interface ErrorPostProcessingStrategy<T> {
 	 * @return une liste contenant les événements non-traités par cette stratégie (ils seront pris en compte par les stratégies suivantes)
 	 */
 	@NotNull
-	List<EvenementOrganisationBasicInfo> doCollectPhase(List<EvenementOrganisationBasicInfo> remainingEvents, Mutable<T> customData);
+	List<EvenementEntrepriseBasicInfo> doCollectPhase(List<EvenementEntrepriseBasicInfo> remainingEvents, Mutable<T> customData);
 
 	/**
 	 * @return <code>true</code> si le {@link #doFinalizePhase(Object)} doit être appelé dans une transaction, <code>false</code> sinon

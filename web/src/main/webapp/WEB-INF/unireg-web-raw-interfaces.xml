@@ -20,18 +20,18 @@
 
 	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
 
-	<!-- Service Organisation -->
+	<!-- Service Entreprise -->
 
-	<bean id="serviceOrganisationCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceOrganisationCache">
-		<property name="target" ref="serviceOrganisationTracing" />
+	<bean id="serviceEntrepriseCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceEntrepriseCache">
+		<property name="target" ref="serviceEntrepriseTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceOrganisation" />
+		<property name="cacheName" value="serviceEntreprise" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<alias alias="serviceOrganisationRaw" name="serviceOrganisationCache" />
+	<alias alias="serviceEntrepriseRaw" name="serviceEntrepriseCache" />
 
 	<!-- Service UPI -->
 

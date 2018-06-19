@@ -5,10 +5,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.common.BusinessTest;
 
 /**
  * Quelques tests autour des algorithmes vus dans cette classe d'adresse
@@ -127,7 +127,7 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 	@Test
 	public void testSplitAdresseStructureeEntreprise() throws Exception {
 		final String raisonSociale = "Turlututu chapeau pointu SA";
-		final DestinataireAdresse destinataire = new DestinataireAdresse.Organisation(null, raisonSociale, null, null, null);
+		final DestinataireAdresse destinataire = new DestinataireAdresse.Entreprise(null, raisonSociale, null, null, null);
 		final AdresseRaisonSociale.StructureeSuisse input = new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, MockRue.Echallens.GrandRue.getNoRue(), null, "42ter", null, null, null, null, MockLocalite.Echallens.getNoOrdre());
 		final Pair<NomAvecCivilite, Adresse> resultat = input.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);

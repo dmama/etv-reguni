@@ -53,9 +53,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.tiers.AutreCommunaute;
@@ -1334,12 +1334,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
-				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay, "CHE123456788");
-				addOrganisation(org);
+				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
+				                                                                                FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay, "CHE123456788");
+				addEntreprise(ent);
 			}
 		});
 
@@ -3484,12 +3484,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final long noEntreprise = 423672L;
 		final RegDate pmActivityStartDate = date(2000, 1, 1);
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
-				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay, "CHE123456788");
-				addOrganisation(org);
+				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
+				                                                                                FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay, "CHE123456788");
+				addEntreprise(ent);
 			}
 		});
 

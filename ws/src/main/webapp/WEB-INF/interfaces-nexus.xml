@@ -32,17 +32,17 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<!-- Service Organisation -->
+	<!-- Service Entreprise -->
 
-	<bean id="serviceOrganisationRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceOrganisation.remoting" />
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw" />
+	<bean id="serviceEntrepriseRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceEntreprise.remoting" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseRaw" />
 		<property name="executor" ref="nexusHttpRequestExecutor" />
 	</bean>
 
 
-	<bean id="serviceOrganisationTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
-		<property name="target" ref="serviceOrganisationRemote" />
+	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseTracing">
+		<property name="target" ref="serviceEntrepriseRemote" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

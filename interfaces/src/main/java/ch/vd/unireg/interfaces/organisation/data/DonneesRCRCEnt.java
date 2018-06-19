@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 /**
  *   Utilisez les méthodes des helpers pour produire les données des accesseurs.
  *
- *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   EntrepriseHelper fournit les méthodes nécessaires à l'accès par date:
  *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
  */
 public class DonneesRCRCEnt implements DonneesRC, Serializable {
@@ -43,7 +43,7 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 
 	@Override
 	public AdresseLegaleRCEnt getAdresseLegale(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(adresseLegale, date);
+		return EntrepriseHelper.dateRangeForDate(adresseLegale, date);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 
 	@Override
 	public InscriptionRC getInscription(RegDate date) {
-		return OrganisationHelper.valueForDate(inscription, date);
+		return EntrepriseHelper.valueForDate(inscription, date);
 	}
 
 	@Override
@@ -78,6 +78,6 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 
 	@Override
 	public List<EntreeJournalRC> getEntreesJournalPourDatePublication(RegDate date) {
-		return OrganisationHelper.getEntreesJournalPourDatePublication(entreesJournal, date);
+		return EntrepriseHelper.getEntreesJournalPourDatePublication(entreesJournal, date);
 	}
 }

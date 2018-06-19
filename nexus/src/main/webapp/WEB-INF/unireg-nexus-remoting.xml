@@ -11,9 +11,9 @@
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
  	</bean>
 
-	<bean name="serviceOrganisationRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-		<property name="service" ref="serviceOrganisationRaw"/>
-		<property name="serviceInterface" value="ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw"/>
+	<bean name="serviceEntrepriseRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="serviceEntrepriseRaw"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseRaw"/>
 	</bean>
 
 	<bean name="serviceUpiRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
@@ -39,7 +39,7 @@
 				<entry key="/serviceUpi.remoting" value-ref="serviceUpiRawExporter" />
 				<entry key="/serviceInfra.remoting" value-ref="serviceInfraRawExporter" />
 				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />
-				<entry key="/serviceOrganisation.remoting" value-ref="serviceOrganisationRawExporter"/>
+				<entry key="/serviceEntreprise.remoting" value-ref="serviceEntrepriseRawExporter"/>
 			</map>
 		</property>
 	</bean>

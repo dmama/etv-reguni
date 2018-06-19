@@ -8,7 +8,7 @@ import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 
 /**
- * Classe abstraite qui représentent un allégement foncier de virtuel généré à la volée pour un entreprise donnée.
+ * Classe abstraite qui représentent un allégement foncier de virtuel généré à la volée pour une entreprise donnée.
  */
 public class AllegementFoncierVirtuel extends AllegementFoncier {
 

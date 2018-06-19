@@ -12,17 +12,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.xml.party.corporation.v3.Capital;
-import ch.vd.unireg.xml.party.corporation.v3.Corporation;
-import ch.vd.unireg.xml.party.corporation.v3.CorporationStatus;
-import ch.vd.unireg.xml.party.corporation.v3.LegalForm;
-import ch.vd.unireg.xml.party.corporation.v3.LegalSeat;
-import ch.vd.unireg.xml.party.corporation.v3.TaxSystem;
-import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.unireg.xml.party.v3.UidNumberList;
 import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.CapitalHisto;
 import ch.vd.unireg.tiers.DomicileHisto;
@@ -36,6 +28,14 @@ import ch.vd.unireg.xml.Context;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.party.corporation.v3.Capital;
+import ch.vd.unireg.xml.party.corporation.v3.Corporation;
+import ch.vd.unireg.xml.party.corporation.v3.CorporationStatus;
+import ch.vd.unireg.xml.party.corporation.v3.LegalForm;
+import ch.vd.unireg.xml.party.corporation.v3.LegalSeat;
+import ch.vd.unireg.xml.party.corporation.v3.TaxSystem;
+import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.unireg.xml.party.v3.UidNumberList;
 
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
@@ -75,8 +75,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		// L'exposition du numéro IDE
 		if (entreprise.isConnueAuCivil()) {
-			final Organisation organisation = context.serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
-			final List<DateRanged<String>> numeros = organisation.getNumeroIDE();
+			final EntrepriseCivile entrepriseCivile = context.serviceEntreprise.getEntrepriseHistory(entreprise.getNumeroEntreprise());
+			final List<DateRanged<String>> numeros = entrepriseCivile.getNumeroIDE();
 			if (numeros != null && !numeros.isEmpty()) {
 				to.setUidNumbers(new UidNumberList(Collections.singletonList(numeros.get(numeros.size() - 1).getPayload())));
 			}

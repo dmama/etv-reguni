@@ -9,13 +9,13 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesREE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL;
@@ -27,7 +27,7 @@ import static ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil.E
 public abstract class MockEtablissementCivilFactory {
 
 	public static MockEtablissementCivil addEtablissement(long cantonalId,
-	                                                      MockOrganisation organisation,
+	                                                      MockEntrepriseCivile entreprise,
 	                                                      RegDate dateDebut,
 	                                                      RegDate dateFin,
 	                                                      String nom,
@@ -38,13 +38,13 @@ public abstract class MockEtablissementCivilFactory {
 	                                                      @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                                      @Nullable RegDate dateInscriptionRC,
 	                                                      @Nullable StatusRegistreIDE statusIde,
-	                                                      @Nullable TypeOrganisationRegistreIDE typeIde,
+	                                                      @Nullable TypeEntrepriseRegistreIDE typeIde,
 	                                                      @Nullable String numeroIDE) {
-		return addEtablissement(cantonalId, organisation, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, numeroIDE, null, null);
+		return addEtablissement(cantonalId, entreprise, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, numeroIDE, null, null);
 	}
 
 	public static MockEtablissementCivil addEtablissement(long cantonalId,
-	                                                      MockOrganisation organisation,
+	                                                      MockEntrepriseCivile entreprise,
 	                                                      RegDate dateDebut,
 	                                                      RegDate dateFin,
 	                                                      String nom,
@@ -55,13 +55,13 @@ public abstract class MockEtablissementCivilFactory {
 	                                                      @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                                      @Nullable RegDate dateInscriptionRC,
 	                                                      @Nullable StatusRegistreIDE statusIde,
-	                                                      @Nullable TypeOrganisationRegistreIDE typeIde,
+	                                                      @Nullable TypeEntrepriseRegistreIDE typeIde,
 	                                                      @Nullable String numeroIDE,
 	                                                      @Nullable BigDecimal capitalAmount,
 	                                                      @Nullable String capitalCurrency) {
 		MockEtablissementCivil
 				mockSite =  mockSite(cantonalId, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, numeroIDE, capitalAmount, capitalCurrency);
-		organisation.addDonneesEtablissement(mockSite);
+		entreprise.addDonneesEtablissement(mockSite);
 		return mockSite;
 	}
 
@@ -76,7 +76,7 @@ public abstract class MockEtablissementCivilFactory {
 	                                              @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                              @Nullable RegDate dateInscriptionRC,
 	                                              @Nullable StatusRegistreIDE statusIde,
-	                                              @Nullable TypeOrganisationRegistreIDE typeIde,
+	                                              @Nullable TypeEntrepriseRegistreIDE typeIde,
 	                                              @Nullable String numeroIDE,
 	                                              @Nullable BigDecimal capitalAmount,
 	                                              @Nullable String capitalCurrency) {
@@ -100,7 +100,7 @@ public abstract class MockEtablissementCivilFactory {
 		if (statusIde != null) {
 			donneesRegistreIDE.changeStatus(dateDebut, statusIde);
 			if (typeIde != null) {
-				donneesRegistreIDE.changeTypeOrganisation(dateDebut, typeIde);
+				donneesRegistreIDE.changeTypeEntreprise(dateDebut, typeIde);
 			}
 		}
 

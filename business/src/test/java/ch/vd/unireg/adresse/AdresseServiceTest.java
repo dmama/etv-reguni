@@ -26,9 +26,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Curatelle;
@@ -82,7 +82,7 @@ public class AdresseServiceTest extends BusinessTest {
 		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(false);
 
 		// Instanciation du service à la main pour pouvoir taper dans les méthodes protégées.
-		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceOrganisation, serviceCivil, localiteInvalideMatcherService);
+		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceEntreprise, serviceCivil, localiteInvalideMatcherService);
 	}
 
 	@Override
@@ -3566,17 +3566,17 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesFiscalesHistoEntrepriseSansAdresseFiscale() throws Exception {
 
-		final long noOrganisation = 1;
+		final long noEntrepriseCivile = 1;
 
 		/*
 		 * Crée les données du mock service PM
 		 */
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation ent = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1001, "Ma Petite Entreprise", date(1970, 7, 1), null,
-				                                                                              FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Lausanne);
-				addOrganisation(ent);
+				final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1001, "Ma Petite Entreprise", date(1970, 7, 1), null,
+				                                                                                FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Lausanne);
+				addEntreprise(ent);
 
 				// adresses courriers
 				addAdresse(ent, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, date(1980, 1, 1), date(1987, 12, 11));
@@ -3593,7 +3593,7 @@ public class AdresseServiceTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				// Crée une entreprise sans adresse fiscale surchargée
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntrepriseCivile);
 				return entreprise.getId();
 			}
 		});
@@ -3609,15 +3609,15 @@ public class AdresseServiceTest extends BusinessTest {
 				assertNotNull(adresses);
 
 				assertEquals(3, adresses.courrier.size());
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ORG, false, adresses.courrier.get(0));
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_ORG, false, adresses.courrier.get(1));
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_ORG, false, adresses.courrier.get(2));
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ENT, false, adresses.courrier.get(0));
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_ENT, false, adresses.courrier.get(1));
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_ENT, false, adresses.courrier.get(2));
 
 				assertAdressesEquals(adresses.courrier, adresses.representation);
 
 				assertEquals(2, adresses.poursuite.size());
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ORG, false, adresses.poursuite.get(0));
-				assertAdresse(date(1987, 12, 12), null, "Cossonay-Ville", SourceType.CIVILE_ORG, false, adresses.poursuite.get(1));
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ENT, false, adresses.poursuite.get(0));
+				assertAdresse(date(1987, 12, 12), null, "Cossonay-Ville", SourceType.CIVILE_ENT, false, adresses.poursuite.get(1));
 
 				assertAdressesEquals(adresses.poursuite, adresses.domicile);
 			}
@@ -3629,7 +3629,7 @@ public class AdresseServiceTest extends BusinessTest {
 	public void testGetSalutations() {
 
 		/* (création d'un adresse service à la main, pour pouver appeler une méthode protégée sans se heurter au proxy spring.) */
-		AdresseServiceImpl service = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceOrganisation, serviceCivil, localiteInvalideMatcherService);
+		AdresseServiceImpl service = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceEntreprise, serviceCivil, localiteInvalideMatcherService);
 		service.setTiersService(tiersService);
 
 		// Ménage homme-femme
@@ -6570,10 +6570,10 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final long noTiers = 10536395;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.KPMG);
+				addEntreprise(MockEntrepriseFactory.KPMG);
 			}
 		});
 
@@ -6581,7 +6581,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final PersonnePhysique ctb = addNonHabitant(noTiers, "Claude-Alain", "Proz", date(1953, 11, 2), Sexe.MASCULIN);
 		addAdresseEtrangere(ctb, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), null, null, "Izmir", MockPays.Turquie);
 
-		final Entreprise representant = addEntrepriseConnueAuCivil(MockOrganisationFactory.KPMG.getNumeroOrganisation());
+		final Entreprise representant = addEntrepriseConnueAuCivil(MockEntrepriseFactory.KPMG.getNumeroEntreprise());
 		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), true);
 
 		// les adresses fiscales
@@ -6690,10 +6690,10 @@ public class AdresseServiceTest extends BusinessTest {
 		final long noTiers = 10033975;
 		final long noIndividu = 330581;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.CURIA_TREUHAND);
+				addEntreprise(MockEntrepriseFactory.CURIA_TREUHAND);
 			}
 		});
 
@@ -6707,7 +6707,7 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
-		final Entreprise representant = addEntrepriseConnueAuCivil(MockOrganisationFactory.CURIA_TREUHAND.getNumeroOrganisation());
+		final Entreprise representant = addEntrepriseConnueAuCivil(MockEntrepriseFactory.CURIA_TREUHAND.getNumeroEntreprise());
 		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), false);
 
 		// les adresses fiscales

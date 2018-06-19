@@ -42,7 +42,7 @@ public interface BatchableExtractor<E, R extends BatchResults<E, R>> extends Ext
 	 * @param batch le lot à traiter
 	 * @param rapport le rapport à remplir à partir des informations du lot
 	 * @return <code>true</code> s'il faut continuer avec le lot suivant, <code>false</code> si le traitement doit s'arrêter là
-	 * @throws Exception en cas de problème ; en fonction du comportement (voir {@link #getBatchBehavior()}) demandé, une reprise pourra être entreprise ou pas
+	 * @throws Exception en cas de problème ; en fonction du comportement (voir {@link #getBatchBehavior()}) demandé, une reprise pourra être organisée ou pas
 	 */
 	boolean doBatchExtraction(List<E> batch, R rapport) throws Exception;
 

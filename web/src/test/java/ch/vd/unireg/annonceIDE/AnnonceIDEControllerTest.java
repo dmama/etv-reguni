@@ -31,10 +31,10 @@ import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.pagination.ParamPagination;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationCriteria;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseCriteria;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseDAO;
+import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
@@ -45,9 +45,9 @@ import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.interfaces.service.mock.MockServiceOrganisationService;
+import ch.vd.unireg.interfaces.service.mock.MockServiceEntreprise;
 import ch.vd.unireg.tiers.TiersMapHelper;
-import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementEntreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -92,12 +92,12 @@ public class AnnonceIDEControllerTest {
 				               new AnnonceIDEData.StatutImpl(StatutAnnonce.REJET_RCENT, DateHelper.getDate(2002, 7, 12), null), SERVICE_UNIREG)
 		);
 
-		// on service organisation qui retourne les deux pages ci-dessus
-		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
+		// on service entreprise qui retourne les deux pages ci-dessus
+		final MockServiceEntreprise serviceEntreprise = new MockServiceEntreprise() {
 			@NotNull
 			@Override
 			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws
-					ServiceOrganisationException {
+					ServiceEntrepriseException {
 				if (pageNumber == 0) {
 					return new PageImpl<>(firstPage, null, 3);
 				}
@@ -113,9 +113,9 @@ public class AnnonceIDEControllerTest {
 		// on crée le contrôleur et le mock MVC
 		final AnnonceIDEController controller = new AnnonceIDEController();
 		controller.setTiersMapHelper(tiersMapHelper);
-		controller.setOrganisationService(organisationService);
+		controller.setServiceEntreprise(serviceEntreprise);
 		controller.setReferenceAnnonceIDEDAO(new MockDummyReferenceAnnonceIDEDAO());
-		controller.setEvtOrganisationDAO(new MockDummyEvenementOrganisationDAO());
+		controller.setEvtEntrepriseDAO(new MockDummyEvenementEntrepriseDAO());
 
 		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
 
@@ -164,8 +164,8 @@ public class AnnonceIDEControllerTest {
 	@Test
 	public void testVisuObjectNotFound() throws Exception {
 
-		// on service organisation qui ne trouve aucun annonce
-		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
+		// on service entreprise qui ne trouve aucun annonce
+		final MockServiceEntreprise serviceEntreprise = new MockServiceEntreprise() {
 			@Nullable
 			@Override
 			public AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) {
@@ -175,7 +175,7 @@ public class AnnonceIDEControllerTest {
 
 		// on crée le contrôleur et le mock MVC
 		final AnnonceIDEController controller = new AnnonceIDEController();
-		controller.setOrganisationService(organisationService);
+		controller.setServiceEntreprise(serviceEntreprise);
 
 		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
 
@@ -198,8 +198,8 @@ public class AnnonceIDEControllerTest {
 
 		final Date dateAnnonce = DateHelper.getDate(2000, 1, 1);
 
-		// on service organisation qui retourne une annonce
-		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
+		// on service entreprise qui retourne une annonce
+		final MockServiceEntreprise serviceEntreprise = new MockServiceEntreprise() {
 			@Nullable
 			@Override
 			public AnnonceIDE getAnnonceIDE(long numero, @NotNull String userId) {
@@ -211,7 +211,7 @@ public class AnnonceIDEControllerTest {
 				annonce.setNoIdeEtablissementPrincipal(NumeroIDE.valueOf(999444777));
 				annonce.setCommentaire("Que voilà un joli commentaire !");
 
-				annonce.setInformationOrganisation(new AnnonceIDEData.InformationOrganisationImpl(22334455L, 22334466L, 11003355L));
+				annonce.setInformationEntreprise(new AnnonceIDEData.InformationEntrepriseImpl(22334455L, 22334466L, 11003355L));
 
 				final AdresseAnnonceIDERCEnt adresse = new AdresseAnnonceIDERCEnt();
 				adresse.setRue("chemin de la date qui glisse");
@@ -236,7 +236,7 @@ public class AnnonceIDEControllerTest {
 
 		// on crée le contrôleur et le mock MVC
 		final AnnonceIDEController controller = new AnnonceIDEController();
-		controller.setOrganisationService(organisationService);
+		controller.setServiceEntreprise(serviceEntreprise);
 
 		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
 
@@ -265,7 +265,7 @@ public class AnnonceIDEControllerTest {
 		assertNull(annonce.getRaisonDeRadiation());
 		assertEquals("Que voilà un joli commentaire !", annonce.getCommentaire());
 
-		final InformationOrganisationView info = annonce.getInformationOrganisation();
+		final InformationEntrepriseView info = annonce.getInformationOrganisation();
 		assertEquals(Long.valueOf(22334455L), info.getNumeroEtablissement());
 		assertEquals(Long.valueOf(22334466L), info.getNumeroOrganisation());
 		assertEquals(Long.valueOf(11003355L), info.getNumeroEtablissementRemplacant());
@@ -299,10 +299,10 @@ public class AnnonceIDEControllerTest {
 		// on crée le contrôleur et le mock MVC
 		final AnnonceIDEController controller = new AnnonceIDEController();
 		controller.setTiersMapHelper(tiersMapHelper);
-		controller.setOrganisationService(new MockServiceOrganisationService(){
+		controller.setServiceEntreprise(new MockServiceEntreprise(){
 			@NotNull
 			@Override
-			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
 				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
 			}
 		});
@@ -332,10 +332,10 @@ public class AnnonceIDEControllerTest {
 		// on crée le contrôleur et le mock MVC
 		final AnnonceIDEController controller = new AnnonceIDEController();
 		controller.setTiersMapHelper(tiersMapHelper);
-		controller.setOrganisationService(new MockServiceOrganisationService(){
+		controller.setServiceEntreprise(new MockServiceEntreprise(){
 			@NotNull
 			@Override
-			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
 				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
 			}
 		});
@@ -369,10 +369,10 @@ public class AnnonceIDEControllerTest {
 		// on crée le contrôleur et le mock MVC
 		final AnnonceIDEController controller = new AnnonceIDEController();
 		controller.setTiersMapHelper(tiersMapHelper);
-		controller.setOrganisationService(new MockServiceOrganisationService(){
+		controller.setServiceEntreprise(new MockServiceEntreprise(){
 			@NotNull
 			@Override
-			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceEntrepriseException {
 				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
 			}
 		});
@@ -479,76 +479,76 @@ public class AnnonceIDEControllerTest {
 		}
 	}
 
-	public static class MockDummyEvenementOrganisationDAO implements EvenementOrganisationDAO {
+	public static class MockDummyEvenementEntrepriseDAO implements EvenementEntrepriseDAO {
 		@Override
-		public List<EvenementOrganisation> getEvenementsOrganisationNonTraites(long noOrganisation) {
+		public List<EvenementEntreprise> getEvenementsNonTraites(long noEntrepriseCivile) {
 			return null;
 		}
 
 		@Override
-		public List<EvenementOrganisation> getEvenementsOrganisation(long noOrganisation) {
+		public List<EvenementEntreprise> getEvenements(long noEntrepriseCivile) {
 			return null;
 		}
 
 		@Override
-		public List<EvenementOrganisation> getEvenementsOrganisationARelancer() {
+		public List<EvenementEntreprise> getEvenementsARelancer() {
 			return null;
 		}
 
 		@NotNull
 		@Override
-		public List<EvenementOrganisation> getEvenementsOrganisationApresDateNonAnnules(Long noOrganisation, RegDate date) {
+		public List<EvenementEntreprise> getEvenementsApresDateNonAnnules(Long noEntrepriseCivile, RegDate date) {
 			return null;
 		}
 
 		@Override
-		public Set<Long> getOrganisationsConcerneesParEvenementsPourRetry() {
+		public Set<Long> getNosEntreprisesCivilesConcerneesParEvenementsPourRetry() {
 			return null;
 		}
 
 		@Override
-		public List<EvenementOrganisation> find(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion, @Nullable ParamPagination paramPagination) {
+		public List<EvenementEntreprise> find(EvenementEntrepriseCriteria<TypeEvenementEntreprise> criterion, @Nullable ParamPagination paramPagination) {
 			return null;
 		}
 
 		@Override
-		public List<EvenementOrganisation> getEvenementsForNoEvenement(long noEvenement) {
+		public List<EvenementEntreprise> getEvenementsForNoEvenement(long noEvenement) {
 			return null;
 		}
 
 		@Override
-		public EvenementOrganisation getEvenementForNoAnnonceIDE(long noAnnonce) {
+		public EvenementEntreprise getEvenementForNoAnnonceIDE(long noAnnonce) {
 			return null;
 		}
 
 		@Override
-		public List<EvenementOrganisation> getEvenementsForBusinessId(String businessId) {
+		public List<EvenementEntreprise> getEvenementsForBusinessId(String businessId) {
 			return null;
 		}
 
 		@Override
-		public int count(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion) {
+		public int count(EvenementEntrepriseCriteria<TypeEvenementEntreprise> criterion) {
 			return 0;
 		}
 
 		@Override
-		public boolean isEvenementDateValeurDansLePasse(EvenementOrganisation event) {
+		public boolean isEvenementDateValeurDansLePasse(EvenementEntreprise event) {
 			return false;
 		}
 
 		@NotNull
 		@Override
-		public List<EvenementOrganisation> evenementsPourDateValeurEtOrganisation(RegDate date, Long noOrganisation) {
+		public List<EvenementEntreprise> evenementsPourDateValeurEtEntreprise(RegDate date, Long noEntrepriseCivile) {
 			return null;
 		}
 
 		@Override
-		public List<EvenementOrganisation> getAll() {
+		public List<EvenementEntreprise> getAll() {
 			return null;
 		}
 
 		@Override
-		public EvenementOrganisation get(Long id) {
+		public EvenementEntreprise get(Long id) {
 			return null;
 		}
 
@@ -563,7 +563,7 @@ public class AnnonceIDEControllerTest {
 		}
 
 		@Override
-		public EvenementOrganisation save(EvenementOrganisation object) {
+		public EvenementEntreprise save(EvenementEntreprise object) {
 			return null;
 		}
 
@@ -583,7 +583,7 @@ public class AnnonceIDEControllerTest {
 		}
 
 		@Override
-		public Iterator<EvenementOrganisation> iterate(String query) {
+		public Iterator<EvenementEntreprise> iterate(String query) {
 			return null;
 		}
 

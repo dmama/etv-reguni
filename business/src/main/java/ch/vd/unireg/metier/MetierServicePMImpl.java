@@ -40,8 +40,8 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tache.TacheService;
 import ch.vd.unireg.tiers.ActiviteEconomique;
 import ch.vd.unireg.tiers.CapitalFiscalEntreprise;
@@ -175,18 +175,18 @@ public class MetierServicePMImpl implements MetierServicePM {
 	}
 
 	@Override
-	public RattachementOrganisationResult rattacheOrganisationEntreprise(Organisation organisation, Entreprise entreprise, RegDate date) throws MetierServiceException {
+	public RattachementEntrepriseResult rattacheEntreprisesCivileEtFiscal(EntrepriseCivile entrepriseCivile, Entreprise entreprise, RegDate date) throws MetierServiceException {
 
-		if (organisation.getEtablissementPrincipal(date) == null) {
-			throw new MetierServiceException(String.format("L'organisation %d n'a pas de établissement principal à la date demandée %s.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
+		if (entrepriseCivile.getEtablissementPrincipal(date) == null) {
+			throw new MetierServiceException(String.format("L'entreprise civile %d n'a pas d'établissement principal à la date demandée %s.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(date)));
 		}
 
-		if (entreprise.getNumeroEntreprise() != null && entreprise.getNumeroEntreprise() != organisation.getNumeroOrganisation()) {
-			throw new MetierServiceException(String.format("L'entreprise %d est déjà rattachée à une autre organisation!", entreprise.getNumero()));
+		if (entreprise.getNumeroEntreprise() != null && entreprise.getNumeroEntreprise() != entrepriseCivile.getNumeroEntreprise()) {
+			throw new MetierServiceException(String.format("L'entreprise %d est déjà rattachée à une autre entreprise civile!", entreprise.getNumero()));
 		}
 
 		// Rapprochement de l'entreprise
-		entreprise.setNumeroEntreprise(organisation.getNumeroOrganisation());
+		entreprise.setNumeroEntreprise(entrepriseCivile.getNumeroEntreprise());
 		entreprise.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
 		final RaisonSocialeFiscaleEntreprise raisonSociale = RangeUtil.getAssertLast(entreprise.getRaisonsSocialesNonAnnuleesTriees(), date);
@@ -204,24 +204,24 @@ public class MetierServicePMImpl implements MetierServicePM {
 			tiersService.closeCapitalFiscal(capital, date.getOneDayBefore());
 		}
 
-		RattachementOrganisationResult result = new RattachementOrganisationResult(entreprise);
+		RattachementEntrepriseResult result = new RattachementEntrepriseResult(entreprise);
 
 		// Rapprochement de l'établissement principal
-		EtablissementCivil etablissementCivilPrincipal = organisation.getEtablissementPrincipal(date).getPayload();
+		EtablissementCivil etablissementCivilPrincipal = entrepriseCivile.getEtablissementPrincipal(date).getPayload();
 		final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 		if (etablissementsPrincipauxEntreprise.isEmpty() || DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, date) == null) {
 			throw new MetierServiceException(String.format("L'entreprise %s ne possède pas d'établissement principal!", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 		}
 		DateRanged<Etablissement> etablissementPrincipalRange = DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, date);
 		if (etablissementPrincipalRange.getDateDebut().isAfter(date)) {
-			throw new MetierServiceException(String.format("L'établissement principal %d commence à une date postérieure à la tentative de rapprochement du %s. Impossible de continuer.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
+			throw new MetierServiceException(String.format("L'établissement principal %d commence à une date postérieure à la tentative de rapprochement du %s. Impossible de continuer.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(date)));
 		}
 
 		final Etablissement etablissementPrincipal = etablissementPrincipalRange.getPayload();
 
 		final List<DomicileEtablissement> sortedDomiciles = etablissementPrincipal.getSortedDomiciles(false);
 		if (sortedDomiciles.isEmpty()) {
-			throw new MetierServiceException(String.format("L'établissement principal %d n'a pas de domicile en date du %s. Impossible de continuer le rapprochement.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
+			throw new MetierServiceException(String.format("L'établissement principal %d n'a pas de domicile en date du %s. Impossible de continuer le rapprochement.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(date)));
 		}
 		final DomicileEtablissement domicile = RangeUtil.getAssertLast(sortedDomiciles, date);
 
@@ -235,7 +235,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		Map<Long, EtablissementCivil> etablissementsToMatch = new HashMap<>();
 		final List<Etablissement> etablissementsNonEncoreRattaches = new ArrayList<>();
 
-		for (EtablissementCivil etablissementsCivilsSecondaire : organisation.getEtablissementsSecondaires(date)) {
+		for (EtablissementCivil etablissementsCivilsSecondaire : entrepriseCivile.getEtablissementsSecondaires(date)) {
 			etablissementsToMatch.put(etablissementsCivilsSecondaire.getNumeroEtablissement(), etablissementsCivilsSecondaire);
 		}
 
@@ -246,7 +246,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 					result.addEtablissementRattache(etablissementSecondaire);
 				}
 				else {
-					throw new MetierServiceException(String.format("L'établissement secondaire %s est censé être connu au civil mais son numéro ne correspond à aucun des établissements civil RCEnt de l'organisation %d!",
+					throw new MetierServiceException(String.format("L'établissement secondaire %s est censé être connu au civil mais son numéro ne correspond à aucun des établissements civil RCEnt de l'entreprise civile %d!",
 					                                               FormatNumeroHelper.numeroCTBToDisplay(numeroEtablissement), entreprise.getNumeroEntreprise()));
 				}
 			} else {
@@ -944,7 +944,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 				}
 			}
 			if (!trouveBonRapportEntreTiers) {
-				throw new MetierServiceException(String.format("L'entreprise %s n'est pas associée à une absorption par l'enteprise %s avec une date de bilan de fusion au %s.",
+				throw new MetierServiceException(String.format("L'entreprise %s n'est pas associée à une absorption par l'entreprise %s avec une date de bilan de fusion au %s.",
 				                                               FormatNumeroHelper.numeroCTBToDisplay(absorbee.getNumero()),
 				                                               FormatNumeroHelper.numeroCTBToDisplay(absorbante.getNumero()),
 				                                               RegDateHelper.dateToDisplayString(dateBilanFusion)));

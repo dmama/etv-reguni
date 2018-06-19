@@ -14,7 +14,7 @@
 			<property name="autorisationManager" ref="autorisationManager" />
 			<property name="webCivilService" ref="webCivilService" />
 			<property name="serviceCivilService" ref="serviceCivilService" />
-			<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+			<property name="serviceEntreprise" ref="serviceEntreprise" />
 			<property name="entrepriseService" ref="entrepriseService" />
 			<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		 -->

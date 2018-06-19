@@ -14,7 +14,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="avatarService" ref="avatarService" />
-		<property name="serviceOrganisationService" ref="serviceOrganisationService"/>
+		<property name="serviceEntreprise" ref="serviceEntreprise"/>
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="sessionFactory"  ref="sessionFactory"/>
 		<property name="statsService" ref="statsService" />

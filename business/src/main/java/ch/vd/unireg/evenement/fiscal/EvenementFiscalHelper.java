@@ -30,7 +30,7 @@ public abstract class EvenementFiscalHelper {
 	private static List<Pair<Pattern, Function<Matcher, String>>> buildBusinessUserExtractors() {
 		final List<Pair<Pattern, Function<Matcher, String>>> extractors = new ArrayList<>();
 		extractors.add(Pair.of(Pattern.compile("EvtCivil-[0-9]+"), matcher -> UNIREG));
-		extractors.add(Pair.of(Pattern.compile("EvtOrganisation-[0-9]+"), matcher -> UNIREG));
+		extractors.add(Pair.of(Pattern.compile("EvtEntreprise-[0-9]+"), matcher -> UNIREG));
 		extractors.add(Pair.of(Pattern.compile("JMS-.+"), matcher -> UNIREG));
 		extractors.add(Pair.of(Pattern.compile("Récupération-démarrage"), matcher -> UNIREG));
 		extractors.add(Pair.of(Pattern.compile("ReqDes-(UT-)?[0-9]+"), matcher -> UNIREG));

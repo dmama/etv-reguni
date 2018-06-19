@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
@@ -16,11 +19,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.common.BusinessTest;
-import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
-import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
@@ -47,15 +47,15 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
-				addOrganisation(MockOrganisationFactory.BCV);
-				addOrganisation(MockOrganisationFactory.KPMG);
-				addOrganisation(MockOrganisationFactory.CURIA_TREUHAND);
-				addOrganisation(MockOrganisationFactory.JAL_HOLDING);
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.KPMG);
+				addEntreprise(MockEntrepriseFactory.CURIA_TREUHAND);
+				addEntreprise(MockEntrepriseFactory.JAL_HOLDING);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
 			}
 		});
 
@@ -113,35 +113,35 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 				@Override
 				public Ids doInTransaction(TransactionStatus status) {
-					final Entreprise nestle = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
-					addRegimeFiscalVD(nestle, MockOrganisationFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(nestle, MockOrganisationFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(nestle, MockOrganisationFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Vevey);
+					final Entreprise nestle = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+					addRegimeFiscalVD(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addForPrincipal(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Vevey);
 
-					final Entreprise bcv = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-					addRegimeFiscalVD(bcv, MockOrganisationFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(bcv, MockOrganisationFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(bcv, MockOrganisationFactory.BCV.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+					final Entreprise bcv = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+					addRegimeFiscalVD(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addForPrincipal(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
-					final Entreprise kpmg = addEntrepriseConnueAuCivil(MockOrganisationFactory.KPMG.getNumeroOrganisation());
-					addRegimeFiscalVD(kpmg, MockOrganisationFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(kpmg, MockOrganisationFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(kpmg, MockOrganisationFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Zurich);
+					final Entreprise kpmg = addEntrepriseConnueAuCivil(MockEntrepriseFactory.KPMG.getNumeroEntreprise());
+					addRegimeFiscalVD(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addForPrincipal(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Zurich);
 
-					final Entreprise curiaTreuhand = addEntrepriseConnueAuCivil(MockOrganisationFactory.CURIA_TREUHAND.getNumeroOrganisation());
-					addRegimeFiscalVD(curiaTreuhand, MockOrganisationFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(curiaTreuhand, MockOrganisationFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(curiaTreuhand, MockOrganisationFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Chur);
+					final Entreprise curiaTreuhand = addEntrepriseConnueAuCivil(MockEntrepriseFactory.CURIA_TREUHAND.getNumeroEntreprise());
+					addRegimeFiscalVD(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addForPrincipal(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Chur);
 
-					final Entreprise jalHolding = addEntrepriseConnueAuCivil(MockOrganisationFactory.JAL_HOLDING.getNumeroOrganisation());
-					addRegimeFiscalVD(jalHolding, MockOrganisationFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(jalHolding, MockOrganisationFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(jalHolding, MockOrganisationFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+					final Entreprise jalHolding = addEntrepriseConnueAuCivil(MockEntrepriseFactory.JAL_HOLDING.getNumeroEntreprise());
+					addRegimeFiscalVD(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addForPrincipal(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
-					final Entreprise banqueCoop = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-					addRegimeFiscalVD(banqueCoop, MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(banqueCoop, MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(banqueCoop, MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bale);
+					final Entreprise banqueCoop = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+					addRegimeFiscalVD(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addForPrincipal(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bale);
 
 					final Ids ids = new Ids();
 					ids.idNestle = nestle.getNumero();

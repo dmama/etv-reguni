@@ -32,8 +32,8 @@ public class IndexationManagerImpl implements IndexationManager {
 			dataEventService.onIndividuChange(noIndividu);
 		}
 		else if (noCantonal != null) {
-			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'organisation/de l'établissement civil n°" + noCantonal + ')');
-			dataEventService.onOrganisationChange(noCantonal);
+			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'entreprise/de l'établissement civil n°" + noCantonal + ')');
+			dataEventService.onEntrepriseChange(noCantonal);
 		}
 		else {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id);

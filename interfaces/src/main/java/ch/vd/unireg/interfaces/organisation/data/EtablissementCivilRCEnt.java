@@ -12,7 +12,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 /**
  *   Utilisez les méthodes des helpers pour produire les données des accesseurs.
  *
- *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   EntrepriseHelper fournit les méthodes nécessaires à l'accès par date:
  *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
 
  */
@@ -71,8 +71,8 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 		this.ideEnRemplacementDe = ideEnRemplacementDe;
 		this.burTransfereA = burTransfereA;
 		this.burTransferDe = burTransferDe;
-		this.numeroIDE = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_IDE);
-		this.numeroRC = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_RC);
+		this.numeroIDE = EntrepriseHelper.extractIdentifiant(autresIdentifiants, EntrepriseConstants.CLE_IDE);
+		this.numeroRC = EntrepriseHelper.extractIdentifiant(autresIdentifiants, EntrepriseConstants.CLE_RC);
 		this.nom = nom;
 		this.rc = rc;
 		this.ree = ree;
@@ -109,7 +109,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public String getNumeroIDE(RegDate date) {
-		return OrganisationHelper.valueForDate(numeroIDE, date);
+		return EntrepriseHelper.valueForDate(numeroIDE, date);
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public String getNom(RegDate date) {
-		return OrganisationHelper.valueForDate(getNom(), date);
+		return EntrepriseHelper.valueForDate(getNom(), date);
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public String getNomAdditionnel(RegDate date) {
-		return OrganisationHelper.valueForDate(nomAdditionnel, date);
+		return EntrepriseHelper.valueForDate(nomAdditionnel, date);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public FormeLegale getFormeLegale(RegDate date) {
-		return OrganisationHelper.valueForDate(formeLegale, date);
+		return EntrepriseHelper.valueForDate(formeLegale, date);
 	}
 
 	@Override
@@ -164,7 +164,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public List<Domicile> getDomicilesEnActivite() {
-		return OrganisationHelper.getDomicilesReels(this, domicile);
+		return EntrepriseHelper.getDomicilesReels(this, domicile);
 	}
 
 	@Override
@@ -174,46 +174,46 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public TypeEtablissementCivil getTypeEtablissement(RegDate date) {
-		return OrganisationHelper.valueForDate(getTypesEtablissement(), date);
+		return EntrepriseHelper.valueForDate(getTypesEtablissement(), date);
 	}
 
 	@Override
 	public Domicile getDomicile(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(getDomiciles(), date);
+		return EntrepriseHelper.dateRangeForDate(getDomiciles(), date);
 	}
 
 	@Override
 	public boolean isSuccursale(RegDate date) {
-		return OrganisationHelper.isSuccursale(this, date);
+		return EntrepriseHelper.isSuccursale(this, date);
 	}
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {
-		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		final InscriptionRC inscription = EntrepriseHelper.valueForDate(this.getDonneesRC().getInscription(), date);
 		return inscription != null ? inscription.getDateInscriptionCH() : null;
 	}
 
 	@Override
 	public RegDate getDateInscriptionRCVd(RegDate date) {
-		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		final InscriptionRC inscription = EntrepriseHelper.valueForDate(this.getDonneesRC().getInscription(), date);
 		return inscription != null ? inscription.getDateInscriptionVD() : null;
 	}
 
 	@Override
 	public RegDate getDateRadiationRC(RegDate date) {
-		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		final InscriptionRC inscription = EntrepriseHelper.valueForDate(this.getDonneesRC().getInscription(), date);
 		return inscription != null ? inscription.getDateRadiationCH() : null;
 	}
 
 	@Override
 	public RegDate getDateRadiationRCVd(RegDate date) {
-		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		final InscriptionRC inscription = EntrepriseHelper.valueForDate(this.getDonneesRC().getInscription(), date);
 		return inscription != null ? inscription.getDateRadiationVD() : null;
 	}
 
 	@Override
 	public List<Adresse> getAdresses() {
-		return OrganisationHelper.getAdressesPourEtablissement(this);
+		return EntrepriseHelper.getAdressesPourEtablissement(this);
 	}
 
 	@Override
@@ -223,7 +223,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public Long getIdeRemplacePar(RegDate date) {
-		return OrganisationHelper.valueForDate(ideRemplacePar, date);
+		return EntrepriseHelper.valueForDate(ideRemplacePar, date);
 	}
 
 	@Override
@@ -233,7 +233,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public Long getIdeEnRemplacementDe(RegDate date) {
-		return OrganisationHelper.valueForDate(ideEnRemplacementDe, date);
+		return EntrepriseHelper.valueForDate(ideEnRemplacementDe, date);
 	}
 
 	public List<DateRanged<Long>> getBurTransferDe() {
@@ -241,7 +241,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 	}
 
 	public Long getBurTransferDe(RegDate date) {
-		return OrganisationHelper.valueForDate(burTransferDe, date);
+		return EntrepriseHelper.valueForDate(burTransferDe, date);
 	}
 
 	public List<DateRanged<Long>> getBurTransfereA() {
@@ -249,7 +249,7 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 	}
 
 	public Long getBurTransfereA(RegDate date) {
-		return OrganisationHelper.valueForDate(burTransfereA, date);
+		return EntrepriseHelper.valueForDate(burTransfereA, date);
 	}
 
 	@Override
@@ -259,46 +259,46 @@ public class EtablissementCivilRCEnt implements Serializable, EtablissementCivil
 
 	@Override
 	public List<PublicationBusiness>  getPublications(RegDate date) {
-		return OrganisationHelper.getPublications(this.getPublications(), date);
+		return EntrepriseHelper.getPublications(this.getPublications(), date);
 	}
 
 	@Override
 	public RegDate connuAuCivilDepuis() {
-		return OrganisationHelper.connuAuCivilDepuis(this);
+		return EntrepriseHelper.connuAuCivilDepuis(this);
 	}
 
 	/**
-	 * Indique si un l'organisation est inscrite au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 * Indique si un l'entreprise est inscrite au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
 	public boolean isInscritAuRC(RegDate date) {
-		return OrganisationHelper.isInscritAuRC(this, date);
+		return EntrepriseHelper.isInscritAuRC(this, date);
 	}
 
 	@Override
 	public boolean isConnuInscritAuRC(RegDate date) {
-		return OrganisationHelper.isConnuInscritAuRC(this, date);
+		return EntrepriseHelper.isConnuInscritAuRC(this, date);
 	}
 
 	@Override
 	public boolean isActif(RegDate date) {
-		return OrganisationActiviteHelper.isActif(this, date);
+		return EntrepriseActiviteHelper.isActif(this, date);
 	}
 
 	/**
-	 * Indique si un l'organisation est radiée au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 * Indique si un l'entreprise est radiée au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
 	public boolean isRadieDuRC(RegDate date) {
-		return OrganisationHelper.isRadieDuRC(this, date);
+		return EntrepriseHelper.isRadieDuRC(this, date);
 	}
 
 	/**
-	 * Indique si un l'organisation est radiée de l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 * Indique si un l'entreprise est radiée de l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
 	public boolean isRadieIDE(RegDate date) {
-		return OrganisationHelper.isRadieIDE(this, date);
+		return EntrepriseHelper.isRadieIDE(this, date);
 	}
 
 	@Override

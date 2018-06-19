@@ -20,10 +20,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
@@ -378,14 +378,14 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		assertTrue(raisonSociale.length() > 100);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation organisation = addOrganisation(noCivilPM);
-				MockEtablissementCivil etablissement = MockEtablissementCivilFactory.addEtablissement(noCivilPM+9876, organisation, date(1989, 7, 7), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
-				                                                                             true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                                                             MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(1989, 7, 4), StatusRegistreIDE.DEFINITIF,
-				                                                                             TypeOrganisationRegistreIDE.SITE, ide, BigDecimal.valueOf(50000), "CHF");
+				final MockEntrepriseCivile entreprise = addEntreprise(noCivilPM);
+				MockEtablissementCivil etablissement = MockEtablissementCivilFactory.addEtablissement(noCivilPM+9876, entreprise, date(1989, 7, 7), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
+				                                                                                      true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                                      MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(1989, 7, 4), StatusRegistreIDE.DEFINITIF,
+				                                                                                      TypeEntrepriseRegistreIDE.SITE, ide, BigDecimal.valueOf(50000), "CHF");
 			}
 		});
 

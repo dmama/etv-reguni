@@ -22,14 +22,14 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.evenement.externe.EtatEvenementExterne;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterne;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.reqdes.ErreurTraitement;
 import ch.vd.unireg.reqdes.EtatTraitement;
 import ch.vd.unireg.type.ActionEvenementCivilEch;
 import ch.vd.unireg.type.EtatEvenementCivil;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.type.TypeEvenementCivilEch;
 
@@ -214,18 +214,18 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	}
 
 	@Override
-	public StatsEvenementsCivilsOrganisationsResults getStatistiquesEvenementsCivilsOrganisations(RegDate debutActivite) {
-		final Map<EtatEvenementOrganisation, Integer> etats = getEtatsEvenementsCivilsOrganisation(null);
-		final Map<EtatEvenementOrganisation, Integer> etatsRecents = getEtatsEvenementsCivilsOrganisation(debutActivite);
-		final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> mutationsTraitees = getStatistiquesMutationsTraitees(null);
-		final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> mutationsRecentesTraitees = getStatistiquesMutationsTraitees(debutActivite);
-		final List<StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee> detailsMutationsTraiteesRecentes = getMutationsTraiteesDepuis(debutActivite);
-		final List<StatsEvenementsCivilsOrganisationsResults.ErreurInfo> erreurs = getToutesErreursEvenementsCivilsOrganisations();
-		final List<StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo> enSouffrance = getEvenementsCivilsOrganisationEnSouffrance(15);
-		return new StatsEvenementsCivilsOrganisationsResults(etats, etatsRecents, mutationsTraitees, mutationsRecentesTraitees, detailsMutationsTraiteesRecentes, erreurs, enSouffrance);
+	public StatsEvenementsCivilsEntreprisesResults getStatistiquesEvenementsCivilsEntreprises(RegDate debutActivite) {
+		final Map<EtatEvenementEntreprise, Integer> etats = getEtatsEvenementsCivilsEntreprise(null);
+		final Map<EtatEvenementEntreprise, Integer> etatsRecents = getEtatsEvenementsCivilsEntreprise(debutActivite);
+		final Map<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> mutationsTraitees = getStatistiquesMutationsTraitees(null);
+		final Map<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> mutationsRecentesTraitees = getStatistiquesMutationsTraitees(debutActivite);
+		final List<StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee> detailsMutationsTraiteesRecentes = getMutationsTraiteesDepuis(debutActivite);
+		final List<StatsEvenementsCivilsEntreprisesResults.ErreurInfo> erreurs = getToutesErreursEvenementsCivilsEntreprises();
+		final List<StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo> enSouffrance = getEvenementsCivilsEntrepriseEnSouffrance(15);
+		return new StatsEvenementsCivilsEntreprisesResults(etats, etatsRecents, mutationsTraitees, mutationsRecentesTraitees, detailsMutationsTraiteesRecentes, erreurs, enSouffrance);
 	}
 
-	private Map<EtatEvenementOrganisation, Integer> getEtatsEvenementsCivilsOrganisation(@Nullable RegDate debutActivite) {
+	private Map<EtatEvenementEntreprise, Integer> getEtatsEvenementsCivilsEntreprise(@Nullable RegDate debutActivite) {
 		final String sql;
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
@@ -237,11 +237,11 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_ORGANISATION GROUP BY ETAT";
 			sqlParameters = null;
 		}
-		return getNombreParModalite(EtatEvenementOrganisation.class, sql, sqlParameters);
+		return getNombreParModalite(EtatEvenementEntreprise.class, sql, sqlParameters);
 	}
 
 	@Nullable
-	private Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> getStatistiquesMutationsTraitees(@Nullable RegDate debutActivite) {
+	private Map<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> getStatistiquesMutationsTraitees(@Nullable RegDate debutActivite) {
 		final Map<String, Object> sqlParameters = new HashMap<>(2);
 		final String limitationDate;
 		if (debutActivite == null) {
@@ -252,7 +252,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			sqlParameters.put("debutActivite", debutActivite.index());
 		}
 
-		final String prefixe = EvenementOrganisationInterne.PREFIXE_MUTATION_TRAITEE;
+		final String prefixe = EvenementEntrepriseInterne.PREFIXE_MUTATION_TRAITEE;
 		final int prefixeLength = prefixe.length();
 		final String sql = String.format("SELECT EVT.ETAT, SUBSTR(MSG.MESSAGE, %d), COUNT(*) FROM EVENEMENT_ORGANISATION EVT JOIN EVENEMENT_ORGANISATION_ERREUR MSG ON MSG.EVT_ORGANISATION_ID=EVT.ID WHERE SUBSTR(MSG.MESSAGE,1,%d) = :prefixe%s GROUP BY EVT.ETAT, SUBSTR(MSG.MESSAGE, %d)",
 		                                 prefixeLength + 1,
@@ -263,9 +263,9 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 		// extraction des lignes bruttes du resultSet (avec 'factorisation' des instances de String pour les descriptions)
 		final Map<String, String> descriptions = new TreeMap<>();
-		final List<Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer>> data = this.executeSelect(sql, sqlParameters, new SelectCallback<Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer>>() {
+		final List<Pair<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer>> data = this.executeSelect(sql, sqlParameters, new SelectCallback<Pair<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer>>() {
 			@Override
-			public Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> onRow(Object[] row) {
+			public Pair<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> onRow(Object[] row) {
 
 				if (row.length != 3) {
 					throw new IllegalArgumentException();
@@ -280,16 +280,16 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 					uniqueDescription = description;
 					descriptions.put(description, description);
 				}
-				final EtatEvenementOrganisation etat = EtatEvenementOrganisation.valueOf((String) row[0]);
+				final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[0]);
 				final int nombre = ((Number) row[2]).intValue();
-				return Pair.of(new StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey(uniqueDescription, etat), nombre);
+				return Pair.of(new StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey(uniqueDescription, etat), nombre);
 			}
 		});
 
 		// constitution de la Map à partir des lignes bruttes
 		if (data != null) {
-			final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> map = new TreeMap<>();
-			for (Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> d : data) {
+			final Map<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> map = new TreeMap<>();
+			for (Pair<StatsEvenementsCivilsEntreprisesResults.MutationsTraiteesStatsKey, Integer> d : data) {
 				map.put(d.getLeft(), d.getRight());
 			}
 			return map;
@@ -299,8 +299,8 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		}
 	}
 
-	private List<StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee> getMutationsTraiteesDepuis(RegDate dateDebutActivite) {
-		final String prefixe = EvenementOrganisationInterne.PREFIXE_MUTATION_TRAITEE;
+	private List<StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee> getMutationsTraiteesDepuis(RegDate dateDebutActivite) {
+		final String prefixe = EvenementEntrepriseInterne.PREFIXE_MUTATION_TRAITEE;
 		final int prefixeLength = prefixe.length();
 		final String sql = String.format("SELECT EVT.NO_ORGANISATION, EVT.DATE_EVENEMENT, EVT.NO_EVENEMENT, EVT.ETAT, SUBSTR(MSG.MESSAGE, %d), MSG.LOG_CDATE" +
 				                                 " FROM EVENEMENT_ORGANISATION EVT JOIN EVENEMENT_ORGANISATION_ERREUR MSG ON MSG.EVT_ORGANISATION_ID=EVT.ID" +
@@ -314,18 +314,18 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 		// extraction des lignes du resultSet (avec 'factorisation' des instances de String pour les descriptions)
 		final Map<String, String> descriptions = new TreeMap<>();
-		return executeSelect(sql, sqlParameters, new SelectCallback<StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee>() {
+		return executeSelect(sql, sqlParameters, new SelectCallback<StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee>() {
 			@Override
-			public StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee onRow(Object[] row) {
+			public StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee onRow(Object[] row) {
 
 				if (row.length != 6) {
 					throw new IllegalArgumentException();
 				}
 
-				final long noOrganisation = ((Number) row[0]).longValue();
+				final long noEntrepriseCivile = ((Number) row[0]).longValue();
 				final RegDate dateEvenement = RegDateHelper.indexStringToDate(Integer.toString(((Number) row[1]).intValue()));
 				final long noEvenement = ((Number) row[2]).longValue();
-				final EtatEvenementOrganisation etat = EtatEvenementOrganisation.valueOf((String) row[3]);
+				final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[3]);
 				final String description = (String) row[4];
 				final Timestamp date = (Timestamp) row[5];
 
@@ -338,19 +338,19 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 					descriptions.put(description, description);
 				}
 
-				return new StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee(noOrganisation, etat, uniqueDescription, noEvenement, dateEvenement, date);
+				return new StatsEvenementsCivilsEntreprisesResults.DetailMutationTraitee(noEntrepriseCivile, etat, uniqueDescription, noEvenement, dateEvenement, date);
 			}
 		});
 	}
 
-	private List<StatsEvenementsCivilsOrganisationsResults.ErreurInfo> getToutesErreursEvenementsCivilsOrganisations() {
+	private List<StatsEvenementsCivilsEntreprisesResults.ErreurInfo> getToutesErreursEvenementsCivilsEntreprises() {
 		final String sql = "SELECT R.ID, R.NO_EVENEMENT, R.DATE_EVENEMENT, R.DATE_TRAITEMENT, R.ETAT, R.NO_ORGANISATION, E.MESSAGE"
 				+ " FROM EVENEMENT_ORGANISATION R JOIN EVENEMENT_ORGANISATION_ERREUR E ON E.EVT_ORGANISATION_ID = R.ID WHERE R.ETAT NOT IN ('TRAITE','REDONDANT')"
 				+ " AND E.TYPE='ERROR' ORDER BY R.ID, R.DATE_TRAITEMENT";
 
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsOrganisationsResults.ErreurInfo>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsEntreprisesResults.ErreurInfo>() {
 			@Override
-			public StatsEvenementsCivilsOrganisationsResults.ErreurInfo onRow(Object[] row) {
+			public StatsEvenementsCivilsEntreprisesResults.ErreurInfo onRow(Object[] row) {
 
 				if (row.length != 7) {
 					throw new IllegalArgumentException();
@@ -360,33 +360,33 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final long noEvenement = ((Number) row[1]).longValue();
 				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[2]).intValue(), false);
 				final Date dateTraitement = (Date) row[3];
-				final EtatEvenementOrganisation etat = EtatEvenementOrganisation.valueOf((String) row[4]);
-				final long noOrganisation = ((Number) row[5]).longValue();
+				final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[4]);
+				final long noEntrepriseCivile = ((Number) row[5]).longValue();
 				final String message = (String) row[6];
-				return new StatsEvenementsCivilsOrganisationsResults.ErreurInfo(id, noOrganisation, noEvenement, dateEvenement, dateTraitement, etat, message);
+				return new StatsEvenementsCivilsEntreprisesResults.ErreurInfo(id, noEntrepriseCivile, noEvenement, dateEvenement, dateTraitement, etat, message);
 			}
 		});
 	}
 
-	private List<StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo> getEvenementsCivilsOrganisationEnSouffrance(int seuilEnJours) {
+	private List<StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo> getEvenementsCivilsEntrepriseEnSouffrance(int seuilEnJours) {
 		final String sql = "SELECT ID, NO_EVENEMENT, NO_ORGANISATION, DATE_EVENEMENT, LOG_CDATE, ETAT FROM EVENEMENT_ORGANISATION"
 				+ " WHERE ETAT IN ('A_TRAITER', 'A_VERIFIER', 'EN_ERREUR', 'EN_ATTENTE')"
 				+ " AND LOG_CDATE < CURRENT_DATE - INTERVAL '" + seuilEnJours + "' DAY ORDER BY ID ASC";
 
-		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo>() {
 			@Override
-			public StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo onRow(Object[] row) {
+			public StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo onRow(Object[] row) {
 				if (row.length != 6) {
 					throw new IllegalArgumentException();
 				}
 
 				final long id = ((Number) row[0]).longValue();
 				final long noEvevement = ((Number) row[1]).longValue();
-				final long noOrganisation = ((Number) row[2]).longValue();
+				final long noEntrepriseCivile = ((Number) row[2]).longValue();
 				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[3]).intValue(), false);
 				final Date dateReception = (Date) row[4];
-				final EtatEvenementOrganisation etat = EtatEvenementOrganisation.valueOf((String) row[5]);
-				return new StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo(id, noOrganisation, noEvevement, dateEvenement, dateReception, etat);
+				final EtatEvenementEntreprise etat = EtatEvenementEntreprise.valueOf((String) row[5]);
+				return new StatsEvenementsCivilsEntreprisesResults.EvenementEnSouffranceInfo(id, noEntrepriseCivile, noEvevement, dateEvenement, dateReception, etat);
 			}
 		});
 	}

@@ -2343,7 +2343,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final DestinataireAdresse destinataire = new DestinataireAdresse.Organisation(null, "Ma petite entreprise SARL", null, null, "Monsieur moi-même");
+		final DestinataireAdresse destinataire = new DestinataireAdresse.Entreprise(null, "Ma petite entreprise SARL", null, null, "Monsieur moi-même");
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, null, "Avenue de Ratatatsointsoin", "24", null, null, null, null, MockLocalite.Lausanne1003.getNoOrdre());
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
@@ -2425,7 +2425,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final DestinataireAdresse destinataire = new DestinataireAdresse.Organisation(null, "Ma petite entreprise SARL", null, null, "Monsieur moi-même");
+		final DestinataireAdresse destinataire = new DestinataireAdresse.Entreprise(null, "Ma petite entreprise SARL", null, null, "Monsieur moi-même");
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.DestinataireSeulement(destinataire);
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
@@ -6267,7 +6267,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (pas de numéro IDE, adresse non-reconnue)
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
@@ -6337,7 +6337,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
@@ -6411,7 +6411,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (on notera l'absence de majuscules dans "le chef")
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "le chef"), null, null, null, null, null, null, null, null, null, null);
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "le chef"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, "0213168888");
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
@@ -6486,7 +6486,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, "0666666666");
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
@@ -6560,7 +6560,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (juste ajout d'un titre sur le nom déjà connu)
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Le Chef"), null, null, null, null, null, null, null, null, null, null);
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "M. Le Chef"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
@@ -6635,7 +6635,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "Le Chef"), null, null, null, null, null, null, null, null, null, null);
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "Le Chef"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
@@ -6710,7 +6710,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, null), null, null, null, null, null, null, null, null, null, null);
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, null), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
@@ -6778,7 +6778,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final DestinataireAdresse destinataire = new DestinataireAdresse.Organisation(null, "Mon Mande-à-Terre", null, null, "Madame Delphine Rapon");
+		final DestinataireAdresse destinataire = new DestinataireAdresse.Entreprise(null, "Mon Mande-à-Terre", null, null, "Madame Delphine Rapon");
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, MockRue.Lausanne.CheminDeMornex.getNoRue(), null, "25 bis", null, null, MockLocalite.Lausanne1003.getNPA(), null, MockLocalite.Lausanne1003.getNoOrdre());
 		final InformationsMandataire infoMandataire = new InformationsMandataire(null, adresse, Boolean.FALSE, "0213161111");
 		final RetourDI retour = new RetourDI(id, annee, 1, null, infoMandataire);

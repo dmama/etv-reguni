@@ -17,7 +17,7 @@
 	<bean id="evenementEfactureListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
 	<bean id="eFactureResponseListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
 	<bean id="reqdesEventListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
-	<bean id="evtOrganisationListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
+	<bean id="evtEntrepriseListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
 	<bean id="evenementRapportAnnonceIDEJmsListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
 	<bean id="evtRFImportEventListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>
 	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.unireg.jms.MockMessageListenerContainer"/>

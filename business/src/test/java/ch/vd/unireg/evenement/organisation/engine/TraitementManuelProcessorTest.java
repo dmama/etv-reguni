@@ -6,20 +6,20 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
-import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
+import ch.vd.unireg.type.TypeEvenementEntreprise;
 
-import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementEntreprise.A_TRAITER;
 
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class TraitementManuelProcessorTest extends AbstractEvenementOrganisationProcessorTest {
+public class TraitementManuelProcessorTest extends AbstractEvenementEntrepriseCivileProcessorTest {
 
 	public TraitementManuelProcessorTest() {
 		setWantIndexationTiers(true);
@@ -33,15 +33,15 @@ public class TraitementManuelProcessorTest extends AbstractEvenementOrganisation
 	public void testDeclenchementTraitementManuel() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
+		final Long noEntrepriseCivile = 101202100L;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), null,
-						                                                 FormeLegale.N_0113_FORME_JURIDIQUE_PARTICULIERE,
-						                                                 MockCommune.Lausanne));
+				addEntreprise(
+						MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), null,
+						                                               FormeLegale.N_0113_FORME_JURIDIQUE_PARTICULIERE,
+						                                               MockCommune.Lausanne));
 			}
 		});
 
@@ -52,23 +52,23 @@ public class TraitementManuelProcessorTest extends AbstractEvenementOrganisation
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-				                             Assert.assertEquals("L'organisation n°101202100, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", evt.getErreurs().get(1).getMessage());
+				                             Assert.assertEquals(EtatEvenementEntreprise.EN_ERREUR, evt.getEtat());
+				                             Assert.assertEquals("L'entreprise civile n°101202100, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }

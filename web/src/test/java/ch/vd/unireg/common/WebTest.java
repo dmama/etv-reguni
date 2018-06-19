@@ -13,8 +13,8 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceCivil;
+import ch.vd.unireg.interfaces.service.mock.ProxyServiceEntreprise;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.mock.ProxyServiceOrganisation;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceSecuriteService;
 import ch.vd.unireg.security.Role;
 
@@ -79,7 +79,7 @@ public abstract class WebTest extends AbstractBusinessTest {
 	protected ProxyServiceCivil serviceCivil;
 	protected ProxyServiceInfrastructureService serviceInfra;
 	protected ProxyServiceSecuriteService serviceSecurite;
-	protected ProxyServiceOrganisation serviceOrganisation;
+	protected ProxyServiceEntreprise serviceEntreprise;
 
 	/**
 	 * @throws Exception
@@ -98,7 +98,7 @@ public abstract class WebTest extends AbstractBusinessTest {
 		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
 		serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
 		serviceSecurite = getBean(ProxyServiceSecuriteService.class, "serviceSecuriteService");
-		serviceOrganisation = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
+		serviceEntreprise = getBean(ProxyServiceEntreprise.class, "serviceEntreprise");
 
 		serviceSecurite.setUp(new DefaultMockServiceSecurite() {
 			@Override

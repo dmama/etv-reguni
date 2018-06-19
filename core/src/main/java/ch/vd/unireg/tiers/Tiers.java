@@ -54,7 +54,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
  * personne peut être:
  * <ul>
  *     <li>Une personne physique, connue ou non du contrôle des habitants</li>
- *     <li>Une organisation (personne morale ou entité sans personnalité juridique, connue ou non du registre des personnes morales)</li>
+ *     <li>une entreprise (personne morale ou entité sans personnalité juridique, connue ou non du registre des personnes morales)</li>
  *     <li>Une autre communauté de personnes sans personnalité juridique complète (Pour le moment, limité au couple de personnes mariées ou liées par un partenariat enregistré, vivant en ménage commun
  *     (c'est-à-dire non séparées ou dont le partenariat n'est pas pas dissous)).</li>
  * </ul>

@@ -28,7 +28,7 @@ public class AnnonceIDEView {
 	private String noIdeEtablissementPrincipal;
 	private RaisonDeRadiationRegistreIDE raisonDeRadiation;
 	private String commentaire;
-	private InformationOrganisationView informationOrganisation;
+	private InformationEntrepriseView informationOrganisation;
 	private ContenuView contenu;
 
 	private Long numeroTiersEntreprise;
@@ -51,7 +51,7 @@ public class AnnonceIDEView {
 		this.noIdeEtablissementPrincipal = formatNoIDE(annonce.getNoIdeEtablissementPrincipal());
 		this.raisonDeRadiation = annonce.getRaisonDeRadiation();
 		this.commentaire = annonce.getCommentaire();
-		this.informationOrganisation = InformationOrganisationView.get(annonce.getInformationOrganisation());
+		this.informationOrganisation = InformationEntrepriseView.get(annonce.getInformationEntreprise());
 		this.contenu = ContenuView.get(annonce.getContenu());
 	}
 
@@ -159,11 +159,11 @@ public class AnnonceIDEView {
 		this.commentaire = commentaire;
 	}
 
-	public InformationOrganisationView getInformationOrganisation() {
+	public InformationEntrepriseView getInformationOrganisation() {
 		return informationOrganisation;
 	}
 
-	public void setInformationOrganisation(InformationOrganisationView informationOrganisation) {
+	public void setInformationOrganisation(InformationEntrepriseView informationOrganisation) {
 		this.informationOrganisation = informationOrganisation;
 	}
 

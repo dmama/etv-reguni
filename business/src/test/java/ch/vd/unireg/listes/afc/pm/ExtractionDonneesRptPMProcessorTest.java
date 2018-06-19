@@ -10,7 +10,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.DayMonth;
@@ -50,7 +50,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 				// vide
 			}
 		});
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -118,7 +118,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 				// vide
 			}
 		});
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -185,7 +185,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 				// vide
 			}
 		});
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide

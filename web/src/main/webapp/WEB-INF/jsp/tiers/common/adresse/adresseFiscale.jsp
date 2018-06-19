@@ -57,7 +57,7 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.source">
 			<fmt:message key="option.source.${adresse.source}" />
-			<c:if test="${adresse['default'] || adresse.source == 'CIVILE_PERS' || adresse.source == 'CIVILE_ORG'}"> (<fmt:message key="option.source.default.tag" />)</c:if>
+			<c:if test="${adresse['default'] || adresse.source == 'CIVILE_PERS' || adresse.source == 'CIVILE_ENT'}"> (<fmt:message key="option.source.default.tag" />)</c:if>
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
@@ -66,7 +66,7 @@
 				</c:if>
 			</c:if>
 			<c:if test="${page == 'edit' }">
-				<c:if test="${!adresse.annule && adresse.source !='CIVILE_PERS' && adresse.source != 'CIVILE_ORG' && adresse.id!= null && adresse.id!='' }">
+				<c:if test="${!adresse.annule && adresse.source !='CIVILE_PERS' && adresse.source != 'CIVILE_ENT' && adresse.id!= null && adresse.id!='' }">
 					<c:if test="${((adresse.usage == 'COURRIER') && (autorisations.adressesCourrier)) ||
 					((adresse.usage == 'POURSUITE') && (autorisations.adressesPoursuite)) ||
 					((adresse.usage == 'REPRESENTATION') && (autorisations.adressesRepresentation)) ||
@@ -107,7 +107,7 @@
 				</c:if>
 			</c:if>
 			<c:if test="${page == 'edit' }">
-				<c:if test="${!adresseEnErreur.annule && adresseEnErreur.source !='CIVILE_PERS' && adresseEnErreur.source !='CIVILE_ORG' && adresseEnErreur.id!= null && adresseEnErreur.id!='' }">
+				<c:if test="${!adresseEnErreur.annule && adresseEnErreur.source !='CIVILE_PERS' && adresseEnErreur.source !='CIVILE_ENT' && adresseEnErreur.id!= null && adresseEnErreur.id!='' }">
 					<c:if test="${((adresseEnErreur.usage == 'COURRIER') && (autorisations.adressesCourrier)) ||
 						((adresseEnErreur.usage == 'POURSUITE') && (autorisations.adressesPoursuite)) ||
 						((adresseEnErreur.usage == 'REPRESENTATION') && (autorisations.adressesRepresentation)) ||

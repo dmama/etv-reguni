@@ -22,9 +22,9 @@ import ch.vd.unireg.identification.contribuable.IdentificationContribuableServic
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.unireg.registrefoncier.MockRapprochementManuelTiersRFService;
 import ch.vd.unireg.registrefoncier.PersonneMoraleRF;
@@ -687,11 +687,11 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		}
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				final MockEtablissementCivil etablissementPrincipal = addEtablissmeent(org, noCantonalEtablissementPrincipal, dateDebut, null, null, null);
+				final MockEntrepriseCivile ent = addEntreprise(noCantonalEntreprise);
+				final MockEtablissementCivil etablissementPrincipal = addEtablissmeent(ent, noCantonalEtablissementPrincipal, dateDebut, null, null, null);
 				etablissementPrincipal.changeNumeroRC(dateDebut, numeroRC);
 				etablissementPrincipal.changeTypeEtablissement(dateDebut, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL);
 				etablissementPrincipal.changeDomicile(dateDebut, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());

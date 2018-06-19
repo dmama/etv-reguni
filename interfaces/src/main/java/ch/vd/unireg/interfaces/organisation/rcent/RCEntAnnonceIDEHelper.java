@@ -228,13 +228,13 @@ public class RCEntAnnonceIDEHelper {
 		final RaisonDeRadiationRegistreIDE raisonDeRadiation = proto.getRaisonDeRadiation();
 		body.setDeregistrationReason(raisonDeRadiation == null ? null : RAISON_DE_RADIATION_REGISTRE_IDE_CONVERTER.convert(raisonDeRadiation));
 
-		final AnnonceIDEEnvoyee.InformationOrganisation informationOrganisation = proto.getInformationOrganisation();
-		if (informationOrganisation != null) {
-			final Long numeroEtablissement = informationOrganisation.getNumeroEtablissement();
+		final BaseAnnonceIDE.InformationEntreprise informationEntreprise = proto.getInformationEntreprise();
+		if (informationEntreprise != null) {
+			final Long numeroEtablissement = informationEntreprise.getNumeroEtablissement();
 			body.setCantonalId(numeroEtablissement == null ? null : BigInteger.valueOf(numeroEtablissement));
-			final Long numeroEtablisssementRemplacant = informationOrganisation.getNumeroEtablissementRemplacant();
+			final Long numeroEtablisssementRemplacant = informationEntreprise.getNumeroEtablissementRemplacant();
 			body.setUIDReplacedByCantonalId(numeroEtablisssementRemplacant == null ? null : BigInteger.valueOf(numeroEtablisssementRemplacant));
-			final Long numeroOrganisation = informationOrganisation.getNumeroOrganisation();
+			final Long numeroOrganisation = informationEntreprise.getNumeroEntreprise();
 			body.setHeadquarterCantonalId(numeroOrganisation == null ? null : BigInteger.valueOf(numeroOrganisation));
 		}
 
@@ -267,7 +267,7 @@ public class RCEntAnnonceIDEHelper {
 	@NotNull
 	public static AnnonceIDE createAnnonceIDE(Long numero, TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeEtablissementCivil typeEtablissementCivil,
 	                                          RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroOrganisation, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
+	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroEntreprise, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
 	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
 		if (numero == null) {
 			throw new IllegalArgumentException("Une annonce à l'IDE ne peut pas avoir un numéro vide.");
@@ -284,7 +284,7 @@ public class RCEntAnnonceIDEHelper {
 		                                             statut,
 		                                             application
 		);
-		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroEtablissementCivil, numeroOrganisation, numeroEtablissementCivilRemplacant, nom, nomAdditionnel,
+		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroEtablissementCivil, numeroEntreprise, numeroEtablissementCivilRemplacant, nom, nomAdditionnel,
 		                      formeLegale, secteurActivite, adresse, annonceIDE);
 		return annonceIDE;
 	}
@@ -292,7 +292,7 @@ public class RCEntAnnonceIDEHelper {
 	@NotNull
 	public static ProtoAnnonceIDE createProtoAnnonceIDE(TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeEtablissementCivil typeEtablissementCivil,
 	                                                    RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                                    NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroOrganisation, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
+	                                                    NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroEntreprise, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
 	                                                    FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
 
 		// SIFISC-23702 Dans les annonces renvoyées par le WS noticeRequestList de RCEnt, le userId peut être nul lorsque l'annonce n'est pas encore traitée à proprement parler par RCEnt.
@@ -305,13 +305,13 @@ public class RCEntAnnonceIDEHelper {
 		                                                            statut,
 		                                                            application
 		);
-		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroEtablissementCivil, numeroOrganisation, numeroEtablissementCivilRemplacant, nom, nomAdditionnel,
+		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroEtablissementCivil, numeroEntreprise, numeroEtablissementCivilRemplacant, nom, nomAdditionnel,
 		                      formeLegale, secteurActivite, adresse, protoAnnonceIDE);
 		return protoAnnonceIDE;
 	}
 
 	private static void fillDetailsAnnonceIDE(RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroOrganisation, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
+	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroEtablissementCivil, Long numeroEntreprise, Long numeroEtablissementCivilRemplacant, String nom, String nomAdditionnel,
 	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData annonceIDEModeleRCEnt) {
 		annonceIDEModeleRCEnt.setRaisonDeRadiation(raisonDeRadiationRegistreIDE);
 		annonceIDEModeleRCEnt.setCommentaire(commentaire);
@@ -322,12 +322,12 @@ public class RCEntAnnonceIDEHelper {
 		annonceIDEModeleRCEnt.setNoIdeEtablissementPrincipal(noIdeEtablissementPrincipal);
 
 		// RCEnt meta data
-		final AnnonceIDEData.InformationOrganisationImpl informationOrganisationImpl = new AnnonceIDEData.InformationOrganisationImpl(
+		final AnnonceIDEData.InformationEntrepriseImpl informationEntreprise = new AnnonceIDEData.InformationEntrepriseImpl(
 				numeroEtablissementCivil,
-				numeroOrganisation,
+				numeroEntreprise,
 				numeroEtablissementCivilRemplacant
 		);
-		annonceIDEModeleRCEnt.setInformationOrganisation(informationOrganisationImpl);
+		annonceIDEModeleRCEnt.setInformationEntreprise(informationEntreprise);
 
 		// Contenu
 		final AnnonceIDEData.ContenuImpl contenu = new AnnonceIDEData.ContenuImpl();
@@ -393,7 +393,7 @@ public class RCEntAnnonceIDEHelper {
 		/*  SIFISC-9682 en cours: le no IDE source n'est pas encore ajouté par RCEnt. Cas en cours pour 17L1. Pour l'instant, on se contente de l'identifiant de l'application, qui suffit.
 			final NamedOrganisationId ideSource = noticeRequestIdent.getIDESource();
 			if (ideSource == null || ideSource.getOrganisationId() == null || ideSource.getOrganisationId().isEmpty()) {
-				throw new EvenementOrganisationException(String.format("L'événement organisation n°%s est issu d'une annonce, mais le numéro IDE de l'institution source n'est pas inclu! Impossible de vérifier l'origine de l'annonce.", notice.getNoticeId().longValue()));
+				throw new EvenementOrganisationException(String.format("L'événement entreprise n°%s est issu d'une annonce, mais le numéro IDE de l'institution source n'est pas inclu! Impossible de vérifier l'origine de l'annonce.", notice.getNoticeId().longValue()));
 			}
 			if (RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS.getValeur().equals(ideSource.getOrganisationId()) && RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG.equals(applicationId)) {
 		*/
@@ -402,7 +402,7 @@ public class RCEntAnnonceIDEHelper {
 				if (noticeRequestId != null) {
 					return Long.parseLong(noticeRequestId);
 				} else {
-					throw new IllegalArgumentException(String.format("L'événement organisation n°%s semble provenir d'une annonce à l'IDE d'Unireg, mais le numéro d'annonce n'est pas inclus!", notice.getNoticeId().longValue()));
+					throw new IllegalArgumentException(String.format("L'événement entreprise n°%s semble provenir d'une annonce à l'IDE d'Unireg, mais le numéro d'annonce n'est pas inclus!", notice.getNoticeId().longValue()));
 				}
 			}
 		}

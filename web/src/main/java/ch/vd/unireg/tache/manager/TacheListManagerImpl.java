@@ -44,9 +44,9 @@ import ch.vd.unireg.tache.view.TacheCriteriaViewBase;
 import ch.vd.unireg.tache.view.TacheListView;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.EntrepriseNotFoundException;
 import ch.vd.unireg.tiers.ForGestion;
 import ch.vd.unireg.tiers.IndividuNotFoundException;
-import ch.vd.unireg.tiers.OrganisationNotFoundException;
 import ch.vd.unireg.tiers.Tache;
 import ch.vd.unireg.tiers.TacheAnnulationDeclaration;
 import ch.vd.unireg.tiers.TacheAnnulationDeclarationImpot;
@@ -187,9 +187,9 @@ public class TacheListManagerImpl implements TacheListManager {
 					LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
 					tacheView.setNomCourrier(Collections.singletonList("<erreur: individu introuvable>"));
 				}
-				catch (OrganisationNotFoundException e) {
+				catch (EntrepriseNotFoundException e) {
 					LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-					tacheView.setNomCourrier(Collections.singletonList("<erreur: organisation introuvable>"));
+					tacheView.setNomCourrier(Collections.singletonList("<erreur: entreprise introuvable>"));
 				}
 				catch (Exception e) {
 					LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
@@ -243,7 +243,7 @@ public class TacheListManagerImpl implements TacheListManager {
 				try {
 					tacheView.setAuthDossier(autorisationCache.getAutorisations(contribuable.getNumero(), currentPrincipal, currentOID));
 				}
-				catch (IndividuNotFoundException | OrganisationNotFoundException e) {
+				catch (IndividuNotFoundException | EntrepriseNotFoundException e) {
 					// erreur normalement déjà signalée... aucun droit de modification en tout état de cause...
 					tacheView.setAuthDossier(new Autorisations());
 				}

@@ -17,6 +17,16 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.StackedThreadLocal;
+import ch.vd.unireg.common.StringRenderer;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalException;
+import ch.vd.unireg.evenement.fiscal.EvenementFiscalSender;
+import ch.vd.unireg.transaction.TransactionSynchronizationManagerInterface;
+import ch.vd.unireg.transaction.TransactionSynchronizationRegistrar;
+import ch.vd.unireg.transaction.TransactionSynchronizationSupplier;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 import ch.vd.unireg.xml.event.data.v1.BatimentChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.CommunauteChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
@@ -30,16 +40,6 @@ import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.Relationship;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.StackedThreadLocal;
-import ch.vd.unireg.common.StringRenderer;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalException;
-import ch.vd.unireg.evenement.fiscal.EvenementFiscalSender;
-import ch.vd.unireg.transaction.TransactionSynchronizationManagerInterface;
-import ch.vd.unireg.transaction.TransactionSynchronizationRegistrar;
-import ch.vd.unireg.transaction.TransactionSynchronizationSupplier;
-import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class ConcentratingDataEventJmsSender implements InitializingBean, DisposableBean, EvenementFiscalSender, DataEventListener, TransactionSynchronizationSupplier {
 
@@ -193,7 +193,7 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 
 		private final Set<Long> tiersChange = new HashSet<>();
 		private final Set<Long> individuChange = new HashSet<>();
-		private final Set<Long> organisationChange = new HashSet<>();
+		private final Set<Long> entrepriseChange = new HashSet<>();
 		private final Set<Long> droitsAccesChange = new HashSet<>();
 		private final Set<Long> immeubleChange = new HashSet<>();
 		private final Set<Long> batimentChange = new HashSet<>();
@@ -217,11 +217,11 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 		}
 
 		/**
-		 * @param id identifiant de l'organisation modifiée
-		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme organisation modifiée
+		 * @param id identifiant de l'entreprise modifiée
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme entreprise modifiée
 		 */
-		public boolean addOrganisationChange(Long id) {
-			return organisationChange.add(id);
+		public boolean addEntrepriseChange(Long id) {
+			return entrepriseChange.add(id);
 		}
 
 		/**
@@ -352,16 +352,16 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 			return action.registerNotification(alreadySentNotifications);
 		}
 
-		public void onOrganisationChange(long id) {
-			final OnNotificationAction action = data -> data.addOrganisationChange(id);
+		public void onEntrepriseChange(long id) {
+			final OnNotificationAction action = data -> data.addEntrepriseChange(id);
 			if (onNewNotification(action)) {
 				if (LOGGER.isTraceEnabled()) {
-					LOGGER.trace("Emission d'un événement DB de changement sur l'organisation n°" + id);
+					LOGGER.trace("Emission d'un événement DB de changement sur l'entreprise n°" + id);
 				}
 				collectNotification(new OrganisationChangeEvent(id));
 			}
 			else if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur l'organisation n°" + id + " (une émission est déjà prévue dans la transaction courante)");
+				LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur l'entreprise n°" + id + " (une émission est déjà prévue dans la transaction courante)");
 			}
 		}
 
@@ -515,8 +515,8 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		delegate(data -> data.onOrganisationChange(id));
+	public void onEntrepriseChange(long id) {
+		delegate(data -> data.onEntrepriseChange(id));
 	}
 
 	@Override

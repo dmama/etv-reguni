@@ -72,7 +72,7 @@
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
-		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="serviceIDEService" ref="serviceIDEService" />
 		<property name="regimeFiscalService" ref="regimeFiscalService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
@@ -140,7 +140,7 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
-		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="localiteInvalideMatcherService" ref="localiteInvalideMatcherService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />

@@ -14,8 +14,8 @@ import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseHelper;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 
 /**
  * @author Raphaël Marmier, 2015-11-04
@@ -70,12 +70,12 @@ public class MockDonneesRC implements DonneesRC {
 			                                                                   previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
 			                                                                   previous.getTitre(), previous.getEgid(), previous.getCasePostale())));
 		}
-		MockOrganisationHelper.addRangedData(adresseLegale, dateDebut, dateFin, nouvelleAdresseLegale);
+		MockEntrepriseHelper.addRangedData(adresseLegale, dateDebut, dateFin, nouvelleAdresseLegale);
 	}
 
 	@Override
 	public AdresseLegaleRCEnt getAdresseLegale(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(getAdresseLegale(), date);
+		return EntrepriseHelper.dateRangeForDate(getAdresseLegale(), date);
 	}
 
 	@Override
@@ -94,50 +94,50 @@ public class MockDonneesRC implements DonneesRC {
 			capital.put(previous.getDateDebut(), new Capital(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getTypeDeCapital(), previous.getDevise(),
 			                                                 previous.getCapitalLibere(), previous.getRepartition()));
 		}
-		MockOrganisationHelper.addRangedData(capital, dateDebut, dateFin, nouveauCapital);
+		MockEntrepriseHelper.addRangedData(capital, dateDebut, dateFin, nouveauCapital);
 	}
 
 	@Override
 	public InscriptionRC getInscription(RegDate date) {
-		return OrganisationHelper.valueForDate(getInscription(), date);
+		return EntrepriseHelper.valueForDate(getInscription(), date);
 	}
 
 	@Override
 	public List<DateRanged<InscriptionRC>> getInscription() {
-		return MockOrganisationHelper.getHisto(inscription);
+		return MockEntrepriseHelper.getHisto(inscription);
 	}
 
 	public void changeInscription(RegDate date, InscriptionRC nouvelleInscription) {
-		MockOrganisationHelper.changeRangedData(inscription, date, nouvelleInscription);
+		MockEntrepriseHelper.changeRangedData(inscription, date, nouvelleInscription);
 	}
 
 	public void addInscription(RegDate dateDebut, @Nullable RegDate dateFin, InscriptionRC inscription) {
-		MockOrganisationHelper.addRangedData(this.inscription, dateDebut, dateFin, inscription);
+		MockEntrepriseHelper.addRangedData(this.inscription, dateDebut, dateFin, inscription);
 	}
 
 	public List<DateRanged<String>> getButs() {
-		return MockOrganisationHelper.getHisto(buts);
+		return MockEntrepriseHelper.getHisto(buts);
 	}
 
 	public void changeButs(RegDate date, String nouveauxButs) {
-		MockOrganisationHelper.changeRangedData(buts, date, nouveauxButs);
+		MockEntrepriseHelper.changeRangedData(buts, date, nouveauxButs);
 	}
 
 	public void addButs(RegDate dateDebut, @Nullable RegDate dateFin, String nouveauxButs) {
-		MockOrganisationHelper.addRangedData(buts, dateDebut, dateFin, nouveauxButs);
+		MockEntrepriseHelper.addRangedData(buts, dateDebut, dateFin, nouveauxButs);
 	}
 
 	@Override
 	public List<DateRanged<RegDate>> getDateStatuts() {
-		return MockOrganisationHelper.getHisto(dateStatus);
+		return MockEntrepriseHelper.getHisto(dateStatus);
 	}
 
 	public void changeDateStatus(RegDate date, RegDate nouvelleDateStatus) {
-		MockOrganisationHelper.changeRangedData(dateStatus, date, nouvelleDateStatus);
+		MockEntrepriseHelper.changeRangedData(dateStatus, date, nouvelleDateStatus);
 	}
 
 	public void addDateStatus(RegDate dateDebut, @Nullable RegDate dateFin, RegDate nouvelleDateStatus) {
-		MockOrganisationHelper.addRangedData(dateStatus, dateDebut, dateFin, nouvelleDateStatus);
+		MockEntrepriseHelper.addRangedData(dateStatus, dateDebut, dateFin, nouvelleDateStatus);
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class MockDonneesRC implements DonneesRC {
 
 	@Override
 	public List<EntreeJournalRC> getEntreesJournalPourDatePublication(RegDate date) {
-		return OrganisationHelper.getEntreesJournalPourDatePublication(entreesJournal, date);
+		return EntrepriseHelper.getEntreesJournalPourDatePublication(entreesJournal, date);
 	}
 
 	public void addEntreeJournal(EntreeJournalRC entreeJournal) {

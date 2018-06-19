@@ -16,11 +16,11 @@ public interface StatistiquesEvenementsService {
 	StatsEvenementsCivilsPersonnesResults getStatistiquesEvenementsCivilsPersonnes(RegDate debutActivite);
 
 	/**
-	 * Renvoie les statistiques sur les événements civils issus de RCEnt (organisations)
+	 * Renvoie les statistiques sur les événements civils issus de RCEnt (entreprises)
 	 * @param debutActivite date à partir de laquelle on liste les modifications récentes
 	 * @return les données nécessaires à l'établissement d'un rapport
 	 */
-	StatsEvenementsCivilsOrganisationsResults getStatistiquesEvenementsCivilsOrganisations(RegDate debutActivite);
+	StatsEvenementsCivilsEntreprisesResults getStatistiquesEvenementsCivilsEntreprises(RegDate debutActivite);
 
 	/**
 	 * Renvoie les statistiques sur les événements externes

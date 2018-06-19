@@ -32,7 +32,7 @@
 
 	<bean id="evenementCivilEchDAO" class="ch.vd.unireg.evenement.civil.ech.EvenementCivilEchDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="evenementOrganisationDAO" class="ch.vd.unireg.evenement.organisation.EvenementOrganisationDAOImpl" parent="hibernateDao">
+	<bean id="evenementEntrepriseDAO" class="ch.vd.unireg.evenement.organisation.EvenementEntrepriseDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="referenceAnnonceIDEDAO" class="ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAOImpl" parent="hibernateDao">
 	</bean>

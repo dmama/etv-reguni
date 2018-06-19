@@ -97,7 +97,7 @@ public class PdfEnvoiLettresBienvenueRapport extends PdfRapport {
 		// Ignorés
 		{
 			String filename = "ignorees.csv";
-			String titre = "Liste des entreprise ignorées";
+			String titre = "Liste des entreprises ignorées";
 			String listVide = "(aucune)";
 			try (TemporaryFile contenu = asCsvFileIgnorees(results.getIgnores(), filename, status)) {
 				addListeDetaillee(writer, titre, listVide, filename, contenu);

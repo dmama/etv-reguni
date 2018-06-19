@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
@@ -34,7 +34,7 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		final RegDate dateDebut = date(2009, 4, 1);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien
@@ -73,7 +73,7 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		final RegDate dateDebut = date(2009, 4, 1);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien
@@ -113,7 +113,7 @@ public class ExerciceCommercialHelperTest extends BusinessTest {
 		final RegDate dateDebut = date(2009, 4, 1);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien

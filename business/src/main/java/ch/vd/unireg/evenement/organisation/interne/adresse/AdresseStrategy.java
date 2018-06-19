@@ -2,17 +2,17 @@ package ch.vd.unireg.evenement.organisation.interne.adresse;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.audit.Audit;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.interne.AbstractEntrepriseStrategy;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterne;
 import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -20,23 +20,23 @@ import ch.vd.unireg.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2016-04-11.
  */
-public class AdresseStrategy extends AbstractOrganisationStrategy {
+public class AdresseStrategy extends AbstractEntrepriseStrategy {
 
 	/**
 	 * @param context le context d'exécution de l'événement
 	 * @param options des options de traitement
 	 */
-	public AdresseStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+	public AdresseStrategy(EvenementEntrepriseContext context, EvenementEntrepriseOptions options) {
 		super(context, options);
 	}
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event un événement organisation reçu de RCEnt
+	 * @param event un événement entreprise civile reçu de RCEnt
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
+	public EvenementEntrepriseInterne matchAndCreate(EvenementEntreprise event, final EntrepriseCivile entrepriseCivile, Entreprise entreprise) throws EvenementEntrepriseException {
 
 		if (entreprise == null) {
 			return null;
@@ -45,7 +45,7 @@ public class AdresseStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = entrepriseCivile.getEtablissementPrincipal(dateAvant);
 		if (etablissementPrincipalAvantRange != null) {
 			AdresseEffectiveRCEnt nouvelleAdresseEffective = null;
 			AdresseLegaleRCEnt nouvelleAdresseLegale = null;
@@ -54,7 +54,7 @@ public class AdresseStrategy extends AbstractOrganisationStrategy {
 			final AdresseEffectiveRCEnt adresseEffectiveAvant = etablissementPrincipalAvant.getDonneesRegistreIDE().getAdresseEffective(dateAvant);
 			final AdresseLegaleRCEnt adresseLegaleAvant = etablissementPrincipalAvant.getDonneesRC().getAdresseLegale(dateAvant);
 
-			final EtablissementCivil etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
+			final EtablissementCivil etablissementPrincipalApres = entrepriseCivile.getEtablissementPrincipal(dateApres).getPayload();
 			final AdresseEffectiveRCEnt adresseEffectiveApres = etablissementPrincipalApres.getDonneesRegistreIDE().getAdresseEffective(dateApres);
 			final AdresseLegaleRCEnt adresseLegaleApres = etablissementPrincipalApres.getDonneesRC().getAdresseLegale(dateApres);
 
@@ -71,7 +71,7 @@ public class AdresseStrategy extends AbstractOrganisationStrategy {
 				                                    nouvelleAdresseEffective != null && nouvelleAdresseLegale != null ? " et d'adresse " : "",
 				                                    nouvelleAdresseLegale != null ? "légale" : "");
 				Audit.info(event.getId(), message);
-				return new Adresse(event, organisation, entreprise, context, options, nouvelleAdresseEffective, nouvelleAdresseLegale);
+				return new Adresse(event, entrepriseCivile, entreprise, context, options, nouvelleAdresseEffective, nouvelleAdresseLegale);
 			}
 		}
 		return null;

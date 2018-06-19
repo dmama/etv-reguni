@@ -27,7 +27,7 @@ public class EtablissementCivilNotFoundException extends ObjectNotFoundException
 		return String.format("Impossible de trouver l'établissement civil n°%d pour l'établissment n°%d", etb.getNumeroEtablissement(), etb.getNumero());
 	}
 
-	private static String buildMessage(long noOrganisation) {
-		return String.format("Impossible de trouver l'établissement civil n°%d", noOrganisation);
+	private static String buildMessage(long noEtablissementCivil) {
+		return String.format("Impossible de trouver l'établissement civil n°%d", noEtablissementCivil);
 	}
 }

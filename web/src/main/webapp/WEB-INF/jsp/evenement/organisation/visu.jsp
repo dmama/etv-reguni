@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.unireg.evenement.organisation.view.EvenementOrganisationDetailView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.evenement.organisation.view.EvenementEntrepriseDetailView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 <tiles:put name="title"><fmt:message key="label.caracteristiques.evenement.organisation"/></tiles:put>

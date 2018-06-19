@@ -22,7 +22,7 @@ import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
@@ -101,7 +101,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 	public void testPopulationInspecteeSurBaseVide() throws Exception {
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// personne
@@ -120,7 +120,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 	public void testPopulationInspectee() throws Exception {
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// personne...
@@ -243,7 +243,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -340,7 +340,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -425,7 +425,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -525,7 +525,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutDroit = date(2015, 7, 12);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -608,7 +608,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutDroit = date(2015, 7, 12);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -692,7 +692,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutDroit = date(2015, 7, 12);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -785,7 +785,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -897,7 +897,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutDroit = date(2015, 7, 12);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -989,7 +989,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final int anneeDerniereEstimationFiscale = 2017;
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1102,7 +1102,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutDroit = date(2010, 7, 12);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1192,7 +1192,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutDroit = date(2015, 7, 12);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1277,7 +1277,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateChangementRegime = date(2016, 1, 1);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1374,7 +1374,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateChangementRegime = date(2016, 1, 1);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1469,7 +1469,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutDroit = date(2015, 7, 12);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1564,7 +1564,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1693,7 +1693,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1822,7 +1822,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -1923,7 +1923,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -2031,7 +2031,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -2217,7 +2217,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -2311,7 +2311,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -2445,7 +2445,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile -> rien
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien...
@@ -2527,7 +2527,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile -> rien
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// rien...
@@ -2617,7 +2617,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateFinExoneration = dateTraitement.addYears(2);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -2705,7 +2705,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateFinExoneration = dateTraitement.addDays(1);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide
@@ -2805,7 +2805,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateTraitement = date(2017, 5, 5);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 				// vide

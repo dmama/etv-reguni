@@ -209,7 +209,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	PersonnePhysique getPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush);
 
-	Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
+	Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile);
 
 	Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissementCivil);
 

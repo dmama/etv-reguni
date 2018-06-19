@@ -4,17 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterneDeTraitement;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -23,7 +23,7 @@ import ch.vd.unireg.tiers.TiersService;
 /**
  * @author Raphaël Marmier, 2015-11-11
  */
-public class Reinscription extends EvenementOrganisationInterneDeTraitement {
+public class Reinscription extends EvenementEntrepriseInterneDeTraitement {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Reinscription.class);
 	private final RegDate dateAvant;
@@ -40,16 +40,16 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 	private final Etablissement etablissementPrincipal;
 
-	public Reinscription(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                     EvenementOrganisationContext context,
-	                     EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	public Reinscription(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise,
+	                     EvenementEntrepriseContext context,
+	                     EvenementEntrepriseOptions options) throws EvenementEntrepriseException {
+		super(evenement, entrepriseCivile, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
 
-		etablissementPrincipalAvant = organisation.getEtablissementPrincipal(dateAvant).getPayload();
-		etablissementPrincipalApres = organisation.getEtablissementPrincipal(dateApres).getPayload();
+		etablissementPrincipalAvant = entrepriseCivile.getEtablissementPrincipal(dateAvant).getPayload();
+		etablissementPrincipalApres = entrepriseCivile.getEtablissementPrincipal(dateApres).getPayload();
 
 		final InscriptionRC inscriptionAvant = etablissementPrincipalAvant.getDonneesRC().getInscription(dateAvant);
 		final InscriptionRC inscriptionApres = etablissementPrincipalApres.getDonneesRC().getInscription(dateApres);
@@ -70,7 +70,7 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
 		final TiersService tiersService = getContext().getTiersService();
 
@@ -78,11 +78,11 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
 		tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
 
-		warnings.addWarning("Réinscription de l’entreprise au RC. Veuillez vérifier et faire le nécessaire à la main.");
+		warnings.addWarning("Réinscription de l'entreprise au RC. Veuillez vérifier et faire le nécessaire à la main.");
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 
 		// Erreurs techniques fatale
 		if (dateAvant == null || dateApres == null || dateAvant != dateApres.getOneDayBefore()) {

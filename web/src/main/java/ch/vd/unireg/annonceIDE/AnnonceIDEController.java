@@ -38,14 +38,14 @@ import ch.vd.unireg.common.pagination.ParamSorting;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.unireg.evenement.ide.ReferenceAnnonceIDEDAO;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseDAO;
+import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityCheck;
 import ch.vd.unireg.tiers.Entreprise;
@@ -72,17 +72,17 @@ public class AnnonceIDEController {
 	private static final String TABLE_NAME = "annonce";
 
 	private TiersMapHelper tiersMapHelper;
-	private ServiceOrganisationService organisationService;
+	private ServiceEntreprise serviceEntreprise;
 	private TiersService tiersService;
 	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
-	private EvenementOrganisationDAO evtOrganisationDAO;
+	private EvenementEntrepriseDAO evtEntrepriseDAO;
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	public void setOrganisationService(ServiceOrganisationService organisationService) {
-		this.organisationService = organisationService;
+	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
+		this.serviceEntreprise = serviceEntreprise;
 	}
 
 	public void setTiersService(TiersService tiersService) {
@@ -93,8 +93,8 @@ public class AnnonceIDEController {
 		this.referenceAnnonceIDEDAO = referenceAnnonceIDEDAO;
 	}
 
-	public void setEvtOrganisationDAO(EvenementOrganisationDAO evtOrganisationDAO) {
-		this.evtOrganisationDAO = evtOrganisationDAO;
+	public void setEvtEntrepriseDAO(EvenementEntrepriseDAO evtEntrepriseDAO) {
+		this.evtEntrepriseDAO = evtEntrepriseDAO;
 	}
 
 	@InitBinder
@@ -157,7 +157,7 @@ public class AnnonceIDEController {
 					Map<String, AnnonceIDE> map = new HashMap<>();
 					if (referencesAnnonceIDE != null && !referencesAnnonceIDE.isEmpty()) {
 						for (ReferenceAnnonceIDE ref : referencesAnnonceIDE) {
-							final AnnonceIDE annonceIDE = organisationService.getAnnonceIDE(ref.getId(), RCEntAnnonceIDEHelper.UNIREG_USER);
+							final AnnonceIDE annonceIDE = serviceEntreprise.getAnnonceIDE(ref.getId(), RCEntAnnonceIDEHelper.UNIREG_USER);
 							if (annonceIDE != null) {
 								map.put(annonceIDE.getUniqueKey(), annonceIDE);
 							}
@@ -167,7 +167,7 @@ public class AnnonceIDEController {
 					if (noCantonalToUse != null) {
 						final AnnonceIDEQuery query = new AnnonceIDEQuery();
 						query.setCantonalId(noCantonalToUse);
-						final List<AnnonceIDE> annoncesPourEtablissement = organisationService.findAnnoncesIDE(query, null, 0, 1000).getContent();
+						final List<AnnonceIDE> annoncesPourEtablissement = serviceEntreprise.findAnnoncesIDE(query, null, 0, 1000).getContent();
 						for (AnnonceIDE annonceIDE : annoncesPourEtablissement) {
 							map.put(annonceIDE.getUniqueKey(), annonceIDE);
 						}
@@ -180,10 +180,10 @@ public class AnnonceIDEController {
 				annonces = new PageImpl<>(listeAnnonces, pageable, listeAnnonces.size());
 			}
 			else {
-				annonces = organisationService.findAnnoncesIDE(view.toQuery(), order, pageNumber, pageSize);
+				annonces = serviceEntreprise.findAnnoncesIDE(view.toQuery(), order, pageNumber, pageSize);
 			}
 		}
-		catch (ServiceOrganisationException e) {
+		catch (ServiceEntrepriseException e) {
 			LOGGER.warn("Erreur lors de la recherche de demandes à l'IDE", e);
 			Flash.warning("L'appel à RCEnt a levé l'erreur suivante : " + e.getMessage() + ". Veuillez réessayer plus tard.");
 			model.addAttribute("page", new PageImpl<>(Collections.<AnnonceIDEView>emptyList()));
@@ -207,10 +207,10 @@ public class AnnonceIDEController {
 					annonceView.setNumeroTiersEntreprise(entreprise.getNumero());
 				}
 				try {
-					final EvenementOrganisation evenementOrganisation = evtOrganisationDAO.getEvenementForNoAnnonceIDE(annonce.getNumero());
-					if (evenementOrganisation != null) {
-						annonceView.setNoEvtOrganisation(evenementOrganisation.getNoEvenement());
-						annonceView.setIdEvtOrganisation(evenementOrganisation.getId());
+					final EvenementEntreprise evenementEntreprise = evtEntrepriseDAO.getEvenementForNoAnnonceIDE(annonce.getNumero());
+					if (evenementEntreprise != null) {
+						annonceView.setNoEvtOrganisation(evenementEntreprise.getNoEvenement());
+						annonceView.setIdEvtOrganisation(evenementEntreprise.getId());
 					}
 				}
 				catch (NonUniqueResultException e) {
@@ -246,7 +246,7 @@ public class AnnonceIDEController {
 		}
 
 		// on effectue la recherche
-		final AnnonceIDEEnvoyee annonce = organisationService.getAnnonceIDE(id, userId);
+		final AnnonceIDEEnvoyee annonce = serviceEntreprise.getAnnonceIDE(id, userId);
 		if (annonce == null) {
 			throw new ObjectNotFoundException("Aucune demande ne correspond à l'identifiant " + id);
 		}

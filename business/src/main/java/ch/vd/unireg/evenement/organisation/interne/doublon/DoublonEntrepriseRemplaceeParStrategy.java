@@ -3,40 +3,40 @@ package ch.vd.unireg.evenement.organisation.interne.doublon;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.common.FormatNumeroHelper;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.interne.AbstractOrganisationStrategy;
-import ch.vd.unireg.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.interne.AbstractEntrepriseStrategy;
+import ch.vd.unireg.evenement.organisation.interne.EvenementEntrepriseInterne;
 import ch.vd.unireg.evenement.organisation.interne.TraitementManuel;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
- * Doublon d'entreprise, l'organisation est remplacée par une autre.
+ * Doublon d'entreprise, l'entreprise civile est remplacée par une autre.
  *
  * @author Raphaël Marmier, 2015-11-05.
  */
-public class DoublonEntrepriseRemplaceeParStrategy extends AbstractOrganisationStrategy {
+public class DoublonEntrepriseRemplaceeParStrategy extends AbstractEntrepriseStrategy {
 
 	/**
 	 * @param context le context d'exécution de l'événement
 	 * @param options des options de traitement
 	 */
-	public DoublonEntrepriseRemplaceeParStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+	public DoublonEntrepriseRemplaceeParStrategy(EvenementEntrepriseContext context, EvenementEntrepriseOptions options) {
 		super(context, options);
 	}
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
-	 * @param event un événement organisation reçu de RCEnt
+	 * @param event un événement entreprise civile reçu de RCEnt
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
+	public EvenementEntrepriseInterne matchAndCreate(EvenementEntreprise event, final EntrepriseCivile entrepriseCivile, Entreprise entreprise) throws EvenementEntrepriseException {
 
 		// On ne s'occupe que d'entités déjà connues
 		if (entreprise == null) {
@@ -47,9 +47,9 @@ public class DoublonEntrepriseRemplaceeParStrategy extends AbstractOrganisationS
 		final RegDate dateApres = event.getDateEvenement();
 
 		final Long remplaceEtablissementAvant;
-		final Long remplaceEtablissementApres = organisation.getEtablissementPrincipal(dateApres).getPayload().getIdeRemplacePar(dateApres);
+		final Long remplaceEtablissementApres = entrepriseCivile.getEtablissementPrincipal(dateApres).getPayload().getIdeRemplacePar(dateApres);
 
-		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = organisation.getEtablissementPrincipal(dateAvant);
+		final DateRanged<EtablissementCivil> etablissementPrincipalAvantRange = entrepriseCivile.getEtablissementPrincipal(dateAvant);
 		if (etablissementPrincipalAvantRange != null) {
 			remplaceEtablissementAvant = etablissementPrincipalAvantRange.getPayload().getIdeRemplacePar(dateAvant);
 		}
@@ -59,22 +59,22 @@ public class DoublonEntrepriseRemplaceeParStrategy extends AbstractOrganisationS
 
 		if (remplaceEtablissementAvant == null && remplaceEtablissementApres != null) {
 			final Entreprise entrepriseRemplacante;
-			final Long noOrganisationRemplacante = context.getServiceOrganisation().getNoOrganisationFromNoEtablissement(remplaceEtablissementApres);
-			if (noOrganisationRemplacante != null) {
-				entrepriseRemplacante = context.getTiersService().getEntrepriseByNumeroOrganisation(noOrganisationRemplacante);
+			final Long noEntrepriseCivileRemplacante = context.getServiceEntreprise().getNoEntrepriseCivileFromNoEtablissementCivil(remplaceEtablissementApres);
+			if (noEntrepriseCivileRemplacante != null) {
+				entrepriseRemplacante = context.getTiersService().getEntrepriseByNoEntrepriseCivile(noEntrepriseCivileRemplacante);
 			}
 			else {
 				entrepriseRemplacante = null;
 			}
 
 
-			final String message = String.format("Doublon d’organisation à l'IDE. Cette entreprise n°%s (civil: %d) est remplacée par l'entreprise %s (civil: %d).",
+			final String message = String.format("Doublon d’entreprise civile à l'IDE. Cette entreprise n°%s (civil: %d) est remplacée par l'entreprise %s (civil: %d).",
 			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-			                                     organisation.getNumeroOrganisation(),
+			                                     entrepriseCivile.getNumeroEntreprise(),
 			                                     entrepriseRemplacante == null ? "non encore connue d'Unireg" : "n°" + FormatNumeroHelper.numeroCTBToDisplay(entrepriseRemplacante.getNumero()),
-			                                     noOrganisationRemplacante);
+			                                     noEntrepriseCivileRemplacante);
 			Audit.info(event.getId(), message);
-			return new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis: " + message);
+			return new TraitementManuel(event, entrepriseCivile, entreprise, context, options, "Traitement manuel requis: " + message);
 		}
 
 		return null;

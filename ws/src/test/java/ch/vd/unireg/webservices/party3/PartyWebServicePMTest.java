@@ -9,20 +9,19 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.webservices.party3.BatchParty;
-import ch.vd.unireg.webservices.party3.BatchPartyEntry;
-import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.party3.GetPartyRequest;
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.PartyWebService;
-import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
-import ch.vd.unireg.webservices.party3.WebServiceException;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersDAO;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
+import ch.vd.unireg.type.MotifFor;
+import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
@@ -30,13 +29,6 @@ import ch.vd.unireg.xml.party.address.v1.OrganisationMailAddressInfo;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
-import ch.vd.unireg.common.WebserviceTest;
-import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.tiers.TiersDAO;
-import ch.vd.unireg.type.FormeJuridiqueEntreprise;
-import ch.vd.unireg.type.MotifFor;
-import ch.vd.unireg.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -104,17 +96,17 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testSetBlocageRemboursementAutomatiquePMConnueDansUnireg() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
 		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 				entreprise.setBlocageRemboursementAutomatique(true);
 				return entreprise.getNumero();
 			}
@@ -152,17 +144,17 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetAdresseEnvoiPersonneMorale() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.BCV);
 			}
 		});
 
 		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
 				return pm.getNumero();
 			}
 		});
@@ -203,17 +195,17 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetForFiscauxPMVaudoise() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.BCV);
 			}
 		});
 
 		final long idPM = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
 				addRegimeFiscalVD(pm, date(1990, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(pm, date(1990, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(pm, date(1883, 6, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
@@ -247,17 +239,17 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetForFiscauxPMHorsCanton() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
+				addEntreprise(MockEntrepriseFactory.BANQUE_COOP);
 			}
 		});
 
 		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
 				addRegimeFiscalVD(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(pm, date(1965, 5, 4), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(pm, date(1960, 1, 1), null, MockCommune.Bale);
@@ -327,10 +319,10 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetBatchPartyRequestAvecMelangePersonnesPhysiquesEtMorales() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.BCV);
+				addEntreprise(MockEntrepriseFactory.BCV);
 			}
 		});
 
@@ -342,7 +334,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
 				final PersonnePhysique pp = addNonHabitant("Cédric", "Digory", date(1980, 5, 30), Sexe.MASCULIN);
 				final Ids ids = new Ids();
 				ids.idPP = pp.getNumero();

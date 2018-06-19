@@ -67,7 +67,7 @@
 	</bean>
 
 	<bean id="entrepriseService" class="ch.vd.unireg.entreprise.EntrepriseServiceImpl">
-		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 

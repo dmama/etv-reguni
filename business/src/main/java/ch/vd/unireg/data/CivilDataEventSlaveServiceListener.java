@@ -30,8 +30,8 @@ public class CivilDataEventSlaveServiceListener implements CivilDataEventListene
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		slave.onOrganisationChange(id);
+	public void onEntrepriseChange(long id) {
+		slave.onEntrepriseChange(id);
 	}
 
 	@Override

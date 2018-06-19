@@ -335,7 +335,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
+	public void onEntrepriseChange(long id) {
 		// rien à faire
 	}
 

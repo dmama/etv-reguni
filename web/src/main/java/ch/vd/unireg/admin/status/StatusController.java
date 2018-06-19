@@ -3,7 +3,6 @@ package ch.vd.unireg.admin.status;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Statistics;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -42,7 +41,7 @@ public class StatusController {
 	private StatsService statsService;
 
 	private StatusChecker serviceCivilChecker;
-	private StatusChecker serviceOrganisationChecker;
+	private StatusChecker serviceEntrepriseChecker;
 	private StatusChecker serviceInfraChecker;
 	private StatusChecker serviceSecuriteChecker;
 	private StatusChecker serviceBVRChecker;
@@ -80,8 +79,8 @@ public class StatusController {
 		this.serviceCivilChecker = serviceCivilChecker;
 	}
 
-	public void setServiceOrganisationChecker(StatusChecker serviceOrganisationChecker) {
-		this.serviceOrganisationChecker = serviceOrganisationChecker;
+	public void setServiceEntrepriseChecker(StatusChecker serviceEntrepriseChecker) {
+		this.serviceEntrepriseChecker = serviceEntrepriseChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -123,9 +122,9 @@ public class StatusController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/admin/status/organisation.do", method = RequestMethod.GET)
-	public ServiceStatusView organisationStatus() {
-		return new ServiceStatusView(serviceOrganisationChecker);
+	@RequestMapping(value = "/admin/status/entreprise.do", method = RequestMethod.GET)
+	public ServiceStatusView entrepriseStatus() {
+		return new ServiceStatusView(serviceEntrepriseChecker);
 	}
 
 	@ResponseBody

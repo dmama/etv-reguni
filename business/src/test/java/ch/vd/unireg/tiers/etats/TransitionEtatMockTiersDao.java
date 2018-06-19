@@ -178,7 +178,7 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 	}
 
 	@Override
-	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
+	public Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile) {
 		throw new UnsupportedOperationException();
 	}
 

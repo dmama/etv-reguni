@@ -30,7 +30,7 @@ import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeEtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -81,7 +81,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 			}
 		});
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 
@@ -151,11 +151,11 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
 				assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
 
-				final BaseAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
-				assertNotNull(informationOrganisation);
-				assertNull(informationOrganisation.getNumeroOrganisation());
-				assertNull(informationOrganisation.getNumeroEtablissement());
-				assertNull(informationOrganisation.getNumeroEtablissementRemplacant());
+				final BaseAnnonceIDE.InformationEntreprise informationEntreprise = annonceIDE.getInformationEntreprise();
+				assertNotNull(informationEntreprise);
+				assertNull(informationEntreprise.getNumeroEntreprise());
+				assertNull(informationEntreprise.getNumeroEtablissement());
+				assertNull(informationEntreprise.getNumeroEtablissementRemplacant());
 
 				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
@@ -246,7 +246,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 			}
 		});
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
 

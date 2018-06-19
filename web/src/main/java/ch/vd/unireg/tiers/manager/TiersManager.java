@@ -72,10 +72,10 @@ import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.interfaces.organisation.ServiceEntrepriseException;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
-import ch.vd.unireg.interfaces.service.ServiceOrganisationService;
 import ch.vd.unireg.lr.view.ListeRecapitulativeView;
 import ch.vd.unireg.lr.view.ListesRecapitulativesView;
 import ch.vd.unireg.mandataire.AccesMandatairesView;
@@ -171,7 +171,7 @@ public class TiersManager implements MessageSourceAware {
 
 	protected ServiceCivilService serviceCivilService;
 
-	protected ServiceOrganisationService serviceOrganisationService;
+	protected ServiceEntreprise serviceEntreprise;
 
 	protected TiersDAO tiersDAO;
 
@@ -262,7 +262,7 @@ public class TiersManager implements MessageSourceAware {
 						final List<String> nomCourrier = getAdresseService().getNomCourrier(dpi, null, false);
 						debiteurView.setNomCourrier(nomCourrier);
 					}
-					catch (ServiceOrganisationException e) {
+					catch (ServiceEntrepriseException e) {
 						debiteurView.setNomCourrier(Collections.singletonList("<erreur lors de l'accès au service civil>"));
 					}
 					debiteursView.add(debiteurView);
@@ -715,12 +715,12 @@ public class TiersManager implements MessageSourceAware {
 
 		// L'ACI est-elle actuellement maîtresse des données civiles pour cette entreprise?
 		try {
-			tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
+			tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // EntrepriseView
 
 			final boolean serviceIDEObligEtendues = serviceIDEService.isServiceIDEObligEtendues(entreprise, null);
 			tiersView.setCivilSousControleACI(serviceIDEObligEtendues);
 		}
-		catch (ServiceOrganisationException e) {
+		catch (ServiceEntrepriseException e) {
 			tiersView.setCivilSousControleACI(false);
 			tiersView.setExceptionDonneesCiviles(e.getMessage());
 		}
@@ -826,7 +826,7 @@ public class TiersManager implements MessageSourceAware {
 		try {
 			tiersView.setEtablissement(entrepriseService.getEtablissement(etb));
 		}
-		catch (ServiceOrganisationException e) {
+		catch (ServiceEntrepriseException e) {
 			tiersView.setExceptionDonneesCiviles(e.getMessage());
 		}
 	}
@@ -1074,7 +1074,7 @@ public class TiersManager implements MessageSourceAware {
 		if (!entreprise.isConnueAuCivil()) {
 			return Collections.emptyList();
 		}
-		final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
+		final AdressesCivilesHisto histo = serviceEntreprise.getAdressesEntrepriseHisto(entreprise.getNumeroEntreprise());
 		if (histo == null) {
 			return Collections.emptyList();
 		}
@@ -1089,7 +1089,7 @@ public class TiersManager implements MessageSourceAware {
 		if (!etb.isConnuAuCivil()) {
 			return Collections.emptyList();
 		}
-		final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesEtablissementCivilHisto(etb.getNumeroEtablissement());
+		final AdressesCivilesHisto histo = serviceEntreprise.getAdressesEtablissementCivilHisto(etb.getNumeroEtablissement());
 		if (histo == null) {
 			return Collections.emptyList();
 		}
@@ -1419,8 +1419,8 @@ public class TiersManager implements MessageSourceAware {
 		this.securityProvider = securityProvider;
 	}
 
-	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
-		this.serviceOrganisationService = serviceOrganisationService;
+	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
+		this.serviceEntreprise = serviceEntreprise;
 	}
 
 	public void setExerciceCommercialHelper(ExerciceCommercialHelper exerciceCommercialHelper) {

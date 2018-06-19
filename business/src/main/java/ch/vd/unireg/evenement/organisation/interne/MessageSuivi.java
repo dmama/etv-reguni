@@ -2,14 +2,14 @@ package ch.vd.unireg.evenement.organisation.interne;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationException;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
-import ch.vd.unireg.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseContext;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseException;
+import ch.vd.unireg.evenement.organisation.EvenementEntrepriseOptions;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseErreurCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseSuiviCollector;
+import ch.vd.unireg.evenement.organisation.audit.EvenementEntrepriseWarningCollector;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 
 /**
@@ -27,13 +27,13 @@ import ch.vd.unireg.tiers.Entreprise;
  *     des traitements.
  * </p>
  */
-public class MessageSuivi extends EvenementOrganisationInterneDeTraitement {
+public class MessageSuivi extends EvenementEntrepriseInterneDeTraitement {
 
 	private String suivi = null;
 
-	public MessageSuivi(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context,
-	                    EvenementOrganisationOptions options, String suivi) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	public MessageSuivi(EvenementEntreprise evenement, EntrepriseCivile entrepriseCivile, Entreprise entreprise, EvenementEntrepriseContext context,
+	                    EvenementEntrepriseOptions options, String suivi) throws EvenementEntrepriseException {
+		super(evenement, entrepriseCivile, entreprise, context, options);
 		this.suivi = suivi;
 	}
 
@@ -43,13 +43,13 @@ public class MessageSuivi extends EvenementOrganisationInterneDeTraitement {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	public void doHandle(EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 		if (StringUtils.isNotBlank(suivi)) {
 			suivis.addSuivi(suivi);
 		}
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementEntrepriseErreurCollector erreurs, EvenementEntrepriseWarningCollector warnings, EvenementEntrepriseSuiviCollector suivis) throws EvenementEntrepriseException {
 	}
 }

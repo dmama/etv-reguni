@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="listEvenementsOrganisation" type="java.util.List<ch.vd.unireg.evenement.organisation.view.EvenementOrganisationElementListeRechercheView>"--%>
+<%--@elvariable id="listEvenementsOrganisation" type="java.util.List<ch.vd.unireg.evenement.organisation.view.EvenementEntrepriseElementListeRechercheView>"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
     <tiles:put name="head">
@@ -70,7 +70,7 @@
 
 			<!-- No Evenement -->
 			<display:column property="noEvenement" sortable ="${sortable}" titleKey="label.no.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="noEvenement"/>
-			<!-- NO Organisation -->
+			<!-- NO Entreprise Civile -->
 			<display:column titleKey="label.no.cantonal">
 				<a href="#" class="staticTip" id="tt-${tableEvtsOrganisation.numeroOrganisation}">
 					<div id="tt-${tableEvtsOrganisation.numeroOrganisation}-tooltip" style="display:none;">
@@ -162,7 +162,7 @@
 			</display:column>
 			<display:column style="action">
 				<c:if test="${tableEvtsOrganisation.id != null}">
-					<unireg:consulterLog entityNature="EvenementOrganisation" entityId="${tableEvtsOrganisation.id}"/>
+					<unireg:consulterLog entityNature="EvenementEntreprise" entityId="${tableEvtsOrganisation.id}"/>
 				</c:if>
 		</display:column>
 		</display:table>
@@ -282,7 +282,7 @@
 	};
 
 	EvtOrg.doCreateEntreprise = function(id) {
-		if (confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement organisation?')) {
+		if (confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement entreprise?')) {
 			$.ajax({
 				       type: "POST",
 				       url: "creer-entrepriseVersListe.do",

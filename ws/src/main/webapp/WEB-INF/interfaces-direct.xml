@@ -76,16 +76,16 @@
 		<constructor-arg ref="organisationHistorizer"/>
 	</bean>
 
-	<!-- Service Organisation -->
+	<!-- Service Entreprise -->
 
-	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
+	<bean id="serviceEntrepriseRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceEntrepriseRCEnt">
 		<constructor-arg ref="rcEntAdapter"/>
 		<constructor-arg ref="rcEntClientRaw"/>
 		<constructor-arg ref="serviceInfrastructureRaw"/>
 	</bean>
 
-	<bean id="serviceOrganisationTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
-		<property name="target" ref="serviceOrganisationRCEnt" />
+	<bean id="serviceEntrepriseTracing" class="ch.vd.unireg.interfaces.organisation.ServiceEntrepriseTracing">
+		<property name="target" ref="serviceEntrepriseRCEnt" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

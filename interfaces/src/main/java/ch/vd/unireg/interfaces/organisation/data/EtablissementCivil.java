@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 
 /**
- * Interface d'un établissement civil d'organisation (= un établissement, au sens civil du terme)
+ * Interface d'un établissement civil d'entreprise (= un établissement, au sens civil du terme)
  */
 public interface EtablissementCivil {
 

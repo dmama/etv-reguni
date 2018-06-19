@@ -24,7 +24,7 @@ import ch.vd.unireg.etiquette.EtiquetteTiers;
 import ch.vd.unireg.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.unireg.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.unireg.evenement.identification.contribuable.IdentificationContribuable;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.unireg.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.unireg.foncier.AllegementFoncier;
@@ -76,7 +76,7 @@ public class ConsultLogController {
 		Etiquette(EtiquetteTiers.class),
 		Evenement(EvenementCivilRegPP.class),
 		EvenementEch(EvenementCivilEch.class),
-		EvenementOrganisation(EvenementOrganisation.class),
+		EvenementEntreprise(EvenementEntreprise.class),
 		FlagEntreprise(FlagEntreprise.class),
 		ForFiscal(ForFiscal.class),
 		Identification(IdentificationContribuable.class),

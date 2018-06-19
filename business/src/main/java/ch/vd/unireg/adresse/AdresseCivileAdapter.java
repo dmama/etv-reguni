@@ -47,7 +47,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
-		this.source = new Source((tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ORG : SourceType.CIVILE_PERS, tiers);
+		this.source = new Source((tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ENT : SourceType.CIVILE_PERS, tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 

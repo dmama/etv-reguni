@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
@@ -72,12 +72,12 @@ public interface MetierServicePM {
 	 *     Note: Dans l'éventualité improbable où il y aurait plusieurs établissements principaux dans l'historique civil, les établissements
 	 *     passés ne seront pas rattachés à leurs contreparties Unireg, même si celles-ci existent.
 	 * </p>
-	 * @param organisation l'organisation civile à rattacher
+	 * @param entrepriseCivile l'entreprise civile à rattacher
 	 * @param entreprise l'entreprise rapprochée
 	 * @param date la date à laquelle le rapprochement prend effet
 	 * @return le résultat de l'opération de rattachement
 	 */
-	RattachementOrganisationResult rattacheOrganisationEntreprise(Organisation organisation, Entreprise entreprise, RegDate date) throws MetierServiceException;
+	RattachementEntrepriseResult rattacheEntreprisesCivileEtFiscal(EntrepriseCivile entrepriseCivile, Entreprise entreprise, RegDate date) throws MetierServiceException;
 
 	/**
 	 * Opération de faillite

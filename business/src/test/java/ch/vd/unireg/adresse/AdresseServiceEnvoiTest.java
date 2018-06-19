@@ -7,6 +7,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.common.CasePostale;
@@ -18,9 +19,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.tiers.AppartenanceMenage;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.ContactImpotSource;
@@ -996,10 +996,10 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableSurEntreprise() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
@@ -1012,7 +1012,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
 				long noDebiteur = debiteur.getNumero();
 
-				final Entreprise nestleSuisse = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise nestleSuisse = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nestleSuisse, debiteur);
 				hibernateTemplate.merge(contact);
@@ -1113,10 +1113,10 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			}
 		});
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addEntreprise(MockEntrepriseFactory.NESTLE);
 			}
 		});
 
@@ -1137,7 +1137,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
 				long noDebiteur = debiteur.getNumero();
 
-				final Entreprise nestleSuisse = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise nestleSuisse = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nestleSuisse, debiteur);
 				hibernateTemplate.merge(contact);
@@ -2514,14 +2514,14 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiJalHolding() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.JAL_HOLDING);
+				addEntreprise(MockEntrepriseFactory.JAL_HOLDING);
 			}
 		});
 
-		final Entreprise jal = addEntrepriseConnueAuCivil(MockOrganisationFactory.JAL_HOLDING.getNumeroOrganisation());
+		final Entreprise jal = addEntrepriseConnueAuCivil(MockEntrepriseFactory.JAL_HOLDING.getNumeroEntreprise());
 		final AdresseSuisse surcharge = addAdresseSuisse(jal, TypeAdresseTiers.COURRIER, date(1990, 1, 4), null, MockRue.Lausanne.AvenueDeLaGare);
 		surcharge.setNumeroMaison("10");
 		surcharge.setComplement("pa Fid.Commerce & Industrie S.A.");

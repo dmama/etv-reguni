@@ -3,7 +3,7 @@ package ch.vd.unireg.evenement.common;
 import ch.vd.unireg.type.TypeEvenementErreur;
 
 /**
- * Interface commune à toutes les erreurs des événements civils et organisation
+ * Interface commune à toutes les erreurs des événements civils et entreprise
  */
 public interface EvenementErreur {
 

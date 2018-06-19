@@ -15,19 +15,19 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscal;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalRegimeFiscal;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
-import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.organisation.engine.AbstractEvenementEntrepriseCivileProcessorTest;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeEntrepriseRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceEntreprise;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockEtablissementCivilFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.tiers.Bouclement;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
@@ -35,18 +35,18 @@ import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.ForFiscalSecondaire;
 import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.type.DayMonth;
-import ch.vd.unireg.type.EtatEvenementOrganisation;
+import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
-import ch.vd.unireg.type.TypeEvenementOrganisation;
+import ch.vd.unireg.type.TypeEvenementEntreprise;
 
-import static ch.vd.unireg.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.unireg.type.EtatEvenementEntreprise.A_TRAITER;
 
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationProcessorTest {
+public class CreateEntrepriseHorsVDTest extends AbstractEvenementEntrepriseCivileProcessorTest {
 
 	public CreateEntrepriseHorsVDTest() {
 		setWantIndexationTiers(true);
@@ -68,11 +68,11 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 	public void testCreationHorsVDPM() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 27), null,
-		                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Zurich);
+		final Long noEntrepriseCivile = 101202100L;
+		final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 27), null,
+		                                                                                FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Zurich);
 		MockEtablissementCivilFactory.addEtablissement(1012021001234L,
-		                                               org,
+		                                               ent,
 		                                               RegDate.get(2015, 6, 27),
 		                                               null,
 		                                               "Robert Alkan et autres",
@@ -83,12 +83,12 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 		                                               StatusInscriptionRC.ACTIF,
 		                                               date(2015, 6, 24),
 		                                               StatusRegistreIDE.DEFINITIF,
-		                                               TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		                                               TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -99,24 +99,24 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
 				                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
@@ -212,11 +212,11 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 	public void testCreationHorsVDSP() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres fous", RegDate.get(2015, 6, 27), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
-		                                                                              MockCommune.Zurich);
+		final Long noEntrepriseCivile = 101202100L;
+		final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1000000, "Robert Alkan et autres fous", RegDate.get(2015, 6, 27), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
+		                                                                                MockCommune.Zurich);
 		MockEtablissementCivilFactory.addEtablissement(1012021001234L,
-		                                               org,
+		                                               ent,
 		                                               RegDate.get(2015, 6, 27),
 		                                               null,
 		                                               "Robert Alkan et autres fous",
@@ -227,12 +227,12 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 		                                               StatusInscriptionRC.ACTIF,
 		                                               date(2015, 6, 24),
 		                                               StatusRegistreIDE.DEFINITIF,
-		                                               TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		                                               TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(org);
+				addEntreprise(ent);
 			}
 		});
 
@@ -243,24 +243,24 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
 				                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
@@ -351,14 +351,14 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 	public void testCreationPasSurVDDuTout() throws Exception {
 
 		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
+		final Long noEntrepriseCivile = 101202100L;
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
 			@Override
 			protected void init() {
-				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                                 MockCommune.Zurich));
+				addEntreprise(
+						MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                               MockCommune.Zurich));
 			}
 		});
 
@@ -369,24 +369,24 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
 
 		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
+		traiterEvenements(noEntrepriseCivile);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-				                             Assert.assertNull(tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation()));
+				                             Assert.assertNull(tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile()));
 
 				                             return null;
 			                             }
@@ -398,11 +398,11 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 	public void testCreationHorsVDPMNouvelEtablissementVD() throws Exception {
 
 			// Mise en place service mock
-			final Long noOrganisation = 101202100L;
-			final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(1920, 1, 5), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-			                                                                              MockCommune.Zurich);
+			final Long noEntrepriseCivile = 101202100L;
+			final MockEntrepriseCivile ent = MockEntrepriseFactory.createSimpleEntrepriseRC(noEntrepriseCivile, noEntrepriseCivile + 1000000, "Robert Alkan et autres", RegDate.get(1920, 1, 5), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+			                                                                                MockCommune.Zurich);
 			MockEtablissementCivilFactory.addEtablissement(1012021001234L,
-			                                               org,
+			                                               ent,
 			                                               RegDate.get(2015, 6, 27),
 			                                               null,
 			                                               "Robert Alkan et autres",
@@ -413,12 +413,12 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 			                                               StatusInscriptionRC.ACTIF,
 			                                               date(2015, 6, 24),
 			                                               StatusRegistreIDE.DEFINITIF,
-			                                               TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+			                                               TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-			serviceOrganisation.setUp(new MockServiceOrganisation() {
+			serviceEntreprise.setUp(new MockServiceEntreprise() {
 				@Override
 				protected void init() {
-					addOrganisation(org);
+					addEntreprise(ent);
 				}
 			});
 
@@ -429,24 +429,24 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 			doInNewTransactionAndSession(new TransactionCallback<Long>() {
 				@Override
 				public Long doInTransaction(TransactionStatus transactionStatus) {
-					final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
+					final EvenementEntreprise event = createEvent(noEvenement, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
 					return hibernateTemplate.merge(event).getId();
 				}
 			});
 
 			// Traitement synchrone de l'événement
-			traiterEvenements(noOrganisation);
+			traiterEvenements(noEntrepriseCivile);
 
 			// Vérification du traitement de l'événement
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
 				                             @Override
 				                             public Object doInTransaction(TransactionStatus status) {
 
-					                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+					                             final EvenementEntreprise evt = getUniqueEvent(noEvenement);
 					                             Assert.assertNotNull(evt);
-					                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+					                             Assert.assertEquals(EtatEvenementEntreprise.TRAITE, evt.getEtat());
 
-					                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+					                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 					                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
 					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();

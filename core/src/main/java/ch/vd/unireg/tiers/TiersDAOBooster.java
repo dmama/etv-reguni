@@ -225,8 +225,8 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
-		return target.getEntrepriseByNumeroOrganisation(numeroOrganisation);
+	public Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile) {
+		return target.getEntrepriseByNoEntrepriseCivile(numeroEntrepriseCivile);
 	}
 
 	@Override

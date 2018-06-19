@@ -63,8 +63,8 @@ public class WebServiceEventListenerAdapter implements DataEventListener, Initia
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(id);
+	public void onEntrepriseChange(long id) {
+		final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(id);
 		if (entreprise != null) {
 			onTiersChange(entreprise.getNumero());
 		}

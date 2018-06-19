@@ -23,7 +23,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.linkedentity.LinkedEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.declaration.Periodicite;
-import ch.vd.unireg.evenement.organisation.EvenementOrganisation;
+import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -31,8 +31,8 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.organisation.data.EtablissementCivil;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
@@ -76,18 +76,18 @@ public interface TiersService {
     PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu);
 
     /**
-     * Renvoie l'entreprise (fiscale, donc) correspondant au numéro d'organisation (civile) passé en paramètre.
+     * Renvoie l'entreprise (fiscale, donc) correspondant au numéro d'entreprise (civile) passé en paramètre.
      *
-     * @param numeroOrganisation le numéro de l'organisation
-     * @return l'entreprise (tiers non-annulé) correspondante au numéro d'organisation passé en paramètre, ou <b>null</b>.
+     * @param numeroEntrepriseCivile le numéro de l'entreprise
+     * @return l'entreprise (tiers non-annulé) correspondante au numéro d'entreprise passé en paramètre, ou <b>null</b>.
      */
-    Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
+    Entreprise getEntrepriseByNoEntrepriseCivile(long numeroEntrepriseCivile);
 
 	/**
 	 * Renvoie l'établissement (fiscal, donc) correspondant au numéro d'établissement civil passé en paramètre.
 	 *
 	 * @param numeroEtablissement le numéro de l'établissement civil
-	 * @return l'établissement (tiers non-annulé) correspondant au numéro d'organisation passé en paramètre, ou <b>null</b>.
+	 * @return l'établissement (tiers non-annulé) correspondant au numéro d'entreprise passé en paramètre, ou <b>null</b>.
 	 */
 	Etablissement getEtablissementByNumeroEtablissementCivil(long numeroEtablissement);
 
@@ -125,16 +125,16 @@ public interface TiersService {
 	 */
 	List<Etablissement> getEtablissementsSecondairesEntreprise(Entreprise entreprise, RegDate date);
 
-	Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt) throws TiersException;
+	Entreprise createEntreprisePourEvenement(EvenementEntreprise evt) throws TiersException;
 
     /**
-     * Créer une entreprise pour le numéro d'organisation fourni. La méthode refuse de la créer si une entreprise est déjà associée à l'organisation.
+     * Créer une entreprise pour le numéro d'entreprise fourni. La méthode refuse de la créer si une entreprise est déjà associée à l'entreprise.
      *
-     * @param noOrganisation
+     * @param noEntrepriseCivile
      * @return L'entreprise créée.
      */
     @NotNull
-    Entreprise createEntreprise(long noOrganisation);
+    Entreprise createEntreprise(long noEntrepriseCivile);
 
     /**
      * Créer un établissement pour le numéro d'établissement civil fourni. La méthode refuse de le créer si un établissement est déjà associé à l'établissement civil.
@@ -307,13 +307,13 @@ public interface TiersService {
 	Etablissement getEtablissementPrincipal(Entreprise entreprise, RegDate date);
 
 	/**
-	 * Associe une entreprise à une organisation civile. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
+	 * Associe une entreprise à une entreprise civile. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
 	 * et supprime le numéro IDE du registre fiscal.
 	 * @param entreprise le tiers visé
-	 * @param organisation l'organisation à rattacher
+	 * @param entrepriseCivile l'entreprise civile à rattacher
 	 * @param fermerSurcharges précise s'il faut fermer les surcharges civiles.
 	 */
-	void apparier(Entreprise entreprise, Organisation organisation, boolean fermerSurcharges);
+	void apparier(Entreprise entreprise, EntrepriseCivile entrepriseCivile, boolean fermerSurcharges);
 
 	/**
 	 * Associe un établissement à un établissement civil du registre civil. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
@@ -2223,12 +2223,12 @@ public interface TiersService {
      * @param entreprise une entreprise fiscale
      * @return les données civiles de l'entreprise, ou <code>null</code> si cette entreprise est inconnue dans les registres civils
      */
-    Organisation getOrganisation(@NotNull Entreprise entreprise);
+    EntrepriseCivile getEntrepriseCivile(@NotNull Entreprise entreprise);
 
-    Organisation getOrganisationPourEtablissement(@NotNull Etablissement etablissement);
+    EntrepriseCivile getEntrepriseCivileByEtablissement(@NotNull Etablissement etablissement);
 
 	/**
-	 * Renvoie l'établissement civil d'organisation RCEnt correspondant à l'établissement.
+	 * Renvoie l'établissement civil d'entreprise RCEnt correspondant à l'établissement.
 	 * @param etablissement L'établissement connu au civil
 	 * @return L'établissement civil correspondant
 	 */

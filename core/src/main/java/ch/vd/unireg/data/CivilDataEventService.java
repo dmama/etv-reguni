@@ -28,10 +28,10 @@ public interface CivilDataEventService {
 	void onIndividuChange(long id);
 
 	/**
-	 * Notifie à tous les listeners qu'une organisation à été changé dans le registre des entreprises.
+	 * Notifie à tous les listeners qu'une entreprise à été changé dans le registre des entreprises.
 	 *
-	 * @param id le numéro de l'organisation changée
+	 * @param id le numéro de l'entreprise changée
 	 */
-	void onOrganisationChange(long id);
+	void onEntrepriseChange(long id);
 
 }

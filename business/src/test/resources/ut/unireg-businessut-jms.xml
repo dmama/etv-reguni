@@ -35,7 +35,7 @@
 
 	<bean id="evtCivilEchProcessorRetry" class="ch.vd.unireg.evenement.civil.engine.ech.MockEvenementCivilEchRetryProcessor"/>
 
-	<bean id="evtOrganisationProcessorRetry" class="ch.vd.unireg.evenement.organisation.engine.MockEvenementOrganisationRetryProcessor"/>
+	<bean id="evtEntrepriseProcessorRetry" class="ch.vd.unireg.evenement.organisation.engine.MockEvenementEntrepriseRetryProcessor"/>
 
 	<bean id="evtReqDesRetryProcessor" class="ch.vd.unireg.evenement.reqdes.engine.MockEvenementReqDesRetryProcessor"/>
 
