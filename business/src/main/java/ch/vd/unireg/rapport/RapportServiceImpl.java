@@ -35,6 +35,7 @@ import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.unireg.declaration.snc.DeterminationQuestionnairesSNCResults;
 import ch.vd.unireg.declaration.snc.EnvoiQuestionnairesSNCEnMasseResults;
 import ch.vd.unireg.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
+import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCEnMasseImporterResults;
 import ch.vd.unireg.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.unireg.declaration.source.EnvoiLRsResults;
 import ch.vd.unireg.declaration.source.EnvoiSommationLRsResults;
@@ -77,6 +78,7 @@ import ch.vd.unireg.document.IdentifierContribuableFromListeRapport;
 import ch.vd.unireg.document.IdentifierContribuableRapport;
 import ch.vd.unireg.document.ImportCodesSegmentRapport;
 import ch.vd.unireg.document.InitialisationIFoncRapport;
+import ch.vd.unireg.document.LienAssociesSNCEnMasseImporterRapport;
 import ch.vd.unireg.document.ListeAssujettisRapport;
 import ch.vd.unireg.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.unireg.document.ListeDIsNonEmisesRapport;
@@ -1851,6 +1853,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(RattrapageModelesCommunautesRFProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfRattrapageModelesCommunautesRFRapport document = new PdfRattrapageModelesCommunautesRFRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public LienAssociesSNCEnMasseImporterRapport generateRapport(LienAssociesSNCEnMasseImporterResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportImportLiensAssociesEtSNC";
+		final String description = "Rapport d'exécution du job d'import des rapports entre associés et les SNC.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(LienAssociesSNCEnMasseImporterRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfLienAssociesSNCEnMasseImporterRapport document = new PdfLienAssociesSNCEnMasseImporterRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

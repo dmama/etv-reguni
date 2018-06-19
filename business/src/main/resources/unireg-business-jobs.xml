@@ -365,7 +365,7 @@
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
-	
+
 	<bean id="envoiRappelsFormulairesDemandeDegrevementICIJob" parent="schedulerJob" class="ch.vd.unireg.foncier.RappelDemandesDegrevementICIJob">
 		<constructor-arg value="456"/>
 		<constructor-arg value="Envoyer les rappels des formulaires de demande de dégrèvement ICI"/>
@@ -712,7 +712,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
-	
+
 	<bean id="auditPurgeJob" parent="schedulerJob" class="ch.vd.unireg.database.AuditLogPurgeJob">
 		<constructor-arg value="709"/>
 		<constructor-arg value="Purger les vieilles entrées dans le log d'audit"/>
@@ -756,6 +756,15 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
+	<bean id="importLienAssociesSNCEnMasseJob" parent="schedulerJob" class="ch.vd.unireg.declaration.snc.liens.associes.ImportLienAssociesSNCEnMasseJob">
+		<constructor-arg value="720" />
+		<constructor-arg value="Importer un fichier CSV de liens des rapports entre tiers ( liens associées - SNC )" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="lienAssociesSNCService" ref="lienAssociesSNCService" />
+		<property name="rapportService" ref="rapportService" />
 	</bean>
 
 	<bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.unireg.cache.CacheResetJob">

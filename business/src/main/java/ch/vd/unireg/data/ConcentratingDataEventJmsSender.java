@@ -178,6 +178,9 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 		case HERITAGE:
 			relationship = Relationship.HERITAGE;
 			break;
+		case LIENS_ASSOCIES_ET_SNC:
+			relationship = Relationship.LIENS_ASSOCIES_ET_SNC;
+			break;
 		default:
 			throw new IllegalArgumentException("Type de relation inconnu = [" + type + ']');
 		}

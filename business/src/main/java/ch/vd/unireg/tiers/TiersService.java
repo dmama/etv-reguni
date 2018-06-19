@@ -380,6 +380,16 @@ public interface TiersService {
 	 */
 	String getLocalisationAsString(LocalizedDateRange localisation) throws ServiceInfrastructureException, ObjectNotFoundException;
 
+	/**
+	 * Indique si le lien entre la SNC et l'associé existe à la date indiquée
+	 *
+	 * @param snc           contribuable snc.
+	 * @param associe       contribuable assoicie
+	 * @param dateDebutLien date de début du lien entre le contribuable et l'associé
+	 * @return indique si le lien entre la SNC et l'associé existe à la date indiquée.
+	 */
+	boolean existLienEntreAssocieEtSNC(Contribuable snc, Contribuable associe, RegDate dateDebutLien);
+
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,
 		CHANGE_EN_HABITANT,

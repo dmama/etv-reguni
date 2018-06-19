@@ -23,6 +23,7 @@ import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.unireg.declaration.snc.DeterminationQuestionnairesSNCResults;
 import ch.vd.unireg.declaration.snc.EnvoiQuestionnairesSNCEnMasseResults;
 import ch.vd.unireg.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
+import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCEnMasseImporterResults;
 import ch.vd.unireg.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.unireg.declaration.source.EnvoiLRsResults;
 import ch.vd.unireg.declaration.source.EnvoiSommationLRsResults;
@@ -64,6 +65,7 @@ import ch.vd.unireg.document.IdentifierContribuableFromListeRapport;
 import ch.vd.unireg.document.IdentifierContribuableRapport;
 import ch.vd.unireg.document.ImportCodesSegmentRapport;
 import ch.vd.unireg.document.InitialisationIFoncRapport;
+import ch.vd.unireg.document.LienAssociesSNCEnMasseImporterRapport;
 import ch.vd.unireg.document.ListeAssujettisRapport;
 import ch.vd.unireg.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.unireg.document.ListeDIsNonEmisesRapport;
@@ -766,4 +768,7 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	RattrapageModelesCommunautesRFProcessorRapport generateRapport(RattrapageModelesCommunautesRFProcessorResults results, StatusManager status);
+
+	LienAssociesSNCEnMasseImporterRapport generateRapport(LienAssociesSNCEnMasseImporterResults results, StatusManager s);
+
 }

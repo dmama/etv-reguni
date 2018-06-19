@@ -13,17 +13,15 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
-import ch.vd.unireg.foncier.migration.mandataire.DonneesMandat;
-import ch.vd.unireg.foncier.migration.mandataire.MigrationMandatImporterResults;
-
-import static ch.vd.unireg.rapport.PdfLienAssociesSNCEnMasseImporterRapport.getTemporaryFile;
+import ch.vd.unireg.declaration.snc.liens.associes.DonneesLienAssocieEtSNC;
+import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCEnMasseImporterResults;
 
 /**
- * Générateur du rapport PDF d'exécution du batch de migration des mandataires spéciaux
+ * Générateur du rapport PDF d'exécution du batch  des liens entre associés et SNC importé du csv.
  */
-public class PdfMigrationMandatairesSpeciauxRapport extends PdfRapport {
+public class PdfLienAssociesSNCEnMasseImporterRapport extends PdfRapport {
 
-	public void write(final MigrationMandatImporterResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
+	public void write(final LienAssociesSNCEnMasseImporterResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 		if (status == null) {
 			throw new IllegalArgumentException();
 		}
@@ -35,14 +33,13 @@ public class PdfMigrationMandatairesSpeciauxRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport de migration des mandataires spéciaux");
+		addTitrePrincipal("Rapport d'import des liens entre associés et SNC");
 
 		// Paramètres
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, table -> {
-				table.addLigne("Date de début des mandats :", RegDateHelper.dateToDisplayString(results.dateDebutMandats));
-				table.addLigne("Type de mandat spécial :", results.genreImpot.getLibelle());
+				table.addLigne("Date de traitements :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			});
 		}
 
@@ -55,8 +52,8 @@ public class PdfMigrationMandatairesSpeciauxRapport extends PdfRapport {
 			}
 
 			addTableSimple(new float[]{.6f, .4f}, table -> {
-				table.addLigne("Nombre de mandats migrés :", String.valueOf(results.getMandatsCrees().size()));
-				table.addLigne("Nombre de mandats en erreur :", String.valueOf(results.getErreurs().size() + results.getLignesIgnorees().size()));
+				table.addLigne("Nombre de lien importé :", String.valueOf(results.getLiensCrees().size()));
+				table.addLigne("Nombre de lien en erreur :", String.valueOf(results.getErreurs().size() + results.getLignesIgnorees().size()));
 				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
@@ -64,10 +61,10 @@ public class PdfMigrationMandatairesSpeciauxRapport extends PdfRapport {
 
 		// Mandats migrés
 		{
-			final String filename = "mandats.csv";
-			final String titre = "Liste des mandats migrés";
+			final String filename = "liensImportes.csv";
+			final String titre = "Liste des liens importés";
 			final String listeVide = "(aucun)";
-			try (TemporaryFile contenu = genererMandatsMigres(results.getMandatsCrees(), filename, status)) {
+			try (TemporaryFile contenu = genererListeImportes(results.getLiensCrees(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
@@ -87,29 +84,46 @@ public class PdfMigrationMandatairesSpeciauxRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private TemporaryFile genererListeErreurs(List<MigrationMandatImporterResults.Erreur> erreurs,
+	private TemporaryFile genererListeErreurs(List<LienAssociesSNCEnMasseImporterResults.Erreur> erreurs,
 	                                          List<String> lignesIgnorees,
 	                                          String filename, StatusManager status) {
 		final String msgLigneIgnoree = "Ligne ignorée";
 		final Stream<Pair<String, String>> strLignesIgnorees = lignesIgnorees.stream()
 				.map(ligne -> Pair.of(ligne, msgLigneIgnoree));
 		final Stream<Pair<String, String>> strErreurs = erreurs.stream()
-				.map(erreur -> Pair.of(erreur.mandat.getLigneSource(), erreur.erreur));
+				.map(erreur -> Pair.of(erreur.data.getLigneSource(), erreur.erreur));
 		final List<Pair<String, String>> toDump = Stream.concat(strLignesIgnorees, strErreurs).collect(Collectors.toList());
 
 		return getTemporaryFile(filename, status, toDump);
 	}
 
-	private TemporaryFile genererMandatsMigres(List<DonneesMandat> liste, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<DonneesMandat>() {
+	public static TemporaryFile getTemporaryFile(String filename, StatusManager status, List<Pair<String, String>> toDump) {
+		return CsvHelper.asCsvTemporaryFile(toDump, filename, status, new CsvHelper.FileFiller<Pair<String, String>>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("INPUT_LINE");
+				b.append("INPUT_LINE").append(COMMA);
+				b.append("ERREUR");
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, DonneesMandat elt) {
-				b.append(CsvHelper.DOUBLE_QUOTE).append(elt.getLigneSource()).append(CsvHelper.DOUBLE_QUOTE);
+			public boolean fillLine(CsvHelper.LineFiller b, Pair<String, String> erreur) {
+				b.append(CsvHelper.DOUBLE_QUOTE).append(erreur.getLeft()).append(CsvHelper.DOUBLE_QUOTE).append(COMMA);
+				b.append(escapeChars(erreur.getRight()));
+				return true;
+			}
+		});
+	}
+
+	private TemporaryFile genererListeImportes(List<DonneesLienAssocieEtSNC> liste, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<DonneesLienAssocieEtSNC>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				DonneesLienAssocieEtSNC.HEADERS.forEach(s -> b.append(s).append(CsvHelper.COMMA));
+			}
+
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, DonneesLienAssocieEtSNC elt) {
+				b.append(elt.getLigneSource());
 				return true;
 			}
 		});
