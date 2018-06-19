@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<!-- POM for Business -->
 
@@ -13,7 +13,7 @@
 		<groupId>ch.vd.unireg</groupId>
 		<artifactId>unireg</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>18R3.B.0-SNAPSHOT</version>
+		<version>FISCPROJ-48-SNAPSHOT</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
