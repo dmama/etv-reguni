@@ -265,7 +265,9 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 			throw new IllegalArgumentException("L'entreprise n°" + idAbsorbee + " n'existe pas.");
 		}
 
-		final List<AllegementFoncier> allegementsFonciers = new ArrayList<>(absorbee.getAllegementsFonciers());
+		final List<AllegementFoncier> allegementsFonciers = absorbee.getAllegementsFonciers().stream()
+				.filter(AnnulableHelper::nonAnnule) // [IMM-1239] on ignore les allègements annulés
+				.collect(Collectors.toList());
 
 		final List<AllegementFoncier> extraction = DateRangeHelper.extract(allegementsFonciers, fusion.getDateDebut(), fusion.getDateFin(), (allegement, debut, fin) -> {
 			final AllegementFoncierVirtuel v = new AllegementFoncierVirtuel();
