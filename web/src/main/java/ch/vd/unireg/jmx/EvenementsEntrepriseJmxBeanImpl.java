@@ -5,11 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.unireg.evenement.organisation.EvenementEntrepriseCappingSwitch;
-import ch.vd.unireg.evenement.organisation.EvenementEntrepriseProcessingMode;
-import ch.vd.unireg.evenement.organisation.EvenementEntrepriseReceptionMonitor;
-import ch.vd.unireg.evenement.organisation.engine.processor.EvenementEntrepriseProcessor;
-import ch.vd.unireg.evenement.organisation.engine.translator.NiveauCappingEtat;
+import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseCappingSwitch;
+import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseProcessingMode;
+import ch.vd.unireg.evenement.entreprise.EvenementEntrepriseReceptionMonitor;
+import ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessor;
+import ch.vd.unireg.evenement.entreprise.engine.translator.NiveauCappingEtat;
 
 @ManagedResource
 public class EvenementsEntrepriseJmxBeanImpl implements EvenementsEntrepriseJmxBean {

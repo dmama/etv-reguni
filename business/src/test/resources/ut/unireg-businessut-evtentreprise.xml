@@ -5,7 +5,7 @@
 
 	<!-- Evénements entreprise -->
 
-	<bean id="evenementEntrepriseTranslator" class="ch.vd.unireg.evenement.organisation.engine.translator.EvenementEntrepriseTranslatorImpl">
+	<bean id="evenementEntrepriseTranslator" class="ch.vd.unireg.evenement.entreprise.engine.translator.EvenementEntrepriseTranslatorImpl">
 		<property name="useOrganisationsOfNotice" value="false" />
 		<property name="serviceEntreprise" ref="serviceEntreprise" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />

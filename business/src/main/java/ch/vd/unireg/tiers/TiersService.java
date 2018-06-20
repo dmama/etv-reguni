@@ -23,7 +23,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.linkedentity.LinkedEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
 import ch.vd.unireg.declaration.Periodicite;
-import ch.vd.unireg.evenement.organisation.EvenementEntreprise;
+import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;

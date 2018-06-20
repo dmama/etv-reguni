@@ -13,7 +13,7 @@
 		<property name="description" value="Réception des évènements en masse provenant du registre des entreprises"/>
 	</bean>
 
-	<bean id="evtEntrepriseEsbHandler" class="ch.vd.unireg.evenement.organisation.EvenementEntrepriseEsbHandler">
+	<bean id="evtEntrepriseEsbHandler" class="ch.vd.unireg.evenement.entreprise.EvenementEntrepriseEsbHandler">
 		<property name="processingMode" value="BULK"/>
 		<property name="receptionHandler" ref="evtEntrepriseReceptionHandler"/>
 		<property name="ignoredEventTypes">
@@ -23,25 +23,25 @@
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
 	</bean>
 
-	<bean id="evtEntrepriseNotificationQueue" class="ch.vd.unireg.evenement.organisation.engine.EvenementEntrepriseNotificationQueueImpl">
+	<bean id="evtEntrepriseNotificationQueue" class="ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseNotificationQueueImpl">
 		<constructor-arg name="delayInSeconds" value="${extprop.evtOrganisation.acknowledgementDelay}"/>
 		<property name="evtEntrepriseService" ref="evtEntrepriseService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-	<bean id="evtEntrepriseReceptionHandler" class="ch.vd.unireg.evenement.organisation.EvenementEntrepriseReceptionHandlerImpl">
+	<bean id="evtEntrepriseReceptionHandler" class="ch.vd.unireg.evenement.entreprise.EvenementEntrepriseReceptionHandlerImpl">
 		<property name="evtEntrepriseDAO" ref="evenementEntrepriseDAO"/>
 		<property name="notificationQueue" ref="evtEntrepriseNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="evtEntrepriseProcessor" class="ch.vd.unireg.evenement.organisation.engine.processor.EvenementEntrepriseProcessorFacade">
+	<bean id="evtEntrepriseProcessor" class="ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessorFacade">
 		<property name="notificationQueue" ref="evtEntrepriseNotificationQueue"/>
 		<property name="internalProcessor" ref="evtEntrepriseProcessorInternal"/>
 	</bean>
 
-	<bean id="evtEntrepriseProcessorInternal" class="ch.vd.unireg.evenement.organisation.engine.processor.EvenementEntrepriseProcessorInternal">
+	<bean id="evtEntrepriseProcessorInternal" class="ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntrepriseProcessorInternal">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtEntrepriseDAO" ref="evenementEntrepriseDAO"/>
 		<property name="translator" ref="evenementEntrepriseTranslator"/>
@@ -50,7 +50,7 @@
 		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
 
-	<bean id="evtEntrepriseProcessorRetry" class="ch.vd.unireg.evenement.organisation.engine.EvenementEntrepriseRetryProcessorImpl">
+	<bean id="evtEntrepriseProcessorRetry" class="ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseRetryProcessorImpl">
 		<property name="notificationQueue" ref="evtEntrepriseNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtEntrepriseDAO" ref="evenementEntrepriseDAO"/>

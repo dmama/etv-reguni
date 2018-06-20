@@ -236,7 +236,7 @@
 	</bean>
 
     <!-- Job qui re-traite les événements entreprise -->
-    <bean id="evenementEntrepriseHandlerJob" parent="schedulerJob" class="ch.vd.unireg.evenement.organisation.engine.EvenementEntrepriseHandlerJob">
+    <bean id="evenementEntrepriseHandlerJob" parent="schedulerJob" class="ch.vd.unireg.evenement.entreprise.engine.EvenementEntrepriseHandlerJob">
         <constructor-arg value="205"/>
         <constructor-arg value="Traitement (ou retraitement) des événements entreprise"/>
         <property name="processorEntreprise" ref="evtEntrepriseProcessorRetry"/>

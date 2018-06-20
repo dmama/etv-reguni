@@ -5,7 +5,7 @@
 
 	<!-- Evénements entreprise -->
 
-	<bean id="evenementEntrepriseTranslator" class="ch.vd.unireg.evenement.organisation.engine.translator.EvenementEntrepriseTranslatorImpl">
+	<bean id="evenementEntrepriseTranslator" class="ch.vd.unireg.evenement.entreprise.engine.translator.EvenementEntrepriseTranslatorImpl">
 		<property name="useOrganisationsOfNotice" value="${extprop.evtOrganisation.useEventWS}" />
 		<property name="cappingLevelProvider" ref="evenementEntrepriseTraitementCapping"/>
 		<property name="serviceEntreprise" ref="serviceEntreprise" />
@@ -25,7 +25,7 @@
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
 
-	<bean id="evenementEntrepriseTraitementCapping" class="ch.vd.unireg.evenement.organisation.EvenementEntrepriseCappingSwitch">
+	<bean id="evenementEntrepriseTraitementCapping" class="ch.vd.unireg.evenement.entreprise.EvenementEntrepriseCappingSwitch">
 		<constructor-arg value="${extprop.evtOrganisation.capping}"/>
 	</bean>
 

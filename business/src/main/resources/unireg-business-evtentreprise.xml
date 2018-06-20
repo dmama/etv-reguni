@@ -5,7 +5,7 @@
 
 	<!-- Evénements entreprise -->
 
-	<bean id="evtEntrepriseService" class="ch.vd.unireg.evenement.organisation.EvenementEntrepriseServiceImpl">
+	<bean id="evtEntrepriseService" class="ch.vd.unireg.evenement.entreprise.EvenementEntrepriseServiceImpl">
 		<property name="evenementEntrepriseDAO" ref="evenementEntrepriseDAO"/>
 	</bean>
 
