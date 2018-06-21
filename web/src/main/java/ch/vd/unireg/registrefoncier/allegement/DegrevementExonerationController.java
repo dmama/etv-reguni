@@ -96,6 +96,7 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.view.ChoixImmeubleView;
 import ch.vd.unireg.tiers.view.ImmeubleView;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.utils.DecimalNumberEditor;
 import ch.vd.unireg.utils.IntegerEditor;
 import ch.vd.unireg.utils.RegDateEditor;
@@ -1254,8 +1255,23 @@ public class DegrevementExonerationController {
 		model.addAttribute("idContribuable", demande.getEntreprise().getNumero());
 		model.addAttribute("immeuble", new ResumeImmeubleView(demande.getImmeuble(), null, registreFoncierService));
 		model.addAttribute("editDemandeDegrevementCommand", view);
-		model.addAttribute("demandeRetournee", demande.getDateRetour() != null);
+		model.addAttribute("isAjoutDelaiAutorise", isAjoutDelaiAutorise(demande));
+
 		return "tiers/edition/pm/degrevement-exoneration/edit-demande-degrevement";
+	}
+
+	/**
+	 * @return true si il est possible d'ajouter un délai sur le document
+	 */
+	private static boolean isAjoutDelaiAutorise(@NotNull DemandeDegrevementICI doc) {
+		if (!doc.isAvecSuivi()) {
+			// pas de suivi, pas de délai
+			return false;
+		}
+		final boolean documentRetourne = (doc.getDateRetour() != null);
+		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
+		final boolean rappelEnvoye = (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
+		return !documentRetourne && !rappelEnvoye;
 	}
 
 	private String showEditDemandeDegrevement(Model model, EditDemandeDegrevementView view) {
@@ -1292,8 +1308,9 @@ public class DegrevementExonerationController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		if (doc.getDateRetour() != null) {
-			Flash.warning("Impossible d'ajouter un délai : la demande de dégrèvement est déjà retournée.");
+		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai.
+		if(!isAjoutDelaiAutorise(doc)) {
+			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
 			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
 		}
 
@@ -1337,8 +1354,9 @@ public class DegrevementExonerationController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		if (doc.getDateRetour() != null) {
-			Flash.error("Impossible d'ajouter un délai : la demande de dégrèvement est déjà retournée.");
+		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai.
+		if(!isAjoutDelaiAutorise(doc)) {
+			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
 			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
 		}
 

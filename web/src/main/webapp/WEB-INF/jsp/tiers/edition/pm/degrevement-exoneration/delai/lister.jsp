@@ -6,7 +6,7 @@
 
 <fieldset>
 	<legend><span><fmt:message key="label.delais" /></span></legend>
-	<c:if test="${!demandeRetournee}">
+	<c:if test="${isAjoutDelaiAutorise}">
 	<table border="0">
 		<tr>
 			<td>
