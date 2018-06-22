@@ -94,7 +94,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_DEGREVEMENTS_ICI = "DEGREVEMENTS_ICI";
 	static final String MODIF_EXONERATIONS_IFONC = "EXONERATIONS_IFONC";
 	static final String MODIF_ETIQUETTES = "ETIQUETTES";
-	
+
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
 	private SecurityProviderInterface securityProvider;
@@ -145,7 +145,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		return true;
 	}
 
-	private static  <T extends ForFiscalPrincipal> T getForFiscalCourant(@NotNull Tiers tiers, Class<T> clazz) {
+	private static <T extends ForFiscalPrincipal> T getForFiscalCourant(@NotNull Tiers tiers, Class<T> clazz) {
 		return Stream.of(tiers)
 				.map(t -> t.getForsFiscauxValidAt(null))
 				.flatMap(List::stream)
@@ -516,7 +516,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 					map.put(MODIF_ADRESSE, Boolean.TRUE);
 					map.put(ADR_P, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {
 					map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
 				}
 			}
@@ -574,11 +574,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 					map.put(FISCAL_SIT_FAMILLLE, Boolean.TRUE);
 				}
 			}
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP, Role.DI_DESANNUL_PP, Role.DI_LIBERER_PP)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.DI_EMIS_PP, Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP, Role.DI_DESANNUL_PP, Role.DI_LIBERER_PP)) {
 				map.put(MODIF_DI, Boolean.TRUE);
 			}
 
-			if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {
 				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
 			}
 
@@ -676,6 +676,12 @@ public class AutorisationManagerImpl implements AutorisationManager {
 					map.put(ADR_P, Boolean.TRUE);
 				}
 			}
+
+			if (SecurityHelper.isGranted(securityProvider, Role.GEST_SNC, visa, oid)) {
+				map.put(MODIF_RAPPORT, Boolean.TRUE);
+				map.put(MODIF_DOSSIER, Boolean.TRUE);
+				map.put(DOSSIER_NO_TRAVAIL, Boolean.TRUE);
+			}
 			if (SecurityHelper.isGranted(securityProvider, Role.ETAT_PM, visa, oid)) {
 				map.put(MODIF_ETATS_PM, Boolean.TRUE);
 			}
@@ -755,16 +761,17 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 
 		// UNIREG-2120 Possibilite de créer un debiteur à partir d'une collectivité administrative
-	    // UNIREG-3362 Création de débiteur à partir d'une PM
+		// UNIREG-3362 Création de débiteur à partir d'une PM
 		else if (tiers instanceof CollectiviteAdministrative) {
 			map.put(MODIF_COMPLEMENT, Boolean.FALSE);
 			map.put(MODIF_MOUVEMENT, Boolean.FALSE);
 		}
-		
+
 		return map;
 	}
 
-	/**Vérifie que le contribuable a une décision en cours ou pas et le cas echéant vérifier les droits en modification
+	/**
+	 * Vérifie que le contribuable a une décision en cours ou pas et le cas echéant vérifier les droits en modification
 	 *
 	 * @param contribuable
 	 * @param visa

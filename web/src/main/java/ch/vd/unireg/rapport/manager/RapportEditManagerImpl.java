@@ -17,6 +17,8 @@ import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.common.pagination.WebParamPagination;
+import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesEtSNCException;
+import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCService;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.general.view.TiersGeneralView;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -31,6 +33,7 @@ import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.LienAssociesEtSNC;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.RapportPrestationImposable;
@@ -53,6 +56,7 @@ import ch.vd.unireg.utils.WebContextUtils;
 public class RapportEditManagerImpl extends TiersManager implements RapportEditManager {
 
 	private EvenementFiscalService evenementFiscalService;
+	private  LienAssociesSNCService lienAssociesSNCService;
 
 	/**
 	 * Alimente la vue RapportView
@@ -219,8 +223,8 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 
 		final TypeRapportEntreTiers type = rapportView.getTypeRapportEntreTiers().toCore();
-		final Tiers sujet; // sujet : pupille, curatelle, personne sous conseil légal ou substitué pour l'assujettissement
-		final Tiers objet; // objet : tuteur, curateur, conseil légal ou substituant pour l'assujettissement
+		 Tiers sujet; // sujet : pupille, curatelle, personne sous conseil légal ou substitué pour l'assujettissement
+		 Tiers objet; // objet : tuteur, curateur, conseil légal ou substituant pour l'assujettissement
 
 		// récupère les données
 		final SensRapportEntreTiers sens = rapportView.getSensRapportEntreTiers();
@@ -242,6 +246,25 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		// instancie le bon rapport
 		RapportEntreTiers rapport = type.newInstance();
 		rapport.setDateDebut(rapportView.getDateDebut());
+
+		if (rapport instanceof LienAssociesEtSNC) {
+
+			if (sens == SensRapportEntreTiers.SUJET) {
+				sujet = tiersService.getTiers(rapportView.getTiers().getNumero());
+				objet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
+			}
+			else {
+				objet = tiersService.getTiers(rapportView.getTiers().getNumero());
+				sujet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
+			}
+
+			try {
+				lienAssociesSNCService.isAllowed((Contribuable) sujet, (Contribuable) objet, rapportView.getDateDebut());
+			}
+			catch (LienAssociesEtSNCException e) {
+				throw new IllegalArgumentException(e.getMessage());
+			}
+		}
 
 		// [UNIREG-755] tenir compte de l'extension de l'exécution à la création du rapport
 		if (rapport instanceof RepresentationConventionnelle) {
@@ -528,5 +551,9 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	public void setLienAssociesSNCService(LienAssociesSNCService lienAssociesSNCService) {
+		this.lienAssociesSNCService = lienAssociesSNCService;
 	}
 }

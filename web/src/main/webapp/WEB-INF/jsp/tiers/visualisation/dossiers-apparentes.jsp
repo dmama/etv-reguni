@@ -7,7 +7,7 @@
     <table border="0">
         <tr><td>
             <c:if test="${empty param['message'] && empty param['retour']}">
-                <unireg:raccourciModifier link="../rapport/list.do?id=${command.tiers.numero}" tooltip="Modifier les débiteurs IS" display="label.bouton.modifier"/>
+                <unireg:raccourciModifier link="../rapport/list.do?id=${command.tiers.numero}" tooltip="Modifier les dossiers apparentés" display="label.bouton.modifier"/>
             </c:if>
         </td></tr>
     </table>

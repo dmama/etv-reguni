@@ -7123,10 +7123,10 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public boolean existLienEntreAssocieEtSNC(Contribuable snc, Contribuable associe, RegDate dateDebutLien) {
-		final Set<RapportEntreTiers> rapportsObjet = snc.getRapportsObjet();
+	public boolean existRapportEntreTiers(@NotNull TypeRapportEntreTiers typeRapport, Contribuable tiersObjet, Contribuable tiersSujet, RegDate dateDebutLien) {
+		final Set<RapportEntreTiers> rapportsObjet = tiersObjet.getRapportsObjet();
 		if (rapportsObjet != null) {
-			return rapportsObjet.stream().anyMatch(objet -> TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC == objet.getType() && objet.getSujetId().equals(associe.getId()) && objet.getDateDebut().equals(dateDebutLien));
+			return rapportsObjet.stream().anyMatch(obj -> typeRapport == obj.getType() && obj.getSujetId().equals(tiersSujet.getId()) && obj.isValidAt(dateDebutLien));
 		}
 		return Boolean.FALSE;
 	}

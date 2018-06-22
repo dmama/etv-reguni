@@ -5,9 +5,16 @@ import java.util.List;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.ForFiscalPrincipal;
+import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 
@@ -18,28 +25,35 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 
 	@Override
 	public LienAssociesSNCEnMasseImporterResults importLienAssociesSNCEnMasse(List<DonneesLienAssocieEtSNC> rapportEntreTiersSnc, final RegDate dateTraitement, StatusManager statusManager) {
-		final ImportLienAssociesSNCEnMasseProcessor processor = new ImportLienAssociesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService);
+		final ImportLienAssociesSNCEnMasseProcessor processor = new ImportLienAssociesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService,this);
 		return processor.run(rapportEntreTiersSnc, dateTraitement, statusManager);
 	}
 
-	public PlatformTransactionManager getTransactionManager() {
-		return transactionManager;
+	@Override
+	public boolean isAllowed(Contribuable sujet, Contribuable objet, RegDate dateDebut) throws LienAssociesEtSNCException {
+		if (!(sujet instanceof PersonnePhysique) && !(sujet instanceof Entreprise)) {
+			throw new LienAssociesEtSNCException(String.format("Le tiers associé  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero()), sujet.getClass().getSimpleName()));
+		}
+		if (!(objet instanceof Entreprise)) {
+			throw new LienAssociesEtSNCException(String.format("Le tiers SNC  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero()), objet.getClass().getSimpleName()));
+		}
+		final ForFiscalPrincipal dernierForSnc = objet.getDernierForFiscalPrincipal();
+		if (dernierForSnc.getGenreImpot() != GenreImpot.REVENU_FORTUNE) {
+			throw new LienAssociesEtSNCException(String.format("Le tiers objet  %s n'est pas une SNC.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+		}
+		if (tiersService.existRapportEntreTiers(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, objet, sujet, dateDebut)) {
+			throw new LienAssociesEtSNCException("Deux liens entre les même contribuables ne peuvent se chevaucher dans le temps");
+		}
+		return Boolean.TRUE;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	public HibernateTemplate getHibernateTemplate() {
-		return hibernateTemplate;
-	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	public TiersService getTiersService() {
-		return tiersService;
 	}
 
 	public void setTiersService(TiersService tiersService) {

@@ -265,7 +265,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public boolean existLienEntreAssocieEtSNC(Contribuable snc, Contribuable associe, RegDate dateDebutLien) {
+	public boolean existRapportEntreTiers(TypeRapportEntreTiers typeRapport, Contribuable tiersObjet, Contribuable tiersSujet, RegDate dateDebutLien) {
 		return false;
 	}
 

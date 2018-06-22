@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -18,13 +16,8 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.LienAssociesEtSNC;
-import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.type.GenreImpot;
-
-import static ch.vd.unireg.declaration.snc.liens.associes.DonneesLienAssocieEtSNC.DATE_DEBUT_LIEN;
 
 /**
  * Processeur pour l'implémentation du job d'import en masse des liens entre tiers et la SNC.
@@ -38,11 +31,14 @@ public class ImportLienAssociesSNCEnMasseProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
+	private final LienAssociesSNCService lienAssociesSNCService;
 
-	public ImportLienAssociesSNCEnMasseProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService) {
+	public ImportLienAssociesSNCEnMasseProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService,
+	                                             LienAssociesSNCServiceImpl lienAssociesSNCService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
+		this.lienAssociesSNCService = lienAssociesSNCService;
 	}
 
 	public LienAssociesSNCEnMasseImporterResults run(final List<DonneesLienAssocieEtSNC> data, final RegDate dateTraitement, StatusManager s) {
@@ -73,28 +69,11 @@ public class ImportLienAssociesSNCEnMasseProcessor {
 						rapport.addContribuableInconnu(donneeBatch, "Tiers associé inconnu d'Unireg");
 						continue;
 					}
-
-					if (!(associe instanceof PersonnePhysique) && !(associe instanceof Entreprise)) {
-						rapport.addContribuableNonAcceptable(associe, donneeBatch);
-						continue;
+					try {
+						lienAssociesSNCService.isAllowed(associe, snc, donneeBatch.getDateDebut());
 					}
-
-					//contrôle date de début
-					final ForFiscalPrincipal dernierForSnc = snc.getDernierForFiscalPrincipal();
-					final RegDate dateDebutDernierFor = dernierForSnc.getDateDebut();
-					final RegDate regDateDebut = donneeBatch.getDateDebut();
-					if (RegDateHelper.isAfter(dateDebutDernierFor, regDateDebut, NullDateBehavior.LATEST)) {
-						LOGGER.info("La date du dernier For fiscale {} est superieur au " + DATE_DEBUT_LIEN, RegDateHelper.StringFormat.DISPLAY.toString(dateDebutDernierFor));
-						donneeBatch.setDateDebut(dateDebutDernierFor);
-					}
-
-					if (dernierForSnc.getGenreImpot() != GenreImpot.REVENU_FORTUNE) {
-						rapport.addContribuableNonAcceptable(snc, donneeBatch);
-						continue;
-					}
-
-					if (tiersService.existLienEntreAssocieEtSNC(snc, associe, donneeBatch.getDateDebut())) {
-						rapport.addDoublonNonAcceptable(donneeBatch);
+					catch (LienAssociesEtSNCException e) {
+						rapport.addContribuableNonAcceptable(snc, donneeBatch, e.getMessage());
 						continue;
 					}
 

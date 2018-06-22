@@ -16,6 +16,7 @@ public class LienAssociesSNCEnMasseImporterResults extends AbstractJobResults<Do
 	private final List<Erreur> erreurs = new LinkedList<>();
 	private final List<String> lignesIgnorees = new LinkedList<>();
 	private final List<DonneesLienAssocieEtSNC> liensCrees = new LinkedList<>();
+	private boolean interrupted;
 
 
 	public LienAssociesSNCEnMasseImporterResults(RegDate dateTraitement) {
@@ -39,12 +40,8 @@ public class LienAssociesSNCEnMasseImporterResults extends AbstractJobResults<Do
 		erreurs.add(new LienAssociesSNCEnMasseImporterResults.Erreur(data, message));
 	}
 
-	public void addContribuableNonAcceptable(Contribuable ctb, DonneesLienAssocieEtSNC data) {
-		erreurs.add(new Erreur(data, "Le contribuable visé n'est pas d'un type acceptable ici (" + ctb.getClass().getSimpleName() + ")"));
-	}
-
-	public void addDoublonNonAcceptable(DonneesLienAssocieEtSNC data) {
-		erreurs.add(new Erreur(data, "Doublon, (deux fois même lien avec même dates)"));
+	public void addContribuableNonAcceptable(Contribuable ctb, DonneesLienAssocieEtSNC data, String message) {
+		erreurs.add(new Erreur(data, message));
 	}
 
 	public void addLienCree(DonneesLienAssocieEtSNC data) {
@@ -72,6 +69,7 @@ public class LienAssociesSNCEnMasseImporterResults extends AbstractJobResults<Do
 	}
 
 	public void setInterrupted(boolean interrupted) {
+		this.interrupted = interrupted;
 	}
 
 
