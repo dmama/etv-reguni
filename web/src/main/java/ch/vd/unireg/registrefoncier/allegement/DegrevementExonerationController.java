@@ -59,6 +59,7 @@ import ch.vd.unireg.common.RetourEditiqueControllerHelper;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.documentfiscal.AjouterDelaiDocumentFiscalView;
 import ch.vd.unireg.documentfiscal.AjouterQuittanceDocumentFiscalView;
+import ch.vd.unireg.documentfiscal.AutreDocumentFiscalController;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalManager;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalService;
@@ -96,7 +97,6 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.view.ChoixImmeubleView;
 import ch.vd.unireg.tiers.view.ImmeubleView;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
-import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.utils.DecimalNumberEditor;
 import ch.vd.unireg.utils.IntegerEditor;
 import ch.vd.unireg.utils.RegDateEditor;
@@ -127,9 +127,9 @@ public class DegrevementExonerationController {
 	private AutreDocumentFiscalManager autreDocumentFiscalManager;
 
 	private static final Comparator<ImmeubleView> IMMEUBLE_VIEW_COMPARATOR = Comparator.comparing(ImmeubleView::getNoParcelle)
-			.thenComparing(Comparator.comparing(ImmeubleView::getIndex1, Comparator.nullsFirst(Comparator.naturalOrder())))
-			.thenComparing(Comparator.comparing(ImmeubleView::getIndex2, Comparator.nullsFirst(Comparator.naturalOrder())))
-			.thenComparing(Comparator.comparing(ImmeubleView::getIndex3, Comparator.nullsFirst(Comparator.naturalOrder())));
+			.thenComparing(ImmeubleView::getIndex1, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(ImmeubleView::getIndex2, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(ImmeubleView::getIndex3, Comparator.nullsFirst(Comparator.naturalOrder()));
 
 	private static final Equalator<Integer> INTEGER_EQUALATOR = Objects::equals;
 	private static final Equalator<Long> LONG_EQUALATOR = Objects::equals;
@@ -1255,28 +1255,9 @@ public class DegrevementExonerationController {
 		model.addAttribute("idContribuable", demande.getEntreprise().getNumero());
 		model.addAttribute("immeuble", new ResumeImmeubleView(demande.getImmeuble(), null, registreFoncierService));
 		model.addAttribute("editDemandeDegrevementCommand", view);
-		model.addAttribute("isAjoutDelaiAutorise", isAjoutDelaiAutorise(demande));
+		model.addAttribute("isAjoutDelaiAutorise", AutreDocumentFiscalController.isAjoutDelaiAutorise(demande));
 
 		return "tiers/edition/pm/degrevement-exoneration/edit-demande-degrevement";
-	}
-
-	/**
-	 * @return true si il est possible d'ajouter un délai sur le document
-	 */
-	private static boolean isAjoutDelaiAutorise(@NotNull DemandeDegrevementICI doc) {
-		if (!doc.isAvecSuivi()) {
-			// pas de suivi, pas de délai
-			return false;
-		}
-		final boolean documentRetourne = (doc.getDateRetour() != null);
-		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
-		final boolean rappelEnvoye = (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
-		return !documentRetourne && !rappelEnvoye;
-	}
-
-	private String showEditDemandeDegrevement(Model model, EditDemandeDegrevementView view) {
-		final DemandeDegrevementICI demande = getDemandeDegrevement(view.getIdDemandeDegrevement());
-		return showEditDemandeDegrevement(model, demande, view);
 	}
 
 	@InitBinder(value = "ajouterDelai")
@@ -1309,7 +1290,7 @@ public class DegrevementExonerationController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai.
-		if(!isAjoutDelaiAutorise(doc)) {
+		if (!AutreDocumentFiscalController.isAjoutDelaiAutorise(doc)) {
 			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
 			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
 		}
@@ -1355,7 +1336,7 @@ public class DegrevementExonerationController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai.
-		if(!isAjoutDelaiAutorise(doc)) {
+		if (!AutreDocumentFiscalController.isAjoutDelaiAutorise(doc)) {
 			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
 			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
 		}
@@ -1421,7 +1402,7 @@ public class DegrevementExonerationController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/etat/ajouter-quittance.do", method = RequestMethod.POST)
-	public String ajouterQuittance(@Valid @ModelAttribute("ajouterQuittance") final AjouterQuittanceDocumentFiscalView view, BindingResult result, Model model) throws AccessDeniedException {
+	public String ajouterQuittance(@Valid @ModelAttribute("ajouterQuittance") final AjouterQuittanceDocumentFiscalView view, BindingResult result) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des demandes de dégrèvement ICI.");
