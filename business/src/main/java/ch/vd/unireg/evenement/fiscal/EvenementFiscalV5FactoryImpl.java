@@ -122,7 +122,7 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 	/**
 	 * Exception lancée par les factories qui indique que l'événement fiscal n'est pas supporté pour le canal v5
 	 */
-	private static class NotSupportedInHereException extends Exception {
+	protected static class NotSupportedInHereException extends Exception {
 	}
 
 	private static abstract class OutputDataFactory<I extends EvenementFiscal, O extends FiscalEvent> {

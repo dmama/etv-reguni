@@ -54,7 +54,7 @@ public abstract class EvenementFiscalV4Factory {
 	/**
 	 * Exception lancée par les factories qui indique que l'événement fiscal n'est pas supporté pour le canal v4
 	 */
-	private static class NotSupportedInHereException extends Exception {
+	protected static class NotSupportedInHereException extends Exception {
 	}
 
 	private interface OutputDataFactory<I extends EvenementFiscal, O extends ch.vd.unireg.xml.event.fiscal.v4.EvenementFiscal> {

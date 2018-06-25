@@ -1,11 +1,16 @@
 package ch.vd.unireg.evenement.fiscal;
 
+import java.util.EnumSet;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.event.fiscal.v3.TypeEvenementFiscalDeclarationRappelable;
 import ch.vd.unireg.xml.event.fiscal.v3.TypeEvenementFiscalDeclarationSommable;
 import ch.vd.unireg.xml.event.fiscal.v3.TypeInformationComplementaire;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class EvenementFiscalV3FactoryTest {
 
@@ -29,10 +34,24 @@ public class EvenementFiscalV3FactoryTest {
 
 	@Test
 	public void testTypeActionEvenementDeclarationRappelable() throws Exception {
+
+		final EnumSet<EvenementFiscalDeclarationRappelable.TypeAction> ignored = EnumSet.of(EvenementFiscalDeclarationRappelable.TypeAction.ECHEANCE);
+
 		// on doit vérifier que types d'événement autour des déclarations sont acceptés par l'XSD des événements fiscaux v3
 		for (EvenementFiscalDeclarationRappelable.TypeAction type : EvenementFiscalDeclarationRappelable.TypeAction.values()) {
-			final TypeEvenementFiscalDeclarationRappelable mapped = EvenementFiscalV3Factory.mapType(type);
-			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux v3", mapped);
+			if (ignored.contains(type)) {
+				try {
+					EvenementFiscalV3Factory.mapType(type);
+					fail();
+				}
+				catch (EvenementFiscalV3Factory.NotSupportedInHereException e) {
+					assertNull(e.getMessage());
+				}
+			}
+			else {
+				final TypeEvenementFiscalDeclarationRappelable mapped = EvenementFiscalV3Factory.mapType(type);
+				Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux v3", mapped);
+			}
 		}
 	}
 
