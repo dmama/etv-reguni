@@ -218,6 +218,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiRetourQuestionnaireSNCRappele() {
+		return container.getDelaiRetourQuestionnaireSNCRappele();
+	}
+
+	@Override
 	public Integer getDelaiRetourDemandeDegrevementICI() {
 		return container.getDelaiRetourDemandeDegrevementICI();
 	}

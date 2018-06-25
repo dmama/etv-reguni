@@ -167,6 +167,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public Integer getDelaiRetourQuestionnaireSNCRappele() {
+		return Integer.parseInt(get(ParametreEnum.delaiRetourQuestionnaireSNCRappele));
+	}
+
+	@Override
 	public Integer getDelaiEnvoiSommationListeRecapitulative() {
 		return Integer.parseInt(get(ParametreEnum.delaiEnvoiSommationListeRecapitulative));
 	}

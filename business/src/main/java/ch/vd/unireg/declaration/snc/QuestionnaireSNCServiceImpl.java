@@ -18,6 +18,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationEchue;
 import ch.vd.unireg.declaration.EtatDeclarationRappelee;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
@@ -250,7 +251,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	}
 
 	@Override
-	public void quittancerQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateRetour, String source) throws DeclarationException {
+	public void quittancerQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateRetour, String source) {
 		final EtatDeclarationRetournee retour = new EtatDeclarationRetournee(dateRetour, source);
 		questionnaire.addEtat(retour);
 
@@ -293,5 +294,13 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 		delai = AddAndSaveHelper.addAndSave(qsnc, delai, questionnaireSNCDAO::save, new DelaiDocumentFiscalAddAndSaveAccessor<>());
 		return delai.getId();
+	}
+
+	@Override
+	public void echoirQuestionnaire(@NotNull QuestionnaireSNC qsnc, @NotNull RegDate dateObtention) {
+		final EtatDeclarationEchue etat = new EtatDeclarationEchue();
+		etat.setDateObtention(dateObtention);
+		qsnc.addEtat(etat);
+		evenementFiscalService.publierEvenementFiscalEcheanceQuestionnaireSNC(qsnc, dateObtention);
 	}
 }

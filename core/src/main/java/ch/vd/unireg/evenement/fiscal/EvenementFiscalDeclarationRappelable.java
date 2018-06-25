@@ -21,6 +21,7 @@ public class EvenementFiscalDeclarationRappelable extends EvenementFiscalDeclara
 		EMISSION,
 		ANNULATION,
 		RAPPEL,
+		ECHEANCE,
 		QUITTANCEMENT
 	}
 

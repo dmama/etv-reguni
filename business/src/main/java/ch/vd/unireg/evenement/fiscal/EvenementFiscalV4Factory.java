@@ -6,6 +6,21 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.tiers.AllegementFiscal;
+import ch.vd.unireg.tiers.AllegementFiscalCommune;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.unireg.tiers.DebiteurPrestationImposable;
+import ch.vd.unireg.tiers.ForFiscal;
+import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
+import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
+import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.event.fiscal.v4.AnnulationAllegementFiscal;
 import ch.vd.unireg.xml.event.fiscal.v4.AnnulationFlagEntreprise;
 import ch.vd.unireg.xml.event.fiscal.v4.AnnulationFor;
@@ -31,21 +46,6 @@ import ch.vd.unireg.xml.event.fiscal.v4.OuvertureRegimeFiscal;
 import ch.vd.unireg.xml.event.fiscal.v4.TypeEvenementFiscalDeclarationRappelable;
 import ch.vd.unireg.xml.event.fiscal.v4.TypeEvenementFiscalDeclarationSommable;
 import ch.vd.unireg.xml.event.fiscal.v4.TypeInformationComplementaire;
-import ch.vd.unireg.declaration.Declaration;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
-import ch.vd.unireg.declaration.DeclarationImpotSource;
-import ch.vd.unireg.declaration.QuestionnaireSNC;
-import ch.vd.unireg.tiers.AllegementFiscal;
-import ch.vd.unireg.tiers.AllegementFiscalCommune;
-import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.unireg.tiers.DebiteurPrestationImposable;
-import ch.vd.unireg.tiers.ForFiscal;
-import ch.vd.unireg.tiers.ForFiscalAvecMotifs;
-import ch.vd.unireg.tiers.ForFiscalPrincipalPP;
-import ch.vd.unireg.tiers.Tiers;
-import ch.vd.unireg.xml.DataHelper;
-import ch.vd.unireg.xml.EnumHelper;
 
 public abstract class EvenementFiscalV4Factory {
 
@@ -54,7 +54,7 @@ public abstract class EvenementFiscalV4Factory {
 	/**
 	 * Exception lancée par les factories qui indique que l'événement fiscal n'est pas supporté pour le canal v4
 	 */
-	private static class NotSupportedInHereException extends Exception {
+	protected static class NotSupportedInHereException extends Exception {
 	}
 
 	private interface OutputDataFactory<I extends EvenementFiscal, O extends ch.vd.unireg.xml.event.fiscal.v4.EvenementFiscal> {
@@ -182,7 +182,7 @@ public abstract class EvenementFiscalV4Factory {
 	private static class DeclarationRappelableFactory implements OutputDataFactory<EvenementFiscalDeclarationRappelable, ch.vd.unireg.xml.event.fiscal.v4.EvenementFiscalDeclarationRappelable> {
 		@NotNull
 		@Override
-		public ch.vd.unireg.xml.event.fiscal.v4.EvenementFiscalDeclarationRappelable build(@NotNull EvenementFiscalDeclarationRappelable evenementFiscal) {
+		public ch.vd.unireg.xml.event.fiscal.v4.EvenementFiscalDeclarationRappelable build(@NotNull EvenementFiscalDeclarationRappelable evenementFiscal) throws NotSupportedInHereException {
 			final Declaration declaration = evenementFiscal.getDeclaration();
 			final ch.vd.unireg.xml.event.fiscal.v4.EvenementFiscalDeclarationRappelable instance = instanciateRappelable(declaration);
 			final Tiers tiers = evenementFiscal.getTiers();
@@ -203,7 +203,7 @@ public abstract class EvenementFiscalV4Factory {
 		}
 	}
 
-	protected static TypeEvenementFiscalDeclarationRappelable mapType(EvenementFiscalDeclarationRappelable.TypeAction type) {
+	protected static TypeEvenementFiscalDeclarationRappelable mapType(EvenementFiscalDeclarationRappelable.TypeAction type) throws NotSupportedInHereException {
 		switch (type) {
 		case ANNULATION:
 			return TypeEvenementFiscalDeclarationRappelable.ANNULATION;
@@ -213,6 +213,8 @@ public abstract class EvenementFiscalV4Factory {
 			return TypeEvenementFiscalDeclarationRappelable.QUITTANCEMENT;
 		case RAPPEL:
 			return TypeEvenementFiscalDeclarationRappelable.RAPPEL;
+		case ECHEANCE:
+			throw new NotSupportedInHereException();    // événement non-supporté dans la version 4
 		default:
 			throw new IllegalArgumentException("Type d'action sur une déclaration 'rappelable' non-supporté : " + type);
 		}

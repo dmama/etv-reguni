@@ -180,6 +180,7 @@
 		<value>ch.vd.unireg.document.EnvoiQuestionnairesSNCRapport</value>
 		<value>ch.vd.unireg.document.EchoirDIsPPRapport</value>
 		<value>ch.vd.unireg.document.EchoirDIsPMRapport</value>
+		<value>ch.vd.unireg.document.EchoirQSNCRapport</value>
 		<value>ch.vd.unireg.document.MajoriteRapport</value>
 		<value>ch.vd.unireg.document.FusionDeCommunesRapport</value>
 		<value>ch.vd.unireg.document.RolePMCommunesRapport</value>

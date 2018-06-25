@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.common.AuthenticationHelper;
@@ -46,32 +44,29 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
+			template.execute(status -> {
 
-					// chargement des paramètres existants
-					final List<ParametreApp> fromDb = dao.getAll();
-					try {
-						container.load(fromDb);
-					}
-					catch (RuntimeException e) {
-						LOGGER.error("Exception au chargement des paramètres applicatifs depuis la base de données", e);
-						throw e;
-					}
-
-					// ajout des paramètres nouvellement créés et pas encore en base
-					for (ParametreEnum p : ParametreEnum.values()) {
-						if (!container.isPresent(p)) {
-							final ParametreApp pa = new ParametreApp(p.name(), p.getDefaut());
-							container.put(p, pa);
-							dao.save(pa);
-
-							LOGGER.info("Nouveau paramètre applicatif ajouté : " + p.name() + " (" + p.getDefaut() + ")");
-						}
-					}
-					return null;
+				// chargement des paramètres existants
+				final List<ParametreApp> fromDb = dao.getAll();
+				try {
+					container.load(fromDb);
 				}
+				catch (RuntimeException e) {
+					LOGGER.error("Exception au chargement des paramètres applicatifs depuis la base de données", e);
+					throw e;
+				}
+
+				// ajout des paramètres nouvellement créés et pas encore en base
+				for (ParametreEnum p : ParametreEnum.values()) {
+					if (!container.isPresent(p)) {
+						final ParametreApp pa = new ParametreApp(p.name(), p.getDefaut());
+						container.put(p, pa);
+						dao.save(pa);
+
+						LOGGER.info("Nouveau paramètre applicatif ajouté : " + p.name() + " (" + p.getDefaut() + ")");
+					}
+				}
+				return null;
 			});
 		}
 		finally {
@@ -304,6 +299,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public Integer getDelaiRetourQuestionnaireSNCEmisManuellement() {
 		return container.getDelaiRetourQuestionnaireSNCEmisManuellement();
+	}
+
+	@Override
+	public Integer getDelaiRetourQuestionnaireSNCRappele() {
+		return container.getDelaiRetourQuestionnaireSNCRappele();
 	}
 
 	@Override

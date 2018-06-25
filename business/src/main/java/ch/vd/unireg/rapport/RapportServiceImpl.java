@@ -33,6 +33,7 @@ import ch.vd.unireg.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.unireg.declaration.snc.DeterminationQuestionnairesSNCResults;
+import ch.vd.unireg.declaration.snc.EchoirQuestionnairesSNCResults;
 import ch.vd.unireg.declaration.snc.EnvoiQuestionnairesSNCEnMasseResults;
 import ch.vd.unireg.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.unireg.declaration.source.DeterminerLRsEchuesResults;
@@ -58,6 +59,7 @@ import ch.vd.unireg.document.DocumentService;
 import ch.vd.unireg.document.DumpPeriodesImpositionImpotSourceRapport;
 import ch.vd.unireg.document.EchoirDIsPMRapport;
 import ch.vd.unireg.document.EchoirDIsPPRapport;
+import ch.vd.unireg.document.EchoirQSNCRapport;
 import ch.vd.unireg.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.unireg.document.EnvoiDIsPMRapport;
 import ch.vd.unireg.document.EnvoiDIsPPRapport;
@@ -1851,6 +1853,26 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(RattrapageModelesCommunautesRFProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfRattrapageModelesCommunautesRFRapport document = new PdfRattrapageModelesCommunautesRFRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public EchoirQSNCRapport generateRapport(EchoirQuestionnairesSNCResults results, StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportEchoirQSNC" + results.dateTraitement.index();
+		final String description = "Rapport d'exécution du job de passage des questionnaires SNC à l'état échu. Date de traitement = " + RegDateHelper.dateToDisplayString(results.dateTraitement) + ".";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(EchoirQSNCRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEchoirQSNCRapport document = new PdfEchoirQSNCRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

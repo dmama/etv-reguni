@@ -59,6 +59,17 @@ public interface DelaisService {
 	RegDate getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(RegDate dateDebut);
 
 	/**
+	 * Détermine la date d'échéance du rappel pour un questionnaire SNC.
+	 * <br>
+	 * Les jours fériés sont comptés dans le délai.<br>
+	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
+	 *
+	 * @param dateRappel la date du rappel
+	 * @return la date d'échéance du rappel
+	 */
+	RegDate getDateFinDelaiEcheanceRappelQSNC(RegDate dateRappel);
+
+	/**
 	 * Determine la date d'échéance du délai technique d’impression par la CADEV des déclarations d’impôt.<br>
 	 * <br>
 	 * Les jours fériés sont comptés dans le délai.<br>
@@ -266,5 +277,4 @@ public interface DelaisService {
 	 * @return la Date représentant l'échéance du délai
 	 */
 	RegDate getFinDelai(RegDate dateDebut, int delaiEnJours, boolean joursOuvres, boolean repousseAuProchainJourOuvre);
-
 }

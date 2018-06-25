@@ -394,6 +394,22 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<bean id="echoirQuestionnairesSNCJob" parent="schedulerJob" class="ch.vd.unireg.declaration.snc.EchoirQuestionnairesSNCJob">
+		<constructor-arg value="463"/>
+		<constructor-arg value="Faire passer à l'état 'échu' les questionnaires SNC sommés dont le délai de retour est dépassé"/>
+		<property name="processor">
+			<bean class="ch.vd.unireg.declaration.snc.EchoirQuestionnairesSNCProcessor">
+				<constructor-arg ref="hibernateTemplate" />
+				<constructor-arg ref="delaisService" />
+				<constructor-arg ref="qsncService" />
+				<constructor-arg ref="transactionManager" />
+				<constructor-arg ref="tiersService" />
+				<constructor-arg ref="adresseService" />
+			</bean>
+		</property>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
 	<bean id="envoiLettresBienvenueJob" parent="schedulerJob" class="ch.vd.unireg.documentfiscal.EnvoiLettresBienvenueJob">
 		<constructor-arg value="475"/>
 		<constructor-arg value="Envoyer les lettres de bienvenue PM"/>
