@@ -379,9 +379,16 @@ public class RapportController {
 	 */
 	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
-	public String edit(@ModelAttribute("rapportEditView") RapportView view, BindingResult binding) throws AdressesResolutionException {
+	public String edit(@ModelAttribute("rapportEditView") RapportView view, BindingResult binding, Model model) throws AdresseException {
 
 		if (binding.hasErrors()) {
+			// on recharge les données en lecture seule de la vue en cours d'édition
+			final RapportView rapportView = rapportEditManager.get(view.getId(), view.getSensRapportEntreTiers());
+			view.setDateDebut(rapportView.getDateDebut());
+			view.setAllowed(rapportView.isAllowed());
+			view.setNomCourrier(rapportView.getNomCourrier());
+
+			model.addAttribute("rapportEditView", view);
 			return "tiers/edition/rapport/edit";
 		}
 
