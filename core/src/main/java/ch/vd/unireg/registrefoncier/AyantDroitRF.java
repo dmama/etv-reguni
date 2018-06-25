@@ -1,6 +1,5 @@
 package ch.vd.unireg.registrefoncier;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -10,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -100,7 +98,7 @@ public abstract class AyantDroitRF extends HibernateEntity {
 	}
 
 	// configuration hibernate : l'ayant-droit ne possède pas les bénéfices de servitudes
-	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "ayantDroit")
+	@OneToMany(mappedBy = "ayantDroit")
 	public Set<BeneficeServitudeRF> getBeneficesServitudes() {
 		return beneficesServitudes;
 	}

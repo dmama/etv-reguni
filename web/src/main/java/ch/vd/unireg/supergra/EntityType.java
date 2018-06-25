@@ -53,7 +53,9 @@ public enum EntityType {
 	ImplantationRF(ch.vd.unireg.registrefoncier.ImplantationRF.class, "implantation", "l'implantation", "de l'implantation"),
 	DescriptionBatimentRF(ch.vd.unireg.registrefoncier.DescriptionBatimentRF.class, "description du bâtiment", "la description du bâtiment", "de la description du bâtiment"),
 	RapprochementRF(ch.vd.unireg.registrefoncier.RapprochementRF.class, "rapprochement", "le rapprochement", "du rapprochement"),
-	AllegementFoncier(ch.vd.unireg.foncier.AllegementFoncier.class, "allègement foncier", "l'allègement foncier", "de l'allègement foncier");
+	AllegementFoncier(ch.vd.unireg.foncier.AllegementFoncier.class, "allègement foncier", "l'allègement foncier", "de l'allègement foncier"),
+	BeneficeServitude(ch.vd.unireg.registrefoncier.BeneficeServitudeRF.class, "bénéfice de servitude", "le bénéfice de servitude", "du bénéfice de servitude"),
+	ChargeServitude(ch.vd.unireg.registrefoncier.ChargeServitudeRF.class, "charge de servitude", "la charge de servitude", "de la charge de servitude");
 
 	private final Class<? extends HibernateEntity> hibernateClass;
 	private final String displayName;   // "chat"

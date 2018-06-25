@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -251,7 +250,7 @@ public abstract class ImmeubleRF extends HibernateEntity {
 	}
 
 	// configuration hibernate : l'immeuble ne possède pas les charges de servitudes
-	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "immeuble")
+	@OneToMany(mappedBy = "immeuble")
 	public Set<ChargeServitudeRF> getChargesServitudes() {
 		return chargesServitudes;
 	}
