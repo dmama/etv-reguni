@@ -103,7 +103,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);
 			if (cache == null) {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
 			}
 		}
 	}

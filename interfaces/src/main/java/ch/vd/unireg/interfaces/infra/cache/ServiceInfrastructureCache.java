@@ -95,7 +95,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	private void initCache() {
 		cache = cacheManager.getCache(cacheName);
 		if (cache == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
 		}
 		shortLivedCache = cacheManager.getCache(shortLivedCacheName);
 		if (shortLivedCache == null) {

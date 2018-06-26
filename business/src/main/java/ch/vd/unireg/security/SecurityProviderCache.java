@@ -426,7 +426,7 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	public void afterPropertiesSet() throws Exception {
 		cache = cacheManager.getCache(cacheName);
 		if (cache == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Le cache avec le nom [" + cacheName + "] est inconnu.");
 		}
 		dataEventService.register(this);
 		uniregCacheManager.register(this);
