@@ -7,8 +7,43 @@ public class LienAssociesEtSNCException extends Exception {
 
 	private static final long serialVersionUID = -5537034464167489894L;
 
-	public LienAssociesEtSNCException(String message) {
-		super(message);
+	/**
+	 * Enumeration des motifs d'invalidité possibles lors de l'intégration lien entre tiers Associé-SNC
+	 */
+	public enum EnumErreurLienAssocieSNC {
+		/**
+		 * Le tiers associé (sujet) n'est pas d'un type acceptable
+		 */
+		ANO01,
+		/**
+		 * Le tiers associé (objet) n'est pas d'un type acceptable
+		 */
+		ANO02,
+		/**
+		 * Le tiers objet  %s n'est pas une SNC
+		 */
+		ANO03,
+		/**
+		 * Deux liens entre les même contribuables ne peuvent se chevaucher dans le temps
+		 */
+		ANO04;
+
+
+		EnumErreurLienAssocieSNC() {
+		}
 	}
+
+	private EnumErreurLienAssocieSNC erreur;
+
+	public LienAssociesEtSNCException(EnumErreurLienAssocieSNC erreur, String message) {
+		super(message);
+		this.erreur = erreur;
+	}
+
+	public EnumErreurLienAssocieSNC getErreur() {
+		return erreur;
+	}
+
+
 }
 

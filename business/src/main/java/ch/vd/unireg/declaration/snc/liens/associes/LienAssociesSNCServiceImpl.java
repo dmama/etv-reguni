@@ -25,24 +25,26 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 
 	@Override
 	public LienAssociesSNCEnMasseImporterResults importLienAssociesSNCEnMasse(List<DonneesLienAssocieEtSNC> rapportEntreTiersSnc, final RegDate dateTraitement, StatusManager statusManager) {
-		final ImportLienAssociesSNCEnMasseProcessor processor = new ImportLienAssociesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService,this);
+		final ImportLienAssociesSNCEnMasseProcessor processor = new ImportLienAssociesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService, this);
 		return processor.run(rapportEntreTiersSnc, dateTraitement, statusManager);
 	}
 
 	@Override
 	public boolean isAllowed(Contribuable sujet, Contribuable objet, RegDate dateDebut) throws LienAssociesEtSNCException {
 		if (!(sujet instanceof PersonnePhysique) && !(sujet instanceof Entreprise)) {
-			throw new LienAssociesEtSNCException(String.format("Le tiers associé  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero()), sujet.getClass().getSimpleName()));
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO01,
+			                                     String.format("Le tiers associé  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero()), sujet.getClass().getSimpleName()));
 		}
 		if (!(objet instanceof Entreprise)) {
-			throw new LienAssociesEtSNCException(String.format("Le tiers SNC  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero()), objet.getClass().getSimpleName()));
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO02,
+			                                     String.format("Le tiers SNC  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero()), objet.getClass().getSimpleName()));
 		}
 		final ForFiscalPrincipal dernierForSnc = objet.getDernierForFiscalPrincipal();
 		if (dernierForSnc.getGenreImpot() != GenreImpot.REVENU_FORTUNE) {
-			throw new LienAssociesEtSNCException(String.format("Le tiers objet  %s n'est pas une SNC.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO03, String.format("Le tiers objet  %s n'est pas une SNC.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
 		}
 		if (tiersService.existRapportEntreTiers(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, objet, sujet, dateDebut)) {
-			throw new LienAssociesEtSNCException("Deux liens entre les même contribuables ne peuvent se chevaucher dans le temps");
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO04, "Deux liens entre les même contribuables ne peuvent se chevaucher dans le temps");
 		}
 		return Boolean.TRUE;
 	}
