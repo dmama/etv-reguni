@@ -81,7 +81,8 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(demande), entreprise.getNumero(), dateTraitement);
 			final String titre = String.format("%s %d", IMPOT_COMPLEMENTAIRE_IMMEUBLES, demande.getPeriodeFiscale());
-			final RegDate dateEnvoi = duplicata ? dateTraitement : demande.getDateEnvoi();
+			// [SIFISC-29013] La date inscrite sur le rappel doit prendre en compte un délai de 3j ouvrables.
+			RegDate dateEnvoi = demande.getEtatRappele() == null ? demande.getDateRappel() : demande.getEtatRappele().getDateEnvoiCourrier();
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final CTypeDegrevementImm lettre = new CTypeDegrevementImm(XmlUtils.regdate2xmlcal(RegDate.get(demande.getPeriodeFiscale())),
 			                                                           getSiegeEntreprise(entreprise, dateTraitement),

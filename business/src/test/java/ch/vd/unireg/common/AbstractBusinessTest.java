@@ -597,6 +597,16 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return implantation;
 	}
 
+	protected SituationRF addSituationRF(RegDate dateDebut, RegDate dateFin, int noParcelle, ImmeubleRF immeuble, CommuneRF commune) {
+		final SituationRF situation = new SituationRF();
+		situation.setDateDebut(dateDebut);
+		situation.setDateFin(dateFin);
+		situation.setNoParcelle(noParcelle);
+		situation.setImmeuble(immeuble);
+		situation.setCommune(commune);
+		return situation;
+	}
+
 	protected EstimationRF addEstimationFiscale(RegDate dateInscription, RegDate dateDebut, RegDate dateFin, boolean enRevision, Long montant, String reference, ImmeubleRF immeuble) {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setDateDebut(dateDebut);

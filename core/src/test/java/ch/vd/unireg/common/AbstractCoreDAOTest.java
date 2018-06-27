@@ -1454,6 +1454,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return addNumeroSequenceAndSave(e, demande);
 	}
 
+	protected DemandeDegrevementICI addDemandeDegrevementICI(Entreprise e, int periodeFiscale, ImmeubleRF immeuble, String codeControle) {
+		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
+		demande.setPeriodeFiscale(periodeFiscale);
+		demande.setImmeuble(immeuble);
+		demande.setCodeControle(codeControle);
+		return addNumeroSequenceAndSave(e, demande);
+	}
+
 	private DemandeDegrevementICI addNumeroSequenceAndSave(Entreprise e, DemandeDegrevementICI demande) {
 		final int pf = demande.getPeriodeFiscale();
 		final int maxNosUtilises = Optional.ofNullable(e.getAutresDocumentsFiscaux()).orElseGet(Collections::emptySet).stream()
