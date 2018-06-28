@@ -4,10 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.jetbrains.annotations.Nullable;
-import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.infrastructure.model.rest.CommuneSimple;
@@ -33,12 +30,19 @@ import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.TexteCasePostale;
 import ch.vd.unireg.type.TypeAdresseTiers;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
 public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTest {
 
 	private ImpressionDemandeDegrevementICIHelperImpl impressionDemandeDegrevementICIHelper;
+
+	private final RegDate dateDebut = date(1990, 4, 2);
+	private final RegDate dateObtentionLettreEmis = date(2015, 6, 2);
+	private final RegDate dateEnvoiRappel = date(2015, 11, 2);
+	private final RegDate dateTraitement = date(2015, 8, 20);
+	private static final SimpleDateFormat FORMATER = new SimpleDateFormat("yyyyMMdd");
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -49,7 +53,6 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 		ProxyServiceInfrastructureService infraService = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
 		impressionDemandeDegrevementICIHelper.setInfraService(infraService);
 		impressionDemandeDegrevementICIHelper.setTiersService(getBean(TiersService.class, "tiersService"));
-//		impressionDemandeDegrevementICIHelper.setRegistreFoncierService(getBean(RegistreFoncierService.class, "serviceRF"));
 		impressionDemandeDegrevementICIHelper.setRegistreFoncierService(new MockRegistreFoncierService() {
 			@Override
 			public @Nullable Commune getCommune(ImmeubleRF immeuble, RegDate dateReference) {
@@ -75,26 +78,84 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 
 
 	/**
-	 * [SIFISC-29013] La date inscrite sur les rappels de dégrèvement et lettre de bienvenue (papier) doit tenir compte d'un délai de trois jours ouvrables.
-	 *
-	 * @throws EditiqueException
+	 * [SIFISC-29013] La date inscrite sur les rappels des lettres de dégrèvement (papier) doit tenir compte d'un délai de 3 jours ouvrables.
 	 */
 	@Test
-	public void testDateEnvoiRappelLettreDegrevementDocument() throws Exception {
+	public void testDateEnvoiRappelLettreDegrevementDocument () throws Exception { // mode batch
 
-		final RegDate dateDebut = date(1990, 4, 2);
-		final RegDate dateEnvoiLettre = date(2015, 6, 2);
-		final RegDate dateEnvoiRappel = date(2015, 11, 2);
-		final RegDate dateTraitementRappel = date(2015, 8, 20);
+		Date dateAttendue = dateEnvoiRappel.asJavaDate(); // Date retournée par 'DelaisService' = envoi rappel + 3j
 
-		class Ids {
-			Long dd;
-		}
-		final Ids ids = new Ids();
+		final Long idDegrevement = createDegrevement(dateEnvoiRappel);
+		final FichierImpression.Document document = buildDegrevementDocument(idDegrevement, false);
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
+		// Date d'envoi du rappel attendue, tient compte d'un délai de trois jours ouvrables
+		assertNotNull(document);
+		assertEquals(FORMATER.format(dateAttendue), document.getInfoEnteteDocument().getExpediteur().getDateExpedition());
+	}
+
+	/**
+	 * [SIFISC-29013] La date inscrite sur les dulicatas des lettres de rappels de dégrèvement (papier) correspond à la date de traitement du rappel.
+	 */
+	@Test
+	public void testDateEnvoiRappelLettreDegrevementDocumentDuplicata () throws Exception { // mode online
+
+		Date dateAttendue = dateTraitement.asJavaDate();
+
+		final Long idDegrevement = createDegrevement(dateEnvoiRappel);
+		final FichierImpression.Document document = buildDegrevementDocument(idDegrevement, true);
+
+		// Date d'envoi du rappel attendue, tient compte d'un délai de trois jours ouvrables
+		assertNotNull(document);
+		assertEquals(FORMATER.format(dateAttendue), document.getInfoEnteteDocument().getExpediteur().getDateExpedition());
+	}
+
+	/**
+	 * [SIFISC-29013] La date inscrite sur les lettres de dégrèvement (papier) ne tient PAS compte d'un délai de 3 jours ouvrables.
+	 */
+	@Test
+	public void testDateEnvoiLettreDegrevementDocument () throws Exception { // mode batch
+		Date dateAttendue = dateObtentionLettreEmis.asJavaDate(); // pas d'ajout de delai pour l'état émis
+
+		final Long idDegrevement = createDegrevement(null);
+		final FichierImpression.Document document = buildDegrevementDocument(idDegrevement, false);
+
+		// Date d'envoi du rappel attendue, tient compte d'un délai de trois jours ouvrables
+		assertNotNull(document);
+		assertEquals(FORMATER.format(dateAttendue), document.getInfoEnteteDocument().getExpediteur().getDateExpedition());
+	}
+
+	/**
+	 * [SIFISC-29013] La date inscrite sur les duplicatas de lettres de dégrèvement (papier) est ...
+	 */
+	@Test
+	public void testDateEnvoiLettreDegrevementDocumentDuplicata () throws Exception { // mode online
+		Date dateAttendue = dateTraitement.asJavaDate();
+
+		final Long idDegrevement = createDegrevement(null);
+		final FichierImpression.Document document = buildDegrevementDocument(idDegrevement, true);
+
+		// Date d'envoi du rappel attendue, tient compte d'un délai de trois jours ouvrables
+		assertNotNull(document);
+		assertEquals(FORMATER.format(dateAttendue), document.getInfoEnteteDocument().getExpediteur().getDateExpedition());
+	}
+
+
+	private FichierImpression.Document buildDegrevementDocument(Long idDegrevement, boolean duplicata) throws Exception {
+		return doInNewTransaction(transactionStatus -> {
+			final DemandeDegrevementICI dd = hibernateTemplate.get(DemandeDegrevementICI.class, idDegrevement);
+			assertNotNull(dd);
+
+			try {
+				return impressionDemandeDegrevementICIHelper.buildDocument(dd, dateTraitement, duplicata);
+			}
+			catch (EditiqueException e) {
+				throw new RuntimeException(e);
+			}
+		});
+	}
+
+	private Long createDegrevement(@Nullable RegDate dateEnvoiRappel) throws Exception {
+		return doInNewTransaction(status -> {
 				// entreprise
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebut, null, MockRue.Lausanne.AvenueJolimont, new CasePostale(TexteCasePostale.CASE_POSTALE, 1007));
@@ -103,46 +164,25 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-
+	
 				BatimentRF batiment = addBatimentRF("masterId");
 				ImmeubleRF immeuble = addImmeubleRF("rf123");
-				addEstimationFiscale(dateTraitementRappel, dateDebut, null, false, 250000L, "estim01", immeuble);
+				addEstimationFiscale(dateTraitement, dateDebut, null, false, 250000L, "estim01", immeuble);
 				addSituationRF(dateDebut, null, 23, immeuble, addCommuneRF(132, "une commune", 456));
 				addSurfaceAuSol(dateDebut, null, 200, "type surf", immeuble);
 				// Lie les implantations à immeuble et bâtiment
 				addImplantationRF(dateDebut, null, 80, immeuble, batiment);
-
+	
 				// Demande dégrèvement
 				DemandeDegrevementICI dd = addDemandeDegrevementICI(entreprise, 2017, immeuble, "ABC123");
-				addEtatAutreDocumentFiscalEmis(dd, dateEnvoiLettre);
-				ids.dd = dd.getId();
-
-				// Date d'envoi du rappel
-				addEtatAutreDocumentFiscalRappele(dd, dateEnvoiRappel);
-
-				return null;
-			}
-		});
-
-		doInNewTransaction(transactionStatus -> {
-			final DemandeDegrevementICI dd = hibernateTemplate.get(DemandeDegrevementICI.class, ids.dd);
-			assertNotNull(dd);
-
-			FichierImpression.Document document;
-			try {
-				document = impressionDemandeDegrevementICIHelper.buildDocument(dd, dateTraitementRappel, true);
-			}
-			catch (EditiqueException e) {
-				throw new RuntimeException(e);
-			}
-			assertNotNull(document);
-
-			// Date d'envoi du rappel attendue, tient compte d'un délai de trois jours ouvrables
-			Date dateAttendue = dateEnvoiRappel.asJavaDate();
-			SimpleDateFormat formater = new SimpleDateFormat("yyyyMMdd");
-			Assert.assertEquals(formater.format(dateAttendue), document.getInfoEnteteDocument().getExpediteur().getDateExpedition());
-			return null;
-		});
-
+				addEtatAutreDocumentFiscalEmis(dd, dateObtentionLettreEmis);
+	
+				if(dateEnvoiRappel != null) {
+					// Date d'envoi du rappel
+					addEtatAutreDocumentFiscalRappele(dd, dateEnvoiRappel);
+				}
+	
+				return dd.getId();
+			});
 	}
 }

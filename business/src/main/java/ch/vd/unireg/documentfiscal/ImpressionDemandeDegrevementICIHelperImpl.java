@@ -20,8 +20,6 @@ import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.editique.ConstantesEditique;
@@ -30,6 +28,8 @@ import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.DroitDistinctEtPermanentRF;
@@ -82,7 +82,7 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(demande), entreprise.getNumero(), dateTraitement);
 			final String titre = String.format("%s %d", IMPOT_COMPLEMENTAIRE_IMMEUBLES, demande.getPeriodeFiscale());
 			// [SIFISC-29013] La date inscrite sur le rappel doit prendre en compte un délai de 3j ouvrables.
-			RegDate dateEnvoi = demande.getEtatRappele() == null ? demande.getDateRappel() : demande.getEtatRappele().getDateEnvoiCourrier();
+			final RegDate dateEnvoi = determineDateEnvoi(demande, dateTraitement, duplicata);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final CTypeDegrevementImm lettre = new CTypeDegrevementImm(XmlUtils.regdate2xmlcal(RegDate.get(demande.getPeriodeFiscale())),
 			                                                           getSiegeEntreprise(entreprise, dateTraitement),
@@ -102,6 +102,27 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		catch (Exception e) {
 			throw new EditiqueException(e);
 		}
+	}
+
+	/**
+	 * Détermine la date d'envoi à imprimer sur le document (date visible pour le contribuable)
+	 */
+	private static RegDate determineDateEnvoi(DemandeDegrevementICI demande, RegDate dateTraitement, boolean duplicata) {
+		final RegDate dateEnvoi;
+		if (duplicata) {
+			// les duplicatas sont imprimés immédiatement par l'opérateur
+			dateEnvoi = dateTraitement;
+		}
+		else {
+			final EtatAutreDocumentFiscalRappele etatRappele = demande.getEtatRappele();
+			if (etatRappele != null) { // RAPPELE
+				dateEnvoi = etatRappele.getDateEnvoiCourrier(); // SIFISC-29013
+			}
+			else { // EMIS (pas de date d'envoi courrier spécifique)
+				dateEnvoi = demande.getDateEnvoi();
+			}
+		}
+		return dateEnvoi;
 	}
 
 	@Override
