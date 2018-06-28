@@ -60,7 +60,7 @@
 			<div class="team">
 				<h3>L'équipe Unireg actuelle</h3>
 
-				<h4>Cellule projet :</h4>
+				<h4>Cellule projets :</h4>
 				<ul>
 					<li>David Radelfinger</li>
 					<li>Raphaël Carbo</li>
@@ -73,7 +73,7 @@
 
 				<h4>OIPM :</h4>
 				<ul>
-					<li>Dominique Viquerat</li>
+					<li>Stéphanie Ries</li>
 				</ul>
 
 				<h4>Chef de projet :</h4>
@@ -83,8 +83,8 @@
 
 				<h4>Spécifications :</h4>
 				<ul>
-					<li>Gabrielle Servoz</li>
 					<li>Christophe Ollivier</li>
+					<li>Gabrielle Servoz</li>
 				</ul>
 
 				<h4>Gestionnaire d'application :</h4>
@@ -95,6 +95,7 @@
 				<h4>Développement :</h4>
 				<ul>
 					<li>Baba Issa Ngom</li>
+					<li>Denis Mama</li>
 					<li>Euan Mateo</li>
 					<li>Manuel Siggen</li>
 				</ul>
@@ -114,6 +115,7 @@
 					<li>Claudio Parnenzini</li>
 					<li>Céline Grand</li>
 					<li>David Dublancher</li>
+					<li>Dominique Viquerat</li>
 					<li>François Dardare</li>
 					<li>Frédéric Noguier</li>
 					<li>Gilles Dubey</li>
