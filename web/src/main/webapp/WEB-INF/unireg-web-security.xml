@@ -30,6 +30,12 @@
 
 	<bean id="accessLoggerFilter" class="ch.vd.unireg.security.AccessLogProcessingFilter" />
 
+	<!-- Limitation du taux de requêtes à l'IHM -->
+	<bean id="rateLimiterFilter" class="ch.vd.unireg.security.RateLimiterFilter">
+		<property name="enabled" value="${extprop.rateLimiter.enabled}" />
+		<property name="maxLoadPerUser" value="${extprop.rateLimiter.maxLoadPerUser}" />
+	</bean>
+
 	<!-- Filtre qui stocker la dernière URL valide pour utilisation dans le ActionExceptionResolver -->
 	<bean id="actionExceptionFilter" class="ch.vd.unireg.servlet.ActionExceptionFilter" />
 
@@ -69,7 +75,7 @@
 			<security:filter-chain pattern="/chooseOID.do"  filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter,${iam-security-filters}" />
 			<!-- les pages normales -->
 			<security:filter-chain pattern="/**/*.do"       filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter,securityContextPersistenceFilter,braveServletFilter,
-																	 exceptionTranslationFilter,${iam-security-filters},accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,
+																	 exceptionTranslationFilter,${iam-security-filters},accessLoggerFilter,rateLimiterFilter,chooseOIDFilter,ifoSecProfileFilter,
 																	 contextHolderAwareRequestFilter,actionExceptionFilter" />
 			<!-- les ressources statiques -->
 			<security:filter-chain pattern="/**"            filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />

@@ -32,6 +32,7 @@
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=IndexationOnTheFly" value-ref="onTheFlyTiersIndexerJmxBean"/>
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
 				<entry key="ch.vd.unireg-web:type=Monitoring,name=AccessLoad" value-ref="webAccessLoadJmxBean" />
+				<entry key="ch.vd.unireg-web:type=Monitoring,name=RateLimiter" value-ref="rateLimiterFilter" />
 				<entry key="ch.vd.unireg-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
 				<entry key="ch.vd.unireg-web:type=Connections,name=IfoSec" value-ref="ifoSecConnectionJmxBean" />
 				<entry key="ch.vd.unireg-web:type=Connections,name=NexusRemoting" value-ref="nexusRemoteConnectionJmxBean" />
