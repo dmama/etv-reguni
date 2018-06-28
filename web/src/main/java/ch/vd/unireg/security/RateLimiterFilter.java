@@ -30,12 +30,12 @@ public class RateLimiterFilter extends GenericFilterBean {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiterFilter.class);
 
 	/**
-	 * le nombre maximal de requêtes simultanées pour chaque utilisateur.
+	 * <i>vrai</i> si le filtre est activé; <i>faux</i> s'il ne fait rien.
 	 */
 	private boolean enabled;
 
 	/**
-	 * <i>vrai</i> si le filtre est activé; <i>faux</i> s'il ne fait rien.
+	 * le nombre maximal de requêtes simultanées pour chaque utilisateur.
 	 */
 	private int maxLoadPerUser;
 
