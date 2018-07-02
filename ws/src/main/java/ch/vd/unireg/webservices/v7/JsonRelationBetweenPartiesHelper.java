@@ -9,6 +9,7 @@ import ch.vd.unireg.xml.party.relation.v4.Absorbed;
 import ch.vd.unireg.xml.party.relation.v4.Absorbing;
 import ch.vd.unireg.xml.party.relation.v4.Administration;
 import ch.vd.unireg.xml.party.relation.v4.AfterSplit;
+import ch.vd.unireg.xml.party.relation.v4.AssociatedSNC;
 import ch.vd.unireg.xml.party.relation.v4.BeforeSplit;
 import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
@@ -582,6 +583,29 @@ public abstract class JsonRelationBetweenPartiesHelper {
 		}
 	}
 
+	/**
+	 * Relation d'associé -> SNC
+	 */
+	public static class JsonAssociateSNC extends AssociatedSNC implements JsonRelationBetweenParties {
+
+		private JsonAssociateSNC(AssociatedSNC src) {
+			super(src.getDateFrom(), src.getDateTo(), src.getCancellationDate(), src.getOtherPartyNumber(), src.getAny());
+		}
+
+		@Override
+		public RelationBetweenPartiesType getType() {
+			return RelationBetweenPartiesType.ASSOCIATED_SNC;
+		}
+
+		public static final class Builder implements JsonRelationBetweenPartiesBuilder<AssociatedSNC> {
+			@Override
+			public RelationBetweenParties buildJsonEquivalent(AssociatedSNC src) {
+				return new JsonAssociateSNC(src);
+			}
+		}
+	}
+
+
 	private static final Map<Class<? extends RelationBetweenParties>, JsonRelationBetweenPartiesBuilder<? extends RelationBetweenParties>> BUILDERS = buildBuilders();
 
 	private static <T extends RelationBetweenParties> void registerBuilder(Map<Class<? extends RelationBetweenParties>, JsonRelationBetweenPartiesBuilder<? extends RelationBetweenParties>> map,
@@ -615,6 +639,7 @@ public abstract class JsonRelationBetweenPartiesHelper {
 		registerBuilder(map, TaxLiabilitySubstituteFor.class, new JsonTaxLiabilitySubstituteFor.Builder());
 		registerBuilder(map, InheritanceTo.class, new JsonInheritanceTo.Builder());
 		registerBuilder(map, InheritanceFrom.class, new JsonInheritanceFrom.Builder());
+		registerBuilder(map, AssociatedSNC.class, new JsonAssociateSNC.Builder());
 		return map;
 	}
 
