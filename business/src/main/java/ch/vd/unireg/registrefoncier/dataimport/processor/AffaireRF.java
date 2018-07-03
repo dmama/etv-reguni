@@ -51,7 +51,6 @@ public class AffaireRF {
 	 *
 	 * @param dateValeur la date d'import en DB de l'affaire
 	 * @param immeuble   l'immeuble concerné
-	 * @param droits     les droits de l'immeuble (sans les droits annulés)
 	 */
 	public AffaireRF(@Nullable RegDate dateValeur, @NotNull ImmeubleRF immeuble) {
 
@@ -212,7 +211,7 @@ public class AffaireRF {
 		// on chercher la date de début métier la plus ancienne
 		final RaisonAcquisitionRF raisonAcquisition = filtered.stream()
 				.filter(m -> m.getDroit().getDateDebutMetier() != null || m.getDroit().getMotifDebut() != null)
-				.min(Comparator.comparing(m -> m.getDroit().getDateDebutMetier()))
+				.min(Comparator.comparing(m -> m.getDroit().getDateDebutMetier(), NullDateBehavior.EARLIEST::compare))
 				.map(m -> new RaisonAcquisitionRF(m.getDroit().getDateDebutMetier(), m.getDroit().getMotifDebut(), null))
 				.orElse(null);
 
@@ -414,7 +413,7 @@ public class AffaireRF {
 				.filter(Objects::nonNull)
 				.flatMap(Collection::stream)
 				.filter(AnnulableHelper::nonAnnule)
-				.max(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition))
+				.max(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition, NullDateBehavior.EARLIEST::compare))
 				.orElse(null);
 		if (raisonPrecedente != null) {
 			return raisonPrecedente;
@@ -427,7 +426,7 @@ public class AffaireRF {
 				.filter(Objects::nonNull)
 				.flatMap(Collection::stream)
 				.filter(AnnulableHelper::nonAnnule)
-				.max(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition))
+				.max(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition, NullDateBehavior.EARLIEST::compare))
 				.orElse(null);
 		if (raisonPrecedente != null) {
 			return raisonPrecedente;
@@ -558,11 +557,6 @@ public class AffaireRF {
 			this.ayantDroitId = ayantDroitId;
 		}
 
-		@NotNull
-		public RegDate getDateTransaction() {
-			return dateTransaction;
-		}
-
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
@@ -641,6 +635,7 @@ public class AffaireRF {
 					.flatMap(Collection::stream)
 					.filter(AnnulableHelper::nonAnnule)
 					.map(RaisonAcquisitionRF::getDateAcquisition)
+					.filter(Objects::nonNull)
 					.max(Comparator.naturalOrder())
 					.orElse(null);
 
@@ -654,7 +649,7 @@ public class AffaireRF {
 					.filter(r -> r.getDateDebut() == dateTransaction)                                                       // on ne s'intéresse qu'aux raisons ajoutées lors de la transaction
 					.filter(r -> r.getDateAcquisition() != null)                                                            // on ignore les raisons sans date d'acquisition
 					.filter(r -> RegDateHelper.isAfter(r.getDateAcquisition(), derniereDate, NullDateBehavior.EARLIEST))    // on ignore les raisons d'acquisition trop anciennes pour être utiles
-					.min(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition))                                     // on prend la raison la plus ancienne
+					.min(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition, NullDateBehavior.EARLIEST::compare)) // on prend la raison la plus ancienne
 					.orElse(null);
 
 			if (reference != null) {
