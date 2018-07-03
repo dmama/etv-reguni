@@ -217,7 +217,7 @@ public abstract class PartyStrategy<T extends Party> {
 
 		final CoordonneesFinancieres coords = tiers.getCoordonneesFinancieresCourantes();
 		final CompteBancaire compteBancaire = (coords == null ?  null : coords.getCompteBancaire());
-		if (coords != null) {
+		if (coords != null && compteBancaire!=null) {
 			if (context.ibanValidator.isValidIban(compteBancaire.getIban())) {
 				left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers.getNumero(), coords.getTitulaire(), compteBancaire, context));
 			}
