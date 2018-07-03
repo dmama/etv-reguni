@@ -233,6 +233,7 @@ public class TiersCreateController {
 			return showCreateEntreprise(model, view);
 		}
 
+		// FIXME (msi) tout ceci devrait être dans la couche business !
 		final Entreprise entreprise = (Entreprise) tiersDAO.save(new Entreprise());
 		final EntrepriseCivilView civilView = view.getCivil();
 
