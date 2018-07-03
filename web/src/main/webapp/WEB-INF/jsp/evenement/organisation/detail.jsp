@@ -237,8 +237,11 @@
                 </c:forEach>
             </ul>
         </c:if>
+	    <c:set var="tiersVisu">
+		    <c:url value="/tiers/visu.do" />
+	    </c:set>
         <display:table name="command.tiersAssocies" id="tiersAssocie" pagesize="25">
-            <display:column titleKey="label.numero.tiers" href="../tiers/visu.do" paramId="id" paramProperty="numero">
+            <display:column titleKey="label.numero.tiers" href="${tiersVisu}" paramId="id" paramProperty="numero">
                 <unireg:numCTB numero="${tiersAssocie.numero}"/>
             </display:column>
             <display:column titleKey="label.raison.sociale">
