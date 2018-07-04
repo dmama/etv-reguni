@@ -18,21 +18,20 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.common.TemporaryFile;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.role.AbstractRolePMData;
 import ch.vd.unireg.role.RoleData;
-import ch.vd.unireg.role.RolePMData;
 import ch.vd.unireg.role.RolePPData;
 import ch.vd.unireg.role.RoleResults;
-import ch.vd.unireg.role.RoleSNCData;
 import ch.vd.unireg.tiers.LocalisationFiscale;
 
 public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRapport {
@@ -344,9 +343,9 @@ public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRappor
 	}
 
 	/**
-	 * Formateur pour les données PM d'une extraction de rôle
+	 * Formateur pour les données PM, SNC d'une extraction de rôle
 	 */
-	protected static class RolePMDataFiller implements CsvHelper.FileFiller<RolePMData> {
+	protected static class RolePMDataFiller<T extends AbstractRolePMData> implements CsvHelper.FileFiller<T> {
 		@Override
 		public void fillHeader(CsvHelper.LineFiller b) {
 			b.append("Numéro OFS de la commune").append(COMMA);
@@ -363,44 +362,7 @@ public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRappor
 		}
 
 		@Override
-		public boolean fillLine(CsvHelper.LineFiller b, RolePMData elt) {
-			b.append(elt.noOfsCommune).append(COMMA);
-			b.append(CsvHelper.escapeChars(elt.nomCommune)).append(COMMA);
-			b.append(CsvHelper.escapeChars(Optional.ofNullable(elt.typeContribuable).map(t -> t.displayLabel).orElse(StringUtils.EMPTY))).append(COMMA);
-			b.append(elt.noContribuable).append(COMMA);
-
-			b.append(CsvHelper.escapeChars(FormatNumeroHelper.formatNumIDE(elt.noIDE))).append(COMMA);
-			b.append(CsvHelper.escapeChars(elt.raisonSociale)).append(COMMA);
-			b.append(CsvHelper.escapeChars(Optional.ofNullable(elt.formeJuridique).map(FormeLegale::getLibelle).orElse(StringUtils.EMPTY))).append(COMMA);
-
-			b.append(CsvHelper.asCsvField(elt.adresseEnvoi)).append(COMMA);
-			b.append(Optional.ofNullable(elt.domicileFiscal).map(LocalisationFiscale::getTypeAutoriteFiscale).map(t -> t.name().substring(t.name().length() - 2)).orElse(StringUtils.EMPTY)).append(COMMA);
-			b.append(Optional.ofNullable(elt.domicileFiscal).map(LocalisationFiscale::getNumeroOfsAutoriteFiscale).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
-			b.append(CsvHelper.escapeChars(elt.nomDomicileFiscal));
-			return true;
-		}
-	}
-	/**
-	 * Formateur pour les données SNC d'une extraction de rôle
-	 */
-	protected static class RoleSNCDataFiller implements CsvHelper.FileFiller<RoleSNCData> {
-		@Override
-		public void fillHeader(CsvHelper.LineFiller b) {
-			b.append("Numéro OFS de la commune").append(COMMA);
-			b.append("Nom de la commune").append(COMMA);
-			b.append("Type de contribuable").append(COMMA);
-			b.append("Numéro de contribuable").append(COMMA);
-			b.append("Numéro IDE").append(COMMA);
-			b.append("Raison sociale").append(COMMA);
-			b.append("Forme juridique").append(COMMA);
-			b.append("Adresse courrier").append(COMMA);
-			b.append("Localisation for principal").append(COMMA);
-			b.append("Numéro OFS for principal").append(COMMA);
-			b.append("Nom for principal");
-		}
-
-		@Override
-		public boolean fillLine(CsvHelper.LineFiller b, RoleSNCData elt) {
+		public boolean fillLine(CsvHelper.LineFiller b, T elt) {
 			b.append(elt.noOfsCommune).append(COMMA);
 			b.append(CsvHelper.escapeChars(elt.nomCommune)).append(COMMA);
 			b.append(CsvHelper.escapeChars(Optional.ofNullable(elt.typeContribuable).map(t -> t.displayLabel).orElse(StringUtils.EMPTY))).append(COMMA);

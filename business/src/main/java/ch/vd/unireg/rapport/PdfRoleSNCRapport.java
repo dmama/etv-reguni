@@ -9,7 +9,7 @@ import ch.vd.unireg.role.RoleSNCResults;
 
 public class PdfRoleSNCRapport extends PdfRoleRapport<RoleSNCResults> {
 
-	private static final RoleSNCDataFiller FILLER = new RoleSNCDataFiller();
+	private static final RolePMDataFiller FILLER = new RolePMDataFiller();
 
 	public PdfRoleSNCRapport(ServiceInfrastructureService infraService) {
 		super(infraService);
