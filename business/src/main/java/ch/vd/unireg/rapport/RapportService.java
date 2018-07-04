@@ -89,6 +89,7 @@ import ch.vd.unireg.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.unireg.document.ResolutionAdresseRapport;
 import ch.vd.unireg.document.RolePMCommunesRapport;
 import ch.vd.unireg.document.RolePMOfficeRapport;
+import ch.vd.unireg.document.RoleSNCRapport;
 import ch.vd.unireg.document.RolePPCommunesRapport;
 import ch.vd.unireg.document.RolePPOfficesRapport;
 import ch.vd.unireg.document.RolesCommunesPMRapport;
@@ -136,6 +137,7 @@ import ch.vd.unireg.registrefoncier.rattrapage.RattrapageModelesCommunautesRFPro
 import ch.vd.unireg.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
 import ch.vd.unireg.role.RolePMCommunesResults;
 import ch.vd.unireg.role.RolePMOfficeResults;
+import ch.vd.unireg.role.RoleSNCResults;
 import ch.vd.unireg.role.RolePPCommunesResults;
 import ch.vd.unireg.role.RolePPOfficesResults;
 import ch.vd.unireg.role.before2016.ProduireRolesOIDsResults;
@@ -769,6 +771,20 @@ public interface RapportService {
 	 */
 	RattrapageModelesCommunautesRFProcessorRapport generateRapport(RattrapageModelesCommunautesRFProcessorResults results, StatusManager status);
 
+	/**
+	 * Génère le rapport d'exécution du batch d'import em masse des SNC et leurs associés.
+	 *
+	 * @param results le résultat du batch
+	 * @param s       le status manager
+	 * @return le rapport
+	 */
 	LienAssociesSNCEnMasseImporterRapport generateRapport(LienAssociesSNCEnMasseImporterResults results, StatusManager s);
+	/**
+	 * Génération du rapport d'exécution du rôle SNC complet de l'OIPM.
+	 * @param results le résultat du batch
+	 * @param s       le status manager
+	 * @return le rapport
+	 */
+	RoleSNCRapport generateRapport(RoleSNCResults results, StatusManager s);
 
 }

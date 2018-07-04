@@ -3,6 +3,7 @@ package ch.vd.unireg.tiers.timeline;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.metier.assujettissement.SourcierPur;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitation;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService.PeriodeContext;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSource;
@@ -251,7 +253,8 @@ public class ForsTimelineController {
 		if (bean.isShowPeriodesExploitation() && tiers instanceof Entreprise) {
 			final Entreprise ent = (Entreprise) tiers;
 			try {
-				periodesExploitation.addAll(periodeExploitationService.determinePeriodesExploitation(ent, PeriodeContext.THEORIQUE));
+				final List<PeriodeExploitation> periodeExploitations = periodeExploitationService.determinePeriodesExploitation(ent, PeriodeContext.THEORIQUE);
+				periodesExploitation.addAll(periodeExploitations.stream().map(PeriodeExploitation::getDateRange).collect(Collectors.toList()));
 			}
 			catch (RuntimeException e) {
 				bean.addException(new AssujettissementException(e));
@@ -366,8 +369,7 @@ public class ForsTimelineController {
 	}
 
 	/**
-	 *
-	 * @param range range to locate relatively to the bigBang date
+	 * @param range   range to locate relatively to the bigBang date
 	 * @param bigBang reference date
 	 * @return -1 if the range is completely before the bigBang date, 0 if the bigBang date lies within the range (but does not start it), and +1 if the range is complelety after the bigBang date
 	 */

@@ -464,6 +464,11 @@
 		<constructor-arg value="Extraction du rôle PM de l'OIPM"/>
 	</bean>
 
+	<bean id="roleSNCJob" parent="roleJob" class="ch.vd.unireg.role.RoleSNCJob">
+		<constructor-arg value="604"/>
+		<constructor-arg value="Extraction du rôle SNC de l'OIPM"/>
+	</bean>
+
 
 	<bean id="abstractProduireRolesJob" parent="schedulerJob" abstract="true" class="ch.vd.unireg.role.before2016.AbstractProduireRolesJob">
 		<property name="service" ref="roleBefore2016Service"/>

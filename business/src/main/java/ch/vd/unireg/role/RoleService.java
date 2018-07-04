@@ -44,4 +44,13 @@ public interface RoleService {
 	 * @return les données extraites
 	 */
 	RolePMOfficeResults produireRolePMOffice(int annee, int nbThreads, @Nullable StatusManager statusManager);
+
+	/**
+	 * Extraction du rôle complet des SNC (une seule liste pour l'OIPM)
+	 * @param annee année du rôle
+	 * @param nbThreads degré de parallélisation de l'extraction
+	 * @param statusManager status manager
+	 * @return les données extraites
+	 */
+	RoleSNCResults produireRoleSNC(int annee, int nbThreads, @Nullable StatusManager statusManager);
 }

@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
@@ -31,8 +31,7 @@ import ch.vd.unireg.tiers.LocalisationFiscale;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 /**
- * Classe de base des données présentées dans les rôles des communes, OID, OIPM... pour tous
- * types de contribuables
+ * Classe de base des données présentées dans les rôles des communes, OID, OIPM... pour tous types de contribuables
  */
 public abstract class RoleData {
 
@@ -44,7 +43,8 @@ public abstract class RoleData {
 		HORS_SUISSE("Hors Suisse"),
 		SOURCE("Source"),
 		DEPENSE("Dépense"),
-		MIXTE("Sourcier mixte");
+		MIXTE("Sourcier mixte"),
+		NON_ASSUJETTI("Non assujetti");
 
 		public final String displayLabel;
 
@@ -87,16 +87,24 @@ public abstract class RoleData {
 		this(contribuable, ofsCommune, annee, adresseService, infrastructureService, assujettissementService, null);
 	}
 
-	public RoleData(Contribuable contribuable, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, AssujettissementService assujettissementService, @Nullable Predicate<Assujettissement> assujettissementFilter) throws CalculRoleException {
+	public RoleData(Contribuable contribuable, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, AssujettissementService assujettissementService,
+	                @Nullable Predicate<Assujettissement> assujettissementFilter) throws CalculRoleException {
 		final RegDate dateReference = RegDate.get(annee, 12, 31);
 		this.noContribuable = contribuable.getNumero();
 		this.noOfsCommune = ofsCommune;
 		this.nomCommune = fillNomCommune(ofsCommune, dateReference, infrastructureService);
 		this.adresseEnvoi = fillAdresseEnvoi(contribuable, dateReference, adresseService);
-		this.typeContribuable = fillTypeContribuable(contribuable, dateReference, assujettissementService, assujettissementFilter);
+		this.typeContribuable = estSoumisImpot() ? fillTypeContribuable(contribuable, dateReference, assujettissementService, assujettissementFilter) : TypeContribuable.NON_ASSUJETTI;
 		this.domicileFiscal = fillDomicileFiscal(contribuable, dateReference);
 		this.nomDomicileFiscal = fillNomDomicileFiscal(this.domicileFiscal, dateReference, infrastructureService);
 	}
+
+	/**
+	 * Indique si l'on doit vérifier l'assujettisement du contribuable car le contribuable est soumis à un impot.
+	 *
+	 * @return
+	 */
+	protected abstract boolean estSoumisImpot();
 
 	@Override
 	public String toString() {

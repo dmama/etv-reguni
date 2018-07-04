@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.tiers.Entreprise;
@@ -23,7 +23,8 @@ public class RolePMData extends RoleData {
 	public final String raisonSociale;
 	public final FormeLegale formeJuridique;
 
-	public RolePMData(Entreprise entreprise, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, TiersService tiersService, AssujettissementService assujettissementService) throws CalculRoleException {
+	public RolePMData(Entreprise entreprise, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, TiersService tiersService, AssujettissementService assujettissementService) throws
+			CalculRoleException {
 		super(entreprise, ofsCommune, annee, adresseService, infrastructureService, assujettissementService);
 		this.noIDE = tiersService.getNumeroIDE(entreprise);
 		this.raisonSociale = buildRaisonSociale(entreprise, annee, tiersService);
@@ -31,13 +32,13 @@ public class RolePMData extends RoleData {
 	}
 
 	@Nullable
-	private static String buildRaisonSociale(Entreprise entreprise, int annee, TiersService tiersService) {
+	protected static String buildRaisonSociale(Entreprise entreprise, int annee, TiersService tiersService) {
 		final List<RaisonSocialeHisto> all = tiersService.getRaisonsSociales(entreprise, false);
 		return buildLastHistoData(all, annee, RaisonSocialeHisto::getRaisonSociale);
 	}
 
 	@Nullable
-	private static FormeLegale buildFormeJuridique(Entreprise entreprise, int annee, TiersService tiersService) {
+	protected static FormeLegale buildFormeJuridique(Entreprise entreprise, int annee, TiersService tiersService) {
 		final List<FormeLegaleHisto> all = tiersService.getFormesLegales(entreprise, false);
 		return buildLastHistoData(all, annee, FormeLegaleHisto::getFormeLegale);
 	}
@@ -49,5 +50,10 @@ public class RolePMData extends RoleData {
 				.max(Comparator.comparing(DateRange::getDateDebut, NullDateBehavior.EARLIEST::compare))
 				.map(dataExtractor)
 				.orElse(null);
+	}
+
+	@Override
+	protected boolean estSoumisImpot() {
+		return Boolean.TRUE;
 	}
 }

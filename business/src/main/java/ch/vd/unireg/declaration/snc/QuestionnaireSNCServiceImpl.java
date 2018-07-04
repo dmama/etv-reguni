@@ -1,6 +1,7 @@
 package ch.vd.unireg.declaration.snc;
 
 import javax.jms.JMSException;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSender;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitation;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService.PeriodeContext;
 import ch.vd.unireg.parametrage.DelaisService;
@@ -159,7 +161,9 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	@NotNull
 	@Override
 	public Set<Integer> getPeriodesFiscalesTheoriquementCouvertes(Entreprise entreprise, boolean pourEmissionAutoSeulement) {
-		return periodeExploitationService.determinePeriodesExploitation(entreprise, pourEmissionAutoSeulement ? PeriodeContext.ENVOI_AUTO : PeriodeContext.THEORIQUE)
+		final List<PeriodeExploitation> periodeExploitations = periodeExploitationService.determinePeriodesExploitation(entreprise, pourEmissionAutoSeulement ? PeriodeContext.ENVOI_AUTO : PeriodeContext.THEORIQUE);
+		final List<DateRange> periodes = periodeExploitations.stream().map(PeriodeExploitation::getDateRange).collect(Collectors.toList());
+		return periodes
 				.stream()
 				.map(DateRange::getDateDebut)
 				.map(RegDate::year)

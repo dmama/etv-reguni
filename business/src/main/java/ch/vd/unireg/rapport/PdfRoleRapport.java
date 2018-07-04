@@ -32,6 +32,7 @@ import ch.vd.unireg.role.RoleData;
 import ch.vd.unireg.role.RolePMData;
 import ch.vd.unireg.role.RolePPData;
 import ch.vd.unireg.role.RoleResults;
+import ch.vd.unireg.role.RoleSNCData;
 import ch.vd.unireg.tiers.LocalisationFiscale;
 
 public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRapport {
@@ -192,7 +193,7 @@ public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRappor
 	protected void writeFichierRole(R results, PdfWriter writer, TemporaryFile contenu, String nomEntite) throws DocumentException {
 		final String filename = String.format("%s_role_%s_%d.csv",
 		                                      human2file(nomEntite.toLowerCase()),
-		                                      results.getTypePopulationRole().name().toLowerCase(),
+		                                      results.getTypePopulationRoleName().toLowerCase(),
 		                                      results.annee);
 
 		final String titre = "Liste détaillée";
@@ -379,4 +380,42 @@ public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRappor
 			return true;
 		}
 	}
+	/**
+	 * Formateur pour les données SNC d'une extraction de rôle
+	 */
+	protected static class RoleSNCDataFiller implements CsvHelper.FileFiller<RoleSNCData> {
+		@Override
+		public void fillHeader(CsvHelper.LineFiller b) {
+			b.append("Numéro OFS de la commune").append(COMMA);
+			b.append("Nom de la commune").append(COMMA);
+			b.append("Type de contribuable").append(COMMA);
+			b.append("Numéro de contribuable").append(COMMA);
+			b.append("Numéro IDE").append(COMMA);
+			b.append("Raison sociale").append(COMMA);
+			b.append("Forme juridique").append(COMMA);
+			b.append("Adresse courrier").append(COMMA);
+			b.append("Localisation for principal").append(COMMA);
+			b.append("Numéro OFS for principal").append(COMMA);
+			b.append("Nom for principal");
+		}
+
+		@Override
+		public boolean fillLine(CsvHelper.LineFiller b, RoleSNCData elt) {
+			b.append(elt.noOfsCommune).append(COMMA);
+			b.append(CsvHelper.escapeChars(elt.nomCommune)).append(COMMA);
+			b.append(CsvHelper.escapeChars(Optional.ofNullable(elt.typeContribuable).map(t -> t.displayLabel).orElse(StringUtils.EMPTY))).append(COMMA);
+			b.append(elt.noContribuable).append(COMMA);
+
+			b.append(CsvHelper.escapeChars(FormatNumeroHelper.formatNumIDE(elt.noIDE))).append(COMMA);
+			b.append(CsvHelper.escapeChars(elt.raisonSociale)).append(COMMA);
+			b.append(CsvHelper.escapeChars(Optional.ofNullable(elt.formeJuridique).map(FormeLegale::getLibelle).orElse(StringUtils.EMPTY))).append(COMMA);
+
+			b.append(CsvHelper.asCsvField(elt.adresseEnvoi)).append(COMMA);
+			b.append(Optional.ofNullable(elt.domicileFiscal).map(LocalisationFiscale::getTypeAutoriteFiscale).map(t -> t.name().substring(t.name().length() - 2)).orElse(StringUtils.EMPTY)).append(COMMA);
+			b.append(Optional.ofNullable(elt.domicileFiscal).map(LocalisationFiscale::getNumeroOfsAutoriteFiscale).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+			b.append(CsvHelper.escapeChars(elt.nomDomicileFiscal));
+			return true;
+		}
+	}
+
 }

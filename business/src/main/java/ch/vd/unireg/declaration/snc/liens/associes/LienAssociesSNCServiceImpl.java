@@ -13,7 +13,6 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
@@ -39,8 +38,8 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO02,
 			                                     String.format("Le tiers SNC  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero()), objet.getClass().getSimpleName()));
 		}
-		final ForFiscalPrincipal dernierForSnc = objet.getDernierForFiscalPrincipal();
-		if (dernierForSnc.getGenreImpot() != GenreImpot.REVENU_FORTUNE) {
+
+		if (!((Entreprise) objet).isSNC()) {
 			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO03, String.format("Le tiers objet  %s n'est pas une SNC.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
 		}
 		if (tiersService.existRapportEntreTiers(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, objet, sujet, dateDebut)) {

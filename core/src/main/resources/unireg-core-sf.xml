@@ -191,6 +191,7 @@
 		<value>ch.vd.unireg.document.RolesCommunesPPRapport</value>        <!-- [SIFISC-19937] avant 2016 -->
 		<value>ch.vd.unireg.document.RolesOIDsRapport</value>              <!-- [SIFISC-19937] avant 2016 -->
 		<value>ch.vd.unireg.document.RolesOIPMRapport</value>              <!-- [SIFISC-19937] avant 2016 -->
+		<value>ch.vd.unireg.document.RoleSNCRapport</value>
 		<value>ch.vd.unireg.document.StatistiquesDIsRapport</value>
 		<value>ch.vd.unireg.document.StatistiquesCtbsRapport</value>
 		<value>ch.vd.unireg.document.ListeDIsNonEmisesRapport</value>

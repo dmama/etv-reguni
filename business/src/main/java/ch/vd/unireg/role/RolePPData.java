@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -80,5 +80,10 @@ public class RolePPData extends RoleData {
 				.map(pp -> buildNoAvs(pp, tiersService))
 				.map(list -> list.isEmpty() ? StringUtils.EMPTY : list.get(0))       // histoire de pouvoir associer le NAVS au conjoint même si le principal n'en a pas
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	protected boolean estSoumisImpot() {
+		return Boolean.TRUE;
 	}
 }
