@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.iban.IbanValidator;
+import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
@@ -23,6 +25,8 @@ import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
 import ch.vd.unireg.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.unireg.registrefoncier.ProprieteParEtageRF;
 import ch.vd.unireg.registrefoncier.RegistreFoncierService;
+import ch.vd.unireg.tiers.CompteBancaire;
+import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.Sexe;
@@ -46,6 +50,7 @@ import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
 import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v4.WelfareAdvocate;
+import ch.vd.unireg.xml.party.v5.BankAccount;
 import ch.vd.unireg.xml.party.v5.InternalPartyPart;
 
 import static ch.vd.unireg.xml.DataHelper.xmlToCore;
@@ -69,6 +74,8 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		context.tiersService = getBean(TiersService.class, "tiersService");
 		context.regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 		context.registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
+		context.ibanValidator = getBean(IbanValidator.class,"ibanValidator");
+		context.infraService = getBean(ServiceInfrastructureService.class,"serviceInfrastructureService");
 	}
 
 	/**
@@ -122,6 +129,78 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		assertInheritanceFrom(ids.decede.intValue(), dateDeces, null, false, relationsHeritier2.get(0));
 	}
 
+
+
+	//Construction et récupération des informations bancaires sur un tiers ayant un compte
+
+	@Test
+	public void testGetCompteBancaireSurTiers() throws Exception {
+
+		final RegDate dateDebutCompte = date(2017, 5, 3);
+
+		Long idGus = doInNewTransaction(status -> {
+			final PersonnePhysique gus = addNonHabitant("Gus", "Sug", RegDate.get(1980, 1, 1), Sexe.MASCULIN);
+			CoordonneesFinancieres coords = new CoordonneesFinancieres();
+
+			coords.setDateDebut(dateDebutCompte);
+			coords.setTitulaire("Gus Sugg");
+			CompteBancaire compteBancaire = new CompteBancaire();
+			compteBancaire.setIban("CH7400243243G15379860");
+			coords.setCompteBancaire(compteBancaire);
+			gus.addCoordonneesFinancieres(coords);
+
+			return gus.getId();
+		});
+
+		// pas de part -> pas de Coordonnées Bancaires
+		assertEmpty(newFrom(idGus).getBankAccounts());
+		try {
+// on demande la part -> on reçoit les informations de coordonnées bancaires sans erreur si elles existent
+			//Dansd ce cas on ne recoit rien car pas de numero bancaire existant
+			final NaturalPerson gus = newFrom(idGus, InternalPartyPart.BANK_ACCOUNTS);
+			final List<BankAccount> bankAccounts = gus.getBankAccounts();
+			assertEquals(1,bankAccounts.size());
+			BankAccount account = bankAccounts.get(0);
+			assertEquals("Gus Sugg", account.getOwnerName());
+			assertEquals("CH7400243243G15379860", account.getIban());
+			//Non renseigné dans la version 7 du ws unireg
+			assertEquals(null,  account.getDateFrom());
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Erreur lors de la récupération des informations bancaires: ",e );
+		}
+
+	}
+	// SIFISC-29332
+	// L'absence de numéro de compte bancaire de ne devrait pas provoquer une NPE
+
+	@Test
+	public void testGetCompteBancaireSansNumeroDeCompte() throws Exception {
+
+		final RegDate dateDeces = RegDate.get(2005, 1, 1);
+
+		Long idGus = doInNewTransaction(status -> {
+			final PersonnePhysique gus = addNonHabitant("Gus", "Sug", RegDate.get(1980, 1, 1), Sexe.MASCULIN);
+			CoordonneesFinancieres coords = new CoordonneesFinancieres();
+			coords.setTitulaire("Gus Sugg");
+			gus.addCoordonneesFinancieres(coords);
+			return gus.getId();
+		});
+
+		// pas de part -> pas de Coordonnées Bancaires
+		assertEmpty(newFrom(idGus).getBankAccounts());
+		try {
+// on demande la part -> on reçoit les informations de coordonnées bancaires sans erreur si elles existent
+			//Dansd ce cas on ne recoit rien car pas de numero bancaire existant
+			final NaturalPerson gus = newFrom(idGus, InternalPartyPart.BANK_ACCOUNTS);
+			final List<BankAccount> bankAccounts = gus.getBankAccounts();
+			assertEmpty(bankAccounts);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Erreur lors de la récupération des informations bancaires: ",e );
+		}
+
+	}
 	/**
 	 * Teste que le clonage d'un party à partir d'un party en mémoire tient correctement compte de la part INHERITANCE_RELATIONSHIPS.
 	 */
