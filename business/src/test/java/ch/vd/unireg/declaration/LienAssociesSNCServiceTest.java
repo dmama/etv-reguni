@@ -54,7 +54,7 @@ public class LienAssociesSNCServiceTest  {
 			service.isAllowed(sujet, null, null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO01);
+			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
 		}
 		catch (Exception e) {
 			Assertions.fail(e.getMessage());
@@ -72,7 +72,7 @@ public class LienAssociesSNCServiceTest  {
 			service.isAllowed(sujet, objet, null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO02);
+			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
 		}
 		catch (Exception e) {
 			Assertions.fail(e.getMessage());
@@ -95,7 +95,7 @@ public class LienAssociesSNCServiceTest  {
 			service.isAllowed(sujet, objet, null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO03);
+			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC);
 		}
 		catch (Exception e) {
 			Assertions.fail(e.getMessage());
@@ -117,7 +117,7 @@ public class LienAssociesSNCServiceTest  {
 			service.isAllowed(sujet, objet, null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO04);
+			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.CHEVAUCHEMENT_LIEN);
 		}
 		catch (Exception e) {
 			Assertions.fail(e.getMessage());

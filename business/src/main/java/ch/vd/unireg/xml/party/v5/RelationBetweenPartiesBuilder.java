@@ -24,7 +24,6 @@ import ch.vd.unireg.xml.party.relation.v4.Absorbed;
 import ch.vd.unireg.xml.party.relation.v4.Absorbing;
 import ch.vd.unireg.xml.party.relation.v4.Administration;
 import ch.vd.unireg.xml.party.relation.v4.AfterSplit;
-import ch.vd.unireg.xml.party.relation.v4.AssociatedSNC;
 import ch.vd.unireg.xml.party.relation.v4.BeforeSplit;
 import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
@@ -35,6 +34,7 @@ import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.PartnerRelationship;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v4.Replaced;
 import ch.vd.unireg.xml.party.relation.v4.ReplacedBy;
@@ -145,8 +145,8 @@ public class RelationBetweenPartiesBuilder {
 		return inheritance;
 	}
 
-	public static AssociatedSNC newAssociatedSNC(LienAssociesEtSNC lienAssociesEtSNC, int numeroAutreTiers) {
-		final AssociatedSNC associated = new AssociatedSNC();
+	public static PartnerRelationship newPartnerRelationship(LienAssociesEtSNC lienAssociesEtSNC, int numeroAutreTiers) {
+		final PartnerRelationship associated = new PartnerRelationship();
 		fillBaseData(associated, lienAssociesEtSNC, numeroAutreTiers);
 		return associated;
 	}

@@ -77,7 +77,10 @@ public enum InternalPartyPart {
 	 * Les allégements virtuels qui correspondent aux allégements hérités par l'entreprise absorbante dans le cas d'une fusion.
 	 */
 	VIRTUAL_LAND_TAX_LIGHTENINGS,
-	ASSOCIATED_SNC;
+	/**
+	 * Les rapports-entre-tiers de type associé/commanditaire SNC
+	 */
+	PARTNER_RELATIONSHIP;
 
 	@Nullable
 	public static InternalPartyPart fromPartyV5(@NotNull ch.vd.unireg.xml.party.v5.PartyPart part) {
@@ -161,8 +164,8 @@ public enum InternalPartyPart {
 			return OPERATING_PERIODS;
 		case VIRTUAL_LAND_TAX_LIGHTENINGS:
 			return VIRTUAL_LAND_TAX_LIGHTENINGS;
-		case ASSOCIATED_SNC:
-			return ASSOCIATED_SNC;
+		case PARTNER_RELATIONSHIP:
+			return PARTNER_RELATIONSHIP;
 		default:
 			throw new IllegalArgumentException("Part inconnue = [" + part + "]");
 		}

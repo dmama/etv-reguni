@@ -9,7 +9,6 @@ import ch.vd.unireg.xml.party.relation.v4.Absorbed;
 import ch.vd.unireg.xml.party.relation.v4.Absorbing;
 import ch.vd.unireg.xml.party.relation.v4.Administration;
 import ch.vd.unireg.xml.party.relation.v4.AfterSplit;
-import ch.vd.unireg.xml.party.relation.v4.AssociatedSNC;
 import ch.vd.unireg.xml.party.relation.v4.BeforeSplit;
 import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
@@ -20,6 +19,7 @@ import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.PartnerRelationship;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenPartiesType;
 import ch.vd.unireg.xml.party.relation.v4.Replaced;
@@ -49,6 +49,7 @@ public abstract class JsonRelationBetweenPartiesHelper {
 
 	/**
 	 * Interface des <i>builders</i> d'équivalents JSON aux sous-classes connues de {@link RelationBetweenParties}
+	 *
 	 * @param <S> classe source
 	 */
 	private interface JsonRelationBetweenPartiesBuilder<S extends RelationBetweenParties> {
@@ -586,21 +587,21 @@ public abstract class JsonRelationBetweenPartiesHelper {
 	/**
 	 * Relation d'associé -> SNC
 	 */
-	public static class JsonAssociateSNC extends AssociatedSNC implements JsonRelationBetweenParties {
+	public static class JsonPartnerRelationship extends PartnerRelationship implements JsonRelationBetweenParties {
 
-		private JsonAssociateSNC(AssociatedSNC src) {
+		private JsonPartnerRelationship(PartnerRelationship src) {
 			super(src.getDateFrom(), src.getDateTo(), src.getCancellationDate(), src.getOtherPartyNumber(), src.getAny());
 		}
 
 		@Override
 		public RelationBetweenPartiesType getType() {
-			return RelationBetweenPartiesType.ASSOCIATED_SNC;
+			return RelationBetweenPartiesType.PARTNER_RELATIONSHIP;
 		}
 
-		public static final class Builder implements JsonRelationBetweenPartiesBuilder<AssociatedSNC> {
+		public static final class Builder implements JsonRelationBetweenPartiesBuilder<PartnerRelationship> {
 			@Override
-			public RelationBetweenParties buildJsonEquivalent(AssociatedSNC src) {
-				return new JsonAssociateSNC(src);
+			public RelationBetweenParties buildJsonEquivalent(PartnerRelationship src) {
+				return new JsonPartnerRelationship(src);
 			}
 		}
 	}
@@ -639,7 +640,7 @@ public abstract class JsonRelationBetweenPartiesHelper {
 		registerBuilder(map, TaxLiabilitySubstituteFor.class, new JsonTaxLiabilitySubstituteFor.Builder());
 		registerBuilder(map, InheritanceTo.class, new JsonInheritanceTo.Builder());
 		registerBuilder(map, InheritanceFrom.class, new JsonInheritanceFrom.Builder());
-		registerBuilder(map, AssociatedSNC.class, new JsonAssociateSNC.Builder());
+		registerBuilder(map, PartnerRelationship.class, new JsonPartnerRelationship.Builder());
 		return map;
 	}
 

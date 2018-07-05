@@ -10,7 +10,6 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
@@ -31,19 +30,19 @@ public class LienAssociesSNCServiceImpl implements LienAssociesSNCService {
 	@Override
 	public boolean isAllowed(Contribuable sujet, Contribuable objet, RegDate dateDebut) throws LienAssociesEtSNCException {
 		if (!(sujet instanceof PersonnePhysique) && !(sujet instanceof Entreprise)) {
-			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO01,
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE,
 			                                     String.format("Le tiers associé  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero()), sujet.getClass().getSimpleName()));
 		}
 		if (!(objet instanceof Entreprise)) {
-			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO02,
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC,
 			                                     String.format("Le tiers SNC  %s n'est pas d'un type acceptable ici %s.", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero()), objet.getClass().getSimpleName()));
 		}
 
 		if (!((Entreprise) objet).isSNC()) {
-			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO03, String.format("Le tiers objet  %s n'est pas une SNC.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC, String.format("Le tiers objet  %s n'est pas une SNC.", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
 		}
 		if (tiersService.existRapportEntreTiers(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, objet, sujet, dateDebut)) {
-			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.ANO04, "Deux liens entre les même contribuables ne peuvent se chevaucher dans le temps");
+			throw new LienAssociesEtSNCException(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.CHEVAUCHEMENT_LIEN, "Deux liens entre les même contribuables ne peuvent se chevaucher dans le temps");
 		}
 		return Boolean.TRUE;
 	}

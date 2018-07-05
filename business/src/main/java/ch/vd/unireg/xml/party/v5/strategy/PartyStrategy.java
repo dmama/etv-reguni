@@ -49,11 +49,11 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.address.v3.Address;
 import ch.vd.unireg.xml.party.address.v3.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v3.AddressType;
-import ch.vd.unireg.xml.party.relation.v4.AssociatedSNC;
 import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
 import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.PartnerRelationship;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
@@ -147,7 +147,7 @@ public abstract class PartyStrategy<T extends Party> {
 				parts.contains(InternalPartyPart.CHILDREN) ||
 				parts.contains(InternalPartyPart.PARENTS) ||
 				parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS) ||
-				parts.contains(InternalPartyPart.ASSOCIATED_SNC))) {
+				parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP))) {
 			initRelationsBetweenParties(left, tiers, parts, context);
 		}
 
@@ -185,7 +185,7 @@ public abstract class PartyStrategy<T extends Party> {
 		if (parts.contains(InternalPartyPart.RELATIONS_BETWEEN_PARTIES) ||
 				parts.contains(InternalPartyPart.CHILDREN) ||
 				parts.contains(InternalPartyPart.PARENTS) ||
-				parts.contains(InternalPartyPart.ASSOCIATED_SNC)||
+				parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP) ||
 				parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS)) { // [SIFISC-2588]
 			copyRelationsBetweenParties(to, from, parts, mode);
 		}
@@ -220,7 +220,7 @@ public abstract class PartyStrategy<T extends Party> {
 	private static void initBankAccounts(Party left, Context context, Tiers tiers) {
 
 		final CoordonneesFinancieres coords = tiers.getCoordonneesFinancieresCourantes();
-		final CompteBancaire compteBancaire = (coords == null ?  null : coords.getCompteBancaire());
+		final CompteBancaire compteBancaire = (coords == null ? null : coords.getCompteBancaire());
 		if (coords != null) {
 			if (context.ibanValidator.isValidIban(compteBancaire.getIban())) {
 				left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers.getNumero(), coords.getTitulaire(), compteBancaire, context));
@@ -367,12 +367,12 @@ public abstract class PartyStrategy<T extends Party> {
 
 		@Override
 		public boolean isExposed(Tiers source, @Nullable Set<InternalPartyPart> parts) {
-			return parts != null && parts.contains(InternalPartyPart.ASSOCIATED_SNC);
+			return parts != null && parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP);
 		}
 
 		@Override
 		public RelationBetweenParties build(LienAssociesEtSNC rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newAssociatedSNC(rapport, otherId.intValue());
+			return RelationBetweenPartiesBuilder.newPartnerRelationship(rapport, otherId.intValue());
 		}
 	};
 
@@ -458,8 +458,7 @@ public abstract class PartyStrategy<T extends Party> {
 	private static final RelationFactory<ContactImpotSource> WITHHOLDING_TAX_CONTACT_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newWithholdingTaxContact(rapport, otherId.intValue());
 
 	/**
-	 * Factory qui construit une relation d'administration d'entreprise (entre une entreprise - société immobilière seulement ? - et son/ses
-	 * administrateurs (= personnes physiques)
+	 * Factory qui construit une relation d'administration d'entreprise (entre une entreprise - société immobilière seulement ? - et son/ses administrateurs (= personnes physiques)
 	 */
 	private static final RelationFactory<AdministrationEntreprise> ADMINISTRATION_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newAdministration(rapport, otherId.intValue());
 
@@ -525,10 +524,11 @@ public abstract class PartyStrategy<T extends Party> {
 
 	/**
 	 * <strong>Attention : ne doit être appelé que pour une clé dont on sait (par construction, par exemple) qu'elle pointe vers une factory non-nulle</strong>
-	 * @param key la clé en question
+	 *
+	 * @param key     la clé en question
 	 * @param rapport le rapport entre tiers à convertir
 	 * @param otherId l'identifiant du tiers à l'autre bout du lien
-	 * @param <T> le type de rapport entre tiers à convertir
+	 * @param <T>     le type de rapport entre tiers à convertir
 	 * @return une instance de {@link RelationBetweenParties} correspondant au lien à convertir
 	 * @throws NullPointerException si la clé n'a pas de factory non-nulle associée
 	 */
@@ -596,7 +596,7 @@ public abstract class PartyStrategy<T extends Party> {
 		final boolean wantChildren = parts.contains(InternalPartyPart.CHILDREN);
 		final boolean wantParents = parts.contains(InternalPartyPart.PARENTS);
 		final boolean wantHeirs = parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS);
-		final boolean wantAssociated = parts.contains(InternalPartyPart.ASSOCIATED_SNC);
+		final boolean wantAssociated = parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP);
 
 		if (mode == CopyMode.ADDITIVE) {
 			if ((wantRelations && wantChildren && wantParents && wantHeirs && wantAssociated)
@@ -622,7 +622,7 @@ public abstract class PartyStrategy<T extends Party> {
 							to.getRelationsBetweenParties().add(relation);
 						}
 					}
-					else if (relation instanceof AssociatedSNC) {
+					else if (relation instanceof PartnerRelationship) {
 						if (wantAssociated) {
 							to.getRelationsBetweenParties().add(relation);
 						}
@@ -656,7 +656,8 @@ public abstract class PartyStrategy<T extends Party> {
 						if (wantHeirs) {
 							to.getRelationsBetweenParties().add(relation);
 						}
-					}else if (relation instanceof AssociatedSNC) {
+					}
+					else if (relation instanceof PartnerRelationship) {
 						if (wantAssociated) {
 							to.getRelationsBetweenParties().add(relation);
 						}

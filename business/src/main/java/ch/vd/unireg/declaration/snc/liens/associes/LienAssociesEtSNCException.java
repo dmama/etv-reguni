@@ -14,19 +14,19 @@ public class LienAssociesEtSNCException extends Exception {
 		/**
 		 * Le tiers associé (sujet) n'est pas d'un type acceptable
 		 */
-		ANO01,
+		MAUVAIS_TYPE_ASSOCIE,
 		/**
 		 * Le tiers associé (objet) n'est pas d'un type acceptable
 		 */
-		ANO02,
+		MAUVAIS_TYPE_SNC,
 		/**
 		 * Le tiers objet  %s n'est pas une SNC
 		 */
-		ANO03,
+		TIERS_PAS_SNC,
 		/**
 		 * Deux liens entre les même contribuables ne peuvent se chevaucher dans le temps
 		 */
-		ANO04;
+		CHEVAUCHEMENT_LIEN;
 
 
 		EnumErreurLienAssocieSNC() {

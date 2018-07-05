@@ -5,12 +5,12 @@ import java.util.Random;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.WithoutSpringTest;
 import ch.vd.unireg.xml.common.v2.Date;
 import ch.vd.unireg.xml.party.relation.v4.Absorbed;
 import ch.vd.unireg.xml.party.relation.v4.Absorbing;
 import ch.vd.unireg.xml.party.relation.v4.Administration;
 import ch.vd.unireg.xml.party.relation.v4.AfterSplit;
-import ch.vd.unireg.xml.party.relation.v4.AssociatedSNC;
 import ch.vd.unireg.xml.party.relation.v4.BeforeSplit;
 import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
@@ -21,6 +21,7 @@ import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.PartnerRelationship;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenPartiesType;
 import ch.vd.unireg.xml.party.relation.v4.Replaced;
@@ -33,7 +34,6 @@ import ch.vd.unireg.xml.party.relation.v4.WealthTransferOriginator;
 import ch.vd.unireg.xml.party.relation.v4.WealthTransferRecipient;
 import ch.vd.unireg.xml.party.relation.v4.WelfareAdvocate;
 import ch.vd.unireg.xml.party.relation.v4.WithholdingTaxContact;
-import ch.vd.unireg.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -143,8 +143,8 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		return new InheritanceFrom(dateFrom, dateTo, cancellationDate, otherPartyId, principal, null);
 	}
 
-	private static AssociatedSNC buildAssociatedSNC(Date dateFrom, Date dateTo, Date cancellationDate, int otherPartyId) {
-		return new AssociatedSNC(dateFrom, dateTo, cancellationDate, otherPartyId,  null);
+	private static PartnerRelationship buildPartnerRelationship(Date dateFrom, Date dateTo, Date cancellationDate, int otherPartyId) {
+		return new PartnerRelationship(dateFrom, dateTo, cancellationDate, otherPartyId, null);
 	}
 
 	private static RelationBetweenParties doTest(RelationBetweenParties src, RelationBetweenPartiesType expectedType) {
@@ -290,7 +290,7 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 	}
 
 	private static Boolean generateRandomNullableBoolean() {
-		final Boolean[] values = { null, Boolean.TRUE, Boolean.FALSE };
+		final Boolean[] values = {null, Boolean.TRUE, Boolean.FALSE};
 		return values[RND.nextInt(values.length)];
 	}
 
@@ -325,7 +325,7 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTest(buildTaxLiabilitySubstituteFor(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE_FOR);
 		doTest(buildInheritanceTo(null, null, null, generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.INHERITANCE_TO);
 		doTest(buildInheritanceFrom(null, null, null, generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.INHERITANCE_TO);
-		doTest(buildAssociatedSNC(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.ASSOCIATED_SNC);
+		doTest(buildPartnerRelationship(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.PARTNER_RELATIONSHIP);
 	}
 
 	@Test
@@ -354,7 +354,7 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTest(buildTaxLiabilitySubstituteFor(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE_FOR);
 		doTest(buildInheritanceTo(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.INHERITANCE_TO);
 		doTest(buildInheritanceFrom(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.INHERITANCE_TO);
-		doTest(buildAssociatedSNC(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.ASSOCIATED_SNC);
+		doTest(buildPartnerRelationship(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.PARTNER_RELATIONSHIP);
 	}
 
 	@Test
@@ -383,7 +383,7 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTestAlreadyJson(buildTaxLiabilitySubstituteFor(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
 		doTestAlreadyJson(buildInheritanceTo(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()));
 		doTestAlreadyJson(buildInheritanceFrom(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()));
-		doTestAlreadyJson(buildAssociatedSNC(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
+		doTestAlreadyJson(buildPartnerRelationship(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
 	}
 
 	private static void doTestAlreadyJson(RelationBetweenParties nonJson) {
