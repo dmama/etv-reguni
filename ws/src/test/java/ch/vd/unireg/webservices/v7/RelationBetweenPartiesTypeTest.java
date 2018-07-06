@@ -5,8 +5,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
+import ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,7 +31,7 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 		                                                        TypeRapportEntreTiers.TRANSFERT_PATRIMOINE,
 		                                                        TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
 		                                                        TypeRapportEntreTiers.SOCIETE_DIRECTION,
-		                                                        TypeRapportEntreTiers.HERITAGE);
+		                                                        TypeRapportEntreTiers.HERITAGE, TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC);
 		for (TypeRapportEntreTiers tret : TypeRapportEntreTiers.values()) {
 			if (notMapped.contains(tret)) {
 				try {
