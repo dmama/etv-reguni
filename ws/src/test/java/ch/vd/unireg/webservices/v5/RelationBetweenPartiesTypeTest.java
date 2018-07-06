@@ -33,7 +33,8 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 		                                                        TypeRapportEntreTiers.TRANSFERT_PATRIMOINE,
 		                                                        TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
 		                                                        TypeRapportEntreTiers.SOCIETE_DIRECTION,
-		                                                        TypeRapportEntreTiers.HERITAGE);
+		                                                        TypeRapportEntreTiers.HERITAGE,
+		                                                        TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC);
 		for (TypeRapportEntreTiers tret : TypeRapportEntreTiers.values()) {
 			if (notMapped.contains(tret)) {
 				try {
