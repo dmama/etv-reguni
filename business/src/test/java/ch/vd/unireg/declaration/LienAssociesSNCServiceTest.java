@@ -1,7 +1,8 @@
 package ch.vd.unireg.declaration;
 
-import org.assertj.core.api.Assertions;
+
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 import static ch.vd.unireg.common.WithoutSpringTest.date;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LienAssociesSNCServiceTest  {
+public class LienAssociesSNCServiceTest {
 
 	@InjectMocks
 	private LienAssociesSNCService service = new LienAssociesSNCServiceImpl();
@@ -54,10 +55,10 @@ public class LienAssociesSNCServiceTest  {
 			service.isAllowed(sujet, null, null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
+			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_ASSOCIE);
 		}
 		catch (Exception e) {
-			Assertions.fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -72,10 +73,10 @@ public class LienAssociesSNCServiceTest  {
 			service.isAllowed(sujet, objet, null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
+			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.MAUVAIS_TYPE_SNC);
 		}
 		catch (Exception e) {
-			Assertions.fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -95,10 +96,10 @@ public class LienAssociesSNCServiceTest  {
 			service.isAllowed(sujet, objet, null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC);
+			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.TIERS_PAS_SNC);
 		}
 		catch (Exception e) {
-			Assertions.fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -117,10 +118,10 @@ public class LienAssociesSNCServiceTest  {
 			service.isAllowed(sujet, objet, null);
 		}
 		catch (LienAssociesEtSNCException ex) {
-			Assertions.assertThat(ex.getErreur()).isEqualTo(LienAssociesEtSNCException.EnumErreurLienAssocieSNC.CHEVAUCHEMENT_LIEN);
+			Assert.assertEquals(ex.getErreur(), LienAssociesEtSNCException.EnumErreurLienAssocieSNC.CHEVAUCHEMENT_LIEN);
 		}
 		catch (Exception e) {
-			Assertions.fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -136,10 +137,10 @@ public class LienAssociesSNCServiceTest  {
 		final PersonnePhysique sujet = getPersonnePhysique();
 		Mockito.when(tiersService.existRapportEntreTiers(Mockito.any(TypeRapportEntreTiers.class), Mockito.any(Contribuable.class), Mockito.any(Contribuable.class), Mockito.any(RegDate.class))).thenReturn(Boolean.FALSE);
 		try {
-			Assertions.assertThat(service.isAllowed(sujet, objet, date(2018, 12, 31))).isTrue();
+			Assert.assertTrue(service.isAllowed(sujet, objet, date(2018, 12, 31)));
 		}
 		catch (Exception e) {
-			Assertions.fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 
 	}
@@ -156,10 +157,10 @@ public class LienAssociesSNCServiceTest  {
 		final Entreprise sujet = new Entreprise();
 		Mockito.when(tiersService.existRapportEntreTiers(Mockito.any(TypeRapportEntreTiers.class), Mockito.any(Contribuable.class), Mockito.any(Contribuable.class), Mockito.any(RegDate.class))).thenReturn(Boolean.FALSE);
 		try {
-			Assertions.assertThat(service.isAllowed(sujet, objet, date(2018, 12, 31))).isTrue();
+			Assert.assertTrue(service.isAllowed(sujet, objet, date(2018, 12, 31)));
 		}
 		catch (LienAssociesEtSNCException e) {
-			Assertions.fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 
 	}

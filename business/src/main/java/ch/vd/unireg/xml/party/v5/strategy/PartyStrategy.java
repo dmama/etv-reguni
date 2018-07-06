@@ -595,10 +595,10 @@ public abstract class PartyStrategy<T extends Party> {
 		final boolean wantChildren = parts.contains(InternalPartyPart.CHILDREN);
 		final boolean wantParents = parts.contains(InternalPartyPart.PARENTS);
 		final boolean wantHeirs = parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS);
-		final boolean wantAssociated = parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP);
+		final boolean wantPartner = parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP);
 
 		if (mode == CopyMode.ADDITIVE) {
-			if ((wantRelations && wantChildren && wantParents && wantHeirs && wantAssociated)
+			if ((wantRelations && wantChildren && wantParents && wantHeirs && wantPartner)
 					|| to.getRelationsBetweenParties() == null || to.getRelationsBetweenParties().isEmpty()) {
 				// la source contient tout ou la destination ne contient rien => on copie tout
 				copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
@@ -622,7 +622,7 @@ public abstract class PartyStrategy<T extends Party> {
 						}
 					}
 					else if (relation instanceof PartnerRelationship) {
-						if (wantAssociated) {
+						if (wantPartner) {
 							to.getRelationsBetweenParties().add(relation);
 						}
 					}
@@ -633,7 +633,7 @@ public abstract class PartyStrategy<T extends Party> {
 			}
 		}
 		else { // mode exclusif
-			if (wantRelations && wantChildren && wantParents && wantHeirs && wantAssociated) {
+			if (wantRelations && wantChildren && wantParents && wantHeirs && wantPartner) {
 				// la source contient tout (par définition) et on demande tout => on copie tout
 				copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
 			}
@@ -657,7 +657,7 @@ public abstract class PartyStrategy<T extends Party> {
 						}
 					}
 					else if (relation instanceof PartnerRelationship) {
-						if (wantAssociated) {
+						if (wantPartner) {
 							to.getRelationsBetweenParties().add(relation);
 						}
 					}
