@@ -106,6 +106,8 @@ public abstract class RapportHelper {
 		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.TUTELLE, RapportEntreTiersKey.Source.SUJET));
 		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.HERITAGE, RapportEntreTiersKey.Source.OBJET));
 		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.HERITAGE, RapportEntreTiersKey.Source.SUJET));
+		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, RapportEntreTiersKey.Source.OBJET));
+		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, RapportEntreTiersKey.Source.SUJET));
 		return Collections.unmodifiableSet(set);
 	}
 }

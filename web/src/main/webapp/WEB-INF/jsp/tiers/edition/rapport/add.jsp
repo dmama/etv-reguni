@@ -57,6 +57,8 @@
 							<option disabled="disabled">&mdash;&mdash;</option>
                             <form:option value="ASSUJETTISSEMENT_PAR_SUBSTITUTION"><fmt:message key="option.rapport.entre.tiers.SUJET.ASSUJETTISSEMENT_PAR_SUBSTITUTION" /></form:option>
 							<form:option value="HERITAGE"><fmt:message key="option.rapport.entre.tiers.HERITAGE"/></form:option>
+							<option disabled="disabled">&mdash;&mdash;</option>
+							<form:option value="LIENS_ASSOCIES_ET_SNC"><fmt:message key="option.rapport.entre.tiers.LIENS_ASSOCIES_ET_SNC" /></form:option>
 						</form:select>
 					</p>
 					
@@ -150,6 +152,9 @@
 								break;
 							case 'HERITAGE':
 								autorite = "a pour héritier";
+								break;
+							case 'LIENS_ASSOCIES_ET_SNC':
+								autorite = "est associé commanditaire";
 								break;
 							}
 

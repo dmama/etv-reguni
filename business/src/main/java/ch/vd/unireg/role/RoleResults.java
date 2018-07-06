@@ -84,6 +84,10 @@ public abstract class RoleResults<R extends RoleResults<R>> extends AbstractJobR
 	 * @return le type de population géré par cette extraction de rôle
 	 */
 	public abstract TypePopulationRole getTypePopulationRole();
+	/**
+	 * Remvoie le nom de la population géré par l'extraction
+	 */
+	public abstract String getTypePopulationRoleName();
 
 	@Override
 	public void addErrorException(Long element, Exception e) {

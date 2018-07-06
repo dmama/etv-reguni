@@ -380,6 +380,17 @@ public interface TiersService {
 	 */
 	String getLocalisationAsString(LocalizedDateRange localisation) throws ServiceInfrastructureException, ObjectNotFoundException;
 
+	/**
+	 * Indique si le lien entre la SNC et l'associé existe à la date indiquée
+	 *
+	 * @param typeRapport   type de rapport
+	 * @param tiersObjet    contribuable snc.
+	 * @param tiersSujet    contribuable assoicie
+	 * @param dateDebutLien date de début du lien entre le contribuable et l'associé
+	 * @return indique si le lien entre la SNC et l'associé existe à la date indiquée.
+	 */
+	boolean existRapportEntreTiers(TypeRapportEntreTiers typeRapport, Contribuable tiersObjet, Contribuable tiersSujet, RegDate dateDebutLien);
+
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,
 		CHANGE_EN_HABITANT,

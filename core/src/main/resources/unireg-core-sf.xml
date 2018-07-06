@@ -133,6 +133,7 @@
 		<value>ch.vd.unireg.tiers.AnnuleEtRemplace</value>
 		<value>ch.vd.unireg.tiers.ActiviteEconomique</value>
 		<value>ch.vd.unireg.tiers.Mandat</value>
+		<value>ch.vd.unireg.tiers.LienAssociesEtSNC</value>
 		<value>ch.vd.unireg.tiers.FusionEntreprises</value>
 		<value>ch.vd.unireg.tiers.ScissionEntreprise</value>
 		<value>ch.vd.unireg.tiers.TransfertPatrimoine</value>
@@ -191,6 +192,7 @@
 		<value>ch.vd.unireg.document.RolesCommunesPPRapport</value>        <!-- [SIFISC-19937] avant 2016 -->
 		<value>ch.vd.unireg.document.RolesOIDsRapport</value>              <!-- [SIFISC-19937] avant 2016 -->
 		<value>ch.vd.unireg.document.RolesOIPMRapport</value>              <!-- [SIFISC-19937] avant 2016 -->
+		<value>ch.vd.unireg.document.RoleSNCRapport</value>
 		<value>ch.vd.unireg.document.StatistiquesDIsRapport</value>
 		<value>ch.vd.unireg.document.StatistiquesCtbsRapport</value>
 		<value>ch.vd.unireg.document.ListeDIsNonEmisesRapport</value>
@@ -253,6 +255,7 @@
 		<value>ch.vd.unireg.document.InitialisationIFoncRapport</value>
 		<value>ch.vd.unireg.document.RattrapageRegimesFiscauxRapport</value>
 		<value>ch.vd.unireg.document.ExtractionRegimesFiscauxRapport</value>
+		<value>ch.vd.unireg.document.LienAssociesSNCEnMasseImporterRapport</value>
 		<value>ch.vd.unireg.parametrage.ParametreApp</value>
 		<value>ch.vd.unireg.registrefoncier.RapprochementRF</value>
 		<value>ch.vd.unireg.registrefoncier.AyantDroitRF</value>

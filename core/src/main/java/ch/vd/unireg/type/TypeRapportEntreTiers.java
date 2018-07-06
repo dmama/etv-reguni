@@ -10,6 +10,7 @@ import ch.vd.unireg.tiers.ContactImpotSource;
 import ch.vd.unireg.tiers.Curatelle;
 import ch.vd.unireg.tiers.FusionEntreprises;
 import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.LienAssociesEtSNC;
 import ch.vd.unireg.tiers.Mandat;
 import ch.vd.unireg.tiers.Parente;
 import ch.vd.unireg.tiers.RapportEntreTiers;
@@ -262,6 +263,18 @@ public enum TypeRapportEntreTiers {
 		@Override
 		public Class<? extends RapportEntreTiers> getRapportClass() {
 			return Heritage.class;
+		}
+	},
+
+	LIENS_ASSOCIES_ET_SNC {
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new LienAssociesEtSNC();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return LienAssociesEtSNC.class;
 		}
 	};
 

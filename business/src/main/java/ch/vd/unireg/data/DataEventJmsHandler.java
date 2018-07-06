@@ -227,6 +227,9 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			case HERITAGE:
 				type = TypeRapportEntreTiers.HERITAGE;
 				break;
+			case LIENS_ASSOCIES_ET_SNC:
+				type = TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC;
+				break;
 			default:
 				throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
 			}

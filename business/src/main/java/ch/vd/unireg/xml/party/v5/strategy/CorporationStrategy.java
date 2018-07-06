@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.entreprise.data.DateRanged;
 import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitation;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService.PeriodeContext;
 import ch.vd.unireg.registrefoncier.DroitRF;
 import ch.vd.unireg.registrefoncier.DroitRFRangeMetierComparator;
@@ -560,7 +561,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	private void initOperatingPeriods(Corporation to, Entreprise from, Context context) {
 		final List<OperatingPeriod> toPeriods = to.getOperatingPeriods();
-		final List<DateRange> periodes = context.periodeExploitationService.determinePeriodesExploitation(from, PeriodeContext.THEORIQUE);
+		final List<PeriodeExploitation> periodesExploitation = context.periodeExploitationService.determinePeriodesExploitation(from, PeriodeContext.THEORIQUE);
+		final List<DateRange> periodes = periodesExploitation.stream().map(PeriodeExploitation::getDateRange).collect(Collectors.toList());
 		periodes.stream()
 				.map(OperatingPeriodBuilder::newPeriod)
 				.forEach(toPeriods::add);

@@ -28,8 +28,8 @@ import ch.vd.unireg.interfaces.entreprise.data.FormeLegale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.role.AbstractRolePMData;
 import ch.vd.unireg.role.RoleData;
-import ch.vd.unireg.role.RolePMData;
 import ch.vd.unireg.role.RolePPData;
 import ch.vd.unireg.role.RoleResults;
 import ch.vd.unireg.tiers.LocalisationFiscale;
@@ -192,7 +192,7 @@ public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRappor
 	protected void writeFichierRole(R results, PdfWriter writer, TemporaryFile contenu, String nomEntite) throws DocumentException {
 		final String filename = String.format("%s_role_%s_%d.csv",
 		                                      human2file(nomEntite.toLowerCase()),
-		                                      results.getTypePopulationRole().name().toLowerCase(),
+		                                      results.getTypePopulationRoleName().toLowerCase(),
 		                                      results.annee);
 
 		final String titre = "Liste détaillée";
@@ -343,9 +343,9 @@ public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRappor
 	}
 
 	/**
-	 * Formateur pour les données PM d'une extraction de rôle
+	 * Formateur pour les données PM, SNC d'une extraction de rôle
 	 */
-	protected static class RolePMDataFiller implements CsvHelper.FileFiller<RolePMData> {
+	protected static class RolePMDataFiller<T extends AbstractRolePMData> implements CsvHelper.FileFiller<T> {
 		@Override
 		public void fillHeader(CsvHelper.LineFiller b) {
 			b.append("Numéro OFS de la commune").append(COMMA);
@@ -362,7 +362,7 @@ public abstract class PdfRoleRapport<R extends RoleResults<R>> extends PdfRappor
 		}
 
 		@Override
-		public boolean fillLine(CsvHelper.LineFiller b, RolePMData elt) {
+		public boolean fillLine(CsvHelper.LineFiller b, T elt) {
 			b.append(elt.noOfsCommune).append(COMMA);
 			b.append(CsvHelper.escapeChars(elt.nomCommune)).append(COMMA);
 			b.append(CsvHelper.escapeChars(Optional.ofNullable(elt.typeContribuable).map(t -> t.displayLabel).orElse(StringUtils.EMPTY))).append(COMMA);

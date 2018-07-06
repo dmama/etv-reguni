@@ -15,4 +15,9 @@ public abstract class RolePPResults<R extends RolePPResults<R>> extends RoleResu
 	public final TypePopulationRole getTypePopulationRole() {
 		return TypePopulationRole.PP;
 	}
+
+	@Override
+	public String getTypePopulationRoleName() {
+		return getTypePopulationRole().name();
+	}
 }

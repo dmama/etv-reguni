@@ -16,6 +16,8 @@ import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.foncier.migration.mandataire.DonneesMandat;
 import ch.vd.unireg.foncier.migration.mandataire.MigrationMandatImporterResults;
 
+import static ch.vd.unireg.rapport.PdfLienAssociesSNCEnMasseImporterRapport.getTemporaryFile;
+
 /**
  * Générateur du rapport PDF d'exécution du batch de migration des mandataires spéciaux
  */
@@ -95,20 +97,7 @@ public class PdfMigrationMandatairesSpeciauxRapport extends PdfRapport {
 				.map(erreur -> Pair.of(erreur.mandat.getLigneSource(), erreur.erreur));
 		final List<Pair<String, String>> toDump = Stream.concat(strLignesIgnorees, strErreurs).collect(Collectors.toList());
 
-		return CsvHelper.asCsvTemporaryFile(toDump, filename, status, new CsvHelper.FileFiller<Pair<String, String>>() {
-			@Override
-			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("INPUT_LINE").append(COMMA);
-				b.append("ERREUR");
-			}
-
-			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, Pair<String, String> erreur) {
-				b.append(CsvHelper.DOUBLE_QUOTE).append(erreur.getLeft()).append(CsvHelper.DOUBLE_QUOTE).append(COMMA);
-				b.append(escapeChars(erreur.getRight()));
-				return true;
-			}
-		});
+		return getTemporaryFile(filename, status, toDump);
 	}
 
 	private TemporaryFile genererMandatsMigres(List<DonneesMandat> liste, String filename, StatusManager status) {

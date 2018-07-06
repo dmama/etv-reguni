@@ -29,6 +29,7 @@ import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
+import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.GroupeFlagsEntreprise;
 import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
 
@@ -345,7 +346,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@Transient
 	public EtatEntreprise getEtatAt(RegDate date) {
 		final List<EtatEntreprise> nonAnnules = getEtatsNonAnnulesTries();
-		return nonAnnules.stream().filter(e->e.getDateObtention().isBeforeOrEqual(date)).
+		return nonAnnules.stream().filter(e -> e.getDateObtention().isBeforeOrEqual(date)).
 				max(Comparator.comparing(EtatEntreprise::getDateObtention, NullDateBehavior.EARLIEST::compare)).orElse(null);
 
 	}
@@ -427,10 +428,10 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	/**
 	 * <p>
-	 *     Méthode métier à appeler lors de l'enregistrement d'un nouveau secteur d'activité, pour lequel le flag IDEDirty doit être mis à <code>true</code>.
+	 * Méthode métier à appeler lors de l'enregistrement d'un nouveau secteur d'activité, pour lequel le flag IDEDirty doit être mis à <code>true</code>.
 	 * </p>
 	 * <p>
-	 *     Pourquoi cette méthode dédiée? C'est beaucoup plus facile que de devoir détecter ce changement dans l'intercepteur tout en ignorant tous les autres.
+	 * Pourquoi cette méthode dédiée? C'est beaucoup plus facile que de devoir détecter ce changement dans l'intercepteur tout en ignorant tous les autres.
 	 * </p>
 	 *
 	 * @param nouveauSecteurActivite
@@ -438,7 +439,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	public void changeSecteurActivite(String nouveauSecteurActivite) {
 		String precedantSecteurActivite = this.secteurActivite;
 		this.setIdeDirty(precedantSecteurActivite != null && nouveauSecteurActivite != null && !nouveauSecteurActivite.equals(precedantSecteurActivite) ||
-				nouveauSecteurActivite != null && precedantSecteurActivite == null || nouveauSecteurActivite == null && precedantSecteurActivite != null);
+				                 nouveauSecteurActivite != null && precedantSecteurActivite == null || nouveauSecteurActivite == null && precedantSecteurActivite != null);
 
 		this.secteurActivite = nouveauSecteurActivite;
 	}
@@ -531,5 +532,11 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 			}
 		}
 		return false;
+	}
+
+	@Transient
+	public boolean isSNC() {
+		final ForFiscalPrincipal dernierForSnc = this.getDernierForFiscalPrincipal();
+		return dernierForSnc.getGenreImpot() == GenreImpot.REVENU_FORTUNE;
 	}
 }

@@ -7121,4 +7121,13 @@ public class TiersServiceImpl implements TiersService {
 
 		return str;
 	}
+
+	@Override
+	public boolean existRapportEntreTiers(@NotNull TypeRapportEntreTiers typeRapport, Contribuable tiersObjet, Contribuable tiersSujet, RegDate dateDebutLien) {
+		final Set<RapportEntreTiers> rapportsObjet = tiersObjet.getRapportsObjet();
+		if (rapportsObjet != null) {
+			return rapportsObjet.stream().anyMatch(obj -> typeRapport == obj.getType() && obj.getSujetId().equals(tiersSujet.getId()) && obj.isValidAt(dateDebutLien));
+		}
+		return Boolean.FALSE;
+	}
 }

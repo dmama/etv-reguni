@@ -25,7 +25,7 @@ public abstract class VarianteCalculRolePM<R extends RoleResults<R>> extends Var
 
 	@NotNull
 	@Override
-	public final Map<Integer, List<Entreprise>> dispatch(int annee, Collection<Entreprise> contribuables) {
+	public Map<Integer, List<Entreprise>> dispatch(int annee, Collection<Entreprise> contribuables) {
 		return roleHelper.dispatchPM(annee, contribuables);
 	}
 }

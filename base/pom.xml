@@ -494,6 +494,19 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mokito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>${mokito.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<reporting>
@@ -791,6 +804,7 @@
 		<slf4j.version>1.7.7</slf4j.version>
 		<oro.version>2.0.8</oro.version>
 		<cobertura.version>2.6</cobertura.version>
+		<mokito.version>1.10.19</mokito.version>
 
 		<!-- Database settings -->
 		<oracle.version>12.1.0.2.0</oracle.version>

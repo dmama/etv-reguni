@@ -61,7 +61,8 @@ public class MockTiersService implements TiersService {
 
 	private boolean isEtrangerSansPermisC;
 
-	public MockTiersService() {	}
+	public MockTiersService() {
+	}
 
 	public MockTiersService(Tiers tiers) {
 		this.tiers = tiers;
@@ -261,6 +262,11 @@ public class MockTiersService implements TiersService {
 	@Override
 	public String getLocalisationAsString(LocalizedDateRange localisation) throws ServiceInfrastructureException, ObjectNotFoundException {
 		return null;
+	}
+
+	@Override
+	public boolean existRapportEntreTiers(TypeRapportEntreTiers typeRapport, Contribuable tiersObjet, Contribuable tiersSujet, RegDate dateDebutLien) {
+		return false;
 	}
 
 	@Override

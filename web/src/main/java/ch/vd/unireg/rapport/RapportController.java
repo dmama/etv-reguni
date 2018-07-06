@@ -158,12 +158,15 @@ public class RapportController {
 	}
 
 	private Set<RapportEntreTiersKey> getAllowedTypes() {
-		final Set<RapportEntreTiersKey> types;
+		 Set<RapportEntreTiersKey> types;
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
 			types = RapportHelper.ALLOWED_VISU_LIMITEE;
 		}
 		else {
 			types = RapportHelper.ALLOWED_VISU_COMPLETE;
+			if(!SecurityHelper.isGranted(securityProvider, Role.GEST_SNC)){
+				types=types.stream().filter(type->type.getType()!=TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC).collect(Collectors.toSet());
+			}
 		}
 		return types;
 	}

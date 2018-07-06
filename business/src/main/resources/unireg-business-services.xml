@@ -115,6 +115,7 @@
 		</property>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="periodeExploitationService" ref="periodeExploitationService"/>
 	</bean>
 	
 	<bean id="listesTiersService" class="ch.vd.unireg.listes.ListesTiersServiceImpl">

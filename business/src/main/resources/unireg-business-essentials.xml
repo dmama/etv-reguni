@@ -222,6 +222,11 @@
 		<property name="periodeExploitationService" ref="periodeExploitationService"/>
 		<property name="evenementDeclarationPMSender" ref="evenementDeclarationPMSender" />
 	</bean>
+	<bean id="lienAssociesSNCService" class="ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCServiceImpl">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
 
 	<bean id="periodeExploitationService" class="ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationServiceImpl">
 		<property name="parametreAppService" ref="parametreAppService"/>

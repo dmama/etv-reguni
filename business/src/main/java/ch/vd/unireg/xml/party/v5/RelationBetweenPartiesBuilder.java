@@ -1,5 +1,25 @@
 package ch.vd.unireg.xml.party.v5;
 
+import ch.vd.unireg.tiers.ActiviteEconomique;
+import ch.vd.unireg.tiers.AdministrationEntreprise;
+import ch.vd.unireg.tiers.AnnuleEtRemplace;
+import ch.vd.unireg.tiers.AppartenanceMenage;
+import ch.vd.unireg.tiers.AssujettissementParSubstitution;
+import ch.vd.unireg.tiers.ConseilLegal;
+import ch.vd.unireg.tiers.ContactImpotSource;
+import ch.vd.unireg.tiers.Curatelle;
+import ch.vd.unireg.tiers.FusionEntreprises;
+import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.LienAssociesEtSNC;
+import ch.vd.unireg.tiers.Parente;
+import ch.vd.unireg.tiers.RapportEntreTiers;
+import ch.vd.unireg.tiers.RapportPrestationImposable;
+import ch.vd.unireg.tiers.RepresentationConventionnelle;
+import ch.vd.unireg.tiers.ScissionEntreprise;
+import ch.vd.unireg.tiers.SocieteDirection;
+import ch.vd.unireg.tiers.TransfertPatrimoine;
+import ch.vd.unireg.tiers.Tutelle;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.party.relation.v4.Absorbed;
 import ch.vd.unireg.xml.party.relation.v4.Absorbing;
 import ch.vd.unireg.xml.party.relation.v4.Administration;
@@ -14,6 +34,7 @@ import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.PartnerRelationship;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v4.Replaced;
 import ch.vd.unireg.xml.party.relation.v4.ReplacedBy;
@@ -25,25 +46,6 @@ import ch.vd.unireg.xml.party.relation.v4.WealthTransferOriginator;
 import ch.vd.unireg.xml.party.relation.v4.WealthTransferRecipient;
 import ch.vd.unireg.xml.party.relation.v4.WelfareAdvocate;
 import ch.vd.unireg.xml.party.relation.v4.WithholdingTaxContact;
-import ch.vd.unireg.tiers.ActiviteEconomique;
-import ch.vd.unireg.tiers.AdministrationEntreprise;
-import ch.vd.unireg.tiers.AnnuleEtRemplace;
-import ch.vd.unireg.tiers.AppartenanceMenage;
-import ch.vd.unireg.tiers.AssujettissementParSubstitution;
-import ch.vd.unireg.tiers.ConseilLegal;
-import ch.vd.unireg.tiers.ContactImpotSource;
-import ch.vd.unireg.tiers.Curatelle;
-import ch.vd.unireg.tiers.FusionEntreprises;
-import ch.vd.unireg.tiers.Heritage;
-import ch.vd.unireg.tiers.Parente;
-import ch.vd.unireg.tiers.RapportEntreTiers;
-import ch.vd.unireg.tiers.RapportPrestationImposable;
-import ch.vd.unireg.tiers.RepresentationConventionnelle;
-import ch.vd.unireg.tiers.ScissionEntreprise;
-import ch.vd.unireg.tiers.SocieteDirection;
-import ch.vd.unireg.tiers.TransfertPatrimoine;
-import ch.vd.unireg.tiers.Tutelle;
-import ch.vd.unireg.xml.DataHelper;
 
 public class RelationBetweenPartiesBuilder {
 
@@ -141,6 +143,12 @@ public class RelationBetweenPartiesBuilder {
 		final Boolean principal = heritage.getPrincipalCommunaute();
 		inheritance.setPrincipal(principal != null && principal);
 		return inheritance;
+	}
+
+	public static PartnerRelationship newPartnerRelationship(LienAssociesEtSNC lienAssociesEtSNC, int numeroAutreTiers) {
+		final PartnerRelationship associated = new PartnerRelationship();
+		fillBaseData(associated, lienAssociesEtSNC, numeroAutreTiers);
+		return associated;
 	}
 
 	public static Representative newRepresentative(RepresentationConventionnelle rc, int numeroAutreTiers) {

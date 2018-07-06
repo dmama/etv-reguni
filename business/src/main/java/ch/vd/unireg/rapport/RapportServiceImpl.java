@@ -36,6 +36,7 @@ import ch.vd.unireg.declaration.snc.DeterminationQuestionnairesSNCResults;
 import ch.vd.unireg.declaration.snc.EchoirQuestionnairesSNCResults;
 import ch.vd.unireg.declaration.snc.EnvoiQuestionnairesSNCEnMasseResults;
 import ch.vd.unireg.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
+import ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCEnMasseImporterResults;
 import ch.vd.unireg.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.unireg.declaration.source.EnvoiLRsResults;
 import ch.vd.unireg.declaration.source.EnvoiSommationLRsResults;
@@ -79,6 +80,7 @@ import ch.vd.unireg.document.IdentifierContribuableFromListeRapport;
 import ch.vd.unireg.document.IdentifierContribuableRapport;
 import ch.vd.unireg.document.ImportCodesSegmentRapport;
 import ch.vd.unireg.document.InitialisationIFoncRapport;
+import ch.vd.unireg.document.LienAssociesSNCEnMasseImporterRapport;
 import ch.vd.unireg.document.ListeAssujettisRapport;
 import ch.vd.unireg.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.unireg.document.ListeDIsNonEmisesRapport;
@@ -102,6 +104,7 @@ import ch.vd.unireg.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.unireg.document.ResolutionAdresseRapport;
 import ch.vd.unireg.document.RolePMCommunesRapport;
 import ch.vd.unireg.document.RolePMOfficeRapport;
+import ch.vd.unireg.document.RoleSNCRapport;
 import ch.vd.unireg.document.RolePPCommunesRapport;
 import ch.vd.unireg.document.RolePPOfficesRapport;
 import ch.vd.unireg.document.RolesCommunesPMRapport;
@@ -150,6 +153,7 @@ import ch.vd.unireg.registrefoncier.rattrapage.RattrapageModelesCommunautesRFPro
 import ch.vd.unireg.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
 import ch.vd.unireg.role.RolePMCommunesResults;
 import ch.vd.unireg.role.RolePMOfficeResults;
+import ch.vd.unireg.role.RoleSNCResults;
 import ch.vd.unireg.role.RolePPCommunesResults;
 import ch.vd.unireg.role.RolePPOfficesResults;
 import ch.vd.unireg.role.before2016.ProduireRolesOIDsResults;
@@ -1853,6 +1857,43 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(RattrapageModelesCommunautesRFProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfRattrapageModelesCommunautesRFRapport document = new PdfRattrapageModelesCommunautesRFRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public LienAssociesSNCEnMasseImporterRapport generateRapport(LienAssociesSNCEnMasseImporterResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportImportLiensAssociesEtSNC";
+		final String description = "Rapport d'exécution du job d'import des rapports entre associés et les SNC.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(LienAssociesSNCEnMasseImporterRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfLienAssociesSNCEnMasseImporterRapport document = new PdfLienAssociesSNCEnMasseImporterRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RoleSNCRapport generateRapport(RoleSNCResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final String nom = "RoleSNC" + results.annee;
+		final String description = String.format("Rapport d'exécution du job d'extraction du rôle SNC %d de l'OIPM", results.annee);
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RoleSNCRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRoleSNCRapport document = new PdfRoleSNCRapport(infraService);
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

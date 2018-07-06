@@ -48,6 +48,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="lienAssociesSNCService" ref="lienAssociesSNCService" />
 	</bean>
 
 	<bean id="rapportAddValidator" class="ch.vd.unireg.rapport.validator.RapportAddValidator" >

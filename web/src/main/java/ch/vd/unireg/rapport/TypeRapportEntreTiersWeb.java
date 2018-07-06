@@ -23,7 +23,8 @@ public enum TypeRapportEntreTiersWeb {
 	TRANSFERT_PATRIMOINE,
 	ADMINISTRATION_ENTREPRISE,
 	SOCIETE_DIRECTION,
-	HERITAGE;
+	HERITAGE,
+	LIENS_ASSOCIES_ET_SNC;
 
 	public static TypeRapportEntreTiersWeb fromCore(TypeRapportEntreTiers t) {
 		return TypeRapportEntreTiersWeb.valueOf(t.name());

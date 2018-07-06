@@ -23,14 +23,15 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.AuthenticationInterface;
 import ch.vd.unireg.common.LoggingStatusManager;
 import ch.vd.unireg.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.TiersService;
 
@@ -46,6 +47,7 @@ public class RoleServiceImpl implements RoleService {
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
 	private AssujettissementService assujettissementService;
+	private PeriodeExploitationService periodeExploitationService;
 
 	public void setRoleHelper(RoleHelper roleHelper) {
 		this.roleHelper = roleHelper;
@@ -69,6 +71,10 @@ public class RoleServiceImpl implements RoleService {
 
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
 		this.assujettissementService = assujettissementService;
+	}
+
+	public void setPeriodeExploitationService(PeriodeExploitationService periodeExploitationService) {
+		this.periodeExploitationService = periodeExploitationService;
 	}
 
 	/**
@@ -247,6 +253,15 @@ public class RoleServiceImpl implements RoleService {
 		                    nbThreads,
 		                    null,
 	                        new VarianteCalculRolePMOffice(roleHelper, () -> new RolePMOfficeResults(annee, nbThreads, adresseService, infraService, tiersService, assujettissementService)),
+		                    statusManager);
+	}
+
+	@Override
+	public RoleSNCResults produireRoleSNC(int annee, int nbThreads, @Nullable StatusManager statusManager) {
+		return produireRole(annee,
+		                    nbThreads,
+		                    null,
+		                    new VarianteCalculRoleSNC(roleHelper, () -> new RoleSNCResults(annee, nbThreads, adresseService, infraService, tiersService, assujettissementService), periodeExploitationService),
 		                    statusManager);
 	}
 }

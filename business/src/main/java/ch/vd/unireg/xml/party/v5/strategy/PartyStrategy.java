@@ -26,6 +26,7 @@ import ch.vd.unireg.tiers.CoordonneesFinancieres;
 import ch.vd.unireg.tiers.Curatelle;
 import ch.vd.unireg.tiers.FusionEntreprises;
 import ch.vd.unireg.tiers.Heritage;
+import ch.vd.unireg.tiers.LienAssociesEtSNC;
 import ch.vd.unireg.tiers.Mandat;
 import ch.vd.unireg.tiers.Parente;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -52,6 +53,7 @@ import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
 import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.PartnerRelationship;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
@@ -144,7 +146,8 @@ public abstract class PartyStrategy<T extends Party> {
 		if (parts != null && (parts.contains(InternalPartyPart.RELATIONS_BETWEEN_PARTIES) ||
 				parts.contains(InternalPartyPart.CHILDREN) ||
 				parts.contains(InternalPartyPart.PARENTS) ||
-				parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS))) {
+				parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS) ||
+				parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP))) {
 			initRelationsBetweenParties(left, tiers, parts, context);
 		}
 
@@ -182,6 +185,7 @@ public abstract class PartyStrategy<T extends Party> {
 		if (parts.contains(InternalPartyPart.RELATIONS_BETWEEN_PARTIES) ||
 				parts.contains(InternalPartyPart.CHILDREN) ||
 				parts.contains(InternalPartyPart.PARENTS) ||
+				parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP) ||
 				parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS)) { // [SIFISC-2588]
 			copyRelationsBetweenParties(to, from, parts, mode);
 		}
@@ -357,6 +361,23 @@ public abstract class PartyStrategy<T extends Party> {
 	};
 
 	/**
+	 * Factory qui construit une relation de type "associe - SNC"
+	 */
+	private static final RelationFactory<LienAssociesEtSNC> ASSOCIATED_SNC_FACTORY = new PartRelatedRelationFactory<LienAssociesEtSNC>() {
+
+		@Override
+		public boolean isExposed(Tiers source, @Nullable Set<InternalPartyPart> parts) {
+			return parts != null && parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP);
+		}
+
+		@Override
+		public RelationBetweenParties build(LienAssociesEtSNC rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newPartnerRelationship(rapport, otherId.intValue());
+		}
+	};
+
+
+	/**
 	 * Factory qui construit une relation de fusion d'entreprise vers l'entreprise absorbée
 	 */
 	private static final RelationFactory<FusionEntreprises> ABSORBED_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newAbsorbed(rapport, otherId.intValue());
@@ -437,8 +458,7 @@ public abstract class PartyStrategy<T extends Party> {
 	private static final RelationFactory<ContactImpotSource> WITHHOLDING_TAX_CONTACT_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newWithholdingTaxContact(rapport, otherId.intValue());
 
 	/**
-	 * Factory qui construit une relation d'administration d'entreprise (entre une entreprise - société immobilière seulement ? - et son/ses
-	 * administrateurs (= personnes physiques)
+	 * Factory qui construit une relation d'administration d'entreprise (entre une entreprise - société immobilière seulement ? - et son/ses administrateurs (= personnes physiques)
 	 */
 	private static final RelationFactory<AdministrationEntreprise> ADMINISTRATION_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newAdministration(rapport, otherId.intValue());
 
@@ -497,6 +517,8 @@ public abstract class PartyStrategy<T extends Party> {
 		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.TUTELLE, RapportEntreTiersKey.Source.SUJET), GUARDIAN_FACTORY);
 		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.HERITAGE, RapportEntreTiersKey.Source.OBJET), INHERITANCE_TO_FACTORY);   // du décédé vers l'héritier
 		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.HERITAGE, RapportEntreTiersKey.Source.SUJET), INHERITANCE_FROM_FACTORY); // de l'héritier vers le décédé
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, RapportEntreTiersKey.Source.OBJET), ASSOCIATED_SNC_FACTORY);   // de la SNC vers ses associés.
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC, RapportEntreTiersKey.Source.SUJET), ASSOCIATED_SNC_FACTORY); // de 'associé vers les SNC dont il est commanditaire
 		return map;
 	}
 
@@ -573,9 +595,10 @@ public abstract class PartyStrategy<T extends Party> {
 		final boolean wantChildren = parts.contains(InternalPartyPart.CHILDREN);
 		final boolean wantParents = parts.contains(InternalPartyPart.PARENTS);
 		final boolean wantHeirs = parts.contains(InternalPartyPart.INHERITANCE_RELATIONSHIPS);
+		final boolean wantAssociated = parts.contains(InternalPartyPart.PARTNER_RELATIONSHIP);
 
 		if (mode == CopyMode.ADDITIVE) {
-			if ((wantRelations && wantChildren && wantParents && wantHeirs)
+			if ((wantRelations && wantChildren && wantParents && wantHeirs && wantAssociated)
 					|| to.getRelationsBetweenParties() == null || to.getRelationsBetweenParties().isEmpty()) {
 				// la source contient tout ou la destination ne contient rien => on copie tout
 				copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
@@ -598,6 +621,11 @@ public abstract class PartyStrategy<T extends Party> {
 							to.getRelationsBetweenParties().add(relation);
 						}
 					}
+					else if (relation instanceof PartnerRelationship) {
+						if (wantAssociated) {
+							to.getRelationsBetweenParties().add(relation);
+						}
+					}
 					else if (wantRelations) {
 						to.getRelationsBetweenParties().add(relation);
 					}
@@ -605,7 +633,7 @@ public abstract class PartyStrategy<T extends Party> {
 			}
 		}
 		else { // mode exclusif
-			if (wantRelations && wantChildren && wantParents && wantHeirs) {
+			if (wantRelations && wantChildren && wantParents && wantHeirs && wantAssociated) {
 				// la source contient tout (par définition) et on demande tout => on copie tout
 				copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
 			}
@@ -625,6 +653,11 @@ public abstract class PartyStrategy<T extends Party> {
 					}
 					else if (relation instanceof InheritanceTo || relation instanceof InheritanceFrom) {
 						if (wantHeirs) {
+							to.getRelationsBetweenParties().add(relation);
+						}
+					}
+					else if (relation instanceof PartnerRelationship) {
+						if (wantAssociated) {
 							to.getRelationsBetweenParties().add(relation);
 						}
 					}
