@@ -5,11 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.iban.IbanValidationException;
 import ch.vd.unireg.iban.IbanValidator;
 
-public class AddCoordonneesFinancieresValidator implements Validator {
+public class AddCoordonneesFinancieresValidator extends AbstractCoordonneesFinancieresValidator implements Validator {
 
 	private final IbanValidator ibanValidator;
 
@@ -28,35 +26,13 @@ public class AddCoordonneesFinancieresValidator implements Validator {
 		final CoordonneesFinancieresEditView view = (CoordonneesFinancieresEditView) obj;
 
 		// validation de la plage de validité
-		final RegDate dateDebut = view.getDateDebut();
-		if (dateDebut != null && dateDebut.isAfter(RegDate.get())) {
-			errors.rejectValue("dateDebut", "error.date.debut.future");
+		validateDateDebut(errors, view.getDateDebut());
+		if (StringUtils.isBlank(view.getTitulaireCompteBancaire())) {
+			errors.rejectValue("titulaireCompteBancaire", "error.titulaire.compte.tiers.vide");
 		}
-
-		final RegDate dateFin = view.getDateFin();
-		if (dateFin != null) {
-			if (dateFin.isAfter(RegDate.get())) {
-				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
-			}
-			if (dateDebut != null && dateFin.isBefore(dateDebut)) {
-				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-			}
-		}
-
-		final String iban = view.getIban();
-		if (StringUtils.isNotBlank(iban)) {
-			// l'iban doit être valide lorsqu'on ajoute de nouvelles coordonnées financières
-			try {
-				ibanValidator.validate(iban);
-			}
-			catch (IbanValidationException e) {
-				if (StringUtils.isBlank(e.getMessage())) {
-					errors.rejectValue("iban", "error.iban");
-				}
-				else {
-					errors.rejectValue("iban", "error.iban.detail", new Object[]{e.getMessage()}, "IBAN invalide");
-				}
-			}
-		}
+		validateAdresseBicSwift(errors, view.getAdresseBicSwift(), "error.bic.mandat.tiers.vide");
+		validateDateFin(errors, view.getDateDebut(), view.getDateFin());
+		validateIBAN(errors, view.getIban(), ibanValidator);
 	}
+
 }
