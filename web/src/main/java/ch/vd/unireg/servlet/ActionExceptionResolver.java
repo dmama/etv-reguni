@@ -15,11 +15,12 @@ import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.unireg.common.ActionErrors;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.HttpHelper;
+import ch.vd.unireg.coordfin.CoordonneesFinanciereException;
 import ch.vd.unireg.metier.MetierServiceException;
 
 /**
- * Ce resolver va détecter les erreurs de validation et d'action, et rediriger automatiquement l'appelant vers la dernière page valide (à utiliser en conjonction avec un filtre {@link
- * ActionExceptionFilter}) en y ajoutant le détails des erreurs levées.
+ * Ce resolver va détecter les erreurs de validation et d'action, et rediriger automatiquement l'appelant vers la dernière page valide (à utiliser en conjonction avec un filtre {@link ActionExceptionFilter}) en y ajoutant le détails des erreurs
+ * levées.
  */
 public class ActionExceptionResolver implements HandlerExceptionResolver, Ordered {
 
@@ -69,8 +70,8 @@ public class ActionExceptionResolver implements HandlerExceptionResolver, Ordere
 			}
 			mav = new ModelAndView("redirect:" + referrer);
 		}
-		else if (ex instanceof MetierServiceException) {
-			LOGGER.debug("MetierServiceException exception catched : " + ex.getMessage() + "\n-> redisplaying page " + referrer);
+		else if (ex instanceof MetierServiceException || ex instanceof CoordonneesFinanciereException) {
+			LOGGER.debug(ex.getClass().getName() + " exception catched : " + ex.getMessage() + "\n-> redisplaying page " + referrer);
 			ActionErrors.addError(ex.getMessage());
 			mav = new ModelAndView("redirect:" + referrer);
 		}

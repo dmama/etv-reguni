@@ -18,7 +18,7 @@ public interface CoordonneesFinancieresService {
 	 * @param iban      le nouvel iban à inscrire (optionel)
 	 * @param bicSwift  le code bic swift (optionel)
 	 */
-	void addCoordonneesFinancieres(Tiers tiers, @NotNull RegDate dateDebut, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift);
+	void addCoordonneesFinancieres(Tiers tiers, @Nullable RegDate dateDebut, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) throws CoordonneesFinanciereException;
 
 	/**
 	 * Met-à-jour des coordonnées financières existantes. Si le seul changement est l'ajoute d'une date de fin, les coordonnées existantes sont simplement mises-à-jour ;
@@ -29,14 +29,14 @@ public interface CoordonneesFinancieresService {
 	 * @param iban      le nouvel iban à inscrire (optionel)
 	 * @param bicSwift  le code bic swift (optionel)
 	 */
-	void updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift);
+	void updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) throws CoordonneesFinanciereException;
 
 	/**
 	 * Annule les coordonnées financières spécifiées.
 	 *
 	 * @param id l'id des coordonnées existantes à annuler
 	 */
-	void cancelCoordonneesFinancieres(long id);
+	void cancelCoordonneesFinancieres(long id) throws CoordonneesFinanciereException;
 
 	interface UpdateNotifier {
 		/**

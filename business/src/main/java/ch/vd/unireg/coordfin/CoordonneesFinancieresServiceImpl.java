@@ -12,7 +12,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.LengthConstants;
-import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidator;
@@ -27,7 +26,7 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 	private IbanValidator ibanValidator;
 
 	@Override
-	public void addCoordonneesFinancieres(Tiers tiers, @NotNull RegDate dateDebut, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) {
+	public void addCoordonneesFinancieres(Tiers tiers, @Nullable RegDate dateDebut, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) throws CoordonneesFinanciereException {
 
 		// normalisation des données
 		titulaire = StringUtils.trimToNull(titulaire);
@@ -36,10 +35,15 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 
 		// validation des données d'entrée
 		if (StringUtils.isBlank(titulaire) && StringUtils.isBlank(iban) && StringUtils.isBlank(bicSwift)) {
-			throw new IllegalArgumentException("Tous les éléments sont vides");
+			throw new CoordonneesFinanciereException("Tous les éléments sont vides");
 		}
+
+		if (dateDebut == null) {
+			throw new CoordonneesFinanciereException("La date de début de validité n'est pas renseignée");
+		}
+
 		if (StringUtils.isNotBlank(iban) && !ibanValidator.isValidIban(iban)) {
-			throw new IllegalArgumentException("L'iban spécifié [" + iban + "] n'est pas valide");
+			throw new CoordonneesFinanciereException("L'iban spécifié [" + iban + "] n'est pas valide");
 		}
 
 		final Set<CoordonneesFinancieres> coordonnees = tiers.getCoordonneesFinancieres();
@@ -61,7 +65,7 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 	}
 
 	@Override
-	public void updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) {
+	public void updateCoordonneesFinancieres(long id, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) throws CoordonneesFinanciereException {
 
 		// normalisation des données
 		titulaire = StringUtils.trimToNull(titulaire);
@@ -70,15 +74,15 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 
 		// validation des données d'entrée
 		if (StringUtils.isBlank(titulaire) && StringUtils.isBlank(iban) && StringUtils.isBlank(bicSwift)) {
-			throw new IllegalArgumentException("Tous les éléments sont vides");
+			throw new CoordonneesFinanciereException("Tous les éléments sont vides");
 		}
 		if (StringUtils.isNotBlank(iban) && !ibanValidator.isValidIban(iban)) {
-			throw new IllegalArgumentException("L'iban spécifié [" + iban + "] n'est pas valide");
+			throw new CoordonneesFinanciereException("L'iban spécifié [" + iban + "] n'est pas valide");
 		}
 
 		final CoordonneesFinancieres coordonnees = hibernateTemplate.get(CoordonneesFinancieres.class, id);
 		if (coordonnees == null) {
-			throw new ObjectNotFoundException("Les coordonnées avec l'id=[" + id + "] n'existent pas");
+			throw new CoordonneesFinanciereException("Les coordonnées avec l'id=[" + id + "] n'existent pas");
 		}
 
 		final Tiers tiers = coordonnees.getTiers();
@@ -113,15 +117,15 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 	}
 
 	@Override
-	public void cancelCoordonneesFinancieres(long id) {
+	public void cancelCoordonneesFinancieres(long id) throws CoordonneesFinanciereException {
 
 		final CoordonneesFinancieres coordonnees = hibernateTemplate.get(CoordonneesFinancieres.class, id);
 		if (coordonnees == null) {
-			throw new ObjectNotFoundException("Les coordonnées avec l'id=[" + id + "] n'existent pas");
+			throw new CoordonneesFinanciereException("Les coordonnées avec l'id=[" + id + "] n'existent pas");
 		}
 
 		if (coordonnees.isAnnule()) {
-			throw new IllegalArgumentException("Les coordonnées avec l'id=[" + id + "] sont déjà annulées");
+			throw new CoordonneesFinanciereException("Les coordonnées avec l'id=[" + id + "] sont déjà annulées");
 		}
 
 		coordonnees.setAnnule(true);
