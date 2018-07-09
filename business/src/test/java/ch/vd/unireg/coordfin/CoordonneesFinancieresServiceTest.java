@@ -46,7 +46,7 @@ public class CoordonneesFinancieresServiceTest {
 			service.addCoordonneesFinancieres(null, RegDate.get(2000, 1, 1), null, "", "  ");
 			fail();
 		}
-		catch (CoordonneesFinanciereException e) {
+		catch (IllegalArgumentException e) {
 			assertEquals("Tous les éléments sont vides", e.getMessage());
 		}
 	}
@@ -59,7 +59,7 @@ public class CoordonneesFinancieresServiceTest {
 			service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1), null, "CH0000", "  ");
 			fail();
 		}
-		catch (CoordonneesFinanciereException e) {
+		catch (IllegalArgumentException e) {
 			assertEquals("L'iban spécifié [CH0000] n'est pas valide", e.getMessage());
 		}
 	}
@@ -70,12 +70,7 @@ public class CoordonneesFinancieresServiceTest {
 		final PersonnePhysique pp = new PersonnePhysique();
 
 		// ajoute de premières coordonnées
-		try {
-			service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1), "titulaire", "CH9308440717427290198", "bicboc");
-		}
-		catch (CoordonneesFinanciereException e) {
-			fail();
-		}
+		service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1), "titulaire", "CH9308440717427290198", "bicboc");
 		{
 			final Set<CoordonneesFinancieres> coordonnees = pp.getCoordonneesFinancieres();
 			assertNotNull(coordonnees);
@@ -93,12 +88,7 @@ public class CoordonneesFinancieresServiceTest {
 		}
 
 		// ajoute de secondes coordonnées
-		try {
-			service.addCoordonneesFinancieres(pp, RegDate.get(2013, 4, 21), "titulaire", "CH690023000123456789A", null);
-		}
-		catch (CoordonneesFinanciereException e) {
-			fail(e.getMessage());
-		}
+		service.addCoordonneesFinancieres(pp, RegDate.get(2013, 4, 21), "titulaire", "CH690023000123456789A", null);
 		{
 			final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
 			assertNotNull(coordonnees);
@@ -133,7 +123,7 @@ public class CoordonneesFinancieresServiceTest {
 			service.updateCoordonneesFinancieres(1, RegDate.get(2000, 1, 1), null, "", "  ");
 			fail();
 		}
-		catch (CoordonneesFinanciereException e) {
+		catch (IllegalArgumentException e) {
 			assertEquals("Tous les éléments sont vides", e.getMessage());
 		}
 	}
@@ -146,7 +136,7 @@ public class CoordonneesFinancieresServiceTest {
 			service.updateCoordonneesFinancieres(1, RegDate.get(2000, 1, 1), null, "CH0000", "  ");
 			fail();
 		}
-		catch (CoordonneesFinanciereException e) {
+		catch (IllegalArgumentException e) {
 			assertEquals("L'iban spécifié [CH0000] n'est pas valide", e.getMessage());
 		}
 	}
@@ -169,7 +159,7 @@ public class CoordonneesFinancieresServiceTest {
 		pp.addCoordonneesFinancieres(coord);
 
 		// petit hack pour éviter d'utiliser un vrai hibernate template
-		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
+		((CoordonneesFinancieresServiceImpl)service).setHibernateTemplate(new MockHibernateTemplate() {
 			@Override
 			public <T> T get(Class<T> clazz, Serializable id) {
 				return (T) coord;
@@ -177,12 +167,7 @@ public class CoordonneesFinancieresServiceTest {
 		});
 
 		// on renseigne la date fin
-		try {
-			service.updateCoordonneesFinancieres(id, RegDate.get(2004, 5, 15), "titulaire", null, null);
-		}
-		catch (CoordonneesFinanciereException e) {
-			fail(e.getMessage());
-		}
+		service.updateCoordonneesFinancieres(id, RegDate.get(2004, 5, 15), "titulaire", null, null);
 
 		// il ne doit y avoir toujours qu'une seule coordonnée et la date de fin doit maintenant être renseignée
 		final Set<CoordonneesFinancieres> coordonnees = pp.getCoordonneesFinancieres();
@@ -222,7 +207,7 @@ public class CoordonneesFinancieresServiceTest {
 		pp.addCoordonneesFinancieres(coord2);
 
 		// petit hack pour éviter d'utiliser un vrai hibernate template
-		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
+		((CoordonneesFinancieresServiceImpl)service).setHibernateTemplate(new MockHibernateTemplate() {
 			@Override
 			public <T> T get(Class<T> clazz, Serializable id) {
 				return (T) coord2;
@@ -230,12 +215,7 @@ public class CoordonneesFinancieresServiceTest {
 		});
 
 		// on modifie le titulaire
-		try {
-			service.updateCoordonneesFinancieres(2L, null, "nouveau titulaire", null, null);
-		}
-		catch (CoordonneesFinanciereException e) {
-			fail(e.getMessage());
-		}
+		service.updateCoordonneesFinancieres(2L, null, "nouveau titulaire", null, null);
 
 		// l'ancienne coordonnée doit être annulée et une nouvelle avec le nouveau titulaire créée
 		final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
@@ -287,7 +267,7 @@ public class CoordonneesFinancieresServiceTest {
 		pp.addCoordonneesFinancieres(coord);
 
 		// petit hack pour éviter d'utiliser un vrai hibernate template
-		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
+		((CoordonneesFinancieresServiceImpl)service).setHibernateTemplate(new MockHibernateTemplate() {
 			@Override
 			public <T> T get(Class<T> clazz, Serializable id) {
 				return (T) coord;
@@ -299,7 +279,7 @@ public class CoordonneesFinancieresServiceTest {
 			service.cancelCoordonneesFinancieres(id);
 			fail();
 		}
-		catch (CoordonneesFinanciereException e) {
+		catch (IllegalArgumentException e) {
 			assertEquals("Les coordonnées avec l'id=[1] sont déjà annulées", e.getMessage());
 		}
 	}
@@ -319,7 +299,7 @@ public class CoordonneesFinancieresServiceTest {
 		pp.addCoordonneesFinancieres(coord);
 
 		// petit hack pour éviter d'utiliser un vrai hibernate template
-		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
+		((CoordonneesFinancieresServiceImpl)service).setHibernateTemplate(new MockHibernateTemplate() {
 			@Override
 			public <T> T get(Class<T> clazz, Serializable id) {
 				return (T) coord;
@@ -327,12 +307,7 @@ public class CoordonneesFinancieresServiceTest {
 		});
 
 		// on annule les coordonnées
-		try {
-			service.cancelCoordonneesFinancieres(id);
-		}
-		catch (CoordonneesFinanciereException e) {
-			fail(e.getMessage());
-		}
+		service.cancelCoordonneesFinancieres(id);
 		assertTrue(coord.isAnnule());
 	}
 
