@@ -20,11 +20,6 @@ public abstract class AbstractCoordonneesFinancieresValidator {
 		}
 	}
 
-	protected void validateAdresseBicSwift(Errors errors, String adresseBicSwift, String s) {
-		if (StringUtils.isBlank(adresseBicSwift)) {
-			errors.rejectValue("adresseBicSwift", s);
-		}
-	}
 
 	protected void validateIBAN(Errors errors, String iban, IbanValidator ibanValidator) {
 		if (StringUtils.isNotBlank(iban)) {

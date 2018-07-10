@@ -27,11 +27,7 @@ public class AddCoordonneesFinancieresValidator extends AbstractCoordonneesFinan
 
 		// validation de la plage de validité
 		validateDateDebut(errors, view.getDateDebut());
-		if (StringUtils.isBlank(view.getTitulaireCompteBancaire())) {
-			errors.rejectValue("titulaireCompteBancaire", "error.titulaire.compte.tiers.vide");
-		}
-		validateAdresseBicSwift(errors, view.getAdresseBicSwift(), "error.bic.mandat.tiers.vide");
-		validateDateFin(errors, view.getDateDebut(), view.getDateFin());
+		validateDateFin(errors,  view.getDateDebut(), view.getDateFin());
 		validateIBAN(errors, view.getIban(), ibanValidator);
 	}
 

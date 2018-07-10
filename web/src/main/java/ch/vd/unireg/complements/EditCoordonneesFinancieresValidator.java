@@ -35,14 +35,7 @@ public class EditCoordonneesFinancieresValidator extends AbstractCoordonneesFina
 		}
 
 		final RegDate dateFin = view.getDateFin();
-		if (dateFin != null) {
-			if (dateFin.isAfter(RegDate.get())) {
-				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
-			}
-			if (dateDebut != null && dateFin.isBefore(dateDebut)) {
-				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-			}
-		}
+		validateDateFin( errors,  dateDebut,  view.getDateFin());
 
 		final String iban = view.getIban();
 		if (StringUtils.isNotBlank(iban)) {
