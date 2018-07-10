@@ -1,9 +1,13 @@
 package ch.vd.unireg.complements;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.iban.IbanHelper;
+import ch.vd.unireg.iban.IbanValidationException;
 import ch.vd.unireg.iban.IbanValidator;
 
 public class EditCoordonneesFinancieresValidator extends AbstractCoordonneesFinancieresValidator implements Validator {
@@ -25,8 +29,37 @@ public class EditCoordonneesFinancieresValidator extends AbstractCoordonneesFina
 		final CoordonneesFinancieresEditView view = (CoordonneesFinancieresEditView) obj;
 
 		// validation de la plage de validité
-		validateDateDebut(errors,view.getDateDebut());
-		validateDateFin(errors, view.getDateDebut(), view.getDateFin());
-		validateIBAN(errors, view.getIban(), ibanValidator);
+		final RegDate dateDebut = view.getDateDebut();
+		if (dateDebut != null && dateDebut.isAfter(RegDate.get())) {
+			errors.rejectValue("dateDebut", "error.date.debut.future");
+		}
+
+		final RegDate dateFin = view.getDateFin();
+		if (dateFin != null) {
+			if (dateFin.isAfter(RegDate.get())) {
+				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
+			}
+			if (dateDebut != null && dateFin.isBefore(dateDebut)) {
+				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
+			}
+		}
+
+		final String iban = view.getIban();
+		if (StringUtils.isNotBlank(iban)) {
+			//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide.
+			if (!IbanHelper.areSame(iban, view.getOldIban())) {
+				try {
+					ibanValidator.validate(iban);
+				}
+				catch (IbanValidationException e) {
+					if (StringUtils.isBlank(e.getMessage())) {
+						errors.rejectValue("iban", "error.iban");
+					}
+					else {
+						errors.rejectValue("iban", "error.iban.detail", new Object[]{e.getMessage()}, "IBAN invalide");
+					}
+				}
+			}
+		}
 	}
 }
