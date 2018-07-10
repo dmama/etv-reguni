@@ -11,14 +11,14 @@ public interface CoordonneesFinancieresService {
 
 	/**
 	 * Ajoute de nouvelles coordonnées financières à un contribuable et ferme automatique les éventuelles coordonnées financières précédentes.
-	 *
 	 * @param tiers     le contribuable dont les coordonnées financières doivent être ajoutées
 	 * @param dateDebut la date de début
+	 * @param dateFin   la date de fin
 	 * @param titulaire le nouveau titulaire à inscrire (optionel)
 	 * @param iban      le nouvel iban à inscrire (optionel)
 	 * @param bicSwift  le code bic swift (optionel)
 	 */
-	void addCoordonneesFinancieres(Tiers tiers, @NotNull RegDate dateDebut, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift);
+	void addCoordonneesFinancieres(Tiers tiers, @NotNull RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift);
 
 	/**
 	 * Met-à-jour des coordonnées financières existantes. Si le seul changement est l'ajoute d'une date de fin, les coordonnées existantes sont simplement mises-à-jour ;

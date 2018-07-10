@@ -163,6 +163,7 @@ public class CoordonneesFinancieresController {
 		// on ajoute les données.
 		coordonneesFinancieresService.addCoordonneesFinancieres(tiers,
 		                                                        view.getDateDebut(),
+		                                                        view.getDateFin(),
 		                                                        view.getTitulaireCompteBancaire(),
 		                                                        view.getIban(),
 		                                                        view.getAdresseBicSwift());

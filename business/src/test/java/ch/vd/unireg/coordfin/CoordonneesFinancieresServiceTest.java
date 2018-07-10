@@ -43,7 +43,7 @@ public class CoordonneesFinancieresServiceTest {
 	@Test
 	public void testAddCoordonneesFinancieresTousElementsVides() {
 		try {
-			service.addCoordonneesFinancieres(null, RegDate.get(2000, 1, 1), null, "", "  ");
+			service.addCoordonneesFinancieres(null, RegDate.get(2000, 1, 1), null, null, "", "  " );
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -56,7 +56,7 @@ public class CoordonneesFinancieresServiceTest {
 
 		final PersonnePhysique pp = new PersonnePhysique();
 		try {
-			service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1), null, "CH0000", "  ");
+			service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1),null , null, "CH0000", "  ");
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -70,7 +70,7 @@ public class CoordonneesFinancieresServiceTest {
 		final PersonnePhysique pp = new PersonnePhysique();
 
 		// ajoute de premières coordonnées
-		service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1), "titulaire", "CH9308440717427290198", "bicboc");
+		service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1),null , "titulaire", "CH9308440717427290198", "bicboc" );
 		{
 			final Set<CoordonneesFinancieres> coordonnees = pp.getCoordonneesFinancieres();
 			assertNotNull(coordonnees);
@@ -88,7 +88,7 @@ public class CoordonneesFinancieresServiceTest {
 		}
 
 		// ajoute de secondes coordonnées
-		service.addCoordonneesFinancieres(pp, RegDate.get(2013, 4, 21), "titulaire", "CH690023000123456789A", null);
+		service.addCoordonneesFinancieres(pp, RegDate.get(2013, 4, 21),null , "titulaire", "CH690023000123456789A", null );
 		{
 			final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
 			assertNotNull(coordonnees);
