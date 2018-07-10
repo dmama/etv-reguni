@@ -66,7 +66,7 @@
 	<input class="noprint" name="coordonnees_histo" type="checkbox" <c:if test="${command.coordonneesHisto}">checked</c:if> onClick="window.location.href = App.toggleBooleanParam(window.location, 'coordonneesHisto', true);" id="isCoordonneesHisto" />
 	<label class="noprint" for="isCoordonneesHisto"><fmt:message key="label.historique" /></label>
 	<unireg:nextRowClass reset="1"/>
-	<display:table name="command.complement.coordonneesFinancieres" id="coordoonnees" pagesize="10" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
+	<display:table name="command.complement.coordonneesFinancieres" id="coordoonnees" pagesize="10" class="display" requestURI="visu.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 		<display:setProperty name="basic.empty.showtable" value="false"/>
 		<display:setProperty name="basic.msg.empty_list" value=""/>
 		<display:setProperty name="paging.banner.all_items_found" value=""/>
