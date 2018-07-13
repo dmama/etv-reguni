@@ -27,7 +27,7 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 	private IbanValidator ibanValidator;
 
 	@Override
-	public void addCoordonneesFinancieres(Tiers tiers, @NotNull RegDate dateDebut, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) {
+	public void addCoordonneesFinancieres(Tiers tiers, @NotNull RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String titulaire, @Nullable String iban, @Nullable String bicSwift) {
 
 		// normalisation des données
 		titulaire = StringUtils.trimToNull(titulaire);
@@ -55,6 +55,7 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 		// on ajoute les nouvelles coordonnées
 		final CoordonneesFinancieres nouvelles = new CoordonneesFinancieres();
 		nouvelles.setDateDebut(dateDebut);
+		nouvelles.setDateFin(dateFin);
 		nouvelles.setTitulaire(titulaire);
 		nouvelles.setCompteBancaire(new CompteBancaire(iban, bicSwift));
 		tiers.addCoordonneesFinancieres(nouvelles);

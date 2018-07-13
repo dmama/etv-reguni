@@ -1,6 +1,7 @@
 package ch.vd.unireg.declaration.snc;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,12 +72,16 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 
 	private CTypeQuestSNC buildDocumentQuestionnaire(QuestionnaireSNC questionnaire) throws EditiqueException {
 		try {
-			final ForFiscalPrincipal ffp = getForPrincipalInteressant(questionnaire.getTiers(), questionnaire.getPeriode().getAnnee());
+			final ContribuableImpositionPersonnesMorales tiers = questionnaire.getTiers();
+			final ForFiscalPrincipal ffp = getForPrincipalInteressant(tiers, questionnaire.getPeriode().getAnnee());
 			final String siege = getNomCommuneOuPays(ffp);
 			final String numCommune = ffp != null ? String.valueOf(ffp.getNumeroOfsAutoriteFiscale()) : StringUtils.EMPTY;
 			final String delaiRetourImprime = RegDateHelper.toIndexString(extractDelaiRetourImprime(questionnaire));
 			final String codeRoutage = String.format("%d-%d", ServiceInfrastructureService.noOIPM, QuestionnaireSNCService.codeSegment);
 			final String codeControle = questionnaire.getCodeControle();
+			final String numTelephone = tiers.getNumeroTelephoneProfessionnel() != null ? tiers.getNumeroTelephoneProfessionnel() :
+					Optional.ofNullable(tiers.getNumeroTelephonePrive())
+							.orElse(tiers.getNumeroTelephonePortable());
 			return new CTypeQuestSNC(XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee())),
 			                         buildAdresse(infraService.getACIOIPM()),
 			                         delaiRetourImprime,
@@ -84,7 +89,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			                         siege,
 			                         numCommune,
 			                         buildCodeBarre(questionnaire, extractModeleFeuilleDocumentEditique(questionnaire), ServiceInfrastructureService.noOIPM),
-					codeControle);
+			                         codeControle, numTelephone);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

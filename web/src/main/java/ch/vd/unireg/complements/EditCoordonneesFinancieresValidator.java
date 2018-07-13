@@ -10,7 +10,7 @@ import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.iban.IbanValidationException;
 import ch.vd.unireg.iban.IbanValidator;
 
-public class EditCoordonneesFinancieresValidator implements Validator {
+public class EditCoordonneesFinancieresValidator extends AbstractCoordonneesFinancieresValidator implements Validator {
 
 	private final IbanValidator ibanValidator;
 
@@ -35,14 +35,7 @@ public class EditCoordonneesFinancieresValidator implements Validator {
 		}
 
 		final RegDate dateFin = view.getDateFin();
-		if (dateFin != null) {
-			if (dateFin.isAfter(RegDate.get())) {
-				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
-			}
-			if (dateDebut != null && dateFin.isBefore(dateDebut)) {
-				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-			}
-		}
+		validateDateFin( errors,  dateDebut,  view.getDateFin());
 
 		final String iban = view.getIban();
 		if (StringUtils.isNotBlank(iban)) {
