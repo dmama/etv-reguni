@@ -200,7 +200,7 @@ public class V2HandlerTest extends BusinessTest {
 
     	final InformationMandataire info = new InformationMandataire();
 		final JAXBElement<TypNumeroIdeAttr> ideMandataire = new JAXBElement<>(new QName("IDE_BIDON"), TypNumeroIdeAttr.class, new TypNumeroIdeAttr(ide, true, Boolean.FALSE));
-		final InformationMandataire.AdresseCourrier adresseCourrier = new InformationMandataire.AdresseCourrier(ideMandataire, new TypAdresse(toTxtMax40("Chez Bernard"), toTxtMax40("Avenue de la Gare 12"), null, null, null, toTxtMax40("1003"), toTxtMax40("Lausanne")));
+		final InformationMandataire.AdresseCourrier adresseCourrier = new InformationMandataire.AdresseCourrier(ideMandataire, new TypAdresse(toTxtMax40("Chez Bernard"), toTxtMax40("Avenue de la Gare 12"), null, null, null, null,toTxtMax40("1003"), toTxtMax40("Lausanne")));
 		info.setAdresseCourrier(adresseCourrier);
 
 		final InformationsMandataire infoExtraite = handler.extractInformationsMandataire(info);
@@ -223,7 +223,7 @@ public class V2HandlerTest extends BusinessTest {
 	@Test
 	public void testAdresseMandataireAvecLignesComposeeExclusivementDeCaracteresSpeciaux() throws Exception {
 		final InformationMandataire info = new InformationMandataire();
-		final TypAdresse adresseMandataire = new TypAdresse(toTxtMax40("Machin SA"), toTxtMax40("Avenue de la Gare 42"), toTxtMax40("+"), null, null, toTxtMax40("1003"), toTxtMax40("Lausanne"));
+		final TypAdresse adresseMandataire = new TypAdresse(toTxtMax40("Machin SA"), toTxtMax40("Avenue de la Gare 42"), toTxtMax40("+"), null, null,null, toTxtMax40("1003"), toTxtMax40("Lausanne"));
 		final InformationMandataire.AdresseCourrier address = new InformationMandataire.AdresseCourrier(null, adresseMandataire);
 		info.setAdresseCourrier(address);
 		final InformationsMandataire infoExtraite = handler.extractInformationsMandataire(info);
