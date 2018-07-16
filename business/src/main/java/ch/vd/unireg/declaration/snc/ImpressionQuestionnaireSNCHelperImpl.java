@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.editique.unireg.CTypeAdresse;
 import ch.vd.editique.unireg.CTypeAffranchissement;
 import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.editique.unireg.CTypeInfoDocument;
@@ -82,6 +83,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			final String numTelephone = tiers.getNumeroTelephoneProfessionnel() != null ? tiers.getNumeroTelephoneProfessionnel() :
 					Optional.ofNullable(tiers.getNumeroTelephonePrive())
 							.orElse(tiers.getNumeroTelephonePortable());
+			final CTypeAdresse adresseRaisonSociale = buildAdresseRaisonSociale((Entreprise) tiers, RegDate.get(questionnaire.getPeriode().getAnnee()));
 			return new CTypeQuestSNC(XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee())),
 			                         buildAdresse(infraService.getACIOIPM()),
 			                         delaiRetourImprime,
@@ -89,7 +91,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			                         siege,
 			                         numCommune,
 			                         buildCodeBarre(questionnaire, extractModeleFeuilleDocumentEditique(questionnaire), ServiceInfrastructureService.noOIPM),
-			                         codeControle, numTelephone);
+			                         codeControle, adresseRaisonSociale, numTelephone);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
