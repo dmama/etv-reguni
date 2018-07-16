@@ -1,6 +1,7 @@
 package ch.vd.unireg.editique;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -23,8 +24,13 @@ import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
 import ch.vd.editique.unireg.CTypePorteAdresse;
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.adresse.AdressesFiscalesHisto;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.DonneesCivilesException;
+import ch.vd.unireg.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelperImpl;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
@@ -77,6 +83,24 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	protected AdresseService adresseService;
 	protected TiersService tiersService;
 	protected ServiceInfrastructureService infraService;
+
+	/**
+	 * @param liste liste de valeurs datées, supposées triées chronologiquement
+	 * @param date date de référence
+	 * @param <T> type des éléments dans la liste
+	 * @return l'élément de la liste valide à la date de référence ou, s'il n'y en a pas, le dernier connu avant cette date
+	 */
+	@Nullable
+	protected static <T extends DateRange> T getLastBeforeOrAt(List<T> liste, RegDate date) {
+		if (liste != null && !liste.isEmpty()) {
+			for (T elt : CollectionsUtils.revertedOrder(liste)) {
+				if (elt.getDateDebut() == null || date == null || elt.getDateDebut().isBeforeOrEqual(date)) {
+					return elt;
+				}
+			}
+		}
+		return null;
+	}
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
@@ -473,5 +497,34 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	protected final String getNomRaisonSociale(Tiers tiers) {
 		return tiersService.getNomRaisonSociale(tiers);
+	}
+
+	/**
+	 * Remplissage de l'adresse légale (en fait, adresse fiscale de domicile) et de la raison sociale
+	 * @param entreprise l'entreprise qui nous intéresse
+	 * @param dateFinPeriode la date de fin de la période d'imposition correspondant à la déclaration
+	 * @return une adresse (au format 'éditique') correspondant à l'adresse de domicile de l'entreprise, si elle est connue
+	 */
+	@NotNull
+	protected CTypeAdresse buildAdresseRaisonSociale(Entreprise entreprise, RegDate dateFinPeriode) throws AdresseException, DonneesCivilesException {
+
+		// L'adresse qui m'intéresse est l'adresse à la date de fin de période
+		final AdressesFiscalesHisto histo = adresseService.getAdressesFiscalHisto(entreprise, false);
+		final List<AdresseGenerique> adressesDomicile = histo != null ? histo.ofType(TypeAdresseFiscale.DOMICILE) : null;
+		AdresseGenerique adresseRetenue = null;
+		if (adressesDomicile != null) {
+			adresseRetenue = ImpressionDeclarationImpotPersonnesMoralesHelperImpl.getLastBeforeOrAt(adressesDomicile, dateFinPeriode);
+		}
+
+		if (adresseRetenue != null) {
+			final AdresseEnvoi adresseEnvoi = adresseService.buildAdresseEnvoi(entreprise, adresseRetenue, dateFinPeriode);
+			final CTypeAdresse adresse = buildAdresse(adresseEnvoi);
+			if (adresse != null) {
+				return adresse;
+			}
+		}
+
+		// pas d'adresse connue ? pas grave, on met au moins la raison sociale
+		return new CTypeAdresse(Collections.singletonList(tiersService.getDerniereRaisonSociale(entreprise)));
 	}
 }

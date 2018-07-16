@@ -2,7 +2,6 @@ package ch.vd.unireg.declaration.ordinaire.pm;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +9,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import ch.vd.editique.unireg.CTypeAdresse;
 import ch.vd.editique.unireg.CTypeAffranchissement;
 import ch.vd.editique.unireg.CTypeAnnexesDI;
 import ch.vd.editique.unireg.CTypeAnnexesDIAPM;
@@ -26,17 +22,11 @@ import ch.vd.editique.unireg.STypeReferenceAnnexeDI;
 import ch.vd.editique.unireg.STypeReferenceAnnexeDIAPM;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
-import ch.vd.unireg.adresse.AdresseGenerique;
-import ch.vd.unireg.adresse.AdressesFiscalesHisto;
-import ch.vd.unireg.adresse.TypeAdresseFiscale;
-import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
@@ -251,24 +241,6 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	}
 
 	/**
-	 * @param liste liste de valeurs datées, supposées triées chronologiquement
-	 * @param date date de référence
-	 * @param <T> type des éléments dans la liste
-	 * @return l'élément de la liste valide à la date de référence ou, s'il n'y en a pas, le dernier connu avant cette date
-	 */
-	@Nullable
-	private static <T extends DateRange> T getLastBeforeOrAt(List<T> liste, RegDate date) {
-		if (liste != null && !liste.isEmpty()) {
-			for (T elt : CollectionsUtils.revertedOrder(liste)) {
-				if (elt.getDateDebut() == null || date == null || elt.getDateDebut().isBeforeOrEqual(date)) {
-					return elt;
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Remplissage des données de siège et d'administration effective
 	 * @param di la déclaration au format "éditique"
 	 * @param entreprise l'entreprise qui nous intéresse
@@ -296,35 +268,6 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 			di.setSiege(getNomCommuneOuPays(domicile));
 			di.setAdministrationEffective(getNomCommuneOuPays(forPrincipal));
 		}
-	}
-
-	/**
-	 * Remplissage de l'adresse légale (en fait, adresse fiscale de domicile) et de la raison sociale
-	 * @param entreprise l'entreprise qui nous intéresse
-	 * @param dateFinPeriode la date de fin de la période d'imposition correspondant à la déclaration
-	 * @return une adresse (au format 'éditique') correspondant à l'adresse de domicile de l'entreprise, si elle est connue
-	 */
-	@NotNull
-	private CTypeAdresse buildAdresseRaisonSociale(Entreprise entreprise, RegDate dateFinPeriode) throws AdresseException, DonneesCivilesException {
-
-		// L'adresse qui m'intéresse est l'adresse à la date de fin de période
-		final AdressesFiscalesHisto histo = adresseService.getAdressesFiscalHisto(entreprise, false);
-		final List<AdresseGenerique> adressesDomicile = histo != null ? histo.ofType(TypeAdresseFiscale.DOMICILE) : null;
-		AdresseGenerique adresseRetenue = null;
-		if (adressesDomicile != null) {
-			adresseRetenue = getLastBeforeOrAt(adressesDomicile, dateFinPeriode);
-		}
-
-		if (adresseRetenue != null) {
-			final AdresseEnvoi adresseEnvoi = adresseService.buildAdresseEnvoi(entreprise, adresseRetenue, dateFinPeriode);
-			final CTypeAdresse adresse = buildAdresse(adresseEnvoi);
-			if (adresse != null) {
-				return adresse;
-			}
-		}
-
-		// pas d'adresse connue ? pas grave, on met au moins la raison sociale
-		return new CTypeAdresse(Collections.singletonList(tiersService.getDerniereRaisonSociale(entreprise)));
 	}
 
 	private void fillDocumentDI(CTypeDeclarationImpot di, DeclarationImpotOrdinairePM declaration, boolean hasFeuilletPrincipal) throws AdresseException, DonneesCivilesException, EditiqueException {
