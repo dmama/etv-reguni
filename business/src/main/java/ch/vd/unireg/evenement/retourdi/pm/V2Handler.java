@@ -88,7 +88,7 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 			entreprise = null;
 			mandataire = null;
 		}
-		return new RetourDI(ibc.getNoContribuable().longValue(), ibc.getPeriode().intValue(), ibc.getNoSequenceDi().intValue(), entreprise, mandataire);
+		return new RetourDI(ibc.getNoContribuable().longValue(), ibc.getPeriode().intValue(), ibc.getNoSequenceDi().intValue(), entreprise, mandataire, RetourDI.EnumCanalAcquisition.valueOf(ibc.getSupervision().getCanalAcquisition().name()));
 	}
 
 	@Nullable
@@ -144,8 +144,8 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 			                                                                           extractStringMax40(libre.getAdresseLigne2()),
 			                                                                           extractStringMax40(libre.getAdresseLigne3()),
 			                                                                           extractStringMax40(libre.getAdresseLigne4()),
-			                                                                      null,
-																					   extractStringMax40(libre.getPersonneContact()),
+			                                                                           null,
+			                                                                           extractStringMax40(libre.getPersonneContact()),
 			                                                                           extractStringMax40(libre.getAdresseNpa()),
 			                                                                           extractStringMax40(libre.getAdresseLocalite()));
 			return brutte.isEmpty() ? null : brutte;
@@ -238,7 +238,7 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 			return null;
 		}
 		final List<String> elements = new ArrayList<>(3);
-		final String[] array = { title, firstname, lastname };
+		final String[] array = {title, firstname, lastname};
 		for (String element : array) {
 			if (StringUtils.isNotBlank(element)) {
 				elements.add(element.trim());

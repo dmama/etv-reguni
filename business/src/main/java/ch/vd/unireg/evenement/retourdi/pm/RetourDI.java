@@ -7,13 +7,15 @@ public class RetourDI {
 	private final int noSequence;
 	private final InformationsEntreprise entreprise;
 	private final InformationsMandataire mandataire;
+	private final EnumCanalAcquisition canalAquisitionDI;
 
-	public RetourDI(long noCtb, int pf, int noSequence, InformationsEntreprise entreprise, InformationsMandataire mandataire) {
+	public RetourDI(long noCtb, int pf, int noSequence, InformationsEntreprise entreprise, InformationsMandataire mandataire, EnumCanalAcquisition enumCanalAcquisitionDI) {
 		this.noCtb = noCtb;
 		this.pf = pf;
 		this.noSequence = noSequence;
 		this.entreprise = entreprise;
 		this.mandataire = mandataire;
+		this.canalAquisitionDI = enumCanalAcquisitionDI;
 	}
 
 	public long getNoCtb() {
@@ -34,5 +36,14 @@ public class RetourDI {
 
 	public InformationsMandataire getMandataire() {
 		return mandataire;
+	}
+
+	public EnumCanalAcquisition getCanalAquisitionDI() {
+		return canalAquisitionDI;
+	}
+
+	public enum EnumCanalAcquisition {
+		ELECTRONIQUE,
+		PAPIER
 	}
 }

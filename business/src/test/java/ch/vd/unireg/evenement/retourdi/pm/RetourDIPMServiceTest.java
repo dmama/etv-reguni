@@ -100,9 +100,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Petite classe de callback qui permet de temporairement placer la première année d'envoi des DI PM
-	 * à une valeur donnée (en production, c'est 2016, ce qui ne laisse, à l'heure où ces lignes sont écrites,
-	 * que peu de place pour les tests...)
+	 * Petite classe de callback qui permet de temporairement placer la première année d'envoi des DI PM à une valeur donnée (en production, c'est 2016, ce qui ne laisse, à l'heure où ces lignes sont écrites, que peu de place pour les tests...)
 	 */
 	private class ChangementPremiereAnneeDeclarationPMInitCleanupCallback implements InitCleanupCallback {
 
@@ -131,7 +129,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// pas de mise en place fiscale -> personne
 
 		// réception des données de retour
-		final RetourDI retour = new RetourDI(42L, 2015, 1, null, null);
+		final RetourDI retour = new RetourDI(42L, 2015, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		try {
@@ -159,7 +157,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final RetourDI retour = new RetourDI(id, 2015, 1, null, null);
+		final RetourDI retour = new RetourDI(id, 2015, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		try {
@@ -195,7 +193,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final RetourDI retour = new RetourDI(id, 2015, 18, null, null);
+		final RetourDI retour = new RetourDI(id, 2015, 18, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		try {
@@ -241,7 +239,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -327,7 +325,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -412,7 +410,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -488,7 +486,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -592,7 +590,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -702,7 +700,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -812,7 +810,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -924,7 +922,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -1060,7 +1058,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -1182,7 +1180,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -1339,7 +1337,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		// exceptionnellement, on va dire que les tâches d'envoi de DI sont générables depuis 2014 (pour bien voir que le trou est remplit par une tâche d'envoi de DI)
@@ -1530,7 +1528,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		// exceptionnellement, on va dire que les tâches d'envoi de DI sont générables depuis 2014 (pour bien voir que le trou est remplit par une DI)
@@ -1730,7 +1728,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -1822,6 +1820,60 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testChangementExerciceCommercialNonPrisEnComptePourAPM() throws Exception {
+
+		final int anneeInitiale = 2015;
+		final int anneeFinale = 2016;
+		final RegDate dateDebutEntreprise = date(Math.min(anneeInitiale, anneeFinale), 2, 1);
+		final RegDate nouvelleFinExerciceCommercial = date(anneeFinale, 6, 30);
+
+		final RegDate dateQuittance = date(anneeInitiale + 1, 5, 13);
+
+		// mise en place fiscale
+		final long pmId = getEntrepriseAPMAvecMandataire(anneeInitiale, dateDebutEntreprise, dateQuittance);
+
+		// réception des données de retour
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
+		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		// vérification des résultats de la prise en compte des données de retour
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+
+				// bouclements ?
+				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
+				Assert.assertEquals(1, bouclements.size());
+
+				final Bouclement bouclement = bouclements.get(0);
+				Assert.assertNotNull(bouclement);
+				Assert.assertFalse(bouclement.isAnnule());
+				Assert.assertEquals(12, bouclement.getPeriodeMois());
+
+
+				// Aucune tâches de contrôle de dossier
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(entreprise);
+				criterion.setInclureTachesAnnulees(true);
+				criterion.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(criterion);
+				Assert.assertEquals(0, tachesControle.size());
+			}
+		});
+	}
+
+	@Test
 	public void testChangementDateFinExerciceCommercialAnneeDifferenteApresAvecDeclarationNonRetourneeUlterieure() throws Exception {
 
 		final int anneeInitiale = 2013;
@@ -1866,7 +1918,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données (en mettant la première année de calcul des tâches de DI PM à 2014 pour comprendre ce qui se passe sur la DI 2014)
 		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(anneeFinale), new TxCallbackWithoutResult() {
@@ -2039,7 +2091,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données (en mettant la première année de calcul des tâches de DI PM à 2014 pour comprendre ce qui se passe sur la DI 2014)
 		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(anneeFinale), new TxCallbackWithoutResult() {
@@ -2190,9 +2242,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Ratatatsointsoin 24", null, null, null, null,"1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Ratatatsointsoin 24", null, null, null, null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2233,7 +2285,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertEquals(1, remarques.size());
 				final Remarque remarque = remarques.iterator().next();
 				Assert.assertNotNull(remarque);
-				Assert.assertEquals("Les données d'adresse/raison sociale trouvées dans la DI 2015/1 n'ont pas pu être interprétées de manière concluante (Ma petite entreprise SARL / Avenue de Ratatatsointsoin 24 / 1003 / Lausanne).", remarque.getTexte());
+				Assert.assertEquals("Les données d'adresse/raison sociale trouvées dans la DI 2015/1 n'ont pas pu être interprétées de manière concluante (Ma petite entreprise SARL / Avenue de Ratatatsointsoin 24 / 1003 / Lausanne).",
+				                    remarque.getTexte());
 			}
 		});
 	}
@@ -2265,9 +2318,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, null,"1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2346,7 +2399,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final DestinataireAdresse destinataire = new DestinataireAdresse.Entreprise(null, "Ma petite entreprise SARL", null, null, "Monsieur moi-même");
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, null, "Avenue de Ratatatsointsoin", "24", null, null, null, null, MockLocalite.Lausanne1003.getNoOrdre());
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2428,7 +2481,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final DestinataireAdresse destinataire = new DestinataireAdresse.Entreprise(null, "Ma petite entreprise SARL", null, null, "Monsieur moi-même");
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.DestinataireSeulement(destinataire);
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2499,9 +2552,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null,null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null, null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2584,9 +2637,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null, null,"1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null, null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2670,9 +2723,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null,null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2768,9 +2821,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null,null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2824,7 +2877,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertEquals(1, remarques.size());
 				final Remarque remarque = remarques.iterator().next();
 				Assert.assertNotNull(remarque);
-				Assert.assertEquals("L'adresse récupérée dans la DI 2015/1 (Ma petite entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge fermée d'adresse courrier.", remarque.getTexte());
+				Assert.assertEquals(
+						"L'adresse récupérée dans la DI 2015/1 (Ma petite entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge fermée d'adresse courrier.",
+						remarque.getTexte());
 			}
 		});
 	}
@@ -2861,9 +2916,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null,null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -2917,7 +2972,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertEquals(1, remarques.size());
 				final Remarque remarque = remarques.iterator().next();
 				Assert.assertNotNull(remarque);
-				Assert.assertEquals("L'adresse récupérée dans la DI 2015/1 (Ma petite entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.", remarque.getTexte());
+				Assert.assertEquals(
+						"L'adresse récupérée dans la DI 2015/1 (Ma petite entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
+						remarque.getTexte());
 			}
 		});
 	}
@@ -2954,9 +3011,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma grande entreprise SARL", "Avenue de Beaulieu 24", null, null, null,null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma grande entreprise SARL", "Avenue de Beaulieu 24", null, null, null, null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3023,8 +3080,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				{
 					final Remarque remarque = remarquesTriees.get(0);
 					Assert.assertNotNull(remarque);
-					Assert.assertEquals("L'adresse récupérée dans la DI 2015/1 (Ma grande entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
-					                    remarque.getTexte());
+					Assert.assertEquals(
+							"L'adresse récupérée dans la DI 2015/1 (Ma grande entreprise SARL / Avenue de Beaulieu 24 / 1003 / Lausanne) n'a pas été prise en compte automatiquement en raison de la présence au 13.05.2016 d'une surcharge permanente d'adresse courrier.",
+							remarque.getTexte());
 				}
 				{
 					final Remarque remarque = remarquesTriees.get(1);
@@ -3069,7 +3127,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final Localisation siege = new Localisation.SaisieLibre("CossoNay");
 		Assert.assertNotNull(siege.transcriptionFiscale(serviceInfra, RegDate.get()));      // vérification qu'on reconnait bien le siège à Cossonay
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3148,7 +3206,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final Localisation siege = new Localisation.SaisieLibre("LausannE");
 		Assert.assertNotNull(siege.transcriptionFiscale(serviceInfra, RegDate.get()));      // vérification qu'on reconnait bien le siège à Cossonay
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3234,7 +3292,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final Localisation siege = new Localisation.Etranger(MockPays.Allemagne.getNoOFS(), "Stuttgart");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3321,7 +3379,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final Localisation siege = new Localisation.SaisieLibre("Pétahouchnock");
 		Assert.assertNull(siege.transcriptionFiscale(serviceInfra, RegDate.get()));
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3408,7 +3466,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final Localisation ae = new Localisation.SaisieLibre("ÉchaLLENS");
 		Assert.assertNotNull(ae.transcriptionFiscale(serviceInfra, RegDate.get()));      // vérification qu'on reconnait bien "échallens"
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3495,7 +3553,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final Localisation ae = new Localisation.SaisieLibre("LausannE");
 		Assert.assertNotNull(ae.transcriptionFiscale(serviceInfra, RegDate.get()));      // vérification qu'on reconnait bien la donnée
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3589,7 +3647,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final Localisation ae = new Localisation.Etranger(MockPays.Allemagne.getNoOFS(), "Stuttgart");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3684,7 +3742,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final Localisation ae = new Localisation.SaisieLibre("Pétahouchnock");
 		Assert.assertNull(ae.transcriptionFiscale(serviceInfra, RegDate.get()));
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3780,7 +3838,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (iban valide sans titulaire)
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3856,7 +3914,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -3876,6 +3934,59 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
 				Assert.assertNotNull(coords);
 				Assert.assertEquals("Ma petite entreprise SARL", coords.getTitulaire());
+				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
+
+				// remarque -> rien
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+
+				// tâche de contrôle de dossier -> aucune
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				tacheCriteria.setNumeroCTB(idEntreprise);
+				final List<Tache> taches = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(0, taches.size());
+			}
+		});
+	}
+
+	@Test
+	public void testCoordonneesFinancieresIbanValideSeulRemplacantAutreIbanValideAPM() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2015, 2, 1);
+		final RegDate dateQuittance = date(annee + 1, 5, 13);
+		final String ibanConnu = "DE43123456780000087512";      // valide
+		final String titulaireCompteConnu = "Otto Müllinger";   // même le titulaire du compte est écrasé
+		final String nouvelIban = "CH690023000123456789A";      // valide
+		final String nouveauTitulaireCompte = null;
+
+		final long idEntreprise = getEntrepriseAPMAvecMandataire(annee, dateDebutEntreprise, dateQuittance);
+
+		// réception des données de retour
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				final CoordonneesFinancieres coords = entreprise.getCoordonneesFinancieresCourantes();
+				Assert.assertNotNull(coords);
+				Assert.assertEquals("Ma petite Association qui va bien", coords.getTitulaire());
 				Assert.assertEquals(nouvelIban, coords.getCompteBancaire().getIban());
 
 				// remarque -> rien
@@ -3929,7 +4040,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (iban valide sans titulaire)
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4005,7 +4116,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4089,7 +4200,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4165,7 +4276,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4241,7 +4352,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4316,10 +4427,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 
-
-
 		// réception des données de retour (en particulier, pas de mandataire)
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -4392,7 +4501,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4474,7 +4583,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, null);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4558,7 +4667,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -4631,7 +4740,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4707,7 +4816,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (en particulier, pas de mandataire)
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4807,7 +4916,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (en particulier, mandataire identifié par son numéro IDE)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, null, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -4912,9 +5021,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (ici, la particularité est qu'une adresse sans raison sociale est fournie - on notera de plus que l'adresse n'est pas
 		// tout-à-fait la même, puisque le nom officiel contient un tiret...)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Avenue Guiseppe Motta 42", null, null, null, null,null, MockLocalite.Geneve.getNPA().toString(), MockLocalite.Geneve.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Avenue Guiseppe Motta 42", null, null, null, null, null, MockLocalite.Geneve.getNPA().toString(), MockLocalite.Geneve.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -5018,9 +5127,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (ici, la particularité est qu'une complètement différente est fournie)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Voltastrasse 42", null, null, null, null, null,MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Voltastrasse 42", null, null, null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -5129,9 +5238,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (ici, la particularité est qu'une complètement différente est fournie)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null,null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -5240,9 +5349,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (ici, la particularité est que l'adresse fournie n'est pas connue dans l'infrastructure)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null,null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null, null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -5290,7 +5399,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Remarque remarque = remarques.iterator().next();
 					Assert.assertNotNull(remarque);
 					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante (Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD).", remarque.getTexte());
+					Assert.assertEquals(
+							"Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante (Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD).",
+							remarque.getTexte());
 				}
 
 				final TacheCriteria tacheCriteria = new TacheCriteria();
@@ -5358,9 +5469,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (ici, la particularité est que l'adresse fournie n'est pas connue dans l'infrastructure)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null,null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null, null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(null, adresseMandataire, null, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5396,7 +5507,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Remarque remarque = remarques.iterator().next();
 					Assert.assertNotNull(remarque);
 					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD.", remarque.getTexte());
+					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee +
+							                    "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD.", remarque.getTexte());
 				}
 
 				final TacheCriteria tacheCriteria = new TacheCriteria();
@@ -5477,7 +5589,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (ici, la particularité est que le numéro IDE est associé à deux entreprises distinctes)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, null, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5579,9 +5691,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (nouveau mandataire)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null,null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, Boolean.TRUE, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -5698,7 +5810,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (nouveau mandataire)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, Boolean.FALSE, null);
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -5821,7 +5933,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (même mandataire mais le flag "sans copie" est coché)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, Boolean.TRUE, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -5944,7 +6056,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (même mandataire mais le numéro de téléphone de contact a changé)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, Boolean.FALSE, newTelContact);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
@@ -6064,7 +6176,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (même mandataire, même flag)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, Boolean.FALSE, null);
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6170,9 +6282,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (pas de numéro IDE, adresse non-reconnue)
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Chapi chapo", "Tralalo", "Chapo chapi", "Tralali", null,null, MockLocalite.Bussigny.getNPA().toString(), MockLocalite.Bussigny.getNom());
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Chapi chapo", "Tralalo", "Chapo chapi", "Tralali", null, null, MockLocalite.Bussigny.getNPA().toString(), MockLocalite.Bussigny.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(null, adresse, Boolean.FALSE, "0211234567");
-		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6221,7 +6333,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Remarque remarque = remarques.iterator().next();
 					Assert.assertNotNull(remarque);
 					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Chapi chapo / Tralalo / Chapo chapi / Tralali / 1030 / Bussigny\n- copie mandataire : avec\n- téléphone contact : 0211234567.", remarque.getTexte());
+					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee +
+							                    "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Chapi chapo / Tralalo / Chapo chapi / Tralali / 1030 / Bussigny\n- copie mandataire : avec\n- téléphone contact : 0211234567.",
+					                    remarque.getTexte());
 				}
 
 				final TacheCriteria tacheCriteria = new TacheCriteria();
@@ -6269,7 +6383,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour (pas de numéro IDE, adresse non-reconnue)
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6339,7 +6453,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6413,7 +6527,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour (on notera l'absence de majuscules dans "le chef")
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "le chef"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, "0213168888");
-		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6488,7 +6602,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, "0666666666");
-		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6562,7 +6676,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour (juste ajout d'un titre sur le nom déjà connu)
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "M. Le Chef"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6599,8 +6713,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-21738] Non-effacement du numéro de téléphone utilisé pour le contact en cas de non-changement dans les données du contact
-	 * [SIFISC-22366] Update: le téléphone professionnel est repris de la quittance dans tous les cas.
+	 * [SIFISC-21738] Non-effacement du numéro de téléphone utilisé pour le contact en cas de non-changement dans les données du contact [SIFISC-22366] Update: le téléphone professionnel est repris de la quittance dans tous les cas.
 	 */
 	@Test
 	public void testNonEffacementNumeroTelephoneContactSiPasChangementContact() throws Exception {
@@ -6637,7 +6750,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, "Le Chef"), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6674,8 +6787,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-21738] Non-effacement du numéro de téléphone utilisé pour le contact en d'absence de données de contact
-	 * [SIFISC-22366] Update: le téléphone professionnel est repris de la quittance dans tous les cas.
+	 * [SIFISC-21738] Non-effacement du numéro de téléphone utilisé pour le contact en d'absence de données de contact [SIFISC-22366] Update: le téléphone professionnel est repris de la quittance dans tous les cas.
 	 */
 	@Test
 	public void testNonEffacementNumeroTelephoneContactAbsenceDonneesContact() throws Exception {
@@ -6712,7 +6824,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Entreprise(null, null, null, null, null), null, null, null, null, null, null, null, null, null, null);
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6779,9 +6891,10 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final DestinataireAdresse destinataire = new DestinataireAdresse.Entreprise(null, "Mon Mande-à-Terre", null, null, "Madame Delphine Rapon");
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, MockRue.Lausanne.CheminDeMornex.getNoRue(), null, "25 bis", null, null, MockLocalite.Lausanne1003.getNPA(), null, MockLocalite.Lausanne1003.getNoOrdre());
+		final AdresseRaisonSociale adresse =
+				new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, MockRue.Lausanne.CheminDeMornex.getNoRue(), null, "25 bis", null, null, MockLocalite.Lausanne1003.getNPA(), null, MockLocalite.Lausanne1003.getNoOrdre());
 		final InformationsMandataire infoMandataire = new InformationsMandataire(null, adresse, Boolean.FALSE, "0213161111");
-		final RetourDI retour = new RetourDI(id, annee, 1, null, infoMandataire);
+		final RetourDI retour = new RetourDI(id, annee, 1, null, infoMandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6826,8 +6939,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * SIFISC-22254 : un exercice commercial 1.7.2015 -> 30.06.2016 est tiré par la DI jusqu'en 2017
-	 * (cela devrait poser un problème car alors 2016 n'a pas de bouclement alors qu'il ne s'agit pas de la première année)
+	 * SIFISC-22254 : un exercice commercial 1.7.2015 -> 30.06.2016 est tiré par la DI jusqu'en 2017 (cela devrait poser un problème car alors 2016 n'a pas de bouclement alors qu'il ne s'agit pas de la première année)
 	 */
 	@Test
 	public void testTraitementDecalageBouclementTropLoin() throws Exception {
@@ -6851,7 +6963,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
 
 			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			final DeclarationImpotOrdinairePM di =
+					addDeclarationImpot(entreprise, pfCourante, date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
 			addEtatDeclarationRetournee(di, date(anneeInitiale, 11, 1));
 
@@ -6860,7 +6973,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// arrivée du contenu de la DI avec un changement de PF -> année suivante (l'ancienne PF de la DI se retrouve alors sans bouclement du tout...)
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 1, 6, 30), null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6932,9 +7045,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * SIFISC-22254 : un exercice commercial 1.7.2015 -> 30.06.2016 est tiré par la DI jusqu'en 2017
-	 * (cela devrait poser un problème car alors 2016 n'a pas de bouclement alors qu'il ne s'agit pas de la première année)
-	 * --> cas où c'est la première DI qui est décalée, mais comme c'est la première, ce n'est pas un souci
+	 * SIFISC-22254 : un exercice commercial 1.7.2015 -> 30.06.2016 est tiré par la DI jusqu'en 2017 (cela devrait poser un problème car alors 2016 n'a pas de bouclement alors qu'il ne s'agit pas de la première année) --> cas où c'est la première DI
+	 * qui est décalée, mais comme c'est la première, ce n'est pas un souci
 	 */
 	@Test
 	public void testTraitementDecalagePremierBouclementAnneeSuivante() throws Exception {
@@ -6958,7 +7070,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
 
 			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			final DeclarationImpotOrdinairePM di =
+					addDeclarationImpot(entreprise, pfCourante, date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
 			addEtatDeclarationRetournee(di, date(anneeInitiale + 1, 1, 20));
 
@@ -6967,7 +7080,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// arrivée du contenu de la DI avec un changement de PF -> année suivante (l'ancienne PF de la DI se retrouve alors sans bouclement du tout, mais ce n'est pas grave, car c'est la première...)
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 1, 1, 31), null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -7064,9 +7177,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * SIFISC-22254 : un exercice commercial 1.7.2015 -> 30.06.2016 est tiré par la DI jusqu'en 2017
-	 * (cela devrait poser un problème car alors 2016 n'a pas de bouclement alors qu'il ne s'agit pas de la première année)
-	 * --> cas où c'est la première DI qui est décalée, d'une année de trop...
+	 * SIFISC-22254 : un exercice commercial 1.7.2015 -> 30.06.2016 est tiré par la DI jusqu'en 2017 (cela devrait poser un problème car alors 2016 n'a pas de bouclement alors qu'il ne s'agit pas de la première année) --> cas où c'est la première DI
+	 * qui est décalée, d'une année de trop...
 	 */
 	@Test
 	public void testTraitementDecalagePremierBouclementAnneeApresSuivante() throws Exception {
@@ -7091,7 +7203,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
 
 			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			final DeclarationImpotOrdinairePM di =
+					addDeclarationImpot(entreprise, pfCourante, date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), date(anneeInitiale, 1, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
 			addEtatDeclarationRetournee(di, date(anneeInitiale + 1, 1, 20));
 
@@ -7101,7 +7214,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// arrivée du contenu de la DI avec un changement de PF -> année + 2 (l'ancienne PF de la DI se retrouve alors sans bouclement du tout, ce qui n'est pas grave, puisque c'est
 		// la première, mais c'est un souci pour la suivante...)
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 2, 1, 31), null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -7173,13 +7286,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * SIFISC-22462 la date d'exercice commercial n'a pas été déplacée malgré l'arrivée d'une DI qui va bien
-	 * (cas de l'exercice commercial déplacé plus loin dans le futur que la prochaine date de bouclement précédemment connue)
-	 * Exemple :
+	 * SIFISC-22462 la date d'exercice commercial n'a pas été déplacée malgré l'arrivée d'une DI qui va bien (cas de l'exercice commercial déplacé plus loin dans le futur que la prochaine date de bouclement précédemment connue) Exemple :
 	 * <ul>
-	 *     <li>bouclements initiaux tous les 30.09</li>
-	 *     <li>DI initiale jusqu'au 30.09.XXXX</li>
-	 *     <li>retour de la DI avec nouvelle date de fin au 31.12 de l'année suivante (= après le 30.09.(XXXX + 1))</li>
+	 * <li>bouclements initiaux tous les 30.09</li>
+	 * <li>DI initiale jusqu'au 30.09.XXXX</li>
+	 * <li>retour de la DI avec nouvelle date de fin au 31.12 de l'année suivante (= après le 30.09.(XXXX + 1))</li>
 	 * </ul>
 	 */
 	@Test
@@ -7209,7 +7320,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(dateDebut.year() + 1, 12, 31), null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -7277,8 +7388,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * SIFISC-22459 : la date d'exercice commercial annoncée par la DI est, par erreur (faute de frappe ?) antérieure à la date de début de la DI
-	 * (il ne faut alors pas en tenir compte...)
+	 * SIFISC-22459 : la date d'exercice commercial annoncée par la DI est, par erreur (faute de frappe ?) antérieure à la date de début de la DI (il ne faut alors pas en tenir compte...)
 	 */
 	@Test
 	public void testFinExerciceCommercialAnnonceeAnterieureADebutConnu() throws Exception {
@@ -7307,7 +7417,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(dateDebut.year() - 1, 12, 31), null, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -7331,8 +7441,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				final Remarque remarque = remarques.iterator().next();
 				Assert.assertNotNull(remarque);
 				Assert.assertFalse(remarque.isAnnule());
-				Assert.assertEquals(String.format("Le retour de la DI %d/1 annonce une nouvelle fin d'exercice commercial au 31.12.2015, mais celle-ci n'a pas été prise en compte automatiquement car elle est antérieure à la date de début de l'exercice commercial de la DI (27.04.2016).",
-				                                  dateDebut.year()),
+				Assert.assertEquals(String.format(
+						"Le retour de la DI %d/1 annonce une nouvelle fin d'exercice commercial au 31.12.2015, mais celle-ci n'a pas été prise en compte automatiquement car elle est antérieure à la date de début de l'exercice commercial de la DI (27.04.2016).",
+						dateDebut.year()),
 				                    remarque.getTexte());
 
 				final TacheCriteria tacheCriteria = new TacheCriteria();
@@ -7397,9 +7508,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			return entreprise.getNumero();
 		});
 
-        final AdresseRaisonSociale adresseCourrier = new AdresseRaisonSociale.Brutte("Ma grande entreprise", "Avenue du 14 avril 12", null, null, null, null, "1020", "Renens VD");
+		final AdresseRaisonSociale adresseCourrier = new AdresseRaisonSociale.Brutte("Ma grande entreprise", "Avenue du 14 avril 12", null, null, null, null, "1020", "Renens VD");
 		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(dateDebut.year(), 9, 30), adresseCourrier, null, null, null, null, null);
-		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null);
+		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -7421,8 +7532,9 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				final Remarque remarque = remarques.iterator().next();
 				Assert.assertNotNull(remarque);
 				Assert.assertFalse(remarque.isAnnule());
-				Assert.assertEquals(String.format("L'adresse récupérée dans la DI %d/1 (Ma grande entreprise / Avenue du 14 avril 12 / 1020 / Renens VD) n'a pas été traitée en raison de la présence d'une surcharge d'adresse courrier existante à partir du 14.02.%d.",
-				                                  dateDebut.year(), dateDebut.year() + 1),
+				Assert.assertEquals(String.format(
+						"L'adresse récupérée dans la DI %d/1 (Ma grande entreprise / Avenue du 14 avril 12 / 1020 / Renens VD) n'a pas été traitée en raison de la présence d'une surcharge d'adresse courrier existante à partir du 14.02.%d.",
+						dateDebut.year(), dateDebut.year() + 1),
 				                    remarque.getTexte());
 
 				final TacheCriteria tacheCriteria = new TacheCriteria();
@@ -7473,9 +7585,11 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		final DestinataireAdresse destinataire = new DestinataireAdresse.Personne(null, "François", "Morin", "Gérance");
-		final AdresseRaisonSociale adresseCourrier = new AdresseRaisonSociale.StructureeSuisse(destinataire, "3ème étage droite", null, MockRue.Renens.QuatorzeAvril.getNoRue(), MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "25", null, MockLocalite.Renens.getNom(), MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre());
+		final AdresseRaisonSociale adresseCourrier =
+				new AdresseRaisonSociale.StructureeSuisse(destinataire, "3ème étage droite", null, MockRue.Renens.QuatorzeAvril.getNoRue(), MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "25", null, MockLocalite.Renens.getNom(),
+				                                          MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre());
 		final InformationsMandataire mandataire = new InformationsMandataire(null, adresseCourrier, Boolean.FALSE, null);
-		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, null, mandataire);
+		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, null, mandataire, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -7535,7 +7649,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 	}
 
-	//SIFISC-28705 les liens mandataires  sur les APM ne doivent pas être touchées en cas de retour DI qui ne contiennent aucune infos sur les mandataires.
+	//SIFISC-28705 les liens mandataires  sur les APM ne doivent pas être touchées en cas de retour DI (Canal Papier) qui ne contiennent aucune infos sur les mandataires.
 	@Test
 	public void testAbsenceInformationMandatairePourAPM() throws Exception {
 
@@ -7570,10 +7684,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 
-
-
 		// réception des données de retour (en particulier, pas de mandataire)
-		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.PAPIER);
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -7604,6 +7716,77 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNull(mandat.getDateFin());
 				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 			}
+		});
+	}
+
+	@Test
+	public void testPresenceInformationMandatairePourAPM() throws Exception {
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2010, 2, 1);
+		final RegDate dateQuittance = date(annee + 1, 5, 13);
+
+		final long idEntreprise = getEntrepriseAPMAvecMandataire(annee, dateDebutEntreprise, dateQuittance);
+
+		// réception des données de retour (en particulier, pas de mandataire)
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null, RetourDI.EnumCanalAcquisition.ELECTRONIQUE);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				final List<Mandat> mandats = new ArrayList<>();
+				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+					if (ret instanceof Mandat) {
+						mandats.add((Mandat) ret);
+					}
+				}
+				Assert.assertEquals(1, mandats.size());
+				final Mandat mandat = mandats.get(0);
+				Assert.assertNotNull(mandat);
+				Assert.assertFalse(mandat.isAnnule());
+				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+				Assert.assertNotNull(mandat.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+			}
+		});
+	}
+
+	private Long getEntrepriseAPMAvecMandataire(int annee, RegDate dateDebutEntreprise, RegDate dateQuittance) throws Exception {
+		return doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite Association qui va bien");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee, 1, 1), date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
+
+
+			final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
+			addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
+
+			addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+
+			return entreprise.getNumero();
 		});
 	}
 }

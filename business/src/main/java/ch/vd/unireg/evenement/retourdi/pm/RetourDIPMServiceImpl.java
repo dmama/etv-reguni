@@ -179,7 +179,8 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Point d'entrée principal du service
-	 * @param retour les informations en question
+	 *
+	 * @param retour          les informations en question
 	 * @param incomingHeaders les méta-données autour du message entrant
 	 * @throws EsbBusinessException en cas de problème
 	 */
@@ -198,7 +199,8 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final List<DeclarationImpotOrdinairePM> declarationsDansPeriode = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, retour.getPf(), true);
 		final DeclarationImpotOrdinairePM declarationIdentifiee = findDeclaration(declarationsDansPeriode, retour.getNoSequence());
 		if (declarationIdentifiee == null) {
-			throw new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "L'entreprise " + FormatNumeroHelper.numeroCTBToDisplay(noCtb) + " ne possède pas de déclaration d'impôt " + retour.getPf() + " avec le numéro de séquence " + retour.getNoSequence() + '.', null);
+			throw new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE,
+			                               "L'entreprise " + FormatNumeroHelper.numeroCTBToDisplay(noCtb) + " ne possède pas de déclaration d'impôt " + retour.getPf() + " avec le numéro de séquence " + retour.getNoSequence() + '.', null);
 		}
 
 		// on a maintenant bien une DI identifiée... est-elle dans un état cohérent par rapport à un retour de scan ?
@@ -219,11 +221,15 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		// Y a-t-il des choses à faire au niveau de l'entreprise elle-même ?
 		final RegDate dateReference = extractDateReference(retour);
 		final InformationsEntreprise infosEntreprise = retour.getEntreprise();
+		final boolean isAPM = tiersService.getCategorieEntreprise(entreprise, null) == CategorieEntreprise.APM;
+
 		if (infosEntreprise != null) {
-			traiterFinExerciceCommercial(entreprise, declarationIdentifiee, infosEntreprise.getDateFinExerciceCommercial());
+			if (!isAPM) {
+				traiterFinExerciceCommercial(entreprise, declarationIdentifiee, infosEntreprise.getDateFinExerciceCommercial());
+				traiterSiege(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getSiege());
+				traiterAdministrationEffective(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdministrationEffective());
+			}
 			traiterAdresseCourrierEtRaisonSociale(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdresseCourrier(), infosEntreprise.getNoTelContact());
-			traiterSiege(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getSiege());
-			traiterAdministrationEffective(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdministrationEffective());
 			traiterInformationsBancaires(entreprise, retour.getPf(), retour.getNoSequence(), infosEntreprise.getIban(), infosEntreprise.getTitulaireCompteBancaire());
 		}
 
@@ -231,26 +237,25 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		// Y a-t-il des choses à faire au niveau du mandataire général de l'entreprise ?
 		//SIFISC-28705 le traitement du mandataire ne doit pas s'appliquer pour le moment sur des entreprises de type APM
 		//Pour l'instant on ne recoit pas le contenu de la DI pour les APM.
-		if (CategorieEntreprise.APM != tiersService.getCategorieEntreprise(entreprise, null)) {
+		//FISCPROJ-299: Mettre à jour les informations mandataires des APM.
 
-
-			final InformationsMandataire infosMandataire = retour.getMandataire();
-			if (infosMandataire != null && infosMandataire.isNotEmpty()) {
-				// ah ah... il y a quelque chose...
-				traiterInformationsMandataire(entreprise, retour.getPf(), retour.getNoSequence(), infosMandataire);
-			}
-			else {
-				// pas d'information fournie -> on stoppe l'éventuel mandat général en cours
-				fermerMandatGeneralActif(entreprise, retour.getPf(), retour.getNoSequence());
-			}
+		final InformationsMandataire infosMandataire = retour.getMandataire();
+		if (infosMandataire != null && infosMandataire.isNotEmpty()) {
+			// ah ah... il y a quelque chose...
+			traiterInformationsMandataire(entreprise, retour.getPf(), retour.getNoSequence(), infosMandataire);
+		}
+		else if (retour.getCanalAquisitionDI() != RetourDI.EnumCanalAcquisition.PAPIER) {
+			// pas d'information fournie -> on stoppe l'éventuel mandat général en cours
+			fermerMandatGeneralActif(entreprise, retour.getPf(), retour.getNoSequence());
 		}
 	}
 
 	/**
 	 * Traitement des informations de mandataire général présentes dans la déclaration retournée
-	 * @param entreprise entreprise ciblée
-	 * @param pf période fiscale initiale (= à l'envoi) de la DI
-	 * @param noSequence numéro de séquence initial (= à l'envoi) de la DI dans sa période fiscale (initiale)
+	 *
+	 * @param entreprise      entreprise ciblée
+	 * @param pf              période fiscale initiale (= à l'envoi) de la DI
+	 * @param noSequence      numéro de séquence initial (= à l'envoi) de la DI dans sa période fiscale (initiale)
 	 * @param infosMandataire informations extraites de la DI
 	 */
 	private void traiterInformationsMandataire(Entreprise entreprise, int pf, int noSequence, @NotNull InformationsMandataire infosMandataire) {
@@ -585,10 +590,10 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	}
 
 	/**
-	 * Ferme le mandat général (quelle que soit sa forme - lien ou simple adresse) actif à la veille
-	 * de la date de début de la période d'imposition de la DI retournée
+	 * Ferme le mandat général (quelle que soit sa forme - lien ou simple adresse) actif à la veille de la date de début de la période d'imposition de la DI retournée
+	 *
 	 * @param entreprise entreprise concernée
-	 * @param pf période fiscale de la déclaration
+	 * @param pf         période fiscale de la déclaration
 	 * @param noSequence numéro de séquence de la déclaration dans sa période fiscale
 	 */
 	private void fermerMandatGeneralActif(Entreprise entreprise, int pf, int noSequence) {
@@ -610,10 +615,11 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Fermeture d'un lien de mandat (ou, si absent, de l'adresse mandataire) - évidemment, rien n'est fait si les deux sont nuls
-	 * @param entreprise entreprise ciblée
-	 * @param mandat lien de mandat à fermer
+	 *
+	 * @param entreprise        entreprise ciblée
+	 * @param mandat            lien de mandat à fermer
 	 * @param adresseMandataire en absence de mandat à fermer, adresse mandataire à fermer
-	 * @param dateCloture date à utiliser pour clôturer les entités
+	 * @param dateCloture       date à utiliser pour clôturer les entités
 	 */
 	private void fermerLienAdresseMandataire(Entreprise entreprise, @Nullable Mandat mandat, @Nullable AdresseMandataire adresseMandataire, RegDate dateCloture) {
 		if (mandat != null) {
@@ -632,9 +638,10 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Ferme l'entité à la date donnée
+	 *
 	 * @param rangeEntity entité à fermer
 	 * @param dateCloture date de clôture souhaitée
-	 * @param <T> type de l'entité
+	 * @param <T>         type de l'entité
 	 * @return si la fermeture de l'entité aboutit à la création d'une nouvelle entité (= annulation de la précédente + création), la nouvelle entité créée (non-encore persistée...)
 	 */
 	@Nullable
@@ -704,10 +711,11 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Traitement des changements dans les coordonnées financières déclarées dans une DI
-	 * @param entreprise entreprise concernée
-	 * @param pf période fiscale de la déclaration
-	 * @param noSequence numéro de séquence de la déclaration dans sa période fiscale
-	 * @param iban éventuel IBAN fourni
+	 *
+	 * @param entreprise      entreprise concernée
+	 * @param pf              période fiscale de la déclaration
+	 * @param noSequence      numéro de séquence de la déclaration dans sa période fiscale
+	 * @param iban            éventuel IBAN fourni
 	 * @param titulaireCompte éventuel titulaire du compte fourni
 	 */
 	private void traiterInformationsBancaires(Entreprise entreprise, int pf, int noSequence, @Nullable String iban, @Nullable String titulaireCompte) {
@@ -730,11 +738,12 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Traitement d'un éventuel nouveau siège déclaré dans une DI
-	 * @param entreprise entreprise concernée
-	 * @param pf période fiscale de la déclaration
-	 * @param noSequence numéro de séquence de la déclaration dans sa période fiscale
+	 *
+	 * @param entreprise    entreprise concernée
+	 * @param pf            période fiscale de la déclaration
+	 * @param noSequence    numéro de séquence de la déclaration dans sa période fiscale
 	 * @param dateReference date de référence pour les éventuelle résolution de noms...
-	 * @param siege éventuel siège fourni dans la déclaration
+	 * @param siege         éventuel siège fourni dans la déclaration
 	 */
 	private void traiterSiege(Entreprise entreprise, int pf, int noSequence, RegDate dateReference, @Nullable Localisation siege) {
 		// aucune information...
@@ -770,10 +779,11 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Traitement d'une éventuelle nouvelle administation effective déclarée dans une DI
-	 * @param entreprise entreprise concernée
-	 * @param pf période fiscale de la déclaration
-	 * @param noSequence numéro de séquence de la déclaration dans sa période fiscale
-	 * @param dateReference date de référence pour les éventuelle résolution de noms...
+	 *
+	 * @param entreprise              entreprise concernée
+	 * @param pf                      période fiscale de la déclaration
+	 * @param noSequence              numéro de séquence de la déclaration dans sa période fiscale
+	 * @param dateReference           date de référence pour les éventuelle résolution de noms...
 	 * @param administrationEffective éventuelle administration effective fournie dans la déclaration
 	 */
 	private void traiterAdministrationEffective(Entreprise entreprise, int pf, int noSequence, RegDate dateReference, @Nullable Localisation administrationEffective) {
@@ -821,11 +831,12 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Traitement d'une éventuelle nouvelle adresse courrier / raison sociale reçue dans une déclaration d'impôt
-	 * @param entreprise entreprise concernée
-	 * @param pf période fiscale de la DI initiale
-	 * @param noSequence numéro de séquence de la DI initiale dans sa période fiscale
-	 * @param dateReference date de référence pour les éventuelle résolution de noms...
-	 * @param adresseCourrier l'éventuelle nouvelle adresse courrier fournie
+	 *
+	 * @param entreprise       entreprise concernée
+	 * @param pf               période fiscale de la DI initiale
+	 * @param noSequence       numéro de séquence de la DI initiale dans sa période fiscale
+	 * @param dateReference    date de référence pour les éventuelle résolution de noms...
+	 * @param adresseCourrier  l'éventuelle nouvelle adresse courrier fournie
 	 * @param telProfessionnel le numéro de téléphone professionnel
 	 */
 	private void traiterAdresseCourrierEtRaisonSociale(Entreprise entreprise, int pf, int noSequence, RegDate dateReference, @Nullable AdresseRaisonSociale adresseCourrier, @Nullable String telProfessionnel) {
@@ -862,8 +873,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Prise en compte d'une éventuelle donnée de contact dans la DI
-	 * @param entreprise entreprise concernée
-	 * @param contact eventuel nom de la personne de contact
+	 *
+	 * @param entreprise       entreprise concernée
+	 * @param contact          eventuel nom de la personne de contact
 	 * @param telProfessionnel le numéro de téléphone professionnel
 	 */
 	private void traiterContact(Entreprise entreprise, @Nullable String contact, @Nullable String telProfessionnel) {
@@ -885,10 +897,11 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Traitement spécifique de la raison sociale reçue dans une déclaration d'impôt
-	 * @param entreprise entreprise concernée
-	 * @param pf période fiscale de la DI initiale
-	 * @param noSequence numéro de séquence de la DI initiale dans sa période fiscale
-	 * @param dateReferenceExistant date de référence pour les données déjà actuelles (= date de début d'une éventuelle nouvelle surcharge d'adresse)
+	 *
+	 * @param entreprise              entreprise concernée
+	 * @param pf                      période fiscale de la DI initiale
+	 * @param noSequence              numéro de séquence de la DI initiale dans sa période fiscale
+	 * @param dateReferenceExistant   date de référence pour les données déjà actuelles (= date de début d'une éventuelle nouvelle surcharge d'adresse)
 	 * @param raisonSocialeTranscrite la nouvelle raison sociale extraite des données fournies
 	 */
 	private void traiteRaisonSociale(Entreprise entreprise, int pf, int noSequence, RegDate dateReferenceExistant, @Nullable String raisonSocialeTranscrite) {
@@ -932,13 +945,14 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Traitement spécifique de l'adresse courrier reçue dans une déclaration d'impôt
-	 * @param entreprise entreprise concernée
-	 * @param pf période fiscale de la DI initiale
-	 * @param noSequence numéro de séquence de la DI initiale dans sa période fiscale
-	 * @param dateReference date de référence pour les éventuelle résolution de noms...
+	 *
+	 * @param entreprise            entreprise concernée
+	 * @param pf                    période fiscale de la DI initiale
+	 * @param noSequence            numéro de séquence de la DI initiale dans sa période fiscale
+	 * @param dateReference         date de référence pour les éventuelle résolution de noms...
 	 * @param dateReferenceExistant date de référence pour les données déjà actuelles (= date de début d'une éventuelle nouvelle surcharge d'adresse)
-	 * @param adresseFournie la nouvelle adresse courrier fournie
-	 * @param adresseTranscrite la nouvelle adresse courrier fournie sous une forme transcrite
+	 * @param adresseFournie        la nouvelle adresse courrier fournie
+	 * @param adresseTranscrite     la nouvelle adresse courrier fournie sous une forme transcrite
 	 */
 	private void traiteAdresseCourrier(Entreprise entreprise, int pf, int noSequence, RegDate dateReference, RegDate dateReferenceExistant, @NotNull AdresseRaisonSociale adresseFournie, @NotNull Adresse adresseTranscrite) {
 
@@ -1048,7 +1062,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		if (length1 != length2) {
 			return false;
 		}
-		for (int i = 0 ; i < length1 ; ++ i) {
+		for (int i = 0; i < length1; ++i) {
 			final String ligne1 = lignes1[i];
 			final String ligne2 = lignes2[i];
 			if (!StringEqualityHelper.equals(ligne1, ligne2)) {
@@ -1060,8 +1074,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Création d'une surcharge d'adresse courrier depuis les données de l'adresse récupérée
+	 *
 	 * @param dateDebut date de début de la surcharge à générer
-	 * @param source données récupérées depuis la déclaration
+	 * @param source    données récupérées depuis la déclaration
 	 * @return une adresse pouvant être ajoutée au tiers comme surcharge
 	 * @throws AdresseException en cas de souci à la transcription
 	 */
@@ -1106,8 +1121,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Création d'une adresse mandataire depuis les données de l'adresse récupérée
+	 *
 	 * @param dateDebut date de début de l'adresse mandataire à générer
-	 * @param source données récupérées depuis la déclaration
+	 * @param source    données récupérées depuis la déclaration
 	 * @return une adresse pouvant être ajoutée au tiers comme surcharge
 	 * @throws AdresseException en cas de souci à la transcription
 	 */
@@ -1171,8 +1187,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Traitement d'une éventuelle nouvelle date d'exercice commercial
-	 * @param entreprise entreprise concernée
-	 * @param di déclaration matchée sur les données reçues
+	 *
+	 * @param entreprise                entreprise concernée
+	 * @param di                        déclaration matchée sur les données reçues
 	 * @param dateFinExerciceCommercial date de fin d'exercice commercial renseignée dans la déclaration
 	 */
 	private void traiterFinExerciceCommercial(Entreprise entreprise, DeclarationImpotOrdinairePM di, @Nullable RegDate dateFinExerciceCommercial) throws EsbBusinessException {
@@ -1197,11 +1214,12 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		if (dateFinExerciceCommercial.isBefore(di.getDateDebutExerciceCommercial())) {
 			tacheService.genereTacheControleDossier(entreprise, Motifs.DATE_EXERCICE_COMMERCIAL_IGNOREE);
 			addRemarque(entreprise,
-			            String.format("Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais celle-ci n'a pas été prise en compte automatiquement car elle est antérieure à la date de début de l'exercice commercial de la DI (%s).",
-			                          di.getPeriode().getAnnee(),
-			                          di.getNumero(),
-			                          RegDateHelper.dateToDisplayString(dateFinExerciceCommercial),
-			                          RegDateHelper.dateToDisplayString(di.getDateDebutExerciceCommercial())));
+			            String.format(
+					            "Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais celle-ci n'a pas été prise en compte automatiquement car elle est antérieure à la date de début de l'exercice commercial de la DI (%s).",
+					            di.getPeriode().getAnnee(),
+					            di.getNumero(),
+					            RegDateHelper.dateToDisplayString(dateFinExerciceCommercial),
+					            RegDateHelper.dateToDisplayString(di.getDateDebutExerciceCommercial())));
 
 			// pas la peine d'aller plus loin...
 			return;
@@ -1249,7 +1267,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			final Set<Integer> presentYears = datesBouclementTriees.stream()
 					.map(RegDate::year)
 					.collect(Collectors.toSet());
-			for (RegDate date = dateFinExerciceCommercial.addYears(1) ; date.compareTo(finDeclarationeRetournee) < 0 ; date = date.addYears(1)) {
+			for (RegDate date = dateFinExerciceCommercial.addYears(1); date.compareTo(finDeclarationeRetournee) < 0; date = date.addYears(1)) {
 				if (!presentYears.contains(date.year())) {
 					datesBouclementTriees.add(date);
 				}
@@ -1267,7 +1285,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			final int anneePremierBouclementAControler = Math.max(Math.min(ancienneFinExerciceCommercial.year(), anneeNouvelleFinExercice), anneeFondation + 1);
 			final int anneeDernierBouclementAControler = Math.max(ancienneFinExerciceCommercial.year(), anneeNouvelleFinExercice);
 			if (anneeDernierBouclementAControler - anneePremierBouclementAControler > 0) {
-				for (int annee = anneePremierBouclementAControler ; annee <= anneeDernierBouclementAControler ; ++ annee) {
+				for (int annee = anneePremierBouclementAControler; annee <= anneeDernierBouclementAControler; ++annee) {
 					if (!periodesAvecBouclement.contains(annee) && annee > anneeFondation) {
 						tacheService.genereTacheControleDossier(entreprise, Motifs.DATE_EXERCICE_COMMERCIAL_IGNOREE);
 						addRemarque(entreprise, String.format("Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais l'année civile %d se retrouve alors sans bouclement, ce qui est interdit.",
@@ -1369,8 +1387,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Récupération, dans une liste des déclarations d'une PF donnée, de celle qui a le bon numéro de séquence
+	 *
 	 * @param declarations les déclarations d'une PF
-	 * @param noSequence le numéro de séquence recherché
+	 * @param noSequence   le numéro de séquence recherché
 	 * @return la DI (si elle existe) qui possède le bon numéro de séquence (on prend la première que l'on trouve, il ne devrait y en avoir qu'une par PF de toute façon)
 	 */
 	@Nullable
@@ -1385,7 +1404,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * @param entreprise une entreprise
-	 * @param date une date seuil
+	 * @param date       une date seuil
 	 * @return la première déclaration retournée dont la période est strictement postérieure à la date de référence donnée
 	 */
 	@Nullable
@@ -1404,8 +1423,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Ajout d'une nouvelle remarque avec le texte donné
+	 *
 	 * @param entreprise entreprise concernée
-	 * @param texte la remarque à ajouter
+	 * @param texte      la remarque à ajouter
 	 */
 	private void addRemarque(Entreprise entreprise, String texte) {
 		if (StringUtils.isNotBlank(texte)) {
@@ -1418,9 +1438,10 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 	/**
 	 * Ajout d'une nouvelle remarque sur le tiers entreprise, comprendant les données retournées et préfixée par l'entête donné
+	 *
 	 * @param entreprise l'entreprise concernée
-	 * @param entete [optionnelle] l'entête à placer sur la première ligne de la remarque
-	 * @param retour les données reçues
+	 * @param entete     [optionnelle] l'entête à placer sur la première ligne de la remarque
+	 * @param retour     les données reçues
 	 */
 	private void addRemarqueDonneesCompletes(Entreprise entreprise, String entete, RetourDI retour) {
 		addRemarque(entreprise, buildTexteRemarqueDonneesCompletes(entete, retour));
