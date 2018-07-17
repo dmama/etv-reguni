@@ -1134,7 +1134,7 @@ public class EvenementEntrepriseCivileProcessorTest extends AbstractEvenementEnt
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
 			String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
-			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996], mais déjà rattachée à l'entreprise civile n°101202100 (%s, IDE: CHE-999.999.996). Potentiel doublon au civil. Traitement manuel.", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom, nom), message);
+			Assert.assertEquals(String.format("Entreprise n°%s identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996], mais déjà rattachée à l'entreprise civile n°101202100 (%s, IDE: CHE-999.999.996). Potentiel doublon au civil. Traitement manuel.", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
 		}
 
 		// Vérification du traitement de l'événement
