@@ -359,9 +359,8 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					// Le tiers entreprise trouvé est déjà apparié à une autre organisation. Causé soit par un doublon dans RCEnt, soit par une grande similitude des attributs civils.
 					else {
 						final Organisation organisationDejaAppariee = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
-						message = String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s], mais déjà rattachée à l'organisation n°%s (%s). Potentiel doublon au civil. Traitement manuel.",
+						message = String.format("Entreprise n°%s identifiée sur la base de ses attributs civils [%s], mais déjà rattachée à l'organisation n°%s (%s). Potentiel doublon au civil. Traitement manuel.",
 						                        FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-						                        raisonSociale,
 						                        attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil),
 						                        entreprise.getNumeroEntreprise(),
 						                        organisationDejaAppariee == null ? "<introuvable au civil>" : attributsCivilsAffichage(organisationDejaAppariee.getNom(event.getDateEvenement()), organisationDejaAppariee.getNumeroIDE(event.getDateEvenement())));
