@@ -1,5 +1,6 @@
 package ch.vd.unireg.declaration.ordinaire;
 
+import javax.imageio.spi.RegisterableService;
 import javax.jms.JMSException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,7 +64,6 @@ import ch.vd.unireg.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteProcessor;
 import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.unireg.declaration.ordinaire.pp.ProduireListeDIsNonEmisesProcessor;
-import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscalAddAndSaveAccessor;
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.unireg.editique.EditiqueCompositionService;
@@ -77,6 +77,8 @@ import ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSender;
 import ch.vd.unireg.evenement.di.EvenementDeclarationPPSender;
 import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
+import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPM;
@@ -85,6 +87,8 @@ import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.regimefiscal.ModeExonerationHisto;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -94,12 +98,20 @@ import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.tiers.Tache;
 import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.validation.ValidationService;
+
+import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_EXONEREE;
+import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_NON_EXONEREE;
+import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.PM_HOLDING;
+import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.PM_HORS_CANTON;
+import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.PM_HORS_SUISSE;
+import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.PM_SNC;
 
 public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
@@ -109,9 +121,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private static final Set<String> CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING = new HashSet<>(Arrays.asList("11", "12", "41C", "42C"));
 	/**
 	 * Code de regime fiscal pour les sociétés de type SNC
-	 *
 	 */
-	private static final String CODE_REGIME_FISCAL_SNC="80";
+	private static final String CODE_REGIME_FISCAL_SNC = "80";
 
 	// private final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotServiceImpl.class);
 
@@ -139,6 +150,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private AssujettissementService assujettissementService;
 	private TicketService ticketService;
 	private PeriodeImpositionImpotSourceService piisService;
+	private RegimeFiscalService regimeFiscalService;
 
 	private Set<String> sourcesMonoQuittancement;
 
@@ -152,7 +164,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                   TiersService tiersService, PlatformTransactionManager transactionManager,
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
 	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationPPSender evenementDeclarationPPSender, PeriodeImpositionService periodeImpositionService,
-	                                   AssujettissementService assujettissementService, TicketService ticketService) {
+	                                   AssujettissementService assujettissementService, TicketService ticketService,RegimeFiscalService regimeFiscalService) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -170,6 +182,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.periodeImpositionService = periodeImpositionService;
 		this.assujettissementService = assujettissementService;
 		this.ticketService = ticketService;
+		this.regimeFiscalService = regimeFiscalService;
 		this.sourcesMonoQuittancement = Collections.emptySet();
 	}
 
@@ -195,6 +208,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	public void setModeleDAO(ModeleDocumentDAO modeleDAO) {
 		this.modeleDAO = modeleDAO;
+	}
+
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	public void setDelaisService(DelaisService delaisService) {
@@ -297,7 +314,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                             int nbThreads, @Nullable StatusManager status) throws DeclarationException {
 
 		final EnvoiDIsPPEnMasseProcessor processor = new EnvoiDIsPPEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-		                                                                        delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService, ticketService);
+		                                                                            delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService, ticketService);
 		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
 	}
 
@@ -305,7 +322,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public EnvoiAnnexeImmeubleResults envoyerAnnexeImmeubleEnMasse(int anneePeriode, RegDate dateTraitement,
 	                                                               List<ContribuableAvecImmeuble> listeCtb, int nbMax, StatusManager status) throws DeclarationException {
 		final EnvoiAnnexeImmeubleEnMasseProcessor processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, modeleDAO, periodeDAO,
-				this, tailleLot, transactionManager, serviceCivilCacheWarmer, periodeImpositionService, adresseService);
+		                                                                                              this, tailleLot, transactionManager, serviceCivilCacheWarmer, periodeImpositionService, adresseService);
 		return processor.run(anneePeriode, listeCtb, nbMax, dateTraitement, status);
 	}
 
@@ -324,14 +341,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public StatistiquesCtbs produireStatsCtbsPP(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService,
-				piisService);
+		                                                                            piisService);
 		return processor.runPP(anneePeriode, dateTraitement, status);
 	}
 
 	@Override
 	public StatistiquesCtbs produireStatsCtbsPM(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService,
-				piisService);
+		                                                                            piisService);
 		return processor.runPM(anneePeriode, dateTraitement, status);
 	}
 
@@ -598,7 +615,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public EnvoiSommationsDIsPPResults envoyerSommationsPP(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager statusManager) {
 		final DeclarationImpotService diService = this;
 		EnvoiSommationsDIsPPProcessor processor = new EnvoiSommationsDIsPPProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager, assujettissementService,
-				periodeImpositionService, adresseService);
+		                                                                            periodeImpositionService, adresseService);
 		return processor.run(dateTraitement, miseSousPliImpossible, nombreMax, statusManager);
 	}
 
@@ -760,22 +777,23 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * Code de routage pour la personne morale :<BR />
 	 * <ul>
-	 *     <li>1 : PM Vaudoise</li>
-	 *     <li>2 : APM</li>
-	 *     <li>3 : PM HS (Hors Suisse)</li>
-	 *     <li>4 : PM Holding</li>
-	 *     <li>5 : PM HC (Hors Canton)</li>
-	 *     <li>6 : SNC (société en nom collectif)</li>
+	 * <li>1 : PM Vaudoise</li>
+	 * <li>2 : APM non Exonéré à IBC</li>
+	 * <li>3 : PM HS (Hors Suisse)</li>
+	 * <li>4 : PM Holding</li>
+	 * <li>5 : PM HC (Hors Canton)</li>
+	 * <li>6 : SNC (société en nom collectif)</li>
+	 * <li>7 : APM Exonéré à IBC</li>
 	 * </ul>
 	 *
-	 * @param entreprise entreprise considérée
+	 * @param entreprise    entreprise considérée
 	 * @param dateReference date de fin de la période d'imposition
-	 * @param typeDocument type de document considéré
+	 * @param typeDocument  type de document considéré
 	 * @return
 	 * @throws DeclarationException
 	 */
 	@Override
-	public int computeCodeSegment(Entreprise entreprise, RegDate dateReference, TypeDocument typeDocument) throws DeclarationException {
+	public EnumCodeRoutageDI computeCodeRoutage(Entreprise entreprise, RegDate dateReference, TypeDocument typeDocument) throws DeclarationException {
 
 		// dépendant du régime fiscal vaudois à la date
 		final RegimeFiscal vd = DateRangeHelper.rangeAt(entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.VD), dateReference);
@@ -789,9 +807,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throw new DeclarationException("Pas de for fiscal principal avant la date de référence.");
 		}
 
-		// APM -> "2"
+		// APM -> "2" ou "7"
 		if (typeDocument == TypeDocument.DECLARATION_IMPOT_APM_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_APM_LOCAL) {
-			return 2;
+			final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.IBC);
+			final ModeExonerationHisto exonerationValide = DateRangeHelper.rangeAt(exonerations, dateReference);
+			return exonerationValide != null && Arrays.asList(ModeExoneration.TOTALE, ModeExoneration.DE_FAIT).contains(exonerationValide.getModeExoneration()) ? APM_EXONEREE : APM_NON_EXONEREE;
 		}
 
 		// autre chose que "PM" -> boum !
@@ -801,25 +821,25 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 		// PM société de base ou holding -> "4"
 		if (CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING.contains(vd.getCode())) {
-			return 4;
+			return PM_HOLDING;
 		}
 
 		//PM société en nom Collectif SNC -> "6"
 		if (CODE_REGIME_FISCAL_SNC.equals(vd.getCode())) {
-			return QuestionnaireSNCService.codeSegment;
-		}		
+			return PM_SNC;
+		}
 
 		// PM vaudoise -> "1"
 		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			return 1;
+			return EnumCodeRoutageDI.PM_VAUDOISE;
 		}
 
 		// PM HC (Hors Canton) -> "5"
 		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
-			return 5;
+			return PM_HORS_CANTON;
 		}
 
 		// PM HS (Hors Suisse) -> "3"
-		return 3;
+		return PM_HORS_SUISSE;
 	}
 }

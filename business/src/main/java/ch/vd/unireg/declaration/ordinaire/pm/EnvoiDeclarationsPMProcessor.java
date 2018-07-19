@@ -279,7 +279,7 @@ public class EnvoiDeclarationsPMProcessor {
 			di.setCodeControle(ContribuableImpositionPersonnesMorales.generateNewCodeControle(informationsFiscales.getDeclarations(pm)));
 		}
 		if (pm instanceof Entreprise && tache.getTypeDocument() != null) {
-			di.setCodeSegment(declarationImpotService.computeCodeSegment((Entreprise) pm, tache.getDateFin(), tache.getTypeDocument()));
+			di.setCodeSegment(declarationImpotService.computeCodeRoutage((Entreprise) pm, tache.getDateFin(), tache.getTypeDocument()).getCode());
 		}
 
 		// ajout de l'état initial de la DI

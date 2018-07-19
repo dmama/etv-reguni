@@ -556,7 +556,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		// assignation du code segment
 		if (ctb instanceof Entreprise && typeDocument != null) {
-			di.setCodeSegment(diService.computeCodeSegment((Entreprise) ctb, dateFin, typeDocument));
+			di.setCodeSegment(diService.computeCodeRoutage((Entreprise) ctb, dateFin, typeDocument).getCode());
 		}
 
 		return creerNouvelleDI(ctb, di, dateDebut, dateFin, typeDocument, typeAdresseRetour, delaiAccorde, dateRetour, TypeTache.TacheEnvoiDeclarationImpotPM);

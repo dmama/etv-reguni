@@ -392,5 +392,5 @@ public interface DeclarationImpotService {
 	 * @return valeur du code segment considéré
 	 * @throws DeclarationException en l'absence de données suffisantes pour calculer ce code segment...
 	 */
-	int computeCodeSegment(Entreprise entreprise, RegDate dateReference, TypeDocument typeDocument) throws DeclarationException;
+	EnumCodeRoutageDI computeCodeRoutage(Entreprise entreprise, RegDate dateReference, TypeDocument typeDocument) throws DeclarationException;
 }

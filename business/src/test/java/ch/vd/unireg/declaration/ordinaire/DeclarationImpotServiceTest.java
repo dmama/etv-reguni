@@ -48,12 +48,14 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
+import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -129,6 +131,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		adresseService = getBean(AdresseService.class, "adresseService");
 		final TicketService ticketService = getBean(TicketService.class, "ticketService");
+		final RegimeFiscalService regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
@@ -138,7 +141,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		 */
 		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService,
 		                                          transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService,
-		                                          assujettissementService, ticketService);
+		                                          assujettissementService, ticketService,regimeFiscalService);
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
@@ -2316,7 +2319,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * @throws DeclarationException
 	 */
 	@Test
-	public void testComputeCodeSegmentPMVD() throws DeclarationException {
+	public void testComputeCodeRoutagePMVD() throws DeclarationException {
 		Entreprise entreprise = new Entreprise();
 		RegDate dateReference = date(2017, 9, 23);
 
@@ -2327,11 +2330,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "1234");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.ORDINAIRE_PM.getCode());
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
-		assertEquals(1, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
+		assertEquals(EnumCodeRoutageDI.PM_VAUDOISE, service.computeCodeRoutage(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
 	}
 
 	/**
@@ -2341,7 +2344,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * @throws DeclarationException
 	 */
 	@Test
-	public void testComputeCodeSegmentAPM() throws DeclarationException {
+	public void testComputeCodeRoutageAPMNonExoneree() throws DeclarationException {
 		Entreprise entreprise = new Entreprise();
 		RegDate dateReference = date(2017, 9, 23);
 
@@ -2352,11 +2355,30 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "1234");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.ORDINAIRE_APM.getCode());
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
-		assertEquals(2, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_APM_LOCAL));
+		assertEquals(EnumCodeRoutageDI.APM_NON_EXONEREE, service.computeCodeRoutage(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_APM_LOCAL));
+	}
+
+	@Test
+	public void testComputeCodeRoutageAPMExoneree() throws DeclarationException {
+		Entreprise entreprise = new Entreprise();
+		RegDate dateReference = date(2017, 9, 23);
+
+		// for fiscal principal
+		Set<ForFiscal> forFiscalSet = new HashSet<ForFiscal>();
+		entreprise.setForsFiscaux(forFiscalSet);
+		ForFiscalPrincipalPM forFiscalPrincipalPM = new ForFiscalPrincipalPM(date(2017, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+		forFiscalSet.add(forFiscalPrincipalPM);
+
+		// Régime fiscal
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.ART90D.getCode());
+		regimeFiscal.setEntreprise(entreprise);
+		entreprise.addRegimeFiscal(regimeFiscal);
+
+		assertEquals(EnumCodeRoutageDI.APM_EXONEREE, service.computeCodeRoutage(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_APM_LOCAL));
 	}
 
 	/**
@@ -2366,7 +2388,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * @throws DeclarationException
 	 */
 	@Test
-	public void testComputeCodeSegmentPMHS() throws DeclarationException {
+	public void testComputeCodeRoutagePMHS() throws DeclarationException {
 		Entreprise entreprise = new Entreprise();
 		RegDate dateReference = date(2017, 9, 23);
 
@@ -2377,11 +2399,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "1234");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD,  MockTypeRegimeFiscal.ORDINAIRE_PM.getCode());
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
-		assertEquals(3, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_BATCH));
+		assertEquals(EnumCodeRoutageDI.PM_HORS_SUISSE, service.computeCodeRoutage(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_BATCH));
 	}
 
 	/**
@@ -2391,7 +2413,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * @throws DeclarationException
 	 */
 	@Test
-	public void testComputeCodeSegmentPMHolding() throws DeclarationException {
+	public void testComputeCodeRoutagePMHolding() throws DeclarationException {
 		Entreprise entreprise = new Entreprise();
 		RegDate dateReference = date(2017, 9, 23);
 
@@ -2402,11 +2424,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		forFiscalSet.add(forFiscalPrincipalPM);
 
 		// Régime fiscal
-		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, "41C");
+		ch.vd.unireg.tiers.RegimeFiscal regimeFiscal = new ch.vd.unireg.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.unireg.tiers.RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.STE_BASE_MIXTE.getCode());
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
-		assertEquals(4, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
+		assertEquals(EnumCodeRoutageDI.PM_HOLDING, service.computeCodeRoutage(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
 
 
 	}
@@ -2418,7 +2440,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * @throws DeclarationException
 	 */
 	@Test
-	public void testComputeCodeSegmentPMHC() throws DeclarationException {
+	public void testComputeCodeRoutagePMHC() throws DeclarationException {
 		Entreprise entreprise = new Entreprise();
 		RegDate dateReference = date(2017, 9, 23);
 
@@ -2433,6 +2455,6 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		regimeFiscal.setEntreprise(entreprise);
 		entreprise.addRegimeFiscal(regimeFiscal);
 
-		assertEquals(5, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
+		assertEquals(EnumCodeRoutageDI.PM_HORS_CANTON, service.computeCodeRoutage(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
 	}
 }
