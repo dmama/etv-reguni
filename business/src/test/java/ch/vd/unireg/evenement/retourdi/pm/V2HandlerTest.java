@@ -73,6 +73,48 @@ public class V2HandlerTest extends BusinessTest {
 		Assert.assertEquals("Madame Albertine Martin", infoEntreprise.getAdresseCourrier().getDestinataire().getContact());
 	}
 
+
+	@Test
+	public void  testAdresseCourrierAvecBlancsEnTropDansRue() throws Exception {
+
+		final InformationPersonneMoraleModifiee info = new InformationPersonneMoraleModifiee();
+		final OrganisationMailAddressInfo organisation = new OrganisationMailAddressInfo(null, "NORBA PRODUCTION SA", null, null, "M", "ALESSANDRO", "BAUMANN");
+
+		final TypAdresse adresseLibre = new TypAdresse();
+		adresseLibre.setAdresseLigne1(toTxtMax40("NORBA PRODUCTION SA"));
+		adresseLibre.setAdresseLigne2(toTxtMax40("ROUTE  DE  LAUSANNE 46"));
+		adresseLibre.setPersonneContact(toTxtMax40("BAUMANN  ALESSANDRO"));
+		adresseLibre.setAdresseNpa(toTxtMax40("1610"));
+		adresseLibre.setAdresseLocalite(toTxtMax40("Invalide"));
+		info.setAdresseCourrier(adresseLibre);
+
+		final InformationsEntreprise infoEntreprise = handler.extractInformationsEntreprise(info);
+		Assert.assertNotNull(infoEntreprise);
+		AdresseRaisonSociale.Brutte adresseCourrier= (AdresseRaisonSociale.Brutte)infoEntreprise.getAdresseCourrier();
+		Assert.assertEquals("ROUTE DE LAUSANNE 46", adresseCourrier.getLigne2());
+	}
+
+
+	@Test
+	public void  testAdresseCourrierAvecPasdeRue() throws Exception {
+
+		final InformationPersonneMoraleModifiee info = new InformationPersonneMoraleModifiee();
+		final OrganisationMailAddressInfo organisation = new OrganisationMailAddressInfo(null, "NORBA PRODUCTION SA", null, null, "M", "ALESSANDRO", "BAUMANN");
+
+		final TypAdresse adresseLibre = new TypAdresse();
+		adresseLibre.setAdresseLigne1(toTxtMax40("NORBA PRODUCTION SA"));
+		adresseLibre.setPersonneContact(toTxtMax40("BAUMANN  ALESSANDRO"));
+		adresseLibre.setAdresseNpa(toTxtMax40("1610"));
+		adresseLibre.setAdresseLocalite(toTxtMax40("Invalide"));
+		info.setAdresseCourrier(adresseLibre);
+
+		final InformationsEntreprise infoEntreprise = handler.extractInformationsEntreprise(info);
+		Assert.assertNotNull(infoEntreprise);
+		AdresseRaisonSociale.Brutte adresseCourrier= (AdresseRaisonSociale.Brutte)infoEntreprise.getAdresseCourrier();
+		Assert.assertEquals(null, adresseCourrier.getLigne2());
+	}
+
+
 	/**
 	 * [SIFISC-21693] Vérifie que le numéro de téléphone professionnel est bien extrait du retour des DIs PM.
 	 */
@@ -108,6 +150,8 @@ public class V2HandlerTest extends BusinessTest {
 		Assert.assertEquals("Chez Bernard", split.getLeft().getNomRaisonSociale());
 		Assert.assertEquals("Avenue de la Gare", split.getRight().getRue());
 	}
+
+
 
 	@Test
 	public void testSalutationsSurAdresseMandataire() throws Exception {
