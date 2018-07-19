@@ -290,7 +290,9 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 		if (str == null || !str.isValide()) {
 			return null;
 		}
-		return StringUtils.trimToNull(str.getValue());
+		//SIFISC-29393 on eneleve tous les espaces superflues afin de ne pas fausser les analyses futures
+		final String value = str.getValue().trim().replaceAll(" +", " ");
+		return StringUtils.trimToNull(value);
 	}
 
 	@Nullable
