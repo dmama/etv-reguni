@@ -113,7 +113,7 @@ public class ServiceEntrepriseRCEntItTest extends BusinessItTest {
 		assertContains(NOM_BCV, ent.getNom().get(0).getPayload());
 	}
 
-//	@Ignore
+	//	@Ignore
 	@Test(timeout = 30000)
 	public void testGetEntrepriseEvent() {
 		EntrepriseCivile ent = service.getEntrepriseEvent(ID_EVT).get(ID_ORGANISATION_EVT).getPseudoHistory();
@@ -201,7 +201,8 @@ public class ServiceEntrepriseRCEntItTest extends BusinessItTest {
 	public void testValidateProtoAnnonceIDE() {
 
 		final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
-				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, MockLocalite.Geneve.getNPA(), null, MockLocalite.Geneve.getNoOrdre(), "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
+				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, MockLocalite.Geneve.getNPA(), null, MockLocalite.Geneve.getNoOrdre(), "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(),
+				                              MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeEtablissementCivil.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    null, null, null, null, null, null, "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques",
@@ -270,12 +271,13 @@ public class ServiceEntrepriseRCEntItTest extends BusinessItTest {
 		assertEquals(0, adresses.secondaires.size());
 		assertEquals(0, adresses.tutelles.size());
 
-		assertEquals(2, adresses.courriers.size());
+		assertEquals(3, adresses.courriers.size());
 		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.courriers.get(0));
-		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.courriers.get(1));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), RegDate.get(2018, 3, 26), "Route de Vevey", "Forel (Lavaux)", adresses.courriers.get(1));
 
-		assertEquals(1, adresses.casesPostales.size());
-		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "Savigny", adresses.casesPostales.get(0));
+		assertEquals(2, adresses.casesPostales.size());
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), RegDate.get(2018, 3, 26), null, "Savigny", adresses.casesPostales.get(0));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2018, 3, 27), null, null, "Savigny", adresses.casesPostales.get(1));
 		assertEquals("Case Postale 38", adresses.casesPostales.get(0).getCasePostale().toString());
 	}
 
@@ -290,10 +292,10 @@ public class ServiceEntrepriseRCEntItTest extends BusinessItTest {
 		assertNotNull(ent);
 
 		final List<Adresse> adresses = ent.getAdresses();
-		assertEquals(3, adresses.size());
+		assertEquals(5, adresses.size());
 		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.get(0));
-		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "Savigny", adresses.get(1));
-		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.get(2));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), RegDate.get(2018, 3, 26), null, "Savigny", adresses.get(1));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), RegDate.get(2018, 3, 26), "Route de Vevey", "Forel (Lavaux)", adresses.get(2));
 		assertEquals("Case Postale 38", adresses.get(1).getCasePostale().toString());
 	}
 
