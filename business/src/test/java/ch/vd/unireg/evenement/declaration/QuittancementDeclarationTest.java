@@ -8,10 +8,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
-import ch.vd.unireg.xml.event.declaration.v2.DeclarationIdentifier;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -24,6 +20,8 @@ import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.jms.EsbBusinessException;
 import ch.vd.unireg.tiers.Entreprise;
@@ -38,6 +36,8 @@ import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
+import ch.vd.unireg.xml.event.declaration.v2.DeclarationIdentifier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -284,5 +284,61 @@ public class QuittancementDeclarationTest extends BusinessTest {
 				assertEquals("E-DIPM", retour.getSource());
 			}
 		});
+	}
+
+	@Test
+	public void testQuittancerQuestionnaireSNCSrcCEDI() throws Exception {
+
+		final RegDate dateDebut = date(2009, 1, 4);
+		final int pf = 2015;
+
+		// mise en place fiscale
+
+		final long id = buildEntreprise(dateDebut, pf);
+
+		// Simule la réception d'un événement de quittancement du questionnaire
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationIdentifier identifier = new DeclarationIdentifier((int) id, pf, null, new DeclarationIdentifier.UnknownSequenceNumber(), null);
+				final DeclarationAck quittance = new DeclarationAck(identifier, "CEDI", DataHelper.coreToXMLv2(date(pf + 1, 5, 26)));
+				quittancementDeclaration.handle(quittance, Collections.<String, String>emptyMap());
+			}
+		});
+
+		// Vérifie que les informations ont été prises en compte
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+
+				final List<QuestionnaireSNC> list = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, pf, false);
+				assertNotNull(list);
+				assertEquals(1, list.size());
+
+				final QuestionnaireSNC qsnc = list.get(0);
+				final EtatDeclaration etat = qsnc.getDernierEtatDeclaration();
+				assertTrue(etat instanceof EtatDeclarationRetournee);
+
+				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+				assertEquals(date(pf + 1, 5, 26), retour.getDateObtention());
+				assertEquals("CEDI", retour.getSource());
+			}
+		});
+	}
+
+	private long buildEntreprise(RegDate dateDebut, int pf) throws Exception {
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			final PeriodeFiscale periode = addPeriodeFiscale(pf);
+			final QuestionnaireSNC qsnc = addQuestionnaireSNC(entreprise, periode, date(pf, 1, 1), date(pf, 12, 31));
+			addEtatDeclarationEmise(qsnc, date(pf + 1, 1, 16));
+			return entreprise.getNumero();
+		});
+		return id;
 	}
 }
