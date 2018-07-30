@@ -3,6 +3,7 @@ package ch.vd.unireg.tiers;
 import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -51,9 +52,9 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		PHONETIQUE,
 		EST_EXACTEMENT;
 
-	    public static TypeRecherche fromValue(String v) {
-	        return valueOf(v);
-	    }
+		public static TypeRecherche fromValue(String v) {
+			return valueOf(v);
+		}
 	}
 
 	public enum TypeRechercheLocalitePays {
@@ -103,6 +104,10 @@ public class TiersCriteria implements Serializable, TiersFilter {
 			default:
 				throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
 			}
+		}
+
+		public static Set<TypeTiers> fromCore(Set<ch.vd.unireg.tiers.TypeTiers> typesTiers) {
+			return typesTiers.stream().map(TypeTiers::fromCore).collect(Collectors.toSet());
 		}
 	}
 
@@ -294,20 +299,17 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private String numeroRC;
 
 	/**
-	 * Types d'états entreprise non-présents (si présent, ce critère excluera de la liste de résultats toutes les
-	 * entreprises dont l'un des états non-annulés est l'un des états du critère)
+	 * Types d'états entreprise non-présents (si présent, ce critère excluera de la liste de résultats toutes les entreprises dont l'un des états non-annulés est l'un des états du critère)
 	 */
 	private Set<TypeEtatEntreprise> etatsEntrepriseInterdits;
 
 	/**
-	 * Types d'états entreprise interdits en tant qu'état courant (si présent, ce critère excluera de la liste des résultats
-	 * toutes les entreprises dont l'état courant est cité)
+	 * Types d'états entreprise interdits en tant qu'état courant (si présent, ce critère excluera de la liste des résultats toutes les entreprises dont l'état courant est cité)
 	 */
 	private Set<TypeEtatEntreprise> etatsEntrepriseCourantsInterdits;
 
 	/**
-	 * Type d'état entreprise recherché comme état courant (en principe, donc, mettre une valeur ici qui est également
-	 * dans le champ {@link #etatsEntrepriseCourantsInterdits} causera une liste de résultats vide)
+	 * Type d'état entreprise recherché comme état courant (en principe, donc, mettre une valeur ici qui est également dans le champ {@link #etatsEntrepriseCourantsInterdits} causera une liste de résultats vide)
 	 */
 	private TypeEtatEntreprise etatEntrepriseCourant;
 
@@ -341,8 +343,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private Boolean hasCorporationTransferedPatrimony;
 
 	/**
-	 * @return true si aucun paramètre de recherche n'est renseigné. false
-	 *         autrement.
+	 * @return true si aucun paramètre de recherche n'est renseigné. false autrement.
 	 */
 	public boolean isEmpty() {
 		return numero == null
@@ -389,8 +390,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	/**
-	 * @param numero
-	 *            the numero to set
+	 * @param numero the numero to set
 	 */
 	public void setNumero(@Nullable Long numero) {
 		this.numero = numero;
@@ -405,8 +405,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	/**
-	 * @param typeRechercheDuNom
-	 *            the typeRechercheDuNom to set
+	 * @param typeRechercheDuNom the typeRechercheDuNom to set
 	 */
 	public void setTypeRechercheDuNom(TypeRecherche typeRechercheDuNom) {
 		this.typeRechercheDuNom = typeRechercheDuNom;
@@ -420,8 +419,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	/**
-	 * @param nomCourrier
-	 *            the nomCourrier to set
+	 * @param nomCourrier the nomCourrier to set
 	 */
 	public void setNomRaison(String nomCourrier) {
 		this.nomRaison = nomCourrier;
@@ -435,8 +433,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	/**
-	 * @param natureJuridique
-	 *            the natureJuridique to set
+	 * @param natureJuridique the natureJuridique to set
 	 */
 	public void setNatureJuridique(String natureJuridique) {
 		this.natureJuridique = natureJuridique;
@@ -450,8 +447,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	/**
-	 * @param dateNaissanceInscriptionRC
-	 *            the dateNaissance to set
+	 * @param dateNaissanceInscriptionRC the dateNaissance to set
 	 */
 	public void setDateNaissanceInscriptionRC(RegDate dateNaissanceInscriptionRC) {
 		if (dateNaissanceInscriptionRC == null) {
@@ -525,8 +521,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	/**
-	 * @param numeroAVS
-	 *            the numeroAVS to set
+	 * @param numeroAVS the numeroAVS to set
 	 */
 	public void setNumeroAVS(String numeroAVS) {
 		this.numeroAVS = StringUtils.isBlank(numeroAVS) ? null : numeroAVS;
@@ -540,8 +535,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	/**
-	 * @param numeroEtranger
-	 *            the numeroEtranger to set
+	 * @param numeroEtranger the numeroEtranger to set
 	 */
 	public void setNumeroEtranger(String numeroEtranger) {
 		this.numeroEtranger = numeroEtranger;
@@ -555,8 +549,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	}
 
 	/**
-	 * @param formeJuridique
-	 *            the formeJuridique to set
+	 * @param formeJuridique the formeJuridique to set
 	 */
 	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
 		this.formeJuridique = formeJuridique;

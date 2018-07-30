@@ -387,7 +387,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private List<TiersIndexedData> findByIde(CriteresEntreprise criteres) {
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.ENTREPRISE));
+
+		addTypeTiersCriteria(criteres, criteria);
 		criteria.setNumeroIDE(criteres.getIde());
 		if (!criteria.isEmpty()) {
 			try {
@@ -400,9 +401,18 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return Collections.emptyList();
 	}
 
+	private void addTypeTiersCriteria(CriteresEntreprise criteres, TiersCriteria criteria) {
+		if (criteres.getTypesTiers() != null) {
+			criteria.setTypesTiersImperatifs(TiersCriteria.TypeTiers.fromCore(criteres.getTypesTiers()));
+		}
+		else {
+			criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.ENTREPRISE, TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE));
+		}
+	}
+
 	private List<TiersIndexedData> findByNumeroRC(CriteresEntreprise criteres) {
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.ENTREPRISE));
+		addTypeTiersCriteria(criteres, criteria);
 		criteria.setNumeroRC(criteres.getNumeroRC());
 		if (!criteria.isEmpty()) {
 			try {
@@ -590,7 +600,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		for (PhaseRechercheSurRaisonSociale phase : PhaseRechercheSurRaisonSociale.values()) {
 			try {
-				final TiersCriteria criteria = asTiersCriteriaForRaisonSociale(criteres.getRaisonSociale(), phase);
+				final TiersCriteria criteria = asTiersCriteriaForRaisonSociale(criteres, phase);
 				if (criteres.getAdresse() != null) {
 					final CriteresAdresse adresse = criteres.getAdresse();
 					final String npa = adresse.getNpaSuisse() == null ? StringUtils.trimToNull(adresse.getNpaEtranger()) : Integer.toString(adresse.getNpaSuisse());
@@ -622,8 +632,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return indexedData;
 	}
 
-	private TiersCriteria asTiersCriteriaForRaisonSociale(String critereRaisonSociale, PhaseRechercheSurRaisonSociale phase) throws IgnoredPhaseException {
+	private TiersCriteria asTiersCriteriaForRaisonSociale(CriteresEntreprise criteres, PhaseRechercheSurRaisonSociale phase) throws IgnoredPhaseException {
 		final String consigne;
+		final String critereRaisonSociale = criteres.getRaisonSociale();
 		final Mutable<Boolean> actionEffective = new MutableBoolean(true);
 		switch (phase) {
 		case STANDARD:
@@ -648,7 +659,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison(consigne);
-		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.ENTREPRISE));
+		addTypeTiersCriteria(criteres,criteria);
 		return criteria;
 	}
 

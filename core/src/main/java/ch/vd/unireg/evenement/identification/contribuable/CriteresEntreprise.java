@@ -1,5 +1,9 @@
 package ch.vd.unireg.evenement.identification.contribuable;
 
+import java.util.Set;
+
+import ch.vd.unireg.tiers.TypeTiers;
+
 /**
  * Contient les critères d'identification utilisés pour une entreprise
  */
@@ -24,6 +28,8 @@ public class CriteresEntreprise {
 	 * Le numéro RC/FOSC
 	 */
 	private String numeroRC;
+
+	private Set<TypeTiers> typesTiers;
 
 	public String getIde() {
 		return ide;
@@ -60,5 +66,13 @@ public class CriteresEntreprise {
 	@Override
 	public String toString() {
 		return String.format("IDE: %s, RC: %s, Raison sociale: %s", ide, numeroRC, raisonSociale);
+	}
+
+	public Set<TypeTiers> getTypesTiers() {
+		return typesTiers;
+	}
+
+	public void setTypesTiers(Set<TypeTiers> typesTiers) {
+		this.typesTiers = typesTiers;
 	}
 }

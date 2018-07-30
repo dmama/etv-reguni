@@ -3,6 +3,7 @@ package ch.vd.unireg.evenement.identification.contribuable;
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,7 @@ import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.tiers.TypeTiers;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.event.identification.request.v4.CorporationIdentificationData;
 import ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest;
@@ -260,6 +262,9 @@ public class IdentificationContribuableRequestHandlerV4 implements Identificatio
 		final CriteresEntreprise criteres = new CriteresEntreprise();
 		criteres.setIde(data.getUid());
 		criteres.setRaisonSociale(data.getRaisonSociale());
+
+		//On ne considère que les entrerprises plus les autres communautés. Cf [SIFISC-28899]
+		criteres.setTypesTiers(EnumSet.of(TypeTiers.ENTREPRISE));
 
 		final NPA requestNPA = data.getNPA();
 		if (requestNPA != null) {
