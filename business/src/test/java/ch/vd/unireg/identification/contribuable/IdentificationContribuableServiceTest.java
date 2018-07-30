@@ -20,6 +20,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.unireg.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
@@ -58,9 +59,9 @@ import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 import ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi;
 import ch.vd.unireg.interfaces.upi.mock.MockServiceUpi;
 import ch.vd.unireg.interfaces.upi.mock.ServiceUpiProxy;
-import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.Etablissement;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.TiersCriteria;
@@ -599,7 +600,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final PersonnePhysique nonHabClaude = addNonHabitant("Rosat","Claude",naissance,null);
+				final PersonnePhysique nonHabClaude = addNonHabitant("Rosat", "Claude", naissance, null);
 				ids.claude = nonHabClaude.getNumero();
 				return null;
 			}
@@ -636,7 +637,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
 
 
-
 	}
 
 	@Test
@@ -650,7 +650,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978,5,6), "Rosat", "Claude", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978, 5, 6), "Rosat", "Claude", true);
 			}
 		});
 
@@ -679,7 +679,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Claude");
 		criteres.setNom("Rosat");
 
-		criteres.setDateNaissance(date(1978,5,6));
+		criteres.setDateNaissance(date(1978, 5, 6));
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
@@ -724,7 +724,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978,5,6), "Rosat", "Claude", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978, 5, 6), "Rosat", "Claude", true);
 				MockIndividu indClaudeAnne = addIndividu(noIndividuClaudeAnne, null, "Rosat", "Claude", false);
 				addFieldsIndividu(indClaude, "7568174973276", "", "");
 				addFieldsIndividu(indClaudeAnne, "7568174973276", "", "");
@@ -760,7 +760,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setNom("Rosat");
 		criteres.setNAVS13("7568174973276");
 
-		criteres.setDateNaissance(date(1978,5,6));
+		criteres.setDateNaissance(date(1978, 5, 6));
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
@@ -794,7 +794,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 
-
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testNavs13MonsieurNomPrenomMadame() throws Exception {
@@ -806,8 +805,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978,5,6), "Rosat", "Claude", true);
-				MockIndividu indAnne = addIndividu(noIndividuAnne, date(1978,11,6), "Rosat", "Anne", false);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1978, 5, 6), "Rosat", "Claude", true);
+				MockIndividu indAnne = addIndividu(noIndividuAnne, date(1978, 11, 6), "Rosat", "Anne", false);
 				addFieldsIndividu(indClaude, "7568174973276", "", "");
 				addFieldsIndividu(indAnne, "7568174363276", "", "");
 			}
@@ -862,7 +861,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
-//SIFISC-13977
+	//SIFISC-13977
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testNavs13MNomPrenomEnMinuscule() throws Exception {
@@ -874,8 +873,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indJudith = addIndividu(noIndividuJudith, date(1978,5,6), "Henchoz", "Judith", true);
-				MockIndividu indHenchoz = addIndividu(noIndividuHenchoz, date(1978,11,6), "Henchoz", "Judith", false);
+				MockIndividu indJudith = addIndividu(noIndividuJudith, date(1978, 5, 6), "Henchoz", "Judith", true);
+				MockIndividu indHenchoz = addIndividu(noIndividuHenchoz, date(1978, 11, 6), "Henchoz", "Judith", false);
 				addFieldsIndividu(indJudith, "7562602654751", "", "");
 				addFieldsIndividu(indHenchoz, "7568174363276", "", "");
 			}
@@ -943,10 +942,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indAndre = addIndividu(noIndividuAndre, date(1913,9,10), "Gailloud", "André", true);
+				MockIndividu indAndre = addIndividu(noIndividuAndre, date(1913, 9, 10), "Gailloud", "André", true);
 				addFieldsIndividu(indAndre, "7560710570956", "", "");
 
-				MockIndividu indRoger = addIndividu(noIndividuRoger, date(1953,9,10), "Gailloud", "Roger", true);
+				MockIndividu indRoger = addIndividu(noIndividuRoger, date(1953, 9, 10), "Gailloud", "Roger", true);
 				addFieldsIndividu(indRoger, "7561131354156 ", "", "");
 			}
 		});
@@ -1001,7 +1000,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testSeulCritereNavs13() throws Exception{
+	public void testSeulCritereNavs13() throws Exception {
 		final long noIndividuAndre = 151658;
 
 		final long noIndividuRoger = 151659;
@@ -1011,10 +1010,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indAndre = addIndividu(noIndividuAndre, date(1913,9,10), "Gailloud", "André", true);
+				MockIndividu indAndre = addIndividu(noIndividuAndre, date(1913, 9, 10), "Gailloud", "André", true);
 				addFieldsIndividu(indAndre, "7560710570956", "", "");
 
-				MockIndividu indRoger = addIndividu(noIndividuRoger, date(1953,9,10), "Gailloud", "Roger", true);
+				MockIndividu indRoger = addIndividu(noIndividuRoger, date(1953, 9, 10), "Gailloud", "Roger", true);
 				addFieldsIndividu(indRoger, "7561131354156 ", "", "");
 			}
 		});
@@ -1077,7 +1076,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1990,10,11), "Farge", "Thomas", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1990, 10, 11), "Farge", "Thomas", true);
 				addFieldsIndividu(indClaude, "7564259784591", "", "");
 			}
 		});
@@ -1107,7 +1106,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Thomas");
 		criteres.setNom("Farge");
 		criteres.setNAVS13("7564259784591");
-		criteres.setDateNaissance(date(1990,10,10));
+		criteres.setDateNaissance(date(1990, 10, 10));
 
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
@@ -1141,8 +1140,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1990,10,11), "Farge", "Thomas", true);
-				MockIndividu indHenri = addIndividu(noIndividuHenri, date(1991,10,11), "Farge", "Henri", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, date(1990, 10, 11), "Farge", "Thomas", true);
+				MockIndividu indHenri = addIndividu(noIndividuHenri, date(1991, 10, 11), "Farge", "Henri", true);
 				addFieldsIndividu(indClaude, "7564259784591", "", "");
 				addFieldsIndividu(indHenri, "7564259784591", "", "");
 			}
@@ -1176,7 +1175,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Henri");
 		criteres.setNom("Farge");
 		criteres.setNAVS13("7564259784591");
-		criteres.setDateNaissance(date(1954,10,10));
+		criteres.setDateNaissance(date(1954, 10, 10));
 
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
@@ -1195,10 +1194,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		final IdentificationContribuable ic = list.get(0);
 		assertNotNull(ic);
 		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-		assertEquals(ids.henri,ic.getReponse().getNoContribuable());
+		assertEquals(ids.henri, ic.getReponse().getNoContribuable());
 
 	}
-
 
 
 	@Test
@@ -1286,7 +1284,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979, 10, 4)), "Rosat", "Claude", true);
 			}
 		});
 
@@ -1360,7 +1358,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,3)), "Rosat", "Claude", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979, 10, 3)), "Rosat", "Claude", true);
 			}
 		});
 
@@ -1389,7 +1387,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Claude");
 		criteres.setNom("Rosat");
 
-		criteres.setDateNaissance(date(1979,10,4));
+		criteres.setDateNaissance(date(1979, 10, 4));
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
@@ -1424,7 +1422,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,3)), "Rosat", "Claude", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979, 10, 3)), "Rosat", "Claude", true);
 			}
 		});
 
@@ -1453,7 +1451,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Claude");
 		criteres.setNom("Rosat");
 
-		criteres.setDateNaissance(RegDate.get(1979,11));
+		criteres.setDateNaissance(RegDate.get(1979, 11));
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
@@ -1517,7 +1515,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Claude");
 		criteres.setNom("Rosat");
 
-		criteres.setDateNaissance(date(1979,10,4));
+		criteres.setDateNaissance(date(1979, 10, 4));
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
@@ -1551,7 +1549,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979, 10, 4)), "Rosat", "Claude", true);
 			}
 		});
 
@@ -1654,7 +1652,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Claude");
 		criteres.setNom("Rosat");
 
-		criteres.setDateNaissance(date(1979,10,4));
+		criteres.setDateNaissance(date(1979, 10, 4));
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
@@ -1699,7 +1697,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979,10,4)), "Rosat", "Claude", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (date(1979, 10, 4)), "Rosat", "Claude", true);
 			}
 		});
 
@@ -1728,7 +1726,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Claude");
 		criteres.setNom("Rosat");
 
-		criteres.setDateNaissance(RegDate.get(1979,10));
+		criteres.setDateNaissance(RegDate.get(1979, 10));
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
@@ -1773,7 +1771,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				MockIndividu indClaude = addIndividu(noIndividuClaude, (RegDate.get(1979,10)), "Rosat", "Claude", true);
+				MockIndividu indClaude = addIndividu(noIndividuClaude, (RegDate.get(1979, 10)), "Rosat", "Claude", true);
 			}
 		});
 
@@ -1802,7 +1800,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		criteres.setPrenoms("Claude");
 		criteres.setNom("Rosat");
 
-		criteres.setDateNaissance(date(1979,10,4));
+		criteres.setDateNaissance(date(1979, 10, 4));
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
@@ -1835,7 +1833,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	}
-
 
 
 	@Test
@@ -1981,7 +1978,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertNotNull(ic);
 		assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
 		assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
-
 
 
 		CriteresPersonne criteresJerome2 = new CriteresPersonne();
@@ -3380,7 +3376,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final MenageCommun menage = ensemble.getMenage();
 
 				addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Aubonne);
+				                MockCommune.Aubonne);
 
 				ids.bruno = bruno.getNumero();
 				ids.zora = zora.getNumero();
@@ -3430,6 +3426,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 	}
+
 	//SIFISC-4845 : Pour une periode
 	//Dans le cas ou la période fiscale du message est inférieure à 2003,
 	//Unireg renvoi le contribuable à la date du 31.12 de l'année précédent à l'année en cours (ex. au 21 janvier 2013,
@@ -3456,7 +3453,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final MenageCommun menage = ensemble.getMenage();
 
 				addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						MockCommune.Aubonne);
+				                MockCommune.Aubonne);
 
 				ids.bruno = bruno.getNumero();
 				ids.zora = zora.getNumero();
@@ -4260,11 +4257,9 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-9328] Dans le cas où l'identification de contribuable est demandée avec un numéro AVS11 seul, l'auteur du cas jira pensait
-	 * que le contribuable ayant ce numéro AVS11 assigné devait être identifié. Mais, d'après la spécification "paragraphe 2.4.3 du document
-	 * SCU-IdentificationCTB_Automatique.doc", cette identification échoue forcément, car "Si le NAVS11 est renseigné dans la demande et qu'il
-	 * n'existe pas dans Unireg, cette étape est considérée comme OK. Et inversement." Autrement dit, la recherche doit également retourner
-	 * tous les contribuables personnes physiques qui répondent aux autres critères (= tous!) et qui n'ont pas de NAVS11.
+	 * [SIFISC-9328] Dans le cas où l'identification de contribuable est demandée avec un numéro AVS11 seul, l'auteur du cas jira pensait que le contribuable ayant ce numéro AVS11 assigné devait être identifié. Mais, d'après la spécification
+	 * "paragraphe 2.4.3 du document SCU-IdentificationCTB_Automatique.doc", cette identification échoue forcément, car "Si le NAVS11 est renseigné dans la demande et qu'il n'existe pas dans Unireg, cette étape est considérée comme OK. Et
+	 * inversement." Autrement dit, la recherche doit également retourner tous les contribuables personnes physiques qui répondent aux autres critères (= tous!) et qui n'ont pas de NAVS11.
 	 */
 	@Test
 	public void testIdentificationAvecNavs11Seul() throws Exception {
@@ -4289,7 +4284,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				addEnsembleTiersCouple(pp, null, date(2012, 5, 1), null);
 
 				// on crée aussi plein d'autres personnes (> 100), parce que c'est le problème (tant que ces personnes n'ont pas de NAVS11...)
-				for (int i = 0 ; i < 130 ; ++ i) {
+				for (int i = 0; i < 130; ++i) {
 					addNonHabitant("Clone-" + i, "Foldingue", RegDate.get().addDays(-i), Sexe.MASCULIN);
 				}
 
@@ -4504,7 +4499,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final CriteresPersonne criteres = new CriteresPersonne();
 				criteres.setNAVS13(oldAvs);
-				criteres.setDateNaissance(date(2000,5,3));
+				criteres.setDateNaissance(date(2000, 5, 3));
 				final Mutable<String> upiAvs = new MutableObject<>("titi");
 				final List<Long> res = service.identifiePersonnePhysique(criteres, upiAvs);
 				assertNotNull(res);
@@ -5110,7 +5105,20 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				// personne physique avec le même nom
 				addNonHabitant("Albert", "Müller Mueller", null, Sexe.MASCULIN);
 
-				final AutreCommunaute ac = addAutreCommunaute("Mueller GmbH");
+				//final AutreCommunaute ac = addAutreCommunaute("Mueller GmbH");
+
+
+				final Entreprise ac = addEntrepriseInconnueAuCivil();
+				{
+					Etablissement etablissement = addEtablissement();
+
+					addActiviteEconomique(ac, etablissement, date(2011, 1, 1), null, true);
+
+					addRaisonSocialeFiscaleEntreprise(ac, date(2011, 1, 1), null, "Mueller GmbH");
+					addDomicileEtablissement(etablissement, date(2011, 1, 1), null, MockCommune.Renens);
+					final AdresseSuisse adresseSuisse = addAdresseSuisse(ac, TypeAdresseTiers.COURRIER, date(2011, 1, 1), null, MockRue.Echallens.GrandRue);
+					adresseSuisse.setNumeroMaison("1");
+				}
 
 				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
 				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
@@ -5157,11 +5165,31 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				addNonHabitant("Albert", "Müller Mueller", null, Sexe.MASCULIN);
 
-				final AutreCommunaute one = addAutreCommunaute("Favre GmbH");
-				addAdresseSuisse(one, TypeAdresseTiers.COURRIER, date(2011, 1, 1), null, MockRue.Echallens.GrandRue);
 
-				final AutreCommunaute two = addAutreCommunaute("Favre & Co AG");
-				addAdresseSuisse(two, TypeAdresseTiers.COURRIER, date(2013, 4, 12), null, MockRue.Lausanne.AvenueDeLaGare);
+				final Entreprise one = addEntrepriseInconnueAuCivil();
+				{
+					Etablissement etablissement = addEtablissement();
+
+					addActiviteEconomique(one, etablissement, date(2011, 1, 1), null, true);
+
+					addRaisonSocialeFiscaleEntreprise(one, date(2011, 1, 1), null, "Favre GmbH");
+					addDomicileEtablissement(etablissement, date(2011, 1, 1), null, MockCommune.Renens);
+					final AdresseSuisse adresseSuisse = addAdresseSuisse(one, TypeAdresseTiers.COURRIER, date(2011, 1, 1), null, MockRue.Echallens.GrandRue);
+					adresseSuisse.setNumeroMaison("1");
+				}
+				//
+				final Entreprise two = addEntrepriseInconnueAuCivil();
+				{
+					Etablissement etablissement = addEtablissement();
+
+					addActiviteEconomique(two, etablissement, date(2013, 1, 1), null, true);
+
+					addRaisonSocialeFiscaleEntreprise(two, date(2013, 1, 1), null, "Favre & Co AG");
+					addDomicileEtablissement(etablissement, date(2013, 1, 1), null, MockCommune.Renens);
+
+					final AdresseSuisse adresseSuisse = addAdresseSuisse(two, TypeAdresseTiers.COURRIER, date(2013, 1, 1), null, MockRue.Lausanne.AvenueDeLaGare);
+					adresseSuisse.setNumeroMaison("1");
+				}
 
 				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
 				addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());

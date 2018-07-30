@@ -10,7 +10,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
+import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.NumeroCtbStringRenderer;
+import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
+import ch.vd.unireg.identification.contribuable.TooManyIdentificationPossibilitiesException;
+import ch.vd.unireg.jms.EsbBusinessCode;
+import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.event.identification.request.v4.CorporationIdentificationData;
 import ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest;
 import ch.vd.unireg.xml.event.identification.request.v4.IdentificationData;
@@ -23,18 +34,6 @@ import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedCorporation;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson;
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
 import ch.vd.unireg.xml.event.identification.response.v4.ObjectFactory;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.NumeroCtbStringRenderer;
-import ch.vd.unireg.identification.contribuable.IdentificationContribuableService;
-import ch.vd.unireg.identification.contribuable.TooManyIdentificationPossibilitiesException;
-import ch.vd.unireg.jms.EsbBusinessCode;
-import ch.vd.unireg.jms.EsbBusinessException;
-import ch.vd.unireg.tiers.AutreCommunaute;
-import ch.vd.unireg.tiers.Contribuable;
-import ch.vd.unireg.tiers.Entreprise;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.xml.DataHelper;
 
 public class IdentificationContribuableRequestHandlerV4 implements IdentificationContribuableRequestHandler<IdentificationContribuableRequest, IdentificationContribuableResponse> {
 
@@ -66,7 +65,7 @@ public class IdentificationContribuableRequestHandlerV4 implements Identificatio
 		final List<IdentificationResult> results = new ArrayList<>(request.getNaturalPersonDataOrCorporationData().size());
 		int index = 0;
 		for (IdentificationData inData : request.getNaturalPersonDataOrCorporationData()) {
-			final String identifier = String.format("%s/part-%02d", businessId, index ++);
+			final String identifier = String.format("%s/part-%02d", businessId, index++);
 			results.add(doIdentification(inData, identifier));
 		}
 		final IdentificationContribuableResponse response = new IdentificationContribuableResponse(results);
@@ -87,7 +86,9 @@ public class IdentificationContribuableRequestHandlerV4 implements Identificatio
 
 	private interface Identificator<D extends IdentificationData, C, I extends IdentifiedTaxpayer> {
 		C getCriteres(D data);
+
 		List<Long> identifie(C criteres) throws TooManyIdentificationPossibilitiesException;
+
 		I buildIdentifiedInformation(long id);
 	}
 
@@ -174,9 +175,6 @@ public class IdentificationContribuableRequestHandlerV4 implements Identificatio
 				if (ctb instanceof Entreprise) {
 					final String raisonSociale = tiersService.getDerniereRaisonSociale((Entreprise) ctb);
 					ic.setRaisonSociale(tokenize(raisonSociale, MAX_NAME_LENGTH));
-				}
-				else if (ctb instanceof AutreCommunaute) {
-					ic.setRaisonSociale(tokenize(((AutreCommunaute) ctb).getNom(), MAX_NAME_LENGTH));
 				}
 				return ic;
 			}

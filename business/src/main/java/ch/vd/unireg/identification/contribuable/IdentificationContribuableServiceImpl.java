@@ -305,7 +305,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				criteres.getSexe() == null &&
 				StringUtils.isBlank(criteres.getNom()) &&
 				StringUtils.isBlank(criteres.getPrenoms()) &&
-				StringUtils.isBlank(criteres.getNAVS11()) ;
+				StringUtils.isBlank(criteres.getNAVS11());
 	}
 
 	public static boolean criteresEmptyForReChercheComplete(CriteresEntreprise criteres) {
@@ -387,7 +387,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private List<TiersIndexedData> findByIde(CriteresEntreprise criteres) {
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE, TiersCriteria.TypeTiers.ENTREPRISE));
+		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.ENTREPRISE));
 		criteria.setNumeroIDE(criteres.getIde());
 		if (!criteria.isEmpty()) {
 			try {
@@ -461,7 +461,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private List<PersonnePhysique> filterCoherenceAfterIdentificationAvs13(List<PersonnePhysique> list, CriteresPersonne criteres) {
 		//SIFISC-10914
 		//Le controle ne se fera que sur le nom /prenom si on a pas de date de naissance dans la demande
-		if (criteres.getDateNaissance()==null) {
+		if (criteres.getDateNaissance() == null) {
 			return controleNomPrenom(list, criteres);
 		}
 
@@ -483,7 +483,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	/**
 	 * Effectue le contrôle de cohérence sur le nom prénom
-	 * @param list liste de personne sphysiques à vérifier
+	 *
+	 * @param list     liste de personne sphysiques à vérifier
 	 * @param criteres de recherche tel qu'indiqué dans la demande notamment avec le nom / prenom
 	 * @return liste des personnes correspondantes aux nom /prenom ou liste vide si aucune personne ne correspond
 	 */
@@ -516,10 +517,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
-	 * Fait une recherche selon le numéro avs13 donné dans les critères. Si ce numéro ne donne aucun résultat, on
-	 * appelle alors le service UPI pour voir s'il n'a pas mieux à proposer (auquel cas on refait la recherche
-	 * avec ce numéro et on le renvoie à l'appelant)
-	 * @param criteres critères issus de la demande d'identification
+	 * Fait une recherche selon le numéro avs13 donné dans les critères. Si ce numéro ne donne aucun résultat, on appelle alors le service UPI pour voir s'il n'a pas mieux à proposer (auquel cas on refait la recherche avec ce numéro et on le renvoie
+	 * à l'appelant)
+	 *
+	 * @param criteres          critères issus de la demande d'identification
 	 * @param navs13UpiProposal en sortie, si non-null et si l'appel UPI a donné un nouveau numéro, le numéro en question
 	 * @return la liste des tiers trouvés
 	 */
@@ -576,7 +577,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	/**
 	 * Phase de recherche sur tous les critères (parce que la phase sur les critères IDE a échoué)
-	 * @param criteres les critères de l'identification tels que fournis dans la demande
+	 *
+	 * @param criteres         les critères de l'identification tels que fournis dans la demande
 	 * @param maxNumberForList le nombre maximal de donner à renvoyer au delà duquel tout se termine en {@link TooManyIdentificationPossibilitiesException}
 	 * @return une liste de contribuables qui satisfont aux critères
 	 * @throws TooManyIdentificationPossibilitiesException si le nombre de résultats trouvés est plus grand que <code>maxNumberForList</code>
@@ -646,13 +648,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison(consigne);
-		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE, TiersCriteria.TypeTiers.ENTREPRISE));
+		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.ENTREPRISE));
 		return criteria;
 	}
 
 	/**
 	 * En fait, on les remplace par des séparations de mots
-	 * @param source chaîne de caractères en entrée
+	 *
+	 * @param source          chaîne de caractères en entrée
 	 * @param actionEffective si non <code>null</code>, contiendra en sortie un flag qui indique si oui ou non des caractères ont été enlevés
 	 * @return chaîne de caractères dans laquelle les caractères spéciaux ont été enlevés
 	 */
@@ -725,8 +728,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	/**
 	 * Phase de recherche sur tous les critères (parce que la phase sur les critères NAVS a échoué)
-	 * @param criteres les critères de l'identification tels que fournis dans la demande
-	 * @param avsUpi si non-null, le numéro AVS renvoyé par l'UPI en remplacement de celui présent dans la demande
+	 *
+	 * @param criteres         les critères de l'identification tels que fournis dans la demande
+	 * @param avsUpi           si non-null, le numéro AVS renvoyé par l'UPI en remplacement de celui présent dans la demande
 	 * @param maxNumberForList le nombre maximal de donner à renvoyer au delà duquel tout se termine en {@link TooManyIdentificationPossibilitiesException}
 	 * @return une liste de contribuables qui satisfont aux critères
 	 * @throws TooManyIdentificationPossibilitiesException si le nombre de résultats trouvés est plus grand que <code>maxNumberForList</code>
@@ -807,6 +811,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	/**
 	 * Contrôle final sur le numéro IDE
+	 *
 	 * @return <code>false</code> s'il n'y a pas exactement un résultat dans la liste, ou si ce résultat n'a pas d'IDE connu, ou si le critère donné sur l'IDE est vide&nbsp;; <code>true</code> sinon.
 	 */
 	private static boolean isIdeNonConforme(List<TiersIndexedData> tiersIndexData, String ide) {
@@ -829,8 +834,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
-	 * Sauve la demande en base, identifie le ou les contribuables et retourne une réponse immédiatement si un seul contribuable est trouvé. Dans tous les autres cas (0, >1 ou en cas d'erreur), la
-	 * demande est stockée pour traitement manuel.
+	 * Sauve la demande en base, identifie le ou les contribuables et retourne une réponse immédiatement si un seul contribuable est trouvé. Dans tous les autres cas (0, >1 ou en cas d'erreur), la demande est stockée pour traitement manuel.
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -845,6 +849,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	/**
 	 * Envoie une réponse d'identification positive de type automatique
+	 *
 	 * @param message  la requête d'identification initiale
 	 * @param personne la personne physique identifiée
 	 * @throws Exception en cas de problème
@@ -930,9 +935,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Envoie une réponse d'identification <b>lorsqu'un contribuable a été identifié formellement</b>.
 	 *
-	 * @param message  la requête d'identification initiale
+	 * @param message    la requête d'identification initiale
 	 * @param entreprise l'entreprise identifiée
-	 * @param etat     le mode d'identification (manuel ou automatique)
+	 * @param etat       le mode d'identification (manuel ou automatique)
 	 * @throws Exception si ça a pas marché
 	 */
 	private void identifie(IdentificationContribuable message, Entreprise entreprise, Etat etat) {
@@ -1104,13 +1109,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 *
-	 *
-	 *
 	 * @param identificationContribuableCriteria
-	 *
 	 * @param paramPagination
 	 * @param filter
-	 *@param typeDemande  @return
+	 * @param typeDemande                        @return
 	 */
 	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria,
@@ -1122,12 +1124,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
 	 *
-	 *
-	 *
 	 * @param identificationContribuableCriteria
-	 *
 	 * @param filter
-	 *@param typeDemande  @return
+	 * @param typeDemande                        @return
 	 */
 	@Override
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria,
@@ -1445,7 +1444,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		if (sexeCritere != null) {
 			CollectionUtils.filter(list, pp -> {
 				final Sexe sexe = tiersService.getSexe(pp);
-				return (sexe!=null && sexe == sexeCritere);
+				return (sexe != null && sexe == sexeCritere);
 			});
 		}
 	}
@@ -1478,7 +1477,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 		if (dateNaissance != null) {
 			//SIFISC-9006 les dates partiels doivent être prises en compte et comparées
-			return dateNaissance.compareTo(critereDateNaissance)==0;
+			return dateNaissance.compareTo(critereDateNaissance) == 0;
 		}
 		else {
 			return false;
@@ -1639,6 +1638,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private interface CustomValueFiller<T> {
 		Map<Etat, List<T>> getValuesParEtat(IdentCtbDAO dao);
+
 		void fillCache(IdentificationContribuableCache cache, Map<Etat, List<T>> values);
 	}
 
@@ -1691,7 +1691,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return template.execute(new TransactionCallback<List<String>>() {
 			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
-					return identCtbDAO.getTraitementUser();
+				return identCtbDAO.getTraitementUser();
 
 			}
 		});
@@ -1762,8 +1762,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	@Override
 	public IdentifierContribuableFromListeResults identifieFromListe(List<CriteresPersonne> listeCriteresPersonnes, StatusManager status, RegDate regDate, int nbThreads) {
-		IdentifierContribuableFromListeProcessor processor = new IdentifierContribuableFromListeProcessor(this,transactionManager, tiersService, adresseService,tiersDAO);
-		return processor.run(listeCriteresPersonnes,status,RegDate.get(), nbThreads);
+		IdentifierContribuableFromListeProcessor processor = new IdentifierContribuableFromListeProcessor(this, transactionManager, tiersService, adresseService, tiersDAO);
+		return processor.run(listeCriteresPersonnes, status, RegDate.get(), nbThreads);
 	}
 
 	private String traduireBusinessUser(String user) {
