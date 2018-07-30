@@ -23,10 +23,12 @@ import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
+import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbBusinessException;
+import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.Sexe;
@@ -77,7 +79,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				for (int i = 0 ; i < nbCtb ; ++ i) {
+				for (int i = 0; i < nbCtb; ++i) {
 					addNonHabitant(null, "Pittet", date(1980, 1, 1).addDays(i / 2), Sexe.MASCULIN);
 				}
 				return null;
@@ -123,7 +125,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				for (int i = 0 ; i < nbCtb ; ++ i) {
+				for (int i = 0; i < nbCtb; ++i) {
 					addNonHabitant(null, "Pittet", date(1980, 1, 1).addDays(i), Sexe.MASCULIN);
 				}
 				return null;
@@ -382,7 +384,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 			@Override
 			protected void init() {
 				final MockEntrepriseCivile entreprise = addEntreprise(noCivilPM);
-				MockEtablissementCivil etablissement = MockEtablissementCivilFactory.addEtablissement(noCivilPM+9876, entreprise, date(1989, 7, 7), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
+				MockEtablissementCivil etablissement = MockEtablissementCivilFactory.addEtablissement(noCivilPM + 9876, entreprise, date(1989, 7, 7), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                                                                      true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                                      MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(1989, 7, 4), StatusRegistreIDE.DEFINITIF,
 				                                                                                      TypeEntrepriseRegistreIDE.SITE, ide, BigDecimal.valueOf(50000), "CHF");
@@ -426,6 +428,62 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 
 				final IdentifiedCorporation pm = (IdentifiedCorporation) ctb;
 				assertEquals(StringUtils.abbreviate(raisonSociale, 100), pm.getRaisonSociale());
+			}
+		});
+
+	}
+
+	@Test
+	public void testIdentificationPersonneMoraleAutreCommunaute() throws Exception {
+
+		// Mise en place service mock
+		final Long noEntrepriseCivile = 101202100L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
+		final String ide = "CHE999999996";
+
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
+			@Override
+			protected void init() {
+				MockEntrepriseCivile entreprise =
+						MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, "Correia Pinto, Jardinage et Paysagisme", date(2010, 6, 26), null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
+						                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                       StatusRegistreIDE.DEFINITIF,
+						                                       TypeEntrepriseRegistreIDE.ENTREPRISE_INDIVIDUELLE, ide, null, null);
+				addEntreprise(entreprise);
+
+			}
+		});
+
+		// L'autre communauté
+		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final AutreCommunaute autreCommunaute = addAutreCommunaute("Correia Pinto, Jardinage et Paysagisme");
+				return autreCommunaute.getNumero();
+			}
+		});
+
+		// attente de la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// identification
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final IdentificationData data = new CorporationIdentificationData("idàmoi", ide, null, null);
+				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
+				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
+				assertNotNull(jaxbResponse);
+
+				final IdentificationContribuableResponse response = jaxbResponse.getValue();
+				assertNotNull(response);
+				assertNotNull(response.getIdentificationResult());
+				assertEquals(1, response.getIdentificationResult().size());
+
+				final IdentificationResult result = response.getIdentificationResult().get(0);
+				assertNotNull(result.getErreur());
+				assertEquals("idàmoi", result.getId());
+				assertTrue(StringUtils.containsIgnoreCase(result.getErreur().getAucun().toString(), "Aucun contribuable trouvé pour le message"));
 			}
 		});
 

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
@@ -21,17 +22,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.xml.event.identification.request.v4.CorporationIdentificationData;
-import ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest;
-import ch.vd.unireg.xml.event.identification.request.v4.IdentificationData;
-import ch.vd.unireg.xml.event.identification.request.v4.NaturalPersonIdentificationData;
-import ch.vd.unireg.xml.event.identification.request.v4.ObjectFactory;
-import ch.vd.unireg.xml.event.identification.response.v4.IdentificationContribuableResponse;
-import ch.vd.unireg.xml.event.identification.response.v4.IdentificationResult;
-import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedCorporation;
-import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson;
-import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.unireg.common.BusinessItTest;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.Entreprise;
@@ -40,10 +30,21 @@ import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.Sexe;
 import ch.vd.unireg.xml.DataHelper;
+import ch.vd.unireg.xml.event.identification.request.v4.CorporationIdentificationData;
+import ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest;
+import ch.vd.unireg.xml.event.identification.request.v4.IdentificationData;
+import ch.vd.unireg.xml.event.identification.request.v4.NaturalPersonIdentificationData;
+import ch.vd.unireg.xml.event.identification.request.v4.ObjectFactory;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentificationContribuableResponse;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentificationResult;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
@@ -137,18 +138,11 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		assertEquals(1, response.getIdentificationResult().size());
 
 		final IdentificationResult result = response.getIdentificationResult().get(0);
-		if (result.getErreur() != null) {
-			fail(result.getErreur().toString());
-		}
+
+		assertNotNull(result.getErreur());
 		assertEquals("MaDemandePM", result.getId());
+		assertTrue(StringUtils.containsIgnoreCase(result.getErreur().getAucun().toString(), "Aucun contribuable trouvé pour le message"));
 
-		final IdentifiedTaxpayer infoCtb = result.getContribuable();
-		assertNotNull(infoCtb);
-		assertEquals(id, infoCtb.getNumeroContribuable());
-		assertEquals(IdentifiedCorporation.class, infoCtb.getClass());
-
-		final IdentifiedCorporation infoEntreprise = (IdentifiedCorporation) infoCtb;
-		assertEquals("Pittet Echaffaudages SA", infoEntreprise.getRaisonSociale());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -157,14 +151,14 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		final Long id1 = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1982,6,29), Sexe.MASCULIN);
+				final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier", date(1982, 6, 29), Sexe.MASCULIN);
 				return christophe.getNumero();
 			}
 		});
 		final Long id2 = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1964,6,29), Sexe.MASCULIN);
+				final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier", date(1964, 6, 29), Sexe.MASCULIN);
 				return christophe.getNumero();
 			}
 		});
@@ -198,7 +192,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1982,6,29), Sexe.MASCULIN);
+				final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier", date(1982, 6, 29), Sexe.MASCULIN);
 				return christophe.getNumero();
 			}
 		});
@@ -337,7 +331,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		assertNotNull(response.getIdentificationResult());
 		assertEquals(nbGroupes * tailleGroupe, response.getIdentificationResult().size());
 
-		for (int index = 0 ; index < nbGroupes * tailleGroupe; ++ index) {
+		for (int index = 0; index < nbGroupes * tailleGroupe; ++index) {
 			final IdentificationResult result = response.getIdentificationResult().get(index);
 			assertNotNull(result);
 			switch (index % tailleGroupe) {
