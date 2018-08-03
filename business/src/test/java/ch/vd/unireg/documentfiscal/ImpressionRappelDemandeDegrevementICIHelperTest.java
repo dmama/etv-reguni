@@ -24,6 +24,7 @@ import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.MockRegistreFoncierService;
+import ch.vd.unireg.registrefoncier.RegistreFoncierService;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.MotifFor;
@@ -38,6 +39,8 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 
 	private ImpressionDemandeDegrevementICIHelperImpl impressionDemandeDegrevementICIHelper;
 
+	private ImpressionRappelDemandeDegrevementICIHelperImpl impressionRappelDemandeDegrevementICIHelper;
+
 	private final RegDate dateDebut = date(1990, 4, 2);
 	private final RegDate dateObtentionLettreEmis = date(2015, 6, 2);
 	private final RegDate dateEnvoiRappel = date(2015, 11, 2);
@@ -48,12 +51,8 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		impressionDemandeDegrevementICIHelper = new ImpressionDemandeDegrevementICIHelperImpl();
-		impressionDemandeDegrevementICIHelper.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		ProxyServiceInfrastructureService infraService = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
-		impressionDemandeDegrevementICIHelper.setInfraService(infraService);
-		impressionDemandeDegrevementICIHelper.setTiersService(getBean(TiersService.class, "tiersService"));
-		impressionDemandeDegrevementICIHelper.setRegistreFoncierService(new MockRegistreFoncierService() {
+		RegistreFoncierService rfService = new MockRegistreFoncierService() {
 			@Override
 			public @Nullable Commune getCommune(ImmeubleRF immeuble, RegDate dateReference) {
 				CommuneSimple commune = new CommuneSimple();
@@ -73,7 +72,27 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 			public @Nullable String getNumeroParcelleComplet(ImmeubleRF immeuble, RegDate dateReference) {
 				return "456";
 			}
-		});
+		};
+
+		// Impression degrevement
+		impressionDemandeDegrevementICIHelper = new ImpressionDemandeDegrevementICIHelperImpl();
+		impressionDemandeDegrevementICIHelper.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		impressionDemandeDegrevementICIHelper.setInfraService(infraService);
+		impressionDemandeDegrevementICIHelper.setTiersService(getBean(TiersService.class, "tiersService"));
+		impressionDemandeDegrevementICIHelper.setRegistreFoncierService(rfService);
+
+		// Impression rappel degrèvement
+		impressionRappelDemandeDegrevementICIHelper = new ImpressionRappelDemandeDegrevementICIHelperImpl();
+		impressionRappelDemandeDegrevementICIHelper.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		impressionRappelDemandeDegrevementICIHelper.setInfraService(infraService);
+		impressionRappelDemandeDegrevementICIHelper.setTiersService(getBean(TiersService.class, "tiersService"));
+		// rappel demande helper
+		ImpressionDemandeDegrevementICIHelperImpl helper = new ImpressionDemandeDegrevementICIHelperImpl();
+		helper.setRegistreFoncierService(rfService);
+		helper.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		helper.setInfraService(infraService);
+		helper.setTiersService(getBean(TiersService.class, "tiersService"));
+		impressionRappelDemandeDegrevementICIHelper.setDemandeHelper(helper);
 	}
 
 
@@ -86,28 +105,13 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 		Date dateAttendue = dateEnvoiRappel.asJavaDate(); // Date retournée par 'DelaisService' = envoi rappel + 3j
 
 		final Long idDegrevement = createDegrevement(dateEnvoiRappel);
-		final FichierImpression.Document document = buildDegrevementDocument(idDegrevement, false);
+		final FichierImpression.Document document = buildRappelDegrevementDocument(idDegrevement);
 
 		// Date d'envoi du rappel attendue, tient compte d'un délai de trois jours ouvrables
 		assertNotNull(document);
 		assertEquals(FORMATER.format(dateAttendue), document.getInfoEnteteDocument().getExpediteur().getDateExpedition());
 	}
 
-	/**
-	 * [SIFISC-29013] La date inscrite sur les dulicatas des lettres de rappels de dégrèvement (papier) correspond à la date de traitement du rappel.
-	 */
-	@Test
-	public void testDateEnvoiRappelLettreDegrevementDocumentDuplicata () throws Exception { // mode online
-
-		Date dateAttendue = dateTraitement.asJavaDate();
-
-		final Long idDegrevement = createDegrevement(dateEnvoiRappel);
-		final FichierImpression.Document document = buildDegrevementDocument(idDegrevement, true);
-
-		// Date d'envoi du rappel attendue, tient compte d'un délai de trois jours ouvrables
-		assertNotNull(document);
-		assertEquals(FORMATER.format(dateAttendue), document.getInfoEnteteDocument().getExpediteur().getDateExpedition());
-	}
 
 	/**
 	 * [SIFISC-29013] La date inscrite sur les lettres de dégrèvement (papier) ne tient PAS compte d'un délai de 3 jours ouvrables.
@@ -147,6 +151,20 @@ public class ImpressionRappelDemandeDegrevementICIHelperTest extends BusinessTes
 
 			try {
 				return impressionDemandeDegrevementICIHelper.buildDocument(dd, dateTraitement, duplicata);
+			}
+			catch (EditiqueException e) {
+				throw new RuntimeException(e);
+			}
+		});
+	}
+
+	private FichierImpression.Document buildRappelDegrevementDocument(Long idDegrevement) throws Exception {
+		return doInNewTransaction(transactionStatus -> {
+			final DemandeDegrevementICI dd = hibernateTemplate.get(DemandeDegrevementICI.class, idDegrevement);
+			assertNotNull(dd);
+
+			try {
+				return impressionRappelDemandeDegrevementICIHelper.buildDocument(dd, dateTraitement);
 			}
 			catch (EditiqueException e) {
 				throw new RuntimeException(e);
