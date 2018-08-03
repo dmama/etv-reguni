@@ -1,5 +1,6 @@
 package ch.vd.unireg.documentfiscal;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,8 +48,10 @@ public class ImpressionRappelDemandeDegrevementICIHelperImpl extends EditiqueAbs
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(demande), entreprise.getNumero(), dateTraitement);
 			final String titre = String.format("%s %d", IMPOT_COMPLEMENTAIRE_IMMEUBLES, demande.getPeriodeFiscale());
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, demande.getDateRappel(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
-			final FichierImpression.Document.LettreDegrevementImmRappel rappel = new FichierImpression.Document.LettreDegrevementImmRappel(XmlUtils.regdate2xmlcal(RegDate.get(demande.getPeriodeFiscale())),
+			// [SIFISC-29013] La date inscrite sur le rappel doit prendre en compte un délai de 3j ouvrables.
+			final RegDate dateEnvoi = determineDateEnvoi(demande);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
+			final FichierImpression.Document.LettreDegrevementImmRappel rappel = new FichierImpression.Document.LettreDegrevementImmRappel(XmlUtils.regdate2xmlcal(RegDate.get(demande.getPeriodeFiscale(), 1, 1)),
 			                                                                                                                               demandeHelper.getSiegeEntreprise(entreprise, dateTraitement),
 			                                                                                                                               demandeHelper.buildCodeBarres(demande),
 			                                                                                                                               demande.getCodeControle(),
@@ -64,6 +67,23 @@ public class ImpressionRappelDemandeDegrevementICIHelperImpl extends EditiqueAbs
 		catch (Exception e) {
 			throw new EditiqueException(e);
 		}
+	}
+
+	/**
+	 * Détermine la date d'envoi à imprimer sur le document (date visible pour le contribuable)
+	 */
+	private static RegDate determineDateEnvoi(DemandeDegrevementICI demande) {
+		final RegDate dateEnvoi;
+
+		final EtatAutreDocumentFiscalRappele etatRappele = demande.getEtatRappele();
+		if (etatRappele != null) { // RAPPELE
+			dateEnvoi = etatRappele.getDateEnvoiCourrier(); // SIFISC-29013
+		}
+		else { // EMIS (pas de date d'envoi courrier spécifique)
+			dateEnvoi = demande.getDateEnvoi();
+		}
+
+		return dateEnvoi;
 	}
 
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, Entreprise entreprise) {
