@@ -239,7 +239,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// [SIFISC-28213] l'ouverture et la fermeture de droits se fait toujours avec la date valeur de l'import courant, mais
 		//                la modification des raisons d'acquisition doit se prendre en compte avec la date valeur de l'import qui
 		//                a créé le droit (autrement, la classe AffairRF ne retrouve pas ces petits) : on doit donc gérer
-		//                potentiellement plusieurs successives à des dates différentes
+		//                potentiellement plusieurs affaires successives à des dates différentes
 		final Map<RegDate, AffaireData> affaires = new TreeMap<>(); // tree map pour traiter les affaires dans l'ordre chronologique croissant
 		if (!toAddList.isEmpty() || !toCloseList.isEmpty()) {
 			// les droits ouverts et fermés dans l'import courant
