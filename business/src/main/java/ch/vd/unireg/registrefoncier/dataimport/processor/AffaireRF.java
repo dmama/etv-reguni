@@ -202,8 +202,14 @@ public class AffaireRF {
 	private void calculateDatesDebutMetier(@NotNull List<Mutation> mutations) {
 
 		// on ne recalcule pas les dates de début sur les droits associés à des mutations de fermeture (car ils dépendent d'une autre affaire)
+		// [SIFISC-29326] ni sur les droits associés à des mutations de mise-à-jour, car :
+		//  - les éventuelles nouvelles raisons d'acquisition ne modifient pas la date de date de début métier ;
+		//  - la date de début métier ne peut être correctement calculée que lors de la création initiale du droit (il faut pouvoir déterminer
+		//    correctement la raison d'acquisition précédente, ce qui n'est pas possible lors de l'ajout d'une raison d'acquisition sur un
+		//    droit existant, par exemple) ;
+		//  - en cas de recalcul, la date de métier correcte est calculée par la mutation de création du droit.
 		final List<Mutation> filtered = mutations.stream()
-				.filter(m -> m.getType() == MutationType.CREATION || m.getType() == MutationType.UPDATE)
+				.filter(m -> m.getType() == MutationType.CREATION)
 				.collect(Collectors.toList());
 
 		// on calcule la date de début métier sur tous les droits
