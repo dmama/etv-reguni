@@ -39,7 +39,8 @@ public class SearchTiersController {
 	private GlobalTiersSearcher searcher;
 	private ApplicationContext applicationContext;
 
-	private static final Pattern PREFIXE_IDE_PATTERN = Pattern.compile("(CHE|ADM)");
+	private final String regexIDE = "(?i)(CHE[-]\\d|ADM[-]\\d)";
+	private final Pattern PREFIXE_IDE_PATTERN = Pattern.compile(regexIDE, Pattern.MULTILINE);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSearcher(GlobalTiersSearcher searcher) {
@@ -80,7 +81,7 @@ public class SearchTiersController {
 		else {
 			try {
 				if (StringUtils.isNotBlank(saveQueryTo) && "simpleSearchQuery".equalsIgnoreCase(saveQueryTo) && PREFIXE_IDE_PATTERN.matcher(query).find()) {
-					query = StringUtils.trimToNull(query.replaceAll("[\\s\\u00a0.-]+", StringUtils.EMPTY).toUpperCase(Locale.ENGLISH));
+					query = query.replaceAll("[\\-.]", StringUtils.EMPTY).toUpperCase(Locale.ENGLISH);
 				}
 				final TopList<TiersIndexedData> list = searcher.searchTop(query, filter, 200);
 				postFilter(filter, list);
