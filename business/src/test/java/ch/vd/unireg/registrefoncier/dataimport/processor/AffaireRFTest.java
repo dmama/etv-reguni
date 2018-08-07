@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.registrefoncier.AyantDroitRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -27,7 +30,9 @@ import ch.vd.unireg.registrefoncier.dao.MockDroitRFDAO;
 
 import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
 import static ch.vd.unireg.common.WithoutSpringTest.date;
+import static ch.vd.unireg.registrefoncier.GenrePropriete.COMMUNE;
 import static ch.vd.unireg.registrefoncier.GenrePropriete.COPROPRIETE;
+import static ch.vd.unireg.registrefoncier.GenrePropriete.INDIVIDUELLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -680,7 +685,7 @@ public class AffaireRFTest {
 		droitHeleneComm.setMotifFin(null);
 		droitHeleneComm.setAyantDroit(helene);
 		droitHeleneComm.setCommunaute(communaute);
-		droitHeleneComm.setRegime(GenrePropriete.COMMUNE);
+		droitHeleneComm.setRegime(COMMUNE);
 		droitHeleneComm.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
 
 		// droit de propriété en communauté de Brigitte
@@ -696,7 +701,7 @@ public class AffaireRFTest {
 		droitBrigitteComm.setMotifFin(null);
 		droitBrigitteComm.setAyantDroit(brigitte);
 		droitBrigitteComm.setCommunaute(communaute);
-		droitBrigitteComm.setRegime(GenrePropriete.COMMUNE);
+		droitBrigitteComm.setRegime(COMMUNE);
 		droitBrigitteComm.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
 
 		final DroitProprieteCommunauteRF droitCommunaute = new DroitProprieteCommunauteRF();
@@ -727,7 +732,7 @@ public class AffaireRFTest {
 		nouveauDroitHelene.setDateDebutMetier(null);
 		nouveauDroitHelene.setDateFinMetier(null);
 		nouveauDroitHelene.setAyantDroit(helene);
-		nouveauDroitHelene.setRegime(GenrePropriete.INDIVIDUELLE);
+		nouveauDroitHelene.setRegime(INDIVIDUELLE);
 		nouveauDroitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSession, dateAchat, "Achat", null));
 		nouveauDroitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
 		nouveauDroitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSession, dateSession, "Session", null));
@@ -831,7 +836,7 @@ public class AffaireRFTest {
 		droitCharles1.setDateFin(dateImportChangementRegime.getOneDayBefore());
 		droitCharles1.setAyantDroit(charles);
 		droitCharles1.setCommunaute(communaute);
-		droitCharles1.setRegime(GenrePropriete.COMMUNE);
+		droitCharles1.setRegime(COMMUNE);
 		droitCharles1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateEchange, "Echange", null));
 		droitCharles1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession2, "Succession", null));
 		droitCharles1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateDonation, "Donation", null));
@@ -846,7 +851,7 @@ public class AffaireRFTest {
 		droitWilfred1.setDateFin(dateImportChangementRegime.getOneDayBefore());
 		droitWilfred1.setAyantDroit(wilfred);
 		droitWilfred1.setCommunaute(communaute);
-		droitWilfred1.setRegime(GenrePropriete.COMMUNE);
+		droitWilfred1.setRegime(COMMUNE);
 		droitWilfred1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateEchange, "Echange", null));
 		droitWilfred1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession2, "Succession", null));
 		droitWilfred1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateDonation, "Donation", null));
@@ -859,7 +864,7 @@ public class AffaireRFTest {
 		droitCommunaute.setDateDebut(dateImportInitial);
 		droitCommunaute.setDateFin(dateImportChangementRegime.getOneDayBefore());
 		droitCommunaute.setAyantDroit(communaute);
-		droitCommunaute.setRegime(GenrePropriete.COMMUNE);
+		droitCommunaute.setRegime(COMMUNE);
 
 		//
 		// Situation au 28.01.2017 (changement de régime : commnauté transformée en copropriété)
@@ -1425,6 +1430,442 @@ public class AffaireRFTest {
 		assertEquals(0, listener.getClosed().size());
 	}
 
+	/**
+	 * [SIFISC-29326] Ce test vérifie que les dates métier sont bien calculées lors du traitement des mutations sur des communautés complexes (voir descriptifs dans le test), notamment dans le cas où un membre renonce à son droit et où une nouvelle
+	 * raisons d'acquisition est ajoutée sur un seul des membres restants .
+	 */
+	@Test
+	public void testApplyCommunautePlusieursPartages() {
+
+		final PersonnePhysiqueRF alain = new PersonnePhysiqueRF();
+		alain.setId(1L);
+		final PersonnePhysiqueRF amandine = new PersonnePhysiqueRF();
+		amandine.setId(2L);
+		final PersonnePhysiqueRF cornelia = new PersonnePhysiqueRF();
+		cornelia.setId(3L);
+		final PersonnePhysiqueRF chloe = new PersonnePhysiqueRF();
+		chloe.setId(4L);
+
+		final CommunauteRF communaute1 = new CommunauteRF();
+		communaute1.setId(10L);
+
+		final CommunauteRF communaute2 = new CommunauteRF();
+		communaute2.setId(11L);
+
+		final CommunauteRF communaute3 = new CommunauteRF();
+		communaute3.setId(12L);
+
+		// historique des changements :
+		//
+		//  | date import | date métier | commentaire
+		//  +-------------+-------------+----------------------------------------------------------------------------------------------------------------------------------
+		//  |     -       | 07.05.1971  | Import initial, deux communautés (Chloé toute seule) et (Alain + Amandine + Cornélia + Chloé) sont créées
+		//  | 07.01.2017  | 19.12.2016  | Décès de Chloé, fermeture des deux communautés existantes et ouverture d'une troisième communauté (Alain + Amandine + Cornélia)
+		//  | 11.02.2018  | 15.12.2017  | Partage, Cornélia renonce à sa part au profit d'Amandine
+		//  | 24.06.2018  | 31.05.2018  | Partage, Amandine devient la seule propriétaire
+
+
+		// import initial  --------------------------------
+
+		final DroitProprieteRF droitCommunaute1 = newDroitComm("1f109152381059670138105fe79f3627", "1f1091523810596701381062e8971959",
+		                                                       null, null,
+		                                                       null, null,
+		                                                       null, null, new Fraction(1, 1), COMMUNE, communaute1);
+
+		final DroitProprieteRF droitChloe1 = newDroitPP("1f109152381059670138105f83310b45", "1f1091523810596701381062e8971959",
+		                                                null, null,
+		                                                null, null,
+		                                                null, null, new Fraction(1, 1), COMMUNE, chloe, communaute1);
+		droitChloe1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(1971, 5, 7), "Achat", new IdentifiantAffaireRF(12, "132394")));
+
+
+		final DroitProprieteRF droitCommunaute2 = newDroitComm("8af806fa3d25b95e013e17b735d60ca2", "1f1091523810596701381062e8971959",
+		                                                       null, null,
+		                                                       null, null,
+		                                                       null, null, new Fraction(1, 1), COMMUNE, communaute2);
+
+		final DroitProprieteRF droitAlain1 = newDroitPP("8af806fa3d25b95e013e17b735d70ca4", "1f1091523810596701381062e8971959",
+		                                             null, null,
+		                                             null, null,
+		                                             null, null, new Fraction(1, 1), COMMUNE, alain, communaute2);
+		droitAlain1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+
+		final DroitProprieteRF droitAmandine1 = newDroitPP("8af806fa3d25b95e013e17b735d70ca5", "1f1091523810596701381062e8971959",
+		                                             null, null,
+		                                             null, null,
+		                                             null, null, new Fraction(1, 1), COMMUNE, amandine, communaute2);
+		droitAmandine1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+
+		final DroitProprieteRF droitCornelia1 = newDroitPP("8af806fa3d25b95e013e17b735d70ca6", "1f1091523810596701381062e8971959",
+		                                             null, null,
+		                                             null, null,
+		                                             null, null, new Fraction(1, 1), COMMUNE, cornelia, communaute2);
+		droitCornelia1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+
+		final DroitProprieteRF droitChloe2 = newDroitPP("8af806fa3d25b95e013e17b735d70ca3", "1f1091523810596701381062e8971959",
+		                                               null, null,
+		                                               null, null,
+		                                               null, null, new Fraction(1, 1), COMMUNE, chloe, communaute2);
+		droitChloe2.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+
+		final ImmeubleRF immeuble = new BienFondsRF();
+		immeuble.setDroitsPropriete(new HashSet<>());
+
+		// on applique les changements
+		final Listener listener = new Listener();
+		final AffaireRF importInitial = new AffaireRF(null, immeuble);
+		importInitial.apply(new MockDroitRFDAO(),
+		                    Arrays.asList(droitCommunaute1, droitChloe1, droitCommunaute2, droitAlain1, droitAmandine1, droitCornelia1, droitChloe2),
+		                    Collections.emptyList(),
+		                    Collections.emptyList(), listener);
+
+		// les dates de début sont bien calculées
+		assertEquals(date(1971, 5, 7), droitCommunaute1.getDateDebutMetier());
+		assertEquals(date(1971, 5, 7), droitChloe1.getDateDebutMetier());
+		assertEquals(date(1971, 5, 7), droitCommunaute2.getDateDebutMetier());  // TODO (msi) cette date me semble fausse, elle devrait valoir date(2013, 4, 11) plutôt...
+		assertEquals(date(2013, 4, 11), droitAlain1.getDateDebutMetier());
+		assertEquals(date(2013, 4, 11), droitAmandine1.getDateDebutMetier());
+		assertEquals(date(2013, 4, 11), droitCornelia1.getDateDebutMetier());
+		assertEquals(date(2013, 4, 11), droitChloe2.getDateDebutMetier());
+
+		assertEquals("Achat", droitCommunaute1.getMotifDebut());
+		assertEquals("Achat", droitChloe1.getMotifDebut());
+		assertEquals("Achat", droitCommunaute2.getMotifDebut());
+		assertEquals("Succession", droitAlain1.getMotifDebut());
+		assertEquals("Succession", droitAmandine1.getMotifDebut());
+		assertEquals("Succession", droitCornelia1.getMotifDebut());
+		assertEquals("Succession", droitChloe2.getMotifDebut());
+
+
+		// décès de Chloé --------------------------------
+
+		final DroitProprieteRF droitCommunaute3 = newDroitComm("8af8064e58e34c9601596981b010113d", "8af8064e58e34c9601596981b00f113a",
+		                                                       date(2017, 1, 7), null,
+		                                                       null, null,
+		                                                       null, null, new Fraction(1, 1), COMMUNE, communaute3);
+
+		final DroitProprieteRF droitAlain2 = newDroitPP("8af8064e58e34c9601596981d9121146", "8af8064e58e34c9601596981b00f113a",
+		                                               date(2017, 1, 7), null,
+		                                               null, null,
+		                                               null, null, new Fraction(1, 1), COMMUNE, alain, communaute3);
+		droitAlain2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitAlain2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+
+		final DroitProprieteRF droitAmandine2 = newDroitPP("8af8064e58e34c9601596981d9111144", "8af8064e58e34c9601596981b00f113a",
+		                                               date(2017, 1, 7), null,
+		                                               null, null,
+		                                               null, null, new Fraction(1, 1), COMMUNE, amandine, communaute3);
+		droitAmandine2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitAmandine2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+
+
+		final DroitProprieteRF droitCornelia2 = newDroitPP("8af8064e58e34c9601596981d9121148", "8af8064e58e34c9601596981b00f113a",
+		                                               date(2017, 1, 7), date(2018, 2, 10),
+		                                               null, null,
+		                                               null, null, new Fraction(1, 1), COMMUNE, cornelia, communaute3);
+		droitCornelia2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitCornelia2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+
+		// on applique les changements
+		final AffaireRF decesChloe = new AffaireRF(date(2017, 1, 7), immeuble);
+		decesChloe.apply(new MockDroitRFDAO(), Arrays.asList(droitCommunaute3, droitAlain2, droitAmandine2, droitCornelia2),
+		                    Collections.emptyList(),
+		                    Arrays.asList(droitCommunaute1, droitChloe1, droitCommunaute2, droitAlain1, droitAmandine1, droitCornelia1, droitChloe2), listener);
+
+
+		// les droits initiaux doivent être fermés
+		assertEquals(date(2017, 1, 6), droitCommunaute1.getDateFin());
+		assertEquals(date(2017, 1, 6), droitChloe1.getDateFin());
+		assertEquals(date(2017, 1, 6), droitCommunaute2.getDateFin());
+		assertEquals(date(2017, 1, 6), droitAlain1.getDateFin());
+		assertEquals(date(2017, 1, 6), droitAmandine1.getDateFin());
+		assertEquals(date(2017, 1, 6), droitCornelia1.getDateFin());
+		assertEquals(date(2017, 1, 6), droitChloe2.getDateFin());
+
+		assertEquals(date(2016, 12, 19), droitCommunaute1.getDateFinMetier());
+		assertEquals(date(2016, 12, 19), droitChloe1.getDateFinMetier());
+		assertEquals(date(2016, 12, 19), droitCommunaute2.getDateFinMetier());
+		assertEquals(date(2016, 12, 19), droitAlain1.getDateFinMetier());
+		assertEquals(date(2016, 12, 19), droitAmandine1.getDateFinMetier());
+		assertEquals(date(2016, 12, 19), droitCornelia1.getDateFinMetier());
+		assertEquals(date(2016, 12, 19), droitChloe2.getDateFinMetier());
+
+		assertEquals("Succession", droitCommunaute1.getMotifFin());
+		assertEquals("Succession", droitChloe1.getMotifFin());
+		assertEquals("Succession", droitCommunaute2.getMotifFin());
+		assertEquals("Succession", droitAlain1.getMotifFin());
+		assertEquals("Succession", droitAmandine1.getMotifFin());
+		assertEquals("Succession", droitCornelia1.getMotifFin());
+		assertEquals("Succession", droitChloe2.getMotifFin());
+
+		// les dates de début des nouveaux droits doivent être calculés
+
+		assertEquals(date(2016, 12, 19), droitCommunaute3.getDateDebutMetier());
+		assertEquals(date(2016, 12, 19), droitAlain2.getDateDebutMetier());
+		assertEquals(date(2016, 12, 19), droitAmandine2.getDateDebutMetier());
+		assertEquals(date(2016, 12, 19), droitCornelia2.getDateDebutMetier());
+
+		assertEquals("Succession", droitCommunaute3.getMotifDebut());
+		assertEquals("Succession", droitAlain2.getMotifDebut());
+		assertEquals("Succession", droitAmandine2.getMotifDebut());
+		assertEquals("Succession", droitCornelia2.getMotifDebut());
+
+
+		// renoncement de Cornélia --------------------------------
+
+		final DroitProprieteRF droitAmandine2Updated = newDroitPP("8af8064e58e34c9601596981d9111144", "8af8064e58e34c9601596981b00f113a",
+		                                                          null, null,
+		                                                          null, null,
+		                                                          null, null, new Fraction(1, 1), COMMUNE, amandine, communaute3);
+		droitAmandine2Updated.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitAmandine2Updated.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+		droitAmandine2Updated.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2017, 12, 15), "Partage", new IdentifiantAffaireRF(12, 2017, 10336, 0)));
+
+		// on applique les changements
+		final AffaireRF renoncementCornelia = new AffaireRF(date(2018, 2, 11), immeuble);
+
+		renoncementCornelia.apply(new MockDroitRFDAO(),
+		                          Collections.emptyList(),
+		                          Collections.singletonList(new Pair<>(droitAmandine2Updated, droitAmandine2)),
+		                          Collections.singletonList(droitCornelia1), listener);
+
+
+		// le droit de Cornélia doit être fermé
+		assertEquals(date(2018, 2, 10), droitCornelia1.getDateFin());
+		assertEquals(date(2017, 12, 15), droitCornelia1.getDateFinMetier());
+		assertEquals("Partage", droitCornelia1.getMotifFin());
+
+		// la nouvelle raison d'acquisition doit apparaître sur le droit d'Amandine...
+
+		final Set<RaisonAcquisitionRF> raisonsAmandines = droitAmandine2.getRaisonsAcquisition();
+		assertEquals(3, raisonsAmandines.size());
+
+		// ... mais la date de début doit rester intouchée
+
+		assertEquals(date(2016, 12, 19), droitAmandine2.getDateDebutMetier());
+		assertEquals("Succession", droitAmandine2.getMotifDebut());
+
+
+		// partage pour Amandine ----------------------------------
+
+		final DroitProprieteRF droitAmandine3 = newDroitPP("0ad275c5-374c-4660-96d6-f3fc424538fe", "d092423b-9221-4bbf-9286-4c725d179bfa",
+		                                               date(2018, 6, 24), null,
+		                                               null, null,
+		                                               "Partage", null, new Fraction(1, 1), INDIVIDUELLE, amandine);
+		droitAmandine3.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 8, 24), date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitAmandine3.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 8, 24), date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+		droitAmandine3.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 8, 24), date(2017, 12, 15), "Partage", new IdentifiantAffaireRF(12, 2017, 10336, 0)));
+		droitAmandine3.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 8, 24), date(2018, 5, 31), "Partage", new IdentifiantAffaireRF(12, 2018, 2858, 0)));
+
+		// on applique les changements
+		final AffaireRF partageAmandine = new AffaireRF(date(2018, 8, 24), immeuble);
+
+		partageAmandine.apply(new MockDroitRFDAO(),
+		                      Collections.singletonList(droitAmandine3),
+		                      Collections.emptyList(),
+		                      Arrays.asList(droitCommunaute3, droitAlain2, droitAmandine2, droitCornelia2), listener);
+
+		// les droits de la communauté 3 doivent être fermés
+
+		assertEquals(date(2018, 8, 23), droitCommunaute3.getDateFin());
+		assertEquals(date(2018, 8, 23), droitAlain2.getDateFin());
+		assertEquals(date(2018, 8, 23), droitAmandine2.getDateFin());
+		assertEquals(date(2018, 8, 23), droitCornelia2.getDateFin());
+
+		assertEquals(date(2018, 5, 31), droitCommunaute3.getDateFinMetier());
+		assertEquals(date(2018, 5, 31), droitAlain2.getDateFinMetier());
+		assertEquals(date(2018, 5, 31), droitAmandine2.getDateFinMetier());
+		assertEquals(date(2018, 5, 31), droitCornelia2.getDateFinMetier());
+
+		assertEquals("Partage", droitCommunaute3.getMotifFin());
+		assertEquals("Partage", droitAlain2.getMotifFin());
+		assertEquals("Partage", droitAmandine2.getMotifFin());
+		assertEquals("Partage", droitCornelia2.getMotifFin());
+
+		// la date de début du nouveau droit doit être calculée
+
+		assertEquals(date(2018, 5, 31), droitAmandine3.getDateDebutMetier());
+		assertEquals("Partage", droitAmandine3.getMotifDebut());
+	}
+
+	/**
+	 * [SIFISC-29326] Ce test vérifie que les dates métier sont bien recalculées sur des communautés complexes (voir descriptifs dans le test), notamment dans le cas où un membre renonce à son droit et où une nouvelle
+	 * raisons d'acquisition est ajoutée sur un seul des membres restants .
+	 */
+	@Test
+	public void testRefreshDatesMetierCommunautePlusieursPartages() {
+
+		final PersonnePhysiqueRF alain = new PersonnePhysiqueRF();
+		alain.setId(1L);
+		final PersonnePhysiqueRF amandine = new PersonnePhysiqueRF();
+		amandine.setId(2L);
+		final PersonnePhysiqueRF cornelia = new PersonnePhysiqueRF();
+		cornelia.setId(3L);
+		final PersonnePhysiqueRF chloe = new PersonnePhysiqueRF();
+		chloe.setId(4L);
+
+		final CommunauteRF communaute1 = new CommunauteRF();
+		communaute1.setId(10L);
+
+		final CommunauteRF communaute2 = new CommunauteRF();
+		communaute2.setId(11L);
+
+		final CommunauteRF communaute3 = new CommunauteRF();
+		communaute3.setId(12L);
+
+		// historique des changements :
+		//
+		//  | date import | date métier | commentaire
+		//  +-------------+-------------+----------------------------------------------------------------------------------------------------------------------------------
+		//  |     -       | 07.05.1971  | Import initial, deux communautés (Chloé toute seule) et (Alain + Amandine + Cornélia + Chloé) sont créées
+		//  | 07.01.2017  | 19.12.2016  | Décès de Chloé, fermeture des deux communautés existantes et ouverture d'une troisième communauté (Alain + Amandine + Cornélia)
+		//  | 11.02.2018  | 15.12.2017  | Partage, Cornélia renonce à sa part au profit d'Amandine
+		//  | 24.06.2018  | 31.05.2018  | Partage, Amandine devient la seule propriétaire
+
+
+		// communaute 1
+
+		final DroitProprieteRF droitCommunaute1 = newDroitComm("1f109152381059670138105fe79f3627", "1f1091523810596701381062e8971959",
+		                                                       null, date(2017, 1, 6),
+		                                                       date(1971, 5, 7), date(2016, 12, 19),
+		                                                       "Achat", "Succession", new Fraction(1, 1), COMMUNE, communaute1);
+
+		final DroitProprieteRF droitChloe1 = newDroitPP("1f109152381059670138105f83310b45", "1f1091523810596701381062e8971959",
+		                                                null, date(2017, 1, 6),
+		                                                date(1971, 5, 7), date(2016, 12, 19),
+		                                                "Achat", "Succession", new Fraction(1, 1), COMMUNE, chloe, communaute1);
+		droitChloe1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(1971, 5, 7), "Achat", new IdentifiantAffaireRF(12, "132394")));
+
+
+		// communaute 2
+
+		final DroitProprieteRF droitCommunaute2 = newDroitComm("8af806fa3d25b95e013e17b735d60ca2", "1f1091523810596701381062e8971959",
+		                                                       null, date(2017, 1, 6),
+		                                                       date(1971, 5, 7), date(2016, 12, 19),
+		                                                       "Achat", "Succession", new Fraction(1, 1), COMMUNE, communaute2);
+
+		final DroitProprieteRF droitAlain1 = newDroitPP("8af806fa3d25b95e013e17b735d70ca4", "1f1091523810596701381062e8971959",
+		                                             null, date(2017, 1, 6),
+		                                             date(2013, 4, 11), date(2016, 12, 19),
+		                                             "Succession", "Succession", new Fraction(1, 1), COMMUNE, alain, communaute2);
+		droitAlain1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+
+		final DroitProprieteRF droitAmandine1 = newDroitPP("8af806fa3d25b95e013e17b735d70ca5", "1f1091523810596701381062e8971959",
+		                                             null, date(2017, 1, 6),
+		                                             date(2013, 4, 11), date(2016, 12, 19),
+		                                             "Succession", "Succession", new Fraction(1, 1), COMMUNE, amandine, communaute2);
+		droitAmandine1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+
+		final DroitProprieteRF droitCornelia1 = newDroitPP("8af806fa3d25b95e013e17b735d70ca6", "1f1091523810596701381062e8971959",
+		                                             null, date(2017, 1, 6),
+		                                             date(2013, 4, 11), date(2016, 12, 19),
+		                                             "Succession", "Succession", new Fraction(1, 1), COMMUNE, cornelia, communaute2);
+		droitCornelia1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+
+		final DroitProprieteRF droitChloe2 = newDroitPP("8af806fa3d25b95e013e17b735d70ca3", "1f1091523810596701381062e8971959",
+		                                               null, date(2017, 1, 6),
+		                                               date(2013, 4, 11), date(2016, 12, 19),
+		                                               "Succession", "Succession", new Fraction(1, 1), COMMUNE, chloe, communaute2);
+		droitChloe2.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+
+		// communaute 3
+
+		final DroitProprieteRF droitCommunaute3 = newDroitComm("8af8064e58e34c9601596981b010113d", "8af8064e58e34c9601596981b00f113a",
+		                                                       date(2017, 1, 7), date(2018, 6, 23),
+		                                                       date(2016, 12, 19), date(2018, 5, 31),
+		                                                       "Succession", "Partage", new Fraction(1, 1), COMMUNE, communaute3);
+
+		final DroitProprieteRF droitAlain2 = newDroitPP("8af8064e58e34c9601596981d9121146", "8af8064e58e34c9601596981b00f113a",
+		                                               date(2017, 1, 7), date(2018, 6, 23),
+		                                               date(2016, 12, 19), date(2018, 5, 31),
+		                                               "Succession", "Partage", new Fraction(1, 1), COMMUNE, alain, communaute3);
+		droitAlain2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitAlain2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+
+		final DroitProprieteRF droitAmandine2 = newDroitPP("8af8064e58e34c9601596981d9111144", "8af8064e58e34c9601596981b00f113a",
+		                                               date(2017, 1, 7), date(2018, 6, 23),
+		                                               date(2016, 12, 19), date(2018, 5, 31),
+		                                               "Succession", "Partage", new Fraction(1, 1), COMMUNE, amandine, communaute3);
+		droitAmandine2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitAmandine2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+		droitAmandine2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 2, 11), date(2017, 12, 15), "Partage", new IdentifiantAffaireRF(12, 2017, 10336, 0)));
+
+
+		final DroitProprieteRF droitCornelia2 = newDroitPP("8af8064e58e34c9601596981d9121148", "8af8064e58e34c9601596981b00f113a",
+		                                               date(2017, 1, 7), date(2018, 2, 10),
+		                                               date(2016, 12, 19), date(2017, 12, 15),
+		                                               "Succession", "Partage", new Fraction(1, 1), COMMUNE, cornelia, communaute3);
+		droitCornelia2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitCornelia2.addRaisonAcquisition(newRaisonAcquisitionRF(date(2017, 1, 7), date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+
+		// droit individuel d'Amandine
+
+		final DroitProprieteRF droitAmandine3 = newDroitPP("0ad275c5-374c-4660-96d6-f3fc424538fe", "d092423b-9221-4bbf-9286-4c725d179bfa",
+		                                               date(2018, 6, 24), null,
+		                                               date(2018, 5, 31), null,
+		                                               "Partage", null, new Fraction(1, 1), INDIVIDUELLE, amandine);
+		droitAmandine3.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 8, 24), date(2013, 4, 11), "Succession", new IdentifiantAffaireRF(12, 2013, 1848, 0)));
+		droitAmandine3.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 8, 24), date(2016, 12, 19), "Succession", new IdentifiantAffaireRF(12, 2016, 7213, 0)));
+		droitAmandine3.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 8, 24), date(2017, 12, 15), "Partage", new IdentifiantAffaireRF(12, 2017, 10336, 0)));
+		droitAmandine3.addRaisonAcquisition(newRaisonAcquisitionRF(date(2018, 8, 24), date(2018, 5, 31), "Partage", new IdentifiantAffaireRF(12, 2018, 2858, 0)));
+
+		final ImmeubleRF immeuble = new BienFondsRF();
+		immeuble.addDroitPropriete(droitCommunaute1);
+		immeuble.addDroitPropriete(droitChloe1);
+		immeuble.addDroitPropriete(droitCommunaute2);
+		immeuble.addDroitPropriete(droitAlain1);
+		immeuble.addDroitPropriete(droitAmandine1);
+		immeuble.addDroitPropriete(droitCornelia1);
+		immeuble.addDroitPropriete(droitChloe2);
+		immeuble.addDroitPropriete(droitCommunaute3);
+		immeuble.addDroitPropriete(droitAlain2);
+		immeuble.addDroitPropriete(droitAmandine2);
+		immeuble.addDroitPropriete(droitCornelia2);
+		immeuble.addDroitPropriete(droitAmandine3);
+
+		// on rafraîchit les dates métier pour l'import initial
+		final Listener listener = new Listener();
+		final AffaireRF importInitial = new AffaireRF(null, immeuble);
+		importInitial.refreshDatesMetier(listener);
+
+		// tout était déjà à jour
+		assertEquals(0, listener.getCreated().size());
+		assertEquals(0, listener.getDebutUpdates().size());
+		assertEquals(0, listener.getFinUpdates().size());
+		assertEquals(0, listener.getClosed().size());
+
+		// on rafraîchit les dates métier pour la succession
+		final AffaireRF succession = new AffaireRF(date(2017, 1, 7), immeuble);
+		succession.refreshDatesMetier(listener);
+
+		// tout était déjà à jour
+		assertEquals(0, listener.getCreated().size());
+		assertEquals(0, listener.getDebutUpdates().size());
+		assertEquals(0, listener.getFinUpdates().size());
+		assertEquals(0, listener.getClosed().size());
+
+		// on rafraîchit les dates métier pour le premier partage
+		final AffaireRF premierPartage = new AffaireRF(date(2018, 2, 11), immeuble);
+		premierPartage.refreshDatesMetier(listener);
+
+		// tout était déjà à jour
+		assertEquals(0, listener.getCreated().size());
+		assertEquals(0, listener.getDebutUpdates().size());
+		assertEquals(0, listener.getFinUpdates().size());
+		assertEquals(0, listener.getClosed().size());
+
+		// on rafraîchit les dates métier pour le second partage
+		final AffaireRF secondPartage = new AffaireRF(date(2018, 8, 24), immeuble);
+		secondPartage.refreshDatesMetier(listener);
+
+		// tout était déjà à jour
+		assertEquals(0, listener.getCreated().size());
+		assertEquals(0, listener.getDebutUpdates().size());
+		assertEquals(0, listener.getFinUpdates().size());
+		assertEquals(0, listener.getClosed().size());
+
+	}
+
 	private static class Listener implements AffaireRFListener {
 
 		private static class DebutUpdate {
@@ -1576,6 +2017,30 @@ public class AffaireRFTest {
 	private static DroitProprietePersonnePhysiqueRF newDroitPP(String masterIdRF, String versionIdRF, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, String motifDebut, String motifFin,
 	                                                           Fraction part, GenrePropriete regime, PersonnePhysiqueRF ayantDroit) {
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
+		droit.setDateDebut(dateDebut);
+		droit.setDateFin(dateFin);
+		droit.setDateDebutMetier(dateDebutMetier);
+		droit.setDateFinMetier(dateFinMetier);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setPart(part);
+		droit.setRegime(regime);
+		droit.setAyantDroit(ayantDroit);
+		return droit;
+	}
+
+	private DroitProprieteRF newDroitPP(String masterIdRF, String versionIdRF, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, String motifDebut, String motifFin,
+	                                    Fraction part, GenrePropriete regime, PersonnePhysiqueRF ayantDroit, CommunauteRF communaute) {
+		final DroitProprietePersonnePhysiqueRF droit = newDroitPP(masterIdRF, versionIdRF, dateDebut, dateFin, dateDebutMetier, dateFinMetier, motifDebut, motifFin, part, regime, ayantDroit);
+		droit.setCommunaute(communaute);
+		return droit;
+	}
+
+	private static DroitProprieteCommunauteRF newDroitComm(String masterIdRF, String versionIdRF, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, String motifDebut, String motifFin,
+	                                                       Fraction part, GenrePropriete regime, CommunauteRF ayantDroit) {
+		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
 		droit.setMasterIdRF(masterIdRF);
 		droit.setVersionIdRF(versionIdRF);
 		droit.setDateDebut(dateDebut);
