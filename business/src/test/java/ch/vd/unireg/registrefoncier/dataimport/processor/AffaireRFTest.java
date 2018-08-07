@@ -27,6 +27,7 @@ import ch.vd.unireg.registrefoncier.dao.MockDroitRFDAO;
 
 import static ch.vd.unireg.common.WithoutSpringTest.assertEmpty;
 import static ch.vd.unireg.common.WithoutSpringTest.date;
+import static ch.vd.unireg.registrefoncier.GenrePropriete.COPROPRIETE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -663,7 +664,7 @@ public class AffaireRFTest {
 		droitHelene.setMotifDebut("Achat");
 		droitHelene.setMotifFin(null);
 		droitHelene.setAyantDroit(helene);
-		droitHelene.setRegime(GenrePropriete.COPROPRIETE);
+		droitHelene.setRegime(COPROPRIETE);
 		droitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateAchat, "Achat", null));
 
 		// droit de propriété en communauté de Hélène
@@ -709,7 +710,7 @@ public class AffaireRFTest {
 		droitCommunaute.setMotifDebut("Succession");
 		droitCommunaute.setMotifFin(null);
 		droitCommunaute.setAyantDroit(communaute);
-		droitCommunaute.setRegime(GenrePropriete.COPROPRIETE);
+		droitCommunaute.setRegime(COPROPRIETE);
 		droitCommunaute.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
 
 		//
@@ -872,7 +873,7 @@ public class AffaireRFTest {
 		droitCharles2.setDateDebut(dateImportChangementRegime);
 		droitCharles2.setDateFin(dateImportDonation2.getOneDayBefore());
 		droitCharles2.setAyantDroit(charles);
-		droitCharles2.setRegime(GenrePropriete.COPROPRIETE);
+		droitCharles2.setRegime(COPROPRIETE);
 		droitCharles2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateSuccession, "Succession", null));
 		droitCharles2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateSuccession2, "Succession", null));
 		droitCharles2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateDonation, "Donation", null));
@@ -886,7 +887,7 @@ public class AffaireRFTest {
 		droitWilfred2.setDateDebut(dateImportChangementRegime);
 		droitWilfred2.setDateFin(null);
 		droitWilfred2.setAyantDroit(wilfred);
-		droitWilfred2.setRegime(GenrePropriete.COPROPRIETE);
+		droitWilfred2.setRegime(COPROPRIETE);
 		droitWilfred2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateSuccession, "Succession", null));
 		droitWilfred2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateSuccession2, "Succession", null));
 		droitWilfred2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateDonation, "Donation", null));
@@ -904,7 +905,7 @@ public class AffaireRFTest {
 		droitChristian.setDateDebut(dateImportDonation2);
 		droitChristian.setDateFin(null);
 		droitChristian.setAyantDroit(christian);
-		droitChristian.setRegime(GenrePropriete.COPROPRIETE);
+		droitChristian.setRegime(COPROPRIETE);
 		droitChristian.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportDonation2, dateDonation2, "Donation", null));
 
 
@@ -1203,7 +1204,7 @@ public class AffaireRFTest {
 
 		// situation initiale
 
-		final RegDate datePremiereDonation = RegDate.get(2017, 5, 5);
+		final RegDate datePremiereDonation = date(2017, 5, 5);
 		final RegDate dateImportPremiereDonation = date(2017, 7, 1);
 
 		final PersonnePhysiqueRF jacques = new PersonnePhysiqueRF();
@@ -1213,69 +1214,23 @@ public class AffaireRFTest {
 		final PersonnePhysiqueRF vincent = new PersonnePhysiqueRF();
 		vincent.setId(3L);
 
-		final DroitProprietePersonnePhysiqueRF droitFabrice = new DroitProprietePersonnePhysiqueRF();
-		droitFabrice.setMasterIdRF("fabrice");
-		droitFabrice.setVersionIdRF("1");
-		droitFabrice.setDateDebut(null);
-		droitFabrice.setDateDebutMetier(RegDate.get(2003, 11, 10));
-		droitFabrice.setMotifDebut("Achat");
-		droitFabrice.setPart(new Fraction(50, 100));
-		droitFabrice.setRegime(GenrePropriete.COPROPRIETE);
-		droitFabrice.setAyantDroit(fabrice);
-		droitFabrice.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
+		final DroitProprieteRF droitFabrice = newDroitPP("fabrice", "1", null, null, date(2003, 11, 10), null, "Achat", null, new Fraction(50, 100), COPROPRIETE, fabrice);
+		droitFabrice.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
 
-		final DroitProprietePersonnePhysiqueRF droitJacques1 = new DroitProprietePersonnePhysiqueRF();
-		droitJacques1.setMasterIdRF("jacques");
-		droitJacques1.setVersionIdRF("1");
-		droitJacques1.setDateDebut(null);
-		droitJacques1.setDateFin(dateImportPremiereDonation.getOneDayBefore());
-		droitJacques1.setDateDebutMetier(RegDate.get(2003, 11, 10));
-		droitJacques1.setDateFinMetier(RegDate.get(2008, 7, 22));
-		droitJacques1.setMotifDebut("Achat");
-		droitJacques1.setMotifFin("Donation");
-		droitJacques1.setPart(new Fraction(14, 100));
-		droitJacques1.setRegime(GenrePropriete.COPROPRIETE);
-		droitJacques1.setAyantDroit(jacques);
-		droitJacques1.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
+		final DroitProprieteRF droitJacques1 = newDroitPP("jacques", "1", null, dateImportPremiereDonation.getOneDayBefore(), date(2003, 11, 10), date(2008, 7, 22), "Achat", "Donation", new Fraction(14, 100), COPROPRIETE, jacques);
+		droitJacques1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
 
-		final DroitProprietePersonnePhysiqueRF droitVincent1 = new DroitProprietePersonnePhysiqueRF();
-		droitVincent1.setMasterIdRF("vincent");
-		droitVincent1.setVersionIdRF("1");
-		droitVincent1.setDateDebut(null);
-		droitVincent1.setDateFin(dateImportPremiereDonation.getOneDayBefore());
-		droitVincent1.setDateDebutMetier(RegDate.get(2008, 7, 22));
-		droitVincent1.setDateFinMetier(datePremiereDonation);
-		droitVincent1.setMotifDebut("Donation");
-		droitVincent1.setMotifFin("Donation");
-		droitVincent1.setPart(new Fraction(36, 100));
-		droitVincent1.setRegime(GenrePropriete.COPROPRIETE);
-		droitVincent1.setAyantDroit(vincent);
-		droitVincent1.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
-		droitVincent1.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
+		final DroitProprieteRF droitVincent1 = newDroitPP("vincent", "1", null, dateImportPremiereDonation.getOneDayBefore(), date(2008, 7, 22), datePremiereDonation, "Donation", "Donation", new Fraction(36, 100), COPROPRIETE, vincent);
+		droitVincent1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
+		droitVincent1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
 
 		// première donation (déjà traitée) de 4/100 de Jacques à Vincent - 05.05.2017
-		final DroitProprietePersonnePhysiqueRF droitJacques2 = new DroitProprietePersonnePhysiqueRF();
-		droitJacques2.setMasterIdRF("jacques");
-		droitJacques2.setVersionIdRF("2");
-		droitJacques2.setDateDebut(dateImportPremiereDonation);
-		droitJacques2.setDateDebutMetier(datePremiereDonation);
-		droitJacques2.setMotifDebut("Donation");
-		droitJacques2.setPart(new Fraction(10, 100));
-		droitJacques2.setRegime(GenrePropriete.COPROPRIETE);
-		droitJacques2.setAyantDroit(jacques);
-		droitJacques2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, RegDate.get(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
+		final DroitProprieteRF droitJacques2 = newDroitPP("jacques", "2", dateImportPremiereDonation, null, datePremiereDonation, null, "Donation", null, new Fraction(10, 100), COPROPRIETE, jacques);
+		droitJacques2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, date(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
 
-		final DroitProprietePersonnePhysiqueRF droitVincent2 = new DroitProprietePersonnePhysiqueRF();
-		droitVincent2.setMasterIdRF("vincent");
-		droitVincent2.setVersionIdRF("2");
-		droitVincent2.setDateDebut(dateImportPremiereDonation);
-		droitVincent2.setDateDebutMetier(datePremiereDonation);
-		droitVincent2.setMotifDebut("Donation");
-		droitVincent2.setPart(new Fraction(40, 100));
-		droitVincent2.setRegime(GenrePropriete.COPROPRIETE);
-		droitVincent2.setAyantDroit(vincent);
-		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, RegDate.get(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
-		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, RegDate.get(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
+		final DroitProprieteRF droitVincent2 = newDroitPP("vincent", "2", dateImportPremiereDonation, null, datePremiereDonation, null, "Donation", null, new Fraction(40, 100), COPROPRIETE, vincent);
+		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, date(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
+		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, date(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
 		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, datePremiereDonation, "Donation", new IdentifiantAffaireRF(6, 2017, 4277, 0)));
 
 		final ImmeubleRF immeuble = new BienFondsRF();
@@ -1286,27 +1241,15 @@ public class AffaireRFTest {
 		immeuble.addDroitPropriete(droitVincent2);
 
 		// seconde donation (à traiter) de 4/100 de Jacques à Vincent - 14.05.2018
-		final RegDate dateSecondeDonation = RegDate.get(2018, 5, 14);
-		final RegDate dateImportSecondeDonation = RegDate.get(2018, 6, 1);
+		final RegDate dateSecondeDonation = date(2018, 5, 14);
+		final RegDate dateImportSecondeDonation = date(2018, 6, 1);
 
-		final DroitProprietePersonnePhysiqueRF droitJacques3 = new DroitProprietePersonnePhysiqueRF();
-		droitJacques3.setMasterIdRF("jacques");
-		droitJacques3.setVersionIdRF("3");
-		droitJacques3.setDateDebut(dateImportSecondeDonation);
-		droitJacques3.setPart(new Fraction(6, 100));                                                                    // <--- nouvelle part
-		droitJacques3.setRegime(GenrePropriete.COPROPRIETE);
-		droitJacques3.setAyantDroit(jacques);
-		droitJacques3.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2003, 11, 10), "Achat", null));
+		final DroitProprieteRF droitJacques3 = newDroitPP("jacques", "3", dateImportSecondeDonation, null, null, null, null, null, new Fraction(6, 100), COPROPRIETE, jacques);
+		droitJacques3.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2003, 11, 10), "Achat", null));
 
-		final DroitProprietePersonnePhysiqueRF droitVincent3 = new DroitProprietePersonnePhysiqueRF();
-		droitVincent3.setMasterIdRF("vincent");
-		droitVincent3.setVersionIdRF("3");
-		droitVincent3.setDateDebut(dateImportSecondeDonation);
-		droitVincent3.setPart(new Fraction(44, 100));                                                                   // <--- nouvelle part
-		droitVincent3.setRegime(GenrePropriete.COPROPRIETE);
-		droitVincent3.setAyantDroit(vincent);
-		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, RegDate.get(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
-		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, RegDate.get(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
+		final DroitProprieteRF droitVincent3 = newDroitPP("vincent", "3", dateImportSecondeDonation, null, null, null, null, null, new Fraction(44, 100), COPROPRIETE, vincent);
+		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, date(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
+		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, date(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
 		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, datePremiereDonation, "Donation", new IdentifiantAffaireRF(6, 2017, 4277, 0)));
 		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, dateSecondeDonation, "Donation", new IdentifiantAffaireRF(6, 2018, 4539, 0)));   // <--- nouvelle raison d'acquisition
 
@@ -1318,8 +1261,8 @@ public class AffaireRFTest {
 		affaire.apply(new MockDroitRFDAO(), aOuvrir, Collections.emptyList(), aFermer, null);
 
 		// ce droit reste inchangé car il s'agit d'un ancien import
-		assertEquals(RegDate.get(2003, 11, 10), droitJacques1.getDateDebutMetier());
-		assertEquals(RegDate.get(2008, 7, 22), droitJacques1.getDateFinMetier());
+		assertEquals(date(2003, 11, 10), droitJacques1.getDateDebutMetier());
+		assertEquals(date(2008, 7, 22), droitJacques1.getDateFinMetier());
 		assertEquals("Achat", droitJacques1.getMotifDebut());
 		assertEquals("Donation", droitJacques1.getMotifFin());
 		assertFraction(14, 100, droitJacques1.getPart());
@@ -1339,7 +1282,7 @@ public class AffaireRFTest {
 		assertFraction(6, 100, droitJacques3.getPart());
 
 		// ce droit reste inchangé car il s'agit d'un ancien import
-		assertEquals(RegDate.get(2008, 7, 22), droitVincent1.getDateDebutMetier());
+		assertEquals(date(2008, 7, 22), droitVincent1.getDateDebutMetier());
 		assertEquals(datePremiereDonation, droitVincent1.getDateFinMetier());
 		assertEquals("Donation", droitVincent1.getMotifDebut());
 		assertEquals("Donation", droitVincent1.getMotifFin());
@@ -1367,12 +1310,12 @@ public class AffaireRFTest {
 	public void testRefreshDatesMetierDonationEntreDeuxCoproprietaires() throws Exception {
 
 		// première donation (déjà traitée) de 4/100 de Jacques à Vincent - 05.05.2017
-		final RegDate datePremiereDonation = RegDate.get(2017, 5, 5);
+		final RegDate datePremiereDonation = date(2017, 5, 5);
 		final RegDate dateImportPremiereDonation = date(2017, 7, 1);
 
 		// seconde donation (à traiter) de 4/100 de Jacques à Vincent - 14.05.2018
-		final RegDate dateSecondeDonation = RegDate.get(2018, 5, 14);
-		final RegDate dateImportSecondeDonation = RegDate.get(2018, 6, 1);
+		final RegDate dateSecondeDonation = date(2018, 5, 14);
+		final RegDate dateImportSecondeDonation = date(2018, 6, 1);
 
 		final PersonnePhysiqueRF jacques = new PersonnePhysiqueRF();
 		jacques.setId(1L);
@@ -1382,100 +1325,34 @@ public class AffaireRFTest {
 		vincent.setId(3L);
 
 		// situation initiale (juste)
-		final DroitProprietePersonnePhysiqueRF droitFabrice = new DroitProprietePersonnePhysiqueRF();
-		droitFabrice.setMasterIdRF("fabrice");
-		droitFabrice.setVersionIdRF("1");
-		droitFabrice.setDateDebut(null);
-		droitFabrice.setDateDebutMetier(RegDate.get(2003, 11, 10));
-		droitFabrice.setMotifDebut("Achat");
-		droitFabrice.setPart(new Fraction(50, 100));
-		droitFabrice.setRegime(GenrePropriete.COPROPRIETE);
-		droitFabrice.setAyantDroit(fabrice);
-		droitFabrice.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
+		final DroitProprieteRF droitFabrice = newDroitPP("fabrice", "1", null, null, date(2003, 11, 10), null, "Achat", null, new Fraction(50, 100), COPROPRIETE, fabrice);
+		droitFabrice.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
 
-		final DroitProprietePersonnePhysiqueRF droitJacques1 = new DroitProprietePersonnePhysiqueRF();
-		droitJacques1.setMasterIdRF("jacques");
-		droitJacques1.setVersionIdRF("1");
-		droitJacques1.setDateDebut(null);
-		droitJacques1.setDateFin(dateImportPremiereDonation.getOneDayBefore());
-		droitJacques1.setDateDebutMetier(RegDate.get(2003, 11, 10));
-		droitJacques1.setDateFinMetier(datePremiereDonation);
-		droitJacques1.setMotifDebut("Achat");
-		droitJacques1.setMotifFin("Donation");
-		droitJacques1.setPart(new Fraction(14, 100));
-		droitJacques1.setRegime(GenrePropriete.COPROPRIETE);
-		droitJacques1.setAyantDroit(jacques);
-		droitJacques1.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
+		final DroitProprieteRF droitJacques1 = newDroitPP("jacques", "1", null, dateImportPremiereDonation.getOneDayBefore(), date(2003, 11, 10), datePremiereDonation, "Achat", "Donation", new Fraction(14, 100), COPROPRIETE, jacques);
+		droitJacques1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
 
-		final DroitProprietePersonnePhysiqueRF droitVincent1 = new DroitProprietePersonnePhysiqueRF();
-		droitVincent1.setMasterIdRF("vincent");
-		droitVincent1.setVersionIdRF("1");
-		droitVincent1.setDateDebut(null);
-		droitVincent1.setDateFin(dateImportPremiereDonation.getOneDayBefore());
-		droitVincent1.setDateDebutMetier(RegDate.get(2008, 7, 22));
-		droitVincent1.setDateFinMetier(datePremiereDonation);
-		droitVincent1.setMotifDebut("Donation");
-		droitVincent1.setMotifFin("Donation");
-		droitVincent1.setPart(new Fraction(36, 100));
-		droitVincent1.setRegime(GenrePropriete.COPROPRIETE);
-		droitVincent1.setAyantDroit(vincent);
-		droitVincent1.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
-		droitVincent1.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
+		final DroitProprieteRF droitVincent1 = newDroitPP("vincent", "1", null, dateImportPremiereDonation.getOneDayBefore(), date(2008, 7, 22), datePremiereDonation, "Donation", "Donation", new Fraction(36, 100), COPROPRIETE, vincent);
+		droitVincent1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
+		droitVincent1.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
 
 		// première donation (déjà traitée) de 4/100 de Jacques à Vincent - 05.05.2017
-		final DroitProprietePersonnePhysiqueRF droitJacques2 = new DroitProprietePersonnePhysiqueRF();
-		droitJacques2.setMasterIdRF("jacques");
-		droitJacques2.setVersionIdRF("2");
-		droitJacques2.setDateDebut(dateImportPremiereDonation);
-		droitJacques2.setDateFin(dateImportSecondeDonation.getOneDayBefore());
-		droitJacques2.setDateDebutMetier(datePremiereDonation);
-		droitJacques2.setDateFinMetier(dateSecondeDonation);
-		droitJacques2.setMotifDebut("Donation");
-		droitJacques2.setMotifFin("Donation");
-		droitJacques2.setPart(new Fraction(10, 100));
-		droitJacques2.setRegime(GenrePropriete.COPROPRIETE);
-		droitJacques2.setAyantDroit(jacques);
-		droitJacques2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, RegDate.get(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
+		final DroitProprieteRF droitJacques2 =
+				newDroitPP("jacques", "2", dateImportPremiereDonation, dateImportSecondeDonation.getOneDayBefore(), datePremiereDonation, dateSecondeDonation, "Donation", "Donation", new Fraction(10, 100), COPROPRIETE, jacques);
+		droitJacques2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, date(2003, 11, 10), "Achat", new IdentifiantAffaireRF(13, 2003, 1573, 0)));
 
-		final DroitProprietePersonnePhysiqueRF droitVincent2 = new DroitProprietePersonnePhysiqueRF();
-		droitVincent2.setMasterIdRF("vincent");
-		droitVincent2.setVersionIdRF("2");
-		droitVincent2.setDateDebut(dateImportPremiereDonation);
-		droitVincent2.setDateFin(dateImportSecondeDonation.getOneDayBefore());
-		droitVincent2.setDateDebutMetier(datePremiereDonation);
-		droitVincent2.setDateFinMetier(dateSecondeDonation);
-		droitVincent2.setMotifDebut("Donation");
-		droitVincent2.setMotifFin("Donation");
-		droitVincent2.setPart(new Fraction(40, 100));
-		droitVincent2.setRegime(GenrePropriete.COPROPRIETE);
-		droitVincent2.setAyantDroit(vincent);
-		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, RegDate.get(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
-		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, RegDate.get(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
+		final DroitProprieteRF droitVincent2 =
+				newDroitPP("vincent", "2", dateImportPremiereDonation, dateImportSecondeDonation.getOneDayBefore(), datePremiereDonation, dateSecondeDonation, "Donation", "Donation", new Fraction(40, 100), COPROPRIETE, vincent);
+		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, date(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
+		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, date(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
 		droitVincent2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportPremiereDonation, datePremiereDonation, "Donation", new IdentifiantAffaireRF(6, 2017, 4277, 0)));
 
 		// seconde donation (à traiter) de 4/100 de Jacques à Vincent - 14.05.2018
-		final DroitProprietePersonnePhysiqueRF droitJacques3 = new DroitProprietePersonnePhysiqueRF();
-		droitJacques3.setMasterIdRF("jacques");
-		droitJacques3.setVersionIdRF("3");
-		droitJacques3.setDateDebut(dateImportSecondeDonation);
-		droitJacques3.setDateDebutMetier(dateSecondeDonation);
-		droitJacques3.setMotifDebut("Donation");
-		droitJacques3.setPart(new Fraction(6, 100));
-		droitJacques3.setRegime(GenrePropriete.COPROPRIETE);
-		droitJacques3.setAyantDroit(jacques);
-		droitJacques3.addRaisonAcquisition(newRaisonAcquisitionRF(null, RegDate.get(2003, 11, 10), "Achat", null));
+		final DroitProprieteRF droitJacques3 = newDroitPP("jacques", "3", dateImportSecondeDonation, null, dateSecondeDonation, null, "Donation", null, new Fraction(6, 100), COPROPRIETE, jacques);
+		droitJacques3.addRaisonAcquisition(newRaisonAcquisitionRF(null, date(2003, 11, 10), "Achat", null));
 
-		final DroitProprietePersonnePhysiqueRF droitVincent3 = new DroitProprietePersonnePhysiqueRF();
-		droitVincent3.setMasterIdRF("vincent");
-		droitVincent3.setVersionIdRF("3");
-		droitVincent3.setDateDebut(dateImportSecondeDonation);
-		droitVincent3.setDateDebutMetier(dateSecondeDonation);
-		droitVincent3.setMotifDebut("Donation");
-		droitVincent3.setPart(new Fraction(44, 100));
-		droitVincent3.setRegime(GenrePropriete.COPROPRIETE);
-		droitVincent3.setAyantDroit(vincent);
-		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, RegDate.get(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
-		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, RegDate.get(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
+		final DroitProprieteRF droitVincent3 = newDroitPP("vincent", "3", dateImportSecondeDonation, null, dateSecondeDonation, null, "Donation", null, new Fraction(44, 100), COPROPRIETE, vincent);
+		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, date(2008, 7, 22), "Donation", new IdentifiantAffaireRF(13, 2008, 1057, 0)));
+		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, date(2016, 10, 9), "Donation", new IdentifiantAffaireRF(6, 2016, 10347, 0)));
 		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, datePremiereDonation, "Donation", new IdentifiantAffaireRF(6, 2017, 4277, 0)));
 		droitVincent3.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSecondeDonation, dateSecondeDonation, "Donation", new IdentifiantAffaireRF(6, 2018, 4539, 0)));
 
@@ -1494,7 +1371,7 @@ public class AffaireRFTest {
 		premierDonation.refreshDatesMetier(listener);
 
 		// aucun changement
-		assertEquals(RegDate.get(2003, 11, 10), droitJacques1.getDateDebutMetier());
+		assertEquals(date(2003, 11, 10), droitJacques1.getDateDebutMetier());
 		assertEquals(datePremiereDonation, droitJacques1.getDateFinMetier());
 		assertEquals("Achat", droitJacques1.getMotifDebut());
 		assertEquals("Donation", droitJacques1.getMotifFin());
@@ -1506,7 +1383,7 @@ public class AffaireRFTest {
 		assertEquals("Donation", droitJacques2.getMotifFin());
 		assertFraction(10, 100, droitJacques2.getPart());
 
-		assertEquals(RegDate.get(2008, 7, 22), droitVincent1.getDateDebutMetier());
+		assertEquals(date(2008, 7, 22), droitVincent1.getDateDebutMetier());
 		assertEquals(datePremiereDonation, droitVincent1.getDateFinMetier());
 		assertEquals("Donation", droitVincent1.getMotifDebut());
 		assertEquals("Donation", droitVincent1.getMotifFin());
@@ -1694,5 +1571,22 @@ public class AffaireRFTest {
 		assertNotNull(part);
 		assertEquals(numerateur, part.getNumerateur());
 		assertEquals(denominateur, part.getDenominateur());
+	}
+
+	private static DroitProprietePersonnePhysiqueRF newDroitPP(String masterIdRF, String versionIdRF, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, String motifDebut, String motifFin,
+	                                                           Fraction part, GenrePropriete regime, PersonnePhysiqueRF ayantDroit) {
+		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
+		droit.setDateDebut(dateDebut);
+		droit.setDateFin(dateFin);
+		droit.setDateDebutMetier(dateDebutMetier);
+		droit.setDateFinMetier(dateFinMetier);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setPart(part);
+		droit.setRegime(regime);
+		droit.setAyantDroit(ayantDroit);
+		return droit;
 	}
 }
