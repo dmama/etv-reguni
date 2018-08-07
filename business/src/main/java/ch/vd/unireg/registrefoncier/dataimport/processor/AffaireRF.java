@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +52,6 @@ public class AffaireRF {
 	 *
 	 * @param dateValeur la date d'import en DB de l'affaire
 	 * @param immeuble   l'immeuble concerné
-	 * @param droits     les droits de l'immeuble (sans les droits annulés)
 	 */
 	public AffaireRF(@Nullable RegDate dateValeur, @NotNull ImmeubleRF immeuble) {
 
@@ -610,6 +610,51 @@ public class AffaireRF {
 	}
 
 	/**
+	 * Détermine l'ensemble des raisons d'acquisition réelles et implicites d'un droit (SIFISC-29326)
+	 *
+	 * @param droit un droit de propriété (communauté ou indiviuel)
+	 * @return les raisons d'acquisition réelles et implicites, c'est-à-dire :
+	 * <ul>
+	 * <li>les raisons d'acquisition réellement rattachées au droit</li>
+	 * <li>la raison d'acquisition implicite constituée de la date de début métier et du motif de début calculés par Unireg et stockés sur le droit lui-même (voir {@link AffaireRF#calculateDatesDebutMetier(List)}</li>
+	 * </ul>
+	 */
+	@NotNull
+	private static Set<RaisonAcquisitionRF> getRaisonsAcquisitionReellesEtImplicites(@NotNull DroitProprieteRF droit) {
+
+		final Set<RaisonAcquisitionRF> raisonsReelles = droit.getRaisonsAcquisition();
+
+		final RaisonAcquisitionRF raisonImplicite;
+		if (droit.getDateDebutMetier() == null && droit.getMotifDebut() == null) {
+			raisonImplicite = null;
+		}
+		else {
+			raisonImplicite = new RaisonAcquisitionRF(droit.getDateDebutMetier(), droit.getMotifDebut(), null);
+			raisonImplicite.setDateDebut(droit.getDateDebut());  // techniquement, la raison implicite débute en même temps que le droit lui-même
+		}
+
+		if (raisonsReelles == null && raisonImplicite == null) {
+			return Collections.emptySet();
+		}
+		else if (raisonsReelles == null) {
+			return Collections.singleton(raisonImplicite);
+		}
+		else if (raisonImplicite == null) {
+			return raisonsReelles;
+		}
+		else if (raisonsReelles.stream().anyMatch(r -> r.getDateAcquisition() == raisonImplicite.getDateAcquisition())) {
+			// la date d'acquisition de la raison implicite existe déjà dans les raisons réelles, inutile de l'ajouter
+			return raisonsReelles;
+		}
+		else {
+			// on ajoute la raison implicite
+			final Set<RaisonAcquisitionRF> set = new HashSet<>(raisonsReelles);
+			set.add(raisonImplicite);
+			return set;
+		}
+	}
+
+	/**
 	 * Représentation d'une transaction constituté de ventes et d'achats simultanés (ou considérés comme tels) concernant un immeuble particulier.
 	 */
 	private static class Transaction {
@@ -647,8 +692,7 @@ public class AffaireRF {
 			// on cherche la raison d'acquisition de référence qui va être utilisé pour renseigner la date de fin métier sur les droits fermés
 			final RaisonAcquisitionRF reference = Stream.concat(droitsOuverts.stream(), droitsModifies.stream())
 					.map(Mutation::getDroit)
-					.map(DroitProprieteRF::getRaisonsAcquisition)
-					.filter(Objects::nonNull)
+					.map(AffaireRF::getRaisonsAcquisitionReellesEtImplicites)   // on veut les raisons réelles et celle implicite calculée par Unireg précédement (voir SIFISC-29326)
 					.flatMap(Collection::stream)
 					.filter(AnnulableHelper::nonAnnule)
 					.filter(r -> r.getDateDebut() == dateTransaction)                                                       // on ne s'intéresse qu'aux raisons ajoutées lors de la transaction
