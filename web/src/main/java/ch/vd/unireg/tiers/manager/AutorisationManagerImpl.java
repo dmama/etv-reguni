@@ -176,9 +176,16 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		else if (tiers instanceof Etablissement) {
 			return isEditAllowedEtablissement((Etablissement) tiers);
 		}
+		else if (tiers instanceof DebiteurPrestationImposable) {
+			return isEditAllowedDPI();
+		}
 		else {
 			return false;
 		}
+	}
+
+	private boolean isEditAllowedDPI() {
+		return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_FISCAL_DPI, Role.CREATE_DPI);
 	}
 
 	@Override
