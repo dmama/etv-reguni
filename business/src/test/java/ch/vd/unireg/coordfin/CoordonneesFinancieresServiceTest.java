@@ -2,6 +2,7 @@ package ch.vd.unireg.coordfin;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class CoordonneesFinancieresServiceTest {
 	@Test
 	public void testAddCoordonneesFinancieresTousElementsVides() {
 		try {
-			service.addCoordonneesFinancieres(null, RegDate.get(2000, 1, 1), null, null, "", "  " );
+			service.addCoordonneesFinancieres(null, RegDate.get(2000, 1, 1), null, null, "", "  ");
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -56,11 +57,75 @@ public class CoordonneesFinancieresServiceTest {
 
 		final PersonnePhysique pp = new PersonnePhysique();
 		try {
-			service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1),null , null, "CH0000", "  ");
+			service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1), null, null, "CH0000", "  ");
 			fail();
 		}
 		catch (IllegalArgumentException e) {
 			assertEquals("L'iban spécifié [CH0000] n'est pas valide", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAddCoordonneesFinancieresHistoriqueOK() {
+		final PersonnePhysique pp = new PersonnePhysique();
+		// ajoute une  coordonnée ouvert sur 2018
+		service.addCoordonneesFinancieres(pp, RegDate.get(2018, 1, 1), null, "titulaire", "CH9308440717427290198", "bicboc");
+		{
+			final Set<CoordonneesFinancieres> coordonnees = pp.getCoordonneesFinancieres();
+
+			assertNotNull(coordonnees);
+			assertEquals(1, coordonnees.size());
+
+			final CoordonneesFinancieres coord0 = coordonnees.iterator().next();
+			assertNotNull(coord0);
+			assertEquals(RegDate.get(2018, 1, 1), coord0.getDateDebut());
+			assertNull(coord0.getDateFin());
+			assertEquals("titulaire", coord0.getTitulaire());
+			final CompteBancaire compteBancaire = coord0.getCompteBancaire();
+			assertNotNull(compteBancaire);
+			assertEquals("CH9308440717427290198", compteBancaire.getIban());
+			assertEquals("bicboc", compteBancaire.getBicSwift());
+		}
+
+		// ajoute une  coordonnée  sur 2017
+		service.addCoordonneesFinancieres(pp, RegDate.get(2017, 1, 1), RegDate.get(2017, 12, 31), "titulaire", "CH9308440717427290198", "bicboc");
+		{
+			final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
+			coordonnees.sort(Comparator.comparing(CoordonneesFinancieres::getDateDebut, RegDate::compareTo));
+			assertNotNull(coordonnees);
+			assertEquals(2, coordonnees.size());
+
+			final CoordonneesFinancieres coord0 = coordonnees.get(0);
+			assertNotNull(coord0);
+			assertEquals(RegDate.get(2017, 1, 1), coord0.getDateDebut());
+			assertEquals(RegDate.get(2017, 12, 31), coord0.getDateFin());
+			assertEquals("titulaire", coord0.getTitulaire());
+			final CompteBancaire compteBancaire = coord0.getCompteBancaire();
+			assertNotNull(compteBancaire);
+			assertEquals("CH9308440717427290198", compteBancaire.getIban());
+			assertEquals("bicboc", compteBancaire.getBicSwift());
+		}
+
+		// ajoute une  coordonnée ouvert sur 2016.
+		service.addCoordonneesFinancieres(pp, RegDate.get(2016, 1, 1), null, "titulaire", "CH9308440717427290198", "bicboc");
+		{
+			final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
+			coordonnees.sort(Comparator.comparing(CoordonneesFinancieres::getDateDebut, RegDate::compareTo));
+			assertNotNull(coordonnees);
+			assertEquals(3, coordonnees.size());
+			final CoordonneesFinancieres coord2 = coordonnees.get(0);
+			assertNotNull(coord2);
+			assertEquals(RegDate.get(2016, 1, 1), coord2.getDateDebut());
+			assertNull(coord2.getDateFin());
+			assertEquals("titulaire", coord2.getTitulaire());
+			final CompteBancaire compteBancaire = coord2.getCompteBancaire();
+			assertNotNull(compteBancaire);
+			assertEquals("CH9308440717427290198", compteBancaire.getIban());
+			assertEquals("bicboc", compteBancaire.getBicSwift());
+
+			//verifie que la coordonnée 2018 n'est pas cloturées.
+			final CoordonneesFinancieres coord0 = coordonnees.get(2);
+			assertNull(coord0.getDateFin());
 		}
 	}
 
@@ -70,7 +135,7 @@ public class CoordonneesFinancieresServiceTest {
 		final PersonnePhysique pp = new PersonnePhysique();
 
 		// ajoute de premières coordonnées
-		service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1),null , "titulaire", "CH9308440717427290198", "bicboc" );
+		service.addCoordonneesFinancieres(pp, RegDate.get(2000, 1, 1), null, "titulaire", "CH9308440717427290198", "bicboc");
 		{
 			final Set<CoordonneesFinancieres> coordonnees = pp.getCoordonneesFinancieres();
 			assertNotNull(coordonnees);
@@ -88,7 +153,7 @@ public class CoordonneesFinancieresServiceTest {
 		}
 
 		// ajoute de secondes coordonnées
-		service.addCoordonneesFinancieres(pp, RegDate.get(2013, 4, 21),null , "titulaire", "CH690023000123456789A", null );
+		service.addCoordonneesFinancieres(pp, RegDate.get(2013, 4, 21), null, "titulaire", "CH690023000123456789A", null);
 		{
 			final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
 			assertNotNull(coordonnees);
@@ -159,7 +224,7 @@ public class CoordonneesFinancieresServiceTest {
 		pp.addCoordonneesFinancieres(coord);
 
 		// petit hack pour éviter d'utiliser un vrai hibernate template
-		((CoordonneesFinancieresServiceImpl)service).setHibernateTemplate(new MockHibernateTemplate() {
+		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
 			@Override
 			public <T> T get(Class<T> clazz, Serializable id) {
 				return (T) coord;
@@ -207,7 +272,7 @@ public class CoordonneesFinancieresServiceTest {
 		pp.addCoordonneesFinancieres(coord2);
 
 		// petit hack pour éviter d'utiliser un vrai hibernate template
-		((CoordonneesFinancieresServiceImpl)service).setHibernateTemplate(new MockHibernateTemplate() {
+		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
 			@Override
 			public <T> T get(Class<T> clazz, Serializable id) {
 				return (T) coord2;
@@ -267,7 +332,7 @@ public class CoordonneesFinancieresServiceTest {
 		pp.addCoordonneesFinancieres(coord);
 
 		// petit hack pour éviter d'utiliser un vrai hibernate template
-		((CoordonneesFinancieresServiceImpl)service).setHibernateTemplate(new MockHibernateTemplate() {
+		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
 			@Override
 			public <T> T get(Class<T> clazz, Serializable id) {
 				return (T) coord;
@@ -299,7 +364,7 @@ public class CoordonneesFinancieresServiceTest {
 		pp.addCoordonneesFinancieres(coord);
 
 		// petit hack pour éviter d'utiliser un vrai hibernate template
-		((CoordonneesFinancieresServiceImpl)service).setHibernateTemplate(new MockHibernateTemplate() {
+		((CoordonneesFinancieresServiceImpl) service).setHibernateTemplate(new MockHibernateTemplate() {
 			@Override
 			public <T> T get(Class<T> clazz, Serializable id) {
 				return (T) coord;
