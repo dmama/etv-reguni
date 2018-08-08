@@ -133,7 +133,7 @@ public class CloseAdresseValidator implements Validator {
 				isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_P);
 			}
 			else {
-				isAllowed = SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI);
+				isAllowed = SecurityHelper.isGranted(securityProvider, Role.CREATE_MODIF_DPI);
 			}
 		}
 		else {

@@ -280,7 +280,7 @@ public class TiersAdresseValidator implements Validator {
 
 		try {
 			if (tiers instanceof DebiteurPrestationImposable) {
-				return SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI);
+				return SecurityHelper.isGranted(securityProvider, Role.CREATE_MODIF_DPI);
 			}
 			else if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
 				final Contribuable ctb = (Contribuable) tiers;

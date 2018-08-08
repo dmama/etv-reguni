@@ -414,7 +414,7 @@ public class TiersCreateController {
 
 	@RequestMapping(value = "/debiteur/create.do", method = RequestMethod.GET)
 	public String createDebiteurPrestationImposable(Model model, @RequestParam(value = "numeroCtbAss") long noCtbAssocie) {
-		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_MODIF_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'un débiteur de prestation imposable.");
 		}
 		return showCreateDebiteurPrestationImposable(model, noCtbAssocie, new CreateDebiteurView());
@@ -433,7 +433,7 @@ public class TiersCreateController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/debiteur/create.do", method = RequestMethod.POST)
 	public String doCreateDebiteurPrestationImposable(Model model, @RequestParam(value = "numeroCtbAss") long noCtbAssocie, @Valid @ModelAttribute(DATA) CreateDebiteurView view, BindingResult results) {
-		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_MODIF_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'un débiteur de prestation imposable.");
 		}
 		if (results.hasErrors()) {
