@@ -185,7 +185,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	}
 
 	private boolean isEditAllowedDPI() {
-		return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_FISCAL_DPI, Role.CREATE_DPI);
+		return SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_DPI);
 	}
 
 	@Override
