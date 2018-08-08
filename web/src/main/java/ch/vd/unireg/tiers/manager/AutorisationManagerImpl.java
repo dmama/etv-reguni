@@ -185,7 +185,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	}
 
 	private boolean isEditAllowedDPI() {
-		return SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_DPI);
+		return SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_MODIF_DPI);
 	}
 
 	@Override
@@ -538,7 +538,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 
 		if (tiers instanceof Contribuable) {
-			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI, visa, oid)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_MODIF_DPI, visa, oid)) {
 				map.put(MODIF_DEBITEUR, Boolean.TRUE);
 			}
 
@@ -643,7 +643,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			//les DPI n'ont jamais les onglets civil, dossier apparenté et débiteur IS
-			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI, visa, oid)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_MODIF_DPI, visa, oid)) {
 				map.put(MODIF_FISCAL, Boolean.TRUE);
 				map.put(MODIF_ADRESSE, Boolean.TRUE);
 				map.put(ADR_B, Boolean.TRUE);
