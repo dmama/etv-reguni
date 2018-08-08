@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.vd.unireg.interfaces.infra.data.AbstractTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
 import ch.vd.unireg.type.CategorieEntreprise;
 
 import static ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration.IBC;
@@ -22,9 +22,9 @@ import static ch.vd.unireg.type.CategorieEntreprise.INDET;
 import static ch.vd.unireg.type.CategorieEntreprise.PM;
 import static ch.vd.unireg.type.CategorieEntreprise.SP;
 
-public class MockTypeRegimeFiscal extends TypeRegimeFiscalFidor {
+public class MockTypeRegimeFiscal extends AbstractTypeRegimeFiscal {
 
-	private static final long serialVersionUID = 7983766633170770086L;
+	private static final long serialVersionUID = 3529184490353279498L;
 
 	// SIFISC-22648: Type spécial signalant que le régime fiscal est encore à déterminer pour cette entité.
 	public static final MockTypeRegimeFiscal INDETERMINE = new MockTypeRegimeFiscal                         ("00", 2016, null, "En attente de détermination", true, true, INDET);
@@ -93,7 +93,7 @@ public class MockTypeRegimeFiscal extends TypeRegimeFiscalFidor {
 			}
 		}
 
-		return mocks.toArray(new MockTypeRegimeFiscal[mocks.size()]);
+		return mocks.toArray(new MockTypeRegimeFiscal[0]);
 	}
 
 	private MockTypeRegimeFiscal(String code, Integer premierePF, Integer dernierePF, String libelle, boolean cantonal, boolean federal, CategorieEntreprise categorie, PlageExonerationFiscale... exonerations) {
