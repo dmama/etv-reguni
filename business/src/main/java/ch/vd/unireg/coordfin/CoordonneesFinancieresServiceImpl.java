@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.FormatNumeroHelper;
@@ -48,7 +49,7 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 		if (coordonnees != null) {
 			coordonnees.stream()
 					.filter(AnnulableHelper::nonAnnule)
-					.filter(c -> c.getDateFin() == null)
+					.filter(c -> checkCollapseDate(c, dateDebut, dateFin))
 					.forEach(c -> c.setDateFin(dateDebut.getOneDayBefore()));
 		}
 
@@ -59,6 +60,12 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 		nouvelles.setTitulaire(titulaire);
 		nouvelles.setCompteBancaire(new CompteBancaire(iban, bicSwift));
 		tiers.addCoordonneesFinancieres(nouvelles);
+	}
+
+	private boolean checkCollapseDate(@NotNull CoordonneesFinancieres c, @NotNull RegDate dateDebut, @Nullable RegDate dateFin) {
+		return c.getDateFin() == null
+				&& DateRangeHelper.intersect(new DateRangeHelper.Range(c.getDateDebut(), null), new DateRangeHelper.Range(dateDebut, dateFin))
+				&& dateDebut.isAfter(c.getDateDebut());
 	}
 
 	@Override
