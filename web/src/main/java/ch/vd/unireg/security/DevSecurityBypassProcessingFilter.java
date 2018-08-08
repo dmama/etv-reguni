@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -103,16 +105,21 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
 		// Les procédures
 		final String procedureStr = SecurityDebugConfig.getIfoSecBypassProcedures(visa);
-		final List<IfoSecProcedure> listProcedure = new ArrayList<>();
-		for (String procedure : procedureStr.split("[, ]")) {
-			procedure = procedure.replace("[", "");
-			procedure = procedure.replace("]", "");
-			final IfoSecProcedureImpl proc = new IfoSecProcedureImpl();
-			proc.setCode(procedure);
-			proc.setCodeActivite("O");
-			proc.setNumero(0);
-			listProcedure.add(proc);
+
+		final Stream<String> codesStream;
+		if ("ALL".equals(procedureStr)) {
+			codesStream = Arrays.stream(Role.values())
+					.map(Role::getIfosecCode);
 		}
+		else {
+			codesStream = Arrays.stream(procedureStr.split("[, ]"))
+					.map(code -> code.replace("[", "").replace("]", ""));
+		}
+		final List<IfoSecProcedure> listProcedure = codesStream
+				.filter(StringUtils::isNotBlank)
+				.map(code -> new IfoSecProcedureImpl(code, "0", null, 0))
+				.collect(Collectors.toList());
+
 		profil.setProcedures(listProcedure);
 
 		return profil;

@@ -17,6 +17,13 @@ public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 	public IfoSecProcedureImpl() {
 	}
 
+	public IfoSecProcedureImpl(String code, String codeActivite, String designation, int numero) {
+		this.code = code;
+		this.codeActivite = codeActivite;
+		this.designation = designation;
+		this.numero = numero;
+	}
+
 	public IfoSecProcedureImpl(Procedure p) {
 		this.code = p.getCode();
 		this.codeActivite = p.getCodeActivite();

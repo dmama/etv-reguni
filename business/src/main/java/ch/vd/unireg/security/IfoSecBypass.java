@@ -1,5 +1,6 @@
 package ch.vd.unireg.security;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -31,12 +32,17 @@ public class IfoSecBypass {
 	}
 
 	private void initProcedures(String procedures) {
-		final String[] array = procedures.split("[, ]+");
-		for (String s : array) {
-			final String code = s.replace("[", "").replace("]", "");
-			final Role r = Role.fromIfoSec(code);
-			if (r != null) {
-				this.procedures.add(r);
+		if ("ALL".equals(procedures)) {
+			this.procedures.addAll(Arrays.asList(Role.values()));
+		}
+		else {
+			final String[] array = procedures.split("[, ]+");
+			for (String s : array) {
+				final String code = s.replace("[", "").replace("]", "");
+				final Role r = Role.fromIfoSec(code);
+				if (r != null) {
+					this.procedures.add(r);
+				}
 			}
 		}
 	}
