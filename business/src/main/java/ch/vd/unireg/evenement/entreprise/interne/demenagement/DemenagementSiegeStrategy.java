@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -34,6 +37,8 @@ import ch.vd.unireg.utils.RangeUtil;
  * @author Raphaël Marmier, 2015-09-02
  */
 public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DemenagementSiegeStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -129,7 +134,15 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 				try {
 					final DateRanged<Etablissement> etablissementPrincipalRange = RangeUtil.getAssertLast(context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise), dateAvant);
 					final Set<DomicileEtablissement> domiciles = etablissementPrincipalRange.getPayload().getDomiciles();
-					final DateRange domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<>(domiciles), dateApres);
+					final DomicileEtablissement domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<>(domiciles), dateApres);
+					if (domicilePrincipal == null) {
+						final String message = String.format(
+								"Fatal: Impossible de traiter l'événement de changement de  siege sociale n°%d: impossible d'avoir le dernier siége sociale  de l'entreprise %s pour faire la comparaison avec le nouveau! "
+								, event.getNoEvenement(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
+						);
+						LOGGER.error(message);
+						throw new EvenementEntrepriseException(message);
+					}
 
 					Integer noOfsAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getNumeroOfsAutoriteFiscale();
 					TypeAutoriteFiscale typeAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getTypeAutoriteFiscale();
@@ -205,7 +218,7 @@ public class DemenagementSiegeStrategy extends AbstractEntrepriseStrategy {
 		}
 		else {
 			final String message = String.format("Il existe manifestement un type de siège qu'Unireg ne sait pas traiter. Type avant: %s. Type après: %s. Impossible de continuer.",
-			                                    communeDeSiegeAvant.getTypeAutoriteFiscale(), communeDeSiegeApres.getTypeAutoriteFiscale());
+			                                     communeDeSiegeAvant.getTypeAutoriteFiscale(), communeDeSiegeApres.getTypeAutoriteFiscale());
 			Audit.error(event.getId(), message);
 			throw new EvenementEntrepriseException(message);
 		}
