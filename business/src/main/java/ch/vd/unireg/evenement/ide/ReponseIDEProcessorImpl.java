@@ -12,7 +12,6 @@ import ch.vd.unireg.interfaces.entreprise.data.NumeroIDE;
 import ch.vd.unireg.interfaces.entreprise.data.StatutAnnonce;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.Etablissement;
-import ch.vd.unireg.tiers.TiersException;
 import ch.vd.unireg.tiers.TiersService;
 
 /**
@@ -69,22 +68,17 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 				On est en train d'agir sur un établissement principal.
 			 */
 			if (etablissement.getNumero().equals(etablissementPrincipal.getNumero())) {
-				try {
-					if (etablissementPrincipal.getNumeroEtablissement() == null) {
-						Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers établissement n°%s principal non encore apparié.",
-						                                                 annonceIDE.getNoIde().getValeur(),
-						                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
-						tiersService.setIdentifiantEntreprise(etablissementPrincipal, annonceIDE.getNoIde().getValeur());
-					}
-					if (entreprise.getNumeroEntreprise() == null) {
-						Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers entreprise n°%s non encore apparié.",
-						                                                 annonceIDE.getNoIde().getValeur(),
-						                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
-						tiersService.setIdentifiantEntreprise(entreprise, annonceIDE.getNoIde().getValeur());
-					}
+				if (etablissementPrincipal.getNumeroEtablissement() == null) {
+					Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers établissement n°%s principal non encore apparié.",
+					                                                 annonceIDE.getNoIde().getValeur(),
+					                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+					tiersService.setIdentifiantEntreprise(etablissementPrincipal, annonceIDE.getNoIde().getValeur());
 				}
-				catch (TiersException e) {
-					throw new ReponseIDEProcessorException("Impossible d'assigner le numéro IDE à l'entreprise: " + e.getMessage(), e);
+				if (entreprise.getNumeroEntreprise() == null) {
+					Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers entreprise n°%s non encore apparié.",
+					                                                 annonceIDE.getNoIde().getValeur(),
+					                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
+					tiersService.setIdentifiantEntreprise(entreprise, annonceIDE.getNoIde().getValeur());
 				}
 			}
 			/*

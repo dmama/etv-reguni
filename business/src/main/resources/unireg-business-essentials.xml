@@ -89,6 +89,7 @@
 		<property name="flagBlocageRembAutoCalculateurDecale" ref="flagBlocageRemboursementAutoCalculateurDecale"/>
 		<property name="bouclementService" ref="bouclementService"/>
 		<property name="transitionEtatEntrepriseService" ref="transitionEtatEntrepriseService" />
+		<property name="metierServicePM" ref="metierServicePM"/>
 	</bean>
 
 	<bean id="flagBlocageRemboursementAutoCalculateurDecale" class="ch.vd.unireg.tiers.FlagBlocageRemboursementAutomatiqueInterceptor">

@@ -97,9 +97,6 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="ibanValidator" ref="ibanValidator"/>
-		<property name="infraService" ref="serviceInfrastructureService"/>
-		<property name="metierServicePM" ref="metierServicePM"/>
-		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
 	<bean id="tiersManager" class="ch.vd.unireg.tiers.manager.TiersManager">

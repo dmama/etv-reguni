@@ -33,12 +33,17 @@ import ch.vd.unireg.interfaces.entreprise.data.EntrepriseCivile;
 import ch.vd.unireg.interfaces.entreprise.data.EtablissementCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.FormeJuridique;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeCommunication;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
@@ -136,19 +141,67 @@ public interface TiersService {
     @NotNull
     Entreprise createEntreprise(long noEntrepriseCivile);
 
-    /**
-     * Créer un établissement pour le numéro d'établissement civil fourni. La méthode refuse de le créer si un établissement est déjà associé à l'établissement civil.
-     *
-     * @param numeroEtablissementCivil
-     * @return L'établissement créé.
-     */
+	/**
+	 * Crée une entreprise inconnue dans RCEnt (hors-canton ou hors-Suisse)
+	 */
+	@NotNull
+	Entreprise createEntreprise(String numeroIde,
+	                            RegDate dateDebutValidite,
+	                            RegDate dateDebutExerciceCommercial,
+	                            RegDate dateFondation,
+	                            FormeJuridiqueEntreprise formeJuridique,
+	                            Long capitalLibere,
+	                            String devise,
+	                            String raisonSociale,
+	                            TypeAutoriteFiscale typeAutoriteFiscaleSiege,
+	                            Integer numeroOfsSiege,
+	                            boolean entrepriseInscriteRC,
+	                            String personneContact,
+	                            String complementNom,
+	                            String numeroTelephonePrive,
+	                            String numeroTelephonePortable,
+	                            String numeroTelephoneProfessionnel,
+	                            String numeroTelecopie,
+	                            String adresseCourrierElectronique,
+	                            String iban,
+	                            String adresseBicSwift,
+	                            String titulaire);
+
+	/**
+	 * Créer un établissement pour le numéro d'établissement civil fourni. La méthode refuse de le créer si un établissement est déjà associé à l'établissement civil.
+	 *
+	 * @param numeroEtablissementCivil
+	 * @return L'établissement créé.
+	 */
     @NotNull
     Etablissement createEtablissement(Long numeroEtablissementCivil);
 
-    /**
-     * @param etablissement établissement ciblé
-     * @return la liste des entités juridiques (personnes physiques, entreprises...) liées à l'établissement donné
-     */
+	/**
+	 * Crée un établissement inconnu dans RCEnt (hors-canton ou hors-Suisse)
+	 */
+	@NotNull
+	Etablissement createEtablissement(long noEntreprise,
+	                                  String raisonSociale,
+	                                  String nomEnseigne,
+	                                  RegDate dateDebutValidite,
+	                                  RegDate dateFinValidite,
+	                                  Integer noOfsCommuneDomicile,
+	                                  String numeroIDE,
+	                                  String personneContact,
+	                                  String complementNom,
+	                                  String numeroTelephonePrive,
+	                                  String numeroTelephonePortable,
+	                                  String numeroTelephoneProfessionnel,
+	                                  String numeroTelecopie,
+	                                  String adresseCourrierElectronique,
+	                                  String iban,
+	                                  String adresseBicSwift,
+	                                  String titulaireCompteBancaire) throws MetierServiceException;
+
+	/**
+	 * @param etablissement établissement ciblé
+	 * @return la liste des entités juridiques (personnes physiques, entreprises...) liées à l'établissement donné
+	 */
     List<DateRanged<Contribuable>> getEntitesJuridiquesEtablissement(Etablissement etablissement);
 
     /**
@@ -174,7 +227,7 @@ public interface TiersService {
      * @param contribuable  le contribuable sur lequel changer cette valeur
      * @param ide           le numéro IDE (potentiellement avec des points, tirets...)
      */
-    void setIdentifiantEntreprise(Contribuable contribuable, String ide) throws TiersException;
+    void setIdentifiantEntreprise(Contribuable contribuable, String ide);
 
 	/**
 	 * Vérifie que l'édition des données civiles du contribuable visé est permise d'un point de vue métier
@@ -198,6 +251,78 @@ public interface TiersService {
 	 */
 	@NotNull
 	PersonnePhysique createNonHabitantFromIndividu(long numeroIndividu);
+
+	/**
+	 * Créé un non-habitant.
+	 */
+	@NotNull
+	PersonnePhysique createNonHabitant(String nom,
+	                                   String nomNaissance,
+	                                   String prenomUsuel,
+	                                   String tousPrenoms,
+	                                   String numeroAssureSocial,
+	                                   Sexe sexe,
+	                                   RegDate dateNaissance,
+	                                   RegDate dateDeces,
+	                                   CategorieEtranger categorieEtranger,
+	                                   RegDate dateDebutValiditeAutorisation,
+	                                   Integer numeroOfsNationalite,
+	                                   Integer ofsCommuneOrigine,
+	                                   String libelleCommuneOrigine,
+	                                   String prenomsPere,
+	                                   String nomPere,
+	                                   String prenomsMere,
+	                                   String nomMere,
+	                                   String ancienNumAVS,
+	                                   String numRegistreEtranger,
+	                                   String personneContact,
+	                                   String complementNom,
+	                                   String numeroTelephonePrive,
+	                                   String numeroTelephonePortable,
+	                                   String numeroTelephoneProfessionnel,
+	                                   String numeroTelecopie,
+	                                   String adresseCourrierElectronique,
+	                                   String iban,
+	                                   String adresseBicSwift,
+	                                   String titulaireCompteBancaire);
+
+	/**
+	 * Crée un débiteur de prestations imposables.
+	 */
+	@NotNull
+	DebiteurPrestationImposable createDebiteur(long noCtbContactIS,
+	                                           CategorieImpotSource categorieImpotSource,
+	                                           ModeCommunication modeCommunication,
+	                                           PeriodiciteDecompte periodiciteDecompte,
+	                                           PeriodeDecompte periodeDecompte,
+	                                           String personneContact,
+	                                           String complementNom,
+	                                           String numeroTelephonePrive,
+	                                           String numeroTelephonePortable,
+	                                           String numeroTelephoneProfessionnel,
+	                                           String numeroTelecopie,
+	                                           String adresseCourrierElectronique,
+	                                           String iban,
+	                                           String adresseBicSwift,
+	                                           String titulaireCompteBancaire);
+
+	/**
+	 * Crée une autre communauté
+	 */
+	@NotNull
+	AutreCommunaute createAutreCommunaute(String nom,
+	                                      String ide,
+	                                      FormeJuridique formeJuridique,
+	                                      String personneContact,
+	                                      String complementNom,
+	                                      String numeroTelephonePrive,
+	                                      String numeroTelephonePortable,
+	                                      String numeroTelephoneProfessionnel,
+	                                      String numeroTelecopie,
+	                                      String adresseCourrierElectronique,
+	                                      String iban,
+	                                      String adresseBicSwift,
+	                                      String titulaireCompteBancaire);
 
 	/**
 	 * @param pp                           une personne physique

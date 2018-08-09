@@ -96,6 +96,7 @@ import ch.vd.unireg.evenement.fiscal.EvenementFiscalService;
 import ch.vd.unireg.evenement.ide.ServiceIDEService;
 import ch.vd.unireg.hibernate.HibernateCallback;
 import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.iban.IbanHelper;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.unireg.indexer.tiers.TiersIndexedData;
@@ -124,6 +125,9 @@ import ch.vd.unireg.interfaces.model.AdressesCivilesHisto;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.metier.AjustementForsSecondairesResult;
+import ch.vd.unireg.metier.MetierServiceException;
+import ch.vd.unireg.metier.MetierServicePM;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
@@ -145,10 +149,13 @@ import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.CategorieEtranger;
 import ch.vd.unireg.type.CategorieIdentifiant;
 import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.DayMonth;
 import ch.vd.unireg.type.EtatCivil;
+import ch.vd.unireg.type.FormeJuridique;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.GroupeFlagsEntreprise;
+import ch.vd.unireg.type.ModeCommunication;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
@@ -199,8 +206,9 @@ public class TiersServiceImpl implements TiersService {
 	private FlagBlocageRemboursementAutomatiqueCalculationRegister flagBlocageRembAutoCalculateurDecale;
 	private BouclementService bouclementService;
 	private TransitionEtatEntrepriseService transitionEtatEntrepriseService;
+	private MetierServicePM metierServicePM;
 
-    /**
+	/**
      * Recherche les Tiers correspondants aux critères dans le data model de Unireg
      *
      * @param tiersCriteria les critères de recherche
@@ -290,6 +298,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setTransitionEtatEntrepriseService(TransitionEtatEntrepriseService transitionEtatEntrepriseService) {
 		this.transitionEtatEntrepriseService = transitionEtatEntrepriseService;
+	}
+
+	public void setMetierServicePM(MetierServicePM metierServicePM) {
+		this.metierServicePM = metierServicePM;
 	}
 
 	/**
@@ -455,6 +467,116 @@ public class TiersServiceImpl implements TiersService {
 		return (Entreprise) tiersDAO.save(entreprise);
 	}
 
+	@Override
+	@NotNull
+	public Entreprise createEntreprise(String numeroIde,
+	                                            RegDate dateDebutValidite,
+	                                            RegDate dateDebutExerciceCommercial,
+	                                            RegDate dateFondation,
+	                                            FormeJuridiqueEntreprise formeJuridique,
+	                                            Long capitalLibere,
+	                                            String devise,
+	                                            String raisonSociale,
+	                                            TypeAutoriteFiscale typeAutoriteFiscaleSiege,
+	                                            Integer numeroOfsSiege,
+	                                            boolean entrepriseInscriteRC,
+	                                            String personneContact,
+	                                            String complementNom,
+	                                            String numeroTelephonePrive,
+	                                            String numeroTelephonePortable,
+	                                            String numeroTelephoneProfessionnel,
+	                                            String numeroTelecopie,
+	                                            String adresseCourrierElectronique,
+	                                            String iban,
+	                                            String adresseBicSwift,
+	                                            String titulaire) {
+
+		final Entreprise entreprise = (Entreprise) tiersDAO.save(new Entreprise());
+
+		// Numéro IDE
+		final String normalizedIde = NumeroIDEHelper.normalize(numeroIde);
+		if (StringUtils.isNotBlank(normalizedIde)) {
+			final IdentificationEntreprise ident = new IdentificationEntreprise();
+			ident.setNumeroIde(normalizedIde);
+			entreprise.addIdentificationEntreprise(ident);
+		}
+
+		// Compléments
+		setComplements(personneContact, complementNom, numeroTelephonePrive, numeroTelephonePortable, numeroTelephoneProfessionnel, numeroTelecopie, adresseCourrierElectronique, entreprise);
+		setCoordonneesFinancieres(iban, adresseBicSwift, titulaire, entreprise);
+
+		// Forme juridique
+		addFormeJuridiqueFiscale(entreprise, formeJuridique, dateDebutValidite, null);
+
+		// Capital
+		if (capitalLibere != null) {
+			addCapitalFiscal(entreprise, capitalLibere, devise, dateDebutValidite, null);
+		}
+
+		// Raison sociale
+		addRaisonSocialeFiscale(entreprise, LiteralStringHelper.stripExtraSpacesAndBlanks(raisonSociale), dateDebutValidite, null);
+
+		// Siège (établissement)
+		final Etablissement etablissementPrincipal;
+		{
+			final Etablissement etablissement = new Etablissement();
+			etablissement.setRaisonSociale(LiteralStringHelper.stripExtraSpacesAndBlanks(raisonSociale));
+			etablissementPrincipal = (Etablissement) tiersDAO.save(etablissement);
+		}
+		addDomicileEtablissement(etablissementPrincipal, typeAutoriteFiscaleSiege, numeroOfsSiege, dateDebutValidite, null);
+
+		// Rapport entre entreprise et établissement principal
+		addActiviteEconomique(etablissementPrincipal, entreprise, dateFondation, true);
+
+		// Régimes fiscaux + For principal (différents en fonction de la forme juridique/catégorie entreprise)
+		final TypeRegimeFiscal typeRegimeFiscalParDefaut = regimeFiscalService.getTypeRegimeFiscalParDefaut(formeJuridique);
+
+		// Calcul de la date d'ouverture fiscale
+		final boolean vd = typeAutoriteFiscaleSiege == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		final RegDate dateOuvertureFiscale =
+				vd && entrepriseInscriteRC ? dateDebutValidite.getOneDayAfter() : dateDebutValidite; // SIFISC-25054 - Appliquer la règle jour + 1 pour les entités inscrites au RC VD, pas pour les autres. (supplante SIFISC-22478)
+
+		// Ajout des régimes fiscaux
+		addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
+		addRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
+
+		final CategorieEntreprise categorieEntreprise = typeRegimeFiscalParDefaut.getCategorie();
+
+		final Set<CategorieEntreprise> isPMOrIndet = EnumSet.of(CategorieEntreprise.PM, CategorieEntreprise.APM, CategorieEntreprise.INDET);
+		if (isPMOrIndet.contains(categorieEntreprise)) {
+			// Bouclement et premier exercice commercial
+			entreprise.setDateDebutPremierExerciceCommercial(dateDebutExerciceCommercial);
+			final RegDate dateBouclement = dateDebutExerciceCommercial.addYears(1).getOneDayBefore();
+			final Bouclement bouclement = new Bouclement();
+			bouclement.setAncrage(DayMonth.get(dateBouclement));
+			bouclement.setDateDebut(dateBouclement.addDays(-dateBouclement.day() + 1));        // = le premier jour du mois du bouclement
+			bouclement.setPeriodeMois(12);
+			entreprise.addBouclement(bouclement);
+
+			// For principal
+			final MotifFor motifOuverture = vd ? MotifFor.DEBUT_EXPLOITATION : null;
+			addForPrincipal(entreprise, dateOuvertureFiscale, motifOuverture, null, null, MotifRattachement.DOMICILE, numeroOfsSiege, typeAutoriteFiscaleSiege, GenreImpot.BENEFICE_CAPITAL);
+		}
+		else if (categorieEntreprise == CategorieEntreprise.SP) {
+			// Pas de régime fiscal (et donc pas de bouclement)
+			// For principal
+			addForPrincipal(entreprise, dateDebutValidite, null, null, null, MotifRattachement.DOMICILE, numeroOfsSiege, typeAutoriteFiscaleSiege, GenreImpot.REVENU_FORTUNE);
+		}
+
+		// Etat fiscal
+		final TypeEtatEntreprise typeEtatEntreprise = entrepriseInscriteRC ? TypeEtatEntreprise.INSCRITE_RC : TypeEtatEntreprise.FONDEE;
+		changeEtatEntreprise(typeEtatEntreprise, entreprise, dateFondation, TypeGenerationEtatEntreprise.MANUELLE);
+		return entreprise;
+	}
+
+	private static void setCoordonneesFinancieres(String iban, String adresseBicSwift, String titulaire, Tiers tiers) {
+		final String ibanNormalise = IbanHelper.normalize(iban);
+		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(adresseBicSwift));
+		if (StringUtils.isNotBlank(titulaire) || StringUtils.isNotBlank(ibanNormalise) || StringUtils.isNotBlank(bicSwift)) {
+			tiers.addCoordonneesFinancieres(new CoordonneesFinancieres(titulaire, ibanNormalise, bicSwift));
+		}
+	}
+
 	/**
 	 * Créer un établissement pour le numéro d'établissement civil fourni. La méthode refuse de le créer si un établissement est déjà associé à l'établissement civil.
 	 *
@@ -471,6 +593,87 @@ public class TiersServiceImpl implements TiersService {
 		etablissement = new Etablissement();
 		etablissement.setNumeroEtablissement(numeroEtablissementCivil);
 		return (Etablissement) tiersDAO.save(etablissement);
+	}
+
+	@NotNull
+	@Override
+	public Etablissement createEtablissement(long noEntreprise,
+	                                         String raisonSociale,
+	                                         String nomEnseigne,
+	                                         RegDate dateDebutValidite,
+	                                         RegDate dateFinValidite,
+	                                         Integer noOfsCommuneDomicile,
+	                                         String numeroIDE,
+	                                         String personneContact,
+	                                         String complementNom,
+	                                         String numeroTelephonePrive,
+	                                         String numeroTelephonePortable,
+	                                         String numeroTelephoneProfessionnel,
+	                                         String numeroTelecopie,
+	                                         String adresseCourrierElectronique,
+	                                         String iban,
+	                                         String adresseBicSwift,
+	                                         String titulaireCompteBancaire) throws MetierServiceException {
+
+		final Etablissement etablissement = new Etablissement();
+
+		etablissement.setRaisonSociale(LiteralStringHelper.stripExtraSpacesAndBlanks(raisonSociale));
+		etablissement.setEnseigne(LiteralStringHelper.stripExtraSpacesAndBlanks(nomEnseigne));
+		etablissement.addDomicile(new DomicileEtablissement(dateDebutValidite, dateFinValidite, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, noOfsCommuneDomicile, etablissement));
+
+		final String normalizedIde = NumeroIDEHelper.normalize(numeroIDE);
+		if (StringUtils.isNotBlank(normalizedIde)) {
+			IdentificationEntreprise identification = new IdentificationEntreprise();
+			identification.setNumeroIde(normalizedIde);
+			etablissement.addIdentificationEntreprise(identification);
+		}
+
+		setComplements(personneContact, complementNom, numeroTelephonePrive, numeroTelephonePortable, numeroTelephoneProfessionnel, numeroTelecopie, adresseCourrierElectronique, etablissement);
+		setCoordonneesFinancieres(iban, adresseBicSwift, titulaireCompteBancaire, etablissement);
+
+		final Etablissement saved = (Etablissement) tiersDAO.save(etablissement);
+		final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+
+		final RapportEntreTiers activiteEconomique = addActiviteEconomique(saved, entreprise, dateDebutValidite, false);
+		if (dateFinValidite != null && dateFinValidite.isAfterOrEqual(dateDebutValidite)) {
+			closeRapportEntreTiers(activiteEconomique, dateFinValidite);
+		}
+
+		// Calcul des éléments fiscaux
+		final AjustementForsSecondairesResult ajustementForsSecondaires = metierServicePM.calculAjustementForsSecondairesPourEtablissementsVD(entreprise);
+
+		for (ForFiscalSecondaire forAAnnuler : ajustementForsSecondaires.getAAnnuler()) {
+			annuleForFiscal(forAAnnuler);
+		}
+
+		for (AjustementForsSecondairesResult.ForAFermer forAFermer : ajustementForsSecondaires.getAFermer()) {
+			closeForFiscalSecondaire(entreprise, forAFermer.getForFiscal(), forAFermer.getDateFermeture(), MotifFor.FIN_EXPLOITATION);
+		}
+
+		for (ForFiscalSecondaire forACreer : ajustementForsSecondaires.getACreer()) {
+			final Commune commune = serviceInfra.getCommuneByNumeroOfs(forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getDateDebut());
+			if (!commune.isPrincipale()) {
+				if (forACreer.getMotifOuverture() == null) {
+					throw new IllegalArgumentException("Le motif d'ouverture est obligatoire sur un for secondaire dans le canton");
+				}
+				addForSecondaire(entreprise, forACreer.getDateDebut(), forACreer.getDateFin(), forACreer.getMotifRattachement(), forACreer.getNumeroOfsAutoriteFiscale(),
+				                              forACreer.getTypeAutoriteFiscale(),
+				                              forACreer.getMotifOuverture(), forACreer.getMotifFermeture(), GenreImpot.BENEFICE_CAPITAL);
+			}
+		}
+
+		return saved;
+	}
+
+	private static void setComplements(String personneContact, String complementNom, String numeroTelephonePrive, String numeroTelephonePortable, String numeroTelephoneProfessionnel, String numeroTelecopie, String adresseCourrierElectronique,
+	                                   Tiers tiers) {
+		tiers.setPersonneContact(personneContact);
+		tiers.setComplementNom(complementNom);
+		tiers.setNumeroTelephonePrive(numeroTelephonePrive);
+		tiers.setNumeroTelephonePortable(numeroTelephonePortable);
+		tiers.setNumeroTelephoneProfessionnel(numeroTelephoneProfessionnel);
+		tiers.setNumeroTelecopie(numeroTelecopie);
+		tiers.setAdresseCourrierElectronique(adresseCourrierElectronique);
 	}
 
 	@Override
@@ -664,6 +867,133 @@ public class TiersServiceImpl implements TiersService {
 		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.save(new PersonnePhysique(numeroIndividu));
 		changeHabitantenNH(pp);
 		return pp;
+	}
+
+	@Override
+	public @NotNull PersonnePhysique createNonHabitant(String nom,
+	                                                   String nomNaissance,
+	                                                   String prenomUsuel,
+	                                                   String tousPrenoms,
+	                                                   String numeroAssureSocial,
+	                                                   Sexe sexe,
+	                                                   RegDate dateNaissance,
+	                                                   RegDate dateDeces,
+	                                                   CategorieEtranger categorieEtranger,
+	                                                   RegDate dateDebutValiditeAutorisation,
+	                                                   Integer numeroOfsNationalite,
+	                                                   Integer ofsCommuneOrigine,
+	                                                   String libelleCommuneOrigine,
+	                                                   String prenomsPere,
+	                                                   String nomPere,
+	                                                   String prenomsMere,
+	                                                   String nomMere,
+	                                                   String ancienNumAVS,
+	                                                   String numRegistreEtranger,
+	                                                   String personneContact,
+	                                                   String complementNom,
+	                                                   String numeroTelephonePrive,
+	                                                   String numeroTelephonePortable,
+	                                                   String numeroTelephoneProfessionnel,
+	                                                   String numeroTelecopie,
+	                                                   String adresseCourrierElectronique,
+	                                                   String iban,
+	                                                   String adresseBicSwift,
+	                                                   String titulaireCompteBancaire) {
+
+		final PersonnePhysique pp = new PersonnePhysique(false);
+
+		pp.setNom(nom);
+		pp.setNomNaissance(nomNaissance);
+		pp.setPrenomUsuel(prenomUsuel);
+		pp.setTousPrenoms(tousPrenoms);
+		pp.setNumeroAssureSocial(FormatNumeroHelper.removeSpaceAndDash(numeroAssureSocial));
+		pp.setSexe(sexe);
+		pp.setDateNaissance(dateNaissance);
+		pp.setDateDeces(dateDeces);
+		pp.setCategorieEtranger(categorieEtranger);
+		pp.setDateDebutValiditeAutorisation(dateDebutValiditeAutorisation);
+		pp.setNumeroOfsNationalite(numeroOfsNationalite);
+		if (ofsCommuneOrigine != null) {
+			final Commune commune = serviceInfra.getCommuneByNumeroOfs(ofsCommuneOrigine, null);
+			pp.setOrigine(new OriginePersonnePhysique(libelleCommuneOrigine, commune.getSigleCanton()));
+		}
+		else {
+			pp.setOrigine(null);
+		}
+		pp.setPrenomsPere(prenomsPere);
+		pp.setNomPere(nomPere);
+		pp.setPrenomsMere(prenomsMere);
+		pp.setNomMere(nomMere);
+
+		setIdentifiantsPersonne(pp, ancienNumAVS, numRegistreEtranger);
+
+		setComplements(personneContact, complementNom, numeroTelephonePrive, numeroTelephonePortable, numeroTelephoneProfessionnel, numeroTelecopie, adresseCourrierElectronique, pp);
+		setCoordonneesFinancieres(iban, adresseBicSwift, titulaireCompteBancaire, pp);
+
+		return (PersonnePhysique) tiersDAO.save(pp);
+	}
+
+	@Override
+	@NotNull
+	public DebiteurPrestationImposable createDebiteur(long noCtbContactIS,
+	                                                  CategorieImpotSource categorieImpotSource,
+	                                                  ModeCommunication modeCommunication,
+	                                                  PeriodiciteDecompte periodiciteDecompte,
+	                                                  PeriodeDecompte periodeDecompte,
+	                                                  String personneContact,
+	                                                  String complementNom,
+	                                                  String numeroTelephonePrive,
+	                                                  String numeroTelephonePortable,
+	                                                  String numeroTelephoneProfessionnel,
+	                                                  String numeroTelecopie,
+	                                                  String adresseCourrierElectronique,
+	                                                  String iban,
+	                                                  String adresseBicSwift,
+	                                                  String titulaireCompteBancaire) {
+
+		final DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+
+		dpi.setCategorieImpotSource(categorieImpotSource);
+		dpi.setModeCommunication(modeCommunication);
+
+		final PeriodeDecompte periode = periodiciteDecompte == PeriodiciteDecompte.UNIQUE ? periodeDecompte : null;
+		dpi.setPeriodicites(new HashSet<>(Collections.singletonList(new Periodicite(periodiciteDecompte, periode, RegDate.get(RegDate.get().year(), 1, 1), null))));
+
+		setComplements(personneContact, complementNom, numeroTelephonePrive, numeroTelephonePortable, numeroTelephoneProfessionnel, numeroTelecopie, adresseCourrierElectronique, dpi);
+		setCoordonneesFinancieres(iban, adresseBicSwift, titulaireCompteBancaire, dpi);
+
+		final DebiteurPrestationImposable saved = (DebiteurPrestationImposable) tiersDAO.save(dpi);
+		final Contribuable ctbAss = (Contribuable) tiersDAO.get(noCtbContactIS);
+		addContactImpotSource(saved, ctbAss);
+
+		return saved;
+	}
+
+	@Override
+	public @NotNull AutreCommunaute createAutreCommunaute(String nom,
+	                                                      String ide,
+	                                                      FormeJuridique formeJuridique,
+	                                                      String personneContact,
+	                                                      String complementNom,
+	                                                      String numeroTelephonePrive,
+	                                                      String numeroTelephonePortable,
+	                                                      String numeroTelephoneProfessionnel,
+	                                                      String numeroTelecopie,
+	                                                      String adresseCourrierElectronique,
+	                                                      String iban,
+	                                                      String adresseBicSwift,
+	                                                      String titulaireCompteBancaire) {
+
+		final AutreCommunaute ac = new AutreCommunaute();
+
+		ac.setFormeJuridique(formeJuridique);
+		ac.setNom(nom);
+		setIdentifiantEntreprise(ac, StringUtils.trimToNull(ide));
+
+		setComplements(personneContact, complementNom, numeroTelephonePrive, numeroTelephonePortable, numeroTelephoneProfessionnel, numeroTelecopie, adresseCourrierElectronique, ac);
+		setCoordonneesFinancieres(iban, adresseBicSwift, titulaireCompteBancaire, ac);
+
+		return (AutreCommunaute) tiersDAO.save(ac);
 	}
 
 	private UpdateHabitantFlagResultat getFlagHabitantChangementNecessaire(@NotNull PersonnePhysique pp, long noInd) throws TiersException {

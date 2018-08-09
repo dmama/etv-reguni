@@ -38,8 +38,12 @@ import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.unireg.type.CategorieEntreprise;
+import ch.vd.unireg.type.CategorieEtranger;
+import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.FormeJuridique;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.GenreImpot;
+import ch.vd.unireg.type.ModeCommunication;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
@@ -120,7 +124,22 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
+	public @NotNull Entreprise createEntreprise(String numeroIde, RegDate dateDebutValidite, RegDate dateDebutExerciceCommercial, RegDate dateFondation, FormeJuridiqueEntreprise formeJuridique, Long capitalLibere, String devise, String raisonSociale,
+	                                            TypeAutoriteFiscale typeAutoriteFiscaleSiege, Integer numeroOfsSiege, boolean entrepriseInscriteRC, String personneContact, String complementNom, String numeroTelephonePrive,
+	                                            String numeroTelephonePortable, String numeroTelephoneProfessionnel, String numeroTelecopie, String adresseCourrierElectronique, String iban, String adresseBicSwift, String titulaire) {
+		return null;
+	}
+
+	@Override
 	public @NotNull Etablissement createEtablissement(Long numeroEtablissementCivil) {
+		return null;
+	}
+
+	@NotNull
+	@Override
+	public Etablissement createEtablissement(long noEntreprise, String raisonSociale, String nomEnseigne, RegDate dateDebutValidite, RegDate dateFinValidite, Integer noOfsCommuneDomicile, String numeroIDE, String personneContact,
+	                                         String complementNom, String numeroTelephonePrive, String numeroTelephonePortable, String numeroTelephoneProfessionnel, String numeroTelecopie, String adresseCourrierElectronique, String iban,
+	                                         String adresseBicSwift, String titulaireCompteBancaire) {
 		return null;
 	}
 
@@ -140,7 +159,7 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
-	public void setIdentifiantEntreprise(Contribuable contribuable, String ide) throws TiersException {
+	public void setIdentifiantEntreprise(Contribuable contribuable, String ide) {
 
 	}
 
@@ -156,6 +175,27 @@ public class MockTiersService implements TiersService {
 
 	@Override
 	public @NotNull PersonnePhysique createNonHabitantFromIndividu(long numeroIndividu) {
+		return null;
+	}
+
+	@Override
+	public @NotNull PersonnePhysique createNonHabitant(String nom, String nomNaissance, String prenomUsuel, String tousPrenoms, String numeroAssureSocial, Sexe sexe, RegDate dateNaissance, RegDate dateDeces, CategorieEtranger categorieEtranger,
+	                                                   RegDate dateDebutValiditeAutorisation, Integer numeroOfsNationalite, Integer ofsCommuneOrigine, String libelleCommuneOrigine, String prenomsPere, String nomPere, String prenomsMere,
+	                                                   String nomMere, String ancienNumAVS, String numRegistreEtranger, String personneContact, String complementNom, String numeroTelephonePrive, String numeroTelephonePortable,
+	                                                   String numeroTelephoneProfessionnel, String numeroTelecopie, String adresseCourrierElectronique, String iban, String adresseBicSwift, String titulaireCompteBancaire) {
+		return null;
+	}
+
+	@Override
+	public @NotNull DebiteurPrestationImposable createDebiteur(long noCtbContactIS, CategorieImpotSource categorieImpotSource, ModeCommunication modeCommunication, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte,
+	                                                           String personneContact, String complementNom, String numeroTelephonePrive, String numeroTelephonePortable, String numeroTelephoneProfessionnel, String numeroTelecopie,
+	                                                           String adresseCourrierElectronique, String iban, String adresseBicSwift, String titulaireCompteBancaire) {
+		return null;
+	}
+
+	@Override
+	public @NotNull AutreCommunaute createAutreCommunaute(String nom, String ide, FormeJuridique formeJuridique, String personneContact, String complementNom, String numeroTelephonePrive, String numeroTelephonePortable,
+	                                                      String numeroTelephoneProfessionnel, String numeroTelecopie, String adresseCourrierElectronique, String iban, String adresseBicSwift, String titulaireCompteBancaire) {
 		return null;
 	}
 
