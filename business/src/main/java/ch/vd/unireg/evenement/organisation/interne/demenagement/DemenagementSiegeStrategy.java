@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import ch.vd.registre.base.date.DateRange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.audit.Audit;
@@ -34,6 +36,8 @@ import ch.vd.unireg.utils.RangeUtil;
  * @author Raphaël Marmier, 2015-09-02
  */
 public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DemenagementSiegeStrategy.class);
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -115,7 +119,7 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 
 				// On peut déjà partager le monde en deux, ce qui existait avant le seuil, sur lequel on peut compter, et ce qui est récent
 				// qui peut avoir été créé à la main.
-				final RegDate newnessThresholdDate = dateApres.addDays( - OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+				final RegDate newnessThresholdDate = dateApres.addDays(-OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
 				final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise);
 				final DateRanged<Etablissement> etablissementPreexistant = DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, newnessThresholdDate);
 				if (etablissementPreexistant == null) {
@@ -129,10 +133,18 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 				try {
 					final DateRanged<Etablissement> etablissementPrincipalRange = RangeUtil.getAssertLast(context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise), dateAvant);
 					final Set<DomicileEtablissement> domiciles = etablissementPrincipalRange.getPayload().getDomiciles();
-					final DateRange domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<>(domiciles), dateApres);
+					final DomicileEtablissement domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<>(domiciles), dateApres);
+					if (domicilePrincipal == null) {
+						final String message = String.format(
+								"Fatal: Impossible de traiter l'événement de changement de  siege sociale n°%d: impossible d'avoir le dernier siége sociale  de l'entreprise %s pour faire la comparaison avec le nouveau! "
+								, event.getNoEvenement(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
+						);
+						LOGGER.error(message);
+						throw new EvenementOrganisationException(message);
+					}
 
-					Integer noOfsAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getNumeroOfsAutoriteFiscale();
-					TypeAutoriteFiscale typeAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getTypeAutoriteFiscale();
+					Integer noOfsAutoriteFiscale = domicilePrincipal.getNumeroOfsAutoriteFiscale();
+					TypeAutoriteFiscale typeAutoriteFiscale = domicilePrincipal.getTypeAutoriteFiscale();
 
 					communeDeSiegeAvant = new Domicile(domicilePrincipal.getDateDebut(), domicilePrincipal.getDateFin(), typeAutoriteFiscale, noOfsAutoriteFiscale);
 
@@ -169,6 +181,7 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 						catch (EvenementOrganisationException e) {
 							final String message = e.getMessage();
 							Audit.error(message);
+							LOGGER.error(message);
 							return new TraitementManuel(event, organisation, entreprise, context, options, message);
 						}
 					}
@@ -176,6 +189,7 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 				catch (RangeUtil.RangeUtilException e) {
 					final String message = String.format("Problème pour déterminer le siège précédant de l'entreprise: %s", e.getMessage());
 					Audit.error(event.getId(), message);
+					LOGGER.error(message);
 					return new TraitementManuel(event, organisation, entreprise, context, options, message);
 				}
 			}
@@ -205,9 +219,10 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 		}
 		else {
 			final String message = String.format("Il existe manifestement un type de siège qu'Unireg ne sait pas traiter. Type avant: %s. Type après: %s. Impossible de continuer.",
-			                                    communeDeSiegeAvant.getTypeAutoriteFiscale(), communeDeSiegeApres.getTypeAutoriteFiscale());
+			                                     communeDeSiegeAvant.getTypeAutoriteFiscale(), communeDeSiegeApres.getTypeAutoriteFiscale());
 			Audit.error(event.getId(), message);
-			throw new EvenementOrganisationException( message);
+			LOGGER.error(message);
+			throw new EvenementOrganisationException(message);
 		}
 
 		if (messageWarning != null) {
