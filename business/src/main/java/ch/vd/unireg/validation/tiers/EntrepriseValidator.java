@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +52,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		return source.stream()
 				.collect(Collectors.toMap(keyExtractor,
 				                          Collections::singletonList,
-				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+				                          ListUtils::union,
 				                          HashMap::new));
 	}
 

@@ -11,27 +11,29 @@ import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 /**
- * @author Raphaël Marmier, 2017-01-25, <raphael.marmier@vd.ch>
+ * Service qui permet de récupérer et de manipuler les types de régimes fiscaux disponibles dans l'infrastructure fiscale. Les types de régimes fiscaux peuvent varier dans le temps (précisément, de nouveaux types peuvent être ajoutés indépendament
+ * des mises-en-production), c'est pourquoi ils ne sont pas définis par une énumération.
  */
 public interface RegimeFiscalService {
 
 	/**
-	 * @param code le code représentant le type de régime fiscal
+	 * @param code le code métier (01, 109, 41, 41C, 70, ...) qui identifie un type de régime fiscal
 	 * @return le type de régime fiscal correspondant au code, ou null si le code ne correspond à rien.
 	 */
 	@NotNull
 	TypeRegimeFiscal getTypeRegimeFiscal(@NotNull String code);
 
 	/**
-	 * @return le type de régime fiscal indéterminé
+	 * @return le type de régime fiscal indéterminé (code = 00)
 	 */
 	@NotNull
 	TypeRegimeFiscal getTypeRegimeFiscalIndetermine();
 
 	/**
-	 * @return le type de régime fiscal société de personnes
+	 * @return le type de régime fiscal société de personnes (code = 80)
 	 */
-	@NotNull TypeRegimeFiscal getTypeRegimeFiscalSocieteDePersonnes();
+	@NotNull
+	TypeRegimeFiscal getTypeRegimeFiscalSocieteDePersonnes();
 
 	/**
 	 * @param formeJuridique la forme juridique
@@ -42,14 +44,16 @@ public interface RegimeFiscalService {
 
 	/**
 	 * Retourne le type de régime fiscal associé au régime de portée VD de l'entreprise, s'il existe à la date donnée.
+	 *
 	 * @param entreprise l'entreprise
-	 * @param date la date
+	 * @param date       la date
 	 * @return le type de régime fiscal, <code>null</code> en cas d'absence de régime fiscal VD
 	 */
 	TypeRegimeFiscal getTypeRegimeFiscalVD(Entreprise entreprise, RegDate date);
 
 	/**
 	 * Retourne la liste triée des régimes fiscaux vaudois non annulés d'une entreprise, sous la forme d'objets consolidés.
+	 *
 	 * @param entreprise L'entreprise concernée
 	 * @return une liste de régimes fiscaux consolidés, potentiellement vide
 	 */

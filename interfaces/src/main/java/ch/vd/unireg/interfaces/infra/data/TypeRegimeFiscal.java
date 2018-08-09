@@ -7,6 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.type.CategorieEntreprise;
 
+/**
+ * Expose les informations disponibles sur les types de régimes fiscaux disponibles dans l'infrastructure fiscale.
+ */
 public interface TypeRegimeFiscal {
 
 	/**
