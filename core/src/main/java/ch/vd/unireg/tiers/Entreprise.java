@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -134,6 +135,16 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return all.stream()
 				.filter(rf -> rf.getPortee() == portee)
 				.collect(Collectors.toList());
+	}
+
+	@Transient
+	@Nullable
+	public RegimeFiscal getRegimeFiscalActif(@NotNull RegimeFiscal.Portee portee) {
+		return regimesFiscaux.stream()
+				.filter(rf -> rf.getPortee() == portee)
+				.filter(r -> r.isValidAt(null))
+				.findAny()
+				.orElse(null);
 	}
 
 	// configuration hibernate : l'entreprise possède les données civiles

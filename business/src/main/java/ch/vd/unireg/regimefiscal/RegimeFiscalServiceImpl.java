@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -80,20 +81,25 @@ public class RegimeFiscalServiceImpl implements RegimeFiscalService {
 
 	@Override
 	@NotNull
-	public TypeRegimeFiscal getTypeRegimeFiscalParDefaut(@NotNull FormeJuridiqueEntreprise formeJuridique) throws RegimeFiscalServiceException {
+	public FormeJuridiqueVersTypeRegimeFiscalMapping getFormeJuridiqueMapping(@NotNull FormeJuridiqueEntreprise formeJuridique, @Nullable RegDate dateReference) {
 
 		String codeRegime = configuration.getCodeTypeRegimeFiscal(formeJuridique);
 		if (codeRegime == null) {
 			codeRegime = getTypeRegimeFiscalIndetermine().getCode();
 		}
+
+		final TypeRegimeFiscal result;
 		try {
-			return this.getTypeRegimeFiscal(codeRegime);
+			result = getTypeRegimeFiscal(codeRegime);
 		}
 		catch (RegimeFiscalServiceException e) {
 			throw new RegimeFiscalServiceException(
 					String.format("Impossible de récupérer un type de régime fiscal avec le code '%s' configuré pour la forme juridique \"%s\". Faites contrôler la configuration Unireg des types par défaut.",
 					              codeRegime, formeJuridique.getLibelle()));
 		}
+
+		// TODO (msi) gérer correctement les plages de validité
+		return new FormeJuridiqueVersTypeRegimeFiscalMapping(null, null, formeJuridique, result);
 	}
 
 	@Override

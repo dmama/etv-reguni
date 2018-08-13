@@ -33,6 +33,7 @@ import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 import static ch.vd.unireg.type.FormeJuridiqueEntreprise.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 /**
@@ -70,50 +71,50 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetTypeRegimeFiscalParDefaut() throws Exception {
+	public void testGetFormeJuridiqueMapping() throws Exception {
 
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(EI).getCode());
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(EI, null));
+		assertMapping("80", null, null, regimeFiscalService.getFormeJuridiqueMapping(SNC, null));
+		assertMapping("80", null, null, regimeFiscalService.getFormeJuridiqueMapping(SC, null));
+		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(SCA, null));
+		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(SA, null));
+		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(SARL, null));
+		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(SCOOP, null));
+		assertMapping("70", null, null, regimeFiscalService.getFormeJuridiqueMapping(ASSOCIATION, null));
+		assertMapping("70", null, null, regimeFiscalService.getFormeJuridiqueMapping(FONDATION, null));
+		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(FILIALE_HS_RC, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(PARTICULIER, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(SCPC, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(SICAV, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(SICAF, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(IDP, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(PNC, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(INDIVISION, null));
+		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(FILIALE_CH_RC, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ADM_CH, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ADM_CT, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ADM_DI, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ADM_CO, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(CORP_DP_ADM, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ENT_CH, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ENT_CT, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ENT_DI, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ENT_CO, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(CORP_DP_ENT, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(SS, null));
+		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(FILIALE_HS_NIRC, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ENT_PUBLIQUE_HS, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ADM_PUBLIQUE_HS, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ORG_INTERNAT, null));
+		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(ENT_HS, null));
+	}
 
-		assertEquals("80", regimeFiscalService.getTypeRegimeFiscalParDefaut(SNC).getCode());
-		assertEquals("80", regimeFiscalService.getTypeRegimeFiscalParDefaut(SC).getCode());
-
-		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(SCA).getCode());
-		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(SA).getCode());
-		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(SARL).getCode());
-		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(SCOOP).getCode());
-
-		assertEquals("70", regimeFiscalService.getTypeRegimeFiscalParDefaut(ASSOCIATION).getCode());
-		assertEquals("70", regimeFiscalService.getTypeRegimeFiscalParDefaut(FONDATION).getCode());
-
-		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(FILIALE_HS_RC).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(PARTICULIER).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(SCPC).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(SICAV).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(SICAF).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(IDP).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(PNC).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(INDIVISION).getCode());
-
-		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(FILIALE_CH_RC).getCode());
-
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_CH).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_CT).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_DI).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_CO).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(CORP_DP_ADM).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_CH).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_CT).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_DI).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_CO).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(CORP_DP_ENT).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(SS).getCode());
-
-		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(FILIALE_HS_NIRC).getCode());
-
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_PUBLIQUE_HS).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_PUBLIQUE_HS).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ORG_INTERNAT).getCode());
-		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_HS).getCode());
+	private static void assertMapping(String code, RegDate dateDebut, RegDate dateFin, FormeJuridiqueVersTypeRegimeFiscalMapping mapping) {
+		final TypeRegimeFiscal type = mapping.getTypeRegimeFiscal();
+		assertNotNull(type);
+		assertEquals(code, type.getCode());
+		assertEquals(dateDebut, mapping.getDateDebut());
+		assertEquals(dateFin, mapping.getDateFin());
 	}
 
 	@Test

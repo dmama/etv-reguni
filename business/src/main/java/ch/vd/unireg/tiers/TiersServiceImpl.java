@@ -22,11 +22,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -135,6 +138,7 @@ import ch.vd.unireg.metier.bouclement.BouclementService;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.metier.common.ForFiscalPrincipalContext;
 import ch.vd.unireg.parentes.ParenteUpdateInfo;
+import ch.vd.unireg.regimefiscal.FormeJuridiqueVersTypeRegimeFiscalMapping;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
@@ -528,22 +532,32 @@ public class TiersServiceImpl implements TiersService {
 		// Rapport entre entreprise et établissement principal
 		addActiviteEconomique(etablissementPrincipal, entreprise, dateFondation, true);
 
-		// Régimes fiscaux + For principal (différents en fonction de la forme juridique/catégorie entreprise)
-		final TypeRegimeFiscal typeRegimeFiscalParDefaut = regimeFiscalService.getTypeRegimeFiscalParDefaut(formeJuridique);
-
 		// Calcul de la date d'ouverture fiscale
 		final boolean vd = typeAutoriteFiscaleSiege == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 		final RegDate dateOuvertureFiscale =
 				vd && entrepriseInscriteRC ? dateDebutValidite.getOneDayAfter() : dateDebutValidite; // SIFISC-25054 - Appliquer la règle jour + 1 pour les entités inscrites au RC VD, pas pour les autres. (supplante SIFISC-22478)
 
-		// Ajout des régimes fiscaux
-		addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
-		addRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
-
-		final CategorieEntreprise categorieEntreprise = typeRegimeFiscalParDefaut.getCategorie();
+		// Ajout des régimes fiscaux (différents en fonction de la forme juridique/catégorie entreprise)
+		final Mutable<CategorieEntreprise> categorieEntreprise = new MutableObject<>();
+		openRegimesFiscauxParDefautCHVD(entreprise, formeJuridique, dateOuvertureFiscale, mapping -> {
+			// ce callback vérifie que tous les régimes fiscaux ouverts correspondent à la même catégorie d'entreprise (parce que autrement, le code plus bas est faux)
+			final CategorieEntreprise courante = mapping.getTypeRegimeFiscal().getCategorie();
+			final CategorieEntreprise existante = categorieEntreprise.getValue();
+			if (existante == null) {
+				// premier type, on mémorise
+				categorieEntreprise.setValue(courante);
+			}
+			else //noinspection StatementWithEmptyBody
+				if (courante == existante) {
+				// les catégories sont identiques, tout va bien
+			}
+			else {
+				throw new IllegalArgumentException("La catégorie de l'entreprise change dans le temps : de " + existante + " à " + courante);
+			}
+		});
 
 		final Set<CategorieEntreprise> isPMOrIndet = EnumSet.of(CategorieEntreprise.PM, CategorieEntreprise.APM, CategorieEntreprise.INDET);
-		if (isPMOrIndet.contains(categorieEntreprise)) {
+		if (isPMOrIndet.contains(categorieEntreprise.getValue())) {
 			// Bouclement et premier exercice commercial
 			entreprise.setDateDebutPremierExerciceCommercial(dateDebutExerciceCommercial);
 			final RegDate dateBouclement = dateDebutExerciceCommercial.addYears(1).getOneDayBefore();
@@ -557,7 +571,7 @@ public class TiersServiceImpl implements TiersService {
 			final MotifFor motifOuverture = vd ? MotifFor.DEBUT_EXPLOITATION : null;
 			addForPrincipal(entreprise, dateOuvertureFiscale, motifOuverture, null, null, MotifRattachement.DOMICILE, numeroOfsSiege, typeAutoriteFiscaleSiege, GenreImpot.BENEFICE_CAPITAL);
 		}
-		else if (categorieEntreprise == CategorieEntreprise.SP) {
+		else if (categorieEntreprise.getValue() == CategorieEntreprise.SP) {
 			// Pas de régime fiscal (et donc pas de bouclement)
 			// For principal
 			addForPrincipal(entreprise, dateDebutValidite, null, null, null, MotifRattachement.DOMICILE, numeroOfsSiege, typeAutoriteFiscaleSiege, GenreImpot.REVENU_FORTUNE);
@@ -6370,6 +6384,77 @@ public class TiersServiceImpl implements TiersService {
 		return rf;
 
 		// TODO si le type est indeterminé, il faudra envoyer une nouvelle tâche au DPerm
+	}
+
+	@Override
+	public void openRegimesFiscauxParDefautCHVD(Entreprise entreprise, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, @Nullable Consumer<FormeJuridiqueVersTypeRegimeFiscalMapping> onDetectedMapping) {
+
+		// [FISCPROJ-155] on tient compte des plages de validité des mappings pour créer un ou plusieurs régimes si nécessaire
+		FormeJuridiqueVersTypeRegimeFiscalMapping mapping = regimeFiscalService.getFormeJuridiqueMapping(formeJuridique, dateDebut);
+
+		// on traite tous les mappings limités dans le temps (les cas sont rares)
+		while (mapping.getDateFin() != null) {
+			final RegDate dateDebutRegime = RegDateHelper.maximum(dateDebut, mapping.getDateDebut(), NullDateBehavior.EARLIEST);
+			final RegDate dateFinRegime = mapping.getDateFin();
+			openAndCloseRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, mapping.getTypeRegimeFiscal(), dateDebutRegime, dateFinRegime);
+			openAndCloseRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, mapping.getTypeRegimeFiscal(), dateDebutRegime, dateFinRegime);
+			if (onDetectedMapping != null) {
+				onDetectedMapping.accept(mapping);
+			}
+
+			mapping = regimeFiscalService.getFormeJuridiqueMapping(formeJuridique, dateFinRegime.getOneDayAfter());
+		}
+
+		// on traite le dernier mapping (non limité dans le temps, donc)
+		final RegDate dateDebutRegime = RegDateHelper.maximum(dateDebut, mapping.getDateDebut(), NullDateBehavior.EARLIEST);
+		openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, mapping.getTypeRegimeFiscal(), dateDebutRegime);
+		openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, mapping.getTypeRegimeFiscal(), dateDebutRegime);
+		if (onDetectedMapping != null) {
+			onDetectedMapping.accept(mapping);
+		}
+	}
+
+	@Override
+	public void changeRegimesFiscauxParDefautCHVD(Entreprise entreprise, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, @Nullable Consumer<FormeJuridiqueVersTypeRegimeFiscalMapping> onDetectedMapping) {
+
+    	final List<FormeJuridiqueVersTypeRegimeFiscalMapping> mappings = new ArrayList<>();
+
+		// [FISCPROJ-155] on va chercher tous les mappings à utiliser à partir de la date de début
+		RegDate datePivot = dateDebut;
+		do {
+			FormeJuridiqueVersTypeRegimeFiscalMapping mapping = regimeFiscalService.getFormeJuridiqueMapping(formeJuridique, datePivot);
+			mappings.add(mapping);
+			if (onDetectedMapping != null) {
+				onDetectedMapping.accept(mapping);
+			}
+			datePivot = mapping.getDateFin() == null ? null : mapping.getDateFin().getOneDayAfter();
+		}
+		while (datePivot != null);
+
+		// on ferme l'ancien régime et on ouvre les suivants (traitement par portée pour que l'entreprise reste valide en tous temps)
+		for (RegimeFiscal.Portee portee : Arrays.asList(RegimeFiscal.Portee.CH, RegimeFiscal.Portee.VD)) {
+
+			// on commence par fermer le régime fiscal existant, si nécessaire
+
+			final RegimeFiscal regimeFiscal = entreprise.getRegimeFiscalActif(portee);
+			if (regimeFiscal != null && !regimeFiscal.isAnnule() && (regimeFiscal.getDateFin() == null || regimeFiscal.getDateFin().isBefore(dateDebut))) {
+				closeRegimeFiscal(regimeFiscal, dateDebut.getOneDayBefore());
+			}
+
+			// on ouvre le ou les régimes fiscals par défaut qui vont bien
+
+			for (FormeJuridiqueVersTypeRegimeFiscalMapping mapping : mappings) {
+				final RegDate dateDebutRegime = RegDateHelper.maximum(dateDebut, mapping.getDateDebut(), NullDateBehavior.EARLIEST);
+				final RegDate dateFinRegime = mapping.getDateFin();
+				if (dateFinRegime == null) {
+					openRegimeFiscal(entreprise, portee, mapping.getTypeRegimeFiscal(), dateDebutRegime);
+				}
+				else {
+					openAndCloseRegimeFiscal(entreprise, portee, mapping.getTypeRegimeFiscal(), dateDebutRegime, dateFinRegime);
+				}
+			}
+		}
+
 	}
 
 	@Override

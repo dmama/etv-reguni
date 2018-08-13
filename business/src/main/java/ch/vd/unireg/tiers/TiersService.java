@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.metier.MetierServiceException;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.regimefiscal.FormeJuridiqueVersTypeRegimeFiscalMapping;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.CategorieEtranger;
@@ -2267,15 +2269,36 @@ public interface TiersService {
      */
     RegimeFiscal openRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut);
 
-    /**
-     * Crée un régime fiscal valide dans la période donnée avec les informations fournies
-     * @param e l'entreprise destinataire
-     * @param portee la portée du régime fiscal
-     * @param type le type de régime fiscal
-     * @param dateDebut la date de début de validité du régime fiscal
-     * @param dateFin la date de fin de validité du régime fiscal
-     * @return le régime fiscal nouvellement créé
-     */
+	/**
+	 * Ouvre un ou plusieurs régimes fiscaux VD et CH par défaut sur l'entreprise spécifiée. Dans la plupart des cas, un seul type de régime fiscal par défaut est détecté, mais il peut y en avoir plusieurs dans le cas où un type de régime fiscal
+	 * s'arrête et est remplacé par un autre durant la période de validité de l'entreprise.
+	 *
+	 * @param entreprise        une entreprise
+	 * @param formeJuridique    la forme juridique civile de l'entreprise
+	 * @param dateDebut         la date de début de validité du ou des régimes par défaut à ajouter
+	 * @param onDetectedMapping un callback appelé une fois pour chaque type de régime fiscal détecté.
+	 */
+	void openRegimesFiscauxParDefautCHVD(Entreprise entreprise, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, @Nullable Consumer<FormeJuridiqueVersTypeRegimeFiscalMapping> onDetectedMapping);
+
+	/**
+	 * Ferme les régimes fiscaux VD et CH existants et ouvre de nouveaux régimes fiscaux par défaut sur l'entreprise spécifiée.
+	 *
+	 * @param entreprise        une entreprise
+	 * @param formeJuridique    la forme juridique civile de l'entreprise
+	 * @param dateDebut         la date de début de validité du ou des régimes par défaut à ajouter
+	 * @param onDetectedMapping un callback appelé une fois pour chaque type de régime fiscal détecté.
+	 */
+	void changeRegimesFiscauxParDefautCHVD(Entreprise entreprise, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, @Nullable Consumer<FormeJuridiqueVersTypeRegimeFiscalMapping> onDetectedMapping);
+
+	/**
+	 * Crée un régime fiscal valide dans la période donnée avec les informations fournies
+	 * @param e l'entreprise destinataire
+	 * @param portee la portée du régime fiscal
+	 * @param type le type de régime fiscal
+	 * @param dateDebut la date de début de validité du régime fiscal
+	 * @param dateFin la date de fin de validité du régime fiscal
+	 * @return le régime fiscal nouvellement créé
+	 */
     RegimeFiscal openAndCloseRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin);
 
     /**

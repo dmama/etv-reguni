@@ -499,52 +499,48 @@ public abstract class EvenementEntrepriseInterne {
 	 */
 	protected void openRegimesFiscauxParDefautCHVD(Entreprise entreprise, EntrepriseCivile entrepriseCivile, RegDate dateDebut, EvenementEntrepriseSuiviCollector suivis) {
 		final FormeJuridiqueEntreprise formeJuridique = FormeJuridiqueEntreprise.fromCode(entrepriseCivile.getFormeLegale(getDateEvt()).getCode());
-		final TypeRegimeFiscal typeRegimeFiscal = context.getRegimeFiscalService().getTypeRegimeFiscalParDefaut(formeJuridique);
-		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
-		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
-		suivis.addSuivi(String.format("Régimes fiscaux par défaut [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
-		                              typeRegimeFiscal.getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoEntrepriseCivile()));
-		raiseStatusTo(HandleStatus.TRAITE);
-	}
 
-	/**
-	 * Règle les régimes fiscaux VD et CH de type indéterminé et programme une tâche de détermination du régime fiscal
-	 */
-	protected void openRegimesFiscauxIndetermineCHVD(Entreprise entreprise, EntrepriseCivile entrepriseCivile, RegDate dateDebut, EvenementEntrepriseSuiviCollector suivis) {
-		final TypeRegimeFiscal typeRegimeFiscal = context.getRegimeFiscalService().getTypeRegimeFiscalIndetermine();
-		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
-		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
-		suivis.addSuivi(String.format("Régimes fiscaux de type indéterminé [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
-		                              typeRegimeFiscal.getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoEntrepriseCivile()));
+		// on ouvre les régimes fiscaux qui vont bien
+		context.getTiersService().openRegimesFiscauxParDefautCHVD(entreprise, formeJuridique, dateDebut, mapping -> {
+			suivis.addSuivi(String.format("Régimes fiscaux par défaut [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
+			                              mapping.getTypeRegimeFiscal().getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoEntrepriseCivile()));
+		});
+
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	protected void changeRegimesFiscauxVDCH(Entreprise entreprise, EntrepriseCivile entrepriseCivile, RegimeFiscal regimeFiscalCH, RegimeFiscal regimeFiscalVD, RegDate dateChangement, boolean indetermine, EvenementEntrepriseSuiviCollector suivis) {
-		final TypeRegimeFiscal typeRegimeFiscal;
+
+		suivis.addSuivi(String.format("Régimes fiscaux VD et CH fermés pour l'entreprise n°%s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoEntrepriseCivile()));
+
 		if (indetermine) {
-			typeRegimeFiscal = context.getRegimeFiscalService().getTypeRegimeFiscalIndetermine();
+			final TypeRegimeFiscal typeRegimeFiscal = context.getRegimeFiscalService().getTypeRegimeFiscalIndetermine();
+
+			// on ferme les régimes fiscaux existants et on ouvre les régimes fiscaux indéterminés (les types de régimes indéterminés ne sont pas limités dans le temps, il n'y donc qu'un seul régime par portée)
+			if (regimeFiscalCH != null && !regimeFiscalCH.isAnnule() && (regimeFiscalCH.getDateFin() == null || regimeFiscalCH.getDateFin().isBefore(dateChangement))) {
+				context.getTiersService().closeRegimeFiscal(regimeFiscalCH, dateChangement.getOneDayBefore());
+			}
+			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateChangement);
+
+			if (regimeFiscalVD != null && !regimeFiscalVD.isAnnule() && (regimeFiscalVD.getDateFin() == null || regimeFiscalVD.getDateFin().isBefore(dateChangement))) {
+				context.getTiersService().closeRegimeFiscal(regimeFiscalVD, dateChangement.getOneDayBefore());
+			}
+			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateChangement);
+
+			suivis.addSuivi(String.format("Régimes fiscaux %s [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)", "de type indéterminé",
+			                              typeRegimeFiscal.getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoEntrepriseCivile()));
 		}
 		else {
 			final FormeJuridiqueEntreprise formeJuridique = FormeJuridiqueEntreprise.fromCode(entrepriseCivile.getFormeLegale(getDateEvt()).getCode());
-			typeRegimeFiscal = context.getRegimeFiscalService().getTypeRegimeFiscalParDefaut(formeJuridique);
+
+			// on ferme et ouvre les régimes fiscaux qui vont bien
+			context.getTiersService().changeRegimesFiscauxParDefautCHVD(entreprise, formeJuridique, dateChangement, mapping -> {
+				suivis.addSuivi(String.format("Régimes fiscaux par défaut [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
+				                              mapping.getTypeRegimeFiscal().getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoEntrepriseCivile()));
+			});
 		}
 
-		if (regimeFiscalCH != null && !regimeFiscalCH.isAnnule() && (regimeFiscalCH.getDateFin() == null || regimeFiscalCH.getDateFin().isBefore(dateChangement))) {
-			context.getTiersService().closeRegimeFiscal(regimeFiscalCH, dateChangement.getOneDayBefore());
-		}
-		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateChangement);
-
-		if (regimeFiscalVD != null && !regimeFiscalVD.isAnnule() && (regimeFiscalVD.getDateFin() == null || regimeFiscalVD.getDateFin().isBefore(dateChangement))) {
-			context.getTiersService().closeRegimeFiscal(regimeFiscalVD, dateChangement.getOneDayBefore());
-		}
-		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateChangement);
-
-		suivis.addSuivi(String.format("Régimes fiscaux VD et CH fermés pour l'entreprise n°%s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoEntrepriseCivile()));
-		suivis.addSuivi(String.format("Régimes fiscaux %s [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
-		                              indetermine ? "de type indéterminé" : "par défaut",
-		                              typeRegimeFiscal.getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoEntrepriseCivile()));
 		raiseStatusTo(HandleStatus.TRAITE);
-
 	}
 
 	/*

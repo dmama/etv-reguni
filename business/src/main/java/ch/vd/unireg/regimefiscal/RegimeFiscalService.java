@@ -3,6 +3,7 @@ package ch.vd.unireg.regimefiscal;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
@@ -36,11 +37,14 @@ public interface RegimeFiscalService {
 	TypeRegimeFiscal getTypeRegimeFiscalSocieteDePersonnes();
 
 	/**
-	 * @param formeJuridique la forme juridique
-	 * @return le type de régime fiscal approprié pour la forme juridique
+	 * Détermine le régime fiscal par défaut à appliquer sur une entreprise à partir de sa forme juridique.
+	 *
+	 * @param formeJuridique la forme juridique de l'entreprise valide à la date de référence
+	 * @param dateReference  la date de validité de la forme juridique, si nulle la date est considérée comme le début des temps.
+	 * @return le type de régime fiscal demandé et sa plage de validité
 	 */
 	@NotNull
-	TypeRegimeFiscal getTypeRegimeFiscalParDefaut(@NotNull FormeJuridiqueEntreprise formeJuridique);
+	FormeJuridiqueVersTypeRegimeFiscalMapping getFormeJuridiqueMapping(@NotNull FormeJuridiqueEntreprise formeJuridique, @Nullable RegDate dateReference);
 
 	/**
 	 * Retourne le type de régime fiscal associé au régime de portée VD de l'entreprise, s'il existe à la date donnée.

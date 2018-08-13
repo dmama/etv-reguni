@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.metier.assujettissement.Assujettissement;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
+import ch.vd.unireg.regimefiscal.FormeJuridiqueVersTypeRegimeFiscalMapping;
 import ch.vd.unireg.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.CategorieEtranger;
@@ -1231,6 +1233,16 @@ public class MockTiersService implements TiersService {
 	@Override
 	public RegimeFiscal openRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut) {
 		return null;
+	}
+
+	@Override
+	public void openRegimesFiscauxParDefautCHVD(Entreprise entreprise, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, @Nullable Consumer<FormeJuridiqueVersTypeRegimeFiscalMapping> onDetectedMapping) {
+
+	}
+
+	@Override
+	public void changeRegimesFiscauxParDefautCHVD(Entreprise entreprise, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, @Nullable Consumer<FormeJuridiqueVersTypeRegimeFiscalMapping> onDetectedMapping) {
+
 	}
 
 	@Override

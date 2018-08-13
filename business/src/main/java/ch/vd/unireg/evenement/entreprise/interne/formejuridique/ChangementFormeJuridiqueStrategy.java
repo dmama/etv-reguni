@@ -75,8 +75,11 @@ public class ChangementFormeJuridiqueStrategy extends AbstractEntrepriseStrategy
 					return new TraitementManuel(event, entrepriseCivile, null, context, options, message);
 				}
 
+				final FormeJuridiqueEntreprise formeJuridiqueAvant = FormeJuridiqueEntreprise.fromCode(formeLegaleAvant.getCode());
+				final FormeJuridiqueEntreprise formeJuridiqueApres = FormeJuridiqueEntreprise.fromCode(formeLegaleApres.getCode());
+
 				// Le type de régime fiscal à l'arrivée est déterminé exclusivement par le type par défaut en fonction de la forme juridique civile.
-				final TypeRegimeFiscal typeRegimeFiscalParDefautApres = context.getRegimeFiscalService().getTypeRegimeFiscalParDefaut(FormeJuridiqueEntreprise.fromCode(formeLegaleApres.getCode()));
+				final TypeRegimeFiscal typeRegimeFiscalParDefautApres = context.getRegimeFiscalService().getFormeJuridiqueMapping(formeJuridiqueApres, dateApres).getTypeRegimeFiscal();
 
 				// Pas de changement de régime. Annoncer comme neutre.
 				if (typeRegimeFiscalVDAvant.getCode().equals(typeRegimeFiscalParDefautApres.getCode())) {
@@ -86,7 +89,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractEntrepriseStrategy
 				}
 
 				// Le type de régime fiscal par défaut au départ permettra de savoir si la valeur de départ a été ajustée
-				final TypeRegimeFiscal typeRegimeFiscalParDefautAvant = context.getRegimeFiscalService().getTypeRegimeFiscalParDefaut(FormeJuridiqueEntreprise.fromCode(formeLegaleAvant.getCode()));
+				final TypeRegimeFiscal typeRegimeFiscalParDefautAvant = context.getRegimeFiscalService().getFormeJuridiqueMapping(formeJuridiqueAvant, dateAvant).getTypeRegimeFiscal();
 
 				// A-t-on fonctionné en mode automatique lors du réglage du précédent régime. Ca ne compte pas si on est resté en type indéterminé. On doit avoir un vrai régime.
 				final boolean wasAuto = ComparisonHelper.areEqual(typeRegimeFiscalVDAvant.getCode(), typeRegimeFiscalParDefautAvant.getCode()) && typeRegimeFiscalParDefautAvant.getCategorie() != CategorieEntreprise.INDET;
