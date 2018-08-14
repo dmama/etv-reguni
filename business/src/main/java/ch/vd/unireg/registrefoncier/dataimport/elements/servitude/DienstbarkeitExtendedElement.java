@@ -3,8 +3,6 @@ package ch.vd.unireg.registrefoncier.dataimport.elements.servitude;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,43 +37,27 @@ public class DienstbarkeitExtendedElement extends DienstbarkeitExtended {
 			lastRechtGruppe = gruppe;
 		}
 		else {
-			final BeneficiaireKeys existants = new BeneficiaireKeys(lastRechtGruppe.getBerechtigtePerson());
-			final BeneficiaireKeys nouveaux = new BeneficiaireKeys(gruppe.getBerechtigtePerson());
-			// on part du principe que les bénéficiaires sont constants sur une servitude.
-			if (!nouveaux.equals(existants)) {
-				throw new IllegalArgumentException("Les bénénificaires de la servitude standardRechtID=[" + dienstbarkeit.getStandardRechtID() + "] ne sont pas constants.");
-			}
+			final Set<@NotNull String> existingPeopleKeys = lastRechtGruppe.getBerechtigtePerson().stream()
+					.map(DienstbarkeitExtendedElement::getPersonIDRef)
+					.collect(Collectors.toSet());
+
+			// [SIFISC-29540] on ajoute les personnes qui manquent (parce qu'on s'est rendu compte que les bénéficiaires peuvent varier d'un immeuble à l'autre
+			//                à l'intérieur d'une même servitude. Actuellement, notre modèle ne permet pas de le faire, alors on s'assure juste que toutes
+			//                les personnes sont bien prises en compte).
+			gruppe.getBerechtigtePerson().stream()
+					.filter(b -> !existingPeopleKeys.contains(getPersonIDRef(b)))
+					.forEach(b -> lastRechtGruppe.getBerechtigtePerson().add(b));
+
+
 			// on ajoute les immeubles
 			lastRechtGruppe.getBelastetesGrundstueck().addAll(gruppe.getBelastetesGrundstueck());
 		}
 	}
 
-	private static class BeneficiaireKeys {
-		private final Set<String> keys;
-
-		public BeneficiaireKeys(@NotNull List<BerechtigtePerson> people) {
-			keys = people.stream()
-					.map(DienstbarkeitExtendedElement::getPerson)
-					.map(DienstbarkeitExtendedElement::getPersonIDRef)
-					.collect(Collectors.toSet());
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			final BeneficiaireKeys that = (BeneficiaireKeys) o;
-			return Objects.equals(keys, that.keys);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(keys);
-		}
-	}
-
 	@NotNull
-	public static String getPersonIDRef(PersonGb person) {
+	public static String getPersonIDRef(BerechtigtePerson bperson) {
+
+		final PersonGb person = getPerson(bperson);
 
 		final String idRef;
 		if (person instanceof NatuerlichePersonGb) {

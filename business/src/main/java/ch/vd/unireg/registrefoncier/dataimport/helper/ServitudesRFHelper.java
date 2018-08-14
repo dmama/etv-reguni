@@ -241,7 +241,7 @@ public class ServitudesRFHelper {
 		final RegDate dateFinMetier = dienstbarkeit.getAblaufDatum();
 
 		lastRechtGruppe.getBerechtigtePerson().forEach(person -> {
-			final String personIDRef = DienstbarkeitExtendedElement.getPersonIDRef(DienstbarkeitExtendedElement.getPerson(person));
+			final String personIDRef = DienstbarkeitExtendedElement.getPersonIDRef(person);
 			final AyantDroitRF ayantDroit = ayantDroitProvider.apply(personIDRef);
 			servitude.addBenefice(new BeneficeServitudeRF(dateDebutMetier, dateFinMetier, servitude, ayantDroit));
 		});
