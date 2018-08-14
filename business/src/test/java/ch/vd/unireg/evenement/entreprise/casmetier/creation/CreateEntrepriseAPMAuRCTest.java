@@ -1,13 +1,14 @@
 package ch.vd.unireg.evenement.entreprise.casmetier.creation;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.engine.AbstractEvenementEntrepriseCivileProcessorTest;
@@ -84,7 +85,13 @@ public class CreateEntrepriseAPMAuRCTest extends AbstractEvenementEntrepriseCivi
 				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+				                             final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
+				                             Assert.assertEquals(4, regimesFiscaux.size());
+				                             regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
+				                             assertRegimeFiscal(RegDate.get(2015, 6, 25), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.VD, "70", regimesFiscaux.get(0));
+				                             assertRegimeFiscal(RegDate.get(2015, 6, 25), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.CH, "70", regimesFiscaux.get(1));
+				                             assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.VD, "703", regimesFiscaux.get(2));
+				                             assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.CH, "703", regimesFiscaux.get(3));
 
 				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
 				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
@@ -201,13 +208,13 @@ public class CreateEntrepriseAPMAuRCTest extends AbstractEvenementEntrepriseCivi
 				                             Assert.assertEquals(EtatEvenementEntreprise.A_VERIFIER, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
-				                             final Set<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscaux();
-				                             Assert.assertEquals(2, regimesFiscaux.size());
-				                             final RegimeFiscal regimeFiscal1 = regimesFiscaux.iterator().next();
-				                             Assert.assertNotNull(regimeFiscal1);
-				                             Assert.assertEquals(RegDate.get(2015, 6, 26), regimeFiscal1.getDateDebut());
-				                             Assert.assertNull(regimeFiscal1.getDateFin());
-				                             Assert.assertEquals("70", regimeFiscal1.getCode());
+				                             final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
+				                             Assert.assertEquals(4, regimesFiscaux.size());
+				                             regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
+				                             assertRegimeFiscal(RegDate.get(2015, 6, 26), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.VD, "70", regimesFiscaux.get(0));
+				                             assertRegimeFiscal(RegDate.get(2015, 6, 26), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.CH, "70", regimesFiscaux.get(1));
+				                             assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.VD, "703", regimesFiscaux.get(2));
+				                             assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.CH, "703", regimesFiscaux.get(3));
 
 				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 26)).get(0);
 				                             Assert.assertEquals(RegDate.get(2015, 6, 26), forFiscalPrincipal.getDateDebut());

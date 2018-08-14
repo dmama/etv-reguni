@@ -18,8 +18,12 @@ import ch.vd.unireg.evenement.entreprise.engine.processor.EvenementEntreprisePro
 import ch.vd.unireg.evenement.entreprise.engine.translator.EvenementEntrepriseTranslator;
 import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
+import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.type.EtatEvenementEntreprise;
 import ch.vd.unireg.type.TypeEvenementEntreprise;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends BusinessTest {
 	
@@ -170,4 +174,12 @@ public abstract class AbstractEvenementEntrepriseCivileProcessorTest extends Bus
 		return result.isEmpty() ? null : result.get(0);
 	}
 
+
+	protected static void assertRegimeFiscal(RegDate dateDebut, RegDate dateFin, RegimeFiscal.Portee portee, String code, RegimeFiscal regimeFiscal) {
+		assertNotNull(regimeFiscal);
+		assertEquals(dateDebut, regimeFiscal.getDateDebut());
+		assertEquals(dateFin, regimeFiscal.getDateFin());
+		assertEquals(portee, regimeFiscal.getPortee());
+		assertEquals(code, regimeFiscal.getCode());
+	}
 }

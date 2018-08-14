@@ -2,7 +2,6 @@ package ch.vd.unireg.evenement.entreprise.casmetier.creation;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.entreprise.EvenementEntreprise;
 import ch.vd.unireg.evenement.entreprise.engine.AbstractEvenementEntrepriseCivileProcessorTest;
@@ -101,8 +101,8 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
 			}
 		});
 
@@ -161,9 +161,9 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
 				final EvenementEntreprise event3 = createEvent(3333L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
-				hibernateTemplate.merge(event3).getId();
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
+				hibernateTemplate.merge(event3);
 			}
 		});
 
@@ -224,8 +224,8 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 28), A_TRAITER);
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
 			}
 		});
 
@@ -285,8 +285,8 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
 			}
 		});
 
@@ -346,9 +346,9 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 				final EvenementEntreprise event0 = createEvent(1000L, noEntrepriseCivile, TypeEvenementEntreprise.IMPORTATION_ENTREPRISE, RegDate.get(2015, 6, 26), FORCE);
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
-				hibernateTemplate.merge(event0).getId();
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
+				hibernateTemplate.merge(event0);
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
 			}
 		});
 
@@ -416,8 +416,8 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_SUCCURSALE, RegDate.get(2015, 6, 26), A_TRAITER);
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
 			}
 		});
 
@@ -435,7 +435,13 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNoEntrepriseCivile(evt.getNoEntrepriseCivile());
 				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
-				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+				                             final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
+				                             Assert.assertEquals(4, regimesFiscaux.size());
+				                             regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
+				                             assertRegimeFiscal(RegDate.get(2015, 6, 26), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.VD, "70", regimesFiscaux.get(0));
+				                             assertRegimeFiscal(RegDate.get(2015, 6, 26), RegDate.get(2017, 12, 31), RegimeFiscal.Portee.CH, "70", regimesFiscaux.get(1));
+				                             assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.VD, "703", regimesFiscaux.get(2));
+				                             assertRegimeFiscal(RegDate.get(2018, 1, 1), null, RegimeFiscal.Portee.CH, "703", regimesFiscaux.get(3));
 
 				                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getForsFiscauxPrincipauxActifsSorted().get(0);
 				                             Assert.assertEquals(RegDate.get(2015, 6, 26), forFiscalPrincipal.getDateDebut());
@@ -478,17 +484,12 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 				                             // vérification des événements fiscaux
 				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
 				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(4, evtsFiscaux.size());    // 2 pour les régimes fiscaux, un pour le for principal
+				                             Assert.assertEquals(8, evtsFiscaux.size());    // 2 pour les régimes fiscaux, un pour le for principal
 
 				                             // on sait (parce qu'on a regardé...) que l'ordre de création est : d'abord les régimes fiscaux (CH puis VD)
 				                             // puis les fors... donc les IDs sont dans cet ordre
 				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+				                             evtsFiscauxTries.sort(Comparator.comparingLong(EvenementFiscal::getId));
 
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
@@ -505,6 +506,17 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+					                             Assert.assertEquals(date(2017, 12, 31), ef.getDateValeur());
+
+					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.FERMETURE, efrf.getType());
+					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
+					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
 					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
 
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
@@ -513,7 +525,40 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
 				                             }
 				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(3);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+					                             Assert.assertEquals(date(2017, 12, 31), ef.getDateValeur());
+
+					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.FERMETURE, efrf.getType());
+					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
+					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), efrf.getRegimeFiscal().getCode());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(4);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+					                             Assert.assertEquals(date(2018, 1, 1), ef.getDateValeur());
+
+					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
+					                             Assert.assertEquals(MockTypeRegimeFiscal.SBI.getCode(), efrf.getRegimeFiscal().getCode());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(5);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+					                             Assert.assertEquals(date(2018, 1, 1), ef.getDateValeur());
+
+					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
+					                             Assert.assertEquals(MockTypeRegimeFiscal.SBI.getCode(), efrf.getRegimeFiscal().getCode());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(6);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
 					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
@@ -524,7 +569,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 					                             Assert.assertEquals(date(2015, 6, 26), eff.getForFiscal().getDateDebut());
 				                             }
 				                             {
-					                             final EvenementFiscal ef = evtsFiscauxTries.get(3);
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(7);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
 					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
@@ -662,8 +707,8 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
 			}
 		});
 
@@ -731,8 +776,8 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_MUTATION, RegDate.get(2015, 6, 26), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
 			}
 		});
 
@@ -798,8 +843,8 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final EvenementEntreprise event1 = createEvent(1111L, noEntrepriseCivile, TypeEvenementEntreprise.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 26), A_TRAITER);
 				final EvenementEntreprise event2 = createEvent(2222L, noEntrepriseCivile, TypeEvenementEntreprise.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
-				hibernateTemplate.merge(event1).getId();
-				hibernateTemplate.merge(event2).getId();
+				hibernateTemplate.merge(event1);
+				hibernateTemplate.merge(event2);
 			}
 		});
 
@@ -922,12 +967,7 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementEntrepriseCi
 				                             // on sait (parce qu'on a regardé...) que l'ordre de création est : d'abord les régimes fiscaux (CH puis VD)
 				                             // puis les fors... donc les IDs sont dans cet ordre
 				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
-				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
-					                             @Override
-					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						                             return Long.compare(o1.getId(), o2.getId());
-					                             }
-				                             });
+				                             evtsFiscauxTries.sort(Comparator.comparingLong(EvenementFiscal::getId));
 
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);

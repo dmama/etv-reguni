@@ -149,7 +149,7 @@ public class RegimeFiscalServiceConfigurationTest extends WithoutSpringTest {
 	public void testStandardConfiguration() throws Exception {
 		// Standard
 		{
-			String formesJuridiquesDefauts = "0103=>80, 0104=>80, 0105=>01, 0106=>01, 0107=>01, 0108=>01, 0109=>70, 0110=>70, 0111=>01, 0151=>01, 0312=>01";
+			String formesJuridiquesDefauts = "0103=>80, 0104=>80, 0105=>01, 0106=>01, 0107=>01, 0108=>01, 0109=>70{=>20171231}, 0109=>703{20180101=>}, 0110=>70{=>20171231}, 0110=>703{20180101=>}, 0111=>01, 0151=>01, 0312=>01";
 			String diOptionnelleVd = "190-2, 739";
 
 			final RegimeFiscalServiceConfigurationImpl config = new RegimeFiscalServiceConfigurationImpl();
@@ -167,8 +167,14 @@ public class RegimeFiscalServiceConfigurationTest extends WithoutSpringTest {
 			assertOneMapping(null, null, SARL, "01", config.getMapping(SARL));
 			assertOneMapping(null, null, SCOOP, "01", config.getMapping(SCOOP));
 
-			assertOneMapping(null, null, ASSOCIATION, "70", config.getMapping(ASSOCIATION));
-			assertOneMapping(null, null, FONDATION, "70", config.getMapping(FONDATION));
+			final List<FormeJuridiqueMapping> assocMapping = config.getMapping(ASSOCIATION);
+			assertEquals(2, assocMapping.size());
+			assertMapping(null, RegDate.get(2017, 12, 31), ASSOCIATION, "70", assocMapping.get(0));
+			assertMapping(RegDate.get(2018, 1, 1), null, ASSOCIATION, "703", assocMapping.get(1));
+
+			final List<FormeJuridiqueMapping> fondMapping = config.getMapping(FONDATION);
+			assertMapping(null, RegDate.get(2017, 12, 31), FONDATION, "70", fondMapping.get(0));
+			assertMapping(RegDate.get(2018, 1, 1), null, FONDATION, "703", fondMapping.get(1));
 
 			assertOneMapping(null, null, FILIALE_HS_RC, "01", config.getMapping(FILIALE_HS_RC));
 

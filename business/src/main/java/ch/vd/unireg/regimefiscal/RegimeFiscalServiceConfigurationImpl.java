@@ -80,7 +80,7 @@ class RegimeFiscalServiceConfigurationImpl implements RegimeFiscalServiceConfigu
 	 *     <li>La valeur est constituée du code alpha-numérique du type de régime fiscal.</li>
 	 * </ul>
 	 *
-	 * <p>Exemple: 0103=>80, 0104=>80, 0105=>01, 0106=>01, 0107=>01, 0108=>01, 0109=>70, 0110=>70, 0111=>01, 0151=>01, 0312=>01</p>
+	 * <p>Exemple: 0103=>80, 0104=>80, 0105=>01, 0106=>01, 0107=>01, 0108=>01, 0109=>70{=>20171231}, 0109=>703{20180101=>}, 0110=>70{=>20171231}, 0110=>703{20180101=>}, 0111=>01, 0151=>01, 0312=>01</p>
 	 * @param config la chaîne de caractères contenant la table encodée.
 	 * @return la Map de la table de correspondance forme juridique vers code de type régime fiscal par défaut.
 	 */

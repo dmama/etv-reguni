@@ -46,6 +46,7 @@ public class MockTypeRegimeFiscal extends AbstractTypeRegimeFiscal {
 	public static final MockTypeRegimeFiscal FONDS_PLACEMENT = new MockTypeRegimeFiscal                     ("50", 1992, null, "Placement collectif avec immeuble(s) (Art. 103 LI)",true, true, APM);
 	public static final MockTypeRegimeFiscal TRANSPORT_CONCESSIONNE = new MockTypeRegimeFiscal              ("60", 1994, null, "Transport concessionné",                            true, true, PM);
 	public static final MockTypeRegimeFiscal ORDINAIRE_APM = new MockTypeRegimeFiscal                       ("70", 1994, null, "Ordinaire Assoc-Fond.",                             true, true, APM);
+	public static final MockTypeRegimeFiscal SBI = new MockTypeRegimeFiscal                                 ("703", 2018, null, "APM Société à but idéal (art. 103a. LI)",          true, true, APM);
 	public static final MockTypeRegimeFiscal ART90G = new MockTypeRegimeFiscal                              ("709", 1994, null, "APM Pure utilité publique (Art. 90g LI)",          true, true, APM, createExo(1994, IBC, DE_FAIT));
 	public static final MockTypeRegimeFiscal COMMUNAUTE_PERSONNES_ETRANGERES_APM = new MockTypeRegimeFiscal ("71", 2016, null, "Communauté de pers. étrangères - APM (Art. 84 LI)", true, true, APM);
 	public static final MockTypeRegimeFiscal ART90D = new MockTypeRegimeFiscal                              ("715", 2001, null, "Eglises et paroisses (Art. 90d LI)",               true, true, APM, createExo(2001, IBC, DE_FAIT), createExo(2001, IFONC, DE_FAIT));

@@ -80,8 +80,10 @@ public class RegimeFiscalServiceTest extends BusinessTest {
 		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(SA, null));
 		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(SARL, null));
 		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(SCOOP, null));
-		assertMapping("70", null, null, regimeFiscalService.getFormeJuridiqueMapping(ASSOCIATION, null));
-		assertMapping("70", null, null, regimeFiscalService.getFormeJuridiqueMapping(FONDATION, null));
+		assertMapping("70", null, RegDate.get(2017, 12, 31), regimeFiscalService.getFormeJuridiqueMapping(ASSOCIATION, RegDate.get(2017, 1, 1)));
+		assertMapping("703", RegDate.get(2018, 1, 1), null, regimeFiscalService.getFormeJuridiqueMapping(ASSOCIATION, null));
+		assertMapping("70", null, RegDate.get(2017, 12, 31), regimeFiscalService.getFormeJuridiqueMapping(FONDATION, RegDate.get(2017, 1, 1)));
+		assertMapping("703", RegDate.get(2018, 1, 1), null, regimeFiscalService.getFormeJuridiqueMapping(FONDATION, null));
 		assertMapping("01", null, null, regimeFiscalService.getFormeJuridiqueMapping(FILIALE_HS_RC, null));
 		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(PARTICULIER, null));
 		assertMapping("00", null, null, regimeFiscalService.getFormeJuridiqueMapping(SCPC, null));
