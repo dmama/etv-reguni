@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
+import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesRequest;
 import ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesResponse;
 import ch.vd.unireg.xml.event.infra.v1.Response;
@@ -15,7 +16,6 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
-import ch.vd.unireg.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -62,7 +62,7 @@ public class TaxOfficesRequestEsbHandlerV1ItTest extends InfraRequestEsbHandlerI
 		final TaxOffice region = taxOffices.getRegion();
 		Assert.assertNotNull(district);
 		Assert.assertNotNull(region);
-		Assert.assertEquals(10, district.getAdmCollNo());       // OID Morges
+		Assert.assertEquals(12, district.getAdmCollNo());       // OID Nyon
 		Assert.assertEquals(12, region.getAdmCollNo());         // OID Nyon
 	}
 
