@@ -2,17 +2,19 @@ package ch.vd.unireg.regimefiscal;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 
 /**
@@ -20,20 +22,19 @@ import ch.vd.unireg.type.FormeJuridiqueEntreprise;
  */
 class RegimeFiscalServiceConfigurationImpl implements RegimeFiscalServiceConfiguration, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegimeFiscalServiceConfigurationImpl.class);
-
 	private static final String WHITESPACE_CHARACTER = "\\s";
 	private static final String WHITESPACE_REGEXP = "[" + WHITESPACE_CHARACTER + "]+";
 	private static final String RECORD_SEPARATOR = ",";
-	private static final String RECORD_SEPARATOR_REGEXP = "[,]";
-	private static final String TUPLE_OPERATOR = "=";
+	private static final String RECORD_SEPARATOR_REGEXP = ",";
+	private static final String TUPLE_OPERATOR = "=>";
+	private static final String DATE_SEPARATOR = "\\{}";
 	private static final String CODE_FORME_JURIDIQUE_REGEXP = "[0-9]{4}";
 	private static final String ALLOWED_CHARACTERS_CODE_REGIME = "-A-Za-z0-9";
 	private static final String CODE_REGIME_REGEXP = "[" + ALLOWED_CHARACTERS_CODE_REGIME + "]+";
-	private static final String VALID_TUPLE_REGEXP = CODE_FORME_JURIDIQUE_REGEXP + TUPLE_OPERATOR + CODE_REGIME_REGEXP;
-	private static final String ALLOWED_CHARACTERS_REGEXP = "[" + ALLOWED_CHARACTERS_CODE_REGIME + RECORD_SEPARATOR + TUPLE_OPERATOR + WHITESPACE_CHARACTER + "]+";
+	private static final Pattern FORME_JURIDIQUE_MAPPING_REGEXP = Pattern.compile("(" + CODE_FORME_JURIDIQUE_REGEXP + ")" + TUPLE_OPERATOR + "(" + CODE_REGIME_REGEXP + ")(?:\\{([0-9]*)=>([0-9]*)})?"); // e.g. 0107=>01 ou 0107=>01{19700101=>20180203}
+	private static final String ALLOWED_CHARACTERS_REGEXP = "[" + ALLOWED_CHARACTERS_CODE_REGIME + RECORD_SEPARATOR + TUPLE_OPERATOR + DATE_SEPARATOR + WHITESPACE_CHARACTER + "]+";
 
-	private Map<FormeJuridiqueEntreprise, String> regimesParDefautMap;
+	private List<FormeJuridiqueMapping> formeJuridiquesMappings;
 	private Set<String> regimesDiOptionnelleVd;
 
 	private String configTableFormesJuridiquesDefauts;
@@ -49,14 +50,16 @@ class RegimeFiscalServiceConfigurationImpl implements RegimeFiscalServiceConfigu
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		regimesParDefautMap = parseConfigTableFormesJuridiquesDefauts(configTableFormesJuridiquesDefauts);
+		formeJuridiquesMappings = parseConfigFormesJuridiquesMapping(configTableFormesJuridiquesDefauts);
 		regimesDiOptionnelleVd = parseConfigRegimesDiOptionnelleVd(configRegimesDiOptionnelleVd);
 	}
 
+	@NotNull
 	@Override
-	@Nullable
-	public String getCodeTypeRegimeFiscal(FormeJuridiqueEntreprise formeJuridique) {
-		return regimesParDefautMap.get(formeJuridique);
+	public List<FormeJuridiqueMapping> getMapping(FormeJuridiqueEntreprise formeJuridique) {
+		return formeJuridiquesMappings.stream()
+				.filter(m -> m.getFormeJuridique() == formeJuridique)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -77,30 +80,48 @@ class RegimeFiscalServiceConfigurationImpl implements RegimeFiscalServiceConfigu
 	 *     <li>La valeur est constituée du code alpha-numérique du type de régime fiscal.</li>
 	 * </ul>
 	 *
-	 * <p>Exemple: 0103=80, 0104=80, 0105=01, 0106=01, 0107=01, 0108=01, 0109=70, 0110=70, 0111=01, 0151=01, 0312=01</p>
+	 * <p>Exemple: 0103=>80, 0104=>80, 0105=>01, 0106=>01, 0107=>01, 0108=>01, 0109=>70, 0110=>70, 0111=>01, 0151=>01, 0312=>01</p>
 	 * @param config la chaîne de caractères contenant la table encodée.
 	 * @return la Map de la table de correspondance forme juridique vers code de type régime fiscal par défaut.
 	 */
-	@NotNull
-	Map<FormeJuridiqueEntreprise, String> parseConfigTableFormesJuridiquesDefauts(String config) {
+	List<FormeJuridiqueMapping> parseConfigFormesJuridiquesMapping(String config) {
 		if (StringUtils.isBlank(config)) {
-			return Collections.emptyMap();
+			return Collections.emptyList();
 		}
 		else if (!config.matches(ALLOWED_CHARACTERS_REGEXP)) {
 			throw new IllegalArgumentException(String.format("Propriété de configuration extprop.regimesfiscaux.table.formesjuridiques.defauts malformée: [%s]", config));
 		}
 		final String mappingString = stripWhiteSpace(config);
 		return Arrays.stream(mappingString.split(RECORD_SEPARATOR_REGEXP))
-				.map(this::checkAndSplitTupleFormesJuridiquesDefauts)
-				.collect(Collectors.toMap(t -> toFormeJuridiqueEntreprise(t[0]), t -> t[1]));
+				.map(this::parseFormeJuridiqueMapping)
+				.collect(Collectors.toList());
 	}
 
 	@NotNull
-	private String[] checkAndSplitTupleFormesJuridiquesDefauts(String e) {
-		if (!e.matches(VALID_TUPLE_REGEXP)) {
-			throw new IllegalArgumentException(String.format("Propriété de configuration extprop.regimesfiscaux.defauts.formesjuridiques.map invalide: paire malformée [%s]", e));
+	private FormeJuridiqueMapping parseFormeJuridiqueMapping(String mappingAsString) {
+
+		final Matcher matcher = FORME_JURIDIQUE_MAPPING_REGEXP.matcher(mappingAsString);
+		if (!matcher.matches()) {
+			throw new IllegalArgumentException(String.format("Propriété de configuration extprop.regimesfiscaux.table.formesjuridiques.defauts invalide: paire malformée [%s]", mappingAsString));
 		}
-		return e.split(TUPLE_OPERATOR);
+		final String codeFormeJuridique = matcher.group(1);
+		final String codeRegime = matcher.group(2);
+		final String indexDateFrom = matcher.groupCount() > 2 ? matcher.group(3) : null;
+		final String indexDateTo = matcher.groupCount() > 3 ? matcher.group(4) : null;
+
+		return new FormeJuridiqueMapping(parseRegDate(indexDateFrom),
+		                                 parseRegDate(indexDateTo),
+		                                 toFormeJuridiqueEntreprise(codeFormeJuridique),
+		                                 codeRegime);
+	}
+
+	private static RegDate parseRegDate(@Nullable String index) {
+		if (StringUtils.isBlank(index)) {
+			return null;
+		}
+		else {
+			return RegDateHelper.indexStringToDate(index);
+		}
 	}
 
 	@NotNull
@@ -109,7 +130,7 @@ class RegimeFiscalServiceConfigurationImpl implements RegimeFiscalServiceConfigu
 			return FormeJuridiqueEntreprise.fromCode(codeECH);
 		}
 		catch (RuntimeException e) {
-			throw new IllegalArgumentException(String.format("Configuration extprop.regimesfiscaux.defauts.formesjuridiques.map potentiellement erronnée: %s", e.getMessage()));
+			throw new IllegalArgumentException(String.format("Configuration extprop.regimesfiscaux.table.formesjuridiques.defauts potentiellement erronée: %s", e.getMessage()));
 		}
 	}
 

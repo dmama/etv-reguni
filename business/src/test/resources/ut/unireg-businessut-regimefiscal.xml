@@ -5,7 +5,7 @@
 	<!-- Configuration Service Régime Fiscal -->
 
 	<bean id="regimeFiscalServiceConfiguration" class="ch.vd.unireg.regimefiscal.RegimeFiscalServiceConfigurationImpl">
-		<property name="configTableFormesJuridiquesDefauts" value="0103=80, 0104=80, 0105=01, 0106=01, 0107=01, 0108=01, 0109=70, 0110=70, 0111=01, 0151=01, 0312=01"/>
+		<property name="configTableFormesJuridiquesDefauts" value="0103=>80, 0104=>80, 0105=>01, 0106=>01, 0107=>01, 0108=>01, 0109=>70, 0110=>70, 0111=>01, 0151=>01, 0312=>01"/>
 		<property name="configRegimesDiOptionnelleVd" value="190-2,739"/>
 	</bean>
 

@@ -83,23 +83,27 @@ public class RegimeFiscalServiceImpl implements RegimeFiscalService {
 	@NotNull
 	public FormeJuridiqueVersTypeRegimeFiscalMapping getFormeJuridiqueMapping(@NotNull FormeJuridiqueEntreprise formeJuridique, @Nullable RegDate dateReference) {
 
-		String codeRegime = configuration.getCodeTypeRegimeFiscal(formeJuridique);
-		if (codeRegime == null) {
-			codeRegime = getTypeRegimeFiscalIndetermine().getCode();
-		}
+		final List<RegimeFiscalServiceConfiguration.FormeJuridiqueMapping> mappings = configuration.getMapping(formeJuridique);
+		return mappings.stream()
+				.filter(m -> m.isValidAt(dateReference))
+				.map(m -> buildFullMapping(formeJuridique, m))
+				.findAny()
+				.orElse(new FormeJuridiqueVersTypeRegimeFiscalMapping(null, null, formeJuridique, getTypeRegimeFiscalIndetermine()));
+	}
 
-		final TypeRegimeFiscal result;
+	@NotNull
+	private FormeJuridiqueVersTypeRegimeFiscalMapping buildFullMapping(@NotNull FormeJuridiqueEntreprise formeJuridique, @NotNull RegimeFiscalServiceConfiguration.FormeJuridiqueMapping m) {
+
+		final TypeRegimeFiscal typeRegimeFiscal;
 		try {
-			result = getTypeRegimeFiscal(codeRegime);
+			typeRegimeFiscal = getTypeRegimeFiscal(m.getCodeRegime());
 		}
 		catch (RegimeFiscalServiceException e) {
-			throw new RegimeFiscalServiceException(
-					String.format("Impossible de récupérer un type de régime fiscal avec le code '%s' configuré pour la forme juridique \"%s\". Faites contrôler la configuration Unireg des types par défaut.",
-					              codeRegime, formeJuridique.getLibelle()));
+			throw new RegimeFiscalServiceException(String.format("Impossible de récupérer un type de régime fiscal avec le code '%s' configuré pour la forme juridique \"%s\". " +
+					                                                     "Faites contrôler la configuration Unireg des types par défaut.", m.getCodeRegime(), formeJuridique.getLibelle()));
 		}
 
-		// TODO (msi) gérer correctement les plages de validité
-		return new FormeJuridiqueVersTypeRegimeFiscalMapping(null, null, formeJuridique, result);
+		return new FormeJuridiqueVersTypeRegimeFiscalMapping(m.getDateDebut(), m.getDateFin(), formeJuridique, typeRegimeFiscal);
 	}
 
 	@Override
