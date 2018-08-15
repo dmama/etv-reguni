@@ -1,7 +1,7 @@
 package ch.vd.unireg.tiers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +25,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.regimefiscal.FormeJuridiqueVersTypeRegimeFiscalMapping;
+import ch.vd.unireg.type.FormeJuridiqueEntreprise;
 import ch.vd.unireg.type.ModeImposition;
 import ch.vd.unireg.type.MotifFor;
 import ch.vd.unireg.type.MotifRattachement;
@@ -359,13 +362,174 @@ public class TiersService2Test extends BusinessTest {
 
 			final List<Heritage> heritages = communaute.getLiensHeritage();
 			assertEquals(4, heritages.size());
-			heritages.sort(new DateRangeComparator<Heritage>().thenComparing(Comparator.comparing(Heritage::getSujetId)));
+			heritages.sort(new DateRangeComparator<Heritage>().thenComparing(Heritage::getSujetId));
 			assertHeritage(ids.heinrich, ids.hans, RegDate.get(2000, 1, 1), RegDate.get(2009, 12, 31), true, heritages.get(0));
 			assertHeritage(ids.heinrich, ids.lieselotte, RegDate.get(2000, 1, 1), RegDate.get(2009, 12, 31), false, heritages.get(1));
 			assertHeritage(ids.heinrich, ids.hans, RegDate.get(2010, 1, 1), null, false, heritages.get(2));
 			assertHeritage(ids.heinrich, ids.lieselotte, RegDate.get(2010, 1, 1), null, true, heritages.get(3));
 			return null;
 		});
+	}
+
+	/**
+	 * [FISCPROJ-155] Vérifie que la méthode openRegimesFiscauxParDefautCHVD ouvre bien plusieurs régimes sur les associations créées avant le 1er janvier 2018 (date de changement de mapping)
+	 */
+	@Test
+	public void testOpenRegimesFiscauxParDefautCHVDPourAssociation() throws Exception {
+
+		final RegDate dateFondation = date(2004, 1, 23);
+
+		doInNewTransaction(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil("Ma petite association", dateFondation);
+
+			final List<FormeJuridiqueVersTypeRegimeFiscalMapping> list = new ArrayList<>();
+			tiersService.openRegimesFiscauxParDefautCHVD(entreprise, FormeJuridiqueEntreprise.ASSOCIATION, dateFondation, list::add);
+
+			// on vérifie que deux mappings forme juridique -> type de régime fiscal ont été trouvés pour la période de validité de l'association
+			assertEquals(2, list.size());
+			assertMapping(null, date(2017, 12, 31), FormeJuridiqueEntreprise.ASSOCIATION, "70", list.get(0));
+			assertMapping(date(2018, 1, 1), null, FormeJuridiqueEntreprise.ASSOCIATION, "703", list.get(1));
+
+			// on vérifie que les régimes fiscaux correspondants ont été créés
+			final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
+			assertEquals(4, regimesFiscaux.size());
+			regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
+			assertRegimeFiscal(dateFondation, date(2017, 12, 31), RegimeFiscal.Portee.VD, "70", regimesFiscaux.get(0));
+			assertRegimeFiscal(dateFondation, date(2017, 12, 31), RegimeFiscal.Portee.CH, "70", regimesFiscaux.get(1));
+			assertRegimeFiscal(date(2018, 1, 1), null, RegimeFiscal.Portee.VD, "703", regimesFiscaux.get(2));
+			assertRegimeFiscal(date(2018, 1, 1), null, RegimeFiscal.Portee.CH, "703", regimesFiscaux.get(3));
+
+			return null;
+		});
+
+	}
+
+	/**
+	 * [FISCPROJ-155] Vérifie que la méthode openRegimesFiscauxParDefautCHVD ouvre un seul régime sur les SA quelque soit la date de création (car il n'y a un qu'un seul mapping sans limite de temps)
+	 */
+	@Test
+	public void testOpenRegimesFiscauxParDefautCHVDPourSA() throws Exception {
+
+		final RegDate dateFondation = date(2004, 1, 23);
+
+		doInNewTransaction(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil("Ma petite entreprise", dateFondation);
+
+			final List<FormeJuridiqueVersTypeRegimeFiscalMapping> list = new ArrayList<>();
+			tiersService.openRegimesFiscauxParDefautCHVD(entreprise, FormeJuridiqueEntreprise.SA, dateFondation, list::add);
+
+			// on vérifie qu'un seul mapping forme juridique -> type de régime fiscal ont été trouvés pour la période de validité de la société
+			assertEquals(1, list.size());
+			assertMapping(null, null, FormeJuridiqueEntreprise.SA, "01", list.get(0));
+
+			// on vérifie que les régimes fiscaux correspondants ont été créés
+			final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
+			assertEquals(2, regimesFiscaux.size());
+			regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
+			assertRegimeFiscal(dateFondation, null, RegimeFiscal.Portee.VD, "01", regimesFiscaux.get(0));
+			assertRegimeFiscal(dateFondation, null, RegimeFiscal.Portee.CH, "01", regimesFiscaux.get(1));
+
+			return null;
+		});
+
+	}
+
+	/**
+	 * [FISCPROJ-155] Vérifie que la méthode changeRegimesFiscauxParDefautCHVD ouvre bien plusieurs régimes sur les associations créées avant le 1er janvier 2018 (date de changement de mapping)
+	 */
+	@Test
+	public void testChangeRegimesFiscauxParDefautCHVDPourAssociation() throws Exception {
+
+		final RegDate dateFondation = date(2004, 1, 23);
+		final RegDate dateChangement = date(2006, 5, 17);
+
+		final Long id = doInNewTransaction(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil("Ma petite association", dateFondation);
+			entreprise.addRegimeFiscal(new RegimeFiscal(dateFondation, null, RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.INDETERMINE.getCode()));
+			entreprise.addRegimeFiscal(new RegimeFiscal(dateFondation, null, RegimeFiscal.Portee.CH, MockTypeRegimeFiscal.INDETERMINE.getCode()));
+			return entreprise.getId();
+		});
+
+		doInNewTransaction(status -> {
+			final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, id);
+			assertNotNull(entreprise);
+
+			final List<FormeJuridiqueVersTypeRegimeFiscalMapping> list = new ArrayList<>();
+			tiersService.changeRegimesFiscauxParDefautCHVD(entreprise, FormeJuridiqueEntreprise.ASSOCIATION, dateChangement, list::add);
+
+			// on vérifie que deux mappings forme juridique -> type de régime fiscal ont été trouvés pour la période de validité après la date de changement
+			assertEquals(2, list.size());
+			assertMapping(null, date(2017, 12, 31), FormeJuridiqueEntreprise.ASSOCIATION, "70", list.get(0));
+			assertMapping(date(2018, 1, 1), null, FormeJuridiqueEntreprise.ASSOCIATION, "703", list.get(1));
+
+			// on vérifie que les nouveaux régimes fiscaux correspondants ont été créés
+			final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
+			assertEquals(6, regimesFiscaux.size());
+			regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
+			assertRegimeFiscal(dateFondation, dateChangement.getOneDayBefore(), RegimeFiscal.Portee.VD, "00", regimesFiscaux.get(0));
+			assertRegimeFiscal(dateFondation, dateChangement.getOneDayBefore(), RegimeFiscal.Portee.CH, "00", regimesFiscaux.get(1));
+			assertRegimeFiscal(dateChangement, date(2017, 12, 31), RegimeFiscal.Portee.VD, "70", regimesFiscaux.get(2));
+			assertRegimeFiscal(dateChangement, date(2017, 12, 31), RegimeFiscal.Portee.CH, "70", regimesFiscaux.get(3));
+			assertRegimeFiscal(date(2018, 1, 1), null, RegimeFiscal.Portee.VD, "703", regimesFiscaux.get(4));
+			assertRegimeFiscal(date(2018, 1, 1), null, RegimeFiscal.Portee.CH, "703", regimesFiscaux.get(5));
+
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-155] Vérifie que la méthode changeRegimesFiscauxParDefautCHVD ouvre un seul régime sur les SA quelque soit la date de création (car il n'y a un qu'un seul mapping sans limite de temps)
+	 */
+	@Test
+	public void testChangeRegimesFiscauxParDefautCHVDPourSA() throws Exception {
+
+		final RegDate dateFondation = date(2004, 1, 23);
+		final RegDate dateChangement = date(2006, 5, 17);
+
+		final Long id = doInNewTransaction(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil("Ma petite entreprise", dateFondation);
+			entreprise.addRegimeFiscal(new RegimeFiscal(dateFondation, null, RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.INDETERMINE.getCode()));
+			entreprise.addRegimeFiscal(new RegimeFiscal(dateFondation, null, RegimeFiscal.Portee.CH, MockTypeRegimeFiscal.INDETERMINE.getCode()));
+			return entreprise.getId();
+		});
+
+		doInNewTransaction(status -> {
+			final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, id);
+			assertNotNull(entreprise);
+
+			final List<FormeJuridiqueVersTypeRegimeFiscalMapping> list = new ArrayList<>();
+			tiersService.changeRegimesFiscauxParDefautCHVD(entreprise, FormeJuridiqueEntreprise.SA, dateChangement, list::add);
+
+			// on vérifie qu'un seul mapping forme juridique -> type de régime fiscal ont été trouvés pour la période de validité de la société
+			assertEquals(1, list.size());
+			assertMapping(null, null, FormeJuridiqueEntreprise.SA, "01", list.get(0));
+
+			// on vérifie que les nouveaux régimes fiscaux correspondants ont été créés
+			final List<RegimeFiscal> regimesFiscaux = new ArrayList<>(entreprise.getRegimesFiscaux());
+			assertEquals(4, regimesFiscaux.size());
+			regimesFiscaux.sort(new DateRangeComparator<RegimeFiscal>().thenComparing(RegimeFiscal::getPortee));
+			assertRegimeFiscal(dateFondation, dateChangement.getOneDayBefore(), RegimeFiscal.Portee.VD, "00", regimesFiscaux.get(0));
+			assertRegimeFiscal(dateFondation, dateChangement.getOneDayBefore(), RegimeFiscal.Portee.CH, "00", regimesFiscaux.get(1));
+			assertRegimeFiscal(dateChangement, null, RegimeFiscal.Portee.VD, "01", regimesFiscaux.get(2));
+			assertRegimeFiscal(dateChangement, null, RegimeFiscal.Portee.CH, "01", regimesFiscaux.get(3));
+
+			return null;
+		});
+	}
+
+	private static void assertRegimeFiscal(RegDate dateDebut, RegDate dateFin, RegimeFiscal.Portee portee, String code, RegimeFiscal regimeFiscal) {
+		assertNotNull(regimeFiscal);
+		assertEquals(dateDebut, regimeFiscal.getDateDebut());
+		assertEquals(dateFin, regimeFiscal.getDateFin());
+		assertEquals(portee, regimeFiscal.getPortee());
+		assertEquals(code, regimeFiscal.getCode());
+	}
+
+	private static void assertMapping(RegDate dateDebut, RegDate dateFin, FormeJuridiqueEntreprise formeJuridiqueEntreprise, String codeRegimeFiscal, FormeJuridiqueVersTypeRegimeFiscalMapping mapping) {
+		assertEquals(dateDebut, mapping.getDateDebut());
+		assertEquals(dateFin, mapping.getDateFin());
+		assertEquals(formeJuridiqueEntreprise, mapping.getFormeJuridique());
+		assertEquals(codeRegimeFiscal, mapping.getTypeRegimeFiscal().getCode());
 	}
 
 	private static void assertHeritage(Long defuntId, Long heritierId, RegDate dateDebut, RegDate dateFin, Boolean principalCommunaute, Heritage heritage) {
