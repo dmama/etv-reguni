@@ -24,6 +24,7 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
@@ -182,7 +183,7 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 			}
 
 			// de la plus petite à la plus grande
-			return date1.compareTo(date2);
+			return NullDateBehavior.EARLIEST.compare(date1,date1);
 		}
 	}
 }
