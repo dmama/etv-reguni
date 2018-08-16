@@ -1,13 +1,19 @@
 package ch.vd.unireg.declaration.snc;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
+import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
@@ -19,9 +25,12 @@ import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class QuestionnaireSNCServiceTest extends BusinessTest {
@@ -221,6 +230,155 @@ public class QuestionnaireSNCServiceTest extends BusinessTest {
 			assertEquals(delaiAccordeAu, delai0.getDelaiAccordeAu());
 			assertEquals(idDelai, delai0.getId());
 			return null;
+		});
+	}
+	@Test
+	public void testMonoQuittancements() throws Exception {
+
+		class Ids {
+			public long nonoId;
+		}
+		final Ids ids = new Ids();
+
+		// les quittancements avec cette source ne doivent pas être multiples
+		final String SOURCE = "E-DIPM";
+		service.setSourcesMonoQuittancement(new HashSet<>(Collections.singletonList(SOURCE)));
+
+		// Création d'une SNC et de son questionnaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+
+				// Une SNC quelconque
+				Entreprise nono = addEntrepriseInconnueAuCivil();
+				ids.nonoId = nono.getNumero();
+				final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
+				ffp.setDateDebut(date(2003, 1, 1));
+				ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				ffp.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+				addQuestionnaireSNC(nono,periode2017);
+
+				return null;
+			}
+		});
+
+		// 1er quittance du questionnaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Entreprise nono = hibernateTemplate.get(Entreprise.class, ids.nonoId);
+				final List<QuestionnaireSNC> qsncs = nono.getDeclarationsDansPeriode(QuestionnaireSNC.class, 2017, false);
+				assertEquals(1, qsncs.size());
+				final QuestionnaireSNC qsnc = qsncs.get(0);
+				assertNotNull(qsnc);
+				service.quittancerQuestionnaire(qsnc, date(2018, 5, 12), SOURCE);
+				return null;
+			}
+		});
+
+		// On s'assure que l'état retourné est bien enregistré
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Entreprise nono = hibernateTemplate.get(Entreprise.class, ids.nonoId);
+				final List<QuestionnaireSNC> qsncs = nono.getDeclarationsDansPeriode(QuestionnaireSNC.class, 2017, false);
+				assertEquals(1, qsncs.size());
+
+				final QuestionnaireSNC qsnc = qsncs.get(0);
+				assertNotNull(qsnc);
+				assertEquals(date(2018, 5, 12), qsnc.getDateRetour());
+
+				final Set<EtatDeclaration> etats = qsnc.getEtatsDeclaration();
+				assertNotNull(etats);
+				assertEquals(1, etats.size());
+
+				final Iterator<EtatDeclaration> iterator = etats.iterator();
+
+				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
+				assertEquals(date(2018, 5, 12), etat0.getDateObtention());
+				assertEquals(SOURCE, etat0.getSource());
+				assertFalse(etat0.isAnnule());
+
+				// l'état retourné est le dernier, comme il se doit
+				assertSame(etat0, qsnc.getDernierEtatDeclaration());
+				assertSame(etat0, qsnc.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
+				return null;
+			}
+		});
+
+		// 2ème quittance du questionnaire, source différence
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Entreprise nono = hibernateTemplate.get(Entreprise.class, ids.nonoId);
+				final List<QuestionnaireSNC> qsncs = nono.getDeclarationsDansPeriode(QuestionnaireSNC.class, 2017, false);
+				assertEquals(1, qsncs.size());
+				final QuestionnaireSNC qsnc = qsncs.get(0);
+				assertNotNull(qsnc);
+				service.quittancerQuestionnaire(qsnc, date(2018, 6, 12), "MANUEL");
+				return null;
+			}
+		});
+
+
+		// 2ème quittance du questionnaire, source initiale qui ne supporte pas le multi-quittancement
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Entreprise nono = hibernateTemplate.get(Entreprise.class, ids.nonoId);
+				final List<QuestionnaireSNC> qsncs = nono.getDeclarationsDansPeriode(QuestionnaireSNC.class, 2017, false);
+				assertEquals(1, qsncs.size());
+				final QuestionnaireSNC qsnc = qsncs.get(0);
+				assertNotNull(qsnc);
+				service.quittancerQuestionnaire(qsnc, date(2018, 6, 23), SOURCE);
+				return null;
+			}
+		});
+
+
+		// on s'assure maintenant que premier quittancement de la source est bien annulé au profit du second, mais que les quittancements de sources annexes n'ont pas été touchés
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Entreprise nono = hibernateTemplate.get(Entreprise.class, ids.nonoId);
+				final List<QuestionnaireSNC> qsncs = nono.getDeclarationsDansPeriode(QuestionnaireSNC.class, 2017, false);
+				assertEquals(1, qsncs.size());
+
+				final QuestionnaireSNC qsnc = qsncs.get(0);
+				assertNotNull(qsnc);
+				assertEquals(date(2018, 6, 23), qsnc.getDateRetour());
+
+				final List<EtatDeclaration> etats = qsnc.getEtatsDeclarationSorted();
+				assertNotNull(etats);
+				assertEquals(3, etats.size());
+
+				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
+				assertEquals(date(2018, 5, 12), etat0.getDateObtention());
+				assertEquals(SOURCE, etat0.getSource());
+				assertTrue(etat0.isAnnule());
+
+				final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat1.getEtat());
+				assertEquals(date(2018, 6, 12), etat1.getDateObtention());
+				assertEquals("MANUEL", etat1.getSource());
+				assertFalse(etat1.isAnnule());
+
+				final EtatDeclarationRetournee etat2 = (EtatDeclarationRetournee) etats.get(2);
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat2.getEtat());
+				assertEquals(date(2018, 6, 23), etat2.getDateObtention());
+				assertEquals(SOURCE, etat2.getSource());
+				assertFalse(etat2.isAnnule());
+
+				// le nouvel état retourné doit être le dernier
+				assertSame(etat2, qsnc.getDernierEtatDeclaration());
+				assertSame(etat2, qsnc.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
+				return null;
+			}
 		});
 	}
 }

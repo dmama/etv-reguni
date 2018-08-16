@@ -19,6 +19,7 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEchue;
 import ch.vd.unireg.declaration.EtatDeclarationRappelee;
 import ch.vd.unireg.declaration.EtatDeclarationRetournee;
@@ -67,6 +68,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private EvenementFiscalService evenementFiscalService;
 	private PeriodeExploitationService periodeExploitationService;
 	private EvenementDeclarationPMSender evenementDeclarationPMSender;
+	private Set<String> sourcesMonoQuittancement;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -138,6 +140,10 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	public void setEvenementDeclarationPMSender(EvenementDeclarationPMSender evenementDeclarationPMSender) {
 		this.evenementDeclarationPMSender = evenementDeclarationPMSender;
+	}
+
+	public void setSourcesMonoQuittancement(Set<String> sourcesMonoQuittancement) {
+		this.sourcesMonoQuittancement = sourcesMonoQuittancement;
 	}
 
 	@Override
@@ -256,6 +262,15 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	@Override
 	public void quittancerQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateRetour, String source) {
+		//FISCPROJ-364 s'assurer qu'une source qui ne supporte que le mono quittancement soit bien prise en compte
+		if (sourcesMonoQuittancement.contains(source)) {
+			for (EtatDeclaration etat : questionnaire.getEtatsDeclaration()) {
+				if (!etat.isAnnule() && etat instanceof EtatDeclarationRetournee && source.equals(((EtatDeclarationRetournee) etat).getSource())) {
+					etat.setAnnule(true);
+				}
+			}
+		}
+
 		final EtatDeclarationRetournee retour = new EtatDeclarationRetournee(dateRetour, source);
 		questionnaire.addEtat(retour);
 

@@ -223,6 +223,7 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="periodeExploitationService" ref="periodeExploitationService"/>
 		<property name="evenementDeclarationPMSender" ref="evenementDeclarationPMSender" />
+		<property name="sourcesMonoQuittancement" ref="sourcesMonoQuittancementDi"/>
 	</bean>
 	<bean id="lienAssociesSNCService" class="ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCServiceImpl">
 		<property name="transactionManager" ref="transactionManager" />
