@@ -517,14 +517,6 @@ public class TiersService2Test extends BusinessTest {
 		});
 	}
 
-	private static void assertRegimeFiscal(RegDate dateDebut, RegDate dateFin, RegimeFiscal.Portee portee, String code, RegimeFiscal regimeFiscal) {
-		assertNotNull(regimeFiscal);
-		assertEquals(dateDebut, regimeFiscal.getDateDebut());
-		assertEquals(dateFin, regimeFiscal.getDateFin());
-		assertEquals(portee, regimeFiscal.getPortee());
-		assertEquals(code, regimeFiscal.getCode());
-	}
-
 	private static void assertMapping(RegDate dateDebut, RegDate dateFin, FormeJuridiqueEntreprise formeJuridiqueEntreprise, String codeRegimeFiscal, FormeJuridiqueVersTypeRegimeFiscalMapping mapping) {
 		assertEquals(dateDebut, mapping.getDateDebut());
 		assertEquals(dateFin, mapping.getDateFin());

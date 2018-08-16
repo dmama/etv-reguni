@@ -2266,4 +2266,74 @@ public class TiersDAOTest extends CoreDAOTest {
 			assertTrue(all.containsAll(expectedIds));
 		}
 	}
+
+	@Test
+	public void testGetEntreprisesAvecRegimeFiscalAt() throws Exception {
+
+		class Ids {
+			Long entrepriseSansRien;
+			Long entrepriseAvecRegime01;
+			Long entrepriseAvecRegime70;
+			Long entrepriseAvecRegime01Annule;
+			Long entrepriseAvecRegime70Et01;
+			Long entrepriseAvecRegime01Ferme;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			{
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				ids.entrepriseSansRien = entreprise.getId();
+			}
+
+			{
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				entreprise.addRegimeFiscal(new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "01"));
+				ids.entrepriseAvecRegime01 = entreprise.getId();
+			}
+
+			{
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				entreprise.addRegimeFiscal(new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "70"));
+				ids.entrepriseAvecRegime70 = entreprise.getId();
+			}
+
+			{
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				final RegimeFiscal rf = new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "01");
+				entreprise.addRegimeFiscal(rf);
+				rf.setAnnule(true);
+				ids.entrepriseAvecRegime01Annule = entreprise.getId();
+			}
+
+			{
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				entreprise.addRegimeFiscal(new RegimeFiscal(date(2009, 1, 1), date(2012, 12, 31), RegimeFiscal.Portee.VD, "70"));
+				entreprise.addRegimeFiscal(new RegimeFiscal(date(2013, 1, 1), null, RegimeFiscal.Portee.VD, "01"));
+				ids.entrepriseAvecRegime70Et01 = entreprise.getId();
+			}
+
+			{
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				entreprise.addRegimeFiscal(new RegimeFiscal(date(2009, 1, 1), date(2015, 12, 31), RegimeFiscal.Portee.VD, "01"));
+				ids.entrepriseAvecRegime01Ferme = entreprise.getId();
+			}
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			// tests sur le critère de la date
+			assertEquals(Arrays.asList(ids.entrepriseAvecRegime01, ids.entrepriseAvecRegime01Ferme), tiersDAO.getEntreprisesAvecRegimeFiscalAt("01", date(2010, 1, 1)));
+			assertEquals(Arrays.asList(ids.entrepriseAvecRegime01, ids.entrepriseAvecRegime70Et01, ids.entrepriseAvecRegime01Ferme), tiersDAO.getEntreprisesAvecRegimeFiscalAt("01", date(2014, 1, 1)));
+			assertEquals(Arrays.asList(ids.entrepriseAvecRegime01, ids.entrepriseAvecRegime70Et01), tiersDAO.getEntreprisesAvecRegimeFiscalAt("01", date(2018, 1, 1)));
+			assertEquals(Collections.emptyList(), tiersDAO.getEntreprisesAvecRegimeFiscalAt("01", date(2000, 1, 1)));
+
+			// tests sur le critère du code
+			assertEquals(Arrays.asList(ids.entrepriseAvecRegime70, ids.entrepriseAvecRegime70Et01), tiersDAO.getEntreprisesAvecRegimeFiscalAt("70", date(2010, 1, 1)));
+			assertEquals(Collections.singletonList(ids.entrepriseAvecRegime70), tiersDAO.getEntreprisesAvecRegimeFiscalAt("70", date(2014, 1, 1)));
+			assertEquals(Collections.emptyList(), tiersDAO.getEntreprisesAvecRegimeFiscalAt("33", date(2010, 1, 1)));
+			return null;
+		});
+
+	}
 }

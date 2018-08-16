@@ -168,6 +168,7 @@
 		<value>ch.vd.unireg.mouvement.ReceptionDossierClassementIndependants</value>
 		<value>ch.vd.unireg.mouvement.ReceptionDossierPersonnel</value>
 		<value>ch.vd.unireg.mouvement.BordereauMouvementDossier</value>
+		<value>ch.vd.unireg.document.ChangementRegimesFiscauxRapport</value>
 		<value>ch.vd.unireg.document.Document</value>
 		<value>ch.vd.unireg.document.DatabaseDump</value>
 		<value>ch.vd.unireg.document.ImportCodesSegmentRapport</value>

@@ -277,9 +277,18 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	Contribuable getContribuable(DebiteurPrestationImposable debiteur);
 
 	/**
-	 * @return la liste des identifiants des entreprises ne possèdant pas de régimes fiscals non annulés.
+	 * @return la liste des identifiants des entreprises ne possèdant pas de régimes fiscaux non annulés.
 	 */
 	List<Long> getEntreprisesSansRegimeFiscal();
+
+	/**
+	 * Recherche les entreprises ayant des régimes fiscaux avec le code spécifié valides à la date spécifiée.
+	 *
+	 * @param code un code de type de régime fiscal (voir {@link ch.vd.infrastructure.fiscal.model.rest.TypeRegimeFiscal})
+	 * @param date la date à laquelle on recherche un régime fiscal valide (CH ou VD)
+	 * @return les ids des entreprises trouvées
+	 */
+	List<Long> getEntreprisesAvecRegimeFiscalAt(@NotNull String code, @NotNull RegDate date);
 
 	/**
 	 * Met-à-jour les oids assignés sur le tiers spécifiés.

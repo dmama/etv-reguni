@@ -6441,7 +6441,7 @@ public class TiersServiceImpl implements TiersService {
 				closeRegimeFiscal(regimeFiscal, dateDebut.getOneDayBefore());
 			}
 
-			// on ouvre le ou les régimes fiscals par défaut qui vont bien
+			// on ouvre le ou les régimes fiscaux par défaut qui vont bien
 
 			for (FormeJuridiqueVersTypeRegimeFiscalMapping mapping : mappings) {
 				final RegDate dateDebutRegime = RegDateHelper.maximum(dateDebut, mapping.getDateDebut(), NullDateBehavior.EARLIEST);

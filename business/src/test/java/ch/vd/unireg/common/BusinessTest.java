@@ -2,6 +2,7 @@ package ch.vd.unireg.common;
 
 import java.util.Date;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.evenement.ide.AnnonceIDEService;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -10,6 +11,10 @@ import ch.vd.unireg.interfaces.service.mock.ProxyServiceEntreprise;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.unireg.regimefiscal.RegimeFiscalService;
 import ch.vd.unireg.scheduler.JobDefinition;
+import ch.vd.unireg.tiers.RegimeFiscal;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public abstract class BusinessTest extends AbstractBusinessTest {
 
@@ -56,5 +61,13 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noIndividu);
 		final MockIndividu other = ((MockServiceCivil) serviceCivil.getUltimateTarget()).getIndividu(noOther);
 		modifier.modifyIndividus(ind, other);
+	}
+
+	protected static void assertRegimeFiscal(RegDate dateDebut, RegDate dateFin, RegimeFiscal.Portee portee, String code, RegimeFiscal regimeFiscal) {
+		assertNotNull(regimeFiscal);
+		assertEquals(dateDebut, regimeFiscal.getDateDebut());
+		assertEquals(dateFin, regimeFiscal.getDateFin());
+		assertEquals(portee, regimeFiscal.getPortee());
+		assertEquals(code, regimeFiscal.getCode());
 	}
 }

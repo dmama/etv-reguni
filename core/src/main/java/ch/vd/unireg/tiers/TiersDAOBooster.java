@@ -296,6 +296,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public List<Long> getEntreprisesAvecRegimeFiscalAt(@NotNull String code, @NotNull RegDate date) {
+		return target.getEntreprisesAvecRegimeFiscalAt(code, date);
+	}
+
+	@Override
 	public void updateOids(Map<Long, Integer> tiersOidsMapping) {
 		target.updateOids(tiersOidsMapping);
 	}

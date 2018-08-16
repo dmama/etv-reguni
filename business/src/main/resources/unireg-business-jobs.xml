@@ -163,6 +163,21 @@
 		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 
+	<!-- Job de changement des régimes fiscaux (d'un type à l'autre) à une date donnée sur les entreprises existantes (FISCPROJ-90) -->
+	<bean id="changementRegimesFiscauxJob" parent="schedulerJob" class="ch.vd.unireg.regimefiscal.changement.ChangementRegimesFiscauxJob">
+		<constructor-arg value="132"/>
+		<constructor-arg value="Changement des régimes fiscaux (d'un type à l'autre) à une date donnée sur les entreprises existantes."/>
+		<property name="processor">
+			<bean class="ch.vd.unireg.regimefiscal.changement.ChangementRegimesFiscauxProcessor">
+				<constructor-arg ref="transactionManager" />
+				<constructor-arg ref="tiersDAO" />
+				<constructor-arg ref="tiersService" />
+				<constructor-arg ref="regimeFiscalService" />
+			</bean>
+		</property>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
 	<!-- Job qui met-à-jour les statistiques des tâches -->
 	<bean id="updateTacheStatsJob" parent="schedulerJob" class="ch.vd.unireg.tache.UpdateTacheStatsJob">
 		<constructor-arg value="150"/>

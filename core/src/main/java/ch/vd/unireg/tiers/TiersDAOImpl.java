@@ -1144,6 +1144,23 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public List<Long> getEntreprisesAvecRegimeFiscalAt(@NotNull String code, @NotNull RegDate date) {
+		final Query query = getCurrentSession().createQuery("select distinct entreprise.id from RegimeFiscal " +
+				                                                    "where annulationDate is null " +
+				                                                    "and code = :code " +
+				                                                    "and (dateDebut is null or dateDebut <= :date) " +
+				                                                    "and (dateFin is null or dateFin >= :date) " +
+				                                                    "order by entreprise.id");
+		query.setParameter("code", code);
+		query.setParameter("date", date);
+
+		//noinspection unchecked
+		final List<? extends Number> list = query.list();
+		return list.stream()
+				.map(Number::longValue)
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	public void updateOids(final Map<Long, Integer> tiersOidsMapping) {

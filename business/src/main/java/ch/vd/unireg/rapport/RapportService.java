@@ -33,6 +33,7 @@ import ch.vd.unireg.document.AnnoncesIDERapport;
 import ch.vd.unireg.document.AppariementEtablissementsSecondairesRapport;
 import ch.vd.unireg.document.AssujettiParSubstitutionRapport;
 import ch.vd.unireg.document.CalculParentesRapport;
+import ch.vd.unireg.document.ChangementRegimesFiscauxRapport;
 import ch.vd.unireg.document.CleanupRFProcessorRapport;
 import ch.vd.unireg.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.unireg.document.ComparerSituationFamilleRapport;
@@ -91,9 +92,9 @@ import ch.vd.unireg.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.unireg.document.ResolutionAdresseRapport;
 import ch.vd.unireg.document.RolePMCommunesRapport;
 import ch.vd.unireg.document.RolePMOfficeRapport;
-import ch.vd.unireg.document.RoleSNCRapport;
 import ch.vd.unireg.document.RolePPCommunesRapport;
 import ch.vd.unireg.document.RolePPOfficesRapport;
+import ch.vd.unireg.document.RoleSNCRapport;
 import ch.vd.unireg.document.RolesCommunesPMRapport;
 import ch.vd.unireg.document.RolesCommunesPPRapport;
 import ch.vd.unireg.document.RolesOIDsRapport;
@@ -129,6 +130,7 @@ import ch.vd.unireg.metier.piis.DumpPeriodesImpositionImpotSourceResults;
 import ch.vd.unireg.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.unireg.oid.SuppressionOIDResults;
 import ch.vd.unireg.parentes.CalculParentesResults;
+import ch.vd.unireg.regimefiscal.changement.ChangementRegimesFiscauxJobResults;
 import ch.vd.unireg.regimefiscal.extraction.ExtractionRegimesFiscauxResults;
 import ch.vd.unireg.regimefiscal.rattrapage.RattrapageRegimesFiscauxJobResults;
 import ch.vd.unireg.registrefoncier.dataimport.MutationsRFDetectorResults;
@@ -139,9 +141,9 @@ import ch.vd.unireg.registrefoncier.rattrapage.RattrapageModelesCommunautesRFPro
 import ch.vd.unireg.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
 import ch.vd.unireg.role.RolePMCommunesResults;
 import ch.vd.unireg.role.RolePMOfficeResults;
-import ch.vd.unireg.role.RoleSNCResults;
 import ch.vd.unireg.role.RolePPCommunesResults;
 import ch.vd.unireg.role.RolePPOfficesResults;
+import ch.vd.unireg.role.RoleSNCResults;
 import ch.vd.unireg.role.before2016.ProduireRolesOIDsResults;
 import ch.vd.unireg.role.before2016.ProduireRolesOIPMResults;
 import ch.vd.unireg.role.before2016.ProduireRolesPMCommunesResults;
@@ -789,7 +791,6 @@ public interface RapportService {
 	 */
 	RoleSNCRapport generateRapport(RoleSNCResults results, StatusManager s);
 
-
 	/**
 	 * Génère le rapport d'exécution du batch d'échéance des questionnaires SNC.
 	 *
@@ -798,4 +799,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	EchoirQSNCRapport generateRapport(EchoirQuestionnairesSNCResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch de changement des régimes fiscaux.
+	 *
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	ChangementRegimesFiscauxRapport generateRapport(ChangementRegimesFiscauxJobResults results, StatusManager status);
 }
