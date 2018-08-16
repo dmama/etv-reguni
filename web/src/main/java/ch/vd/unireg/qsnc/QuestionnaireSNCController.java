@@ -537,7 +537,7 @@ public class QuestionnaireSNCController {
 		                                                               infraService,
 		                                                               messageSource,
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
-		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA), SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_LIBERATION));
+		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA), SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_LIBERATION) && isLiberable(questionnaire));
 		model.addAttribute("questionnaire", view);
 		model.addAttribute("depuisTache", tacheId != null);
 		model.addAttribute("tacheId", tacheId);
