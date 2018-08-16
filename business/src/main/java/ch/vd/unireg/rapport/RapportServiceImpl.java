@@ -1929,7 +1929,7 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RapportEchoirQSNC" + results.getAncienType().getCode() + "_" + results.getNouveauType().getCode() + "_" + results.getDateChangement().index();
+		final String nom = "RapportChangementRegimesFiscaux" + results.getAncienType().getCode() + "_" + results.getNouveauType().getCode() + "_" + results.getDateChangement().index();
 		final String description = "Rapport d'exécution du job de changement des régimes fiscaux. Date de changement = " + RegDateHelper.dateToDisplayString(results.getDateChangement()) + ".";
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
