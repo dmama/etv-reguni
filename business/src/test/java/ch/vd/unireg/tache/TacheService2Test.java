@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(locations = {
 	BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES
 })
-public class TacheServiceTest2 extends BusinessTest {
+public class TacheService2Test extends BusinessTest {
 
 	private TacheDAO tacheDAO;
 	private DeclarationImpotOrdinaireDAO diDAO;

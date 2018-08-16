@@ -374,6 +374,12 @@ public class MockIndividu implements Individu {
 		adresses.add(adresse);
 	}
 
+	public void clearAddresses() {
+		if (adresses != null) {
+			adresses.clear();
+		}
+	}
+
 	public boolean isNonHabitantNonRenvoye() {
 		return nonHabitantNonRenvoye;
 	}
