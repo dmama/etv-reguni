@@ -1,12 +1,14 @@
 package ch.vd.unireg.interfaces.infra.fidor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -81,12 +83,30 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	private FidorClient fidorClient;
 	private UniregCacheManager uniregCacheManager;
 
+	/**
+	 * [FISCPROJ-92] Liste des régimes fiscaux qu'il faut ignorer et qui ne doivent pas apparaître dans Unireg.
+	 */
+	private Set<String> regimesFiscauxBlacklist;
+
 	public void setFidorClient(FidorClient fidorClient) {
 		this.fidorClient = fidorClient;
 	}
 
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
+	}
+
+	public void setRegimesFiscauxBlacklist(String blackList) {
+		this.regimesFiscauxBlacklist = parseRegimesFiscaux(blackList);
+	}
+
+	static Set<String> parseRegimesFiscaux(String blackList) {
+		if (StringUtils.isBlank(blackList)) {
+			return Collections.emptySet();
+		}
+		return Arrays.stream(blackList.split("[, ]"))
+				.filter(StringUtils::isNotBlank)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -692,11 +712,10 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			if (liste == null || liste.isEmpty()) {
 				return Collections.emptyList();
 			}
-
-			final List<TypeRegimeFiscal> regimes = new ArrayList<>(liste.size());
-			for (RegimeFiscal regime : liste) {
-				regimes.add(TypeRegimeFiscalFidor.get(regime));
-			}
+			final List<TypeRegimeFiscal> regimes = liste.stream()
+					.map(TypeRegimeFiscalFidor::get)
+					.filter(r -> !regimesFiscauxBlacklist.contains(r.getCode()))    // [FISCPROJ-92] on ignore les régimes blacklistés
+					.collect(Collectors.toList());
 			return Collections.unmodifiableList(regimes);
 		}
 		catch (FidorClientException e) {
