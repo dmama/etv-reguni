@@ -183,7 +183,7 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 			}
 
 			// de la plus petite à la plus grande
-			return NullDateBehavior.EARLIEST.compare(date1,date1);
+			return NullDateBehavior.EARLIEST.compare(date1,date2);
 		}
 	}
 }
