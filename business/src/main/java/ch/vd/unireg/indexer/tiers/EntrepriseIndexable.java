@@ -29,7 +29,7 @@ import ch.vd.unireg.type.TypeRapportEntreTiers;
 
 public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesIndexable<Entreprise> {
 
-	public static final String SUB_TYPE = "organisation";
+	public static final String SUB_TYPE = "entreprise";
 
 	private final EntrepriseCivile entrepriseCivile;
 
