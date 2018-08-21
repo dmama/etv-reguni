@@ -490,12 +490,15 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			final List<EntityKey> keys = d.getAllKeys();
 			for (EntityKey key : keys) {
 				final HibernateEntity entity = context.getEntity(key);
+				// l'entité elle-même s'il s'agit d'une entité principale
 				if (isAnyInstanceOf(entity, TOP_ENTITY_TYPES)) {
 					if (!mainEntities.containsKey(key)) {
 						mainEntities.put(key, entity);
 					}
 				}
-				else if (entity instanceof LinkedEntity) {
+				// [SIFISC-29450] les éventuelles entités principales liées à l'entité courante doivent être prises en compte même si l'entité courante est une entité principale
+				//                (par exemple, un droit RF qui pointe vers une communauté RF : les deux entités sont des entités principales)
+				if (entity instanceof LinkedEntity) {
 					for (EntityType entityType : TOP_ENTITY_TYPES) {
 						addLinkedEntities(mainEntities, (LinkedEntity) entity, entityType.getHibernateClass(), entityType, isAnnulation(d));
 					}
