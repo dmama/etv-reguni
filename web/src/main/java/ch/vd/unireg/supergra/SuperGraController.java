@@ -46,6 +46,7 @@ import ch.vd.unireg.supergra.delta.AttributeUpdate;
 import ch.vd.unireg.supergra.delta.Delta;
 import ch.vd.unireg.supergra.delta.DisableEntity;
 import ch.vd.unireg.supergra.delta.EnableEntity;
+import ch.vd.unireg.supergra.delta.RecalcRegroup;
 import ch.vd.unireg.supergra.view.AttributeView;
 import ch.vd.unireg.supergra.view.CollectionView;
 import ch.vd.unireg.supergra.view.EntityView;
@@ -339,6 +340,34 @@ public class SuperGraController {
 		else {
 			session.addDelta(new EnableEntity(view.getKey()));
 			Flash.message("L'entité a été désannulée.");
+		}
+
+		return "redirect:show.do?id=" + view.getKey().getId() + "&class=" + view.getKey().getType();
+	}
+
+	@RequestMapping(value = "/supergra/entity/recalcRegroup.do", method = RequestMethod.POST)
+	public String recalcRegroup(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, HttpServletRequest request) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
+
+		// On récupère la session
+		final SuperGraSession session = getSession(request);
+
+		// On recharge toutes les entités de la base de données
+		final EntityKey key = new EntityKey(type, id);
+		final EntityView view = new EntityView();
+		manager.fillView(key, view, session);
+
+
+		if (!view.isCommunauteRF()) {
+			Flash.warning("L'entité n'est pas une communauté RF. Aucun changement effectué.");
+		}
+		else {
+			// on ajoute le changement de recalcule des regroupements sur la communauté
+			session.addDelta(new RecalcRegroup(view.getKey()));
+			Flash.message("Le calcul des regroupements a été effectué.");
 		}
 
 		return "redirect:show.do?id=" + view.getKey().getId() + "&class=" + view.getKey().getType();

@@ -8,6 +8,9 @@ import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.supergra.EntityKey;
 import ch.vd.unireg.supergra.SuperGraContext;
 
+/**
+ * Changement qui peut être défini sur une entité gérée par SuperGra.
+ */
 public abstract class Delta {
 
 	/**

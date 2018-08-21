@@ -7,8 +7,11 @@ import java.util.Set;
 
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.common.HibernateEntity;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
+import ch.vd.unireg.registrefoncier.dataimport.processor.CommunauteRFProcessor;
 import ch.vd.unireg.tiers.RapportEntreTiers;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.validation.ValidationInterceptor;
@@ -21,6 +24,8 @@ public class SuperGraContext {
 	private final Session session;
 	private final boolean forCommit;
 	private final ValidationInterceptor validationInterceptor;
+	private final CommunauteRFProcessor communauteRFProcessor;
+
 	private final Map<EntityKey, HibernateEntity> newlyCreated = new HashMap<>();
 	private final Set<HibernateEntity> scheduledForSave = new HashSet<>();
 
@@ -28,16 +33,17 @@ public class SuperGraContext {
 	 * Crée un context SuperGra associé à une session Hibernate.
 	 * <p/>
 	 * <b>Note:</b> la durée de vie du context ne doit pas excéder celle de la session.
-	 *
-	 * @param session               une session Hibernate ouverte et valide.
+	 *  @param session               une session Hibernate ouverte et valide.
 	 * @param forCommit             <b>vrai</b> si l'appel est effectué dans l'optique de sauver le changement en base de données; <b>faux</b> si l'appel est effectué uniquement dans le but d'afficher le
 	 *                              changement.
 	 * @param validationInterceptor l'intercepteur de validation
+	 * @param communauteRFProcessor le processeur des communautés RF
 	 */
-	public SuperGraContext(Session session, boolean forCommit, ValidationInterceptor validationInterceptor) {
+	public SuperGraContext(Session session, boolean forCommit, ValidationInterceptor validationInterceptor, CommunauteRFProcessor communauteRFProcessor) {
 		this.session = session;
 		this.forCommit = forCommit;
 		this.validationInterceptor = validationInterceptor;
+		this.communauteRFProcessor = communauteRFProcessor;
 
 		this.session.setFlushMode(FlushMode.COMMIT);
 	}
@@ -107,6 +113,15 @@ public class SuperGraContext {
 	 */
 	public void scheduleForSave(HibernateEntity entity) {
 		scheduledForSave.add(entity);
+	}
+
+	/**
+	 * Recalcul les regroupements de la communaute RF spécifiée.
+	 *
+	 * @param communauteRF une communauté RF
+	 */
+	public void recalculeRegroupements(@NotNull CommunauteRF communauteRF) {
+		communauteRFProcessor.process(communauteRF);
 	}
 
 	/**

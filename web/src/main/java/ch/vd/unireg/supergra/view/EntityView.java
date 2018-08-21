@@ -23,6 +23,7 @@ public class EntityView implements Duplicable<EntityView> {
 	private Map<String, AttributeView> attributesMap;
 	private boolean isMenageCommun;
 	private boolean isPersonnePhysique;
+	private boolean isCommunauteRF;
 
 	public EntityView() {
 	}
@@ -93,6 +94,14 @@ public class EntityView implements Duplicable<EntityView> {
 
 	public void setPersonnePhysique(boolean personnePhysique) {
 		isPersonnePhysique = personnePhysique;
+	}
+
+	public boolean isCommunauteRF() {
+		return isCommunauteRF;
+	}
+
+	public void setCommunauteRF(boolean communauteRF) {
+		isCommunauteRF = communauteRF;
 	}
 
 	@Override

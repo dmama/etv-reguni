@@ -74,6 +74,7 @@ import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.json.InfraCategory;
 import ch.vd.unireg.mouvement.MouvementDossier;
 import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
 import ch.vd.unireg.registrefoncier.DroitProprieteRF;
 import ch.vd.unireg.registrefoncier.EstimationRF;
@@ -84,6 +85,7 @@ import ch.vd.unireg.registrefoncier.QuotePartRF;
 import ch.vd.unireg.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
+import ch.vd.unireg.registrefoncier.dataimport.processor.CommunauteRFProcessor;
 import ch.vd.unireg.reqdes.ErreurTraitement;
 import ch.vd.unireg.reqdes.PartiePrenante;
 import ch.vd.unireg.reqdes.RolePartiePrenante;
@@ -158,6 +160,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private GlobalTiersIndexer globalTiersIndexer;
 	private Dialect dialect;
 	private FiscalDataEventListener autorisationCache;
+	private CommunauteRFProcessor communauteRFProcessor;
 
 	private List<String> annotatedClass;
 	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new EnumMap<>(EntityType.class);
@@ -181,6 +184,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		// déclaration
 		readonlyProps.add("modeleDocument");
 		readonlyProps.add("periode");
+
+		// communauté RF
+		readonlyProps.add("regroupements"); // SIFISC-29450, les regroupements sont calculés automatiquement, il ne faut pas que l'utilisateur puisse les modifier (voir commentaire sur RecalcRegroup)
 
 		return readonlyProps;
 	}
@@ -386,6 +392,10 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		this.autorisationCache = autorisationCache;
 	}
 
+	public void setCommunauteRFProcessor(CommunauteRFProcessor communauteRFProcessor) {
+		this.communauteRFProcessor = communauteRFProcessor;
+	}
+
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public void afterPropertiesSet() throws Exception {
@@ -446,7 +456,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		simulate(s -> {
 
 			// Reconstruit l'état en cours de modification des entités
-			final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
+			final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor, communauteRFProcessor);
 			applyDeltas(session.getDeltas(), context);
 			refreshEntityStates(session, context);
 
@@ -599,7 +609,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					else if (p.isCollection()) {
 						// on cas de collection, on affiche un lien vers la page d'affichage de la collection
 						final Collection<?> coll = (Collection<?>) value;
-						attributeView = new AttributeView(propName, p.getType().getJavaType(), value == null ? "" : coll.size() + " éléments", false, true, false);
+						final boolean isReadonly = readonlyProps.contains(propName);
+						attributeView = new AttributeView(propName, p.getType().getJavaType(), value == null ? "" : coll.size() + " éléments", false, true, isReadonly);
 					}
 					else {
 						// cas général, on affiche l'éditeur pour l'attribut
@@ -662,7 +673,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		simulate(s -> {
 
 			// Reconstruit l'état en cours de modification des entités
-			final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
+			final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor, communauteRFProcessor);
 			applyDeltas(session.getDeltas(), context);
 			refreshEntityStates(session, context);
 
@@ -841,6 +852,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		view.setAttributes(buildAttributes(entity, context));
 		view.setPersonnePhysique(entity instanceof PersonnePhysique);
 		view.setMenageCommun(entity instanceof MenageCommun);
+		view.setCommunauteRF(entity instanceof CommunauteRF);
 
 		final ValidationResults res = validationService.validate(entity);
 		view.setValidationResults(res);
@@ -871,7 +883,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	public void commitDeltas(final List<Delta> deltas) {
 		execute(session -> {
 			// Reconstruit l'état en cours de modification des entités
-			final SuperGraContext context = new SuperGraContext(session, true, validationInterceptor);
+			final SuperGraContext context = new SuperGraContext(session, true, validationInterceptor, communauteRFProcessor);
 			applyDeltas(deltas, context);
 			context.finish();
 			return null; // la transaction est committé automatiquement par le template

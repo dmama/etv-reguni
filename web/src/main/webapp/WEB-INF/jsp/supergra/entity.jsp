@@ -17,6 +17,9 @@
 		<c:if test="${entity.annule}">
 			<li><unireg:buttonTo name="Désannuler ${entity.key.type.displayArticleName}" action="/supergra/entity/enable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
 		</c:if>
+		<c:if test="${entity.communauteRF}">
+			<li><unireg:buttonTo name="Recalculer les regroupements" action="/supergra/entity/recalcRegroup.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
+		</c:if>
 		<c:if test="${entity.personnePhysique}">
 			<li><unireg:buttonTo name="Transformer en ménage-commun" action="/supergra/entity/pp2mc.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="GET"/></li>
 		</c:if>
@@ -91,7 +94,12 @@
 						</display:column>
 						<display:column title="Valeur">
 							<c:if test="${a.collection}">
-								<a href="<c:url value="/supergra/coll/list.do?id=${entity.key.id}&class=${entity.key.type}&name=${a.name}"/>"><c:out value="${a.value}"/></a>
+								<c:if test="${a.readonly}">
+									<c:out value="${a.value}"/>
+								</c:if>
+								<c:if test="${!a.readonly}">
+									<a href="<c:url value="/supergra/coll/list.do?id=${entity.key.id}&class=${entity.key.type}&name=${a.name}"/>"><c:out value="${a.value}"/></a>
+								</c:if>
 							</c:if>
 							<c:if test="${!a.collection}">
 								<unireg:formInput id="${a.id}" path="attributes[${a_rowNum - 1}].value" type="${a.type}" category="${a.category}" readonly="${a.readonly}"/>
