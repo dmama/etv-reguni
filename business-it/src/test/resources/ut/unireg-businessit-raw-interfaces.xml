@@ -80,6 +80,7 @@
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
 		<property name="fidorClient" ref="fidorClient" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="regimesFiscauxBlacklist" value=""/>
 	</bean>
 
 	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
