@@ -10,8 +10,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.adresse.AdresseSuisse;
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.data.MockDataEventService;
@@ -19,8 +17,12 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.registrefoncier.BatimentRF;
+import ch.vd.unireg.registrefoncier.BeneficeServitudeRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
+import ch.vd.unireg.registrefoncier.ChargeServitudeRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
 import ch.vd.unireg.registrefoncier.CommuneRF;
 import ch.vd.unireg.registrefoncier.DescriptionBatimentRF;
@@ -31,6 +33,7 @@ import ch.vd.unireg.registrefoncier.EstimationRF;
 import ch.vd.unireg.registrefoncier.Fraction;
 import ch.vd.unireg.registrefoncier.GenrePropriete;
 import ch.vd.unireg.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.unireg.registrefoncier.IdentifiantDroitRF;
 import ch.vd.unireg.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.unireg.registrefoncier.ImmeubleRF;
 import ch.vd.unireg.registrefoncier.ImplantationRF;
@@ -46,6 +49,7 @@ import ch.vd.unireg.registrefoncier.SituationRF;
 import ch.vd.unireg.registrefoncier.SurfaceAuSolRF;
 import ch.vd.unireg.registrefoncier.SurfaceTotaleRF;
 import ch.vd.unireg.registrefoncier.TypeCommunaute;
+import ch.vd.unireg.registrefoncier.UsufruitRF;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.tiers.IdentificationPersonne;
@@ -1747,5 +1751,133 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		// on vérifie l'envoi de notification de changement de communauté sur la communauté Rf du défunt
 		assertEquals(1, eventService.changedCommunautes.size());
 		assertTrue(eventService.changedCommunautes.contains(ids.communaute));
+	}
+
+	/**
+	 * [SIFISC-29558] détection de la propagation depuis un bénéfice d'usufruit vers les tiers concernés
+	 */
+	@Test
+	public void testDetectChangementTiersDepuisBeneficeUsufruit() throws Exception {
+
+		assertEmpty(eventService.changedTiers);
+
+		final class Ids {
+			long pp1;
+			long pp2;
+			long ppRF1;
+			long usufruit;
+		}
+
+		// on créé un usufruit de 2 personnes en DB et les tiers Unireg équivalents
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// tiers Unireg
+			final PersonnePhysique pp1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique pp2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+
+			// tiers RF
+			final PersonnePhysiqueRF ppRF1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF ppRF2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+
+			addRapprochementRF(pp1, ppRF1, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(pp2, ppRF2, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final UsufruitRF usufruit = addUsufruitRF(null, date(2005, 1, 1), null, null, "Donation", null, "239074289472", "1",
+			                                          new IdentifiantAffaireRF(42, 2005, 32, 1), new IdentifiantDroitRF(42, 2005, 1),
+			                                          Arrays.asList(ppRF1, ppRF2), Collections.singletonList(immeuble));
+			final Ids res = new Ids();
+			res.pp1 = pp1.getId();
+			res.pp2 = pp2.getId();
+			res.ppRF1 = ppRF1.getId();
+			res.usufruit = usufruit.getId();
+			return res;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedTiers);
+
+		// on met une date de fin sur le bénéfice du tiers 1
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UsufruitRF usufruitRF = hibernateTemplate.get(UsufruitRF.class, ids.usufruit);
+				final BeneficeServitudeRF benefice0 = usufruitRF.getBenefices().stream()
+						.filter(b -> b.getAyantDroit().getId().equals(ids.ppRF1))
+						.findFirst()
+						.orElseThrow(IllegalArgumentException::new);
+				benefice0.setDateFin(RegDate.get(2010,12,31));
+			}
+		});
+
+		// on vérifie l'envoi de notification de changement sur les deux tiers
+		assertEquals(2, eventService.changedTiers.size());
+		assertTrue(eventService.changedTiers.contains(ids.pp1));
+		assertTrue(eventService.changedTiers.contains(ids.pp2));
+	}
+
+	/**
+	 * [SIFISC-29558] détection de la propagation depuis une charge d'usufruit vers les tiers concernés
+	 */
+	@Test
+	public void testDetectChangementTiersDepuisChargeUsufruit() throws Exception {
+
+		assertEmpty(eventService.changedTiers);
+
+		final class Ids {
+			long pp1;
+			long pp2;
+			long ppRF1;
+			long usufruit;
+		}
+
+		// on créé un usufruit de 2 personnes en DB et les tiers Unireg équivalents
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// tiers Unireg
+			final PersonnePhysique pp1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique pp2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+
+			// tiers RF
+			final PersonnePhysiqueRF ppRF1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF ppRF2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+
+			addRapprochementRF(pp1, ppRF1, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(pp2, ppRF2, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final ImmeubleRF immeuble1 = addImmeubleRF("5r37858725g3b");
+			final ImmeubleRF immeuble2 = addImmeubleRF("48023kj23jjk");
+			final UsufruitRF usufruit = addUsufruitRF(null, date(2005, 1, 1), null, null, "Donation", null, "239074289472", "1",
+			                                          new IdentifiantAffaireRF(42, 2005, 32, 1), new IdentifiantDroitRF(42, 2005, 1),
+			                                          Arrays.asList(ppRF1, ppRF2), Arrays.asList(immeuble1, immeuble2));
+			final Ids res = new Ids();
+			res.pp1 = pp1.getId();
+			res.pp2 = pp2.getId();
+			res.ppRF1 = ppRF1.getId();
+			res.usufruit = usufruit.getId();
+			return res;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedTiers);
+
+		// on met une date de fin sur une des charges
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final UsufruitRF usufruitRF = hibernateTemplate.get(UsufruitRF.class, ids.usufruit);
+				final ChargeServitudeRF charge0 = usufruitRF.getCharges().iterator().next();
+				charge0.setDateFin(RegDate.get(2010,12,31));
+			}
+		});
+
+		// on vérifie l'envoi de notification de changement sur les deux tiers
+		assertEquals(2, eventService.changedTiers.size());
+		assertTrue(eventService.changedTiers.contains(ids.pp1));
+		assertTrue(eventService.changedTiers.contains(ids.pp2));
 	}
 }

@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
@@ -108,7 +109,7 @@ public class ChargeServitudeRF extends HibernateDateRangeEntity implements Linke
 
 	@Override
 	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
-		return null;
+		return Arrays.asList(servitude, immeuble);
 	}
 
 	@Transient
