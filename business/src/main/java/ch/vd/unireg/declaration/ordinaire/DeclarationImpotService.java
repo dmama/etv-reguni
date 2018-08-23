@@ -3,10 +3,12 @@ package ch.vd.unireg.declaration.ordinaire;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
@@ -190,6 +192,16 @@ public interface DeclarationImpotService {
 	 * @param dateEvenement la date d'impression
 	 */
 	void envoiDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException;
+
+	/**
+	 * Ajoute un délai sur une déclaration d'impôt.
+	 *
+	 * @param declaration   une déclaration d'impôt.
+	 * @param dateObtention la date d'obtention de délai
+	 * @param dateDelai     la date du délai lui-même
+	 * @throws AjoutDelaiDeclarationException en cas d'erreur qui empêche l'ajout d'un délai
+	 */
+	void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @NotNull RegDate dateDelai) throws AjoutDelaiDeclarationException;
 
 	/**
 	 * Envoie à l'impression la sommation pour la déclaration spécifiée, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est committée,

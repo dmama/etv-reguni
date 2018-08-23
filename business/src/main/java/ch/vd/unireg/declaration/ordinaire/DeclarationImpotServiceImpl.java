@@ -1,6 +1,5 @@
 package ch.vd.unireg.declaration.ordinaire;
 
-import javax.imageio.spi.RegisterableService;
 import javax.jms.JMSException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,16 +8,20 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.AddAndSaveHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
+import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
@@ -98,7 +101,6 @@ import ch.vd.unireg.tiers.RegimeFiscal;
 import ch.vd.unireg.tiers.Tache;
 import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TiersService;
-import ch.vd.unireg.type.CategorieEntreprise;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 import ch.vd.unireg.type.TypeDocument;
@@ -106,6 +108,10 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.validation.ValidationService;
 
+import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DATE_DELAI_INVALIDE;
+import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DATE_OBTENTION_INVALIDE;
+import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DECLARATION_ANNULEE;
+import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.MAUVAIS_ETAT_DECLARATION;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_EXONEREE;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_NON_EXONEREE;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.PM_HOLDING;
@@ -482,6 +488,43 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		catch (EditiqueException | EvenementDeclarationException e) {
 			throw new DeclarationException(e);
 		}
+	}
+
+	@Override
+	public void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @NotNull RegDate dateDelai) throws AjoutDelaiDeclarationException {
+
+		final RegDate aujourdhui = RegDate.get();
+
+		// on vérifie les conditions métier
+		if (declaration.isAnnule()) {
+			throw new AjoutDelaiDeclarationException(DECLARATION_ANNULEE, "La déclaration est annulée.");
+		}
+
+		if (declaration.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMIS) {
+			throw new AjoutDelaiDeclarationException(MAUVAIS_ETAT_DECLARATION, "La déclaration n'est pas dans l'état 'EMIS'.");
+		}
+
+		if (RegDateHelper.isAfter(dateObtention, aujourdhui, NullDateBehavior.LATEST)) {
+			throw new AjoutDelaiDeclarationException(DATE_OBTENTION_INVALIDE, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");
+		}
+
+		if (RegDateHelper.isBefore(dateDelai, aujourdhui, NullDateBehavior.LATEST)) {
+			throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
+		}
+
+		final RegDate delaiActuel = declaration.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
+		if (RegDateHelper.isBeforeOrEqual(dateDelai, delaiActuel, NullDateBehavior.LATEST)) {
+			throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un délai plus lointain existe déjà.");
+		}
+
+		// on ajoute le délai
+		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		delai.setDateTraitement(aujourdhui);
+		delai.setCleArchivageCourrier(null);
+		delai.setDateDemande(dateObtention);
+		delai.setDelaiAccordeAu(dateDelai);
+		declaration.addDelai(delai);
 	}
 
 	@Override

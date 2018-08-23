@@ -58,10 +58,10 @@ import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.ObjectNotFoundException;
 import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.TiersNotFoundException;
+import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
-import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.source.ListeRecapService;
 import ch.vd.unireg.efacture.EFactureService;
@@ -108,9 +108,7 @@ import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieImpotSource;
-import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.Niveau;
-import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.EvenementFiscalDescriptionHelper;
 import ch.vd.unireg.webservices.common.WebServiceHelper;
@@ -543,74 +541,64 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, DeadlineRequest request) throws AccessDeniedException {
 		final RegDate nouveauDelai = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate dateObtention = ch.vd.unireg.xml.DataHelper.xmlToCore(request.getGrantedOn());
-		final RegDate today = RegDate.get();
 
 		try {
 			return doInTransaction(false, new TxCallback<DeadlineResponse>() {
 				@Override
 				public DeadlineResponse execute(TransactionStatus status) throws AccessDeniedException {
 
+					// on va chercher le contribuable et la déclaration
 					final Tiers tiers = context.tiersService.getTiers(partyNo);
 					if (tiers == null) {
 						throw new TiersNotFoundException(partyNo);
 					}
-					else if (tiers instanceof Contribuable) {
-						final Contribuable ctb = (Contribuable) tiers;
 
-						if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-							WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PP);
-						}
-						else if (ctb instanceof Entreprise) {
-							WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PM);
-						}
-
-						final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
-						if (di == null) {
-							throw new ObjectNotFoundException("Déclaration d'impôt inexistante.");
-						}
-						else {
-							final DeadlineResponse response;
-							if (di.isAnnule()) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_CANCELLED_DECLARATION, null);
-							}
-							else if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMIS) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMIS'.");
-							}
-							else if (RegDateHelper.isAfter(dateObtention, today, NullDateBehavior.LATEST)) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_GRANTED_ON, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");
-							}
-							else if (RegDateHelper.isBefore(nouveauDelai, today, NullDateBehavior.LATEST)) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
-							}
-							else {
-								final RegDate delaiActuel = di.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
-								if (RegDateHelper.isBeforeOrEqual(nouveauDelai, delaiActuel, NullDateBehavior.LATEST)) {
-									response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un délai plus lointain existe déjà.");
-								}
-								else {
-									final DelaiDeclaration delai = new DelaiDeclaration();
-									delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
-									delai.setDateTraitement(RegDate.get());
-									delai.setCleArchivageCourrier(null);
-									delai.setDateDemande(dateObtention);
-									delai.setDelaiAccordeAu(nouveauDelai);
-									di.addDelai(delai);
-
-									response = new DeadlineResponse(DeadlineStatus.OK, null);
-								}
-							}
-
-							return response;
-						}
-					}
-					else {
+					if (!(tiers instanceof Contribuable)) {
 						throw new ObjectNotFoundException("Le tiers donné n'est pas un contribuable.");
+					}
+					final Contribuable ctb = (Contribuable) tiers;
+
+					if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
+						WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PP);
+					}
+					else if (ctb instanceof Entreprise) {
+						WebServiceHelper.checkAccess(context.securityProvider, Role.DI_DELAI_PM);
+					}
+
+					final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
+					if (di == null) {
+						throw new ObjectNotFoundException("Déclaration d'impôt inexistante.");
+					}
+
+					try {
+						// on ajoute le délai
+						context.diService.ajouterDelaiDI(di, dateObtention, nouveauDelai);
+						return new DeadlineResponse(DeadlineStatus.OK, null);
+					}
+					catch (AjoutDelaiDeclarationException e) {
+						return new DeadlineResponse(getDeadlineStatus(e.getRaison()), e.getMessage());
 					}
 				}
 			});
 		}
 		catch (TxCallbackException e) {
 			throw (AccessDeniedException) e.getCause();
+		}
+	}
+
+	@NotNull
+	private static DeadlineStatus getDeadlineStatus(@NotNull AjoutDelaiDeclarationException.Raison raison) {
+		switch (raison) {
+		case DECLARATION_ANNULEE:
+			return DeadlineStatus.ERROR_CANCELLED_DECLARATION;
+		case DATE_OBTENTION_INVALIDE:
+			return DeadlineStatus.ERROR_INVALID_GRANTED_ON;
+		case DATE_DELAI_INVALIDE:
+			return DeadlineStatus.ERROR_INVALID_DEADLINE;
+		case MAUVAIS_ETAT_DECLARATION:
+			return DeadlineStatus.ERROR_BAD_DECLARATION_STATUS;
+		default:
+			throw new IllegalArgumentException("Type de raison inconnu = [" + raison + "]");
 		}
 	}
 
