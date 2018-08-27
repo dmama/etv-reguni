@@ -12,6 +12,7 @@ import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
 import ch.vd.unireg.common.ListesResults;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
@@ -20,6 +21,7 @@ import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Tous les tiers sont placés dans la liste des tiers traités
@@ -33,6 +35,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
     private static final String[] LIGNES_ADRESSE_VIDE = {null, null, null, null, null, null};
 
     private final List<InfoTiers> tiers = new LinkedList<>();
+	private final List<InfoTiersRpt> tiersRpt = new LinkedList<>();
 
     private final TypeAdresse typeAdressesIncluses;
 
@@ -66,7 +69,21 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
         }
     }
 
-    public static class InfoTiersAvecAdresseFormattee extends InfoTiers {
+	public static class InfoTiersRpt {
+		public final long numeroTiers;
+		public final String prenom;
+		public final String nom;
+		public final String type;
+
+		public InfoTiersRpt(long numeroTiers, String prenom, String nom, String type) {
+			this.numeroTiers = numeroTiers;
+			this.prenom = prenom;
+			this.nom = nom;
+			this.type = type;
+		}
+	}
+
+	public static class InfoTiersAvecAdresseFormattee extends InfoTiers {
 
         public final String[] adresse;
 
@@ -111,6 +128,13 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 			}
 			else {
 				addTiers(ctb.getNumero(), nomPrenom, null);
+				//Pour la RPT
+				if (UniregModeHelper.isTestMode()) {
+					final String prenom = tiersService.getDecompositionNomPrenom(pp, true).getPrenom();
+					final String nom = tiersService.getDecompositionNomPrenom(pp, true).getNom();
+					addTiersRpt(pp.getNumero(), prenom, nom, "PP");
+				}
+
 			}
 		}
 		else if (ctb instanceof MenageCommun) {
@@ -138,6 +162,25 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 				}
 				else {
 					addTiers(menage.getNumero(), nomPrenomPrincipal, nomPrenomConjoint);
+
+					//Pour la RPT
+					if (UniregModeHelper.isTestMode()) {
+
+						if (principal != null) {
+							final NomPrenom nomPrenomP = tiersService.getDecompositionNomPrenom(principal, true);
+							final String prenomP = nomPrenomP.getPrenom();
+							final String nomP = nomPrenomP.getNom();
+							addTiersRpt(menage.getNumero(), prenomP, nomP, "MC");
+						}
+						if (conjoint != null) {
+							final NomPrenom nomPrenomC = tiersService.getDecompositionNomPrenom(conjoint, true);
+							final String prenomC = nomPrenomC.getPrenom();
+							final String nomC = nomPrenomC.getNom();
+							addTiersRpt(menage.getNumero(), prenomC, nomC, "MC");
+						}
+					}
+
+
 				}
 			}
 			else {
@@ -264,10 +307,18 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
     private void addTiers(long numeroCtb, String nomPrenomPrincipal, @Nullable String nomPrenomConjoint, String[] lignesAdresse) {
         this.tiers.add(new InfoTiersAvecAdresseFormattee(numeroCtb, nomPrenomPrincipal, nomPrenomConjoint, lignesAdresse));
     }
+	private void addTiersRpt(long numeroCtb, String prenom, @Nullable String nom,String type) {
+		this.tiersRpt.add(new InfoTiersRpt(numeroCtb, prenom, nom, type));
+	}
 
 	private void addContribuable(Long numero, String nomPrenomPrincipal, @Nullable String nomPrenomConjoint, String rueEtNumero, String npa, String localite, String pays) {
 		this.tiers.add(new InfoTiersAvecAdresseStructureeRF(numero, nomPrenomPrincipal, nomPrenomConjoint, rueEtNumero, npa, localite, pays));
 	}
+//		private boolean isSelectionnable(PersonnePhysique pp){
+//			final boolean isPasEncoreMort = pp.getDateDeces() == null || pp.getDateDeces().isAfter(RegDate.get(periodeFiscale, 1, 1));
+//			final boolean isDejaNee = pp.getDateNaissance()==null || pp.getDateNaissance().isBefore(RegDate.get(periodeFiscale,12,31));
+//			return isPasEncoreMort && isDejaNee;
+//		}
 
     public List<InfoTiers> getListeTiers() {
         return this.tiers;
@@ -277,16 +328,22 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
         return this.tiers.size();
     }
 
-    @Override
+	public List<InfoTiersRpt> getListTiersRpt() {
+		return tiersRpt;
+	}
+
+	@Override
     public void addAll(ListesNominativesResults source) {
 	    super.addAll(source);
         this.tiers.addAll(source.tiers);
+        this.tiersRpt.addAll(source.tiersRpt);
     }
 
     @Override
     public void sort() {
         super.sort();
         this.tiers.sort(Comparator.comparingLong(info -> info.numeroTiers));
+	    this.tiersRpt.sort(Comparator.comparingLong(info -> info.numeroTiers));
     }
 
 	public TypeAdresse getTypeAdressesIncluses() {

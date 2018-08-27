@@ -6,12 +6,14 @@ import java.util.List;
 
 import com.itextpdf.text.pdf.PdfWriter;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.ListesResults;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
 import ch.vd.unireg.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.unireg.listes.listesnominatives.TypeAdresse;
+import ch.vd.unireg.utils.UniregModeHelper;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
@@ -81,6 +83,18 @@ public class PdfListesNominativesRapport extends PdfRapport{
 			}
 		}
 
+		//Contribuables pour RPT
+		if (UniregModeHelper.isTestMode()) {
+			{
+				final String stringDate = DateHelper.dateToDashString(dateGeneration);
+				final String filename = "Unireg-Batch-TousContribuables-" + stringDate + ".csv";
+				final String titre = "Liste des tiers pour la RPT";
+				final String listVide = "(aucun)";
+				try (TemporaryFile contenu = genererListesRptNominatives(results, filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
+			}
+		}
 		close();
 
 		status.setMessage("Génération du rapport terminée.");
@@ -143,6 +157,35 @@ public class PdfListesNominativesRapport extends PdfRapport{
         }
         return contenu;
     }
+
+	private TemporaryFile genererListesRptNominatives(final ListesNominativesResults results, String filename, StatusManager status) {
+
+		TemporaryFile contenu = null;
+		final List<ListesNominativesResults.InfoTiersRpt> list = results.getListTiersRpt();
+		final int size = list.size();
+		if (size > 0) {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListesNominativesResults.InfoTiersRpt>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("Numéro tiers").append(COMMA);
+					b.append("Prenom").append(COMMA);
+					b.append("Nom").append(COMMA);
+					b.append("Type");
+				}
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, ListesNominativesResults.InfoTiersRpt ligne) {
+					b.append(Long.toString(ligne.numeroTiers)).append(COMMA);
+					b.append(escapeChars(ligne.prenom)).append(COMMA);
+					b.append(escapeChars(ligne.nom)).append(COMMA);
+					b.append(escapeChars(ligne.type));
+
+					return true;
+				}
+			});
+		}
+		return contenu;
+	}
 
 	private TemporaryFile genererErreursListesNominatives(ListesNominativesResults results, String filename, StatusManager status) {
 
