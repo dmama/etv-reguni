@@ -209,6 +209,7 @@
 		<value>ch.vd.unireg.document.AcomptesRapport</value>
 		<value>ch.vd.unireg.document.ExtractionDonneesRptRapport</value>
 		<value>ch.vd.unireg.document.ListeAssujettisRapport</value>
+		<value>ch.vd.unireg.document.ListeEchangeRenseignementsRapport</value>
 		<value>ch.vd.unireg.document.ImpressionChemisesTORapport</value>
 		<value>ch.vd.unireg.document.ReinitialiserBaremeDoubleGainRapport</value>
 		<value>ch.vd.unireg.document.ExclureContribuablesEnvoiRapport</value>

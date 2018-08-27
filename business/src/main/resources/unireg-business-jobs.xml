@@ -677,6 +677,18 @@
 		<property name="rapportService" ref="rapportService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
+	<bean id="listeEchangeRenseignementsJob" parent="schedulerJob" class="ch.vd.unireg.listes.ear.ListeEchangeRenseignementsJob">
+		<constructor-arg value="626"/>
+		<constructor-arg value="Produire la liste des contribuables pour l'échange automatique de renseignements (EAR)"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="adresseService" ref="adresseService"/>
+	</bean>
 
     <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.unireg.database.DumpDatabaseJob">
         <constructor-arg value="700"/>

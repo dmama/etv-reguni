@@ -105,6 +105,7 @@ import ch.vd.unireg.document.StatistiquesEvenementsRapport;
 import ch.vd.unireg.document.SuppressionOIDRapport;
 import ch.vd.unireg.document.TraiterEvenementExterneRapport;
 import ch.vd.unireg.document.ValidationJobRapport;
+import ch.vd.unireg.document.ListeEchangeRenseignementsRapport;
 import ch.vd.unireg.documentfiscal.EnvoiLettresBienvenueResults;
 import ch.vd.unireg.documentfiscal.RappelLettresBienvenueResults;
 import ch.vd.unireg.droits.ListeDroitsAccesResults;
@@ -120,6 +121,7 @@ import ch.vd.unireg.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.unireg.listes.afc.pm.ExtractionDonneesRptPMResults;
 import ch.vd.unireg.listes.assujettis.AssujettisParSubstitutionResults;
 import ch.vd.unireg.listes.assujettis.ListeAssujettisResults;
+import ch.vd.unireg.listes.ear.ListeEchangeRenseignementsResults;
 import ch.vd.unireg.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.unireg.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.unireg.metier.ComparerForFiscalEtCommuneResults;
@@ -808,4 +810,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	ChangementRegimesFiscauxRapport generateRapport(ChangementRegimesFiscauxJobResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du job d'extraction de la liste EAR d'une période fiscale
+	 *
+	 * @param results les résultats du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	ListeEchangeRenseignementsRapport generateRapport(ListeEchangeRenseignementsResults results, StatusManager status);
 }
