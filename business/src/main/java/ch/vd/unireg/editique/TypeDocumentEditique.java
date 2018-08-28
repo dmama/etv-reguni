@@ -50,6 +50,8 @@ public enum TypeDocumentEditique {
 
 	QSNC("U1PQQSNC", "407", "impressionQSNC"),
 	RAPPEL_SQNC("U1PRQSNC", "406", "rappelQSNC"),
+	REFUS_DELAI_QSNC("U1PCREFU", "418", "refusDelaiQSNC"),
+	ACCORD_DELAI_QSNC("U1PBDLAI", "419", "accordDelaiQSNC"),
 
 	//
 	// Autour des listes récapitulatives IS
