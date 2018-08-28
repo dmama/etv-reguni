@@ -18,6 +18,7 @@ public interface AssujettissementService {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
+	@Nullable
 	List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException;
 
 	/**
@@ -27,6 +28,7 @@ public interface AssujettissementService {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
+	@Nullable
 	List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException;
 
 	/**
@@ -36,6 +38,7 @@ public interface AssujettissementService {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
+	@Nullable
 	List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException;
 
 	/**
@@ -48,6 +51,7 @@ public interface AssujettissementService {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
+	@Nullable
 	List<Assujettissement> determinePourCommunes(Contribuable ctb, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException;
 
 	/**
@@ -59,6 +63,7 @@ public interface AssujettissementService {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
+	@Nullable
 	List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException;
 
 	/**
@@ -72,6 +77,7 @@ public interface AssujettissementService {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
+	@Nullable
 	List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range) throws AssujettissementException;
 
 	/**
@@ -81,5 +87,6 @@ public interface AssujettissementService {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
+	@Nullable
 	List<Assujettissement> determine(Contribuable contribuable, List<DateRange> splittingRanges) throws AssujettissementException;
 }

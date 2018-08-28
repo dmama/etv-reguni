@@ -35,12 +35,16 @@ import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
+import ch.vd.unireg.declaration.EtatDeclarationEmise;
+import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.declaration.Periodicite;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.efacture.EFactureServiceProxy;
 import ch.vd.unireg.efacture.MockEFactureService;
 import ch.vd.unireg.etiquette.Etiquette;
@@ -65,6 +69,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.metier.bouclement.BouclementService;
 import ch.vd.unireg.registrefoncier.BatimentRF;
 import ch.vd.unireg.registrefoncier.BienFondsRF;
 import ch.vd.unireg.registrefoncier.CommunauteRF;
@@ -111,6 +117,7 @@ import ch.vd.unireg.type.TypeFlagEntreprise;
 import ch.vd.unireg.type.TypePermis;
 import ch.vd.unireg.type.TypeRapprochementRF;
 import ch.vd.unireg.type.TypeTiersEtiquette;
+import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.ws.ack.v7.AckStatus;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
@@ -120,6 +127,11 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
+import ch.vd.unireg.ws.groupdeadline.v7.RejectionReason;
+import ch.vd.unireg.ws.groupdeadline.v7.TaxDeclarationInfo;
+import ch.vd.unireg.ws.groupdeadline.v7.ValidationResult;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
@@ -245,6 +257,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	private BusinessWebService service;
 	private EFactureServiceProxy efactureService;
 	private EtiquetteService etiquetteService;
+	private ValidationService validationService;
+	private PeriodeImpositionService periodeImpositionService;
+	private BouclementService bouclementService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -252,6 +267,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		service = getBean(BusinessWebService.class, "wsv7Business");
 		efactureService = getBean(EFactureServiceProxy.class, "efactureService");
 		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
+		validationService = getBean(ValidationService.class, "validationService");
+		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
+		bouclementService = getBean(BouclementService.class, "bouclementService");
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
 			@Override
@@ -4942,6 +4960,561 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertNotNull(leaders);
 		assertEquals(1, leaders.size());
 		assertLeader(ids.heritier1, RegDate.get(2016, 5, 13), null, null, leaders.get(0));
+	}
+
+	@Test
+	public void testValidateGroupDeadlineRequest() throws Exception {
+
+		// on créé des tiers avec des situations différentes
+		final int ctbIdInconnu = 12300301;
+		final Long debiteurId = doInNewTransaction(status -> addDebiteur().getNumero());
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
+
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
+			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30)));
+
+			return pp.getNumero();
+		});
+
+
+		final GroupDeadlineValidationRequest request = new GroupDeadlineValidationRequest(2017, Arrays.asList((int) ctbId, ctbIdInconnu, debiteurId.intValue()));
+		final GroupDeadlineValidationResponse response = service.validateGroupDeadlineRequest(request);
+		assertNotNull(response);
+
+		final List<ValidationResult> results = response.getValidationResults();
+		assertNotNull(results);
+		assertEquals(3, results.size());
+		assertValidationSuccess(ctbId, PartyType.NATURAL_PERSON, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(date(2018, 6, 30)), results.get(0));
+		assertIneligibleError(ctbIdInconnu, null, "Le contribuable n'existe pas.", results.get(1));
+		assertIneligibleError(debiteurId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable.", results.get(2));
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableInconnu() throws Exception {
+
+		final int ctbId = 12300301;
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2018, ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, null, "Le contribuable n'existe pas.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestDebiteur() throws Exception {
+
+		final long ctbId = 1230001;
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+
+		doInNewTransaction(status -> {
+
+			// on crée un débiteur
+			addDebiteur(ctbId);
+
+			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableAnnule() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+
+		// on crée un contribuable annulé
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			pp.setAnnule(true);
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable est annulé.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableInvalide() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+
+		// on crée un contribuable invalide
+		final long ctbId = doInNewTransactionAndSessionWithoutValidation(status -> {
+			PersonnePhysique pp = addNonHabitant("Rodolf", "Piedbor", date(1953, 12, 18), Sexe.MASCULIN);
+			addForPrincipal(pp, date(1971, 12, 18), MotifFor.MAJORITE, MockCommune.Lausanne);
+			// le for secondaire n'est pas couvert par le for principal
+			addForSecondaire(pp, date(1920, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Une incohérence de données sur le contribuable empêche sa modification (validation).", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableNonAssujetti() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable non-assujetti
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'a pas de période d'imposition en 2018.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuablePasAssujettiAuRole() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable hors-canton avec un immeuble
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2000,1,1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+			addForSecondaire(pp, date(2000,1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex, MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'est pas assujetti au rôle de manière illimitée en 2018 (hors Suisse).", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestPPPasAssujettiDeManiereIllimitee() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable PP vaudois parti HS dans l'année
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HC, date(2018, 8, 22), MotifFor.DEPART_HS, MockCommune.Bex);
+			addForPrincipal(pp, date(2018, 8, 23), MotifFor.DEPART_HS, MockPays.Liechtenstein);
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale 2018.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestPMPasAssujettiDeManiereIllimitee() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+		service.setBouclementService(bouclementService);
+
+		// on crée un contribuable PM vaudois parti HS dans l'année
+		final long ctbId = doInNewTransaction(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil("Ma petite entreprise", date(2000, 2, 1));
+			addBouclement(pm, date(2000, 2, 1), DayMonth.get(12, 31), 12);              // tous les 31.12 depuis 2000
+			addRegimeFiscalVD(pm, date(2000, 2, 1), date(2018, 8, 23), MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(2000, 2, 1), date(2018, 8, 23), MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2018, 8, 22), MotifFor.DEPART_HS, MockCommune.Bex);
+			return pm.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, PartyType.CORPORATION, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale 2018.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableSansDeclaration() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable assujetti mais sans déclaration (cas métier : contribuable dont l'arrivée
+		// a été traité tardivement et qui possède des tâches d'émission des DIs pas encore traitées)
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertEquals(1, results.size());
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "03", "Il n'existe aucune déclaration sur la période 2017.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableAvecDeclarationAnnulee() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable assujetti avec une déclaration annulée
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.setAnnule(true);
+
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertEquals(1, results.size());
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "01", "La déclaration existante sur la période 2017 est annulée.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableAvecPlusieursDeclarationsAnnulees() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable assujetti avec deux déclarations annulées
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
+
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 7, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di1.setAnnule(true);
+			final DeclarationImpotOrdinairePP di2 = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di2.setAnnule(true);
+
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertEquals(1, results.size());
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "01", "Les déclarations existantes sur la période 2017 sont toutes annulées.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableAvecUneDeclarationRetournee() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable assujetti avec un déclaration déjà retournée
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
+
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
+			di.addEtat(new EtatDeclarationRetournee(date(2018, 5, 1), "TEST"));
+			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30)));
+
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertEquals(1, results.size());
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "04", "La déclaration est déjà retournée.",
+			                      date(2017, 1, 1), date(2017, 12, 31), 1, results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableAvecUneDeclarationAvecUnDelaiDejaOctroye() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable assujetti avec un déclaration émise et un délai déjà octroyé
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
+
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
+			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30)));
+			di.addDelai(newDelaiDeclaration(date(2018, 4, 16), date(2018, 11, 1)));   // <--- délai déjà octroyé
+
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertEquals(1, results.size());
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "02", "Il y a déjà un délai accordé au 01.11.2018.",
+			                      date(2017, 1, 1), date(2017, 12, 31), 1, results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableAvecUneDeclarationEmise() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable assujetti avec un déclaration émise toute propre
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
+
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
+			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30)));
+
+			return pp.getNumero();
+		});
+
+		// il doit être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertEquals(1, results.size());
+			assertValidationSuccess(ctbId, PartyType.NATURAL_PERSON, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(date(2018, 6, 30)), results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableAvecDeuxDeclarationsEmises() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable assujetti avec deux déclarations émises (touch'n go)
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 1, 1), MotifFor.ARRIVEE_HC, date(2017, 3, 31), MotifFor.DEPART_HS, MockCommune.Bex);
+			addForPrincipal(pp, date(2017, 4, 1), MotifFor.DEPART_HS, date(2017, 8, 30), MotifFor.ARRIVEE_HS, MockPays.France);
+			addForPrincipal(pp, date(2017, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Croy);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
+
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di1.addEtat(new EtatDeclarationEmise(date(2017, 4, 15)));
+			di1.addDelai(newDelaiDeclaration(date(2017, 4, 15), date(2017, 4, 30)));
+
+			final DeclarationImpotOrdinairePP di2 = addDeclarationImpot(pp, periode2017, date(2017, 9, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di2.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
+			di2.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2017, 6, 30)));
+
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertEquals(1, results.size());
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il possède plusieurs périodes d'imposition en 2017.", results.get(0));
+			return null;
+		});
+	}
+
+	@Test
+	public void testValidateDeadlineRequestContribuableAvecDeuxDeclarationsEmisesMaisUneSeulePeriodeImposition() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+
+		// on crée un contribuable assujetti avec deux déclarations émises mais une seule période d'imposition
+		final long ctbId = doInNewTransaction(status -> {
+			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
+			addForPrincipal(pp, date(2017, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Croy);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
+
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di1.addEtat(new EtatDeclarationEmise(date(2017, 4, 15)));
+			di1.addDelai(newDelaiDeclaration(date(2017, 4, 15), date(2017, 4, 30)));
+
+			final DeclarationImpotOrdinairePP di2 = addDeclarationImpot(pp, periode2017, date(2017, 9, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di2.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
+			di2.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2017, 6, 30)));
+
+			return pp.getNumero();
+		});
+
+		// il ne doit pas être possible de demander un délai
+		doInNewTransaction(status -> {
+			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertEquals(1, results.size());
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "TODO", "Il existe plusieurs déclarations sur la période 2017.", results.get(0));
+			return null;
+		});
+	}
+
+	private static DelaiDocumentFiscal newDelaiDeclaration(RegDate dateTraitement, RegDate dateDelai) {
+		DelaiDeclaration d = new DelaiDeclaration();
+		d.setDateTraitement(dateTraitement);
+		d.setDelaiAccordeAu(dateDelai);
+		d.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		return d;
+	}
+
+	private static void assertIneligibleError(long ctbId, PartyType partyType, String message, ValidationResult result) {
+		assertEquals(ctbId, result.getTaxPayerNumber());
+		assertEquals(partyType, result.getTaxPayerType());
+		assertFalse(result.isEligible());
+		assertEquals(message, result.getNonEligibleReason());
+		assertNull(result.getTaxDeclaration());
+		assertEmpty(result.getProposedDeadlines());
+		assertNull(result.getRejectionReason());
+	}
+
+	private static void assertValidationError(long ctbId, PartyType partyType, String code, String message, ValidationResult result) {
+		assertEquals(ctbId, result.getTaxPayerNumber());
+		assertEquals(partyType, result.getTaxPayerType());
+		assertTrue(result.isEligible());
+		assertEmpty(result.getProposedDeadlines());
+		assertNull(result.getTaxDeclaration());
+
+		final RejectionReason reason = result.getRejectionReason();
+		assertEquals(code, reason.getCode());
+		assertEquals(message, reason.getMessage());
+	}
+
+	private static void assertValidationError(long ctbId, PartyType partyType, String code, String message, RegDate dateDebutDeclaration, RegDate dateFinDeclaration, int numeroSequence, ValidationResult result) {
+		assertEquals(ctbId, result.getTaxPayerNumber());
+		assertEquals(partyType, result.getTaxPayerType());
+		assertTrue(result.isEligible());
+		assertEmpty(result.getProposedDeadlines());
+
+		final TaxDeclarationInfo taxDeclaration = result.getTaxDeclaration();
+		assertNotNull(taxDeclaration);
+		assertDate(dateDebutDeclaration, taxDeclaration.getDateFrom());
+		assertDate(dateFinDeclaration, taxDeclaration.getDateTo());
+		assertEquals(numeroSequence, taxDeclaration.getSequenceNumber());
+
+		final RejectionReason reason = result.getRejectionReason();
+		assertEquals(code, reason.getCode());
+		assertEquals(message, reason.getMessage());
+	}
+
+	private static void assertValidationSuccess(long ctbId, PartyType partyType, RegDate dateDebutDeclaration, RegDate dateFinDeclaration, int numeroSequence, List<RegDate> delais, ValidationResult result) {
+		assertEquals(ctbId, result.getTaxPayerNumber());
+		assertEquals(partyType, result.getTaxPayerType());
+		assertTrue(result.isEligible());
+		assertNull(result.getRejectionReason());
+
+		final List<ch.vd.unireg.xml.common.v2.Date> proposedDeadlines = result.getProposedDeadlines();
+		assertEquals(delais.size(), proposedDeadlines.size());
+		assertEquals(delais, proposedDeadlines.stream().map(DataHelper::webToRegDate).collect(Collectors.toList()));
+
+		final TaxDeclarationInfo taxDeclaration = result.getTaxDeclaration();
+		assertNotNull(taxDeclaration);
+		assertDate(dateDebutDeclaration, taxDeclaration.getDateFrom());
+		assertDate(dateFinDeclaration, taxDeclaration.getDateTo());
+		assertEquals(numeroSequence, taxDeclaration.getSequenceNumber());
+	}
+
+	public static void assertDate(@Nullable RegDate expected, @Nullable ch.vd.unireg.xml.common.v2.Date actual) {
+		if (expected == null) {
+			assertNull(actual);
+		}
+		else {
+			assertNotNull(actual);
+			assertEquals(expected.year(), actual.getYear());
+			assertEquals(expected.month(), actual.getMonth());
+			assertEquals(expected.day(), actual.getDay());
+		}
 	}
 
 	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {

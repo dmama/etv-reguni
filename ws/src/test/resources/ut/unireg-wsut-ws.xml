@@ -221,6 +221,8 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
 		<property name="regimeFiscalService" ref="regimeFiscalService"/>
+		<property name="validationService" ref="validationService"/>
+		<property name="bouclementService" ref="bouclementService"/>
 	</bean>
 
 </beans>

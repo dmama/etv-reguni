@@ -17,6 +17,8 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
@@ -98,6 +100,15 @@ public interface BusinessWebService {
 	 * @throws AccessDeniedException si l'opérateur courant n'a pas le droit de faire ça
 	 */
 	DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, DeadlineRequest request) throws AccessDeniedException;
+
+	/**
+	 * Validation d'une demande de groupée de délais sur plusieurs déclarations d'impôt
+	 *
+	 * @param request la demande de délai à valider
+	 * @return la réponse
+	 */
+	@NotNull
+	GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) throws AccessDeniedException;
 
 	/**
 	 * Récupère les offices d'impôt de la commune identifiée par son numéro OFS et la date de validité

@@ -24,6 +24,8 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
@@ -102,6 +104,12 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, DeadlineRequest request) throws AccessDeniedException {
 		check(partyNo);
 		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, request);
+	}
+
+	@NotNull
+	@Override
+	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) throws AccessDeniedException {
+		return target.validateGroupDeadlineRequest(request);
 	}
 
 	@Override

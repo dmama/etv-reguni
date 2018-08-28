@@ -97,6 +97,7 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 		this.calculators = buildAssujettissementCalculators();
 	}
 
+	@Nullable
 	@Override
 	public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
 		return determineCalculatorEtAssujettissement(ctb, null);
@@ -222,21 +223,25 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 	 */
 	private static final InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, SourcierPur> SOURCE_PP_CALCULATOR = AssujettissementPersonnesPhysiquesCalculator::determineSource;
 
+	@Nullable
 	@Override
 	public List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
 		return determine(ctb, ROLE_PP_CALCULATOR, null);
 	}
 
+	@Nullable
 	@Override
 	public List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
 		return determine(ctb, SOURCE_PP_CALCULATOR, null);
 	}
 
+	@Nullable
 	@Override
 	public List<Assujettissement> determinePourCommunes(Contribuable ctb, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		return determineCalculatorEtAssujettissement(ctb, noOfsCommunesVaudoises);
 	}
 
+	@Nullable
 	@Override
 	public List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException {
 		final AssujettissementCalculator<? super Contribuable> calculator = findCalculator(contribuable);
@@ -249,6 +254,7 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 		return determineAssujettissement(contribuable, limited, null);
 	}
 
+	@Nullable
 	@Override
 	public List<Assujettissement> determine(Contribuable contribuable, @Nullable final DateRange range) throws AssujettissementException {
 		final AssujettissementCalculator<? super Contribuable> calculator = findCalculator(contribuable);
@@ -261,6 +267,7 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 		return determineAssujettissement(contribuable, limiting, null);
 	}
 
+	@Nullable
 	@Override
 	public List<Assujettissement> determine(Contribuable contribuable, List<DateRange> splittingRanges) throws AssujettissementException {
 		final AssujettissementCalculator<? super Contribuable> calculator = findCalculator(contribuable);

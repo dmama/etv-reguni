@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -227,6 +228,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 		// Configuration du translator
 		translator.setAssujettissementService(new MockAssujettissementService() {
+			@Nullable
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) {
 				return Collections.singletonList(new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifAssujettissement.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
@@ -318,6 +320,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 		// Configuration du translator
 		translator.setAssujettissementService(new MockAssujettissementService() {
+			@Nullable
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) {
 				return Collections.emptyList();
@@ -408,6 +411,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 		// Configuration du translator
 		translator.setAssujettissementService(new MockAssujettissementService() {
+			@Nullable
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) {
 				return Collections.emptyList();
@@ -509,6 +513,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 		// Configuration du translator
 		translator.setAssujettissementService(new MockAssujettissementService() {
+			@Nullable
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) {
 				return Collections.emptyList();
@@ -651,6 +656,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 		// Configuration du translator
 		translator.setAssujettissementService(new MockAssujettissementService() {
+			@Nullable
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) {
 				return Collections.singletonList(new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifAssujettissement.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
@@ -737,6 +743,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 		// Configuration du translator
 		translator.setAssujettissementService(new MockAssujettissementService() {
+			@Nullable
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) {
 				return Collections.emptyList();
@@ -822,6 +829,7 @@ public class RadiationTest extends AbstractEvenementEntrepriseCivileProcessorTes
 
 		// Configuration du translator
 		translator.setAssujettissementService(new MockAssujettissementService() {
+			@Nullable
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) {
 				return Collections.singletonList(new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifAssujettissement.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));

@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.jms.BamMessageSender;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.metier.bouclement.BouclementService;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
@@ -25,6 +26,7 @@ import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
+import ch.vd.unireg.validation.ValidationService;
 
 /**
  * Encapsule quelques services d'unireg
@@ -78,4 +80,8 @@ public class Context {
 	public RegistreFoncierService registreFoncierService;
 
 	public RegimeFiscalService regimeFiscalService;
+
+	public ValidationService validationService;
+
+	public BouclementService bouclementService;
 }

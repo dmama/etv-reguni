@@ -1,6 +1,3 @@
-/**
- *
- */
 package ch.vd.unireg.type;
 
 /**

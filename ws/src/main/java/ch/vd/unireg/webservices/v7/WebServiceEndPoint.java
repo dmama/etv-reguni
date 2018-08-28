@@ -48,6 +48,8 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
@@ -99,6 +101,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.security.v7.ObjectFactory securityObjectFactory = new ch.vd.unireg.ws.security.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.ack.v7.ObjectFactory ackObjectFactory = new ch.vd.unireg.ws.ack.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.deadline.v7.ObjectFactory deadlineObjectFactory = new ch.vd.unireg.ws.deadline.v7.ObjectFactory();
+	private final ch.vd.unireg.ws.groupdeadline.v7.ObjectFactory groupdeadlineObjectFactory = new ch.vd.unireg.ws.groupdeadline.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.taxoffices.v7.ObjectFactory taxOfficesObjectFactory = new ch.vd.unireg.ws.taxoffices.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.modifiedtaxpayers.v7.ObjectFactory modifiedTaxPayersFactory = new ch.vd.unireg.ws.modifiedtaxpayers.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.debtorinfo.v7.ObjectFactory debtorInfoFactory = new ch.vd.unireg.ws.debtorinfo.v7.ObjectFactory();
@@ -505,6 +508,15 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		return execute(user, params, WRITE_ACCESS_LOG, () -> {
 			final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, request);
 			return ExecutionResult.with(Response.ok(deadlineObjectFactory.createDeadlineResponse(response)).build());
+		});
+	}
+
+	@Override
+	public Response validateGroupDeadlineRequest(String user, GroupDeadlineValidationRequest request) {
+		final Supplier<String> params = () -> String.format("validateGroupDeadlineRequest{user=%s, request=%s}", WebServiceHelper.enquote(user), request);
+		return execute(user, params, WRITE_ACCESS_LOG, () -> {
+			final GroupDeadlineValidationResponse response = target.validateGroupDeadlineRequest(request);
+			return ExecutionResult.with(Response.ok(groupdeadlineObjectFactory.createGroupDeadlineValidationResponse(response)).build());
 		});
 	}
 

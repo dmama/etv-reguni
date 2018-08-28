@@ -30,6 +30,8 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
@@ -269,6 +271,20 @@ public interface WebService {
 	                                           @ApiParam(value = "numéro de séquence de la déclaration à laquelle on veut rajouter un délai") @PathParam("sequenceNo") int seqNo,
 	                                           @ApiParam(value = USER_PARAM_DESCRIPTION, required = true) @QueryParam("user") String user,
 	                                           @ApiParam(value = "XML au format de l’élément « deadlineRequest » du namespace http://www.vd.ch/fiscalite/unireg/ws/deadline/7") DeadlineRequest request);
+
+	@POST
+	@Path("/validateGroupDeadlineRequest")
+	@Consumes(MediaType.APPLICATION_XML)
+	@Produces(MediaType.APPLICATION_XML)
+	@ApiOperation(value = "Validation d'une demande de groupée de délais sur plusieurs déclarations d'impôt")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "la réponse de la demande de validation", response = GroupDeadlineValidationResponse.class),
+			@ApiResponse(code = 400, message = ERROR_400_MESSAGE),
+			@ApiResponse(code = 403, message = "si l’opérateur indiqué ne possède pas les droits de demande de délai sur l’application Unireg"),
+			@ApiResponse(code = 415, message = ERROR_415_MESSAGE)
+	})
+	Response validateGroupDeadlineRequest(@ApiParam(value = USER_PARAM_DESCRIPTION, required = true) @QueryParam("user") String user,
+	                                      @ApiParam(value = "XML au format de l’élément « groupDeadlineValidationRequest » du namespace http://www.vd.ch/fiscalite/unireg/ws/groupdeadline/7.", required = true) GroupDeadlineValidationRequest request);
 
 	@GET
 	@Path("/modifiedTaxPayers")

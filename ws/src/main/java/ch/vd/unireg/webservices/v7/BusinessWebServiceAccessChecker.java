@@ -20,6 +20,8 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
@@ -81,6 +83,13 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, DeadlineRequest request) throws AccessDeniedException {
 		// le droit PP/PM dépend du type de contribuable, le check est donc fait plus bas...
 		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, request);
+	}
+
+	@NotNull
+	@Override
+	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) throws AccessDeniedException {
+		// le droit d'ajouter un délai dépend du type de contribuable PP/PM, le check est donc fait dans l'implémentation.
+		return target.validateGroupDeadlineRequest(request);
 	}
 
 	@Override

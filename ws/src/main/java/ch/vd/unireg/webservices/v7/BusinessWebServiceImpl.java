@@ -56,6 +56,7 @@ import ch.vd.unireg.common.BatchIterator;
 import ch.vd.unireg.common.BatchTransactionTemplateWithResults;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.ObjectNotFoundException;
+import ch.vd.unireg.common.ProgrammingException;
 import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.declaration.AjoutDelaiDeclarationException;
@@ -80,8 +81,11 @@ import ch.vd.unireg.interfaces.service.ServiceEntreprise;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.jms.BamMessageHelper;
 import ch.vd.unireg.jms.BamMessageSender;
+import ch.vd.unireg.metier.assujettissement.AssujettissementException;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
+import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.unireg.metier.bouclement.BouclementService;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.unireg.metier.periodeexploitation.PeriodeExploitationService;
 import ch.vd.unireg.metier.piis.PeriodeImpositionImpotSourceService;
@@ -97,6 +101,7 @@ import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
+import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
@@ -109,6 +114,9 @@ import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieImpotSource;
 import ch.vd.unireg.type.Niveau;
+import ch.vd.unireg.type.TypeContribuable;
+import ch.vd.unireg.type.TypeEtatDocumentFiscal;
+import ch.vd.unireg.validation.ValidationService;
 import ch.vd.unireg.webservices.common.AccessDeniedException;
 import ch.vd.unireg.webservices.common.EvenementFiscalDescriptionHelper;
 import ch.vd.unireg.webservices.common.WebServiceHelper;
@@ -121,6 +129,11 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationRequest;
+import ch.vd.unireg.ws.groupdeadline.v7.GroupDeadlineValidationResponse;
+import ch.vd.unireg.ws.groupdeadline.v7.RejectionReason;
+import ch.vd.unireg.ws.groupdeadline.v7.TaxDeclarationInfo;
+import ch.vd.unireg.ws.groupdeadline.v7.ValidationResult;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
@@ -288,6 +301,14 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
 		context.regimeFiscalService = regimeFiscalService;
+	}
+
+	public void setValidationService(ValidationService validationService) {
+		context.validationService = validationService;
+	}
+
+	public void setBouclementService(BouclementService bouclementService) {
+		context.bouclementService = bouclementService;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -600,6 +621,211 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		default:
 			throw new IllegalArgumentException("Type de raison inconnu = [" + raison + "]");
 		}
+	}
+
+	@NotNull
+	@Override
+	public GroupDeadlineValidationResponse validateGroupDeadlineRequest(@NotNull GroupDeadlineValidationRequest request) {
+
+		final int periodeFiscale = request.getTaxPeriod();
+		final List<Integer> ctbIds = request.getTaxPayerNumber();
+
+		return doInTransaction(true, status -> {
+			final List<ValidationResult> validationResults = ctbIds.stream()
+					.map(id -> validateDeadlineRequest(periodeFiscale, id))
+					.flatMap(Collection::stream)
+					.collect(Collectors.toList());
+			return new GroupDeadlineValidationResponse(validationResults, 0, null);
+		});
+	}
+
+	/**
+	 * Valide de la demande de délai pour un contribuable et une période fiscale donnés.
+	 *
+	 * @param periodeFiscale la période fiscale considérée
+	 * @param ctbId          le numéro de contribuable considéré
+	 * @return la liste des résultats de validation (il y a un résultat par déclaration émise)
+	 */
+	@NotNull
+	List<ValidationResult> validateDeadlineRequest(int periodeFiscale, int ctbId) {
+
+		// vérification sur le tiers lui-même
+		final Tiers tiers = context.tiersDAO.get((long) ctbId);
+		if (tiers == null) {
+			return Collections.singletonList(buildIneligibleCtbResult(ctbId, null, "Le contribuable n'existe pas."));
+		}
+		if (!(tiers instanceof Contribuable)) {
+			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le tiers n'est pas un contribuable."));
+		}
+		if (tiers.isAnnule()) {
+			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable est annulé."));
+		}
+		if (!context.validationService.validate(tiers).getErrorsList().isEmpty()) {
+			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Une incohérence de données sur le contribuable empêche sa modification (validation)."));
+		}
+
+		// TODO (msi) faut-il ajouter un check sur la sécurité (role + dossier protégé) ?
+
+		// on vérifie si le contribuable est éligible
+		final List<PeriodeImposition> periodeImpositions;
+		try {
+			periodeImpositions = context.periodeImpositionService.determine((Contribuable) tiers, periodeFiscale);
+		}
+		catch (AssujettissementException e) {
+			LOGGER.warn(e.getMessage(), e);
+			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Impossible de calculer l'assujettissement du contribuable (" + e.getMessage() + ")."));
+		}
+		if (periodeImpositions == null || periodeImpositions.isEmpty()) {
+			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'a pas de période d'imposition en " + periodeFiscale + "."));
+		}
+		final int nbPeriodes = periodeImpositions.size();
+		if (nbPeriodes > 1) {
+			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il possède plusieurs périodes d'imposition en " + periodeFiscale + "."));
+		}
+
+		final PeriodeImposition periodeImposition = periodeImpositions.get(nbPeriodes - 1);
+		final TypeContribuable typeContribuable = periodeImposition.getTypeContribuable();
+		if (typeContribuable != TypeContribuable.VAUDOIS_ORDINAIRE) {
+			return Collections.singletonList(
+					buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est pas assujetti au rôle de manière illimitée en " + periodeFiscale + " (" + typeContribuable.description() + ")."));
+		}
+
+		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+			final RegDate finPeriode = RegDate.get(periodeFiscale, 12, 31);
+			if (periodeImposition.getDateFin().isBefore(finPeriode)) {
+				return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale " + periodeFiscale + "."));
+			}
+		}
+		else if (tiers instanceof ContribuableImpositionPersonnesMorales) {
+			final Entreprise entreprise = (Entreprise) tiers;
+			final RegDate dateProchainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), periodeImposition.getDateFin(), true);
+			if (periodeImposition.getDateFin().isBefore(dateProchainBouclement)) {
+				return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale " + periodeFiscale + "."));
+			}
+		}
+
+		// vérification sur les déclarations
+		final List<DeclarationImpotOrdinaire> declaration = tiers.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, periodeFiscale, true);
+		if (declaration.isEmpty()) {
+			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "03", "Il n'existe aucune déclaration sur la période " + periodeFiscale + "."));
+		}
+
+		final List<DeclarationImpotOrdinaire> declarationValides = declaration.stream() // déclarations non-annulées et triées par ordre chronologique croissant
+				.filter(AnnulableHelper::nonAnnule)
+				.collect(Collectors.toList());
+
+		if (declarationValides.isEmpty()) {
+			// il n'y a pas de déclaration non-annulée
+			final String message;
+			if (declaration.size() > 1) {
+				message = "Les déclarations existantes sur la période " + periodeFiscale + " sont toutes annulées.";
+			}
+			else {
+				message = "La déclaration existante sur la période " + periodeFiscale + " est annulée.";
+			}
+			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "01", message));
+		}
+		if (declarationValides.size() > 1) {
+			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "TODO", "Il existe plusieurs déclarations sur la période " + periodeFiscale + "."));
+		}
+
+		// on détermine un résultat pour la déclaration valide
+		final DeclarationImpotOrdinaire declarationValide = declarationValides.get(declarationValides.size() - 1);
+		return Collections.singletonList(validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide));
+	}
+
+	/**
+	 * Valide la demande de délai pour la déclaration spécifiée.
+	 *
+	 * @param periodeFiscale la période fiscale considérée
+	 * @param tiers          le tiers qui possède la déclaration
+	 * @param declaration    la déclaration considérée
+	 * @return le résultat de la validation
+	 */
+	@NotNull
+	private ValidationResult validateDeadlineForDeclaration(int periodeFiscale, @NotNull Tiers tiers, @NotNull DeclarationImpotOrdinaire declaration) {
+
+		final ValidationResult result = new ValidationResult();
+		result.setTaxPayerNumber(tiers.getNumero().intValue());
+		result.setTaxPayerType(DataHelper.getPartyType(tiers.getType()));
+		result.setEligible(true);
+		result.setTaxDeclaration(new TaxDeclarationInfo(DataHelper.coreToWeb(declaration.getDateDebut()), DataHelper.coreToWeb(declaration.getDateFin()), declaration.getNumero(), null));
+
+		final TypeEtatDocumentFiscal etat = declaration.getDernierEtat().getEtat();
+		final RegDate dateDelai = declaration.getDernierDelaiAccorde().getDelaiAccordeAu();
+
+		if (etat != TypeEtatDocumentFiscal.EMIS) {
+			result.setRejectionReason(buildRejectionReasonPourDeclarationNonEmise(etat));
+		}
+		else if (dateDelai.isAfter(RegDate.get(periodeFiscale + 1, 10, 31))) {                                  // FIXME (msi) rendre ce délai paramètrable
+			result.setRejectionReason(new RejectionReason("02", "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(dateDelai) + ".", null));
+		}
+		else {
+			result.getProposedDeadlines().add(DataHelper.coreToWeb(RegDate.get(periodeFiscale + 1, 6, 30)));    // FIXME (msi) calculer correctement cette date
+		}
+
+		return result;
+	}
+
+	/**
+	 * Construit une réponse négative pour le cas où c'est le contribuable qui n'est pas éligible.
+	 *
+	 * @param ctbId    le numéro du tiers considéré
+	 * @param tiers    le contribuable considéré
+	 * @param message  le message de la réponse négative
+	 * @return la réponse construite
+	 */
+	private static ValidationResult buildIneligibleCtbResult(int ctbId, @Nullable Tiers tiers, @NotNull String message) {
+		final ValidationResult result = new ValidationResult();
+		result.setTaxPayerNumber(ctbId);
+		result.setTaxPayerType(tiers == null ? null : DataHelper.getPartyType(tiers.getType()));
+		result.setEligible(false);
+		result.setNonEligibleReason(message);
+		return result;
+	}
+
+	/**
+	 * Construit une réponse négative pour une demande de validation d'un ajout de délai
+	 *
+	 * @param ctbId    le numéro du tiers considéré
+	 * @param tiers    le contribuable considéré
+	 * @param eligible si le contribuable est éligible
+	 * @param code     le code de la réponse négative
+	 * @param message  le message de la réponse négative
+	 * @return la réponse construite
+	 */
+	private static ValidationResult buildRejectedDeadlineResult(int ctbId, @Nullable Tiers tiers, boolean eligible, @NotNull String code, @NotNull String message) {
+		final ValidationResult result = new ValidationResult();
+		result.setTaxPayerNumber(ctbId);
+		result.setTaxPayerType(tiers == null ? null : DataHelper.getPartyType(tiers.getType()));
+		result.setEligible(eligible);
+		result.setRejectionReason(new RejectionReason(code, message, null));
+		return result;
+	}
+
+	@NotNull
+	private static RejectionReason buildRejectionReasonPourDeclarationNonEmise(@NotNull TypeEtatDocumentFiscal etat) {
+		final RejectionReason reason;
+		switch (etat) {
+		case RETOURNE:
+			reason = new RejectionReason("04", "La déclaration est déjà retournée.", null);
+			break;
+		case RAPPELE:
+			reason = new RejectionReason("TODO", "La déclaration est déjà rappelée.", null);
+			break;
+		case SOMME:
+			reason = new RejectionReason("05", "La déclaration est déjà sommée.", null);
+			break;
+		case SUSPENDU:
+			reason = new RejectionReason("TODO", "La déclaration est suspendue.", null);
+			break;
+		case ECHU:
+			reason = new RejectionReason("06", "La déclaration est échue.", null);
+			break;
+		default:
+			throw new ProgrammingException("On ne devrait jamais arriver ici");
+		}
+		return reason;
 	}
 
 	@Override
