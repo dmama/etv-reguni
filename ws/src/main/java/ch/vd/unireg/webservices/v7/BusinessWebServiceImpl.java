@@ -633,7 +633,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return doInTransaction(true, status -> {
 			final List<ValidationResult> validationResults = ctbIds.stream()
 					.map(id -> validateDeadlineRequest(periodeFiscale, id))
-					.flatMap(Collection::stream)
 					.collect(Collectors.toList());
 			return new GroupDeadlineValidationResponse(validationResults, 0, null);
 		});
@@ -647,21 +646,21 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	 * @return la liste des résultats de validation (il y a un résultat par déclaration émise)
 	 */
 	@NotNull
-	List<ValidationResult> validateDeadlineRequest(int periodeFiscale, int ctbId) {
+	ValidationResult validateDeadlineRequest(int periodeFiscale, int ctbId) {
 
 		// vérification sur le tiers lui-même
 		final Tiers tiers = context.tiersDAO.get((long) ctbId);
 		if (tiers == null) {
-			return Collections.singletonList(buildIneligibleCtbResult(ctbId, null, "Le contribuable n'existe pas."));
+			return buildIneligibleCtbResult(ctbId, null, "Le contribuable n'existe pas.");
 		}
 		if (!(tiers instanceof Contribuable)) {
-			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le tiers n'est pas un contribuable (" + tiers.getType().getDescription() +	")."));
+			return buildIneligibleCtbResult(ctbId, tiers, "Le tiers n'est pas un contribuable (" + tiers.getType().getDescription() + ").");
 		}
 		if (tiers.isAnnule()) {
-			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable est annulé."));
+			return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable est annulé.");
 		}
 		if (!context.validationService.validate(tiers).getErrorsList().isEmpty()) {
-			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Une incohérence de données sur le contribuable empêche sa modification (validation)."));
+			return buildIneligibleCtbResult(ctbId, tiers, "Une incohérence de données sur le contribuable empêche sa modification (validation).");
 		}
 
 		// TODO (msi) faut-il ajouter un check sur la sécurité (role + dossier protégé) ?
@@ -673,41 +672,40 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 		catch (AssujettissementException e) {
 			LOGGER.warn(e.getMessage(), e);
-			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Impossible de calculer l'assujettissement du contribuable (" + e.getMessage() + ")."));
+			return buildIneligibleCtbResult(ctbId, tiers, "Impossible de calculer l'assujettissement du contribuable (" + e.getMessage() + ").");
 		}
 		if (periodeImpositions == null || periodeImpositions.isEmpty()) {
-			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'a pas de période d'imposition en " + periodeFiscale + "."));
+			return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'a pas de période d'imposition en " + periodeFiscale + ".");
 		}
 		final int nbPeriodes = periodeImpositions.size();
 		if (nbPeriodes > 1) {
-			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il possède plusieurs périodes d'imposition en " + periodeFiscale + "."));
+			return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il possède plusieurs périodes d'imposition en " + periodeFiscale + ".");
 		}
 
 		final PeriodeImposition periodeImposition = periodeImpositions.get(nbPeriodes - 1);
 		final TypeContribuable typeContribuable = periodeImposition.getTypeContribuable();
 		if (typeContribuable != TypeContribuable.VAUDOIS_ORDINAIRE) {
-			return Collections.singletonList(
-					buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est pas assujetti au rôle de manière illimitée en " + periodeFiscale + " (" + typeContribuable.description() + ")."));
+			return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est pas assujetti au rôle de manière illimitée en " + periodeFiscale + " (" + typeContribuable.description() + ").");
 		}
 
 		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
 			final RegDate finPeriode = RegDate.get(periodeFiscale, 12, 31);
 			if (periodeImposition.getDateFin().isBefore(finPeriode)) {
-				return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale " + periodeFiscale + "."));
+				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale " + periodeFiscale + ".");
 			}
 		}
 		else if (tiers instanceof ContribuableImpositionPersonnesMorales) {
 			final Entreprise entreprise = (Entreprise) tiers;
 			final RegDate dateProchainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), periodeImposition.getDateFin(), true);
 			if (periodeImposition.getDateFin().isBefore(dateProchainBouclement)) {
-				return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale " + periodeFiscale + "."));
+				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale " + periodeFiscale + ".");
 			}
 		}
 
 		// vérification sur les déclarations
 		final List<DeclarationImpotOrdinaire> declaration = tiers.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, periodeFiscale, true);
 		if (declaration.isEmpty()) {
-			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "03", "Il n'existe aucune déclaration sur la période " + periodeFiscale + "."));
+			return buildRejectedDeadlineResult(ctbId, tiers, true, "03", "Il n'existe aucune déclaration sur la période " + periodeFiscale + ".");
 		}
 
 		final List<DeclarationImpotOrdinaire> declarationValides = declaration.stream() // déclarations non-annulées et triées par ordre chronologique croissant
@@ -716,15 +714,15 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		if (declarationValides.isEmpty()) {
 			// il n'y a pas de déclaration non-annulée
-			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "01", "La déclaration existante sur la période " + periodeFiscale + " est annulée."));
+			return buildRejectedDeadlineResult(ctbId, tiers, true, "01", "La déclaration existante sur la période " + periodeFiscale + " est annulée.");
 		}
 		if (declarationValides.size() > 1) {
-			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "TODO", "Il existe plusieurs déclarations sur la période " + periodeFiscale + "."));
+			return buildRejectedDeadlineResult(ctbId, tiers, true, "TODO", "Il existe plusieurs déclarations sur la période " + periodeFiscale + ".");
 		}
 
 		// on détermine un résultat pour la déclaration valide
 		final DeclarationImpotOrdinaire declarationValide = declarationValides.get(declarationValides.size() - 1);
-		return Collections.singletonList(validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide));
+		return validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide);
 	}
 
 	/**

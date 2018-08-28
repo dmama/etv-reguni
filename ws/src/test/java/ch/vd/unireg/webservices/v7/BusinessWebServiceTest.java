@@ -5004,9 +5004,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		service.setTiersDAO(tiersDAO);
 
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2018, ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, null, "Le contribuable n'existe pas.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2018, ctbId);
+			assertIneligibleError(ctbId, null, "Le contribuable n'existe pas.", results);
 			return null;
 		});
 	}
@@ -5024,9 +5023,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			// on crée un débiteur
 			addDebiteur(ctbId);
 
-			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable (Débiteur prestation imposable).", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertIneligibleError(ctbId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable (Débiteur prestation imposable).", results);
 			return null;
 		});
 	}
@@ -5046,9 +5044,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable est annulé.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable est annulé.", results);
 			return null;
 		});
 	}
@@ -5071,9 +5068,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Une incohérence de données sur le contribuable empêche sa modification (validation).", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Une incohérence de données sur le contribuable empêche sa modification (validation).", results);
 			return null;
 		});
 	}
@@ -5094,9 +5090,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'a pas de période d'imposition en 2018.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'a pas de période d'imposition en 2018.", results);
 			return null;
 		});
 	}
@@ -5119,9 +5114,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'est pas assujetti au rôle de manière illimitée en 2018 (hors Suisse).", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'est pas assujetti au rôle de manière illimitée en 2018 (hors Suisse).", results);
 			return null;
 		});
 	}
@@ -5144,9 +5138,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale 2018.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale 2018.", results);
 			return null;
 		});
 	}
@@ -5172,9 +5165,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.CORPORATION, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale 2018.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2018, (int) ctbId);
+			assertIneligibleError(ctbId, PartyType.CORPORATION, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale 2018.", results);
 			return null;
 		});
 	}
@@ -5197,9 +5189,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertEquals(1, results.size());
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "03", "Il n'existe aucune déclaration sur la période 2017.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "03", "Il n'existe aucune déclaration sur la période 2017.", results);
 			return null;
 		});
 	}
@@ -5227,9 +5218,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertEquals(1, results.size());
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "01", "La déclaration existante sur la période 2017 est annulée.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "01", "La déclaration existante sur la période 2017 est annulée.", results);
 			return null;
 		});
 	}
@@ -5260,10 +5250,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertEquals(1, results.size());
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
 			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "04", "La déclaration est déjà retournée sur la période 2017.",
-			                      date(2017, 1, 1), date(2017, 12, 31), 1, results.get(0));
+			                      date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
 		});
 	}
@@ -5294,10 +5283,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertEquals(1, results.size());
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
 			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "02", "Il y a déjà un délai accordé au 01.11.2018.",
-			                      date(2017, 1, 1), date(2017, 12, 31), 1, results.get(0));
+			                      date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
 		});
 	}
@@ -5327,9 +5315,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il doit être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertEquals(1, results.size());
-			assertValidationSuccess(ctbId, PartyType.NATURAL_PERSON, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(date(2018, 6, 30)), results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertValidationSuccess(ctbId, PartyType.NATURAL_PERSON, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(date(2018, 6, 30)), results);
 			return null;
 		});
 	}
@@ -5365,9 +5352,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il possède plusieurs périodes d'imposition en 2017.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertIneligibleError(ctbId, PartyType.NATURAL_PERSON, "Le contribuable n'est pas éligible car il possède plusieurs périodes d'imposition en 2017.", results);
 			return null;
 		});
 	}
@@ -5401,9 +5387,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertEquals(1, results.size());
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "TODO", "Il existe plusieurs déclarations sur la période 2017.", results.get(0));
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "TODO", "Il existe plusieurs déclarations sur la période 2017.", results);
 			return null;
 		});
 	}
