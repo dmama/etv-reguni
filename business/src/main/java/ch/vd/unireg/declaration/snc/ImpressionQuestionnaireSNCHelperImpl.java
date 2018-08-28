@@ -85,7 +85,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 							.orElse(tiers.getNumeroTelephonePortable());
 			final CTypeAdresse adresseRaisonSociale = buildAdresseRaisonSociale((Entreprise) tiers, RegDate.get(questionnaire.getPeriode().getAnnee()));
 			return new CTypeQuestSNC(XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee())),
-			                         buildAdresse(infraService.getACIOIPM()),
+			                         buildAdresse(infraService.getCEDI()),
 			                         delaiRetourImprime,
 			                         codeRoutage,
 			                         siege,
