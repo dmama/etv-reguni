@@ -30,8 +30,10 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageValidator esbValidator;
 	private String serviceDestination;
+	private String serviceDestinationEnMasse;
 	private String queueRetour;
 	private boolean enabled;
+	private boolean enabledEnMasse;
 
 	private JAXBContext jaxbContext;
 
@@ -51,6 +53,10 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 		this.serviceDestination = serviceDestination;
 	}
 
+	public void setServiceDestinationEnMasse(String serviceDestinationEnMasse) {
+		this.serviceDestinationEnMasse = serviceDestinationEnMasse;
+	}
+
 	public void setQueueRetour(String queueRetour) {
 		this.queueRetour = queueRetour;
 	}
@@ -59,19 +65,29 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 		this.enabled = enabled;
 	}
 
+	public void setEnabledEnMasse(boolean enabledEnMasse) {
+		this.enabledEnMasse = enabledEnMasse;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
-	public void sendEvenementDocumentSortant(String businessId, Documents events, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders) throws EvenementDocumentSortantException {
+	public void sendEvenementDocumentSortant(String businessId, Documents events, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders, boolean local) throws EvenementDocumentSortantException {
 
-		if (!enabled) {
+		//La  queue d'envoi en traitement local est désactivée et on est en mode local on envoie rien
+		if (!enabled && local) {
 			LOGGER.info(String.format("Evénements de notification des documents sortants désactivés : l'événement '%s' n'est pas envoyé.", businessId));
 			return;
 		}
 
+		//La  queue d'envoi en masse est désactivée et on est en mode bach (donc pas local )  on envoie rien
+		if (!enabledEnMasse && !local) {
+			LOGGER.info(String.format("Evénements de notification des documents sortants en masse désactivés : l'événement '%s' n'est pas envoyé.", businessId));
+			return;
+		}
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		if (principal == null) {
 			throw new IllegalArgumentException();
@@ -88,7 +104,12 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(businessId);
 			m.setBusinessUser(principal);
-			m.setServiceDestination(serviceDestination);
+			if (local) {
+				m.setServiceDestination(serviceDestination);
+			}
+			else{
+				m.setServiceDestination(serviceDestinationEnMasse);
+			}
 			m.setContext("documentSortant");
 			m.setBody(doc);
 

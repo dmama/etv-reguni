@@ -18,7 +18,8 @@ public interface EvenementDocumentSortantSender {
 	 * @param docs les documents à envoyer
 	 * @param reponseAttendue <code>true</code> si on doit demander une réponse (avec l'ID d'indexation)
 	 * @param additionalHeaders (optional) map des headers à ajouter à l'événement en sortie
+	 * @param local Indique si c'est un traitement local ou de masse dont les documents doivent être diriger vers une destination adaptée
 	 * @throws EvenementDocumentSortantException en cas de souci
 	 */
-	void sendEvenementDocumentSortant(String businessId, Documents docs, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders) throws EvenementDocumentSortantException;
+	void sendEvenementDocumentSortant(String businessId, Documents docs, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders, boolean local) throws EvenementDocumentSortantException;
 }

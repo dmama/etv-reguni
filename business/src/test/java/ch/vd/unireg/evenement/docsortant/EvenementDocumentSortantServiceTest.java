@@ -53,7 +53,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 		private final Map<String, Documents> collected = new HashMap<>();
 
 		@Override
-		public void sendEvenementDocumentSortant(String businessId, Documents docs, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders) throws EvenementDocumentSortantException {
+		public void sendEvenementDocumentSortant(String businessId, Documents docs, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders, boolean local) throws EvenementDocumentSortantException {
 			collected.put(businessId, docs);
 		}
 

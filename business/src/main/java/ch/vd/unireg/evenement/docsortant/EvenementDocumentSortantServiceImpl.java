@@ -543,7 +543,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 			                                    new Documents(Collections.singletonList(document),
 			                                                  XmlUtils.date2xmlcal(DateHelper.getCurrentDate())),
 			                                    typeDocument.isQuittanceAnnonceDemandee(),
-			                                    headers);
+			                                    headers, local);
 		}
 		catch (EvenementDocumentSortantException e) {
 			throw new RuntimeException(e);

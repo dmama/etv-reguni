@@ -9,6 +9,8 @@
 		<property name="enabled" value="${extprop.jms.queue.notification.document.sortant.enabled}"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.notification.document.sortant}"/>
 		<property name="queueRetour" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
+		<property name="serviceDestinationEnMasse" value="${extprop.jms.queue.notification.document.sortant.masse}"/>
+		<property name="enabledEnMasse" value="${extprop.jms.queue.notification.document.sortant.masse.enabled}"/>
 	</bean>
 
 	<bean id="retourDocumentSortantListener" class="ch.vd.unireg.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
