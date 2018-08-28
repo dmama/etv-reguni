@@ -655,7 +655,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			return Collections.singletonList(buildIneligibleCtbResult(ctbId, null, "Le contribuable n'existe pas."));
 		}
 		if (!(tiers instanceof Contribuable)) {
-			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le tiers n'est pas un contribuable."));
+			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le tiers n'est pas un contribuable (" + tiers.getType().getDescription() +	")."));
 		}
 		if (tiers.isAnnule()) {
 			return Collections.singletonList(buildIneligibleCtbResult(ctbId, tiers, "Le contribuable est annulé."));
@@ -716,14 +716,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		if (declarationValides.isEmpty()) {
 			// il n'y a pas de déclaration non-annulée
-			final String message;
-			if (declaration.size() > 1) {
-				message = "Les déclarations existantes sur la période " + periodeFiscale + " sont toutes annulées.";
-			}
-			else {
-				message = "La déclaration existante sur la période " + periodeFiscale + " est annulée.";
-			}
-			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "01", message));
+			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "01", "La déclaration existante sur la période " + periodeFiscale + " est annulée."));
 		}
 		if (declarationValides.size() > 1) {
 			return Collections.singletonList(buildRejectedDeadlineResult(ctbId, tiers, true, "TODO", "Il existe plusieurs déclarations sur la période " + periodeFiscale + "."));
@@ -755,7 +748,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		final RegDate dateDelai = declaration.getDernierDelaiAccorde().getDelaiAccordeAu();
 
 		if (etat != TypeEtatDocumentFiscal.EMIS) {
-			result.setRejectionReason(buildRejectionReasonPourDeclarationNonEmise(etat));
+			result.setRejectionReason(buildRejectionReasonPourDeclarationNonEmise(etat, periodeFiscale));
 		}
 		else if (dateDelai.isAfter(RegDate.get(periodeFiscale + 1, 10, 31))) {                                  // FIXME (msi) rendre ce délai paramètrable
 			result.setRejectionReason(new RejectionReason("02", "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(dateDelai) + ".", null));
@@ -804,23 +797,23 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@NotNull
-	private static RejectionReason buildRejectionReasonPourDeclarationNonEmise(@NotNull TypeEtatDocumentFiscal etat) {
+	private static RejectionReason buildRejectionReasonPourDeclarationNonEmise(@NotNull TypeEtatDocumentFiscal etat, int periodeFiscale) {
 		final RejectionReason reason;
 		switch (etat) {
 		case RETOURNE:
-			reason = new RejectionReason("04", "La déclaration est déjà retournée.", null);
+			reason = new RejectionReason("04", "La déclaration est déjà retournée sur la période " + periodeFiscale + ".", null);
 			break;
 		case RAPPELE:
-			reason = new RejectionReason("TODO", "La déclaration est déjà rappelée.", null);
+			reason = new RejectionReason("TODO", "La déclaration est déjà rappelée sur la période " + periodeFiscale + ".", null);
 			break;
 		case SOMME:
-			reason = new RejectionReason("05", "La déclaration est déjà sommée.", null);
+			reason = new RejectionReason("05", "La déclaration est déjà sommée sur la période " + periodeFiscale + ".", null);
 			break;
 		case SUSPENDU:
-			reason = new RejectionReason("TODO", "La déclaration est suspendue.", null);
+			reason = new RejectionReason("TODO", "La déclaration est suspendue sur la période " + periodeFiscale + ".", null);
 			break;
 		case ECHU:
-			reason = new RejectionReason("06", "La déclaration est échue.", null);
+			reason = new RejectionReason("06", "La déclaration est échue sur la période " + periodeFiscale + ".", null);
 			break;
 		default:
 			throw new ProgrammingException("On ne devrait jamais arriver ici");

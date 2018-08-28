@@ -4992,7 +4992,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertEquals(3, results.size());
 		assertValidationSuccess(ctbId, PartyType.NATURAL_PERSON, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(date(2018, 6, 30)), results.get(0));
 		assertIneligibleError(ctbIdInconnu, null, "Le contribuable n'existe pas.", results.get(1));
-		assertIneligibleError(debiteurId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable.", results.get(2));
+		assertIneligibleError(debiteurId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable (Débiteur prestation imposable).", results.get(2));
 	}
 
 	@Test
@@ -5026,7 +5026,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final List<ValidationResult> results = service.validateDeadlineRequest(2018, (int) ctbId);
 			assertEquals(1, results.size());
-			assertIneligibleError(ctbId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable.", results.get(0));
+			assertIneligibleError(ctbId, PartyType.DEBTOR, "Le tiers n'est pas un contribuable (Débiteur prestation imposable).", results.get(0));
 			return null;
 		});
 	}
@@ -5235,39 +5235,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	public void testValidateDeadlineRequestContribuableAvecPlusieursDeclarationsAnnulees() throws Exception {
-
-		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
-		service.setTiersDAO(tiersDAO);
-		service.setValidationService(validationService);
-		service.setPeriodeImpositionService(periodeImpositionService);
-
-		// on crée un contribuable assujetti avec deux déclarations annulées
-		final long ctbId = doInNewTransaction(status -> {
-			final PersonnePhysique pp = addNonHabitant("Jackie", "Glutz", date(1950, 1, 1), Sexe.FEMININ);
-			addForPrincipal(pp, date(2017, 11, 8), MotifFor.ARRIVEE_HC, MockCommune.Bex);
-
-			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
-			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2017);
-
-			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 7, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-			di1.setAnnule(true);
-			final DeclarationImpotOrdinairePP di2 = addDeclarationImpot(pp, periode2017, date(2017, 1, 1), date(2017, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-			di2.setAnnule(true);
-
-			return pp.getNumero();
-		});
-
-		// il ne doit pas être possible de demander un délai
-		doInNewTransaction(status -> {
-			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertEquals(1, results.size());
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "01", "Les déclarations existantes sur la période 2017 sont toutes annulées.", results.get(0));
-			return null;
-		});
-	}
-
-	@Test
 	public void testValidateDeadlineRequestContribuableAvecUneDeclarationRetournee() throws Exception {
 
 		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
@@ -5295,7 +5262,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		doInNewTransaction(status -> {
 			final List<ValidationResult> results = service.validateDeadlineRequest(2017, (int) ctbId);
 			assertEquals(1, results.size());
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "04", "La déclaration est déjà retournée.",
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "04", "La déclaration est déjà retournée sur la période 2017.",
 			                      date(2017, 1, 1), date(2017, 12, 31), 1, results.get(0));
 			return null;
 		});
