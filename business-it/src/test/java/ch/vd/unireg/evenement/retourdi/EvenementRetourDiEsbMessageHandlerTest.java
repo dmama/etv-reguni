@@ -29,6 +29,8 @@ import ch.vd.unireg.evenement.retourdi.pp.Pf2016V2Handler;
 import ch.vd.unireg.evenement.retourdi.pp.Pf2017V1Handler;
 import ch.vd.unireg.evenement.retourdi.pp.Pf2017V2Handler;
 import ch.vd.unireg.evenement.retourdi.pp.Pf2018V1Handler;
+import ch.vd.unireg.evenement.retourdi.pp.Pf2018V2Handler;
+import ch.vd.unireg.evenement.retourdi.pp.Pf2019V1Handler;
 import ch.vd.unireg.evenement.retourdi.pp.RetourDI;
 import ch.vd.unireg.evenement.retourdi.pp.V1Handler;
 import ch.vd.unireg.evenement.retourdi.pp.V2Handler;
@@ -195,6 +197,30 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 					}
 				};
 			}
+
+		},
+		PF2018_2 {
+			@Override
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
+				return new Pf2018V2Handler() {
+					@Override
+					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+						action.accept(evt);
+					}
+				};
+			}
+		},
+		PF2019_1 {
+			@Override
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
+				return new Pf2019V1Handler() {
+					@Override
+					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+						action.accept(evt);
+					}
+				};
+			}
+
 		},
 		;
 
@@ -669,6 +695,70 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		assertNotNull(q);
 		assertEquals(10500171, q.getNoContribuable());
 		assertEquals(2018, q.getPeriodeFiscale());
+		assertEquals(1, q.getNoSequenceDI());
+		assertEquals(RetourDI.TypeDocument.VAUDTAX, q.getTypeDocument());
+		assertEquals("toto@earth.net", q.getEmail());
+		assertEquals("CH2800767000U09565735", q.getIban());
+		assertEquals("0211234567", q.getNoTelephone());
+		assertEquals("0797654321", q.getNoMobile());
+		assertEquals("Toto le rigolo", q.getTitulaireCompte());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testFormatPf2018_V2() throws Exception {
+
+		final List<EvenementCedi> events = new ArrayList<>();
+		final List<RetourDiHandler<?>> handlers = buildHandlers(XmlVersionPP.PF2018_2, events);
+		esbHandler.setHandlers(handlers);
+		esbHandler.afterPropertiesSet();
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2018.2-exemple.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		waitForNonEmpty(events);
+		Assert.assertEquals(1, events.size());
+
+		final RetourDI q = (RetourDI) events.get(0);
+		assertNotNull(q);
+		assertEquals(10500171, q.getNoContribuable());
+		assertEquals(2018, q.getPeriodeFiscale());
+		assertEquals(1, q.getNoSequenceDI());
+		assertEquals(RetourDI.TypeDocument.VAUDTAX, q.getTypeDocument());
+		assertEquals("toto@earth.net", q.getEmail());
+		assertEquals("CH2800767000U09565735", q.getIban());
+		assertEquals("0211234567", q.getNoTelephone());
+		assertEquals("0797654321", q.getNoMobile());
+		assertEquals("Toto le rigolo", q.getTitulaireCompte());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testFormatPf2019_V1() throws Exception {
+
+		final List<EvenementCedi> events = new ArrayList<>();
+		final List<RetourDiHandler<?>> handlers = buildHandlers(XmlVersionPP.PF2019_1, events);
+		esbHandler.setHandlers(handlers);
+		esbHandler.afterPropertiesSet();
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/unireg/evenement/retourdi/pp/DossierElectronique-2019.1-exemple.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		waitForNonEmpty(events);
+		Assert.assertEquals(1, events.size());
+
+		final RetourDI q = (RetourDI) events.get(0);
+		assertNotNull(q);
+		assertEquals(10500171, q.getNoContribuable());
+		assertEquals(2019, q.getPeriodeFiscale());
 		assertEquals(1, q.getNoSequenceDI());
 		assertEquals(RetourDI.TypeDocument.VAUDTAX, q.getTypeDocument());
 		assertEquals("toto@earth.net", q.getEmail());

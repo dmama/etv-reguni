@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DossierElectronique noContribuable="10500171" noSequenceDI="1"
+  periode="2019" versionSchema="1.0" xmlns="http://www.vd.ch/fiscalite/taxation/dossier-electronique/2019/1">
+  <Operation>
+    <horodatageReception>2018-09-18T13:44:06.230+02:00</horodatageReception>
+    <horodatagePublication>2018-09-18T13:48:04.686+02:00</horodatagePublication>
+    <uniteAcquisition>ADDI</uniteAcquisition>
+    <canalAcquisition>ELECTRONIQUE</canalAcquisition>
+    <origineAcquisitionDi>7</origineAcquisitionDi>
+	<idCorrelationDiPj>20150319_10002_007</idCorrelationDiPj>
+  </Operation>
+  <DeclarationImpot
+    identifiant="2019 1 DI Electronique     0818134804686"
+    noContribuable="10500171" noSequenceDI="1" periode="2019"
+    typeDocument="601" typeLogiciel="3">
+    <Identification>
+      <CoordonneesContribuable>
+        <TelephoneContact>0211234567</TelephoneContact>
+        <NoTelPortable>0797654321</NoTelPortable>
+        <AdresseMail>toto@earth.net</AdresseMail>
+        <CodeIBAN>CH2800767000U09565735</CodeIBAN>
+        <TitulaireCompte>Toto le rigolo</TitulaireCompte>
+      </CoordonneesContribuable>
+	</Identification>
+    <ExcluTaxationAutomatique>false</ExcluTaxationAutomatique>
+  </DeclarationImpot>
+</DossierElectronique>
