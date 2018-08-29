@@ -223,4 +223,14 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	public EditiqueResultat imprimerFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
+
+	@Override
+	public String imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai) throws EditiqueException {
+		return null;
+	}
+
+	@Override
+	public Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiQSNCOnline(DelaiDeclaration delai) throws EditiqueException {
+		return Pair.of(dummyResultat(), null);
+	}
 }

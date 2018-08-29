@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.StatusManager;
@@ -139,4 +140,10 @@ public interface QuestionnaireSNCService {
 	 * @param dateObtention la date d'obtention de l'état échu
 	 */
 	void echoirQuestionnaire(@NotNull QuestionnaireSNC qsnc, @NotNull RegDate dateObtention);
+
+	@Transactional(rollbackFor = Throwable.class)
+	EditiqueResultat envoiDemandeDelaiQuestionnaireSNCOnline(Long idDelai, RegDate dateTraitement) throws EditiqueException;
+
+	@Transactional(rollbackFor = Throwable.class)
+	String envoiDemandeDelaiQuestionnaireSNCBatch(Long idDelai, RegDate dateTraitement) throws EditiqueException;
 }

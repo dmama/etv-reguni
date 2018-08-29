@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.ActionException;
@@ -56,6 +59,8 @@ import ch.vd.unireg.declaration.snc.QuestionnaireSNCService;
 import ch.vd.unireg.declaration.view.QuestionnaireSNCView;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscalController;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.unireg.documentfiscal.TypeImpression;
+import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatErreur;
 import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
@@ -63,6 +68,7 @@ import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 import ch.vd.unireg.evenement.di.EvenementLiberationDeclarationImpotSender;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
@@ -75,6 +81,7 @@ import ch.vd.unireg.tiers.TacheCriteria;
 import ch.vd.unireg.tiers.TacheDAO;
 import ch.vd.unireg.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersMapHelper;
 import ch.vd.unireg.tiers.manager.AutorisationManager;
 import ch.vd.unireg.tiers.manager.Autorisations;
 import ch.vd.unireg.transaction.TransactionHelper;
@@ -89,6 +96,7 @@ import ch.vd.unireg.utils.WebContextUtils;
 @Controller
 @RequestMapping("/qsnc")
 public class QuestionnaireSNCController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuestionnaireSNCController.class);
 
 	private HibernateTemplate hibernateTemplate;
 	private QuestionnaireSNCService qsncService;
@@ -97,6 +105,7 @@ public class QuestionnaireSNCController {
 	private AutorisationManager autorisationManager;
 	private DelaisService delaisService;
 	private TransactionHelper transactionHelper;
+	private TiersMapHelper tiersMapHelper;
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private TacheDAO tacheDAO;
@@ -107,6 +116,7 @@ public class QuestionnaireSNCController {
 	private Set<String> sourcesQuittancementAvecLiberationPossible = Collections.emptySet();
 	private EvenementLiberationDeclarationImpotSender liberationSender;
 	private Validator ajouterDelaiValidator;
+
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -176,6 +186,10 @@ public class QuestionnaireSNCController {
 		this.ajouterDelaiValidator = ajouterDelaiValidator;
 	}
 
+	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
+		this.tiersMapHelper = tiersMapHelper;
+	}
+
 	private void checkEditRight(boolean emission, boolean rappel, boolean duplicata, boolean quittancement, boolean liberation) throws AccessDeniedException {
 		final Set<Role> rolesRequis = EnumSet.noneOf(Role.class);
 		if (emission) {
@@ -207,8 +221,9 @@ public class QuestionnaireSNCController {
 
 	/**
 	 * Lance le traitement du callback dans une transaction en lecture/écriture et transforme une éventuelle {@link DeclarationException} en {@link ActionException}
+	 *
 	 * @param callback action à lancer
-	 * @param <T> type du résultat renvoyé par l'action
+	 * @param <T>      type du résultat renvoyé par l'action
 	 * @return le résultat renvoyé par l'action
 	 */
 	protected final <T> T doInTransaction(TransactionHelper.ExceptionThrowingCallback<T, DeclarationException> callback) {
@@ -222,6 +237,7 @@ public class QuestionnaireSNCController {
 
 	/**
 	 * Lance le traitement du callback dans une transaction en lecture/écriture et transforme une éventuelle {@link DeclarationException} en {@link ActionException}
+	 *
 	 * @param callback action à lancer
 	 */
 	protected final void doInTransaction(TransactionHelper.ExceptionThrowingCallbackWithoutResult<DeclarationException> callback) {
@@ -344,7 +360,7 @@ public class QuestionnaireSNCController {
 	}
 
 	@RequestMapping(value = "/add.do", method = RequestMethod.POST)
-	public String printNewQuestionnaire(Model model, HttpServletResponse response, @Valid@ModelAttribute("added")final QuestionnaireSNCAddView view, BindingResult bindingResult) throws Exception {
+	public String printNewQuestionnaire(Model model, HttpServletResponse response, @Valid @ModelAttribute("added") final QuestionnaireSNCAddView view, BindingResult bindingResult) throws Exception {
 		if (bindingResult.hasErrors()) {
 			return showAdd(model, view);
 		}
@@ -557,7 +573,7 @@ public class QuestionnaireSNCController {
 	 * Affiche un écran qui permet de choisir les paramètres pour l'ajout d'une demande de délai
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/delai/ajouter-snc.do", method = RequestMethod.GET)
 	public String ajouterDelai(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
@@ -578,42 +594,85 @@ public class QuestionnaireSNCController {
 		}
 
 		final RegDate delaiAccorde = delaisService.getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(questionnaire.getDelaiAccordeAu());
-		model.addAttribute("ajouterDelai", new QuestionnaireSNCAjouterDelaiView(questionnaire, delaiAccorde));
-		return "documentfiscal/delai/ajouter";
+		model.addAttribute("ajouterDelai", new QuestionnaireSNCAjouterDelaiView(questionnaire, delaiAccorde, EtatDelaiDocumentFiscal.ACCORDE));
+		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
+		return "qsnc/delai/ajouter-snc";
+
+
 	}
 
 	/**
 	 * Ajoute un délai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
-	public String ajouterDelai(@Valid @ModelAttribute("ajouterDelai") final QuestionnaireSNCAjouterDelaiView view, BindingResult result) {
+	@RequestMapping(value = "/delai/ajouter-snc.do", method = RequestMethod.POST)
+	public String ajouterDelai(HttpServletResponse response, @Valid @ModelAttribute("ajouterDelai") final QuestionnaireSNCAjouterDelaiView view, BindingResult result, Model model) throws EditiqueException, IOException, AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
-			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un délai sur un questionnaire SNC.");
+			final String message = MessageHelper.getMessage("error.qsnc.ajout.delai.habilitation");
+			LOGGER.debug(message);
+			throw new AccessDeniedException(message);
 		}
 
 		if (result.hasErrors()) {
-			return "documentfiscal/delai/ajouter";
+			final QuestionnaireSNC doc = hibernateTemplate.get(QuestionnaireSNC.class, view.getIdDocumentFiscal());
+			view.setDeclarationRange(new DateRangeHelper.Range(doc));
+			model.addAttribute("ajouterDelai", view);
+			model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
+			return "qsnc/delai/ajouter-snc";
 		}
 
 		final Long id = view.getIdDocumentFiscal();
 		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, id);
 		if (questionnaire == null) {
-			throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + id);
+			final String message = MessageHelper.getMessage("error.qsnc.ajout.delai.questionnaire.inconnu", id);
+			LOGGER.debug(message);
+			throw new ObjectNotFoundException(message);
 		}
 
 		final Entreprise ctb = (Entreprise) questionnaire.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		if (!AutreDocumentFiscalController.isAjoutDelaiAutorise(questionnaire)) {
-			Flash.warning("Impossible d'ajouter un délai : document déjà retourné, ou rappel déjà été envoyé.");
+			final String message = MessageHelper.getMessage("error.qsnc.ajout.delai.questionnaire.document.deja.retourne");
+			Flash.warning(message);
 			return "redirect:/qsnc/editer.do?id=" + id;
 		}
 
 		// On ajoute le délai
-		final RegDate delaiAccordeAu = view.getDelaiAccordeAu();
-		qsncService.ajouterDelai(id, view.getDateDemande(), delaiAccordeAu, EtatDelaiDocumentFiscal.ACCORDE);
+		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE ? view.getDelaiAccordeAu() : null;
+		final Long idDelai = qsncService.ajouterDelai(id, view.getDateDemande(), delaiAccordeAu, view.getDecision());
+
+		if (view.getTypeImpression() != null) {
+			if (view.getTypeImpression() == TypeImpression.BATCH) {
+				qsncService.envoiDemandeDelaiQuestionnaireSNCBatch(idDelai, RegDate.get());
+				final String message = MessageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.programmer", id);
+				Flash.message(message);
+			}
+			else if (view.getTypeImpression() == TypeImpression.LOCAL) {
+				final EditiqueResultat retourEditique = qsncService.envoiDemandeDelaiQuestionnaireSNCOnline(idDelai, RegDate.get());
+
+				if (retourEditique != null) {
+					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
+							resultat -> "redirect:/qsnc/editer.do?id=" + id;
+
+					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
+						Flash.error(String.format("%s Veuillez ré-essayer ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+						return "redirect:/qsnc/editer.do?id=" + id;
+					};
+
+					return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "delaiQuestionnaireSNC", inbox, null, erreur);
+				}
+				else {
+					final String message = MessageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.document.generer.impression.non.programme");
+					Flash.warning(message);
+					return "redirect:/qsnc/list.do?tiersId=" + id;
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Valeur non-supportée pour le type d'impression : " + view.getTypeImpression());
+			}
+		}
 		return "redirect:/qsnc/editer.do?id=" + id;
 	}
 
@@ -814,9 +873,9 @@ public class QuestionnaireSNCController {
 		// envoi de la demande de libération
 		try {
 			liberationSender.demandeLiberationDeclarationImpot(questionnaireSNC.getTiers().getNumero(),
-					questionnaireSNC.getPeriode().getAnnee(),
-					questionnaireSNC.getNumero(),
-					EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
+			                                                   questionnaireSNC.getPeriode().getAnnee(),
+			                                                   questionnaireSNC.getNumero(),
+			                                                   EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
 			Flash.message("La demande de libération du questionnaire SNC a été envoyée au service concerné.");
 			return "redirect:editer.do?id=" + idQuestionnaire;
 		}

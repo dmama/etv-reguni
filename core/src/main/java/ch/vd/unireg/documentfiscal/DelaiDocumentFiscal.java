@@ -133,14 +133,15 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 
 	/**
 	 * Compare d'apres la date de DelaiDocumentFiscal
+	 *
 	 * @see Comparable#compareTo(Object)
 	 */
 	public int compareTo(@NotNull DelaiDocumentFiscal delaiDocumentFiscal) {
 		final RegDate autreDelaiAccordeAu = delaiDocumentFiscal.getDelaiAccordeAu();
-		return - delaiAccordeAu.compareTo(autreDelaiAccordeAu);
+		return -delaiAccordeAu.compareTo(autreDelaiAccordeAu);
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
 	@ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID")
 	@Index(name = "IDX_DEL_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
@@ -155,6 +156,16 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 	@Transient
 	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return getDocumentFiscal() == null ? null : Collections.singletonList(getDocumentFiscal());
+	}
+
+	@Transient
+	public boolean isDelaiAccorde() {
+		return etat == EtatDelaiDocumentFiscal.ACCORDE;
+	}
+
+	@Transient
+	public boolean isRufusDelai() {
+		return etat == EtatDelaiDocumentFiscal.REFUSE;
 	}
 
 	/**
@@ -183,7 +194,7 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 			}
 
 			// de la plus petite à la plus grande
-			return NullDateBehavior.EARLIEST.compare(date1,date2);
+			return NullDateBehavior.EARLIEST.compare(date1, date2);
 		}
 	}
 }

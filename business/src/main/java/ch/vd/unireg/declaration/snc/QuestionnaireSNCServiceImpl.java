@@ -6,9 +6,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
@@ -19,6 +23,8 @@ import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TicketService;
 import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.DelaiDeclaration;
+import ch.vd.unireg.declaration.DelaiDeclarationDAO;
+import ch.vd.unireg.declaration.DelaiDeclarationDAOImpl;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEchue;
 import ch.vd.unireg.declaration.EtatDeclarationRappelee;
@@ -49,6 +55,7 @@ import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.validation.ValidationService;
 
 public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuestionnaireSNCServiceImpl.class);
 
 	private ParametreAppService parametreAppService;
 	private PlatformTransactionManager transactionManager;
@@ -69,6 +76,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private PeriodeExploitationService periodeExploitationService;
 	private EvenementDeclarationPMSender evenementDeclarationPMSender;
 	private Set<String> sourcesMonoQuittancement;
+	private DelaiDeclarationDAO delaiDeclarationDAO;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -321,5 +329,67 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		etat.setDateObtention(dateObtention);
 		qsnc.addEtat(etat);
 		evenementFiscalService.publierEvenementFiscalEcheanceQuestionnaireSNC(qsnc, dateObtention);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public EditiqueResultat envoiDemandeDelaiQuestionnaireSNCOnline(Long idDelai, RegDate dateTraitement) throws EditiqueException {
+
+		try {
+			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+			final QuestionnaireSNC qsnc = (QuestionnaireSNC) delai.getDeclaration();
+			final Pair<EditiqueResultat, String> resultat;
+			switch (delai.getEtat()) {
+			case ACCORDE:
+			case REFUSE:
+				resultat = editiqueCompositionService.imprimeLettreDecisionDelaiQSNCOnline(delai);
+				break;
+			default:
+				final String message = String.format("Type de lettre non-supporté, etat du délai  : %s", delai.getEtat());
+				LOGGER.error(message);
+				throw new IllegalArgumentException(message);
+			}
+			delai.setCleArchivageCourrier(resultat.getRight());
+			return resultat.getLeft();
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			throw new EditiqueException(e);
+		}
+
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public String envoiDemandeDelaiQuestionnaireSNCBatch(Long idDelai, RegDate dateTraitement) throws EditiqueException {
+
+		try {
+
+			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+			final QuestionnaireSNC qsnc = (QuestionnaireSNC) delai.getDeclaration();
+			final String cleArchivageDocument;
+			switch (delai.getEtat()) {
+			case ACCORDE:
+			case REFUSE:
+				cleArchivageDocument = editiqueCompositionService.imprimeLettreDecisionDelaiQSNCBatch(delai);
+				break;
+			default:
+				final String message = String.format("Type de lettre non-supporté, etat du délai  : %s", delai.getEtat());
+				LOGGER.error(message);
+				throw new IllegalArgumentException(message);
+			}
+			delai.setCleArchivageCourrier(cleArchivageDocument);
+			return cleArchivageDocument;
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			throw new EditiqueException(e);
+		}
+
+	}
+
+
+	public void setDelaiDeclarationDAO(DelaiDeclarationDAOImpl delaiDeclarationDAO) {
+		this.delaiDeclarationDAO = delaiDeclarationDAO;
 	}
 }

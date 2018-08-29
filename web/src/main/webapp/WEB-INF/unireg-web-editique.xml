@@ -54,6 +54,7 @@
 		<property name="impressionRappelDemandeDegrevementICIHelper" ref="impressionRappelDemandeDegrevementICIHelper"/>
 		<property name="evenementDocumentSortantService" ref="evenementDocumentSortantService"/>
 		<property name="impressionFourreNeutreHelper" ref="impressionFourreNeutreHelper"/>
+		<property name="impressionDelaiQSNCHelper" ref="impressionDelaiQSNCHelper"/>
 	</bean>
 
 	<bean id="signatairesAutorisationRadiation" class="ch.vd.unireg.documentfiscal.Signataires">

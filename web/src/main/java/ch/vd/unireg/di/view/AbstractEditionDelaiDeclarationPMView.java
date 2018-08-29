@@ -2,14 +2,11 @@ package ch.vd.unireg.di.view;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.documentfiscal.TypeImpression;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 public abstract class AbstractEditionDelaiDeclarationPMView extends AbstractEditionDelaiDeclarationView {
 
-	public enum TypeImpression {
-		LOCAL,
-		BATCH
-	}
 
 	// champs du formulaire
 	private RegDate dateDemande;

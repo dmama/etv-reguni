@@ -232,6 +232,7 @@ public class QuestionnaireSNCServiceTest extends BusinessTest {
 			return null;
 		});
 	}
+
 	@Test
 	public void testMonoQuittancements() throws Exception {
 
@@ -259,7 +260,7 @@ public class QuestionnaireSNCServiceTest extends BusinessTest {
 				ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 				ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 				ffp.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
-				addQuestionnaireSNC(nono,periode2017);
+				addQuestionnaireSNC(nono, periode2017);
 
 				return null;
 			}

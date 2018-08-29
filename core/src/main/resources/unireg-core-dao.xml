@@ -120,6 +120,10 @@
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 
+	<bean id="messageHelper" class="ch.vd.unireg.message.MessageHelper" factory-method="messageHelper">
+		<property name="messageSource" ref="messageSource" />
+	</bean>
+
 	<!-- Gestionnaire de transaction base sur les annotations @Transactional -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 

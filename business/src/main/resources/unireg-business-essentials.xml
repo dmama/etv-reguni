@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<bean id="appInfo" class="ch.vd.unireg.common.ApplicationInfo">
 		<property name="name" value="${project.name}" />
@@ -205,6 +205,7 @@
 	</bean>
 
 	<bean id="qsncService" class="ch.vd.unireg.declaration.snc.QuestionnaireSNCServiceImpl">
+		<aop:scoped-proxy proxy-target-class="true"/>
 		<property name="adresseService" ref="adresseService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="parametreAppService" ref="parametreAppService"/>
@@ -224,6 +225,7 @@
 		<property name="periodeExploitationService" ref="periodeExploitationService"/>
 		<property name="evenementDeclarationPMSender" ref="evenementDeclarationPMSender" />
 		<property name="sourcesMonoQuittancement" ref="sourcesMonoQuittancementDi"/>
+		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
 	</bean>
 	<bean id="lienAssociesSNCService" class="ch.vd.unireg.declaration.snc.liens.associes.LienAssociesSNCServiceImpl">
 		<property name="transactionManager" ref="transactionManager" />

@@ -67,7 +67,6 @@ import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
 import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.view.DeclarationView;
 import ch.vd.unireg.di.manager.DeclarationImpotEditManager;
-import ch.vd.unireg.di.view.AbstractEditionDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.AbstractEditionDelaiDeclarationView;
 import ch.vd.unireg.di.view.AjouterDelaiDeclarationView;
 import ch.vd.unireg.di.view.AjouterEtatDeclarationView;
@@ -80,6 +79,7 @@ import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.unireg.di.view.ModifierDemandeDelaiDeclarationView;
 import ch.vd.unireg.di.view.NouvelleDemandeDelaiDeclarationView;
 import ch.vd.unireg.di.view.TypeDeclaration;
+import ch.vd.unireg.documentfiscal.TypeImpression;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatErreur;
@@ -320,6 +320,7 @@ public class DeclarationImpotController {
 
 	/**
 	 * Liste les déclarations d'impôt d'un contribuable
+	 *
 	 * @param tiersId le numéro d'un contribuable
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -471,7 +472,8 @@ public class DeclarationImpotController {
 
 	/**
 	 * Désannuler une déclaration d'impôt ordinaire.
-	 * @param diId l'id de la déclaration d'impôt ordinaire à désannuler
+	 *
+	 * @param diId  l'id de la déclaration d'impôt ordinaire à désannuler
 	 * @param clazz la classe de la déclaration d'impôt
 	 */
 	private String desannuler(long diId, Class<? extends DeclarationImpotOrdinaire> clazz) throws AccessDeniedException {
@@ -717,7 +719,7 @@ public class DeclarationImpotController {
 					typeDocument = TypeDocument.DECLARATION_IMPOT_PM_LOCAL;
 					break;
 				default:
-				    throw new ActionException("Type de document invalide : " + typeDocumentDeclaration);
+					throw new ActionException("Type de document invalide : " + typeDocumentDeclaration);
 				}
 			}
 		}
@@ -1025,7 +1027,8 @@ public class DeclarationImpotController {
 	                     @RequestParam(value = "tacheId", required = false) Long tacheId,
 	                     Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM, Role.DI_DELAI_PP, Role.DI_DELAI_PM, Role.DI_SOM_PP, Role.DI_SOM_PM, Role.DI_DUPLIC_PP, Role.DI_DUPLIC_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM, Role.DI_LIBERER_PM, Role.DI_LIBERER_PP)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM, Role.DI_DELAI_PP, Role.DI_DELAI_PM, Role.DI_SOM_PP, Role.DI_SOM_PM, Role.DI_DUPLIC_PP, Role.DI_DUPLIC_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM,
+		                                 Role.DI_LIBERER_PM, Role.DI_LIBERER_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt.");
 		}
 
@@ -1429,6 +1432,7 @@ public class DeclarationImpotController {
 
 	/**
 	 * [SIFISC-18869] la date par défaut du délai accordé (sursis ou pas) ne doit de toute façon pas être dans le passé
+	 *
 	 * @param delaiPrecedent la date actuelle du délai accordé
 	 * @return la nouvelle date à proposer comme délai par défaut
 	 */
@@ -1561,14 +1565,14 @@ public class DeclarationImpotController {
 	}
 
 	private String gererImpressionCourrierDelaiDeclarationPM(long idDelai, long idDeclaration,
-	                                                         AbstractEditionDelaiDeclarationPMView.TypeImpression typeImpression,
+	                                                         TypeImpression typeImpression,
 	                                                         HttpServletResponse response) throws EditiqueException, IOException {
 		if (typeImpression != null) {
-			if (typeImpression == AbstractEditionDelaiDeclarationPMView.TypeImpression.BATCH) {
+			if (typeImpression == TypeImpression.BATCH) {
 				manager.envoieImpressionBatchLettreDecisionDelaiPM(idDelai);
 				Flash.message("L'envoi automatique du document de décision a été programmé.");
 			}
-			else if (typeImpression == AbstractEditionDelaiDeclarationPMView.TypeImpression.LOCAL) {
+			else if (typeImpression == TypeImpression.LOCAL) {
 				final EditiqueResultat resultat = manager.envoieImpressionLocaleLettreDecisionDelaiPM(idDelai);
 				final RedirectEditDI inbox = new RedirectEditDI(idDeclaration);
 				final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(idDeclaration, messageSource);
@@ -1658,7 +1662,8 @@ public class DeclarationImpotController {
 			liberationSender.demandeLiberationDeclarationImpot(di.getTiers().getNumero(),
 			                                                   di.getPeriode().getAnnee(),
 			                                                   di.getNumero(),
-			                                                   di instanceof DeclarationImpotOrdinairePP ? EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PP : EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
+			                                                   di instanceof DeclarationImpotOrdinairePP ? EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PP :
+					                                                   EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
 			Flash.message("La demande de libération de la déclaration a été envoyée au service concerné.");
 			return "redirect:/di/editer.do?id=" + idDeclaration;
 		}

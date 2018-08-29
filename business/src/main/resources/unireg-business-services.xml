@@ -292,6 +292,8 @@
 
 	<bean id="impressionQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.snc.ImpressionQuestionnaireSNCHelperImpl"/>
 
+	<bean id="impressionDelaiQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.snc.ImpressionDelaiQuestionnaireSNCHelperImpl"/>
+
 	<bean id="impressionSommationDIPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.unireg.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="delaisService" ref="delaisService" />		 

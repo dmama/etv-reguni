@@ -15,14 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.xml.event.docsortant.v1.Archivage;
-import ch.vd.unireg.xml.event.docsortant.v1.Archives;
-import ch.vd.unireg.xml.event.docsortant.v1.Caracteristiques;
-import ch.vd.unireg.xml.event.docsortant.v1.CodeSupport;
-import ch.vd.unireg.xml.event.docsortant.v1.Document;
-import ch.vd.unireg.xml.event.docsortant.v1.Documents;
-import ch.vd.unireg.xml.event.docsortant.v1.DonneesMetier;
-import ch.vd.unireg.xml.event.docsortant.v1.Population;
 import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.XmlUtils;
@@ -50,6 +42,14 @@ import ch.vd.unireg.tiers.Tiers;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeLettreBienvenue;
+import ch.vd.unireg.xml.event.docsortant.v1.Archivage;
+import ch.vd.unireg.xml.event.docsortant.v1.Archives;
+import ch.vd.unireg.xml.event.docsortant.v1.Caracteristiques;
+import ch.vd.unireg.xml.event.docsortant.v1.CodeSupport;
+import ch.vd.unireg.xml.event.docsortant.v1.Document;
+import ch.vd.unireg.xml.event.docsortant.v1.Documents;
+import ch.vd.unireg.xml.event.docsortant.v1.DonneesMetier;
+import ch.vd.unireg.xml.event.docsortant.v1.Population;
 
 /**
  * Implémentation du service de notification de la présence d'un document sortant
@@ -209,6 +209,40 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       di.getNumero(),
 		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDocumentFiscal.REFUSE),
 		                       infoArchivage);
+	}
+
+	@Override
+	public void signaleReponseDemandeDelaiQSNC(DelaiDeclaration delai, CTypeInfoArchivage infoArchivage, boolean local) {
+		if (infoArchivage != null) {
+			final EtatDelaiDocumentFiscal etatDelai = delai.getEtat();
+			switch (etatDelai) {
+			case ACCORDE:
+				signaleDocumentSortant("ACDELQSNC",
+				                       TypeDocumentSortant.ACCORD_DELAI_QSNC,
+				                       delai.getDocumentFiscal().getTiers(),
+				                       local,
+				                       delai.getDateDemande().year(),
+				                       null,
+				                       String.valueOf(delai.getId()),
+				                       infoArchivage);
+
+				break;
+			case REFUSE:
+				signaleDocumentSortant("REDELQSNC",
+				                       TypeDocumentSortant.REFUS_DELAI_QSNC,
+				                       delai.getDocumentFiscal().getTiers(),
+				                       local,
+				                       delai.getDateDemande().year(),
+				                       null,
+				                       String.valueOf(delai.getId()),
+				                       infoArchivage);
+				break;
+			default:
+				//rien à faire
+			}
+		}
+
+
 	}
 
 	@Override

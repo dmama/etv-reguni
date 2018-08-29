@@ -20,6 +20,7 @@
 		<property name="sourcesQuittancementAvecLiberationPossible" ref="sourcesQuittancementAvecLiberationPossible"/>
 		<property name="liberationSender" ref="evenementLiberationDeclarationImpotSender" />
 		<property name="ajouterDelaiValidator" ref="ajouterDelaiDocumentFiscalValidator"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 	</bean>
 
 </beans>

@@ -7,6 +7,7 @@ import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
+import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.unireg.documentfiscal.AutorisationRadiationRC;
@@ -63,4 +64,6 @@ public interface EvenementDocumentSortantService {
 	void signaleDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata);
 
 	void signaleRappelDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local);
+
+	void signaleReponseDemandeDelaiQSNC(DelaiDeclaration delai, CTypeInfoArchivage infoArchivage, boolean locale);
 }

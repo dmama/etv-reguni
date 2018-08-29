@@ -38,7 +38,7 @@ public interface EditiqueCompositionService {
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
 	 * DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinairePP, RegDate)}.
 	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
+	 * @param declaration la déclaration d'impôt ordinaire à imprimer
 	 * @return le document imprimé
 	 */
 	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration) throws EditiqueException, JMSException;
@@ -49,7 +49,7 @@ public interface EditiqueCompositionService {
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
 	 * DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinairePM, RegDate)}.
 	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
+	 * @param declaration la déclaration d'impôt ordinaire à imprimer
 	 * @return le document imprimé
 	 */
 	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException;
@@ -59,6 +59,7 @@ public interface EditiqueCompositionService {
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
 	 * QuestionnaireSNCService#envoiQuestionnaireSNCOnline(QuestionnaireSNC, RegDate)}.
+	 *
 	 * @param questionnaire le questionnaire SNC à imprimer
 	 * @return le document imprimé
 	 */
@@ -70,9 +71,9 @@ public interface EditiqueCompositionService {
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
 	 * {@link DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinairePP, TypeDocument, List)}.
 	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 * @param typeDocument  le type de document
-	 * @param annexes       la liste des annexes
+	 * @param declaration  la déclaration d'impôt ordinaire à imprimer
+	 * @param typeDocument le type de document
+	 * @param annexes      la liste des annexes
 	 * @return le document imprimé
 	 */
 	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
@@ -83,8 +84,8 @@ public interface EditiqueCompositionService {
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
 	 * {@link DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinairePM, List)}.
 	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 * @param annexes       la liste des annexes
+	 * @param declaration la déclaration d'impôt ordinaire à imprimer
+	 * @param annexes     la liste des annexes
 	 * @return le document imprimé
 	 */
 	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
@@ -94,52 +95,50 @@ public interface EditiqueCompositionService {
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
 	 * QuestionnaireSNCService#envoiDuplicataQuestionnaireSNCOnline(QuestionnaireSNC)}.
+	 *
 	 * @param questionnaire le questionnaire SNC à imprimer
 	 * @return le document imprimé
 	 */
 	EditiqueResultat imprimeDuplicataQuestionnaireSNCOnline(QuestionnaireSNC questionnaire) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
-	 * déclaration.
+	 * Imprime la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
 	 * DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinairePP, RegDate)}.
 	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
+	 * @param declaration la déclaration d'impôt ordinaire à imprimer
 	 */
 	void imprimeDIForBatch(DeclarationImpotOrdinairePP declaration) throws EditiqueException;
 
 	/**
-	 * Imprime la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
-	 * déclaration.
+	 * Imprime la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
 	 * DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinairePP, RegDate)}.
 	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
+	 * @param declaration la déclaration d'impôt ordinaire à imprimer
 	 */
 	void imprimeDIForBatch(DeclarationImpotOrdinairePM declaration) throws EditiqueException;
 
 	/**
-	 * Imprime le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement, et du moment que la transaction est committée, il est de la responsabilité
-	 * d'éditique d'imprimer le questionnaire
+	 * Imprime le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement, et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer le questionnaire
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
 	 * QuestionnaireSNCService#envoiQuestionnaireSNCOnline(QuestionnaireSNC, RegDate)}.
+	 *
 	 * @param questionnaire le questionnaire SNC à imprimer
 	 * @return le document imprimé
 	 */
 	void imprimerQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire) throws EditiqueException;
 
 	/**
-	 * Imprime la lr spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
-	 * déclaration.
+	 * Imprime la lr spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
 	 * ch.vd.unireg.declaration.source.ListeRecapService#imprimerLR(ch.vd.unireg.tiers.DebiteurPrestationImposable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate)}
 	 *
-	 * @param lr            la LR à imprimer
+	 * @param lr la LR à imprimer
 	 */
 	void imprimeLRForBatch(DeclarationImpotSource lr) throws EditiqueException;
 
@@ -153,8 +152,7 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeNouveauxDossiers(List<Contribuable> contribuables) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la sommation pour la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
-	 * d'éditique d'imprimer la déclaration.
+	 * Imprime la sommation pour la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 * <p/>
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire dont la sommation est à imprimer
@@ -164,18 +162,16 @@ public interface EditiqueCompositionService {
 	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException;
 
 	/**
-	 * Imprime la sommation pour la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
-	 * d'éditique d'imprimer la déclaration.
+	 * Imprime la sommation pour la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 * <p/>
 	 *
-	 * @param declaration   la déclaration d'impôt ordinaire dont la sommation est à imprimer
+	 * @param declaration    la déclaration d'impôt ordinaire dont la sommation est à imprimer
 	 * @param dateTraitement la date d'impression
 	 */
 	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException;
 
 	/**
-	 * Imprime la sommation pour la LR spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique
-	 * d'imprimer la déclaration.
+	 * Imprime la sommation pour la LR spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 *
 	 * @param lr
 	 * @param dateEvenement
@@ -184,10 +180,10 @@ public interface EditiqueCompositionService {
 	void imprimeSommationLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException;
 
 	/**
-	 * Imprime le rappel pour le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
-	 * d'éditique d'imprimer la déclaration
-	 * @param questionnaire le questionnaire dont on veut envoyer le rappel
-	 * @param dateTraitement date de traitement
+	 * Imprime le rappel pour le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la déclaration
+	 *
+	 * @param questionnaire       le questionnaire dont on veut envoyer le rappel
+	 * @param dateTraitement      date de traitement
 	 * @param dateOfficielleEnvoi date à placer sur le courrier comme date officielle d'envoi
 	 * @throws EditiqueException en cas de souci
 	 */
@@ -225,9 +221,9 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeSommationLROnline(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime le rappel pour le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
-	 * d'éditique d'imprimer la déclaration
-	 * @param questionnaire le questionnaire dont on veut envoyer le rappel
+	 * Imprime le rappel pour le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la déclaration
+	 *
+	 * @param questionnaire  le questionnaire dont on veut envoyer le rappel
 	 * @param dateTraitement date de traitement
 	 * @return le document imprimé
 	 * @throws EditiqueException en cas de souci
@@ -247,7 +243,7 @@ public interface EditiqueCompositionService {
 	/**
 	 * Imprime la lettre de décision d'accord/refus de délai pour la {@link DeclarationImpotOrdinairePM}
 	 *
-	 * @param di la déclaration d'impôt PM
+	 * @param di    la déclaration d'impôt PM
 	 * @param delai le délai accordé/refusé
 	 * @return un accesseur vers le document éditique généré, et l'identifiant d'archivage du document généré
 	 * @throws EditiqueException en cas de souci
@@ -255,9 +251,27 @@ public interface EditiqueCompositionService {
 	Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException;
 
 	/**
+	 * Imprime la lettre de décision d'accord/refus de délai pour le {@link DelaiDeclaration}, pour un {@link QuestionnaireSNC}
+	 *
+	 * @param delai le délai accordé/refusé
+	 * @return la clé d'archivage du document
+	 * @throws EditiqueException en cas de souci
+	 */
+	String imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai) throws EditiqueException;
+
+	/**
+	 * Imprime la lettre de décision d'accord/refus de délai pour le {@link DelaiDeclaration}, pour un {@link QuestionnaireSNC}
+	 *
+	 * @param delai le délai accordé/refusé
+	 * @return un accesseur vers le document éditique généré, et l'identifiant d'archivage du document généré
+	 * @throws EditiqueException en cas de souci
+	 */
+	Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiQSNCOnline(DelaiDeclaration delai) throws EditiqueException;
+
+	/**
 	 * Demande l'impression et l'envoi de la lettre de décision d'accord de délai pour la {@link DeclarationImpotOrdinairePM}
 	 *
-	 * @param di la déclaration d'impôt PM
+	 * @param di    la déclaration d'impôt PM
 	 * @param delai le délai accordé/refusé
 	 * @return l'identifiant d'archivage du document généré
 	 * @throws EditiqueException en cas de souci
@@ -294,13 +308,14 @@ public interface EditiqueCompositionService {
 
 	/**
 	 * Imprime les document de confirmation ou de mise en attente lors d'une demande d'inscription à la E-facture
-	 * @param tiers a qui le document doit être envoyé
-	 * @param typeDoc permet de determiner le type de document a imprimer
-	 * @param dateTraitement date du traitement
-	 * @param dateDemande date de la demande d'inscription pour laquelle on imprime ce document
-	 * @param noAdherent numéro d'adhérent e-facture de la demande d'inscription en cours de traitement
+	 *
+	 * @param tiers                 a qui le document doit être envoyé
+	 * @param typeDoc               permet de determiner le type de document a imprimer
+	 * @param dateTraitement        date du traitement
+	 * @param dateDemande           date de la demande d'inscription pour laquelle on imprime ce document
+	 * @param noAdherent            numéro d'adhérent e-facture de la demande d'inscription en cours de traitement
 	 * @param dateDemandePrecedente date de la demande d'inscription précédente remplacée par celle-ci
-	 * @param noAdherentPrecedent numéro d'adhérent e-facture de l'inscription précédente remplacée par celle-ci
+	 * @param noAdherentPrecedent   numéro d'adhérent e-facture de l'inscription précédente remplacée par celle-ci
 	 * @return l'identifiant d'archivage du document
 	 * @throws EditiqueException
 	 */
@@ -318,7 +333,8 @@ public interface EditiqueCompositionService {
 
 	/**
 	 * Envoie à l'éditique la lettre de bienvenue à imprimer en masse
-	 * @param lettre la lettre en question
+	 *
+	 * @param lettre         la lettre en question
 	 * @param dateTraitement la date de traitement de l'envoi
 	 * @throws EditiqueException en cas de problème
 	 */
@@ -335,6 +351,7 @@ public interface EditiqueCompositionService {
 
 	/**
 	 * Imprime un duplicata de la lettre de bienvenue spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
+	 *
 	 * @param lettre
 	 * @param dateTraitement
 	 * @return
@@ -344,7 +361,8 @@ public interface EditiqueCompositionService {
 
 	/**
 	 * Envoie à l'éditique le rappel de la lettre de bienvenue à imprimer en masse
-	 * @param lettre la lettre rappelée
+	 *
+	 * @param lettre         la lettre rappelée
 	 * @param dateTraitement la date de traitement de l'envoi du rappel
 	 * @throws EditiqueException en cas de problème
 	 */
@@ -352,37 +370,41 @@ public interface EditiqueCompositionService {
 
 	/**
 	 * Envoie à l'éditique une lettre d'autorisation de radiation du RC à imprimer localement
-	 * @param lettre la lettre d'autorisation
+	 *
+	 * @param lettre         la lettre d'autorisation
 	 * @param dateTraitement la date de traitement de l'envoi
 	 * @return le document imprimé, en quelque sorte...
 	 * @throws EditiqueException en cas de souci éditique
-	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
+	 * @throws JMSException      en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
 	 */
 	EditiqueResultat imprimeAutorisationRadiationRCOnline(AutorisationRadiationRC lettre, RegDate dateTraitement) throws EditiqueException, JMSException;
 
 	/**
 	 * Envoie à l'éditique une lettre de demande de bilan final à imprimer localement
-	 * @param lettre la lettre de demande de bilan final
+	 *
+	 * @param lettre         la lettre de demande de bilan final
 	 * @param dateTraitement la date de traitement de l'envoi
 	 * @return le document imprimé, en quelque sorte...
 	 * @throws EditiqueException en cas de souci éditique
-	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
+	 * @throws JMSException      en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
 	 */
 	EditiqueResultat imprimeDemandeBilanFinalOnline(DemandeBilanFinal lettre, RegDate dateTraitement) throws EditiqueException, JMSException;
 
 	/**
 	 * Envoie à l'éditique une lettre type de liquidation à imprimer localement
-	 * @param lettre la lettre
+	 *
+	 * @param lettre         la lettre
 	 * @param dateTraitement la date de traitement de l'envoi
 	 * @return le document imprimé, en quelque sorte...
 	 * @throws EditiqueException en cas de souci éditique
-	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
+	 * @throws JMSException      en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
 	 */
 	EditiqueResultat imprimeLettreTypeInformationLiquidationOnline(LettreTypeInformationLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException;
 
 	/**
 	 * Envoie à l'éditique le formulaire de demande de dégrèvement ICI à imprimer en masse
-	 * @param demande le formulaire à imprimer
+	 *
+	 * @param demande        le formulaire à imprimer
 	 * @param dateTraitement la date de traitement de l'envoi
 	 * @throws EditiqueException en cas de problème
 	 */
@@ -390,17 +412,19 @@ public interface EditiqueCompositionService {
 
 	/**
 	 * Envoie à l'éditique le formulaire de demande de dégrèvement ICI à imprimer localement
-	 * @param demande le formulaire à imprimer
+	 *
+	 * @param demande        le formulaire à imprimer
 	 * @param dateTraitement la date de traitement de l'envoi
-	 * @param duplicata si le document est un duplicata de l'original
+	 * @param duplicata      si le document est un duplicata de l'original
 	 * @return le document imprimé, en quelque sorte...
 	 * @throws EditiqueException en cas de problème
-	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
+	 * @throws JMSException      en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
 	 */
 	EditiqueResultat imprimeDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement, boolean duplicata) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime un duplicata de la demande de dégrèvement spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
+	 *
 	 * @param demande
 	 * @param dateTraitement
 	 * @return
@@ -410,7 +434,8 @@ public interface EditiqueCompositionService {
 
 	/**
 	 * Envoie à l'éditique le rappel du formulaire de demande de dégrèvement à imprimer en masse
-	 * @param formulaire le formulaire rappelé
+	 *
+	 * @param formulaire     le formulaire rappelé
 	 * @param dateTraitement la date de traitement de l'envoi du rappel
 	 * @throws EditiqueException en cas de problème
 	 */
@@ -418,10 +443,11 @@ public interface EditiqueCompositionService {
 
 	/**
 	 * Envoie à l'éditique une fourre neutre à imprimer localement
+	 *
 	 * @param dateTraitement
 	 * @return le document imprimé
 	 * @throws EditiqueException si l'éditique n'est pas content
-	 * @throws JMSException en cas de problème avec l'esb
+	 * @throws JMSException      en cas de problème avec l'esb
 	 */
 	EditiqueResultat imprimerFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) throws EditiqueException, JMSException;
 }

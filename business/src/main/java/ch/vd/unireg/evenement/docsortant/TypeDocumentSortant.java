@@ -8,6 +8,8 @@ public enum TypeDocumentSortant {
 	QSNC(false, CodeTypeDocumentSortant.DECLARATION_COMPTES, "Questionnaire SNC", true),
 	DUPLICATA_QSNC(false, CodeTypeDocumentSortant.DECLARATION_COMPTES, "Questionnaire SNC (duplicata)", false),
 	RAPPEL_QSNC(false, CodeTypeDocumentSortant.DECLARATION_COMPTES, "Rappel de questionnaire SNC", true),
+	ACCORD_DELAI_QSNC(false, CodeTypeDocumentSortant.DECLARATION_COMPTES, "Accord de délai Questionnaire SNC", true),
+	REFUS_DELAI_QSNC(false, CodeTypeDocumentSortant.DECLARATION_COMPTES, "Refus de délai Questionnaire SNC", true),
 	DI_PM(false, CodeTypeDocumentSortant.DECLARATION_COMPTES, "Déclaration d'impôt PM", true),
 	DUPLICATA_DI_PM(false, CodeTypeDocumentSortant.DECLARATION_COMPTES, "Déclaration d'impôt PM (duplicata)", false),
 	DI_APM(false, CodeTypeDocumentSortant.DECLARATION_COMPTES, "Déclaration d'impôt APM", true),
