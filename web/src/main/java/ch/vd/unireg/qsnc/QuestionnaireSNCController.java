@@ -657,7 +657,7 @@ public class QuestionnaireSNCController {
 							resultat -> "redirect:/qsnc/editer.do?id=" + id;
 
 					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
-						Flash.error(String.format("%s Veuillez ré-essayer ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+						Flash.error(MessageHelper.getMessage("error.qsnc.ajout.delai.retour.editique", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
 						return "redirect:/qsnc/editer.do?id=" + id;
 					};
 
