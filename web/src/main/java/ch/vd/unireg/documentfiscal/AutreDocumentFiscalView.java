@@ -30,7 +30,7 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 	private RegDate dateDemande;
 
 	public AutreDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageSource messageSource, String typeKey, String subtypeKey) {
-		super(doc, infraService, messageSource);
+		super(doc, infraService);
 		this.dateEnvoi = doc.getDateEnvoi();
 		this.libelleTypeDocument = getLibelle(messageSource, typeKey);
 		this.libelleSousType = getLibelle(messageSource, subtypeKey);

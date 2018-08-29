@@ -51,7 +51,7 @@ public class AjouterQuittanceDocumentFiscalView {
 	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDocumentFiscal> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDocumentFiscal etat : etats) {
-			list.add(new EtatDocumentFiscalView(etat, infraService, messageSource));
+			list.add(new EtatDocumentFiscalView(etat, infraService));
 		}
 		Collections.sort(list);
 		return list;

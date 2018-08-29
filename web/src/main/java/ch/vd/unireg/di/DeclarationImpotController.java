@@ -394,7 +394,7 @@ public class DeclarationImpotController {
 		final Long tiersId = decl.getTiers().getId();
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
-		return new DeclarationView(decl, infraService, messageSource);
+		return new DeclarationView(decl, infraService);
 	}
 
 	/**

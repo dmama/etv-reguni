@@ -67,7 +67,7 @@ public class AjouterEtatDeclarationView {
 	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDocumentFiscalView(etat, infraService, messageSource));
+			list.add(new EtatDocumentFiscalView(etat, infraService));
 		}
 		Collections.sort(list);
 		return list;

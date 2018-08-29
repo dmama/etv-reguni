@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -18,8 +17,8 @@ import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDateEnvoiCourrierEtEmol
 import ch.vd.unireg.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.unireg.documentfiscal.SourceQuittancement;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
-import ch.vd.unireg.utils.WebContextUtils;
 
 @SuppressWarnings("unused")
 public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView>, Annulable {
@@ -48,35 +47,31 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 	 */
 	private String urlVisualisationExterneDocument;
 
-	public EtatDocumentFiscalView(@NotNull EtatDocumentFiscal etat, @NotNull ServiceInfrastructureService infraService, @NotNull MessageSource messageSource) {
+	public EtatDocumentFiscalView(@NotNull EtatDocumentFiscal etat, @NotNull ServiceInfrastructureService infraService) {
 		this.id = etat.getId();
 		this.dateObtention = etat.getDateObtention();
 		this.logCreationDate = etat.getLogCreationDate();
 		this.annule = etat.isAnnule();
 		this.etat = etat.getEtat();
-		this.etatMessage = messageSource.getMessage("option.etat.avancement.f." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
+		this.etatMessage = MessageHelper.getMessage("option.etat.avancement.f." + this.etat.name());
 
 		if (etat instanceof SourceQuittancement) {
 			this.source = ((SourceQuittancement) etat).getSource();
 			if (this.source == null) {
-				this.sourceMessage = messageSource.getMessage("option.source.quittancement.UNKNOWN", null, WebContextUtils.getDefaultLocale());
+				this.sourceMessage = MessageHelper.getMessage("option.source.quittancement.UNKNOWN");
 			}
 			else {
-				this.sourceMessage = messageSource.getMessage("option.source.quittancement." + this.source, null, WebContextUtils.getDefaultLocale());
+				this.sourceMessage = MessageHelper.getMessage("option.source.quittancement." + this.source);
 			}
 		}
 		if (etat instanceof EtatDocumentFiscalAvecDateEnvoiCourrier) {
 			this.dateEnvoiCourrier = ((EtatDocumentFiscalAvecDateEnvoiCourrier) etat).getDateEnvoiCourrier();
 			final Integer emolument = getEmolument(etat);
 			if (emolument != null) {
-				this.dateEnvoiCourrierMessage = messageSource.getMessage("label.date.envoi.courrier.avec.emolument",
-				                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier), Integer.toString(emolument)},
-				                                                         WebContextUtils.getDefaultLocale());
+				this.dateEnvoiCourrierMessage = MessageHelper.getMessage("label.date.envoi.courrier.avec.emolument", RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier), Integer.toString(emolument));
 			}
 			else {
-				this.dateEnvoiCourrierMessage = messageSource.getMessage("label.date.envoi.courrier",
-				                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)},
-				                                                         WebContextUtils.getDefaultLocale());
+				this.dateEnvoiCourrierMessage = MessageHelper.getMessage("label.date.envoi.courrier", RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier));
 			}
 		}
 		if (etat instanceof EtatDocumentFiscalAvecDocumentArchive) {

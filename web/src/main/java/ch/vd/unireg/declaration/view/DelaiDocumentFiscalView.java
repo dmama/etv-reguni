@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
@@ -13,8 +12,8 @@ import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.documentfiscal.DocumentFiscal;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
-import ch.vd.unireg.utils.WebContextUtils;
 
 public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalView>, Annulable {
 
@@ -42,7 +41,7 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 	public DelaiDocumentFiscalView() {
 	}
 
-	public DelaiDocumentFiscalView(DelaiDocumentFiscal delai, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public DelaiDocumentFiscalView(DelaiDocumentFiscal delai, ServiceInfrastructureService infraService) {
 		this.id = delai.getId();
 		this.annule = delai.isAnnule();
 		this.confirmationEcrite = StringUtils.isNotBlank(delai.getCleArchivageCourrier());
@@ -58,7 +57,7 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 		this.logModifUser = delai.getLogModifUser();
 		this.idDocumentFiscal = documentFiscal.getId();
 		this.etat = delai.getEtat();
-		this.etatMessage = messageSource.getMessage("option.etat.delai." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
+		this.etatMessage = MessageHelper.getMessage("option.etat.delai." + this.etat.name());
 		this.sursis = delai.isSursis();
 	}
 
@@ -218,9 +217,9 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 	 */
 	@Override
 	public int compareTo(@NotNull DelaiDocumentFiscalView delaiDocumentFiscalView) {
-		int comparison = - dateTraitement.compareTo(delaiDocumentFiscalView.dateTraitement);
+		int comparison = -dateTraitement.compareTo(delaiDocumentFiscalView.dateTraitement);
 		if (comparison == 0) {
-			comparison = - Long.compare(id, delaiDocumentFiscalView.id);
+			comparison = -Long.compare(id, delaiDocumentFiscalView.id);
 		}
 		return comparison;
 	}

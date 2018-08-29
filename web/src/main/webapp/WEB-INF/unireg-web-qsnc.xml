@@ -4,7 +4,6 @@
 
 	<bean id="questionnaireSncController" class="ch.vd.unireg.qsnc.QuestionnaireSNCController">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
-		<property name="messageSource" ref="messageSource"/>
 		<property name="qsncService" ref="qsncService"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="autorisationManager" ref="autorisationManager"/>

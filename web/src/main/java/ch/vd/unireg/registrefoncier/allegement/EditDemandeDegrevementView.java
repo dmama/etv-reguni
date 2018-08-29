@@ -34,7 +34,7 @@ public class EditDemandeDegrevementView extends AbstractEditDemandeDegrevementVi
 	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDocumentFiscal> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDocumentFiscal etat : etats) {
-			list.add(new EtatDocumentFiscalView(etat, infraService, messageSource));
+			list.add(new EtatDocumentFiscalView(etat, infraService));
 		}
 		Collections.sort(list);
 		return list;
@@ -43,7 +43,7 @@ public class EditDemandeDegrevementView extends AbstractEditDemandeDegrevementVi
 	private static List<DelaiDocumentFiscalView> initDelais(Set<DelaiDocumentFiscal> delais, RegDate premierDelai, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<DelaiDocumentFiscalView> list = new ArrayList<>();
 		for (DelaiDocumentFiscal delai : delais) {
-			final DelaiDocumentFiscalView delaiView = new DelaiDocumentFiscalView(delai, infraService, messageSource);
+			final DelaiDocumentFiscalView delaiView = new DelaiDocumentFiscalView(delai, infraService);
 			delaiView.setFirst(premierDelai == delai.getDelaiAccordeAu());
 			list.add(delaiView);
 		}

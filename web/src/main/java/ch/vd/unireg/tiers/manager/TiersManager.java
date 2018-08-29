@@ -676,7 +676,7 @@ public class TiersManager implements MessageSourceAware {
 		if (!qsnc.isEmpty()) {
 			final List<QuestionnaireSNCView> views = new ArrayList<>(qsnc.size());
 			for (QuestionnaireSNC q : qsnc) {
-				views.add(new QuestionnaireSNCView(q, serviceInfrastructureService, messageSource));
+				views.add(new QuestionnaireSNCView(q, serviceInfrastructureService));
 			}
 			views.sort(Comparator.comparing(QuestionnaireSNCView::getDateDebut, NullDateBehavior.EARLIEST::compare).reversed());
 			tiersView.setQuestionnairesSNC(views);

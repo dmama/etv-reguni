@@ -1,7 +1,5 @@
 package ch.vd.unireg.qsnc;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
@@ -15,9 +13,9 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 	private final boolean duplicable;       // si on peut en faire un duplicata
 	private final boolean liberable;        // si on peut liberer le questionnaire
 
-	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, ServiceInfrastructureService infraService, MessageSource messageSource, boolean allowedRappel, boolean allowedDuplicata,
+	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, ServiceInfrastructureService infraService, boolean allowedRappel, boolean allowedDuplicata,
 	                                boolean allowedLiberable) {
-		super(questionnaire, infraService, messageSource);
+		super(questionnaire, infraService);
 		this.liberable = allowedLiberable;
 		this.rappelable = allowedRappel && isRappelable(questionnaire);
 		this.duplicable = allowedDuplicata && isDuplicable(questionnaire);

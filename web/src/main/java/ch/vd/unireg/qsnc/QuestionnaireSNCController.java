@@ -14,9 +14,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -91,7 +89,6 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatTache;
 import ch.vd.unireg.type.TypeTache;
 import ch.vd.unireg.utils.RegDateEditor;
-import ch.vd.unireg.utils.WebContextUtils;
 
 @Controller
 @RequestMapping("/qsnc")
@@ -100,7 +97,6 @@ public class QuestionnaireSNCController {
 
 	private HibernateTemplate hibernateTemplate;
 	private QuestionnaireSNCService qsncService;
-	private MessageSource messageSource;
 	private SecurityProviderInterface securityProvider;
 	private AutorisationManager autorisationManager;
 	private DelaisService delaisService;
@@ -126,9 +122,6 @@ public class QuestionnaireSNCController {
 		this.qsncService = qsncService;
 	}
 
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
-	}
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -274,7 +267,7 @@ public class QuestionnaireSNCController {
 	private List<QuestionnaireSNCView> asViews(Iterable<QuestionnaireSNC> core) {
 		final List<QuestionnaireSNCView> views = new LinkedList<>();
 		for (QuestionnaireSNC q : core) {
-			views.add(new QuestionnaireSNCView(q, infraService, messageSource));
+			views.add(new QuestionnaireSNCView(q, infraService));
 		}
 		return views;
 	}
@@ -287,7 +280,7 @@ public class QuestionnaireSNCController {
 		if (questionnaire == null) {
 			throw new ObjectNotFoundException("Questionnaire SNC inexistant.");
 		}
-		return new QuestionnaireSNCView(questionnaire, infraService, messageSource);
+		return new QuestionnaireSNCView(questionnaire, infraService);
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -386,84 +379,73 @@ public class QuestionnaireSNCController {
 	private String printNewQuestionnaire(HttpServletResponse response, final QuestionnaireSNCAddView view) throws IOException {
 
 		// création du nouveau questionnaire, impression locale...
-		final EditiqueResultat retourEditique = doInTransaction(new TransactionHelper.ExceptionThrowingCallback<EditiqueResultat, DeclarationException>() {
-			@Override
-			public EditiqueResultat execute(TransactionStatus status) throws DeclarationException {
+		final EditiqueResultat retourEditique = doInTransaction(status -> {
 
-				final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, view.getEntrepriseId());
-				if (entreprise == null) {
-					throw new TiersNotFoundException(view.getEntrepriseId());
-				}
-				checkEditRightOnEntreprise(entreprise);
+			final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, view.getEntrepriseId());
+			if (entreprise == null) {
+				throw new TiersNotFoundException(view.getEntrepriseId());
+			}
+			checkEditRightOnEntreprise(entreprise);
 
-				final PeriodeFiscale periodeFiscale = periodeFiscaleDAO.getPeriodeFiscaleByYear(view.getPeriodeFiscale());
-				if (periodeFiscale == null) {
-					throw new DeclarationException("Période fiscale " + view.getPeriodeFiscale() + " inexistante!");
-				}
+			final PeriodeFiscale periodeFiscale = periodeFiscaleDAO.getPeriodeFiscaleByYear(view.getPeriodeFiscale());
+			if (periodeFiscale == null) {
+				throw new DeclarationException("Période fiscale " + view.getPeriodeFiscale() + " inexistante!");
+			}
 
-				final RegDate dateTraitement = RegDate.get();
-				final ModeleDocument md = periodeFiscale.get(TypeDocument.QUESTIONNAIRE_SNC);
+			final RegDate dateTraitement = RegDate.get();
+			final ModeleDocument md = periodeFiscale.get(TypeDocument.QUESTIONNAIRE_SNC);
 
-				final QuestionnaireSNC questionnaire = new QuestionnaireSNC();
-				questionnaire.setDateDebut(RegDate.get(view.getPeriodeFiscale(), 1, 1));
-				questionnaire.setDateFin(RegDate.get(view.getPeriodeFiscale(), 12, 31));
-				questionnaire.setPeriode(periodeFiscale);
-				questionnaire.setModeleDocument(md);
-				questionnaire.addEtat(new EtatDeclarationEmise(dateTraitement));
+			final QuestionnaireSNC questionnaire = new QuestionnaireSNC();
+			questionnaire.setDateDebut(RegDate.get(view.getPeriodeFiscale(), 1, 1));
+			questionnaire.setDateFin(RegDate.get(view.getPeriodeFiscale(), 12, 31));
+			questionnaire.setPeriode(periodeFiscale);
+			questionnaire.setModeleDocument(md);
+			questionnaire.addEtat(new EtatDeclarationEmise(dateTraitement));
 
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateTraitement);
-				delai.setDateTraitement(dateTraitement);
-				delai.setDelaiAccordeAu(view.getDelaiAccorde());
-				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
-				questionnaire.addDelai(delai);
-				questionnaire.setDelaiRetourImprime(view.getDelaiAccorde());
-				questionnaire.setCodeSegment(QuestionnaireSNCService.codeSegment);
-				entreprise.addDeclaration(questionnaire);
+			final DelaiDeclaration delai = new DelaiDeclaration();
+			delai.setDateDemande(dateTraitement);
+			delai.setDateTraitement(dateTraitement);
+			delai.setDelaiAccordeAu(view.getDelaiAccorde());
+			delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+			questionnaire.addDelai(delai);
+			questionnaire.setDelaiRetourImprime(view.getDelaiAccorde());
+			questionnaire.setCodeSegment(QuestionnaireSNCService.codeSegment);
+			entreprise.addDeclaration(questionnaire);
 
-				// s'il y avait une tâche d'envoi en instance, il faut la traiter
-				final TacheCriteria tacheCriterion = new TacheCriteria();
-				tacheCriterion.setAnnee(periodeFiscale.getAnnee());
-				tacheCriterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-				tacheCriterion.setInclureTachesAnnulees(false);
-				tacheCriterion.setNumeroCTB(entreprise.getNumero());
-				tacheCriterion.setTypeTache(TypeTache.TacheEnvoiQuestionnaireSNC);
-				final List<Tache> tachesATraiter = tacheDAO.find(tacheCriterion);
-				if (tachesATraiter != null && !tachesATraiter.isEmpty()) {
-					// on marque la première comme traitée, et les (éventuelles) suivantes seront annulées par la synchronisation des tâches
-					final TacheEnvoiQuestionnaireSNC tacheTraitee = (TacheEnvoiQuestionnaireSNC) tachesATraiter.get(0);
-					tacheTraitee.setEtat(TypeEtatTache.TRAITE);
-					tacheTraitee.setDateDebut(questionnaire.getDateDebut());        // éventuel ré-alignement
-					tacheTraitee.setDateFin(questionnaire.getDateFin());
-				}
+			// s'il y avait une tâche d'envoi en instance, il faut la traiter
+			final TacheCriteria tacheCriterion = new TacheCriteria();
+			tacheCriterion.setAnnee(periodeFiscale.getAnnee());
+			tacheCriterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+			tacheCriterion.setInclureTachesAnnulees(false);
+			tacheCriterion.setNumeroCTB(entreprise.getNumero());
+			tacheCriterion.setTypeTache(TypeTache.TacheEnvoiQuestionnaireSNC);
+			final List<Tache> tachesATraiter = tacheDAO.find(tacheCriterion);
+			if (tachesATraiter != null && !tachesATraiter.isEmpty()) {
+				// on marque la première comme traitée, et les (éventuelles) suivantes seront annulées par la synchronisation des tâches
+				final TacheEnvoiQuestionnaireSNC tacheTraitee = (TacheEnvoiQuestionnaireSNC) tachesATraiter.get(0);
+				tacheTraitee.setEtat(TypeEtatTache.TRAITE);
+				tacheTraitee.setDateDebut(questionnaire.getDateDebut());        // éventuel ré-alignement
+				tacheTraitee.setDateFin(questionnaire.getDateFin());
+			}
 
-				// [SIFISC-20041] si on a un modèle de document, on envoie tout ça à l'éditique... mais sinon, l'envoi se fera hors-application manuellement
-				if (md != null) {
-					return qsncService.envoiQuestionnaireSNCOnline(questionnaire, dateTraitement);
-				}
-				else {
-					// c'est le signal que le questionnaire doit être imprimé et envoyé par un autre biais que l'application
-					return null;
-				}
+			// [SIFISC-20041] si on a un modèle de document, on envoie tout ça à l'éditique... mais sinon, l'envoi se fera hors-application manuellement
+			if (md != null) {
+				return qsncService.envoiQuestionnaireSNCOnline(questionnaire, dateTraitement);
+			}
+			else {
+				// c'est le signal que le questionnaire doit être imprimé et envoyé par un autre biais que l'application
+				return null;
 			}
 		});
 
 		// cas d'une demande d'impression avérée
 		if (retourEditique != null) {
 			final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-					new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-						@Override
-						public String doJob(EditiqueResultatReroutageInbox resultat) {
-							return "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
-						}
-					};
+					resultat -> "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
 
-			final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-				@Override
-				public String doJob(EditiqueResultatErreur resultat) {
-					Flash.error(String.format("%s Veuillez imprimer un duplicata du questionnaire SNC.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-					return "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
-				}
+			final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
+				Flash.error(String.format("%s Veuillez imprimer un duplicata du questionnaire SNC.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+				return "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
 			};
 
 			return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "questionnaireSNC", inbox, null, erreur);
@@ -484,42 +466,31 @@ public class QuestionnaireSNCController {
 		checkEditRight(false, false, true, false, false);
 
 		// appel à éditique
-		final EditiqueResultat retourEditique = doInTransaction(new TransactionHelper.ExceptionThrowingCallback<EditiqueResultat, DeclarationException>() {
-			@Override
-			public EditiqueResultat execute(TransactionStatus status) throws DeclarationException {
-				// récupération du questionnaire
-				final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
-				if (questionnaire == null) {
-					throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
-				}
-
-				// récupération de l'entreprise et vérification des droits de modification
-				final Tiers tiers = questionnaire.getTiers();
-				if (!(tiers instanceof Entreprise)) {
-					throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-				}
-
-				final Entreprise entreprise = (Entreprise) tiers;
-				checkEditRightOnEntreprise(entreprise);
-
-				return qsncService.envoiDuplicataQuestionnaireSNCOnline(questionnaire);
+		final EditiqueResultat retourEditique = doInTransaction(status -> {
+			// récupération du questionnaire
+			final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
+			if (questionnaire == null) {
+				throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
 			}
+
+			// récupération de l'entreprise et vérification des droits de modification
+			final Tiers tiers = questionnaire.getTiers();
+			if (!(tiers instanceof Entreprise)) {
+				throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
+			}
+
+			final Entreprise entreprise = (Entreprise) tiers;
+			checkEditRightOnEntreprise(entreprise);
+
+			return qsncService.envoiDuplicataQuestionnaireSNCOnline(questionnaire);
 		});
 
 		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-				new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-					@Override
-					public String doJob(EditiqueResultatReroutageInbox resultat) {
-						return "redirect:/qsnc/editer.do?id=" + questionnaireId;
-					}
-				};
+				resultat -> "redirect:/qsnc/editer.do?id=" + questionnaireId;
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-			@Override
-			public String doJob(EditiqueResultatErreur resultat) {
-				Flash.error(String.format("%s Veuillez ré-essayer ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-				return "redirect:/qsnc/editer.do?id=" + questionnaireId;
-			}
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
+			Flash.error(String.format("%s Veuillez ré-essayer ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+			return "redirect:/qsnc/editer.do?id=" + questionnaireId;
 		};
 
 		return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "questionnaireSNC", inbox, null, erreur);
@@ -551,7 +522,6 @@ public class QuestionnaireSNCController {
 		// construction de la vue et affichage
 		final QuestionnaireSNCView view = new QuestionnaireSNCEditView(questionnaire,
 		                                                               infraService,
-		                                                               messageSource,
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA), SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_LIBERATION) && isLiberable(questionnaire));
 		model.addAttribute("questionnaire", view);
@@ -743,27 +713,24 @@ public class QuestionnaireSNCController {
 		}
 
 		// on fait le boulot de quittancement
-		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<DeclarationException>() {
-			@Override
-			public void execute(TransactionStatus status) throws DeclarationException {
+		doInTransaction(status -> {
 
-				// récupération du questionnaire
-				final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, view.getQuestionnaireId());
-				if (questionnaire == null) {
-					throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + view.getQuestionnaireId());
-				}
-
-				// récupération de l'entreprise et vérification des droits de modification
-				final Tiers tiers = questionnaire.getTiers();
-				if (!(tiers instanceof Entreprise)) {
-					throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-				}
-				final Entreprise entreprise = (Entreprise) tiers;
-				checkEditRightOnEntreprise(entreprise);
-
-				// quittancement
-				qsncService.quittancerQuestionnaire(questionnaire, view.getDateRetour(), EtatDeclarationRetournee.SOURCE_WEB);
+			// récupération du questionnaire
+			final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, view.getQuestionnaireId());
+			if (questionnaire == null) {
+				throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + view.getQuestionnaireId());
 			}
+
+			// récupération de l'entreprise et vérification des droits de modification
+			final Tiers tiers = questionnaire.getTiers();
+			if (!(tiers instanceof Entreprise)) {
+				throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
+			}
+			final Entreprise entreprise = (Entreprise) tiers;
+			checkEditRightOnEntreprise(entreprise);
+
+			// quittancement
+			qsncService.quittancerQuestionnaire(questionnaire, view.getDateRetour(), EtatDeclarationRetournee.SOURCE_WEB);
 		});
 
 		// et c'est fini (sauf bien-sûr si la quittance ne s'est pas bien passée...)
@@ -811,36 +778,33 @@ public class QuestionnaireSNCController {
 		// vérification des droits d'accès
 		checkEditRight(true, false, false, false, false);
 
-		return doInTransaction(new TransactionHelper.ExceptionThrowingCallback<String, DeclarationException>() {
-			@Override
-			public String execute(TransactionStatus status) throws DeclarationException {
-				// récupération du questionnaire
-				final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, idQuestionnaire);
-				if (questionnaire == null) {
-					throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + idQuestionnaire);
-				}
+		return doInTransaction(status -> {
+			// récupération du questionnaire
+			final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, idQuestionnaire);
+			if (questionnaire == null) {
+				throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + idQuestionnaire);
+			}
 
-				// récupération de l'entreprise et vérification des droits de modification
-				final Tiers tiers = questionnaire.getTiers();
-				if (!(tiers instanceof Entreprise)) {
-					throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-				}
-				final Entreprise entreprise = (Entreprise) tiers;
-				checkEditRightOnEntreprise(entreprise);
+			// récupération de l'entreprise et vérification des droits de modification
+			final Tiers tiers = questionnaire.getTiers();
+			if (!(tiers instanceof Entreprise)) {
+				throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
+			}
+			final Entreprise entreprise = (Entreprise) tiers;
+			checkEditRightOnEntreprise(entreprise);
 
-				// annulation du questionnaire
-				qsncService.annulerQuestionnaire(questionnaire);
+			// annulation du questionnaire
+			qsncService.annulerQuestionnaire(questionnaire);
 
-				if (tacheId != null) {
-					// traitement de la tâche
-					final Tache tache = tacheDAO.get(tacheId);
-					tache.setEtat(TypeEtatTache.TRAITE);
+			if (tacheId != null) {
+				// traitement de la tâche
+				final Tache tache = tacheDAO.get(tacheId);
+				tache.setEtat(TypeEtatTache.TRAITE);
 
-					return "redirect:/tache/list.do";
-				}
-				else {
-					return "redirect:/qsnc/list.do?tiersId=" + tiers.getNumero();
-				}
+				return "redirect:/tache/list.do";
+			}
+			else {
+				return "redirect:/qsnc/list.do?tiersId=" + tiers.getNumero();
 			}
 		});
 	}
@@ -855,7 +819,7 @@ public class QuestionnaireSNCController {
 
 		final QuestionnaireSNC questionnaireSNC = questionnaireSNCDAO.get(idQuestionnaire);
 		if (questionnaireSNC == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.qsnc.inexistante", null, WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(MessageHelper.getMessage("error.qsnc.inexistante"));
 		}
 		// vérification des droits d'accès
 		checkEditRight(false, false, false, false, true);
@@ -865,7 +829,7 @@ public class QuestionnaireSNCController {
 
 		// vérification de la libérabilité de la déclaration
 		if (!isLiberable(questionnaireSNC)) {
-			final String message = messageSource.getMessage("error.qsnc.non.liberable", null, WebContextUtils.getDefaultLocale());
+			final String message = MessageHelper.getMessage("error.qsnc.non.liberable");
 			Flash.error(message);
 			return "redirect:editer.do?id=" + idQuestionnaire;
 		}
@@ -891,47 +855,36 @@ public class QuestionnaireSNCController {
 		checkEditRight(false, true, false, false, false);
 
 		// appel à éditique
-		final EditiqueResultat retourEditique = doInTransaction(new TransactionHelper.ExceptionThrowingCallback<EditiqueResultat, DeclarationException>() {
-			@Override
-			public EditiqueResultat execute(TransactionStatus status) throws DeclarationException {
-				// récupération du questionnaire
-				final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
-				if (questionnaire == null) {
-					throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
-				}
-
-				// récupération de l'entreprise et vérification des droits de modification
-				final Tiers tiers = questionnaire.getTiers();
-				if (!(tiers instanceof Entreprise)) {
-					throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-				}
-				final Entreprise entreprise = (Entreprise) tiers;
-				checkEditRightOnEntreprise(entreprise);
-
-				// vérification du côté 'rappelable' du questionnaire, on ne sait jamais
-				final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, infraService, messageSource, true, false, false);
-				if (!view.isRappelable()) {
-					throw new ActionException("Le questionnaire SNC n'est pas dans un état 'rappelable'.");
-				}
-
-				return qsncService.envoiRappelQuestionnaireSNCOnline(questionnaire, RegDate.get());
+		final EditiqueResultat retourEditique = doInTransaction(status -> {
+			// récupération du questionnaire
+			final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, questionnaireId);
+			if (questionnaire == null) {
+				throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + questionnaireId);
 			}
+
+			// récupération de l'entreprise et vérification des droits de modification
+			final Tiers tiers = questionnaire.getTiers();
+			if (!(tiers instanceof Entreprise)) {
+				throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
+			}
+			final Entreprise entreprise = (Entreprise) tiers;
+			checkEditRightOnEntreprise(entreprise);
+
+			// vérification du côté 'rappelable' du questionnaire, on ne sait jamais
+			final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, infraService, true, false, false);
+			if (!view.isRappelable()) {
+				throw new ActionException("Le questionnaire SNC n'est pas dans un état 'rappelable'.");
+			}
+
+			return qsncService.envoiRappelQuestionnaireSNCOnline(questionnaire, RegDate.get());
 		});
 
 		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-				new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-					@Override
-					public String doJob(EditiqueResultatReroutageInbox resultat) {
-						return "redirect:/qsnc/editer.do?id=" + questionnaireId;
-					}
-				};
+				resultat -> "redirect:/qsnc/editer.do?id=" + questionnaireId;
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-			@Override
-			public String doJob(EditiqueResultatErreur resultat) {
-				Flash.error(String.format("%s Veuillez ré-essayer ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-				return "redirect:/qsnc/editer.do?id=" + questionnaireId;
-			}
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
+			Flash.error(String.format("%s Veuillez ré-essayer ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+			return "redirect:/qsnc/editer.do?id=" + questionnaireId;
 		};
 
 		return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "questionnaireSNC", inbox, null, erreur);

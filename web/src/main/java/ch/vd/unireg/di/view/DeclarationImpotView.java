@@ -27,7 +27,7 @@ public class DeclarationImpotView extends DeclarationView implements CodeControl
 	private final RegDate dateFinExercice;
 
 	public DeclarationImpotView(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		super(di, infraService, messageSource);
+		super(di, infraService);
 
 		this.codeControle = di.getCodeControle();
 		this.typeDocument = di.getTypeDeclaration();

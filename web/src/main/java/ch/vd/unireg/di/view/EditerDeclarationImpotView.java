@@ -156,7 +156,7 @@ public class EditerDeclarationImpotView {
 		final RegDate first = di.getPremierDelai();
 		final List<DelaiDocumentFiscalView> list = new ArrayList<>(delais.size());
 		for (DelaiDeclaration delai : delais) {
-			final DelaiDocumentFiscalView d = new DelaiDocumentFiscalView(delai, infraService, messageSource);
+			final DelaiDocumentFiscalView d = new DelaiDocumentFiscalView(delai, infraService);
 			d.setFirst(d.getDelaiAccordeAu() == first);
 			list.add(d);
 		}
@@ -181,7 +181,7 @@ public class EditerDeclarationImpotView {
 	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDocumentFiscalView(etat, infraService, messageSource));
+			list.add(new EtatDocumentFiscalView(etat, infraService));
 		}
 		Collections.sort(list);
 		return list;

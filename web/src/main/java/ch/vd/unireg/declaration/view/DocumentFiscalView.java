@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.Annulable;
 import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
@@ -28,7 +26,7 @@ public abstract class DocumentFiscalView implements Annulable {
 	private final RegDate dateRetour;
 	private final String sourceRetour;
 
-	public DocumentFiscalView(DocumentFiscal documentFiscal, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public DocumentFiscalView(DocumentFiscal documentFiscal, ServiceInfrastructureService infraService) {
 		this.id = documentFiscal.getId();
 		this.tiersId = documentFiscal.getTiers().getNumero();
 		this.annule = documentFiscal.isAnnule();
@@ -42,26 +40,26 @@ public abstract class DocumentFiscalView implements Annulable {
 			this.sourceRetour = null;
 		}
 
-		this.etats = initEtats(documentFiscal.getEtats(), infraService, messageSource);
-		this.delais = initDelais(documentFiscal.getDelais(), documentFiscal.getPremierDelai(), infraService, messageSource);
+		this.etats = initEtats(documentFiscal.getEtats(), infraService);
+		this.delais = initDelais(documentFiscal.getDelais(), documentFiscal.getPremierDelai(), infraService);
 
 		this.delaiAccorde = documentFiscal.getDelaiAccordeAu();
 		this.dateRetour = documentFiscal.getDateRetour();
 	}
 
-	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDocumentFiscal> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDocumentFiscal> etats, ServiceInfrastructureService infraService) {
 		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDocumentFiscal etat : etats) {
-			list.add(new EtatDocumentFiscalView(etat, infraService, messageSource));
+			list.add(new EtatDocumentFiscalView(etat, infraService));
 		}
 		Collections.sort(list);
 		return list;
 	}
 
-	private static List<DelaiDocumentFiscalView> initDelais(Set<DelaiDocumentFiscal> delais, RegDate premierDelai, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	private static List<DelaiDocumentFiscalView> initDelais(Set<DelaiDocumentFiscal> delais, RegDate premierDelai, ServiceInfrastructureService infraService) {
 		final List<DelaiDocumentFiscalView> list = new ArrayList<>();
 		for (DelaiDocumentFiscal delai : delais) {
-			final DelaiDocumentFiscalView delaiView = new DelaiDocumentFiscalView(delai, infraService, messageSource);
+			final DelaiDocumentFiscalView delaiView = new DelaiDocumentFiscalView(delai, infraService);
 			delaiView.setFirst(premierDelai == delai.getDelaiAccordeAu());
 			list.add(delaiView);
 		}
