@@ -112,6 +112,7 @@ public class QuestionnaireSNCController {
 	private Set<String> sourcesQuittancementAvecLiberationPossible = Collections.emptySet();
 	private EvenementLiberationDeclarationImpotSender liberationSender;
 	private Validator ajouterDelaiValidator;
+	private MessageHelper messageHelper;
 
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
@@ -267,7 +268,7 @@ public class QuestionnaireSNCController {
 	private List<QuestionnaireSNCView> asViews(Iterable<QuestionnaireSNC> core) {
 		final List<QuestionnaireSNCView> views = new LinkedList<>();
 		for (QuestionnaireSNC q : core) {
-			views.add(new QuestionnaireSNCView(q, infraService));
+			views.add(new QuestionnaireSNCView(q, infraService, messageHelper));
 		}
 		return views;
 	}
@@ -280,7 +281,7 @@ public class QuestionnaireSNCController {
 		if (questionnaire == null) {
 			throw new ObjectNotFoundException("Questionnaire SNC inexistant.");
 		}
-		return new QuestionnaireSNCView(questionnaire, infraService);
+		return new QuestionnaireSNCView(questionnaire, infraService, messageHelper);
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -523,7 +524,8 @@ public class QuestionnaireSNCController {
 		final QuestionnaireSNCView view = new QuestionnaireSNCEditView(questionnaire,
 		                                                               infraService,
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
-		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA), SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_LIBERATION) && isLiberable(questionnaire));
+		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA), SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_LIBERATION) && isLiberable(questionnaire),
+		                                                               messageHelper);
 		model.addAttribute("questionnaire", view);
 		model.addAttribute("depuisTache", tacheId != null);
 		model.addAttribute("tacheId", tacheId);
@@ -579,7 +581,7 @@ public class QuestionnaireSNCController {
 	public String ajouterDelai(HttpServletResponse response, @Valid @ModelAttribute("ajouterDelai") final QuestionnaireSNCAjouterDelaiView view, BindingResult result, Model model) throws EditiqueException, IOException, AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
-			final String message = MessageHelper.getMessage("error.qsnc.ajout.delai.habilitation");
+			final String message = messageHelper.getMessage("error.qsnc.ajout.delai.habilitation");
 			LOGGER.debug(message);
 			throw new AccessDeniedException(message);
 		}
@@ -595,7 +597,7 @@ public class QuestionnaireSNCController {
 		final Long id = view.getIdDocumentFiscal();
 		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, id);
 		if (questionnaire == null) {
-			final String message = MessageHelper.getMessage("error.qsnc.ajout.delai.questionnaire.inconnu", id);
+			final String message = messageHelper.getMessage("error.qsnc.ajout.delai.questionnaire.inconnu", id);
 			LOGGER.debug(message);
 			throw new ObjectNotFoundException(message);
 		}
@@ -604,7 +606,7 @@ public class QuestionnaireSNCController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		if (!AutreDocumentFiscalController.isAjoutDelaiAutorise(questionnaire)) {
-			final String message = MessageHelper.getMessage("error.qsnc.ajout.delai.questionnaire.document.deja.retourne");
+			final String message = messageHelper.getMessage("error.qsnc.ajout.delai.questionnaire.document.deja.retourne");
 			Flash.warning(message);
 			return "redirect:/qsnc/editer.do?id=" + id;
 		}
@@ -616,7 +618,7 @@ public class QuestionnaireSNCController {
 		if (view.getTypeImpression() != null) {
 			if (view.getTypeImpression() == TypeImpression.BATCH) {
 				qsncService.envoiDemandeDelaiQuestionnaireSNCBatch(idDelai, RegDate.get());
-				final String message = MessageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.programmer", id);
+				final String message = messageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.programmer", id);
 				Flash.message(message);
 			}
 			else if (view.getTypeImpression() == TypeImpression.LOCAL) {
@@ -627,14 +629,14 @@ public class QuestionnaireSNCController {
 							resultat -> "redirect:/qsnc/editer.do?id=" + id;
 
 					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
-						Flash.error(MessageHelper.getMessage("error.qsnc.ajout.delai.retour.editique", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+						Flash.error(messageHelper.getMessage("error.qsnc.ajout.delai.retour.editique", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
 						return "redirect:/qsnc/editer.do?id=" + id;
 					};
 
 					return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "delaiQuestionnaireSNC", inbox, null, erreur);
 				}
 				else {
-					final String message = MessageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.document.generer.impression.non.programme");
+					final String message = messageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.document.generer.impression.non.programme");
 					Flash.warning(message);
 					return "redirect:/qsnc/list.do?tiersId=" + id;
 				}
@@ -819,7 +821,7 @@ public class QuestionnaireSNCController {
 
 		final QuestionnaireSNC questionnaireSNC = questionnaireSNCDAO.get(idQuestionnaire);
 		if (questionnaireSNC == null) {
-			throw new ObjectNotFoundException(MessageHelper.getMessage("error.qsnc.inexistante"));
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.qsnc.inexistante"));
 		}
 		// vérification des droits d'accès
 		checkEditRight(false, false, false, false, true);
@@ -829,7 +831,7 @@ public class QuestionnaireSNCController {
 
 		// vérification de la libérabilité de la déclaration
 		if (!isLiberable(questionnaireSNC)) {
-			final String message = MessageHelper.getMessage("error.qsnc.non.liberable");
+			final String message = messageHelper.getMessage("error.qsnc.non.liberable");
 			Flash.error(message);
 			return "redirect:editer.do?id=" + idQuestionnaire;
 		}
@@ -871,7 +873,7 @@ public class QuestionnaireSNCController {
 			checkEditRightOnEntreprise(entreprise);
 
 			// vérification du côté 'rappelable' du questionnaire, on ne sait jamais
-			final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, infraService, true, false, false);
+			final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, infraService, true, false, false, messageHelper);
 			if (!view.isRappelable()) {
 				throw new ActionException("Le questionnaire SNC n'est pas dans un état 'rappelable'.");
 			}
@@ -898,5 +900,9 @@ public class QuestionnaireSNCController {
 		}
 		sources.retainAll(sourcesQuittancementAvecLiberationPossible);
 		return !sources.isEmpty();
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 }

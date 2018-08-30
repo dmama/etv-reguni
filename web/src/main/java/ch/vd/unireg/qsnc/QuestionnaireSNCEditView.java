@@ -5,6 +5,7 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.view.QuestionnaireSNCView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
@@ -14,8 +15,8 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 	private final boolean liberable;        // si on peut liberer le questionnaire
 
 	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, ServiceInfrastructureService infraService, boolean allowedRappel, boolean allowedDuplicata,
-	                                boolean allowedLiberable) {
-		super(questionnaire, infraService);
+	                                boolean allowedLiberable, MessageHelper messageHelper) {
+		super(questionnaire, infraService, messageHelper);
 		this.liberable = allowedLiberable;
 		this.rappelable = allowedRappel && isRappelable(questionnaire);
 		this.duplicable = allowedDuplicata && isDuplicable(questionnaire);

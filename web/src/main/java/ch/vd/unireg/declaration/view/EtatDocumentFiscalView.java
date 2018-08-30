@@ -47,21 +47,21 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 	 */
 	private String urlVisualisationExterneDocument;
 
-	public EtatDocumentFiscalView(@NotNull EtatDocumentFiscal etat, @NotNull ServiceInfrastructureService infraService) {
+	public EtatDocumentFiscalView(@NotNull EtatDocumentFiscal etat, @NotNull ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		this.id = etat.getId();
 		this.dateObtention = etat.getDateObtention();
 		this.logCreationDate = etat.getLogCreationDate();
 		this.annule = etat.isAnnule();
 		this.etat = etat.getEtat();
-		this.etatMessage = MessageHelper.getMessage("option.etat.avancement.f." + this.etat.name());
+		this.etatMessage = messageHelper.getMessage("option.etat.avancement.f." + this.etat.name());
 
 		if (etat instanceof SourceQuittancement) {
 			this.source = ((SourceQuittancement) etat).getSource();
 			if (this.source == null) {
-				this.sourceMessage = MessageHelper.getMessage("option.source.quittancement.UNKNOWN");
+				this.sourceMessage = messageHelper.getMessage("option.source.quittancement.UNKNOWN");
 			}
 			else {
-				this.sourceMessage = MessageHelper.getMessage("option.source.quittancement." + this.source);
+				this.sourceMessage = messageHelper.getMessage("option.source.quittancement." + this.source);
 			}
 		}
 		if (etat instanceof EtatDocumentFiscalAvecDateEnvoiCourrier) {

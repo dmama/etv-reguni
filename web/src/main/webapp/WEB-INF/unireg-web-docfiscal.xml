@@ -27,6 +27,7 @@
 		<property name="delaisService" ref="delaisService"/>
 		<property name="ajouterDelaiValidator" ref="ajouterDelaiDocumentFiscalValidator"/>
 		<property name="ajouterQuittanceValidator" ref="ajouterQuittanceDocumentFiscalValidator"/>
+		<property name="messageHelper" ref="messageHelper"/>
 	</bean>
 
 	<bean id="autreDocumentFiscalManager" class="ch.vd.unireg.documentfiscal.AutreDocumentFiscalManagerImpl">
@@ -36,6 +37,7 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="delaiAutreDocumentFiscalDAO" ref="delaiAutreDocumentFiscalDAO"/>
+		<property name="messageHelper" ref="messageHelper"/>
 	</bean>
 
 </beans>

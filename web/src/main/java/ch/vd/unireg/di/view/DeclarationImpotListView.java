@@ -6,10 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -22,20 +21,20 @@ public class DeclarationImpotListView {
 	private boolean ctbPP;
 	private boolean ctbPM;
 
-	public DeclarationImpotListView(Contribuable ctb, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public DeclarationImpotListView(Contribuable ctb, ServiceInfrastructureService infraService, MessageHelper messageSHelper) {
 		this.ctbId = ctb.getId();
-		this.dis = initDeclarations(ctb.getDeclarationsTriees(DeclarationImpotOrdinaire.class, true), infraService, messageSource);
+		this.dis = initDeclarations(ctb.getDeclarationsTriees(DeclarationImpotOrdinaire.class, true), infraService, messageSHelper);
 		this.ctbPP = ctb instanceof ContribuableImpositionPersonnesPhysiques;
 		this.ctbPM = ctb instanceof ContribuableImpositionPersonnesMorales;
 	}
 
-	public static List<DeclarationImpotView> initDeclarations(Collection<? extends DeclarationImpotOrdinaire> declarations, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public static List<DeclarationImpotView> initDeclarations(Collection<? extends DeclarationImpotOrdinaire> declarations, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
 		final List<DeclarationImpotView> views = new ArrayList<>(declarations.size());
 		for (DeclarationImpotOrdinaire declaration : declarations) {
-			views.add(new DeclarationImpotView(declaration, infraService, messageSource));
+			views.add(new DeclarationImpotView(declaration, infraService, messageHelper));
 		}
 		views.sort(new Comparator<DeclarationImpotView>() {
 			@Override

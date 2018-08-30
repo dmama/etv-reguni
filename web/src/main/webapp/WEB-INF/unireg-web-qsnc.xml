@@ -20,6 +20,7 @@
 		<property name="liberationSender" ref="evenementLiberationDeclarationImpotSender" />
 		<property name="ajouterDelaiValidator" ref="ajouterDelaiDocumentFiscalValidator"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="messageHelper" ref="messageHelper"/>
 	</bean>
 
 </beans>

@@ -5,11 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.view.EtatDocumentFiscalView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 public class AjouterQuittanceDocumentFiscalView {
@@ -29,17 +28,17 @@ public class AjouterQuittanceDocumentFiscalView {
 	public AjouterQuittanceDocumentFiscalView() {
 	}
 
-	public AjouterQuittanceDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		resetDocumentInfo(doc, infraService, messageSource);
+	public AjouterQuittanceDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+		resetDocumentInfo(doc, infraService, messageHelper);
 		this.dateRetour = doc.getDateRetour();
 	}
 
-	public void resetDocumentInfo(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public void resetDocumentInfo(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		this.tiersId = doc.getTiers().getId();
 		this.id = doc.getId();
 		this.periodeFiscale = doc.getPeriodeFiscale();
-		this.etats = initEtats(doc.getEtats(), infraService, messageSource);
-		final AutreDocumentFiscalView autreDocumentFiscalView = AutreDocumentFiscalViewFactory.buildView(doc, infraService, messageSource);
+		this.etats = initEtats(doc.getEtats(), infraService, messageHelper);
+		final AutreDocumentFiscalView autreDocumentFiscalView = AutreDocumentFiscalViewFactory.buildView(doc, infraService, messageHelper);
 		this.libelleTypeDocument = autreDocumentFiscalView.getLibelleTypeDocument();
 	}
 
@@ -48,10 +47,10 @@ public class AjouterQuittanceDocumentFiscalView {
 		return etatDoc == null ? null : etatDoc.getEtat();
 	}
 
-	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDocumentFiscal> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDocumentFiscal> etats, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDocumentFiscal etat : etats) {
-			list.add(new EtatDocumentFiscalView(etat, infraService));
+			list.add(new EtatDocumentFiscalView(etat, infraService, messageHelper));
 		}
 		Collections.sort(list);
 		return list;

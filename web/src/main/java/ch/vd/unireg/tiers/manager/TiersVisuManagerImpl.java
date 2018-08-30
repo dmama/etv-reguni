@@ -114,7 +114,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			if (tiers instanceof Contribuable) {
 				final Contribuable contribuable = (Contribuable) tiers;
 				tiersVisuView.setDebiteurs(getDebiteurs(contribuable));
-				tiersVisuView.setDis(new DeclarationImpotListView(contribuable, serviceInfrastructureService, messageSource).getDis());
+				tiersVisuView.setDis(new DeclarationImpotListView(contribuable, serviceInfrastructureService, messageHelper).getDis());
 				tiersVisuView.setMouvements(getMouvements(contribuable));
 				setForsFiscaux(tiersVisuView, contribuable);
 				setDecisionAciView(tiersVisuView,contribuable);

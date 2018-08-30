@@ -23,6 +23,7 @@ import ch.vd.unireg.common.TiersNotFoundException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.EtatEntreprise;
 import ch.vd.unireg.tiers.Tiers;
@@ -39,6 +40,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 	private ServiceInfrastructureService infraService;
 	private SessionFactory sessionFactory;
 	private DelaiAutreDocumentFiscalDAO delaiAutreDocumentFiscalDAO;
+	private MessageHelper messageHelper;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -136,7 +138,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		final List<AutreDocumentFiscalView> views = new ArrayList<>(adfs.size());
 		for (AutreDocumentFiscal adf : CollectionsUtils.revertedOrder(adfs)) {
 			if (!(adf instanceof AutreDocumentFiscalAvecSuivi)) {
-				views.add(AutreDocumentFiscalViewFactory.buildView(adf, infraService, messageSource));
+				views.add(AutreDocumentFiscalViewFactory.buildView(adf, infraService, messageHelper));
 			}
 		}
 		return views;
@@ -147,7 +149,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 
 		final LettreBienvenue lettre = (LettreBienvenue) sessionFactory.getCurrentSession().get(LettreBienvenue.class, id);
 
-		final AutreDocumentFiscalView docView = AutreDocumentFiscalViewFactory.buildView(lettre, infraService, messageSource);
+		final AutreDocumentFiscalView docView = AutreDocumentFiscalViewFactory.buildView(lettre, infraService, messageHelper);
 		String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de la lettre de bienvenue (%s) pour le contribuable %s",
 		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(),
 		                                             docView.getLibelleSousType(), FormatNumeroHelper.numeroCTBToDisplay(lettre.getTiers().getNumero()));
@@ -162,7 +164,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 
 		final DemandeDegrevementICI demande = (DemandeDegrevementICI) sessionFactory.getCurrentSession().get(DemandeDegrevementICI.class, id);
 
-		final AutreDocumentFiscalView docView = AutreDocumentFiscalViewFactory.buildView(demande, infraService, messageSource);
+		final AutreDocumentFiscalView docView = AutreDocumentFiscalViewFactory.buildView(demande, infraService, messageHelper);
 		String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de la demande de dégrèvement (%s) pour le contribuable %s",
 		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(),
 		                                             docView.getLibelleSousType(), FormatNumeroHelper.numeroCTBToDisplay(demande.getTiers().getNumero()));
@@ -185,7 +187,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		final List<AutreDocumentFiscalView> views = new ArrayList<>(adfs.size());
 		for (AutreDocumentFiscal adf : CollectionsUtils.revertedOrder(adfs)) {
 			if (adf instanceof AutreDocumentFiscalAvecSuivi && !(adf instanceof DemandeDegrevementICI)) {
-				views.add(AutreDocumentFiscalViewFactory.buildView(adf, infraService, messageSource));
+				views.add(AutreDocumentFiscalViewFactory.buildView(adf, infraService, messageHelper));
 			}
 		}
 		return views;
@@ -276,5 +278,9 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 			throw new IllegalArgumentException(String.format("Le document fiscal n°%s n'est pas annulé! Impossible de le désannuler.", doc.getId()));
 		}
 		doc.setAnnule(false);
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 }

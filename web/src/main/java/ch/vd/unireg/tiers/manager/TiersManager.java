@@ -83,6 +83,7 @@ import ch.vd.unireg.mandataire.ConfigurationMandataire;
 import ch.vd.unireg.mandataire.MandataireCourrierView;
 import ch.vd.unireg.mandataire.MandatairePerceptionView;
 import ch.vd.unireg.mandataire.MandataireViewHelper;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.unireg.rapport.RapportHelper;
@@ -203,6 +204,7 @@ public class TiersManager implements MessageSourceAware {
 	protected ServiceIDEService serviceIDEService;
 
 	protected RegistreFoncierService registreFoncierService;
+	protected MessageHelper messageHelper;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -275,7 +277,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Alimente Set&lt;DecisionAciView&gt;
 	 */
-	protected void setDecisionAciView(TiersView tiersView,Contribuable contribuable){
+	protected void setDecisionAciView(TiersView tiersView, Contribuable contribuable) {
 		final List<DecisionAciView> decisionsView = new ArrayList<>();
 		final Set<DecisionAci> decisions = contribuable.getDecisionsAci();
 		if (decisions != null) {
@@ -409,10 +411,9 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setContribuablesAssocies(rapportsView);
 	}
 
-	private boolean isRapportHistorique(RapportEntreTiers r){
-		return r.getDateFin() !=null || r.isAnnule();
+	private boolean isRapportHistorique(RapportEntreTiers r) {
+		return r.getDateFin() != null || r.isAnnule();
 	}
-
 
 
 	protected void setLogicielView(TiersView tiersView, DebiteurPrestationImposable debiteur) {
@@ -586,8 +587,9 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Détermine si un élément annulable et localisable dans le temps est visible toujours (= true) ou seulement si l'historique est activé (= false)
+	 *
 	 * @param data élément à tester
-	 * @param <T> type de cet élément
+	 * @param <T>  type de cet élément
 	 * @return <code>true</code> si l'élément doit être toujours affiché, <code>false</code> s'il ne doit l'être
 	 */
 	protected static <T extends Annulable & DateRange> boolean isAlwaysShown(T data) {
@@ -676,7 +678,7 @@ public class TiersManager implements MessageSourceAware {
 		if (!qsnc.isEmpty()) {
 			final List<QuestionnaireSNCView> views = new ArrayList<>(qsnc.size());
 			for (QuestionnaireSNC q : qsnc) {
-				views.add(new QuestionnaireSNCView(q, serviceInfrastructureService));
+				views.add(new QuestionnaireSNCView(q, serviceInfrastructureService, messageHelper));
 			}
 			views.sort(Comparator.comparing(QuestionnaireSNCView::getDateDebut, NullDateBehavior.EARLIEST::compare).reversed());
 			tiersView.setQuestionnairesSNC(views);
@@ -694,7 +696,7 @@ public class TiersManager implements MessageSourceAware {
 					continue;
 				}
 
-				final AutreDocumentFiscalView view = AutreDocumentFiscalViewFactory.buildView(document, serviceInfrastructureService, messageSource);
+				final AutreDocumentFiscalView view = AutreDocumentFiscalViewFactory.buildView(document, serviceInfrastructureService, messageHelper);
 				if (document instanceof AutreDocumentFiscalAvecSuivi) {
 					avecSuiviViews.add(view);
 				}
@@ -1042,6 +1044,10 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setTiersGeneral(tiersGeneralView);
 	}
 
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
+	}
+
 
 	protected interface AdressesResolverCallback {
 		AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException;
@@ -1054,10 +1060,9 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * recuperation des adresses civiles historiques
 	 *
-	 * @param pp                une personne physique
+	 * @param pp une personne physique
 	 * @return une liste d'adresses
-	 * @throws ch.vd.unireg.common.DonneesCivilesException
-	 *          si une adresse possède des données incohérentes (date de fin avant date de début, par exemple)
+	 * @throws ch.vd.unireg.common.DonneesCivilesException si une adresse possède des données incohérentes (date de fin avant date de début, par exemple)
 	 */
 	public List<AdresseCivilView> getAdressesHistoriquesCiviles(PersonnePhysique pp) throws DonneesCivilesException {
 		final Long noIndividu = pp.getNumeroIndividu();
@@ -1109,6 +1114,7 @@ public class TiersManager implements MessageSourceAware {
 			dest.sort(new AdresseCivilViewComparator());
 		}
 	}
+
 	/**
 	 * [UNIREG-3153] Résoud les adresses fiscales et met-à-disposition la liste des vues sur ces adresses. Cette méthode gère gracieusement les exceptions dans la résolution des adresses.
 	 *
@@ -1155,8 +1161,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et
-	 * place.
+	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et place.
 	 */
 	protected void setAdressesActives(final TiersEditView tiersEditView, final Tiers tiers) throws ServiceInfrastructureException {
 

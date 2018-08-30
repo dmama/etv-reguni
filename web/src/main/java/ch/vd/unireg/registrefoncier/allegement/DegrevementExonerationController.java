@@ -78,6 +78,7 @@ import ch.vd.unireg.foncier.DonneesUtilisation;
 import ch.vd.unireg.foncier.ExonerationIFONC;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.ParametreAppService;
 import ch.vd.unireg.registrefoncier.DroitRF;
@@ -136,6 +137,7 @@ public class DegrevementExonerationController {
 	private static final Equalator<RegDate> DATE_EQUALATOR = Objects::equals;
 	private static final Equalator<Boolean> BOOLEAN_EQUALATOR = Objects::equals;
 	private static final Equalator<BigDecimal> BIGDECIMAL_EQUALATOR = (d1, d2) -> Objects.equals(d1, d2) || (d1 != null && d2 != null && d1.compareTo(d2) == 0);
+	private MessageHelper messageHelper;
 
 	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
 		this.registreFoncierService = registreFoncierService;
@@ -350,7 +352,7 @@ public class DegrevementExonerationController {
 
 		final List<DemandeDegrevementICIView> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
 				.filter(demande -> demande.getImmeuble() == immeuble)
-				.map(demande -> new DemandeDegrevementICIView(demande, infraService, messageSource))
+				.map(demande -> new DemandeDegrevementICIView(demande, infraService, messageHelper))
 				.sorted(Comparator.comparingInt(DemandeDegrevementICIView::getPeriodeFiscale).reversed())
 				.collect(Collectors.toList());
 
@@ -1115,7 +1117,7 @@ public class DegrevementExonerationController {
 		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
 
 		final List<DemandeDegrevementICIView> demandes = getDemandesDegrevement(entreprise, immeuble, null, true).stream()
-				.map(dd -> new DemandeDegrevementICIView(dd, infraService, messageSource))
+				.map(dd -> new DemandeDegrevementICIView(dd, infraService, messageHelper))
 				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparingInt(DemandeDegrevementICIView::getPeriodeFiscale).reversed()))
 				.collect(Collectors.toList());
 		final Set<Integer> periodesActives = demandes.stream()    // les périodes fiscales pour lesquelles des demandes non-annulées existent déjà
@@ -1248,7 +1250,7 @@ public class DegrevementExonerationController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	public String editDemandeDegrevement(Model model, @RequestParam(value = "id") long idDemande) {
 		final DemandeDegrevementICI demande = getDemandeDegrevement(idDemande);
-		return showEditDemandeDegrevement(model, demande, new EditDemandeDegrevementView(demande, infraService, messageSource));
+		return showEditDemandeDegrevement(model, demande, new EditDemandeDegrevementView(demande, infraService, messageHelper));
 	}
 
 	private String showEditDemandeDegrevement(Model model, DemandeDegrevementICI demande, EditDemandeDegrevementView view) {
@@ -1387,7 +1389,7 @@ public class DegrevementExonerationController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		AjouterQuittanceDocumentFiscalView view = new AjouterQuittanceDocumentFiscalView(doc, infraService, messageSource);
+		AjouterQuittanceDocumentFiscalView view = new AjouterQuittanceDocumentFiscalView(doc, infraService, messageHelper);
 		if (view.getDateRetour() == null) {
 			view.setDateRetour(RegDate.get());
 		}
@@ -1410,7 +1412,7 @@ public class DegrevementExonerationController {
 
 		if (result.hasErrors()) {
 			final DemandeDegrevementICI doc = getDemandeDegrevement(view.getId());
-			view.resetDocumentInfo(doc, infraService, messageSource);
+			view.resetDocumentInfo(doc, infraService, messageHelper);
 			return "tiers/edition/pm/degrevement-exoneration/etat/ajouter-quittance";
 		}
 
@@ -1544,6 +1546,10 @@ public class DegrevementExonerationController {
 		final DegrevementExonerationController.RedirectEditDemandeDegrevement inbox = new DegrevementExonerationController.RedirectEditDemandeDegrevement(id);
 		final DegrevementExonerationController.RedirectEditDemandeDegrevementApresErreur erreur = new DegrevementExonerationController.RedirectEditDemandeDegrevementApresErreur(id, messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "lb", inbox, null, erreur);
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 
 	private static class RedirectEditDemandeDegrevement implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> {

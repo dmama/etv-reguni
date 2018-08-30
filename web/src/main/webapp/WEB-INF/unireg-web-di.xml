@@ -33,6 +33,7 @@
 		<property name="sourcesQuittancementAvecLiberationPossible" ref="sourcesQuittancementAvecLiberationPossible"/>
 		<property name="liberationSender" ref="evenementLiberationDeclarationImpotSender"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="messageHelper" ref="messageHelper"/>
 	</bean>
 
 	<bean id="diEditManager" class="ch.vd.unireg.di.manager.DeclarationImpotEditManagerImpl" >

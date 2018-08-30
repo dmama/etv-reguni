@@ -3,10 +3,10 @@ package ch.vd.unireg.documentfiscal;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 
 public class AutreDocumentFiscalAvecSuiviView extends AutreDocumentFiscalView {
 
@@ -16,8 +16,8 @@ public class AutreDocumentFiscalAvecSuiviView extends AutreDocumentFiscalView {
 	private final boolean avecCopieConformeRappel;
 	private final String urlVisualisationExterneRappel;
 
-	public AutreDocumentFiscalAvecSuiviView(AutreDocumentFiscalAvecSuivi doc, ServiceInfrastructureService infraService, MessageSource messageSource, String typeKey, String subtypeKey) {
-		super(doc, infraService, messageSource, typeKey, subtypeKey);
+	public AutreDocumentFiscalAvecSuiviView(AutreDocumentFiscalAvecSuivi doc, ServiceInfrastructureService infraService, MessageHelper messageHelper, String typeKey, String subtypeKey) {
+		super(doc, infraService, messageHelper, typeKey, subtypeKey);
 		this.dateRetour = doc.getDateRetour();
 		this.dateRappel = doc.getDateRappel();
 		this.delaiRetour = doc.getDelaiRetour();

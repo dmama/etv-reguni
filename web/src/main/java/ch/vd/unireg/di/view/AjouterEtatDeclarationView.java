@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
@@ -14,6 +12,7 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.view.EtatDocumentFiscalView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
@@ -35,27 +34,27 @@ public class AjouterEtatDeclarationView {
 	public AjouterEtatDeclarationView() {
 	}
 
-	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePP di, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		this(di, true, infraService, messageSource);
+	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePP di, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+		this(di, true, infraService, messageHelper);
 	}
 
-	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePM di, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		this(di, false, infraService, messageSource);
+	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePM di, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+		this(di, false, infraService, messageHelper);
 	}
 
-	private AjouterEtatDeclarationView(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		initReadOnlyValues(di, typeDocumentEditable, infraService, messageSource);
+	private AjouterEtatDeclarationView(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+		initReadOnlyValues(di, typeDocumentEditable, infraService, messageHelper);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateFin().year();
 		this.dateDebutPeriodeImposition = di.getDateDebut();
 		this.dateFinPeriodeImposition = di.getDateFin();
-		this.etats = initEtats(di.getEtatsDeclaration(), infraService, messageSource);
+		this.etats = initEtats(di.getEtatsDeclaration(), infraService, messageHelper);
 		this.typeDocumentEditable = typeDocumentEditable;
 	}
 
@@ -64,10 +63,10 @@ public class AjouterEtatDeclarationView {
 		return etatDI == null ? null : etatDI.getEtat();
 	}
 
-	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDocumentFiscalView(etat, infraService));
+			list.add(new EtatDocumentFiscalView(etat, infraService, messageHelper));
 		}
 		Collections.sort(list);
 		return list;

@@ -3,6 +3,7 @@ package ch.vd.unireg.declaration.view;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 
 public class DeclarationView extends DocumentFiscalView {
 
@@ -10,8 +11,8 @@ public class DeclarationView extends DocumentFiscalView {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 
-	public DeclarationView(Declaration declaration, ServiceInfrastructureService infraService) {
-		super(declaration, infraService);
+	public DeclarationView(Declaration declaration, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+		super(declaration, infraService, messageHelper);
 		this.periodeFiscale = declaration.getPeriode().getAnnee();
 		this.dateDebut = declaration.getDateDebut();
 		this.dateFin = declaration.getDateFin();

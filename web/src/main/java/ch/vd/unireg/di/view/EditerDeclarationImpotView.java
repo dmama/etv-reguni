@@ -10,7 +10,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
-import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.AnnulableHelper;
@@ -23,6 +22,7 @@ import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
 import ch.vd.unireg.declaration.view.EtatDocumentFiscalView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
@@ -67,16 +67,16 @@ public class EditerDeclarationImpotView {
 	public EditerDeclarationImpotView() {
 	}
 
-	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, ServiceInfrastructureService infraService, MessageSource messageSource,
+	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, ServiceInfrastructureService infraService, MessageHelper messageHelper,
 	                                  boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
 	                                  boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension, boolean allowedLiberation) {
-		initReadOnlyValues(di, infraService, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata, allowedSuspension, allowedAnnulationSuspension, allowedLiberation);
+		initReadOnlyValues(di, infraService, messageHelper, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata, allowedSuspension, allowedAnnulationSuspension, allowedLiberation);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 		this.tacheId = tacheId;
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource,
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageHelper messageHelper,
 	                               boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension, boolean allowedLiberation) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
@@ -86,8 +86,8 @@ public class EditerDeclarationImpotView {
 		this.codeControle = di.getCodeControle();
 		this.sourceQuittancement = initSourceQuittancement(di);
 		this.dernierEtat = getDernierEtat(di);
-		this.delais = initDelais(di, infraService, messageSource);
-		this.etats = initEtats(di.getEtatsDeclaration(), infraService, messageSource);
+		this.delais = initDelais(di, infraService, messageHelper);
+		this.etats = initEtats(di.getEtatsDeclaration(), infraService, messageHelper);
 		this.isAllowedQuittancement = allowedQuittancement;
 		this.isAllowedDelai = allowedDelai;
 		this.isAllowedSommation = allowedSommation;
@@ -148,7 +148,7 @@ public class EditerDeclarationImpotView {
 		return etatRourne == null ? null : etatRourne.getSource();
 	}
 
-	private static List<DelaiDocumentFiscalView> initDelais(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	private static List<DelaiDocumentFiscalView> initDelais(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		final Set<DelaiDeclaration> delais = di.getDelaisDeclaration();
 		if (delais == null || delais.isEmpty()) {
 			return Collections.emptyList();
@@ -178,10 +178,10 @@ public class EditerDeclarationImpotView {
 		return list;
 	}
 
-	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDocumentFiscalView(etat, infraService));
+			list.add(new EtatDocumentFiscalView(etat, infraService, messageHelper));
 		}
 		Collections.sort(list);
 		return list;

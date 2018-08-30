@@ -1,7 +1,5 @@
 package ch.vd.unireg.di.view;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
@@ -9,6 +7,7 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.view.CodeControlable;
 import ch.vd.unireg.declaration.view.DeclarationView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.utils.WebContextUtils;
 
@@ -26,13 +25,13 @@ public class DeclarationImpotView extends DeclarationView implements CodeControl
 	private final RegDate dateDebutExercice;
 	private final RegDate dateFinExercice;
 
-	public DeclarationImpotView(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		super(di, infraService);
+	public DeclarationImpotView(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+		super(di, infraService, messageHelper);
 
 		this.codeControle = di.getCodeControle();
 		this.typeDocument = di.getTypeDeclaration();
 		if (this.typeDocument != null) {
-			this.typeDocumentMessage = messageSource.getMessage("option.type.document." + this.typeDocument.name(), null, WebContextUtils.getDefaultLocale());
+			this.typeDocumentMessage = messageHelper.getMessage("option.type.document." + this.typeDocument.name());
 		}
 		else {
 			this.typeDocumentMessage = null;

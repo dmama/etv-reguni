@@ -3,10 +3,9 @@ package ch.vd.unireg.documentfiscal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.registrefoncier.allegement.DemandeDegrevementICIView;
 
 /**
@@ -15,7 +14,7 @@ import ch.vd.unireg.registrefoncier.allegement.DemandeDegrevementICIView;
 public abstract class AutreDocumentFiscalViewFactory {
 
 	interface ViewFactory<T extends AutreDocumentFiscal> {
-		AutreDocumentFiscalView buildView(T document, ServiceInfrastructureService infraService, MessageSource messageSource);
+		AutreDocumentFiscalView buildView(T document, ServiceInfrastructureService infraService, MessageHelper messageHelper);
 	}
 
 	private static final Map<Class<? extends AutreDocumentFiscal>, ViewFactory<?>> FACTORIES = buildFactoryMap();
@@ -28,18 +27,18 @@ public abstract class AutreDocumentFiscalViewFactory {
 
 	private static Map<Class<? extends AutreDocumentFiscal>, ViewFactory<?>> buildFactoryMap() {
 		final Map<Class<? extends AutreDocumentFiscal>, ViewFactory<?>> map = new HashMap<>();
-		addToMap(map, LettreBienvenue.class,                    (document, infraService, messageSource) -> new AutreDocumentFiscalAvecSuiviView(document, infraService, messageSource, "label.autre.document.fiscal.lettre.bienvenue", "label.autre.document.fiscal.lettre.bienvenue.type." + document.getType()));
-		addToMap(map, AutorisationRadiationRC.class,            (document, infraService, messageSource) -> new AutreDocumentFiscalView(document, infraService, messageSource, "label.autre.document.fiscal.autorisation.radiation.rc", null));
-		addToMap(map, DemandeBilanFinal.class,                  (document, infraService, messageSource) -> new AutreDocumentFiscalView(document, infraService, messageSource, "label.autre.document.fiscal.demande.bilan.final", null));
-		addToMap(map, LettreTypeInformationLiquidation.class,   (document, infraService, messageSource) -> new AutreDocumentFiscalView(document, infraService, messageSource, "label.autre.document.fiscal.lettre.liquidation", null));
-		addToMap(map, DemandeDegrevementICI.class,              (document, infraService, messageSource) -> new DemandeDegrevementICIView(document, infraService, messageSource, "label.autre.document.fiscal.formulaire.demande.degrevement.ici", null));
+		addToMap(map, LettreBienvenue.class,                    (document, infraService, messageHelper) -> new AutreDocumentFiscalAvecSuiviView(document, infraService, messageHelper, "label.autre.document.fiscal.lettre.bienvenue", "label.autre.document.fiscal.lettre.bienvenue.type." + document.getType()));
+		addToMap(map, AutorisationRadiationRC.class,            (document, infraService, messageHelper) -> new AutreDocumentFiscalView(document, infraService, messageHelper, "label.autre.document.fiscal.autorisation.radiation.rc", null));
+		addToMap(map, DemandeBilanFinal.class,                  (document, infraService, messageHelper) -> new AutreDocumentFiscalView(document, infraService, messageHelper, "label.autre.document.fiscal.demande.bilan.final", null));
+		addToMap(map, LettreTypeInformationLiquidation.class,   (document, infraService, messageHelper) -> new AutreDocumentFiscalView(document, infraService, messageHelper, "label.autre.document.fiscal.lettre.liquidation", null));
+		addToMap(map, DemandeDegrevementICI.class,              (document, infraService, messageHelper) -> new DemandeDegrevementICIView(document, infraService, messageHelper, "label.autre.document.fiscal.formulaire.demande.degrevement.ici", null));
 		return map;
 	}
 
-	public static <T extends AutreDocumentFiscal> AutreDocumentFiscalView buildView(T doc, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public static <T extends AutreDocumentFiscal> AutreDocumentFiscalView buildView(T doc, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		final Class<? extends AutreDocumentFiscal> clazz = doc.getClass();
 		//noinspection unchecked
 		final ViewFactory<? super T> factory = (ViewFactory<? super T>) FACTORIES.get(clazz);
-		return factory.buildView(doc, infraService, messageSource);
+		return factory.buildView(doc, infraService, messageHelper);
 	}
 }

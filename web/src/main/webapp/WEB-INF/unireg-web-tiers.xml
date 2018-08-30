@@ -120,6 +120,7 @@
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="serviceIDEService" ref="serviceIDEService"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
+		<property name="messageHelper" ref="messageHelper"/>
 	</bean>
 
 	<bean id="tiersEditManager" class="ch.vd.unireg.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">
@@ -302,6 +303,7 @@
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
 		<property name="messageSource" ref="messageSource"/>
+		<property name="messageHelper" ref="messageHelper"/>
 		<property name="delaisService" ref="delaisService"/>
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
 		<property name="sessionFactory" ref="sessionFactory"/>

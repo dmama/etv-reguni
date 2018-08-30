@@ -3,12 +3,12 @@ package ch.vd.unireg.documentfiscal;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.view.DocumentFiscalView;
 import ch.vd.unireg.foncier.DemandeDegrevementICI;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.utils.WebContextUtils;
 
 public class AutreDocumentFiscalView extends DocumentFiscalView {
@@ -29,11 +29,11 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 	// Autorisation de radiaton RC
 	private RegDate dateDemande;
 
-	public AutreDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageSource messageSource, String typeKey, String subtypeKey) {
-		super(doc, infraService);
+	public AutreDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageHelper messageHelper, String typeKey, String subtypeKey) {
+		super(doc, infraService, messageHelper);
 		this.dateEnvoi = doc.getDateEnvoi();
-		this.libelleTypeDocument = getLibelle(messageSource, typeKey);
-		this.libelleSousType = getLibelle(messageSource, subtypeKey);
+		this.libelleTypeDocument = getLibelle(messageHelper, typeKey);
+		this.libelleSousType = getLibelle(messageHelper, subtypeKey);
 		this.avecCopieConformeEnvoi = StringUtils.isNotBlank(doc.getCleArchivage()) || StringUtils.isNotBlank(doc.getCleDocument());
 		this.urlVisualisationExterneDocument = Optional.ofNullable(doc.getCleDocument())
 				.filter(StringUtils::isNotBlank)
@@ -63,8 +63,8 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 		}
 	}
 
-	private String getLibelle(MessageSource messageSource, String typeKey) {
-		return typeKey != null ? messageSource.getMessage(typeKey, null, WebContextUtils.getDefaultLocale()) : StringUtils.EMPTY;
+	private String getLibelle(MessageHelper messageHelper, String typeKey) {
+		return typeKey != null ? messageHelper.getMessage(typeKey) : StringUtils.EMPTY;
 	}
 
 	public RegDate getDateEnvoi() {

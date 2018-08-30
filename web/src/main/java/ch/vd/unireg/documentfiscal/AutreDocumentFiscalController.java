@@ -39,6 +39,7 @@ import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.EditiqueResultatErreur;
 import ch.vd.unireg.editique.EditiqueResultatReroutageInbox;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.security.AccessDeniedException;
 import ch.vd.unireg.security.Role;
@@ -70,6 +71,7 @@ public class AutreDocumentFiscalController {
 	private Validator ajouterQuittanceValidator;
 
 	private static final Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> TYPES_DOC_ALLOWED = buildTypesDocAllowed();
+	private MessageHelper messageHelper;
 
 	private static Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> buildTypesDocAllowed() {
 		final Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> map = new EnumMap<>(Role.class);
@@ -131,6 +133,7 @@ public class AutreDocumentFiscalController {
 		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
+
 	@InitBinder(value = "ajouterQuittance")
 	public void initAjouterQuittanceBinder(WebDataBinder binder) {
 		binder.setValidator(ajouterQuittanceValidator);
@@ -251,7 +254,7 @@ public class AutreDocumentFiscalController {
 		final Long tiersId = autreDocumentFiscal.getTiers().getId();
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
-		return AutreDocumentFiscalViewFactory.buildView(autreDocumentFiscal, infraService, messageSource);
+		return AutreDocumentFiscalViewFactory.buildView(autreDocumentFiscal, infraService, messageHelper);
 	}
 
 	/**
@@ -274,7 +277,7 @@ public class AutreDocumentFiscalController {
 		final AutreDocumentFiscalView view;
 
 		if (doc instanceof AutreDocumentFiscalAvecSuivi) {
-			view = AutreDocumentFiscalViewFactory.buildView(doc, infraService, messageSource);
+			view = AutreDocumentFiscalViewFactory.buildView(doc, infraService, messageHelper);
 		}
 		else {
 			throw new IllegalArgumentException("Le document fiscal n°" + id + " n'est pas un document fiscal avec suivi.");
@@ -414,7 +417,7 @@ public class AutreDocumentFiscalController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		AjouterQuittanceDocumentFiscalView view = new AjouterQuittanceDocumentFiscalView(doc, infraService, messageSource);
+		AjouterQuittanceDocumentFiscalView view = new AjouterQuittanceDocumentFiscalView(doc, infraService, messageHelper);
 		if (view.getDateRetour() == null) {
 			view.setDateRetour(RegDate.get());
 		}
@@ -437,7 +440,7 @@ public class AutreDocumentFiscalController {
 
 		if (result.hasErrors()) {
 			final AutreDocumentFiscal doc = getDocumentFiscal(view.getId());
-			view.resetDocumentInfo(doc, infraService, messageSource);
+			view.resetDocumentInfo(doc, infraService, messageHelper);
 			return "documentfiscal/etat/ajouter-quittance";
 		}
 
@@ -564,7 +567,7 @@ public class AutreDocumentFiscalController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/duplicata.do", method = RequestMethod.POST)
 	public String duplicataLettreBienvenue(@RequestParam("id") long id,
-	                                                   HttpServletResponse response) throws Exception {
+	                                       HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de lettre de bienvenue.");
@@ -594,6 +597,10 @@ public class AutreDocumentFiscalController {
 		// [SIFISC-29014] Une fois le rappel envoyé pour une lettre de bienvenue ou un formulaire de dégrèvement, il ne doit plus être possible d'ajouter un délai
 		final boolean rappelEnvoye = (doc.getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE) != null);
 		return !documentRetourne && !rappelEnvoye;
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 
 	private static class RedirectEditLettreBienvenue implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> {
