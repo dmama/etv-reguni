@@ -5,6 +5,7 @@
 	<bean id="evenementDeclarationPPSender" class="ch.vd.unireg.evenement.di.EvenementDeclarationPPSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="evenementCyberContexteSender" ref="evenementCyberContexteSender"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.pp.output}" />
 		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pp.output.enabled}" />
 	</bean>
@@ -12,9 +13,17 @@
 	<bean id="evenementDeclarationPMSender" class="ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="evenementCyberContexteSender" ref="evenementCyberContexteSender"/>
 		<property name="serviceDestinationDI" value="${extprop.jms.queue.evtDeclaration.pm.output.di}" />
 		<property name="serviceDestinationDD" value="${extprop.jms.queue.evtDeclaration.pm.output.dd}" />
 		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pm.output.enabled}" />
+	</bean>
+
+	<bean id="evenementCyberContexteSender" class="ch.vd.unireg.evenement.cybercontexte.EvenementCyberContexteSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtCyberContexte.output}" />
+		<property name="enabled" value="${extprop.jms.queue.evtCyberContexte.output.enabled}" />
 	</bean>
 
 </beans>

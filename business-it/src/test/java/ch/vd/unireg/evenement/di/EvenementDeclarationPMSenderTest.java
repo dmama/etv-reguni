@@ -4,13 +4,16 @@ import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.evenement.EvenementTest;
+import ch.vd.unireg.evenement.cybercontexte.EvenementCyberContexteSender;
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationPMSenderImpl;
 
@@ -26,6 +29,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 	private String OUTPUT_QUEUE_DD;
 
 	private EvenementDeclarationPMSenderImpl sender;
+	private EvenementCyberContexteSender cyberContexteSender;
 
 	@Before
 	public void setUp() throws Exception {
@@ -44,6 +48,8 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 		esbTemplate.setDomain("fiscalite");
 		esbTemplate.setSessionTransacted(true);
 
+		cyberContexteSender = Mockito.mock(EvenementCyberContexteSender.class);
+
 		clearQueue(OUTPUT_QUEUE_DI);
 		clearQueue(OUTPUT_QUEUE_DD);
 
@@ -56,6 +62,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 		sender.setEsbValidator(esbValidator);
 		sender.setServiceDestinationDI(OUTPUT_QUEUE_DI);
 		sender.setServiceDestinationDD(OUTPUT_QUEUE_DD);
+		sender.setEvenementCyberContexteSender(cyberContexteSender);
 		sender.afterPropertiesSet();
 
 		AuthenticationHelper.pushPrincipal("EvenementTest");
@@ -88,11 +95,14 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 
 		final Pattern pattern = Pattern.compile(Pattern.quote(expectedAvantHorodatage) + "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{1,3}[+-][0-9]{2}:[0-9]{2}" + Pattern.quote(expectedApresHorodatage));
 		assertTextMessage(OUTPUT_QUEUE_DI, pattern);
+
+		// l'événement doit avoir été transmis au sender du cyber-contexte
+		Mockito.verify(cyberContexteSender).sendEmissionDeclarationEvent(4215L, 2016, 1, "2X3ff%", RegDate.get());
 	}
 
 	@Test
 	public void testSendEvenementAnnulationDeclaration() throws Exception {
-		sender.sendAnnulationDIEvent(12344556L, 2000, 1, "5635sS", "5");
+		sender.sendAnnulationDIEvent(4215L, 2000, 1, "5635sS", "5");
 
 		final String expectedAvantHorodatage = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 				"<ev-di-cyber-cc-2:evtPublicationCodeControleCyber xmlns:ev-di-cyber-cc-2=\"http://www.vd.ch/fiscalite/cyber/codeControle/2\">" +
@@ -102,7 +112,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 				"<ev-di-cyber-cc-2:statut>INACTIF</ev-di-cyber-cc-2:statut>" +
 				"<ev-di-cyber-cc-2:typeDocument>DI-PM</ev-di-cyber-cc-2:typeDocument>" +
 				"<ev-di-cyber-cc-2:periodeFiscale>2000</ev-di-cyber-cc-2:periodeFiscale>" +
-				"<ev-di-cyber-cc-2:numeroContribuable>12344556</ev-di-cyber-cc-2:numeroContribuable>" +
+				"<ev-di-cyber-cc-2:numeroContribuable>4215</ev-di-cyber-cc-2:numeroContribuable>" +
 				"<ev-di-cyber-cc-2:codeControle>5635sS</ev-di-cyber-cc-2:codeControle>" +
 				"<ev-di-cyber-cc-2:numeroSequence>1</ev-di-cyber-cc-2:numeroSequence>" +
 				"<ev-di-cyber-cc-2:informationsComplementaires><ev-di-cyber-cc-2:informationComplementaire><ev-di-cyber-cc-2:attribut>CODE_ROUTAGE</ev-di-cyber-cc-2:attribut><ev-di-cyber-cc-2:valeur>5</ev-di-cyber-cc-2:valeur></ev-di-cyber-cc-2:informationComplementaire></ev-di-cyber-cc-2:informationsComplementaires>" +
@@ -110,6 +120,9 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 
 		final Pattern pattern = Pattern.compile(Pattern.quote(expectedAvantHorodatage) + "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{1,3}[+-][0-9]{2}:[0-9]{2}" + Pattern.quote(expectedApresHorodatage));
 		assertTextMessage(OUTPUT_QUEUE_DI, pattern);
+
+		// l'événement doit avoir été transmis au sender du cyber-contexte
+		Mockito.verify(cyberContexteSender).sendAnnulationDeclarationEvent(4215L, 2000, 1, "5635sS", RegDate.get());
 	}
 
 	@Test
@@ -122,6 +135,9 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 			assertEquals("ch.vd.technical.esb.util.exception.ESBValidationException: org.xml.sax.SAXParseException; " +
 					"cvc-maxInclusive-valid: Value '1000000000' is not facet-valid with respect to maxInclusive '99999999' for type 'numeroContribuableType'.", e.getMessage());
 		}
+
+		// l'événement ne doit pas avoir été transmis au sender du cyber-contexte
+		Mockito.verify(cyberContexteSender, Mockito.never()).sendEmissionDeclarationEvent(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.any(RegDate.class));
 	}
 
 	@Test
@@ -134,5 +150,8 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 			assertEquals("ch.vd.technical.esb.util.exception.ESBValidationException: org.xml.sax.SAXParseException; " +
 					"cvc-maxInclusive-valid: Value '1000000000' is not facet-valid with respect to maxInclusive '99999999' for type 'numeroContribuableType'.", e.getMessage());
 		}
+
+		// l'événement ne doit pas avoir été transmis au sender du cyber-contexte
+		Mockito.verify(cyberContexteSender, Mockito.never()).sendAnnulationDeclarationEvent(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.any(RegDate.class));
 	}
 }

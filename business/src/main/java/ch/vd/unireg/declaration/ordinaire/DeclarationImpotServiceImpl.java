@@ -392,7 +392,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			final int pf = declaration.getPeriode().getAnnee();
 			if (pf >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 				final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
-				evenementDeclarationPPSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, declaration.getCodeControle(), codeSegmentString);
+				evenementDeclarationPPSender.sendEmissionEvent(ctb.getNumero(), pf, declaration.getNumero(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
@@ -467,7 +467,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
 
 			final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
-			evenementDeclarationPPSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
+			evenementDeclarationPPSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), declaration.getNumero(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
 		}
 		catch (EditiqueException | EvenementDeclarationException e) {
 			throw new DeclarationException(e);
@@ -605,7 +605,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement d'annulation de DI (pour le moment, il ne s'agit que d'ADDI)
 			final int pf = di.getPeriode().getAnnee();
 			if (di instanceof DeclarationImpotOrdinairePP && pf >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-				evenementDeclarationPPSender.sendAnnulationEvent(contribuable.getNumero(), pf, dateEvenement);
+				evenementDeclarationPPSender.sendAnnulationEvent(contribuable.getNumero(), pf, di.getNumero(), di.getCodeControle(), dateEvenement);
 			}
 			if (di instanceof DeclarationImpotOrdinairePM && StringUtils.isNotBlank(di.getCodeControle())) {
 				final DeclarationImpotOrdinairePM dipm = (DeclarationImpotOrdinairePM) di;
@@ -635,7 +635,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				final DeclarationImpotOrdinairePP dipp = (DeclarationImpotOrdinairePP) di;
 				if (pf > DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE || (pf == DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && dipp.getCodeControle() != null)) {
 					final String codeSegmentString = Integer.toString(dipp.getCodeSegment() != null ? dipp.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
-					evenementDeclarationPPSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, dipp.getCodeControle(), codeSegmentString);
+					evenementDeclarationPPSender.sendEmissionEvent(ctb.getNumero(), pf, dipp.getNumero(), dateEvenement, dipp.getCodeControle(), codeSegmentString);
 				}
 			}
 			else if (di instanceof DeclarationImpotOrdinairePM) {

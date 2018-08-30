@@ -17,6 +17,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.common.AuthenticationHelper;
+import ch.vd.unireg.evenement.cybercontexte.EvenementCyberContexteSender;
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbMessageValidator;
@@ -33,6 +34,7 @@ public class EvenementDeclarationPPSenderImpl implements EvenementDeclarationPPS
 
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageValidator esbValidator;
+	private EvenementCyberContexteSender evenementCyberContexteSender;
 	private String serviceDestination;
 
 	private JAXBContext jaxbContext;
@@ -44,18 +46,20 @@ public class EvenementDeclarationPPSenderImpl implements EvenementDeclarationPPS
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceDestination(String serviceDestination) {
 		this.serviceDestination = serviceDestination;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
 	}
 
 	public void setEsbValidator(EsbMessageValidator esbValidator) {
 		this.esbValidator = esbValidator;
+	}
+
+	public void setEvenementCyberContexteSender(EvenementCyberContexteSender evenementCyberContexteSender) {
+		this.evenementCyberContexteSender = evenementCyberContexteSender;
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -68,7 +72,7 @@ public class EvenementDeclarationPPSenderImpl implements EvenementDeclarationPPS
 	}
 
 	@Override
-	public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+	public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 
 		if (!enabled) {
 			LOGGER.info("Evénements de déclarations désactivés: l'événement d'émission de DI sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
@@ -80,11 +84,14 @@ public class EvenementDeclarationPPSenderImpl implements EvenementDeclarationPPS
 		emission.setCodeControle(codeControle);
 		emission.setCodeRoutage(codeRoutage);
 
+		// on envoie un événement pour ADDI
 		sendEvent(emission);
+		// [FISCPROJ-499] on envoie un autre événement pour le context Cyber
+		evenementCyberContexteSender.sendEmissionDeclarationEvent(numeroContribuable, periodeFiscale, numeroSequence, codeControle, date);
 	}
 
 	@Override
-	public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, RegDate date) throws EvenementDeclarationException {
+	public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, RegDate date) throws EvenementDeclarationException {
 
 		if (!enabled) {
 			LOGGER.info("Evénements de déclarations désactivés: l'événement d'annulation de DI sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
@@ -94,7 +101,10 @@ public class EvenementDeclarationPPSenderImpl implements EvenementDeclarationPPS
 		final EvenementAnnulationDeclarationImpot annulation = objectFactory.createEvenementAnnulationDeclarationImpotType();
 		annulation.setContext(new EvenementDeclarationImpotContext(periodeFiscale, (int) numeroContribuable, regdate2xml(date)));
 
+		// on envoie un événement pour ADDI
 		sendEvent(annulation);
+		// [FISCPROJ-499] on envoie un autre événement pour le context Cyber
+		evenementCyberContexteSender.sendAnnulationDeclarationEvent(numeroContribuable, periodeFiscale, numeroSequence, codeControle, date);
 	}
 
 	private static Date regdate2xml(RegDate date) {

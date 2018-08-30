@@ -1684,12 +1684,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		service.setEvenementDeclarationPPSender(new MockEvenementDeclarationPPSender() {
 			@Override
-			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);
 			}
 
 			@Override
-			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, RegDate date) throws EvenementDeclarationException {
+			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, RegDate date) throws EvenementDeclarationException {
 				diEventAnnulation.add(periodeFiscale);
 			}
 		});
@@ -1795,12 +1795,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		service.setEvenementDeclarationPPSender(new MockEvenementDeclarationPPSender(){
 			@Override
-			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);
 			}
 
 			@Override
-			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, RegDate date) throws EvenementDeclarationException {
+			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, RegDate date) throws EvenementDeclarationException {
 				diEventAnnulation.add(periodeFiscale);
 			}
 		});
@@ -1891,12 +1891,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		service.setEvenementDeclarationPPSender(new MockEvenementDeclarationPPSender(){
 			@Override
-			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);
 			}
 
 			@Override
-			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, RegDate date) throws EvenementDeclarationException {
+			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, RegDate date) throws EvenementDeclarationException {
 				diEventAnnulation.add(periodeFiscale);
 			}
 		});
@@ -1983,12 +1983,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		service.setEvenementDeclarationPPSender(new MockEvenementDeclarationPPSender(){
 			@Override
-			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);
 			}
 
 			@Override
-			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, RegDate date) throws EvenementDeclarationException {
+			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, RegDate date) throws EvenementDeclarationException {
 				diEventAnnulation.add(periodeFiscale);
 			}
 		});

@@ -28,6 +28,7 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.common.AuthenticationHelper;
 import ch.vd.unireg.common.StringRenderer;
 import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.cybercontexte.EvenementCyberContexteSender;
 import ch.vd.unireg.jms.EsbBusinessCode;
 import ch.vd.unireg.jms.EsbMessageValidator;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.CodeApplication;
@@ -48,6 +49,7 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageValidator esbValidator;
+	private EvenementCyberContexteSender evenementCyberContexteSender;
 	private String serviceDestinationDI;        // pour les DI
 	private String serviceDestinationDD;        // pour les demandes de dégrèvement
 
@@ -64,6 +66,10 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 
 	public void setEsbValidator(EsbMessageValidator esbValidator) {
 		this.esbValidator = esbValidator;
+	}
+
+	public void setEvenementCyberContexteSender(EvenementCyberContexteSender evenementCyberContexteSender) {
+		this.evenementCyberContexteSender = evenementCyberContexteSender;
 	}
 
 	public void setServiceDestinationDI(String serviceDestinationDI) {
@@ -90,6 +96,8 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 			return;
 		}
 		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, TypeDocument.DI_PM, true, serviceDestinationDI, Collections.singletonMap(CODE_ROUTAGE_ATTRIBUTE_NAME, codeRoutage));
+		// [FISCPROJ-499] on envoie un autre événement pour le context Cyber
+		evenementCyberContexteSender.sendEmissionDeclarationEvent(numeroContribuable, periodeFiscale, numeroSequence, codeControle, RegDate.get());
 	}
 
 	@Override
@@ -99,6 +107,8 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 			return;
 		}
 		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, TypeDocument.DI_PM, false, serviceDestinationDI, Collections.singletonMap(CODE_ROUTAGE_ATTRIBUTE_NAME, codeRoutage));
+		// [FISCPROJ-499] on envoie un autre événement pour le context Cyber
+		evenementCyberContexteSender.sendAnnulationDeclarationEvent(numeroContribuable, periodeFiscale, numeroSequence, codeControle, RegDate.get());
 	}
 
 	@Override

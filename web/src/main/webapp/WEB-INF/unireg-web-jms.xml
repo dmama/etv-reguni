@@ -82,6 +82,7 @@
 				<value>classpath:event/di/evenementDeclarationImpot-common-1.xsd</value>
 				<value>classpath:event/di/evenementDeclarationImpot-output-1.xsd</value>
 				<value>classpath:event/di/evtPublicationCodeControleCyber-2.xsd</value>
+				<value>classpath:event/di/evtPublicationContextePrestationCyber-1.xsd</value>
 				<value>classpath:event/di/evtLiberationDeclarationImpot-1.xsd</value>
 				<value>classpath:event/lr/evtQuittanceListe-v1.xsd</value>
 				<value>classpath:event/data/dataEvent-1.xsd</value>

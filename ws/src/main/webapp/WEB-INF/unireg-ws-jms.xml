@@ -60,6 +60,7 @@
 				<value>classpath:event/di/evenementDeclarationImpot-common-1.xsd</value>
 				<value>classpath:event/di/evenementDeclarationImpot-output-1.xsd</value>
 				<value>classpath:event/di/evtPublicationCodeControleCyber-2.xsd</value>
+				<value>classpath:event/di/evtPublicationContextePrestationCyber-1.xsd</value>
 			</list>
 		</property>
 	</bean>
