@@ -7,17 +7,19 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
-import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.common.MockMessageSource;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
+import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.service.mock.ProxyServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
@@ -55,7 +57,7 @@ public class ListeRecapitulativeDetailViewTest {
 		// Delai déclaration 04
 		DelaiDeclaration delaiDeclaration04 = new DelaiDeclaration();
 		delaiDeclaration04.setId(444L);
-		delaiDeclaration04.setDateDemande(RegDate.get(2017 ,01, 23));
+		delaiDeclaration04.setDateDemande(RegDate.get(2017, 01, 23));
 		delaiDeclaration04.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		declaration = new DeclarationImpotSource();
 		declaration.setId(44L);
@@ -68,7 +70,7 @@ public class ListeRecapitulativeDetailViewTest {
 		lr.setDelaisDeclaration(delaiDeclarationSet);
 
 		ProxyServiceInfrastructureService infraService = new ProxyServiceInfrastructureService();
-		infraService.setUp(new DefaultMockServiceInfrastructureService(){
+		infraService.setUp(new DefaultMockServiceInfrastructureService() {
 			@Override
 			public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 				return "toto";
@@ -76,8 +78,10 @@ public class ListeRecapitulativeDetailViewTest {
 		});
 
 		MessageSource messageSourceMock = new MockMessageSource();
+		final MessageHelper messageHelperMock = Mockito.mock(MessageHelper.class);
+		Mockito.when(messageHelperMock.getMessage(Mockito.any(String.class))).thenReturn("option.etat.delai." + EtatDelaiDocumentFiscal.ACCORDE.name());
 
-		List<DelaiDocumentFiscalView> returnedList = ListeRecapitulativeDetailView.buildDelais(lr, infraService, messageSourceMock);
+		List<DelaiDocumentFiscalView> returnedList = ListeRecapitulativeDetailView.buildDelais(lr, infraService, messageHelperMock);
 
 		// Asserts
 		assertEquals(4, returnedList.size());

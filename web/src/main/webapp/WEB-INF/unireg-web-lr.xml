@@ -15,6 +15,7 @@
 		<property name="periodeFiscaleService" ref="periodeFiscaleService"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="ticketService" ref="ticketService"/>
+		<property name="messageHelper" ref="messageHelper"/>
 	</bean>
 
 	<bean id="lrListManager" class="ch.vd.unireg.lr.manager.ListeRecapListManagerImpl">

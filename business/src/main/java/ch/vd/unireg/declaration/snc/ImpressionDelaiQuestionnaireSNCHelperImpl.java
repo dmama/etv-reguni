@@ -37,6 +37,7 @@ public class ImpressionDelaiQuestionnaireSNCHelperImpl extends EditiqueAbstractH
 
 	private static final String CODE_DOCUMENT_ACCORD = TypeDocumentEditique.ACCORD_DELAI_QSNC.getCodeDocumentEditique().substring(0, 4);
 	private static final String CODE_DOCUMENT_REFUS = TypeDocumentEditique.REFUS_DELAI_QSNC.getCodeDocumentEditique().substring(0, 4);
+	private MessageHelper messageHelper;
 
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique(DelaiDeclaration delai) {
@@ -139,17 +140,20 @@ public class ImpressionDelaiQuestionnaireSNCHelperImpl extends EditiqueAbstractH
 		final String description;
 		switch (delai.getEtat()) {
 		case ACCORDE:
-			description = MessageHelper.getMessage("ajout.delai.qsnc.lettre.accord.delai", RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()));
+			description = messageHelper.getMessage("ajout.delai.qsnc.lettre.accord.delai", RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()));
 			break;
 		case REFUSE:
-			description = MessageHelper.getMessage("ajout.delai.qsnc.lettre.refus.delai");
+			description = messageHelper.getMessage("ajout.delai.qsnc.lettre.refus.delai");
 			break;
 		default:
 
 			throw new IllegalArgumentException("Type de lettre non-supporté, etat du délai  : " + delai.getEtat());
 		}
-		return MessageHelper.getMessage("ajout.delai.qsnc.lettre.description", description, delai.getDateDemande().year(), FormatNumeroHelper.numeroCTBToDisplay(delai.getDeclaration().getTiers().getNumero()));
+		return messageHelper.getMessage("ajout.delai.qsnc.lettre.description", description, delai.getDateDemande().year(), FormatNumeroHelper.numeroCTBToDisplay(delai.getDeclaration().getTiers().getNumero()));
 	}
 
 
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
+	}
 }

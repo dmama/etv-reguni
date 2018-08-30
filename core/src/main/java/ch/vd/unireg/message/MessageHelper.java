@@ -9,20 +9,16 @@ import org.springframework.context.i18n.LocaleContextHolder;
  * Configuration permettant d'exposer un bean {@link MessageSource} et d'accéder à ses clés de manière statique.
  */
 public class MessageHelper {
-	/**
-	 * L'unique instance de {@link MessageHelper}.
-	 */
-	private static final MessageHelper INSTANCE = new MessageHelper();
 
 	private MessageSource messageSource;
 
 	private Locale localeDefinie = Locale.forLanguageTag("fr_CH");
 
-	private static Locale getLocaleDefinie() {
-		if (INSTANCE.localeDefinie == null) {
+	private Locale getLocaleDefinie() {
+		if (localeDefinie == null) {
 			return LocaleContextHolder.getLocale();
 		}
-		return INSTANCE.localeDefinie;
+		return localeDefinie;
 	}
 
 	/**
@@ -31,8 +27,8 @@ public class MessageHelper {
 	 * @param code
 	 * @return
 	 */
-	public static String getMessage(String code) {
-		return INSTANCE.messageSource.getMessage(code, null, getLocaleDefinie());
+	public String getMessage(String code) {
+		return messageSource.getMessage(code, null, getLocaleDefinie());
 	}
 
 	/**
@@ -43,11 +39,11 @@ public class MessageHelper {
 	 * @param locale
 	 * @return
 	 */
-	public static String getMessage(String code, Locale locale) {
+	public String getMessage(String code, Locale locale) {
 		if (code == null) {
 			return null;
 		}
-		return INSTANCE.messageSource.getMessage(code, null, locale);
+		return messageSource.getMessage(code, null, locale);
 	}
 
 	/**
@@ -60,8 +56,8 @@ public class MessageHelper {
 	 * @param locale
 	 * @return
 	 */
-	public static String getMessageWithDefault(String code, String defaultMessage, Locale locale) {
-		return INSTANCE.messageSource.getMessage(code, null, defaultMessage, locale);
+	public String getMessageWithDefault(String code, String defaultMessage, Locale locale) {
+		return messageSource.getMessage(code, null, defaultMessage, locale);
 	}
 
 	/**
@@ -73,8 +69,8 @@ public class MessageHelper {
 	 * @param defaultMessage
 	 * @return
 	 */
-	public static String getMessageWithDefault(String code, String defaultMessage) {
-		return INSTANCE.messageSource.getMessage(code, null, defaultMessage, getLocaleDefinie());
+	public String getMessageWithDefault(String code, String defaultMessage) {
+		return messageSource.getMessage(code, null, defaultMessage, getLocaleDefinie());
 	}
 
 
@@ -87,8 +83,8 @@ public class MessageHelper {
 	 * @param args   Arguments
 	 * @return
 	 */
-	public static String getMessage(String code, Locale locale, Object... args) {
-		return INSTANCE.messageSource.getMessage(code, args, locale);
+	public String getMessage(String code, Locale locale, Object... args) {
+		return messageSource.getMessage(code, args, locale);
 	}
 
 	/**
@@ -99,8 +95,8 @@ public class MessageHelper {
 	 * @param args Arguments
 	 * @return
 	 */
-	public static String getMessage(String code, Object... args) {
-		return INSTANCE.messageSource.getMessage(code, args, getLocaleDefinie());
+	public String getMessage(String code, Object... args) {
+		return messageSource.getMessage(code, args, getLocaleDefinie());
 	}
 
 	/**
@@ -114,8 +110,8 @@ public class MessageHelper {
 	 * @param args
 	 * @return
 	 */
-	public static String getMessageWithDefault(String code, String defaultMessage, Locale locale, Object... args) {
-		return INSTANCE.messageSource.getMessage(code, args, defaultMessage, locale);
+	public String getMessageWithDefault(String code, String defaultMessage, Locale locale, Object... args) {
+		return messageSource.getMessage(code, args, defaultMessage, locale);
 	}
 
 	/**
@@ -128,12 +124,12 @@ public class MessageHelper {
 	 * @param args
 	 * @return
 	 */
-	public static String getMessageWithDefault(String code, String defaultMessage, Object... args) {
-		return INSTANCE.messageSource.getMessage(code, args, defaultMessage, getLocaleDefinie());
+	public String getMessageWithDefault(String code, String defaultMessage, Object... args) {
+		return messageSource.getMessage(code, args, defaultMessage, getLocaleDefinie());
 	}
 
-	public static MessageSource getMessageSource() {
-		return INSTANCE.messageSource;
+	public MessageSource getMessageSource() {
+		return messageSource;
 	}
 
 
@@ -141,7 +137,4 @@ public class MessageHelper {
 		this.messageSource = messageSource;
 	}
 
-	public static MessageHelper messageHelper() {
-		return INSTANCE;
-	}
 }

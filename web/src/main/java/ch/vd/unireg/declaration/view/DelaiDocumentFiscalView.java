@@ -41,7 +41,7 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 	public DelaiDocumentFiscalView() {
 	}
 
-	public DelaiDocumentFiscalView(DelaiDocumentFiscal delai, ServiceInfrastructureService infraService) {
+	public DelaiDocumentFiscalView(DelaiDocumentFiscal delai, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		this.id = delai.getId();
 		this.annule = delai.isAnnule();
 		this.confirmationEcrite = StringUtils.isNotBlank(delai.getCleArchivageCourrier());
@@ -57,7 +57,7 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 		this.logModifUser = delai.getLogModifUser();
 		this.idDocumentFiscal = documentFiscal.getId();
 		this.etat = delai.getEtat();
-		this.etatMessage = MessageHelper.getMessage("option.etat.delai." + this.etat.name());
+		this.etatMessage = messageHelper.getMessage("option.etat.delai." + this.etat.name());
 		this.sursis = delai.isSursis();
 	}
 

@@ -156,7 +156,7 @@ public class EditerDeclarationImpotView {
 		final RegDate first = di.getPremierDelai();
 		final List<DelaiDocumentFiscalView> list = new ArrayList<>(delais.size());
 		for (DelaiDeclaration delai : delais) {
-			final DelaiDocumentFiscalView d = new DelaiDocumentFiscalView(delai, infraService);
+			final DelaiDocumentFiscalView d = new DelaiDocumentFiscalView(delai, infraService, messageHelper);
 			d.setFirst(d.getDelaiAccordeAu() == first);
 			list.add(d);
 		}

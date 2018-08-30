@@ -68,10 +68,10 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 			this.dateEnvoiCourrier = ((EtatDocumentFiscalAvecDateEnvoiCourrier) etat).getDateEnvoiCourrier();
 			final Integer emolument = getEmolument(etat);
 			if (emolument != null) {
-				this.dateEnvoiCourrierMessage = MessageHelper.getMessage("label.date.envoi.courrier.avec.emolument", RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier), Integer.toString(emolument));
+				this.dateEnvoiCourrierMessage = messageHelper.getMessage("label.date.envoi.courrier.avec.emolument", RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier), Integer.toString(emolument));
 			}
 			else {
-				this.dateEnvoiCourrierMessage = MessageHelper.getMessage("label.date.envoi.courrier", RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier));
+				this.dateEnvoiCourrierMessage = messageHelper.getMessage("label.date.envoi.courrier", RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier));
 			}
 		}
 		if (etat instanceof EtatDocumentFiscalAvecDocumentArchive) {

@@ -4,8 +4,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.context.MessageSource;
-
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.Annulable;
@@ -15,6 +13,7 @@ import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.view.DelaiDocumentFiscalView;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
@@ -38,15 +37,15 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 	 * Constructeur dans le cas de l'édition d'une LR déjà existante
 	 * @param lr la LR à montrer
 	 * @param infraService service d'infrastructure
-	 * @param messageSource provider de messages éventuellement traduits
+	 * @param messageHelper provider de messages éventuellement traduits
 	 */
-	public ListeRecapitulativeDetailView(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public ListeRecapitulativeDetailView(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		this.idDebiteur = lr.getTiers().getNumero();
 		this.idListe = lr.getId();
 		this.dateDebut = lr.getDateDebut();
 		this.dateFin = lr.getDateFin();
 		this.dateRetour = lr.getDateRetour();
-		this.delais = buildDelais(lr, infraService, messageSource);
+		this.delais = buildDelais(lr, infraService, messageHelper);
 		this.delaiAccorde = this.delais.stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.map(DelaiDocumentFiscalView::getDelaiAccordeAu)
@@ -87,10 +86,10 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		this.imprimable = true;
 	}
 
-	static List<DelaiDocumentFiscalView> buildDelais(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	static List<DelaiDocumentFiscalView> buildDelais(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		final List<DelaiDocumentFiscalView> delais = lr.getDelaisDeclaration().stream()
 				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(DelaiDeclaration::getDateDemande, Comparator.nullsLast(Comparator.reverseOrder()))))
-				.map(delai -> new DelaiDocumentFiscalView(delai, infraService))
+				.map(delai -> new DelaiDocumentFiscalView(delai, infraService, messageHelper))
 				.collect(Collectors.toList());
 
 		// le premier n'est pas annulable, il faut dont l'identifier comme tel

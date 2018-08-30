@@ -120,7 +120,7 @@
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 
-	<bean id="messageHelper" class="ch.vd.unireg.message.MessageHelper" factory-method="messageHelper">
+	<bean id="messageHelper" class="ch.vd.unireg.message.MessageHelper">
 		<property name="messageSource" ref="messageSource" />
 	</bean>
 

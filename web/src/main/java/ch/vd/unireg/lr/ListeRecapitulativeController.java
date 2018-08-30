@@ -68,6 +68,7 @@ import ch.vd.unireg.lr.view.ListeRecapitulativeDetailView;
 import ch.vd.unireg.lr.view.ListeRecapitulativeSearchResult;
 import ch.vd.unireg.lr.view.ListesRecapitulativesView;
 import ch.vd.unireg.lr.view.SearchResultsHidingCause;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.parametrage.DelaisService;
 import ch.vd.unireg.parametrage.PeriodeFiscaleService;
 import ch.vd.unireg.security.Role;
@@ -117,6 +118,7 @@ public class ListeRecapitulativeController {
 	private PeriodeFiscaleService periodeFiscaleService;
 	private EvenementFiscalService evenementFiscalService;
 	private TicketService ticketService;
+	private MessageHelper messageHelper;
 
 	public void setLrListManager(ListeRecapListManager lrListManager) {
 		this.lrListManager = lrListManager;
@@ -174,7 +176,7 @@ public class ListeRecapitulativeController {
 	private DeclarationImpotSource getListeRecapitulative(long id) {
 		final DeclarationImpotSource lr = hibernateTemplate.get(DeclarationImpotSource.class, id);
 		if (lr == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.lr.inexistante" , null, WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageSource.getMessage("error.lr.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 		return lr;
 	}
@@ -199,11 +201,11 @@ public class ListeRecapitulativeController {
 	}
 
 	/**
-	 * @param model le modèle
-	 * @param request la requête HTTP
-	 * @param effacer [optionel] booléen qui indique s'il faut effacer tous les critères de recherche
-	 * @param realSearch [optionel] booléen qui que le formulaire a réellement été soumis (par rapport à un simple retour sur la page)
-	 * @param criteriaView critères de recherche
+	 * @param model         le modèle
+	 * @param request       la requête HTTP
+	 * @param effacer       [optionel] booléen qui indique s'il faut effacer tous les critères de recherche
+	 * @param realSearch    [optionel] booléen qui que le formulaire a réellement été soumis (par rapport à un simple retour sur la page)
+	 * @param criteriaView  critères de recherche
 	 * @param bindingResult résultats de binding par rapport aux critères de recherche
 	 * @return la vue
 	 * @throws AdresseException en cas de souci avec la résolution de l'adresse
@@ -242,10 +244,10 @@ public class ListeRecapitulativeController {
 	}
 
 	/**
-	 * Reconstruit une structure de critères pour la recherche de listes récapitulatives d'après la vue donnée, et si celle-ci est vide,
-	 * prend en compte le contenu de la session
-	 * @param view source principale des données pour les critères de recherche
-	 * @param session source secondaire (si la première fournit des critères vides) pour les critères de recherche
+	 * Reconstruit une structure de critères pour la recherche de listes récapitulatives d'après la vue donnée, et si celle-ci est vide, prend en compte le contenu de la session
+	 *
+	 * @param view       source principale des données pour les critères de recherche
+	 * @param session    source secondaire (si la première fournit des critères vides) pour les critères de recherche
 	 * @param realSearch <code>true</code> si le formulaire de recherche a été réellement (re-)soumis, i.e. si la donnée présente en session doit de toute façon être ignorée...
 	 * @return les critères de recherche à prendre en compte
 	 */
@@ -470,15 +472,15 @@ public class ListeRecapitulativeController {
 		if (periodicitePrecedente.getPeriodiciteDecompte() != periodiciteSuivante.getPeriodiciteDecompte()) {
 			//Changement de periodicite,
 
-			if(periodiciteSuivante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE){
+			if (periodiciteSuivante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
 				final PeriodeDecompte periode = periodiciteSuivante.getPeriodeDecompte();
 				final DateRange periodeUnique = periode.getPeriodeCourante(dateDebutPeriodeSuivante);
 				dateDebutPeriode = periodeUnique.getDateDebut();
-				dateFinPeriode =  periodeUnique.getDateFin();
+				dateFinPeriode = periodeUnique.getDateFin();
 			}
-			else{
+			else {
 				dateDebutPeriode = periodiciteSuivante.getDebutPeriode(dateDebutPeriodeSuivante);
-				dateFinPeriode =  periodiciteSuivante.getFinPeriode(dateDebutPeriode);
+				dateFinPeriode = periodiciteSuivante.getFinPeriode(dateDebutPeriode);
 			}
 		}
 		else {
@@ -489,14 +491,14 @@ public class ListeRecapitulativeController {
 				//SIFISC-15772 Si la période de décompte est differente entre les deux périodicités, il faut prendre la nouvelle sinon on se retrouve à proposer l'ancienne
 				//période de décompte
 				//En cas de changement de periode de décompte il faut également changer la date de référence pour le calcul de période
-				final RegDate dateReferencePourCalculPeriode = periodeDecomptePrecedente == periodeDecompteSuivante ? dateFinLRPrecedente:dateDebutPeriodeSuivante;
+				final RegDate dateReferencePourCalculPeriode = periodeDecomptePrecedente == periodeDecompteSuivante ? dateFinLRPrecedente : dateDebutPeriodeSuivante;
 				final DateRange periodeUnique = periodeDecompteSuivante.getPeriodeSuivante(dateReferencePourCalculPeriode);
 				dateDebutPeriode = periodeUnique.getDateDebut();
-				dateFinPeriode =  periodeUnique.getDateFin();
+				dateFinPeriode = periodeUnique.getDateFin();
 			}
 			else {
 				dateDebutPeriode = periodicitePrecedente.getDebutPeriodeSuivante(dateFinLRPrecedente);
-				dateFinPeriode =  periodicitePrecedente.getFinPeriode(dateDebutPeriode);
+				dateFinPeriode = periodicitePrecedente.getFinPeriode(dateDebutPeriode);
 			}
 		}
 
@@ -511,7 +513,7 @@ public class ListeRecapitulativeController {
 			final PeriodeDecompte periodeDecompte = periodiciteCourante.getPeriodeDecompte();
 			rangeSuivant = periodeDecompte.getPeriodeSuivante(dateFinLR);
 		}
-		else{
+		else {
 			final RegDate debutPeriode = periodiciteCourante.getDebutPeriodeSuivante(dateFinLR);
 			final RegDate finPeriode = periodiciteCourante.getFinPeriode(debutPeriode);
 			rangeSuivant = new DateRangeHelper.Range(debutPeriode, finPeriode);
@@ -524,7 +526,7 @@ public class ListeRecapitulativeController {
 	@RequestMapping(value = "/edit-lr.do", method = RequestMethod.GET)
 	public String editListe(Model model, @RequestParam(value = "id") long idListe) {
 		final DeclarationImpotSource lr = getListeRecapitulative(idListe);
-		final ListeRecapitulativeDetailView view = new ListeRecapitulativeDetailView(lr, infraService, messageSource);
+		final ListeRecapitulativeDetailView view = new ListeRecapitulativeDetailView(lr, infraService, messageHelper);
 		model.addAttribute("lr", view);
 		return "lr/edit/edit-lr";
 	}
@@ -617,5 +619,9 @@ public class ListeRecapitulativeController {
 		lr.addDelai(nouveauDelai);
 
 		return "redirect:edit-lr.do?id=" + lr.getId();
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 }

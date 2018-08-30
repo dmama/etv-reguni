@@ -292,7 +292,9 @@
 
 	<bean id="impressionQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.snc.ImpressionQuestionnaireSNCHelperImpl"/>
 
-	<bean id="impressionDelaiQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.snc.ImpressionDelaiQuestionnaireSNCHelperImpl"/>
+	<bean id="impressionDelaiQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.snc.ImpressionDelaiQuestionnaireSNCHelperImpl">
+		<property name="messageHelper" ref="messageHelper"/>
+	</bean>
 
 	<bean id="impressionSommationDIPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.unireg.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />

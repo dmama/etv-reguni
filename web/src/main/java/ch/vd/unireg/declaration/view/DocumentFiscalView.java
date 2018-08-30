@@ -60,7 +60,7 @@ public abstract class DocumentFiscalView implements Annulable {
 	private static List<DelaiDocumentFiscalView> initDelais(Set<DelaiDocumentFiscal> delais, RegDate premierDelai, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		final List<DelaiDocumentFiscalView> list = new ArrayList<>();
 		for (DelaiDocumentFiscal delai : delais) {
-			final DelaiDocumentFiscalView delaiView = new DelaiDocumentFiscalView(delai, infraService);
+			final DelaiDocumentFiscalView delaiView = new DelaiDocumentFiscalView(delai, infraService, messageHelper);
 			delaiView.setFirst(premierDelai == delai.getDelaiAccordeAu());
 			list.add(delaiView);
 		}
