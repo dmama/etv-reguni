@@ -141,9 +141,7 @@ public interface QuestionnaireSNCService {
 	 */
 	void echoirQuestionnaire(@NotNull QuestionnaireSNC qsnc, @NotNull RegDate dateObtention);
 
-	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoiDemandeDelaiQuestionnaireSNCOnline(Long idDelai, RegDate dateTraitement) throws EditiqueException;
 
-	@Transactional(rollbackFor = Throwable.class)
 	String envoiDemandeDelaiQuestionnaireSNCBatch(Long idDelai, RegDate dateTraitement) throws EditiqueException;
 }

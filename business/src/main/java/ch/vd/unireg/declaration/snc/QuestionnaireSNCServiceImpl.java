@@ -332,7 +332,6 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoiDemandeDelaiQuestionnaireSNCOnline(Long idDelai, RegDate dateTraitement) throws EditiqueException {
 
 		try {
@@ -360,7 +359,6 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public String envoiDemandeDelaiQuestionnaireSNCBatch(Long idDelai, RegDate dateTraitement) throws EditiqueException {
 
 		try {
