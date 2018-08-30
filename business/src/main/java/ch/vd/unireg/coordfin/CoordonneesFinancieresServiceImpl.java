@@ -63,6 +63,9 @@ public class CoordonneesFinancieresServiceImpl implements CoordonneesFinancieres
 	}
 
 	private boolean checkCollapseDate(@NotNull CoordonneesFinancieres c, @NotNull RegDate dateDebut, @Nullable RegDate dateFin) {
+		if (c.getDateDebut() == null && c.getDateFin() == null) {
+			return true; //SIFISC-29616
+		}
 		return c.getDateFin() == null
 				&& DateRangeHelper.intersect(new DateRangeHelper.Range(c.getDateDebut(), null), new DateRangeHelper.Range(dateDebut, dateFin))
 				&& dateDebut.isAfter(c.getDateDebut());
