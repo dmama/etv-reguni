@@ -218,6 +218,7 @@ public class DeclarationImpotController {
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
 	}
+
 	public void setMessageHelper(MessageHelper messageHelper) {
 		this.messageHelper = messageHelper;
 	}
