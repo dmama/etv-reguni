@@ -3,7 +3,10 @@
 <%--@elvariable id="ajouterDelai" type="ch.vd.unireg.documentfiscal.QuestionnaireSNCAjouterDelaiView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
-	<tiles:put name="head"/>
+	<tiles:put name="head">
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/documentfiscal/ajout-delai.js"/>"></script>
+	</tiles:put>
+
 	<tiles:put name="title">
 		<c:set var="titleKey" value="title.enregistrement.demande.delai.di"/>
 		<fmt:message key="${titleKey}">

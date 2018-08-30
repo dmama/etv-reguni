@@ -18,4 +18,4 @@
 
 <script type="text/javascript" language="Javascript" src="<c:url value="/js/navigation.js"/>"></script>
 <script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
-<script type="text/javascript" language="Javascript" src="<c:url value="/js/documentfiscal/ajout-delai.js"/>"></script>
+
