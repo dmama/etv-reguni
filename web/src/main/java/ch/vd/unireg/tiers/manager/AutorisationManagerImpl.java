@@ -649,6 +649,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(ADR_B, Boolean.TRUE);
 				map.put(ADR_C, Boolean.TRUE);
 				map.put(ADR_D, Boolean.TRUE);
+				map.put(MODIF_RAPPORT, Boolean.TRUE);
+				map.put(MODIF_DOSSIER, Boolean.TRUE);
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.RT, visa, oid)) {
 				map.put(MODIF_RAPPORT, Boolean.TRUE);
