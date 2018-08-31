@@ -84,6 +84,8 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 					Optional.ofNullable(tiers.getNumeroTelephonePrive())
 							.orElse(tiers.getNumeroTelephonePortable());
 			final CTypeAdresse adresseRaisonSociale = buildAdresseRaisonSociale((Entreprise) tiers, RegDate.get(questionnaire.getPeriode().getAnnee()));
+			//Selon FISCPROJ-527 valeur string du code segment
+			final String codeFlyers = String.valueOf(QuestionnaireSNCService.codeSegment);
 			return new CTypeQuestSNC(XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee())),
 			                         buildAdresse(infraService.getCEDI()),
 			                         delaiRetourImprime,
@@ -91,7 +93,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			                         siege,
 			                         numCommune,
 			                         buildCodeBarre(questionnaire, extractModeleFeuilleDocumentEditique(questionnaire), ServiceInfrastructureService.noOIPM),
-			                         codeControle, adresseRaisonSociale, numTelephone);
+			                         codeControle, adresseRaisonSociale, numTelephone, codeFlyers);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
