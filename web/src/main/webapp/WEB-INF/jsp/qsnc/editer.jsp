@@ -39,7 +39,7 @@
 					</tr>
 				</table>
 			</c:if>
-			<display:table 	name="questionnaire.delais" id="delai" pagesize="10" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
+			<display:table 	name="questionnaire.delais" id="delai" pagesize="10" requestURI="editer.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 				<display:column titleKey="label.date.demande" style="width: 20%;">
 					<unireg:regdate regdate="${delai.dateDemande}" />
 				</display:column>
