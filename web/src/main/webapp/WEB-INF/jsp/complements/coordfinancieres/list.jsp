@@ -23,7 +23,7 @@
 			<unireg:linkTo name="Ajouter" title="Ajouter des coordonnées financières" action="/complements/coordfinancieres/add.do" params="{tiersId:${tiersId}}" link_class="add margin_right_10"/>
 
 			<unireg:nextRowClass reset="1"/>
-			<display:table name="coordonneesFinancieres" id="coordoonnees" pagesize="10" class="display" requestURI="list.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
+			<display:table name="coordonneesFinancieres" id="coordoonnees" pagesize="10" class="display" requestURI="list.do" decorator="ch.vd.unireg.decorator.TableEntityDecorator" sort="list">
 				<display:setProperty name="basic.empty.showtable" value="false"/>
 				<display:setProperty name="basic.msg.empty_list" value=""/>
 				<display:setProperty name="paging.banner.all_items_found" value=""/>
