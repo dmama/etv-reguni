@@ -8,7 +8,7 @@
 	</tiles:put>
 
 	<tiles:put name="title">
-		<c:set var="titleKey" value="title.enregistrement.demande.delai.di"/>
+		<c:set var="titleKey" value="ajout.delai.qsnc.title.enregistrement.demande.delai"/>
 		<fmt:message key="${titleKey}">
 			<fmt:param>${ajouterDelai.periode}</fmt:param>
 			<fmt:param><unireg:date date="${ajouterDelai.declarationRange.dateDebut}"/></fmt:param>
