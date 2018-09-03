@@ -54,9 +54,9 @@
 				</display:column>
 				<display:column style="action">
 					<unireg:consulterLog entityNature="DelaiDeclaration" entityId="${delai.id}"/>
-			<%--		<c:if test="${delai.etat == 'DEMANDE' && !delai.annule}">
+					<c:if test="${delai.etat == 'DEMANDE' && !delai.annule}">
 						<unireg:linkTo name="" title="Accorder/refuser le délai" action="/qsnc/delai/editer-snc.do" params="{id:${delai.id}}" link_class="edit"/>
-					</c:if>--%>
+					</c:if>
 					<c:if test="${(!delai.annule) && (!delai.first)}">
 						<unireg:linkTo name="" title="Annuler le délai"  confirm="Voulez-vous vraiment annuler ce delai ?"
 						               action="/qsnc/delai/annuler.do" method="post" params="{id:${delai.id}}" link_class="delete"/>

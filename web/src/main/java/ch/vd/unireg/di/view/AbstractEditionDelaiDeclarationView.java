@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
 
 public abstract class AbstractEditionDelaiDeclarationView {
 
@@ -24,13 +25,22 @@ public abstract class AbstractEditionDelaiDeclarationView {
 		setDiInfo(di);
 	}
 
-	public void setDiInfo (DeclarationImpotOrdinaire di) {
+	public void setDiInfo(DeclarationImpotOrdinaire di) {
 		this.tiersId = di.getTiers().getId();
 		this.declarationPeriode = di.getDateFin().year();
 		this.declarationRange = new DateRangeHelper.Range(di);
 		this.dateExpedition = di.getDateExpedition();
 		this.idDeclaration = di.getId();
 		this.ancienDelaiAccorde = di.getDelaiAccordeAu();
+	}
+
+	public AbstractEditionDelaiDeclarationView(QuestionnaireSNC qsnc) {
+		this.tiersId = qsnc.getTiers().getId();
+		this.declarationPeriode = qsnc.getDateFin().year();
+		this.declarationRange = new DateRangeHelper.Range(qsnc);
+		this.dateExpedition = qsnc.getDateExpedition();
+		this.idDeclaration = qsnc.getId();
+		this.ancienDelaiAccorde = qsnc.getDelaiAccordeAu();
 	}
 
 	public Long getTiersId() {

@@ -94,6 +94,15 @@ import ch.vd.unireg.utils.RegDateEditor;
 @RequestMapping("/qsnc")
 public class QuestionnaireSNCController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QuestionnaireSNCController.class);
+	/**
+	 * Nom du model d'ajout de délai
+	 */
+	private static final String AJOUTER_DELAI = "ajouterDelai";
+	/**
+	 * Nom du model de modification de délai
+	 */
+	private static final String MODIFIER_DELAI = "modifDelai";
+	private static final String DECISIONS_DELAI = "decisionsDelai";
 
 	private HibernateTemplate hibernateTemplate;
 	private QuestionnaireSNCService qsncService;
@@ -533,13 +542,11 @@ public class QuestionnaireSNCController {
 		return "qsnc/editer";
 	}
 
-	@InitBinder(value = "ajouterDelai")
+	@InitBinder(value = AJOUTER_DELAI)
 	public void initAjouterDelaiBinder(WebDataBinder binder) {
-		binder.setValidator(ajouterDelaiValidator);
-		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
-		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
-		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		initDelaiBinder(binder);
 	}
+
 
 	/**
 	 * Affiche un écran qui permet de choisir les paramètres pour l'ajout d'une demande de délai
@@ -566,8 +573,8 @@ public class QuestionnaireSNCController {
 		}
 
 		final RegDate delaiAccorde = delaisService.getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(questionnaire.getDelaiAccordeAu());
-		model.addAttribute("ajouterDelai", new QuestionnaireSNCAjouterDelaiView(questionnaire, delaiAccorde, EtatDelaiDocumentFiscal.ACCORDE));
-		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
+		model.addAttribute(AJOUTER_DELAI, new QuestionnaireSNCAjouterDelaiView(questionnaire, delaiAccorde, EtatDelaiDocumentFiscal.ACCORDE));
+		model.addAttribute(DECISIONS_DELAI, tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "qsnc/delai/ajouter-snc";
 
 
@@ -578,19 +585,15 @@ public class QuestionnaireSNCController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/ajouter-snc.do", method = RequestMethod.POST)
-	public String ajouterDelai(HttpServletResponse response, @Valid @ModelAttribute("ajouterDelai") final QuestionnaireSNCAjouterDelaiView view, BindingResult result, Model model) throws EditiqueException, IOException, AccessDeniedException {
+	public String ajouterDelai(HttpServletResponse response, @Valid @ModelAttribute(AJOUTER_DELAI) final QuestionnaireSNCAjouterDelaiView view, BindingResult result, Model model) throws EditiqueException, IOException, AccessDeniedException {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
-			final String message = messageHelper.getMessage("error.qsnc.ajout.delai.habilitation");
-			LOGGER.debug(message);
-			throw new AccessDeniedException(message);
-		}
+		checkAccessGestionQSNC();
 
 		if (result.hasErrors()) {
 			final QuestionnaireSNC doc = hibernateTemplate.get(QuestionnaireSNC.class, view.getIdDocumentFiscal());
 			view.setDeclarationRange(new DateRangeHelper.Range(doc));
-			model.addAttribute("ajouterDelai", view);
-			model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
+			model.addAttribute(AJOUTER_DELAI, view);
+			model.addAttribute(DECISIONS_DELAI, tiersMapHelper.getTypesEtatsDelaiDeclaration());
 			return "qsnc/delai/ajouter-snc";
 		}
 
@@ -646,6 +649,40 @@ public class QuestionnaireSNCController {
 			}
 		}
 		return "redirect:/qsnc/editer.do?id=" + id;
+	}
+
+	@InitBinder(value = MODIFIER_DELAI)
+	public void initModifierDelaiBinder(WebDataBinder binder) {
+		initDelaiBinder(binder);
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/delai/editer-snc.do", method = RequestMethod.GET)
+	public String editerDemandeDelaiPM(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+
+		checkAccessGestionQSNC();
+
+		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, id);
+		if (delai == null) {
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.delai.inexistant"));
+		}
+		if (delai.getEtat() != EtatDelaiDocumentFiscal.DEMANDE) {
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.delai.finalise"));
+		}
+
+		final Declaration declaration = delai.getDeclaration();
+		if (!(declaration instanceof QuestionnaireSNC)) {
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.qsnc.inexistante"));
+		}
+
+		final QuestionnaireSNC qsnc = (QuestionnaireSNC) declaration;
+		final Contribuable ctb = qsnc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(qsnc.getDelaiAccordeAu());
+		model.addAttribute(MODIFIER_DELAI, new ModifierDemandeDelaiQSNCView(delai, delaiAccordeAu));
+		model.addAttribute(DECISIONS_DELAI, tiersMapHelper.getTypesEtatsDelaiDeclaration());
+		return "qsnc/delai/editer-snc";
 	}
 
 	/**
@@ -900,6 +937,23 @@ public class QuestionnaireSNCController {
 		}
 		sources.retainAll(sourcesQuittancementAvecLiberationPossible);
 		return !sources.isEmpty();
+	}
+
+	private void checkAccessGestionQSNC() {
+		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
+			final String message = messageHelper.getMessage("error.qsnc.ajout.delai.habilitation");
+			LOGGER.debug(message);
+			throw new AccessDeniedException(message);
+		}
+	}
+
+	private void initDelaiBinder(WebDataBinder binder) {
+		binder.setValidator(ajouterDelaiValidator);
+		//champs ajout formulaire ajout délai
+		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	public void setMessageHelper(MessageHelper messageHelper) {

@@ -6,6 +6,7 @@ var DelaiSNC = {'DelaiSNC': {}};
 	DelaiSNC.ajouterDelai = ajouterDelai;
 	DelaiSNC.toggleDecision = toggleDecision;
 	DelaiSNC.verifierDelai = verifierDelai;
+	DelaiSNC.modifierDelai = modifierDelai;
 
 	function ajouterDelai(button, type) {
 
@@ -48,4 +49,21 @@ var DelaiSNC = {'DelaiSNC': {}};
 			$('#ajouter').show();
 		}
 	}
+
+	function modifierDelai(button, type) {
+		if ($('#decision').val() === 'ACCORDE' && !verifierDelai()) {
+			return false;
+		}
+
+		$('#typeImpression').val(type);
+		$(button).closest("form").submit();
+
+		// On desactive les boutons
+		$('#annuler, #envoi-auto, #envoi-manuel').hide();
+		$('#retour').show();
+
+		return true;
+	}
+
+
 }(DelaiSNC));

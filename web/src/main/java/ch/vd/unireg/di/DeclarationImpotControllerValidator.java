@@ -1,5 +1,6 @@
 package ch.vd.unireg.di;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -36,7 +37,7 @@ import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 import ch.vd.unireg.utils.ValidatorUtils;
 
-public class DeclarationImpotControllerValidator implements Validator {
+public class DeclarationImpotControllerValidator extends AbstractDelaiControllerValidator implements Validator {
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
@@ -330,7 +331,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 			return;
 		}
 
-		final DelaiDeclaration delai = delaiDeclarationDAO.get(view.getIdDelai());
+		final DelaiDeclaration delai = getDelaiDeclarationById(view.getIdDelai());
 		if (delai == null) {
 			errors.reject("error.delai.inexistant");
 			return;
@@ -371,5 +372,10 @@ public class DeclarationImpotControllerValidator implements Validator {
 				}
 			}
 		}
+	}
+
+	@Override
+	public DelaiDeclaration getDelaiDeclarationById(@NotNull Long idDocument) {
+		return delaiDeclarationDAO.get(idDocument);
 	}
 }
