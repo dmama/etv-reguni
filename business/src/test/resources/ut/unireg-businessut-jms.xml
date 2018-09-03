@@ -28,6 +28,7 @@
 
 	<bean id="evenementDeclarationPPSender" class="ch.vd.unireg.evenement.di.MockEvenementDeclarationPPSender"/>
 	<bean id="evenementDeclarationPMSender" class="ch.vd.unireg.evenement.declaration.MockEvenementDeclarationPMSender"/>
+	<bean id="evenementCyberContexteSender" class="ch.vd.unireg.evenement.cybercontexte.MockEvenementCyberContexteSender"/>
 
 	<bean id="eFactureMessageSender" class="ch.vd.unireg.efacture.MockEFactureMessageSender" />
 

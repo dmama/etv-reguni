@@ -252,6 +252,7 @@
 		<value>ch.vd.unireg.document.EnvoiFormulairesDemandeDegrevementICIRapport</value>
 		<value>ch.vd.unireg.document.RappelFormulairesDemandeDegrevementICIRapport</value>
 		<value>ch.vd.unireg.document.RattraperDatesMetierDroitProcessorRapport</value>
+		<value>ch.vd.unireg.document.RattraperEmissionDIPourCyberContexteRapport</value>
 		<value>ch.vd.unireg.document.RattrapageModelesCommunautesRFProcessorRapport</value>
 		<value>ch.vd.unireg.document.FinsDeDroitRFRapport</value>
 		<value>ch.vd.unireg.document.InitialisationIFoncRapport</value>

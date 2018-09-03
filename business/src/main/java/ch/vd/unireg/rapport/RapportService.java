@@ -8,6 +8,7 @@ import ch.vd.unireg.declaration.DeclarationException;
 import ch.vd.unireg.declaration.ordinaire.StatistiquesCtbs;
 import ch.vd.unireg.declaration.ordinaire.StatistiquesDIs;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
+import ch.vd.unireg.declaration.ordinaire.common.RattraperEmissionDIPourCyberContexteResults;
 import ch.vd.unireg.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.unireg.declaration.ordinaire.pm.EchoirDIsPMResults;
 import ch.vd.unireg.declaration.ordinaire.pm.EnvoiDIsPMResults;
@@ -73,6 +74,7 @@ import ch.vd.unireg.document.ListeAssujettisRapport;
 import ch.vd.unireg.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.unireg.document.ListeDIsNonEmisesRapport;
 import ch.vd.unireg.document.ListeDroitsAccesRapport;
+import ch.vd.unireg.document.ListeEchangeRenseignementsRapport;
 import ch.vd.unireg.document.ListeNoteRapport;
 import ch.vd.unireg.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.unireg.document.ListesNominativesRapport;
@@ -87,6 +89,7 @@ import ch.vd.unireg.document.RapprochementTiersRFRapport;
 import ch.vd.unireg.document.RattrapageModelesCommunautesRFProcessorRapport;
 import ch.vd.unireg.document.RattrapageRegimesFiscauxRapport;
 import ch.vd.unireg.document.RattraperDatesMetierDroitProcessorRapport;
+import ch.vd.unireg.document.RattraperEmissionDIPourCyberContexteRapport;
 import ch.vd.unireg.document.RecalculTachesRapport;
 import ch.vd.unireg.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.unireg.document.ResolutionAdresseRapport;
@@ -105,7 +108,6 @@ import ch.vd.unireg.document.StatistiquesEvenementsRapport;
 import ch.vd.unireg.document.SuppressionOIDRapport;
 import ch.vd.unireg.document.TraiterEvenementExterneRapport;
 import ch.vd.unireg.document.ValidationJobRapport;
-import ch.vd.unireg.document.ListeEchangeRenseignementsRapport;
 import ch.vd.unireg.documentfiscal.EnvoiLettresBienvenueResults;
 import ch.vd.unireg.documentfiscal.RappelLettresBienvenueResults;
 import ch.vd.unireg.droits.ListeDroitsAccesResults;
@@ -819,4 +821,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	ListeEchangeRenseignementsRapport generateRapport(ListeEchangeRenseignementsResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch de réémission des événements de mise-à-disposition des DIs dans le contexte de la cyberfiscalité.
+	 *
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	RattraperEmissionDIPourCyberContexteRapport generateRapport(RattraperEmissionDIPourCyberContexteResults results, StatusManager status);
 }

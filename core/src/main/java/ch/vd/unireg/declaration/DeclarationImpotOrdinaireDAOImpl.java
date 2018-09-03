@@ -6,8 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
+import org.hibernate.Query;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,5 +130,24 @@ public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<Declara
 		}
 
 		return etat;
+	}
+
+	@Override
+	public List<Long> findIdsDeclarationsOrdinairesEmisesUntil(@NotNull RegDate date) {
+		final Query query = getCurrentSession().createQuery("select etat.documentFiscal.id " +
+				                                                    "from EtatDeclarationEmise etat " +
+				                                                    "where etat.annulationDate is null " +
+				                                                    "and etat.dateObtention <= :date " +
+				                                                    "and etat.documentFiscal.annulationDate is null " +
+				                                                    "and etat.documentFiscal.class in ('DI', 'DIPM') " +
+				                                                    "and etat.documentFiscal.tiers.annulationDate is null " +
+				                                                    "order by etat.documentFiscal.tiers.id, etat.documentFiscal.id");
+		query.setParameter("date", date);
+
+		//noinspection unchecked
+		final List<Object> list = query.list();
+		return list.stream()
+				.map(id -> ((Number) id).longValue())
+				.collect(Collectors.toList());
 	}
 }
