@@ -41,7 +41,7 @@
 		</file>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/unireg-tools-18R3.C.0.jar</source>
+			<source>target/unireg-tools-18R3.C.1-SNAPSHOT.jar</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>tools/lib</outputDirectory>
 			<destName>unireg-tools.jar</destName>

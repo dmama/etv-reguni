@@ -8,7 +8,7 @@
 	<bean id="auditManager" class="ch.vd.unireg.audit.AuditManager">
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<!-- BEGIN_LVERSION -->
-		<property name="appName" value="Web (version 18R3.C.0)" />
+		<property name="appName" value="Web (version 18R3.C.1-SNAPSHOT)" />
 		<!-- END_LVERSION -->
 	</bean>
 
