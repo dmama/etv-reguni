@@ -1,11 +1,18 @@
 package ch.vd.unireg.editique.impl;
 
+import javax.xml.transform.stream.StreamSource;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.cxf.common.xmlschema.XmlSchemaUtils;
+import org.apache.ws.commons.schema.XmlSchema;
+import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.apache.ws.commons.schema.XmlSchemaSimpleType;
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
@@ -21,6 +28,7 @@ import ch.vd.unireg.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnes
 import ch.vd.unireg.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.unireg.declaration.source.ImpressionListeRecapHelper;
 import ch.vd.unireg.declaration.source.ImpressionSommationLRHelper;
+import ch.vd.unireg.editique.EditiqueAbstractHelperImpl;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.editique.mock.MockEditiqueService;
@@ -65,6 +73,17 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 		service.setServiceSecurite(getBean(ServiceSecuriteService.class, "serviceSecuriteService"));
 		service.setImpressionEfactureHelper(getBean(ImpressionDocumentEfactureHelperImpl.class, "impressionEfactureHelper"));
 		service.setEvenementDocumentSortantService(getBean(EvenementDocumentSortantService.class, "evenementDocumentSortantService"));
+	}
+
+	@Test
+	public void testFicherImpressionVersion() throws Exception {
+		final ClassPathResource classPathResource = new ClassPathResource("editique/UniregPM_FichierImpression.xsd");
+		final InputStream is = classPathResource.getInputStream();
+		final XmlSchemaCollection schemaCol = new XmlSchemaCollection();
+		final XmlSchema schema = schemaCol.read(new StreamSource(is));
+		final List<String> sTypeVersionXSD = XmlSchemaUtils.enumeratorValues((XmlSchemaSimpleType) schema.getTypeByName("STypeVersionXSD"));
+		Assert.assertEquals(1, sTypeVersionXSD.size());
+		Assert.assertEquals("Attention la version Editique UNIREG diffère de celle de la xsd!", sTypeVersionXSD.get(0), EditiqueAbstractHelperImpl.VERSION_XSD);
 	}
 
 	/**
