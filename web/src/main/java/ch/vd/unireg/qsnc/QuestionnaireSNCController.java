@@ -618,22 +618,28 @@ public class QuestionnaireSNCController {
 		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE ? view.getDelaiAccordeAu() : null;
 		final Long idDelai = qsncService.ajouterDelai(id, view.getDateDemande(), delaiAccordeAu, view.getDecision());
 
-		if (view.getTypeImpression() != null) {
-			if (view.getTypeImpression() == TypeImpression.BATCH) {
+		return gererImpressionCourrierDelai(idDelai, id, view.getTypeImpression(), response);
+	}
+
+	private String gererImpressionCourrierDelai(long idDelai, long idDeclaration,
+	                                            TypeImpression typeImpression,
+	                                            HttpServletResponse response) throws EditiqueException, IOException {
+		if (typeImpression != null) {
+			if (TypeImpression.BATCH == typeImpression) {
 				qsncService.envoiDemandeDelaiQuestionnaireSNCBatch(idDelai, RegDate.get());
-				final String message = messageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.programmer", id);
+				final String message = messageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.programmer", idDeclaration);
 				Flash.message(message);
 			}
-			else if (view.getTypeImpression() == TypeImpression.LOCAL) {
+			else if (TypeImpression.LOCAL == typeImpression) {
 				final EditiqueResultat retourEditique = qsncService.envoiDemandeDelaiQuestionnaireSNCOnline(idDelai, RegDate.get());
 
 				if (retourEditique != null) {
 					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-							resultat -> "redirect:/qsnc/editer.do?id=" + id;
+							resultat -> "redirect:/qsnc/editer.do?id=" + idDeclaration;
 
 					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = resultat -> {
 						Flash.error(messageHelper.getMessage("error.qsnc.ajout.delai.retour.editique", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-						return "redirect:/qsnc/editer.do?id=" + id;
+						return "redirect:/qsnc/editer.do?id=" + idDeclaration;
 					};
 
 					return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "delaiQuestionnaireSNC", inbox, null, erreur);
@@ -641,14 +647,15 @@ public class QuestionnaireSNCController {
 				else {
 					final String message = messageHelper.getMessage("ajout.delai.qsnc.lettre.delai.editique.document.generer.impression.non.programme");
 					Flash.warning(message);
-					return "redirect:/qsnc/list.do?tiersId=" + id;
+					return "redirect:/qsnc/list.do?tiersId=" + idDeclaration;
 				}
 			}
 			else {
-				throw new IllegalArgumentException("Valeur non-supportée pour le type d'impression : " + view.getTypeImpression());
+				throw new IllegalArgumentException("Valeur non-supportée pour le type d'impression : " + typeImpression);
 			}
 		}
-		return "redirect:/qsnc/editer.do?id=" + id;
+		// Pas de document directement en retour -> on retourne à l'édition de la DI
+		return "redirect:/qsnc/editer.do?id=" + idDeclaration;
 	}
 
 	@InitBinder(value = MODIFIER_DELAI)
@@ -683,6 +690,42 @@ public class QuestionnaireSNCController {
 		model.addAttribute(MODIFIER_DELAI, new ModifierDemandeDelaiQSNCView(delai, delaiAccordeAu));
 		model.addAttribute(DECISIONS_DELAI, tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "qsnc/delai/editer-snc";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/delai/editer-snc.do", method = RequestMethod.POST)
+	public String editerDemandeDelaiPM(@Valid @ModelAttribute(MODIFIER_DELAI) final ModifierDemandeDelaiQSNCView view,
+	                                   BindingResult result, Model model, HttpServletResponse response) throws AccessDeniedException, EditiqueException, IOException {
+		checkAccessGestionQSNC();
+		final Long id = view.getIdDeclaration();
+		final QuestionnaireSNC qsnc = hibernateTemplate.get(QuestionnaireSNC.class, id);
+
+		if (result.hasErrors()) {
+			view.setDeclarationRange(new DateRangeHelper.Range(qsnc));
+			model.addAttribute(MODIFIER_DELAI, view);
+			model.addAttribute(DECISIONS_DELAI, tiersMapHelper.getTypesEtatsDelaiDeclaration());
+			return "qsnc/delai/editer-snc";
+		}
+
+		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, view.getIdDelai());
+		if (delai == null) {
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.delai.inexistant"));
+		}
+		if (delai.getEtat() != EtatDelaiDocumentFiscal.DEMANDE) {
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.delai.finalise"));
+		}
+
+		final Declaration declaration = delai.getDeclaration();
+		if (!(declaration instanceof QuestionnaireSNC)) {
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.qsnc.inexistante"));
+		}
+
+		final Contribuable ctb = qsnc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE ? view.getDelaiAccordeAu() : null;
+		final Long idDelai = qsncService.saveDelai(view.getIdDelai(), view.getDecision(), delaiAccordeAu);
+		return gererImpressionCourrierDelai(idDelai, id, view.getTypeImpression(), response);
 	}
 
 	/**

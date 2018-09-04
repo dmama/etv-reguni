@@ -25,8 +25,8 @@ public interface QuestionnaireSNCService {
 	/**
 	 * @param periodeFiscale la période fiscale à considérer pour la génération des tâches
 	 * @param dateTraitement la date de traitement (doit être postérieure à la fin de la période fiscale)
-	 * @param nbThreads nombre de threads pour le processing
-	 * @param statusManager status manager
+	 * @param nbThreads      nombre de threads pour le processing
+	 * @param statusManager  status manager
 	 * @return un résumé des actions accomplies
 	 */
 	DeterminationQuestionnairesSNCResults determineQuestionnairesAEmettre(int periodeFiscale, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException;
@@ -34,7 +34,7 @@ public interface QuestionnaireSNCService {
 	/**
 	 * @param periodeFiscale la période fiscale à considérer pour la génération des tâches
 	 * @param dateTraitement la date de traitement (doit être postérieure à la fin de la période fiscale)
-	 * @param statusManager status manager
+	 * @param statusManager  status manager
 	 * @return un résumé des actions accomplies
 	 */
 	EnvoiQuestionnairesSNCEnMasseResults envoiQuestionnairesSNCEnMasse(int periodeFiscale, RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException;
@@ -42,13 +42,13 @@ public interface QuestionnaireSNCService {
 	/**
 	 * @param dateTraitement la date de traitement
 	 * @param periodeFiscale si présent, la période fiscale des questionnaires candidats au rappel
-	 * @param statusManager status manager
+	 * @param statusManager  status manager
 	 * @return un résumé des actions accomplies
 	 */
 	EnvoiRappelsQuestionnairesSNCResults envoiRappelsQuestionnairesSNCEnMasse(RegDate dateTraitement, @Nullable Integer periodeFiscale, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException;
 
 	/**
-	 * @param entreprise une entreprise
+	 * @param entreprise                une entreprise
 	 * @param pourEmissionAutoSeulement <code>true</code> si on ne veut que les périodes qui doivent générer des tâches automatique, <code>false</code> sinon
 	 * @return la liste des périodes pour lesquelles il serait de bon ton d'avoir un questionnaire SNC
 	 */
@@ -57,6 +57,7 @@ public interface QuestionnaireSNCService {
 
 	/**
 	 * Envoi d'un questionnaire SNC pour impression locale
+	 *
 	 * @param questionnaire nouveau questionnaire à envoyer
 	 * @param dateEvenement date de traitement
 	 * @return données du document imprimé
@@ -66,6 +67,7 @@ public interface QuestionnaireSNCService {
 
 	/**
 	 * Envoi d'un questionnaire SNC pour impression batch
+	 *
 	 * @param questionnaire nouveau questionnaire à envoyer
 	 * @param dateEvenement date de traitement
 	 * @throws DeclarationException en cas de souci
@@ -74,6 +76,7 @@ public interface QuestionnaireSNCService {
 
 	/**
 	 * Envoi pour impression locale d'un duplicata du questionnaire SNC
+	 *
 	 * @param questionnaire questionnaire à envoyer
 	 * @return données du document imprimé
 	 * @throws DeclarationException en cas de souci
@@ -82,7 +85,8 @@ public interface QuestionnaireSNCService {
 
 	/**
 	 * Création de l'état "rappelé" et envoi pour impression locale d'un rappel du questionnaire SNC
-	 * @param questionnaire questionnaire à rappeler
+	 *
+	 * @param questionnaire  questionnaire à rappeler
 	 * @param dateTraitement date de traitement (= date d'obtention de l'état)
 	 * @return données du document imprimé
 	 * @throws DeclarationException en cas de souci
@@ -91,7 +95,8 @@ public interface QuestionnaireSNCService {
 
 	/**
 	 * Création de l'état "rappelé" et envoi pour impression locale d'un rappel du questionnaire SNC
-	 * @param questionnaire questionnaire à rappeler
+	 *
+	 * @param questionnaire  questionnaire à rappeler
 	 * @param dateTraitement date de traitement (= date d'obtention de l'état)
 	 * @param dateExpedition date à placer sur le courrier
 	 * @throws DeclarationException en cas de souci
@@ -100,6 +105,7 @@ public interface QuestionnaireSNCService {
 
 	/**
 	 * Récupération du PDF de copie conforme
+	 *
 	 * @param questionnaire questionnaire rappelé dont on veut récupérer le rappel
 	 * @return données du document de rappel
 	 * @throws EditiqueException en cas de souci
@@ -108,15 +114,17 @@ public interface QuestionnaireSNCService {
 
 	/**
 	 * Ajout d'un nouvel état "retourné" au questionnaire donné
+	 *
 	 * @param questionnaire questionnaire
-	 * @param dateRetour date de quittancement
-	 * @param source source du quittancement
+	 * @param dateRetour    date de quittancement
+	 * @param source        source du quittancement
 	 * @throws DeclarationException en cas de souci
 	 */
 	void quittancerQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateRetour, String source) throws DeclarationException;
 
 	/**
 	 * Annule le questionnaire donné
+	 *
 	 * @param questionnaire le questionnaire à annuler
 	 * @throws DeclarationException en cas de souci
 	 */
@@ -132,6 +140,16 @@ public interface QuestionnaireSNCService {
 	 * @return l'id du délai ajouté
 	 */
 	Long ajouterDelai(long questionnaireId, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etatDelai);
+
+	/**
+	 * Sauvegarde de délai
+	 *
+	 * @param idDelai:       l'id du délai
+	 * @param etat           : l'etat de la nouvelle décision de demande de délai
+	 * @param delaiAccordeAu : la date du déali
+	 * @return l'id du délai mis à jour
+	 */
+	Long saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu);
 
 	/**
 	 * Fait passer à l'état <i>échu</i> le questionnaire SNC spécifié.

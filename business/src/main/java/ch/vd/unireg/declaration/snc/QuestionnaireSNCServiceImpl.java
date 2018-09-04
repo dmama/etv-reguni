@@ -324,6 +324,15 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	}
 
 	@Override
+	public Long saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu) {
+		final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+		delai.setDateTraitement(RegDate.get());
+		delai.setEtat(etat);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
+		return delai.getId();
+	}
+
+	@Override
 	public void echoirQuestionnaire(@NotNull QuestionnaireSNC qsnc, @NotNull RegDate dateObtention) {
 		final EtatDeclarationEchue etat = new EtatDeclarationEchue();
 		etat.setDateObtention(dateObtention);
