@@ -13,9 +13,20 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.XmlUtils;
+import ch.vd.unireg.evenement.RequestHandlerResult;
+import ch.vd.unireg.hibernate.HibernateTemplate;
+import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.unireg.indexer.tiers.TiersIndexedData;
+import ch.vd.unireg.indexer.tiers.TopList;
 import ch.vd.unireg.interfaces.upi.ServiceUpiException;
 import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;
 import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
+import ch.vd.unireg.security.Role;
+import ch.vd.unireg.security.SecurityProviderInterface;
+import ch.vd.unireg.tiers.PersonnePhysique;
+import ch.vd.unireg.tiers.TiersCriteria;
+import ch.vd.unireg.xml.ServiceException;
 import ch.vd.unireg.xml.common.v2.UserLogin;
 import ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNRequest;
 import ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNResponse;
@@ -25,17 +36,6 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
-import ch.vd.unireg.common.XmlUtils;
-import ch.vd.unireg.evenement.RequestHandlerResult;
-import ch.vd.unireg.hibernate.HibernateTemplate;
-import ch.vd.unireg.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.unireg.indexer.tiers.TiersIndexedData;
-import ch.vd.unireg.indexer.tiers.TopList;
-import ch.vd.unireg.security.Role;
-import ch.vd.unireg.security.SecurityProviderInterface;
-import ch.vd.unireg.tiers.PersonnePhysique;
-import ch.vd.unireg.tiers.TiersCriteria;
-import ch.vd.unireg.xml.ServiceException;
 
 public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<CreateNonresidentByVNRequest> {
 
@@ -130,6 +130,7 @@ public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<C
 		// quelque chose à flusher, alors que le "principal" n'est plus connu...
 		hibernateTemplate.flush();
 
+		LOGGER.info("Création du non-habitant n°" + idNouveauNonHabitant);
 		return new RequestHandlerResult<>(new CreateNonresidentByVNResponse(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()), idNouveauNonHabitant, null));
 	}
 

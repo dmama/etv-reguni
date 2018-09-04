@@ -3,13 +3,11 @@ package ch.vd.unireg.evenement.party;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
-import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
-import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.evenement.RequestHandlerResult;
 import ch.vd.unireg.hibernate.HibernateTemplate;
@@ -21,8 +19,14 @@ import ch.vd.unireg.type.CategorieIdentifiant;
 import ch.vd.unireg.xml.DataHelper;
 import ch.vd.unireg.xml.EnumHelper;
 import ch.vd.unireg.xml.ServiceException;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
+import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
+import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 
 public class CreateNonresidentRequestHandlerV1 implements RequestHandlerV1<CreateNonresidentRequest> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CreateNonresidentRequestHandlerV1.class);
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -66,6 +70,7 @@ public class CreateNonresidentRequestHandlerV1 implements RequestHandlerV1<Creat
 		// l'authentification n'est plus valide au moment ou hibernate veut sauver l'eventuelle IdentificationPersonne
 		hibernateTemplate.flush();
 
+		LOGGER.info("Création du non-habitant n°" + idNouveauNonHabitant);
 		return new RequestHandlerResult<>(new CreateNonresidentResponse(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()), idNouveauNonHabitant));
 	}
 
