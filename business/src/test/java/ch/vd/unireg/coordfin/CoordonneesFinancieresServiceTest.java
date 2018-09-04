@@ -53,6 +53,42 @@ public class CoordonneesFinancieresServiceTest {
 	}
 
 	@Test
+	public void testAjoutIbanAvecIbanEnBddSansDateDebutNiDeFin() {
+		try {
+			// Cf. [SIFISC-29616] Crash à l'ajout d'un nouvel IBAN
+			final PersonnePhysique pp = new PersonnePhysique();
+			pp.addCoordonneesFinancieres(new CoordonneesFinancieres("ToutesDatesNullEnBase", "CH0000", "  "));
+			// ajoute une  coordonnée ouvert sur 2018
+			service.addCoordonneesFinancieres(pp, RegDate.get(2018, 1, 1), null, "titulaire", "CH9308440717427290198", "bicboc");
+			{
+				final List<CoordonneesFinancieres> coordonnees = new ArrayList<>(pp.getCoordonneesFinancieres());
+				coordonnees.sort(Comparator.comparing(CoordonneesFinancieres::getDateFin, Comparator.nullsLast(Comparator.naturalOrder())));
+				assertNotNull(coordonnees);
+				assertEquals(2, coordonnees.size());
+
+				final CoordonneesFinancieres coord1 = coordonnees.get(1);
+				assertNotNull(coord1);
+				assertEquals(RegDate.get(2018, 1, 1), coord1.getDateDebut());
+				assertNull(coord1.getDateFin());
+				assertEquals("titulaire", coord1.getTitulaire());
+				final CompteBancaire compteBancaire = coord1.getCompteBancaire();
+				assertNotNull(compteBancaire);
+				assertEquals("CH9308440717427290198", compteBancaire.getIban());
+				assertEquals("bicboc", compteBancaire.getBicSwift());
+
+				//verifie que la coordonnée 2018 n'est pas cloturées.
+				final CoordonneesFinancieres coord0 = coordonnees.get(0);
+				assertNotNull(coord0.getDateFin());
+				assertEquals("ToutesDatesNullEnBase", coord0.getTitulaire());
+			}
+		}
+		catch (IllegalArgumentException e) {
+			fail();
+		}
+
+	}
+
+	@Test
 	public void testAddCoordonneesFinancieresIbanInvalide() {
 
 		final PersonnePhysique pp = new PersonnePhysique();
