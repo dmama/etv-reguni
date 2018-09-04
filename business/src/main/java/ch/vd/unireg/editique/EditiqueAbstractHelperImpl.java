@@ -72,7 +72,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	public static final String IMPOT_COMPLEMENTAIRE_IMMEUBLES = "IMPÔT COMPLÉMENTAIRE SUR LES IMMEUBLES";
 	public static final String CODE_PORTE_ADRESSE_MANDATAIRE = "M";
 
-	public static final String VERSION_XSD = "16.13";
+	public static final String VERSION_XSD = "16.14";
 
 	public static final String TYPE_DOCUMENT_CO = "CO";     // pour "courrier", apparemment
 	public static final String TYPE_DOCUMENT_DI = "DI";
