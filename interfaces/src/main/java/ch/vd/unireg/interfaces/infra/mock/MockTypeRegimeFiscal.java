@@ -27,7 +27,7 @@ public class MockTypeRegimeFiscal extends AbstractTypeRegimeFiscal {
 	private static final long serialVersionUID = 3529184490353279498L;
 
 	// SIFISC-22648: Type spécial signalant que le régime fiscal est encore à déterminer pour cette entité.
-	public static final MockTypeRegimeFiscal INDETERMINE = new MockTypeRegimeFiscal                         ("00", 2016, null, "En attente de détermination", true, true, INDET);
+	public static final MockTypeRegimeFiscal INDETERMINE = new MockTypeRegimeFiscal                         ("00", 2009, null, "En attente de détermination", true, true, INDET);
 
 	public static final MockTypeRegimeFiscal ORDINAIRE_PM = new MockTypeRegimeFiscal                        ("01", 1994, null, "Ordinaire",                                         true, true, PM);
 	public static final MockTypeRegimeFiscal EXO_90G = new MockTypeRegimeFiscal                             ("109", 2003, null, "PM Pure utilité publique (Art. 90g LI)",           true, true, PM, createExo(2003, IBC, DE_FAIT));
@@ -61,17 +61,17 @@ public class MockTypeRegimeFiscal extends AbstractTypeRegimeFiscal {
 	public static final MockTypeRegimeFiscal ART90J = new MockTypeRegimeFiscal                              ("779", 1992, null, "Placement collectif exonéré (Art. 90j LI)",        true, true, APM, createExo(1992, IBC, DE_FAIT));
 
 	// SIFISC-22648: Type spécial société de personnes
-	public static final MockTypeRegimeFiscal SOCIETE_PERS = new MockTypeRegimeFiscal                        ("80", 2016, null, "Société de personnes",                              true, true, SP, createExo(1994, IBC, TOTALE), createExo(1994, ICI, TOTALE), createExo(1994, IFONC, TOTALE));
+	public static final MockTypeRegimeFiscal SOCIETE_PERS = new MockTypeRegimeFiscal                        ("80", 2009, null, "Société de personnes",                              true, true, SP, createExo(1994, IBC, TOTALE), createExo(1994, ICI, TOTALE), createExo(1994, IFONC, TOTALE));
 
 	//
 	// mocks spécialisés pour les tests d'exonerations
 	//
-	public static final MockTypeRegimeFiscal EXO_IBC_TOTALE = new MockTypeRegimeFiscal                      ("IBCTOTAL", 2010, 2020, "Exonéré total IBC", true, true, PM, createExo(2010, IBC, TOTALE));
-	public static final MockTypeRegimeFiscal EXO_IBC_FAIT = new MockTypeRegimeFiscal                        ("IBCFAIT", 2010, 2020, "Exonéré de fait IBC", true, true, PM, createExo(2010, IBC, DE_FAIT));
-	public static final MockTypeRegimeFiscal EXO_ICI_TOTALE = new MockTypeRegimeFiscal                      ("ICITOTAL", 2010, 2020, "Exonéré total ICI", true, true, PM, createExo(2010, ICI, TOTALE));
-	public static final MockTypeRegimeFiscal EXO_ICI_FAIT = new MockTypeRegimeFiscal                        ("ICIFAIT", 2010, 2020, "Exonéré de fait ICI", true, true, PM, createExo(2010, ICI, DE_FAIT));
-	public static final MockTypeRegimeFiscal EXO_IFONC_TOTALE = new MockTypeRegimeFiscal                    ("IFONCTOTAL", 2010, 2020, "Exonéré total IFONC", true, true, PM, createExo(2010, IFONC, TOTALE));
-	public static final MockTypeRegimeFiscal EXO_IFONC_FAIT = new MockTypeRegimeFiscal                      ("IFONCFAIT", 2010, 2020, "Exonéré de fait IFONC", true, true, PM, createExo(2010, IFONC, DE_FAIT));
+	public static final MockTypeRegimeFiscal EXO_IBC_TOTALE = new MockTypeRegimeFiscal                      ("IBCTOTAL", 2009, null, "Exonéré total IBC", true, true, PM, createExo(2009, IBC, TOTALE));
+	public static final MockTypeRegimeFiscal EXO_IBC_FAIT = new MockTypeRegimeFiscal                        ("IBCFAIT", 2009, null, "Exonéré de fait IBC", true, true, PM, createExo(2009, IBC, DE_FAIT));
+	public static final MockTypeRegimeFiscal EXO_ICI_TOTALE = new MockTypeRegimeFiscal                      ("ICITOTAL", 2009, null, "Exonéré total ICI", true, true, PM, createExo(2009, ICI, TOTALE));
+	public static final MockTypeRegimeFiscal EXO_ICI_FAIT = new MockTypeRegimeFiscal                        ("ICIFAIT", 2009, null, "Exonéré de fait ICI", true, true, PM, createExo(2009, ICI, DE_FAIT));
+	public static final MockTypeRegimeFiscal EXO_IFONC_TOTALE = new MockTypeRegimeFiscal                    ("IFONCTOTAL", 2009, null, "Exonéré total IFONC", true, true, PM, createExo(2009, IFONC, TOTALE));
+	public static final MockTypeRegimeFiscal EXO_IFONC_FAIT = new MockTypeRegimeFiscal                      ("IFONCFAIT", 2009, null, "Exonéré de fait IFONC", true, true, PM, createExo(2009, IFONC, DE_FAIT));
 
 
 	public static final MockTypeRegimeFiscal[] ALL = buildAllMocks();

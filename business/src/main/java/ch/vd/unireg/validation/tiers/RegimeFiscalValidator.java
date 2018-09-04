@@ -75,7 +75,7 @@ public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal
 
 						final List<DateRange> depassementsPertinents = DateRangeHelper.intersections(rangePertinence, depassements);
 						if (depassementsPertinents != null && !depassementsPertinents.isEmpty()) {
-							vr.addWarning(String.format("Le régime fiscal %s déborde de la plage de validité du type associé '%s' (%s).",
+							vr.addError(String.format("Le régime fiscal %s déborde de la plage de validité du type associé '%s' (%s).",
 							                            getEntityDisplayString(rf),
 							                            typeRF.getLibelleAvecCode(),
 							                            rangeToString(rangeValiditeDuType)));

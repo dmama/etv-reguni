@@ -44,10 +44,10 @@ public class RegimeFiscalValidatorTest extends AbstractValidatorTest<RegimeFisca
 		final RegimeFiscal rf = new RegimeFiscal(date(2010, 1, 1), null, RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.COMMUNAUTE_PERSONNES_ETRANGERES_PM.getCode());
 		final ValidationResults vr = validate(rf);
 		Assert.assertNotNull(vr);
-		Assert.assertEquals(0, vr.errorsCount());
-		Assert.assertEquals(1, vr.warningsCount());
+		Assert.assertEquals(0, vr.warningsCount());
+		Assert.assertEquals(1, vr.errorsCount());
 		{
-			final String warning  = vr.getWarnings().get(0);
+			final String warning  = vr.getErrors().get(0);
 			Assert.assertEquals("Le régime fiscal de portée VD (01.01.2010 - ?) déborde de la plage de validité du type associé '13 - Communauté de pers. étrangères - PM (Art. 84 LI)' (01.01.2016 - ?).", warning);
 		}
 	}
