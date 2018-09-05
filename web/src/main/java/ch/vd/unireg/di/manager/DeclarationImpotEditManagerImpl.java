@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -364,7 +363,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean saveModele) throws DeclarationException {
 
 		final DeclarationImpotOrdinaire declaration = diDAO.get(id);
@@ -390,7 +388,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocaleDI(Long ctbId, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
 	                                                 TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
 		final Tiers tiers = tiersDAO.get(ctbId);
@@ -626,7 +623,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * Persiste en base le delai
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public Long saveNouveauDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat, boolean sursis) {
 		final DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);
 		DelaiDeclaration delai = new DelaiDeclaration();
@@ -640,7 +636,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu) {
 		final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
 		delai.setDateTraitement(RegDate.get());
@@ -654,7 +649,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @throws EditiqueException
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException, DeclarationException {
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
 		return envoieImpressionLocalSommationDI(di);
@@ -681,7 +675,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalConfirmationDelaiPP(Long idDI, Long idDelai) throws EditiqueException {
 		try {
 			final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
@@ -696,7 +689,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocaleLettreDecisionDelaiPM(Long idDelai) throws EditiqueException {
 		try {
 			final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
@@ -719,7 +711,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void envoieImpressionBatchLettreDecisionDelaiPM(Long idDelai) throws EditiqueException {
 		try {
 			final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);

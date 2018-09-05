@@ -67,7 +67,6 @@ public interface DeclarationImpotEditManager {
 	/**
 	 * Persiste en base la nouvelle demande de delai
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	Long saveNouveauDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat, boolean sursis);
 
 	/**
@@ -83,22 +82,17 @@ public interface DeclarationImpotEditManager {
 	 *
 	 * @param id l'id de la déclaration d'impôt à sommer.
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException, DeclarationException;
 
 	/**
 	 * Imprimer la lettre de confirmation de délai de déclaration PP
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalConfirmationDelaiPP(Long idDI, Long idDelai) throws EditiqueException;
 
-	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocaleLettreDecisionDelaiPM(Long idDelai) throws EditiqueException;
 
-	@Transactional(rollbackFor = Throwable.class)
 	void envoieImpressionBatchLettreDecisionDelaiPM(Long idDelai) throws EditiqueException;
 
-	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean saveModele) throws DeclarationException;
 
 	/**

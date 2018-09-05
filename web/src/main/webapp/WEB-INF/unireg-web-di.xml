@@ -23,7 +23,6 @@
 		<property name="delaisService" ref="delaisService" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
-		<property name="transactionManager" ref="transactionManager"/>
 		<property name="validator" ref="declarationImpotControllerValidator"/>
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
 		<property name="periodeImpositionService" ref="periodeImpositionService" />

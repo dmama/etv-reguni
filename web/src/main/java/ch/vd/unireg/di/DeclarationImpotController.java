@@ -9,18 +9,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
@@ -37,7 +31,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.common.ActionException;
 import ch.vd.unireg.common.ControllerUtils;
@@ -128,7 +121,6 @@ public class DeclarationImpotController {
 	private DelaisService delaisService;
 	private TiersMapHelper tiersMapHelper;
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
-	private PlatformTransactionManager transactionManager;
 	private Validator validator;
 	private ModeleDocumentDAO modeleDocumentDAO;
 	private PeriodeImpositionService periodeImpositionService;
@@ -177,10 +169,6 @@ public class DeclarationImpotController {
 
 	public void setRetourEditiqueControllerHelper(RetourEditiqueControllerHelper retourEditiqueControllerHelper) {
 		this.retourEditiqueControllerHelper = retourEditiqueControllerHelper;
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 
 	public void setValidator(Validator validator) {
@@ -1104,6 +1092,7 @@ public class DeclarationImpotController {
 	/**
 	 * Sommer la déclaration d'impôt spécifiée.
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/sommer.do", method = RequestMethod.POST)
 	public String sommerDeclarationImpotPersonnesPhysiques(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
 
@@ -1112,25 +1101,18 @@ public class DeclarationImpotController {
 		}
 
 		// Vérifie les paramètres
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
-				checkAccessRights(di, false, false, false, true, false, false, false, false, false);
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		checkAccessRights(di, false, false, false, true, false, false, false, false, false);
 
-				if (!EditerDeclarationImpotView.isSommable(di)) {
-					throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas dans un état sommable.");
-				}
+		if (!EditerDeclarationImpotView.isSommable(di)) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas dans un état sommable.");
+		}
 
-				final Contribuable ctb = di.getTiers();
-				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-				return null;
-			}
-		});
+		final Contribuable ctb = di.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On imprime la sommation
 		final EditiqueResultat resultat = manager.envoieImpressionLocalSommationDI(id);
@@ -1165,6 +1147,7 @@ public class DeclarationImpotController {
 	/**
 	 * Imprime un duplicata de DI PM
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/duplicata-pm.do", method = RequestMethod.POST)
 	public String duplicataDeclarationPersonnesMorales(@Valid @ModelAttribute("command") final ImprimerDuplicataDeclarationImpotView view,
 	                                                   BindingResult result, HttpServletResponse response) throws Exception {
@@ -1178,21 +1161,14 @@ public class DeclarationImpotController {
 		}
 
 		final Long id = view.getIdDI();
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final TypeDocument typeDocument = template.execute(new TxCallback<TypeDocument>() {
-			@Override
-			public TypeDocument execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (!(di instanceof DeclarationImpotOrdinairePM)) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (!(di instanceof DeclarationImpotOrdinairePM)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
 
-				final ContribuableImpositionPersonnesMorales ctb = (ContribuableImpositionPersonnesMorales) di.getTiers();
-				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-				return di.getTypeDeclaration();
-			}
-		});
+		controllerUtils.checkAccesDossierEnEcriture(di.getTiers().getId());
 
+		final TypeDocument typeDocument = di.getTypeDeclaration();
 		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(id, typeDocument, view.getSelectedAnnexes(), false);
 		final RedirectEditDI inbox = new RedirectEditDI(id);
 		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
@@ -1227,6 +1203,7 @@ public class DeclarationImpotController {
 	/**
 	 * Imprime un duplicata de DI (avec annexes et potentiellement nouveau type de document).
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/duplicata-pp.do", method = RequestMethod.POST)
 	public String duplicataDeclarationPersonnesPhysiques(@Valid @ModelAttribute("command") final ImprimerDuplicataDeclarationImpotView view,
 	                                                     BindingResult result, HttpServletResponse response) throws Exception {
@@ -1241,29 +1218,18 @@ public class DeclarationImpotController {
 
 		// Vérifie les paramètres
 		final Long id = view.getIdDI();
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final String redirect = template.execute(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (!(di instanceof DeclarationImpotOrdinairePP)) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (!(di instanceof DeclarationImpotOrdinairePP)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
 
-				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) di.getTiers();
-				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) di.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-				// Vérification de la période d'imposition du contribuable
-				if (periodeImpositionService.determine(ctb, di) == null) {
-					Flash.error("Echec de l'impression du duplicata, le contribuable n'a pas de données valides à la fin de la période de la déclaration d'impôt.");
-					return "redirect:/di/editer.do?id=" + di.getId();
-				}
-
-				return null;
-			}
-		});
-		if (redirect != null) {
-			return redirect;
+		// Vérification de la période d'imposition du contribuable
+		if (periodeImpositionService.determine(ctb, di) == null) {
+			Flash.error("Echec de l'impression du duplicata, le contribuable n'a pas de données valides à la fin de la période de la déclaration d'impôt.");
+			return "redirect:/di/editer.do?id=" + di.getId();
 		}
 
 		//Si la valeur de toSave est nulle c'est que nous sommes sur le même type de document, on a pas besoin de le sauvegarder
@@ -1305,6 +1271,7 @@ public class DeclarationImpotController {
 	/**
 	 * Ajoute un délai sur une DI PP
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/ajouter-pp.do", method = RequestMethod.POST)
 	public String ajouterDelaiPP(@Valid @ModelAttribute("command") final AjouterDelaiDeclarationView view,
 	                             BindingResult result, HttpServletResponse response) throws Exception {
@@ -1316,26 +1283,16 @@ public class DeclarationImpotController {
 		final Long id = view.getIdDeclaration();
 
 		if (result.hasErrors()) {
-			fixModel(id, view);
+			fillDiInfo(id, view);
 			return "di/delai/ajouter-pp";
 		}
 
 		// Vérifie les paramètres
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (!(di instanceof DeclarationImpotOrdinairePP)) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
-
-				final Contribuable ctb = di.getTiers();
-				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-
-				return null;
-			}
-		});
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (!(di instanceof DeclarationImpotOrdinairePP)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		controllerUtils.checkAccesDossierEnEcriture(di.getTiers().getId());
 
 		// On ajoute le délai
 		final Long idDelai = manager.saveNouveauDelai(id, view.getDateDemande(), view.getDelaiAccordeAu(), EtatDelaiDocumentFiscal.ACCORDE, false);
@@ -1354,6 +1311,7 @@ public class DeclarationImpotController {
 		}
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/print-confirmation.do", method = RequestMethod.POST)
 	public String imprimerConfirmation(@RequestParam("idDelai") long idDelai) throws Exception {
 
@@ -1361,43 +1319,40 @@ public class DeclarationImpotController {
 			throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI");
 		}
 
+		// vérification des paramètres
 		final Mutable<Long> idDeclaration = new MutableObject<>();
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final Callable<EditiqueResultat> actionEnvoi = template.execute(status -> {
-			final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
-			if (delai == null) {
-				throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
-			}
+		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+		if (delai == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (delai.isAnnule()) {
+			throw new ActionException("Opération impossible sur un délai annulé.");
+		}
+		if (delai.getCleArchivageCourrier() != null || delai.getCleDocument() != null) {
+			throw new ActionException("Le document a déjà été généré pour ce délai.");
+		}
 
-			if (delai.isAnnule()) {
-				throw new ActionException("Opération impossible sur un délai annulé.");
+		// impression document...
+		final EditiqueResultat resultat;
+		final Declaration declaration = delai.getDeclaration();
+		idDeclaration.setValue(declaration.getId());
+		if (declaration instanceof DeclarationImpotOrdinairePP) {
+			if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
+				throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI PP");
 			}
-			if (delai.getCleArchivageCourrier() != null || delai.getCleDocument() != null) {
-				throw new ActionException("Le document a déjà été généré pour ce délai.");
+			resultat = manager.envoieImpressionLocalConfirmationDelaiPP(declaration.getId(), idDelai);
+		}
+		else if (declaration instanceof DeclarationImpotOrdinairePM) {
+			if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
+				throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI PM");
 			}
-
-			// impression document...
-			final Declaration declaration = delai.getDeclaration();
-			idDeclaration.setValue(declaration.getId());
-			if (declaration instanceof DeclarationImpotOrdinairePP) {
-				if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
-					throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI PP");
-				}
-				return () -> manager.envoieImpressionLocalConfirmationDelaiPP(declaration.getId(), idDelai);
-			}
-			else if (declaration instanceof DeclarationImpotOrdinairePM) {
-				if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-					throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI PM");
-				}
-				return () -> manager.envoieImpressionLocaleLettreDecisionDelaiPM(idDelai);
-			}
-			else {
-				throw new ActionException("Type de déclaration non-supporté.");
-			}
-		});
+			resultat = manager.envoieImpressionLocaleLettreDecisionDelaiPM(idDelai);
+		}
+		else {
+			throw new ActionException("Type de déclaration non-supporté.");
+		}
 
 		// On imprime le document
-		final EditiqueResultat resultat = actionEnvoi.call();
 		final RedirectEditDI inbox = new RedirectEditDI(idDeclaration.getValue());
 		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(idDeclaration.getValue(), messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
@@ -1450,6 +1405,7 @@ public class DeclarationImpotController {
 	/**
 	 * Ajoute un délai sur une DI PM
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/ajouter-pm.do", method = RequestMethod.POST)
 	public String ajouterDemandeDelaiPM(@Valid @ModelAttribute("command") final NouvelleDemandeDelaiDeclarationView view,
 	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
@@ -1461,27 +1417,17 @@ public class DeclarationImpotController {
 		final Long id = view.getIdDeclaration();
 
 		if (result.hasErrors()) {
-			fixModel(id, view);
+			fillDiInfo(id, view);
 			model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 			return "di/delai/ajouter-pm";
 		}
 
 		// Vérifie les paramètres
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (!(di instanceof DeclarationImpotOrdinairePM)) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
-
-				final Contribuable ctb = di.getTiers();
-				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-
-				return null;
-			}
-		});
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (!(di instanceof DeclarationImpotOrdinairePM)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		controllerUtils.checkAccesDossierEnEcriture(di.getTiers().getId());
 
 		// On ajoute le délai
 		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE ? view.getDelaiAccordeAu() : null;
@@ -1489,7 +1435,7 @@ public class DeclarationImpotController {
 		return gererImpressionCourrierDelaiDeclarationPM(idDelai, id, view.getTypeImpression(), response);
 	}
 
-	@Transactional(rollbackFor = Throwable.class)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/di/delai/editer-pm.do", method = RequestMethod.GET)
 	public String editerDemandeDelaiPM(@RequestParam("id") long id,
 	                                   Model model) throws AccessDeniedException {
@@ -1524,6 +1470,7 @@ public class DeclarationImpotController {
 	/**
 	 * Ajoute un délai sur une DI PM
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/editer-pm.do", method = RequestMethod.POST)
 	public String editerDemandeDelaiPM(@Valid @ModelAttribute("command") final ModifierDemandeDelaiDeclarationView view,
 	                                   BindingResult result, Model model, HttpServletResponse response) throws Exception {
@@ -1533,41 +1480,33 @@ public class DeclarationImpotController {
 		}
 
 		if (result.hasErrors()) {
-			fixModel(view.getIdDeclaration(), view);
+			fillDiInfo(view.getIdDeclaration(), view);
 			model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 			return "di/delai/editer-pm";
 		}
 
 		// Vérifie les paramètres
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final long diId = template.execute(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, view.getIdDelai());
-				if (delai == null) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
-				}
-				if (delai.getEtat() != EtatDelaiDocumentFiscal.DEMANDE) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.delai.finalise", null, WebContextUtils.getDefaultLocale()));
-				}
+		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, view.getIdDelai());
+		if (delai == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (delai.getEtat() != EtatDelaiDocumentFiscal.DEMANDE) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.finalise", null, WebContextUtils.getDefaultLocale()));
+		}
 
-				final Declaration declaration = delai.getDeclaration();
-				if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
+		final Declaration declaration = delai.getDeclaration();
+		if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
 
-				final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
-				final Contribuable ctb = di.getTiers();
-				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-
-				return di.getId();
-			}
-		});
+		final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
+		final Contribuable ctb = di.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On modifie le délai
 		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE ? view.getDelaiAccordeAu() : null;
 		manager.saveDelai(view.getIdDelai(), view.getDecision(), delaiAccordeAu);
-		return gererImpressionCourrierDelaiDeclarationPM(view.getIdDelai(), diId, view.getTypeImpression(), response);
+		return gererImpressionCourrierDelaiDeclarationPM(view.getIdDelai(), di.getId(), view.getTypeImpression(), response);
 	}
 
 	private String gererImpressionCourrierDelaiDeclarationPM(long idDelai, long idDeclaration,
@@ -1593,20 +1532,12 @@ public class DeclarationImpotController {
 		return "redirect:/di/editer.do?id=" + idDeclaration;
 	}
 
-	private void fixModel(final long id, final AbstractEditionDelaiDeclarationView view) {
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-		template.setReadOnly(true);
-		template.execute(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
-				view.setDiInfo(di);
-			}
-		});
+	private void fillDiInfo(final long diId, final AbstractEditionDelaiDeclarationView view) {
+		final DeclarationImpotOrdinaire di = diDAO.get(diId);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		view.setDiInfo(di);
 	}
 
 	private static class RedirectEditDI implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> {
