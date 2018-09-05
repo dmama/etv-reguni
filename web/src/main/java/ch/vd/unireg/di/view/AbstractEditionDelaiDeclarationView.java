@@ -1,10 +1,11 @@
 package ch.vd.unireg.di.view;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
-import ch.vd.unireg.declaration.QuestionnaireSNC;
+import ch.vd.unireg.declaration.Declaration;
 
 public abstract class AbstractEditionDelaiDeclarationView {
 
@@ -17,30 +18,29 @@ public abstract class AbstractEditionDelaiDeclarationView {
 
 	// champs du formulaire
 	private Long idDeclaration;
+	protected RegDate dateDemande;
+	protected RegDate delaiAccordeAu;
 
 	public AbstractEditionDelaiDeclarationView() {
 	}
 
-	public AbstractEditionDelaiDeclarationView(DeclarationImpotOrdinaire di) {
-		setDiInfo(di);
+	public AbstractEditionDelaiDeclarationView(@NotNull Declaration declaration, RegDate dateDemande, RegDate delaiAccordeAu) {
+		setDiInfo(declaration);
+		this.dateDemande = dateDemande;
+		this.delaiAccordeAu = delaiAccordeAu;
 	}
 
-	public void setDiInfo(DeclarationImpotOrdinaire di) {
+	public AbstractEditionDelaiDeclarationView(@NotNull Declaration declaration) {
+		setDiInfo(declaration);
+	}
+
+	public void setDiInfo(Declaration di) {
 		this.tiersId = di.getTiers().getId();
 		this.declarationPeriode = di.getDateFin().year();
 		this.declarationRange = new DateRangeHelper.Range(di);
 		this.dateExpedition = di.getDateExpedition();
 		this.idDeclaration = di.getId();
 		this.ancienDelaiAccorde = di.getDelaiAccordeAu();
-	}
-
-	public AbstractEditionDelaiDeclarationView(QuestionnaireSNC qsnc) {
-		this.tiersId = qsnc.getTiers().getId();
-		this.declarationPeriode = qsnc.getDateFin().year();
-		this.declarationRange = new DateRangeHelper.Range(qsnc);
-		this.dateExpedition = qsnc.getDateExpedition();
-		this.idDeclaration = qsnc.getId();
-		this.ancienDelaiAccorde = qsnc.getDelaiAccordeAu();
 	}
 
 	public Long getTiersId() {
@@ -89,5 +89,21 @@ public abstract class AbstractEditionDelaiDeclarationView {
 
 	public void setIdDeclaration(Long idDeclaration) {
 		this.idDeclaration = idDeclaration;
+	}
+
+	public RegDate getDateDemande() {
+		return dateDemande;
+	}
+
+	public void setDateDemande(RegDate dateDemande) {
+		this.dateDemande = dateDemande;
+	}
+
+	public RegDate getDelaiAccordeAu() {
+		return delaiAccordeAu;
+	}
+
+	public void setDelaiAccordeAu(RegDate delaiAccordeAu) {
+		this.delaiAccordeAu = delaiAccordeAu;
 	}
 }

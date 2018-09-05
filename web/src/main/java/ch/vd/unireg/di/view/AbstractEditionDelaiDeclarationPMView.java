@@ -7,30 +7,16 @@ import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 public abstract class AbstractEditionDelaiDeclarationPMView extends AbstractEditionDelaiDeclarationView {
 
-
-	// champs du formulaire
-	private RegDate dateDemande;
 	private EtatDelaiDocumentFiscal decision;
-	private RegDate delaiAccordeAu;
 	private TypeImpression typeImpression;
 
 	public AbstractEditionDelaiDeclarationPMView() {
 	}
 
 	public AbstractEditionDelaiDeclarationPMView(DeclarationImpotOrdinaire di, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal decision) {
-		super(di);
-		this.dateDemande = dateDemande;
-		this.delaiAccordeAu = delaiAccordeAu;
+		super(di, dateDemande, delaiAccordeAu);
 		this.decision = decision;
 		this.typeImpression = TypeImpression.BATCH;         // par défaut
-	}
-
-	public RegDate getDateDemande() {
-		return dateDemande;
-	}
-
-	public void setDateDemande(RegDate dateDemande) {
-		this.dateDemande = dateDemande;
 	}
 
 	public EtatDelaiDocumentFiscal getDecision() {
@@ -39,14 +25,6 @@ public abstract class AbstractEditionDelaiDeclarationPMView extends AbstractEdit
 
 	public void setDecision(EtatDelaiDocumentFiscal decision) {
 		this.decision = decision;
-	}
-
-	public RegDate getDelaiAccordeAu() {
-		return delaiAccordeAu;
-	}
-
-	public void setDelaiAccordeAu(RegDate delaiAccordeAu) {
-		this.delaiAccordeAu = delaiAccordeAu;
 	}
 
 	public TypeImpression getTypeImpression() {
