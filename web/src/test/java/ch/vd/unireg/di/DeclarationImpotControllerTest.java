@@ -12,18 +12,18 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.common.FlashMessage;
 import ch.vd.unireg.common.WebTestSpring3;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
-import ch.vd.unireg.di.view.AjouterDelaiDeclarationView;
+import ch.vd.unireg.di.view.AjouterDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.tiers.EnsembleTiersCouple;
 import ch.vd.unireg.tiers.MenageCommun;
 import ch.vd.unireg.tiers.PersonnePhysique;
@@ -225,7 +225,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		assertEquals("delaiAccordeAu", error.getField());
 		assertEquals("error.delai.accorde.invalide", error.getCode());
 
-		final AjouterDelaiDeclarationView ajouterView = (AjouterDelaiDeclarationView) mav.getModel().get("command");
+		final AjouterDelaiDeclarationPPView ajouterView = (AjouterDelaiDeclarationPPView) mav.getModel().get("command");
 		assertNotNull(ajouterView);
 	}
 

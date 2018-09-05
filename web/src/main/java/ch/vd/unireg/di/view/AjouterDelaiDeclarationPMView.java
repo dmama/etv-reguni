@@ -5,14 +5,14 @@ import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 @SuppressWarnings("UnusedDeclaration")
-public class NouvelleDemandeDelaiDeclarationView extends AbstractEditionDelaiDeclarationPMView {
+public class AjouterDelaiDeclarationPMView extends AbstractEditionDelaiDeclarationPMView {
 
 	private boolean sursis;
 
-	public NouvelleDemandeDelaiDeclarationView() {
+	public AjouterDelaiDeclarationPMView() {
 	}
 
-	public NouvelleDemandeDelaiDeclarationView(DeclarationImpotOrdinaire di, RegDate delaiAccordeAu, boolean sursis) {
+	public AjouterDelaiDeclarationPMView(DeclarationImpotOrdinaire di, RegDate delaiAccordeAu, boolean sursis) {
 		super(di, RegDate.get(), delaiAccordeAu, EtatDelaiDocumentFiscal.ACCORDE);     // accordé par défaut
 		this.sursis = sursis;
 	}

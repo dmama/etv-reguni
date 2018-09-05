@@ -17,14 +17,14 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEmise;
 import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.di.manager.DeclarationImpotEditManager;
-import ch.vd.unireg.di.view.AjouterDelaiDeclarationView;
+import ch.vd.unireg.di.view.AjouterDelaiDeclarationPMView;
+import ch.vd.unireg.di.view.AjouterDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.AjouterEtatDeclarationView;
 import ch.vd.unireg.di.view.DeclarationImpotListView;
 import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.unireg.di.view.ModifierDemandeDelaiDeclarationView;
-import ch.vd.unireg.di.view.NouvelleDemandeDelaiDeclarationView;
+import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -69,8 +69,8 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 	public boolean supports(Class<?> clazz) {
 		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
 				|| DeclarationImpotListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz)
-				|| AjouterDelaiDeclarationView.class.equals(clazz) || AjouterEtatDeclarationView.class.equals(clazz)
-				|| NouvelleDemandeDelaiDeclarationView.class.equals(clazz) || ModifierDemandeDelaiDeclarationView.class.equals(clazz);
+				|| AjouterDelaiDeclarationPPView.class.equals(clazz) || AjouterEtatDeclarationView.class.equals(clazz)
+				|| AjouterDelaiDeclarationPMView.class.equals(clazz) || ModifierEtatDelaiDeclarationPMView.class.equals(clazz);
 	}
 
 	@Override
@@ -85,14 +85,14 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		else if (target instanceof ImprimerDuplicataDeclarationImpotView) {
 			valideImprimerDuplicataDI((ImprimerDuplicataDeclarationImpotView) target, errors);
 		}
-		else if (target instanceof AjouterDelaiDeclarationView) {
-			valideAjoutDelaiDeclaration((AjouterDelaiDeclarationView) target, errors);
+		else if (target instanceof AjouterDelaiDeclarationPPView) {
+			valideAjoutDelaiDeclarationPP((AjouterDelaiDeclarationPPView) target, errors);
 		}
-		else if (target instanceof NouvelleDemandeDelaiDeclarationView) {
-			valideNouvelleDemandeDelaiDeclaration((NouvelleDemandeDelaiDeclarationView) target, errors);
+		else if (target instanceof AjouterDelaiDeclarationPMView) {
+			valideAjoutDelaiDeclarationPM((AjouterDelaiDeclarationPMView) target, errors);
 		}
-		else if (target instanceof ModifierDemandeDelaiDeclarationView) {
-			valideModifierDemandeDelaiDeclaration((ModifierDemandeDelaiDeclarationView) target, errors);
+		else if (target instanceof ModifierEtatDelaiDeclarationPMView) {
+			valideModifierEtatDelaiDeclarationPM((ModifierEtatDelaiDeclarationPMView) target, errors);
 		}
 	}
 
@@ -235,7 +235,7 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		}
 	}
 
-	private void valideAjoutDelaiDeclaration(AjouterDelaiDeclarationView view, Errors errors) {
+	private void valideAjoutDelaiDeclarationPP(AjouterDelaiDeclarationPPView view, Errors errors) {
 
 		if (view.getIdDeclaration() == null) {
 			errors.reject("error.di.inexistante");
@@ -274,7 +274,7 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		}
 	}
 
-	private void valideNouvelleDemandeDelaiDeclaration(NouvelleDemandeDelaiDeclarationView view, Errors errors) {
+	private void valideAjoutDelaiDeclarationPM(AjouterDelaiDeclarationPMView view, Errors errors) {
 
 		if (view.getIdDeclaration() == null) {
 			errors.reject("error.di.inexistante");
@@ -324,7 +324,7 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		}
 	}
 
-	private void valideModifierDemandeDelaiDeclaration(ModifierDemandeDelaiDeclarationView view, Errors errors) {
+	private void valideModifierEtatDelaiDeclarationPM(ModifierEtatDelaiDeclarationPMView view, Errors errors) {
 
 		if (view.getIdDelai() == null) {
 			errors.reject("error.delai.inexistant");

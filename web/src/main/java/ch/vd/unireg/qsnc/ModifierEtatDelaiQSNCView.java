@@ -5,16 +5,15 @@ import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 
 
-public class ModifierDemandeDelaiQSNCView extends AbstractEditionDelaiQSNCView {
-
+public class ModifierEtatDelaiQSNCView extends AbstractEditionDelaiQSNCView {
 
 	private Long idDelai;
 
-	public ModifierDemandeDelaiQSNCView() {
+	public ModifierEtatDelaiQSNCView() {
 	}
 
 
-	public ModifierDemandeDelaiQSNCView(DelaiDeclaration delai, RegDate delaiAccordeAu) {
+	public ModifierEtatDelaiQSNCView(DelaiDeclaration delai, RegDate delaiAccordeAu) {
 		super((QuestionnaireSNC) delai.getDeclaration(), delai.getDateDemande(), delaiAccordeAu, delai.getEtat());
 		this.idDelai = delai.getId();
 

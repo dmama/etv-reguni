@@ -12,7 +12,7 @@ import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.di.AbstractDelaiControllerValidator;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.hibernate.HibernateTemplateImpl;
-import ch.vd.unireg.qsnc.ModifierDemandeDelaiQSNCView;
+import ch.vd.unireg.qsnc.ModifierEtatDelaiQSNCView;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.utils.ValidatorUtils;
 
@@ -30,7 +30,7 @@ public class AjouterDelaiDocumentFiscalValidator extends AbstractDelaiController
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return AjouterDelaiDocumentFiscalView.class.isAssignableFrom(clazz) || ModifierDemandeDelaiQSNCView.class.equals(clazz);
+		return AjouterDelaiDocumentFiscalView.class.isAssignableFrom(clazz) || ModifierEtatDelaiQSNCView.class.equals(clazz);
 	}
 
 	@Override
@@ -39,8 +39,8 @@ public class AjouterDelaiDocumentFiscalValidator extends AbstractDelaiController
 		if (target instanceof AjouterDelaiDocumentFiscalView) {
 			validateEditionDelai((AjouterDelaiDocumentFiscalView) target, errors);
 		}
-		else if (target instanceof ModifierDemandeDelaiQSNCView) {
-			valideModifierDemandeDelaiDeclaration((ModifierDemandeDelaiQSNCView) target, errors);
+		else if (target instanceof ModifierEtatDelaiQSNCView) {
+			valideModifierEtatDelaiQSNC((ModifierEtatDelaiQSNCView) target, errors);
 		}
 	}
 
@@ -83,7 +83,7 @@ public class AjouterDelaiDocumentFiscalValidator extends AbstractDelaiController
 		}
 	}
 
-	protected void valideModifierDemandeDelaiDeclaration(ModifierDemandeDelaiQSNCView view, Errors errors) {
+	protected void valideModifierEtatDelaiQSNC(ModifierEtatDelaiQSNCView view, Errors errors) {
 
 		if (view.getIdDelai() == null) {
 			errors.reject("error.delai.inexistant");

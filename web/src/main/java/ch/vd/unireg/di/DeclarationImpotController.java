@@ -61,7 +61,8 @@ import ch.vd.unireg.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.unireg.declaration.view.DeclarationView;
 import ch.vd.unireg.di.manager.DeclarationImpotEditManager;
 import ch.vd.unireg.di.view.AbstractEditionDelaiDeclarationView;
-import ch.vd.unireg.di.view.AjouterDelaiDeclarationView;
+import ch.vd.unireg.di.view.AjouterDelaiDeclarationPMView;
+import ch.vd.unireg.di.view.AjouterDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.AjouterEtatDeclarationView;
 import ch.vd.unireg.di.view.ChoixDeclarationImpotView;
 import ch.vd.unireg.di.view.DeclarationImpotListView;
@@ -69,8 +70,7 @@ import ch.vd.unireg.di.view.DeclarationImpotView;
 import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.unireg.di.view.ModifierDemandeDelaiDeclarationView;
-import ch.vd.unireg.di.view.NouvelleDemandeDelaiDeclarationView;
+import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.TypeDeclaration;
 import ch.vd.unireg.documentfiscal.TypeImpression;
 import ch.vd.unireg.editique.EditiqueException;
@@ -1248,8 +1248,7 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/di/delai/ajouter-pp.do", method = RequestMethod.GET)
-	public String ajouterDelaiDiPP(@RequestParam("id") long id,
-	                               Model model) throws AccessDeniedException {
+	public String ajouterDelaiDiPP(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
@@ -1264,7 +1263,7 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(RegDate.get());
-		model.addAttribute("command", new AjouterDelaiDeclarationView(di, delaiAccordeAu));
+		model.addAttribute("command", new AjouterDelaiDeclarationPPView(di, delaiAccordeAu));
 		return "di/delai/ajouter-pp";
 	}
 
@@ -1273,8 +1272,8 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/ajouter-pp.do", method = RequestMethod.POST)
-	public String ajouterDelaiPP(@Valid @ModelAttribute("command") final AjouterDelaiDeclarationView view,
-	                             BindingResult result, HttpServletResponse response) throws Exception {
+	public String ajouterDelaiDiPP(@Valid @ModelAttribute("command") final AjouterDelaiDeclarationPPView view,
+	                               BindingResult result, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
@@ -1369,8 +1368,7 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/di/delai/ajouter-pm.do", method = RequestMethod.GET)
-	public String ajouterDelaiDiPM(@RequestParam("id") long id,
-	                               Model model) throws AccessDeniedException {
+	public String ajouterDelaiDiPM(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
@@ -1386,7 +1384,7 @@ public class DeclarationImpotController {
 
 		final boolean sursis = di.getDernierEtatDeclaration() != null && di.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.SOMME;
 		final RegDate delaiAccordeAu = determineDateAccordDelaiPMParDefaut(di.getDelaiAccordeAu());
-		model.addAttribute("command", new NouvelleDemandeDelaiDeclarationView(di, delaiAccordeAu, sursis));
+		model.addAttribute("command", new AjouterDelaiDeclarationPMView(di, delaiAccordeAu, sursis));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "di/delai/ajouter-pm";
 	}
@@ -1407,8 +1405,8 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/ajouter-pm.do", method = RequestMethod.POST)
-	public String ajouterDemandeDelaiPM(@Valid @ModelAttribute("command") final NouvelleDemandeDelaiDeclarationView view,
-	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
+	public String ajouterDelaiDiPM(@Valid @ModelAttribute("command") final AjouterDelaiDeclarationPMView view,
+	                               BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
 			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une DI");
@@ -1437,8 +1435,7 @@ public class DeclarationImpotController {
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/di/delai/editer-pm.do", method = RequestMethod.GET)
-	public String editerDemandeDelaiPM(@RequestParam("id") long id,
-	                                   Model model) throws AccessDeniedException {
+	public String editerEtatDelaiPM(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
 			throw new AccessDeniedException("vous n'avez pas le droit de gestion des demandes de délai sur les DI");
@@ -1462,7 +1459,7 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(di.getDelaiAccordeAu());
-		model.addAttribute("command", new ModifierDemandeDelaiDeclarationView(delai, delaiAccordeAu));
+		model.addAttribute("command", new ModifierEtatDelaiDeclarationPMView(delai, delaiAccordeAu));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "di/delai/editer-pm";
 	}
@@ -1472,7 +1469,7 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/editer-pm.do", method = RequestMethod.POST)
-	public String editerDemandeDelaiPM(@Valid @ModelAttribute("command") final ModifierDemandeDelaiDeclarationView view,
+	public String editerEtatDelaiPM(@Valid @ModelAttribute("command") final ModifierEtatDelaiDeclarationPMView view,
 	                                   BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {

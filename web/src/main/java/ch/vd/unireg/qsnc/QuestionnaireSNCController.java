@@ -601,7 +601,6 @@ public class QuestionnaireSNCController {
 		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, id);
 		if (questionnaire == null) {
 			final String message = messageHelper.getMessage("error.qsnc.ajout.delai.questionnaire.inconnu", id);
-			LOGGER.debug(message);
 			throw new ObjectNotFoundException(message);
 		}
 
@@ -665,7 +664,7 @@ public class QuestionnaireSNCController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/editer-snc.do", method = RequestMethod.GET)
-	public String editerDemandeDelaiPM(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+	public String editerEtatDelai(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		checkAccessGestionQSNC();
 
@@ -687,15 +686,15 @@ public class QuestionnaireSNCController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(qsnc.getDelaiAccordeAu());
-		model.addAttribute(MODIFIER_DELAI, new ModifierDemandeDelaiQSNCView(delai, delaiAccordeAu));
+		model.addAttribute(MODIFIER_DELAI, new ModifierEtatDelaiQSNCView(delai, delaiAccordeAu));
 		model.addAttribute(DECISIONS_DELAI, tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "qsnc/delai/editer-snc";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/editer-snc.do", method = RequestMethod.POST)
-	public String editerDemandeDelaiPM(@Valid @ModelAttribute(MODIFIER_DELAI) final ModifierDemandeDelaiQSNCView view,
-	                                   BindingResult result, Model model, HttpServletResponse response) throws AccessDeniedException, EditiqueException, IOException {
+	public String editerEtatDelai(@Valid @ModelAttribute(MODIFIER_DELAI) final ModifierEtatDelaiQSNCView view,
+	                              BindingResult result, Model model, HttpServletResponse response) throws AccessDeniedException, EditiqueException, IOException {
 		checkAccessGestionQSNC();
 		final Long id = view.getIdDeclaration();
 		final QuestionnaireSNC qsnc = hibernateTemplate.get(QuestionnaireSNC.class, id);
@@ -985,7 +984,6 @@ public class QuestionnaireSNCController {
 	private void checkAccessGestionQSNC() {
 		if (!SecurityHelper.isGranted(securityProvider, Role.QSNC_DELAI)) {
 			final String message = messageHelper.getMessage("error.qsnc.ajout.delai.habilitation");
-			LOGGER.debug(message);
 			throw new AccessDeniedException(message);
 		}
 	}

@@ -4,15 +4,15 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 
 @SuppressWarnings("UnusedDeclaration")
-public class AjouterDelaiDeclarationView extends AbstractEditionDelaiDeclarationView {
+public class AjouterDelaiDeclarationPPView extends AbstractEditionDelaiDeclarationView {
 
 	// champs du formulaire
 	private boolean confirmationEcrite;
 
-	public AjouterDelaiDeclarationView() {
+	public AjouterDelaiDeclarationPPView() {
 	}
 
-	public AjouterDelaiDeclarationView(DeclarationImpotOrdinaire di, RegDate delaiAccordeAu) {
+	public AjouterDelaiDeclarationPPView(DeclarationImpotOrdinaire di, RegDate delaiAccordeAu) {
 		super(di, RegDate.get(), delaiAccordeAu);
 		this.confirmationEcrite = false;
 	}

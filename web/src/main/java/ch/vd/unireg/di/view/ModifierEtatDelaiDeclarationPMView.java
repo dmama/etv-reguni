@@ -4,15 +4,15 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 
-public class ModifierDemandeDelaiDeclarationView extends AbstractEditionDelaiDeclarationPMView {
+public class ModifierEtatDelaiDeclarationPMView extends AbstractEditionDelaiDeclarationPMView {
 
 	// champs du formulaire
 	private Long idDelai;
 
-	public ModifierDemandeDelaiDeclarationView() {
+	public ModifierEtatDelaiDeclarationPMView() {
 	}
 
-	public ModifierDemandeDelaiDeclarationView(DelaiDeclaration delai, RegDate delaiAccordeAu) {
+	public ModifierEtatDelaiDeclarationPMView(DelaiDeclaration delai, RegDate delaiAccordeAu) {
 		super((DeclarationImpotOrdinaire) delai.getDeclaration(), delai.getDateDemande(), delaiAccordeAu, delai.getEtat());
 		this.idDelai = delai.getId();
 	}
