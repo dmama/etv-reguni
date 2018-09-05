@@ -28,11 +28,9 @@ import ch.vd.unireg.common.AnnulableHelper;
 import ch.vd.unireg.common.CollectionsUtils;
 import ch.vd.unireg.common.ComparisonHelper;
 import ch.vd.unireg.common.LengthConstants;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.documentfiscal.AutreDocumentFiscal;
 import ch.vd.unireg.type.GenreImpot;
 import ch.vd.unireg.type.GroupeFlagsEntreprise;
-import ch.vd.unireg.type.GroupeTypesDocumentBatchLocal;
 
 /**
  * Entreprise connue du registre des personnes morales de l'ACI
@@ -534,16 +532,6 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return numeroEntreprise != null;
 	}
 
-	@Override
-	public boolean shouldAssignCodeControle(DeclarationImpotOrdinairePM di) {
-		if (super.shouldAssignCodeControle(di)) {
-			// [SIFISC-26581] Le code de contrôle est systématiquement généré (même pour les PM HC)
-			if (di.getModeleDocument() != null && GroupeTypesDocumentBatchLocal.DI_PM.hasType(di.getModeleDocument().getTypeDocument())) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	@Transient
 	public boolean isSNC() {

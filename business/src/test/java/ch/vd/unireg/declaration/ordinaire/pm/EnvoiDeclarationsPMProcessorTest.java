@@ -572,7 +572,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
-					Assert.assertNull(di.getCodeControle());        // pas de code de contrôle sur les APM
+					//FISCPROJ-547 On doit avoir un code de contrôle pour les APM
+					Assert.assertNotNull(di.getCodeControle());
 					Assert.assertEquals(pf, di.getPeriode().getAnnee().intValue());
 					Assert.assertEquals((Integer) 1, di.getNumero());
 
