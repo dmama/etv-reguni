@@ -187,7 +187,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 		//vérification droit édition du rapport pour fermeture
 		if (rapportEntreTiers instanceof RapportPrestationImposable) {
-			if (!SecurityHelper.isGranted(securityProvider, Role.RT)) {
+			if (!SecurityHelper.isAnyGranted(securityProvider, Role.RT, Role.CREATE_MODIF_DPI)) {
 				allowed = false;
 			}
 		}

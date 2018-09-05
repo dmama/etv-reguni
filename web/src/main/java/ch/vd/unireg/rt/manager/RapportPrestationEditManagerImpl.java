@@ -385,7 +385,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		view.idDpi = noDebiteur;
 		view.tiersGeneral = tiersGeneralManager.getDebiteur(debiteur, true);
-		view.editionAllowed = SecurityHelper.isGranted(securityProvider, Role.RT);
+		view.editionAllowed = SecurityHelper.isAnyGranted(securityProvider, Role.RT, Role.CREATE_MODIF_DPI);
 		view.rapports = rapports;
 	}
 

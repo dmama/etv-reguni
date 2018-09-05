@@ -69,7 +69,7 @@ public class RapportPrestationController {
 	 *
 	 * @param id le numéro de tiers du débiteur
 	 */
-	@SecurityCheck(rolesToCheck = Role.RT, accessDeniedMessage = DROIT_MODIFICATION_RT)
+	@SecurityCheck(rolesToCheck = {Role.RT, Role.CREATE_MODIF_DPI}, accessDeniedMessage = DROIT_MODIFICATION_RT)
 	@RequestMapping(value = "/rapports-prestation/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String edit(@RequestParam long id, Model model, HttpServletRequest request) throws AdresseException {
@@ -94,7 +94,7 @@ public class RapportPrestationController {
 	/**
 	 * Affiche l'écran de recherche d'un débiteur à lier par un rapport de prestation à un contribuable donné.
 	 */
-	@SecurityCheck(rolesToCheck = Role.RT, accessDeniedMessage = DROIT_MODIFICATION_RT)
+	@SecurityCheck(rolesToCheck = {Role.RT, Role.CREATE_MODIF_DPI}, accessDeniedMessage = DROIT_MODIFICATION_RT)
 	@RequestMapping(value = "/rapports-prestation/search-debiteur.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String searchDebiteur(@Valid @ModelAttribute("debiteurCriteriaView") final DebiteurListView view, BindingResult binding, Model model) {
@@ -142,7 +142,7 @@ public class RapportPrestationController {
 	/**
 	 * Affiche l'écran de recherche d'un sourcier à lier par un rapport de prestation à un débiteur donné.
 	 */
-	@SecurityCheck(rolesToCheck = Role.RT, accessDeniedMessage = DROIT_MODIFICATION_RT)
+	@SecurityCheck(rolesToCheck = {Role.RT, Role.CREATE_MODIF_DPI}, accessDeniedMessage = DROIT_MODIFICATION_RT)
 	@RequestMapping(value = "/rapports-prestation/search-sourcier.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String searchSourcier(@Valid @ModelAttribute("sourcierCriteriaView") final SourcierListView view, BindingResult binding, Model model) {
@@ -193,7 +193,7 @@ public class RapportPrestationController {
 	 * @param sourcierId l'id du sourcier
 	 * @param debiteurId l'id du débiteur
 	 */
-	@SecurityCheck(rolesToCheck = Role.RT, accessDeniedMessage = DROIT_MODIFICATION_RT)
+	@SecurityCheck(rolesToCheck = {Role.RT, Role.CREATE_MODIF_DPI}, accessDeniedMessage = DROIT_MODIFICATION_RT)
 	@RequestMapping(value = "/rapports-prestation/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addRapport(@RequestParam(value = "numeroSrc") long sourcierId, @RequestParam(value = "numeroDpi") long debiteurId, Model model) {
@@ -216,7 +216,7 @@ public class RapportPrestationController {
 	/**
 	 * Enregistre un nouvel rapport de prestations imposables dans la DB
 	 */
-	@SecurityCheck(rolesToCheck = Role.RT, accessDeniedMessage = DROIT_MODIFICATION_RT)
+	@SecurityCheck(rolesToCheck = {Role.RT, Role.CREATE_MODIF_DPI}, accessDeniedMessage = DROIT_MODIFICATION_RT)
 	@RequestMapping(value = "/rapports-prestation/add.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String addRapport(@Valid @ModelAttribute(value = "rapportAddView") RapportPrestationView view, BindingResult binding, Model model) {
@@ -245,7 +245,7 @@ public class RapportPrestationController {
 	 *
 	 * @param rapportId l'id du rapport à annuler
 	 */
-	@SecurityCheck(rolesToCheck = Role.RT, accessDeniedMessage = DROIT_MODIFICATION_RT)
+	@SecurityCheck(rolesToCheck = {Role.RT, Role.CREATE_MODIF_DPI}, accessDeniedMessage = DROIT_MODIFICATION_RT)
 	@RequestMapping(value = "/rapports-prestation/cancel.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String annulerRapport(@RequestParam long rapportId) {
