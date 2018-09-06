@@ -1,20 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.unireg.di.view.AjouterDelaiDeclarationPMView"--%>
+<%--@elvariable id="command" type="ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPPView"--%>
 <%--@elvariable id="decisionsDelai" type="java.util.Map"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head"/>
 	<tiles:put name="title">
-		<c:choose>
-			<c:when test="${command.sursis}">
-				<c:set var="titleKey" value="title.enregistrement.sursis.di"/>
-			</c:when>
-			<c:otherwise>
-				<c:set var="titleKey" value="title.enregistrement.demande.delai.di"/>
-			</c:otherwise>
-		</c:choose>
-		<fmt:message key="${titleKey}">
+		<fmt:message key="title.modification.demande.delai.di">
 			<fmt:param>${command.declarationPeriode}</fmt:param>
 			<fmt:param><unireg:date date="${command.declarationRange.dateDebut}"/></fmt:param>
 			<fmt:param><unireg:date date="${command.declarationRange.dateFin}"/></fmt:param>
@@ -22,14 +14,14 @@
 		</fmt:message>
 	</tiles:put>
 	<tiles:put name="body">
-		<form:form method="post" name="theForm" id="formAddDelai" action="ajouter-pm.do">
+		<form:form method="post" name="theForm" id="formModifDelai" action="editer-pp.do">
 
 			<form:errors cssClass="error"/>
 
 			<form:hidden path="idDeclaration"/>
+			<form:hidden path="idDelai"/>
 			<form:hidden path="ancienDelaiAccorde"/>
-			<form:hidden path="typeImpression" id="typeImpression"/>
-			<form:hidden path="sursis"/>
+			<form:hidden path="dateDemande"/>
 
 			<fieldset>
 				<legend><span><fmt:message key="label.etats"/></span></legend>
@@ -37,41 +29,20 @@
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>">
 						<td style="width: 25%;"><fmt:message key="label.date.demande"/>&nbsp;:</td>
-						<td style="width: 25%;">
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="dateDemande"/>
-								<jsp:param name="id" value="dateDemande"/>
-								<jsp:param name="mandatory" value="true" />
-							</jsp:include>
-						</td>
+						<td style="width: 25%;"><unireg:date date="${command.dateDemande}"/></td>
 						<td style="width: 25%;"><fmt:message key="label.date.ancien.delai"/>&nbsp;:</td>
 						<td style="width: 25%;"><unireg:date date="${command.ancienDelaiAccorde}"/></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.decision"/>&nbsp;:</td>
 						<td>
-							<c:choose>
-								<c:when test="${command.sursis}">
-									<fmt:message key="option.etat.delai.ACCORDE"/>
-									<input type="hidden" id="decision" name="decision" value="ACCORDE"/>
-								</c:when>
-								<c:otherwise>
-									<form:select id="decision" path="decision" onchange="DelaiPM.toggleDecision();">
-										<form:options items="${decisionsDelai}"/>
-									</form:select>
-								</c:otherwise>
-							</c:choose>
+							<form:select id="decision" path="decision" onchange="DelaiPP.toggleDecision();">
+								<form:options items="${decisionsDelai}"/>
+							</form:select>
 						</td>
 						<td>
 							<div class="siDelaiAccorde">
-								<c:choose>
-									<c:when test="${command.sursis}">
-										<fmt:message key="label.date.sursis.accorde"/>&nbsp;:
-									</c:when>
-									<c:otherwise>
-										<fmt:message key="label.date.delai.accorde"/>&nbsp;:
-									</c:otherwise>
-								</c:choose>
+								<fmt:message key="label.date.delai.accorde"/>&nbsp;:
 							</div>
 						</td>
 						<td>
@@ -84,22 +55,28 @@
 							</div>
 						</td>
 					</tr>
+					<unireg:nextRowClass reset="0"/>
+					<tr class="<unireg:nextRowClass/>">
+						<td><fmt:message key="label.confirmation.ecrite"/>&nbsp;:</td>
+						<td>
+							<form:checkbox path="confirmationEcrite" id="confirmation"/>
+						</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
 				</table>
 
 			</fieldset>
 
 			<table border="0">
 				<tr>
-					<td width="25%" align="right">
-						<input type="button" id="envoi-auto" value="Envoi courrier automatique" onclick="return DelaiPM.ajouterDelai(this, 'BATCH');" style="display: none;">
-					</td>
+					<td width="25%">&nbsp;</td>
 					<td width="25%">
-						<input type="button" id="envoi-manuel" value="Envoi courrier manuel" onclick="return DelaiPM.ajouterDelai(this, 'LOCAL');" style="display: none;">
-						<input type="button" id="ajouter" value="Ajouter" onclick="return DelaiPM.ajouterDelai(this, null);">
+						<input type="button" id="ajouter" value="Ajouter" onclick="return DelaiPP.modifierDelai(this);">
 						<unireg:buttonTo id="retour" name="Retour" visible="false" action="/di/editer.do" method="get" params="{id:${command.idDeclaration}}"/>
 					</td>
 					<td width="25%">
-						<unireg:buttonTo id="annuler" name="Annuler" action="/di/editer.do" method="get" params="{id:${command.idDeclaration}}"/>
+							<unireg:buttonTo id="annuler" name="Annuler" action="/di/editer.do" method="get" params="{id:${command.idDeclaration}}"/>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>
@@ -107,7 +84,7 @@
 
 		<script type="text/javascript">
 
-			var DelaiPM = {
+			var DelaiPP = {
 
 				verifierDelaiDI: function() {
 					var dateExpedition = '${command.dateExpedition}';
@@ -118,40 +95,53 @@
 					return true;
 				},
 
-				ajouterDelai: function(button, type) {
-					if ($('#decision').val() === 'ACCORDE' && !this.verifierDelaiDI()) {
+				modifierDelai: function(button) {
+					if ($('#decision').val() === 'ACCORDE' && !DelaiPP.verifierDelaiDI()) {
 						return false;
 					}
 
-					$('#typeImpression').val(type);
-					$('.error').hide();         // [SIFISC-18869] il faut enlever les éventuels messages d'erreur de l'affichage
 					$(button).closest("form").submit();
 
 					// On desactive les boutons
-					$('#ajouter, #annuler, #envoi-auto, #envoi-manuel').hide();
+					$('#annuler, #ajouter').hide();
 					$('#retour').show();
 
 					return true;
 				},
 
-				toggleDecision: function() {
-					var decisionSelectionnee = $('#decision').val();
-					$('.siDelaiAccorde, #envoi-auto, #envoi-manuel, #ajouter').hide();
-					if (decisionSelectionnee === 'ACCORDE') {
-						$('.siDelaiAccorde').show();
-						$('#envoi-auto, #envoi-manuel').show();
-					}
-					else if (decisionSelectionnee === 'REFUSE') {
-						$('#envoi-auto, #envoi-manuel').show();
+				toggleSubmitName: function () {
+					if ($('#confirmation').attr('checked') && $('#decision').val() !== 'DEMANDE') {
+						$('#ajouter').val('Imprimer');
 					}
 					else {
-						$('#ajouter').show();
+						$('#ajouter').val('Ajouter');
 					}
+				},
+
+				toggleDecision: function() {
+					let isDelaiAccorde = $('#decision').val() === 'ACCORDE';
+
+					// on ne peut pas demander une confirmation écrite que sur un délai accordé
+					let confirmationInput = $('#confirmation');
+					confirmationInput.attr("disabled", !isDelaiAccorde);
+					if (!isDelaiAccorde) {
+						confirmationInput.attr('checked', false)
+					}
+
+					// on peut pas mettre de date de délai accordé sur un délai non-accordé
+					if (isDelaiAccorde) {
+						$('.siDelaiAccorde').show();
+					}
+					else {
+						$('.siDelaiAccorde').hide();
+					}
+
+					DelaiPP.toggleSubmitName();
 				}
 			};
 
 			// première exécution au chargement de la page...
-			DelaiPM.toggleDecision();
+			DelaiPP.toggleDecision();
 
 		</script>
 	</tiles:put>

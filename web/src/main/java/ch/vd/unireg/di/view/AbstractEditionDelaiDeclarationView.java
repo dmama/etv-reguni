@@ -6,7 +6,9 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.Declaration;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
+@SuppressWarnings("unused")
 public abstract class AbstractEditionDelaiDeclarationView {
 
 	// information en lecture-seule
@@ -18,23 +20,25 @@ public abstract class AbstractEditionDelaiDeclarationView {
 
 	// champs du formulaire
 	private Long idDeclaration;
-	protected RegDate dateDemande;
-	protected RegDate delaiAccordeAu;
+	private RegDate dateDemande;
+	private RegDate delaiAccordeAu;
+	private EtatDelaiDocumentFiscal decision;
 
 	public AbstractEditionDelaiDeclarationView() {
 	}
 
-	public AbstractEditionDelaiDeclarationView(@NotNull Declaration declaration, RegDate dateDemande, RegDate delaiAccordeAu) {
+	public AbstractEditionDelaiDeclarationView(@NotNull Declaration declaration, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal decision) {
 		setDiInfo(declaration);
 		this.dateDemande = dateDemande;
 		this.delaiAccordeAu = delaiAccordeAu;
+		this.decision = decision;
 	}
 
 	public AbstractEditionDelaiDeclarationView(@NotNull Declaration declaration) {
 		setDiInfo(declaration);
 	}
 
-	public void setDiInfo(Declaration di) {
+	public void setDiInfo(@NotNull Declaration di) {
 		this.tiersId = di.getTiers().getId();
 		this.declarationPeriode = di.getDateFin().year();
 		this.declarationRange = new DateRangeHelper.Range(di);
@@ -105,5 +109,13 @@ public abstract class AbstractEditionDelaiDeclarationView {
 
 	public void setDelaiAccordeAu(RegDate delaiAccordeAu) {
 		this.delaiAccordeAu = delaiAccordeAu;
+	}
+
+	public EtatDelaiDocumentFiscal getDecision() {
+		return decision;
+	}
+
+	public void setDecision(EtatDelaiDocumentFiscal decision) {
+		this.decision = decision;
 	}
 }

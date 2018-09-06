@@ -1,10 +1,12 @@
 package ch.vd.unireg.di.view;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings("unused")
 public class AjouterDelaiDeclarationPMView extends AbstractEditionDelaiDeclarationPMView {
 
 	private boolean sursis;
@@ -12,7 +14,7 @@ public class AjouterDelaiDeclarationPMView extends AbstractEditionDelaiDeclarati
 	public AjouterDelaiDeclarationPMView() {
 	}
 
-	public AjouterDelaiDeclarationPMView(DeclarationImpotOrdinaire di, RegDate delaiAccordeAu, boolean sursis) {
+	public AjouterDelaiDeclarationPMView(@NotNull DeclarationImpotOrdinairePM di, RegDate delaiAccordeAu, boolean sursis) {
 		super(di, RegDate.get(), delaiAccordeAu, EtatDelaiDocumentFiscal.ACCORDE);     // accordé par défaut
 		this.sursis = sursis;
 	}

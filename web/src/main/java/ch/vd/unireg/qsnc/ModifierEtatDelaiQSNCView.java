@@ -1,10 +1,12 @@
 package ch.vd.unireg.qsnc;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 import ch.vd.unireg.declaration.QuestionnaireSNC;
 
-
+@SuppressWarnings("unused")
 public class ModifierEtatDelaiQSNCView extends AbstractEditionDelaiQSNCView {
 
 	private Long idDelai;
@@ -12,8 +14,7 @@ public class ModifierEtatDelaiQSNCView extends AbstractEditionDelaiQSNCView {
 	public ModifierEtatDelaiQSNCView() {
 	}
 
-
-	public ModifierEtatDelaiQSNCView(DelaiDeclaration delai, RegDate delaiAccordeAu) {
+	public ModifierEtatDelaiQSNCView(@NotNull DelaiDeclaration delai, RegDate delaiAccordeAu) {
 		super((QuestionnaireSNC) delai.getDeclaration(), delai.getDateDemande(), delaiAccordeAu, delai.getEtat());
 		this.idDelai = delai.getId();
 

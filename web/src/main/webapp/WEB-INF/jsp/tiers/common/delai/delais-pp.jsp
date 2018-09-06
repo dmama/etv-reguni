@@ -4,15 +4,18 @@
 <c:set var="depuisTache" value="${param.depuisTache}" />
 <c:if test="${not empty command.delais}">
 
-	<display:table 	name="command.delais" id="delai" pagesize="10" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
+	<display:table name="command.delais" id="delai" pagesize="10" requestURI="editer.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 		<display:column titleKey="label.date.demande">
 			<unireg:regdate regdate="${delai.dateDemande}" />
 		</display:column>
-		<display:column titleKey="label.date.delai.accorde">
-			<unireg:regdate regdate="${delai.delaiAccordeAu}" />
-		</display:column>
 		<display:column titleKey="label.date.traitement">
 			<unireg:regdate regdate="${delai.dateTraitement}" />
+		</display:column>
+		<display:column titleKey="label.decision">
+			<fmt:message key="option.etat.delai.${delai.etat}"/>
+		</display:column>
+		<display:column titleKey="label.date.delai.accorde">
+			<unireg:regdate regdate="${delai.delaiAccordeAu}" />
 		</display:column>
 		<display:column style="action">
 			<c:choose>                                                                                        
@@ -20,9 +23,12 @@
 					<unireg:consulterLog entityNature="DelaiDeclaration" entityId="${delai.id}"/>
 				</c:when>
 				<c:when test="${page == 'edit' && depuisTache == null && command.allowedDelai}">
-					<c:if test="${!delai.annule && delai.lastOfState && delai.etat != 'DEMANDE' && !delai.confirmationEcrite && delai.urlVisualisationExterneDocument == null}">
+					<c:if test="${!delai.annule && delai.lastOfState && delai.etat == 'ACCORDE' && !delai.confirmationEcrite && delai.urlVisualisationExterneDocument == null}">
 						<unireg:linkTo name="" title="Imprimer un document de confirmation" confirm="Voulez-vous vraiment imprimer une confirmation ?"
 						               action="/di/delai/print-confirmation.do" method="post" params="{idDelai:${delai.id}}" link_class="printer"/>
+					</c:if>
+					<c:if test="${delai.etat == 'DEMANDE' && !delai.annule}">
+						<unireg:linkTo name="" title="Accorder/refuser le délai" action="/di/delai/editer-pp.do" params="{id:${delai.id}}" link_class="edit"/>
 					</c:if>
 					<c:if test="${!delai.annule && !delai.first}">
 						<unireg:linkTo name="" title="Annuler le délai"  confirm="Voulez-vous vraiment annuler ce delai ?"

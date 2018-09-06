@@ -1,9 +1,12 @@
 package ch.vd.unireg.di.view;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DelaiDeclaration;
 
+@SuppressWarnings("unused")
 public class ModifierEtatDelaiDeclarationPMView extends AbstractEditionDelaiDeclarationPMView {
 
 	// champs du formulaire
@@ -12,8 +15,8 @@ public class ModifierEtatDelaiDeclarationPMView extends AbstractEditionDelaiDecl
 	public ModifierEtatDelaiDeclarationPMView() {
 	}
 
-	public ModifierEtatDelaiDeclarationPMView(DelaiDeclaration delai, RegDate delaiAccordeAu) {
-		super((DeclarationImpotOrdinaire) delai.getDeclaration(), delai.getDateDemande(), delaiAccordeAu, delai.getEtat());
+	public ModifierEtatDelaiDeclarationPMView(@NotNull DelaiDeclaration delai, RegDate delaiAccordeAu) {
+		super((DeclarationImpotOrdinairePM) delai.getDeclaration(), delai.getDateDemande(), delaiAccordeAu, delai.getEtat());
 		this.idDelai = delai.getId();
 	}
 

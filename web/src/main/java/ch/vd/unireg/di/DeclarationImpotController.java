@@ -70,6 +70,7 @@ import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
+import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.QuittancerDeclarationView;
 import ch.vd.unireg.di.view.TypeDeclaration;
 import ch.vd.unireg.documentfiscal.TypeImpression;
@@ -693,6 +694,9 @@ public class DeclarationImpotController {
 		else {
 			final PeriodeFiscale pf = periodeFiscaleDAO.getPeriodeFiscaleByYear(periode.getPeriodeFiscale());
 			final ParametrePeriodeFiscalePM params = pf.getParametrePeriodeFiscalePM(periode.getTypeContribuable());
+			if (params == null) {
+				throw new IllegalArgumentException();
+			}
 
 			final RegDate dateReferencePourDelai = params.getReferenceDelaiInitial() == ParametrePeriodeFiscalePM.ReferencePourDelai.EMISSION ? RegDate.get() : periode.getDateFin();
 			final RegDate delaiTheorique = dateReferencePourDelai.addMonths(params.getDelaiImprimeMois());
@@ -775,20 +779,11 @@ public class DeclarationImpotController {
 					final EditiqueResultat resultat = manager.envoieImpressionLocaleDI(tiersId, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
 					                                                                   view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
 
-					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-							new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-								@Override
-								public String doJob(EditiqueResultatReroutageInbox resultat) {
-									return "redirect:/di/list.do?tiersId=" + tiersId;
-								}
-							};
+					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox = r -> "redirect:/di/list.do?tiersId=" + tiersId;
 
-					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-						@Override
-						public String doJob(EditiqueResultatErreur resultat) {
-							Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-							return "redirect:/di/list.do?tiersId=" + tiersId;
-						}
+					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = r -> {
+						Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(r)));
+						return "redirect:/di/list.do?tiersId=" + tiersId;
 					};
 
 					return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
@@ -1263,7 +1258,8 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(RegDate.get());
-		model.addAttribute("command", new AjouterDelaiDeclarationPPView(di, delaiAccordeAu));
+		model.addAttribute("command", new AjouterDelaiDeclarationPPView((DeclarationImpotOrdinairePP) di, delaiAccordeAu));
+		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "di/delai/ajouter-pp";
 	}
 
@@ -1273,7 +1269,7 @@ public class DeclarationImpotController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/ajouter-pp.do", method = RequestMethod.POST)
 	public String ajouterDelaiDiPP(@Valid @ModelAttribute("command") final AjouterDelaiDeclarationPPView view,
-	                               BindingResult result, HttpServletResponse response) throws Exception {
+	                               BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
@@ -1283,6 +1279,7 @@ public class DeclarationImpotController {
 
 		if (result.hasErrors()) {
 			fillDiInfo(id, view);
+			model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 			return "di/delai/ajouter-pp";
 		}
 
@@ -1294,11 +1291,104 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(di.getTiers().getId());
 
 		// On ajoute le délai
-		final Long idDelai = manager.saveNouveauDelai(id, view.getDateDemande(), view.getDelaiAccordeAu(), EtatDelaiDocumentFiscal.ACCORDE, false);
-		if (view.isConfirmationEcrite()) {
+		final EtatDelaiDocumentFiscal decision = view.getDecision();
+		final boolean isDelaiAccorde = (decision == EtatDelaiDocumentFiscal.ACCORDE);
+		final RegDate delaiAccordeAu = (isDelaiAccorde ? view.getDelaiAccordeAu() : null);
+		final Long idDelai = manager.saveNouveauDelai(id, view.getDateDemande(), delaiAccordeAu, decision, false);
+
+		if (view.isConfirmationEcrite() && isDelaiAccorde) {
 
 			// On imprime le document
 			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelaiPP(id, idDelai);
+
+			final RedirectEditDI inbox = new RedirectEditDI(id);
+			final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
+			return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, null, erreur);
+		}
+		else {
+			// Pas de duplicata -> on retourne à l'édition de la DI
+			return "redirect:/di/editer.do?id=" + id;
+		}
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/di/delai/editer-pp.do", method = RequestMethod.GET)
+	public String editerEtatDelaiPP(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
+			throw new AccessDeniedException("vous n'avez pas le droit de gestion des demandes de délai sur les DI");
+		}
+
+		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, id);
+		if (delai == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (delai.getEtat() != EtatDelaiDocumentFiscal.DEMANDE) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.finalise", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Declaration declaration = delai.getDeclaration();
+		if (!(declaration instanceof DeclarationImpotOrdinairePP)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
+		final Contribuable ctb = di.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(di.getDelaiAccordeAu());
+		model.addAttribute("command", new ModifierEtatDelaiDeclarationPPView(delai, delaiAccordeAu));
+		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
+		return "di/delai/editer-pp";
+	}
+
+	/**
+	 * Editer un délai sur une DI PP
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/di/delai/editer-pp.do", method = RequestMethod.POST)
+	public String editerEtatDelaiPP(@Valid @ModelAttribute("command") final ModifierEtatDelaiDeclarationPPView view,
+	                                BindingResult result, Model model, HttpServletResponse response) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
+			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une DI");
+		}
+
+		if (result.hasErrors()) {
+			fillDiInfo(view.getIdDeclaration(), view);
+			model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
+			return "di/delai/editer-pp";
+		}
+
+		// Vérifie les paramètres
+		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, view.getIdDelai());
+		if (delai == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (delai.getEtat() != EtatDelaiDocumentFiscal.DEMANDE) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.finalise", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Declaration declaration = delai.getDeclaration();
+		if (!(declaration instanceof DeclarationImpotOrdinairePP)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		final Long id = declaration.getId();
+
+		final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
+		final Contribuable ctb = di.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On modifie le délai
+		final EtatDelaiDocumentFiscal decision = view.getDecision();
+		final boolean isDelaiAccorde = (decision == EtatDelaiDocumentFiscal.ACCORDE);
+		final RegDate delaiAccordeAu = (isDelaiAccorde ? view.getDelaiAccordeAu() : null);
+		manager.saveDelai(view.getIdDelai(), view.getDecision(), delaiAccordeAu);
+
+		if (view.isConfirmationEcrite() && isDelaiAccorde) {
+
+			// On imprime le document
+			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelaiPP(id, view.getIdDelai());
 
 			final RedirectEditDI inbox = new RedirectEditDI(id);
 			final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
@@ -1384,7 +1474,7 @@ public class DeclarationImpotController {
 
 		final boolean sursis = di.getDernierEtatDeclaration() != null && di.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.SOMME;
 		final RegDate delaiAccordeAu = determineDateAccordDelaiPMParDefaut(di.getDelaiAccordeAu());
-		model.addAttribute("command", new AjouterDelaiDeclarationPMView(di, delaiAccordeAu, sursis));
+		model.addAttribute("command", new AjouterDelaiDeclarationPMView((DeclarationImpotOrdinairePM) di, delaiAccordeAu, sursis));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "di/delai/ajouter-pm";
 	}
@@ -1465,7 +1555,7 @@ public class DeclarationImpotController {
 	}
 
 	/**
-	 * Ajoute un délai sur une DI PM
+	 * Editer un délai sur une DI PM
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/delai/editer-pm.do", method = RequestMethod.POST)

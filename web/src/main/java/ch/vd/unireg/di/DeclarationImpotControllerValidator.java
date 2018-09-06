@@ -17,6 +17,7 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.declaration.EtatDeclarationEmise;
 import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.di.manager.DeclarationImpotEditManager;
+import ch.vd.unireg.di.view.AbstractEditionDelaiDeclarationView;
 import ch.vd.unireg.di.view.AjouterDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.AjouterDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.DeclarationImpotListView;
@@ -24,6 +25,7 @@ import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
+import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.QuittancerDeclarationView;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.Contribuable;
@@ -69,7 +71,8 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 	public boolean supports(Class<?> clazz) {
 		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
 				|| DeclarationImpotListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz)
-				|| AjouterDelaiDeclarationPPView.class.equals(clazz) || QuittancerDeclarationView.class.equals(clazz)
+				|| QuittancerDeclarationView.class.equals(clazz)
+				|| AjouterDelaiDeclarationPPView.class.equals(clazz) || ModifierEtatDelaiDeclarationPPView.class.equals(clazz)
 				|| AjouterDelaiDeclarationPMView.class.equals(clazz) || ModifierEtatDelaiDeclarationPMView.class.equals(clazz);
 	}
 
@@ -87,6 +90,9 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		}
 		else if (target instanceof AjouterDelaiDeclarationPPView) {
 			valideAjoutDelaiDeclarationPP((AjouterDelaiDeclarationPPView) target, errors);
+		}
+		else if (target instanceof ModifierEtatDelaiDeclarationPPView) {
+			valideModifierEtatDelaiDeclarationPP((ModifierEtatDelaiDeclarationPPView) target, errors);
 		}
 		else if (target instanceof AjouterDelaiDeclarationPMView) {
 			valideAjoutDelaiDeclarationPM((AjouterDelaiDeclarationPMView) target, errors);
@@ -236,46 +242,22 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 	}
 
 	private void valideAjoutDelaiDeclarationPP(AjouterDelaiDeclarationPPView view, Errors errors) {
-
-		if (view.getIdDeclaration() == null) {
-			errors.reject("error.di.inexistante");
-			return;
-		}
-
-		final DeclarationImpotOrdinaire di = diDAO.get(view.getIdDeclaration());
-		if (di == null) {
-			errors.reject("error.di.inexistante");
-			return;
-		}
-
-		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
-		if (!errors.hasFieldErrors("delaiAccordeAu")) {
-			if (view.getDelaiAccordeAu() == null) {
-				ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
-			}
-			else {
-				final RegDate ancienDelaiAccorde = di.getDelaiAccordeAu();
-				if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
-					errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
-				}
-			}
-		}
-
-		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
-		if (!errors.hasFieldErrors("dateDemande")) {
-			if (view.getDateDemande() == null) {
-				ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
-			}
-			else if (view.getDateDemande().isAfter(RegDate.get())) {
-				if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
-					errors.rejectValue("dateDemande", "error.date.demande.future");
-				}
-			}
-		}
+		validateAjoutDelaiDeclaration(view, errors);
 	}
 
 	private void valideAjoutDelaiDeclarationPM(AjouterDelaiDeclarationPMView view, Errors errors) {
 
+		validateAjoutDelaiDeclaration(view, errors);
+
+		if (view.getDecision() != EtatDelaiDocumentFiscal.DEMANDE) {
+			if (view.getTypeImpression() == null) {
+				errors.rejectValue("decision", "error.type.impression.obligatoire");
+			}
+		}
+	}
+
+	private void validateAjoutDelaiDeclaration(@NotNull AbstractEditionDelaiDeclarationView view, Errors errors) {
+
 		if (view.getIdDeclaration() == null) {
 			errors.reject("error.di.inexistante");
 			return;
@@ -287,7 +269,12 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 			return;
 		}
 
-		if (view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE) {
+		final EtatDelaiDocumentFiscal decision = view.getDecision();
+		if (decision == null) {
+			errors.rejectValue("decision", "error.decision.obligatoire");
+		}
+
+		if (decision == EtatDelaiDocumentFiscal.ACCORDE) {
 			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
 			if (!errors.hasFieldErrors("delaiAccordeAu")) {
 				if (view.getDelaiAccordeAu() == null) {
@@ -299,15 +286,6 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 						errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
 					}
 				}
-			}
-		}
-		else if (view.getDecision() == null) {
-			errors.rejectValue("decision", "error.decision.obligatoire");
-		}
-
-		if (view.getDecision() != EtatDelaiDocumentFiscal.DEMANDE) {
-			if (view.getTypeImpression() == null) {
-				errors.rejectValue("decision", "error.type.impression.obligatoire");
 			}
 		}
 
@@ -324,17 +302,35 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		}
 	}
 
+	private void valideModifierEtatDelaiDeclarationPP(ModifierEtatDelaiDeclarationPPView view, Errors errors) {
+		validateModifierEtatDelaiDeclaration(view, view.getIdDelai(), errors);
+	}
+
 	private void valideModifierEtatDelaiDeclarationPM(ModifierEtatDelaiDeclarationPMView view, Errors errors) {
 
-		if (view.getIdDelai() == null) {
+		validateModifierEtatDelaiDeclaration(view, view.getIdDelai(), errors);
+
+		if (view.getDecision() != EtatDelaiDocumentFiscal.DEMANDE) {
+			if (view.getTypeImpression() == null) {
+				errors.rejectValue("decision", "error.type.impression.obligatoire");
+			}
+		}
+	}
+
+	private void validateModifierEtatDelaiDeclaration(AbstractEditionDelaiDeclarationView view, Long idDelai, Errors errors) {
+		if (idDelai == null) {
 			errors.reject("error.delai.inexistant");
 			return;
 		}
 
-		final DelaiDeclaration delai = getDelaiDeclarationById(view.getIdDelai());
+		final DelaiDeclaration delai = getDelaiDeclarationById(idDelai);
 		if (delai == null) {
 			errors.reject("error.delai.inexistant");
 			return;
+		}
+
+		if (view.getDecision() == null) {
+			errors.rejectValue("decision", "error.decision.obligatoire");
 		}
 
 		if (view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE) {
@@ -349,15 +345,6 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 						errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
 					}
 				}
-			}
-		}
-		else if (view.getDecision() == null) {
-			errors.rejectValue("decision", "error.decision.obligatoire");
-		}
-
-		if (view.getDecision() != EtatDelaiDocumentFiscal.DEMANDE) {
-			if (view.getTypeImpression() == null) {
-				errors.rejectValue("decision", "error.type.impression.obligatoire");
 			}
 		}
 

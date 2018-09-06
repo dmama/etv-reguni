@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="command" type="ch.vd.unireg.di.view.AjouterDelaiDeclarationPPView"--%>
+<%--@elvariable id="decisionsDelai" type="java.util.Map"--%>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head"/>
 	<tiles:put name="title">
@@ -24,27 +26,35 @@
 				<table border="0">
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>">
-						<td/>
-						<td/>
-						<td><fmt:message key="label.date.ancien.delai"/>&nbsp;:</td>
-						<td><unireg:date date="${command.ancienDelaiAccorde}"/></td>
-					</tr>
-					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.date.demande"/>&nbsp;:</td>
-						<td>
+						<td style="width: 25%;"><fmt:message key="label.date.demande"/>&nbsp;:</td>
+						<td style="width: 25%;">
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDemande"/>
 								<jsp:param name="id" value="dateDemande"/>
 								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
 						</td>
-						<td><fmt:message key="label.date.delai.accorde"/>&nbsp;:</td>
+						<td style="width: 25%;"><fmt:message key="label.date.ancien.delai"/>&nbsp;:</td>
+						<td style="width: 25%;"><unireg:date date="${command.ancienDelaiAccorde}"/></td>
+					</tr>
+					<tr class="<unireg:nextRowClass/>">
+						<td><fmt:message key="label.decision"/>&nbsp;:</td>
 						<td>
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="delaiAccordeAu"/>
-								<jsp:param name="id" value="delaiAccordeAu"/>
-								<jsp:param name="mandatory" value="true" />
-							</jsp:include>
+							<form:select id="decision" path="decision" onchange="toggleDecision();">
+								<form:options items="${decisionsDelai}"/>
+							</form:select>
+						</td>
+						<td>
+							<div class="siDelaiAccorde"><fmt:message key="label.date.delai.accorde"/>&nbsp;:</div>
+						</td>
+						<td>
+							<div class="siDelaiAccorde">
+								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+									<jsp:param name="path" value="delaiAccordeAu"/>
+									<jsp:param name="id" value="delaiAccordeAu"/>
+									<jsp:param name="mandatory" value="true" />
+								</jsp:include>
+							</div>
 						</td>
 					</tr>
 					<unireg:nextRowClass reset="0"/>
@@ -103,7 +113,7 @@
 			}
 
 			function toggleSubmitName() {
-				if ($('#confirmation').attr('checked')) {
+				if ($('#confirmation').attr('checked') && $('#decision').val() !== 'DEMANDE') {
 					$('#ajouter').val('Imprimer');
 				}
 				else {
@@ -111,8 +121,29 @@
 				}
 			}
 
+			function toggleDecision() {
+				let isDelaiAccorde = $('#decision').val() === 'ACCORDE';
+
+				// on ne peut pas demander une confirmation écrite que sur un délai accordé
+				let confirmationInput = $('#confirmation');
+				confirmationInput.attr("disabled", !isDelaiAccorde);
+				if (!isDelaiAccorde) {
+					confirmationInput.attr('checked', false)
+				}
+
+				// on peut pas mettre de date de délai accordé sur un délai non-accordé
+				if (isDelaiAccorde) {
+					$('.siDelaiAccorde').show();
+				}
+				else {
+					$('.siDelaiAccorde').hide();
+				}
+
+				toggleSubmitName();
+			}
+
 			// première exécution au chargement de la page...
-			toggleSubmitName();
+			toggleDecision();
 
 		</script>
 	</tiles:put>

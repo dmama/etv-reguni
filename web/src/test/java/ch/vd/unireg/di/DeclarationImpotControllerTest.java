@@ -207,6 +207,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.setMethod("POST");
 		request.addParameter("idDeclaration", diId.toString());
 		request.addParameter("dateDemande", RegDateHelper.dateToDisplayString(RegDate.get()));
+		request.addParameter("decision", EtatDelaiDocumentFiscal.ACCORDE.name());
 		request.addParameter("delaiAccordeAu", RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)));
 		request.setRequestURI("/di/delai/ajouter-pp.do");
 
