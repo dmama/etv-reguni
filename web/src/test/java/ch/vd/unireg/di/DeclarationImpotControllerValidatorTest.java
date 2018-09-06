@@ -12,16 +12,16 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.common.WebTest;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.unireg.declaration.ModeleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscale;
 import ch.vd.unireg.di.manager.DeclarationImpotEditManager;
-import ch.vd.unireg.di.view.AjouterEtatDeclarationView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
+import ch.vd.unireg.di.view.QuittancerDeclarationView;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.tiers.Entreprise;
 import ch.vd.unireg.tiers.PersonnePhysique;
 import ch.vd.unireg.type.DayMonth;
@@ -114,7 +114,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		AjouterEtatDeclarationView view = new AjouterEtatDeclarationView();
+		QuittancerDeclarationView view = new QuittancerDeclarationView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 1, 20));
 		view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
@@ -171,7 +171,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		AjouterEtatDeclarationView view = new AjouterEtatDeclarationView();
+		QuittancerDeclarationView view = new QuittancerDeclarationView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 1, 20));
 		view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
@@ -219,7 +219,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		AjouterEtatDeclarationView view = new AjouterEtatDeclarationView();
+		QuittancerDeclarationView view = new QuittancerDeclarationView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 4, 24));
 		view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
@@ -276,7 +276,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		});
 
 		//On tente de la quittancer au 20.06.2011 -> Blocage et message d'erreur
-		AjouterEtatDeclarationView view = new AjouterEtatDeclarationView();
+		QuittancerDeclarationView view = new QuittancerDeclarationView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 4, 26));
 		view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);

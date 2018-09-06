@@ -16,7 +16,7 @@ import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.type.TypeDocument;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
-public class AjouterEtatDeclarationView {
+public class QuittancerDeclarationView {
 
 	// Données en lecture-seule du formulaire
 	private Long tiersId;
@@ -31,18 +31,18 @@ public class AjouterEtatDeclarationView {
 	private TypeDocument typeDocument;
 	private RegDate dateRetour;
 
-	public AjouterEtatDeclarationView() {
+	public QuittancerDeclarationView() {
 	}
 
-	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePP di, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+	public QuittancerDeclarationView(DeclarationImpotOrdinairePP di, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		this(di, true, infraService, messageHelper);
 	}
 
-	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePM di, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+	public QuittancerDeclarationView(DeclarationImpotOrdinairePM di, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		this(di, false, infraService, messageHelper);
 	}
 
-	private AjouterEtatDeclarationView(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
+	private QuittancerDeclarationView(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, ServiceInfrastructureService infraService, MessageHelper messageHelper) {
 		initReadOnlyValues(di, typeDocumentEditable, infraService, messageHelper);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();

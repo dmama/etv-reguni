@@ -19,12 +19,12 @@ import ch.vd.unireg.declaration.EtatDeclarationSommee;
 import ch.vd.unireg.di.manager.DeclarationImpotEditManager;
 import ch.vd.unireg.di.view.AjouterDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.AjouterDelaiDeclarationPPView;
-import ch.vd.unireg.di.view.AjouterEtatDeclarationView;
 import ch.vd.unireg.di.view.DeclarationImpotListView;
 import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
+import ch.vd.unireg.di.view.QuittancerDeclarationView;
 import ch.vd.unireg.metier.bouclement.ExerciceCommercial;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -69,7 +69,7 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 	public boolean supports(Class<?> clazz) {
 		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
 				|| DeclarationImpotListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz)
-				|| AjouterDelaiDeclarationPPView.class.equals(clazz) || AjouterEtatDeclarationView.class.equals(clazz)
+				|| AjouterDelaiDeclarationPPView.class.equals(clazz) || QuittancerDeclarationView.class.equals(clazz)
 				|| AjouterDelaiDeclarationPMView.class.equals(clazz) || ModifierEtatDelaiDeclarationPMView.class.equals(clazz);
 	}
 
@@ -79,8 +79,8 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		if (target instanceof ImprimerNouvelleDeclarationImpotView) {
 			validateImprimerNouvelleDI((ImprimerNouvelleDeclarationImpotView) target, errors);
 		}
-		else if (target instanceof AjouterEtatDeclarationView) {
-			validateAjouterEtatDI((AjouterEtatDeclarationView)target, errors);
+		else if (target instanceof QuittancerDeclarationView) {
+			validateQuittancerDI((QuittancerDeclarationView)target, errors);
 		}
 		else if (target instanceof ImprimerDuplicataDeclarationImpotView) {
 			valideImprimerDuplicataDI((ImprimerDuplicataDeclarationImpotView) target, errors);
@@ -171,7 +171,7 @@ public class DeclarationImpotControllerValidator extends AbstractDelaiController
 		}
 	}
 
-	private void validateAjouterEtatDI(AjouterEtatDeclarationView view, Errors errors) {
+	private void validateQuittancerDI(QuittancerDeclarationView view, Errors errors) {
 
 		// Vérifie que les paramètres reçus sont valides
 

@@ -63,7 +63,6 @@ import ch.vd.unireg.di.manager.DeclarationImpotEditManager;
 import ch.vd.unireg.di.view.AbstractEditionDelaiDeclarationView;
 import ch.vd.unireg.di.view.AjouterDelaiDeclarationPMView;
 import ch.vd.unireg.di.view.AjouterDelaiDeclarationPPView;
-import ch.vd.unireg.di.view.AjouterEtatDeclarationView;
 import ch.vd.unireg.di.view.ChoixDeclarationImpotView;
 import ch.vd.unireg.di.view.DeclarationImpotListView;
 import ch.vd.unireg.di.view.DeclarationImpotView;
@@ -71,6 +70,7 @@ import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.unireg.di.view.ModifierEtatDelaiDeclarationPMView;
+import ch.vd.unireg.di.view.QuittancerDeclarationView;
 import ch.vd.unireg.di.view.TypeDeclaration;
 import ch.vd.unireg.documentfiscal.TypeImpression;
 import ch.vd.unireg.editique.EditiqueException;
@@ -882,7 +882,7 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/di/etat/ajouter-quittance.do", method = RequestMethod.GET)
-	public String ajouterEtat(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+	public String quittancerDeclaration(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
@@ -897,12 +897,12 @@ public class DeclarationImpotController {
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final AjouterEtatDeclarationView view;
+		final QuittancerDeclarationView view;
 		if (di instanceof DeclarationImpotOrdinairePP) {
-			view = new AjouterEtatDeclarationView((DeclarationImpotOrdinairePP) di, infraService, messageHelper);
+			view = new QuittancerDeclarationView((DeclarationImpotOrdinairePP) di, infraService, messageHelper);
 		}
 		else if (di instanceof DeclarationImpotOrdinairePM) {
-			view = new AjouterEtatDeclarationView((DeclarationImpotOrdinairePM) di, infraService, messageHelper);
+			view = new QuittancerDeclarationView((DeclarationImpotOrdinairePM) di, infraService, messageHelper);
 		}
 		else {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
@@ -919,7 +919,7 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/etat/ajouter-quittance.do", method = RequestMethod.POST)
-	public String ajouterEtat(@Valid @ModelAttribute("command") final AjouterEtatDeclarationView view, BindingResult result, Model model) throws AccessDeniedException {
+	public String quittancerDeclaration(@Valid @ModelAttribute("command") final QuittancerDeclarationView view, BindingResult result, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
