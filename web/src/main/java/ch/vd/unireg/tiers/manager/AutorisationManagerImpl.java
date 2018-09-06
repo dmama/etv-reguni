@@ -178,6 +178,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			return isEditAllowedDPI();
+		}else if(tiers instanceof AutreCommunaute){
+			//SIFISC-29391, Edition des autres Communautés sans plus de vérification pour être conforme à la 18R2.
+			return true;
 		}
 		else {
 			return false;
