@@ -51,19 +51,18 @@ import ch.vd.unireg.utils.WebContextUtils;
  * Claase offrant les services au controller RapportController
  *
  * @author xcifde
- *
  */
 public class RapportEditManagerImpl extends TiersManager implements RapportEditManager {
 
 	private EvenementFiscalService evenementFiscalService;
-	private  LienAssociesSNCService lienAssociesSNCService;
+	private LienAssociesSNCService lienAssociesSNCService;
 
 	/**
 	 * Alimente la vue RapportView
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public RapportView get(Long numeroTiers, Long numeroTiersLie) throws AdressesResolutionException{
+	public RapportView get(Long numeroTiers, Long numeroTiersLie) throws AdressesResolutionException {
 		//création d'un rapport autre que travail
 		Tiers tiers = tiersService.getTiers(numeroTiers);
 
@@ -71,10 +70,10 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			throw new TiersNotFoundException(numeroTiers);
 		}
 
-		RapportView rapportView =  new RapportView();
+		RapportView rapportView = new RapportView();
 		//vérification des droits
 		rapportView.setAllowed(checkDroitEdit(tiers));
-		if(rapportView.isAllowed()){
+		if (rapportView.isAllowed()) {
 			//Tiers
 			TiersGeneralView tiersView = tiersGeneralManager.getTiers(tiers, true);
 			rapportView.setTiers(tiersView);
@@ -201,6 +200,11 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			}
 			allowed = checkDroitEdit(tiersCourant); // [UNIREG-2814]
 		}
+		else if (rapportEntreTiers instanceof LienAssociesEtSNC) {
+			if (!SecurityHelper.isGranted(securityProvider, Role.GEST_SNC)) {
+				allowed = false;
+			}
+		}
 		else {//rapport de non travail
 			final Tiers tiersLie = tiersService.getTiers(numeroTiersLie); // l'autre tiers du rapport (pas celui par lequel on est arrivé sur le rapport)
 			if (tiersLie == null) {
@@ -223,8 +227,8 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 
 		final TypeRapportEntreTiers type = rapportView.getTypeRapportEntreTiers().toCore();
-		 Tiers sujet; // sujet : pupille, curatelle, personne sous conseil légal ou substitué pour l'assujettissement
-		 Tiers objet; // objet : tuteur, curateur, conseil légal ou substituant pour l'assujettissement
+		Tiers sujet; // sujet : pupille, curatelle, personne sous conseil légal ou substitué pour l'assujettissement
+		Tiers objet; // objet : tuteur, curateur, conseil légal ou substituant pour l'assujettissement
 
 		// récupère les données
 		final SensRapportEntreTiers sens = rapportView.getSensRapportEntreTiers();
@@ -334,7 +338,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	}
 
 	private CollectiviteAdministrative findAutorite(Long autoriteTutelaireId) {
-		if(autoriteTutelaireId !=null){
+		if (autoriteTutelaireId != null) {
 			return tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(autoriteTutelaireId.intValue());
 		}
 		return null;
@@ -398,7 +402,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
-		if ( numero == null) {
+		if (numero == null) {
 			return null;
 		}
 
@@ -431,7 +435,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	@Transactional(readOnly = true)
 	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
-		if ( numero == null) {
+		if (numero == null) {
 			return null;
 		}
 
@@ -443,7 +447,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		tiersEditView.setTiers(tiers);
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 		tiersEditView.setTiersGeneral(tiersGeneralView);
-		if (tiers instanceof DebiteurPrestationImposable ) {
+		if (tiers instanceof DebiteurPrestationImposable) {
 			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 			tiersEditView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination, rapportsPrestationHisto));
 			setContribuablesAssocies(tiersEditView, dpi, false);
