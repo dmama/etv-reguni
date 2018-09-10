@@ -62,8 +62,8 @@ public class TaxOfficesRequestEsbHandlerV1ItTest extends InfraRequestEsbHandlerI
 		final TaxOffice region = taxOffices.getRegion();
 		Assert.assertNotNull(district);
 		Assert.assertNotNull(region);
-		Assert.assertEquals(12, district.getAdmCollNo());       // OID Nyon
-		Assert.assertEquals(12, region.getAdmCollNo());         // OID Nyon
+		Assert.assertEquals(10, district.getAdmCollNo());       // OID Nyon
+		Assert.assertEquals(10, region.getAdmCollNo());         // OID Nyon
 	}
 
 	@Test
