@@ -500,7 +500,7 @@ public class RapportController {
 	 */
 	@RequestMapping(value = "/cancel.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
-	public String cancel(@RequestParam("id") long rapportId) throws AdressesResolutionException {
+	public String cancel(@RequestParam("id") long rapportId, @RequestParam("sens") SensRapportEntreTiers sens) throws AdressesResolutionException {
 
 		final RapportEntreTiers rapport = rapportEntreTiersDAO.get(rapportId);
 		if (rapport == null) {
@@ -522,11 +522,9 @@ public class RapportController {
 		// checks de sécurité
 		controllerUtils.checkAccesDossierEnEcriture(sujetId);
 		controllerUtils.checkAccesDossierEnEcriture(objetId);
-		if (!autorisationManager.isEditAllowed(sujet)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur le tiers n°" + sujetId);
-		}
-		if (!autorisationManager.isEditAllowed(objet)) {
-			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur le tiers n°" + objetId);
+
+		if (!rapportEditManager.isEditionAllowed(rapportId, sens)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition du rapport-entre-tiers entre le tiers n°" + objetId + " et le tiers n°" + sujetId);
 		}
 
 		// annulation du rapport

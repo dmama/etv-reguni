@@ -106,7 +106,7 @@
 						<unireg:raccourciModifier
 								link="../rapport/edit.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}"
 								tooltip="Edition de rapport"/>
-						<unireg:linkTo name="" action="/rapport/cancel.do" method="POST" params="{id:${dossierApparente.id}}" link_class="delete"
+						<unireg:linkTo name="" action="/rapport/cancel.do" method="POST" params="{id:${dossierApparente.id}, sens:'${dossierApparente.sensRapportEntreTiers}'}" link_class="delete"
 						               title="Annulation du rapport-entre-tiers" confirm="Voulez-vous vraiment annuler ce rapport-entre-tiers ?"/>
 					</c:if>
 					<c:if test="${dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE' && autorisations.rapportsDeTravail && dossierApparente.id != null}">
