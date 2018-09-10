@@ -158,14 +158,14 @@ public class RapportController {
 	}
 
 	private Set<RapportEntreTiersKey> getAllowedTypes() {
-		 Set<RapportEntreTiersKey> types;
+		Set<RapportEntreTiersKey> types;
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
 			types = RapportHelper.ALLOWED_VISU_LIMITEE;
 		}
 		else {
 			types = RapportHelper.ALLOWED_VISU_COMPLETE;
-			if(!SecurityHelper.isGranted(securityProvider, Role.GEST_SNC)){
-				types=types.stream().filter(type->type.getType()!=TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC).collect(Collectors.toSet());
+			if (!SecurityHelper.isGranted(securityProvider, Role.GEST_SNC)) {
+				types = types.stream().filter(type -> type.getType() != TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC).collect(Collectors.toSet());
 			}
 		}
 		return types;
@@ -334,7 +334,7 @@ public class RapportController {
 	 * Affichage de l'écran d'édition d'un rapport-entre-tiers existant.
 	 *
 	 * @param idRapport l'id du rapport à éditer
-	 * @param sens le sens du rapport qui permet d'ordonner le sujet et l'objet.
+	 * @param sens      le sens du rapport qui permet d'ordonner le sujet et l'objet.
 	 */
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -549,8 +549,7 @@ public class RapportController {
 	 * @param page      le numéro de page à retourner
 	 * @param pageSize  la taille des pages
 	 * @return les informations nécessaire à l'affichage d'une page de rapports du contribuable.
-	 * @throws ch.vd.unireg.security.AccessDeniedException
-	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
+	 * @throws ch.vd.unireg.security.AccessDeniedException si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/rapports.do", method = RequestMethod.GET)
@@ -597,10 +596,9 @@ public class RapportController {
 	/**
 	 * Retourne les parentés d'un contribuable sous format JSON.
 	 *
-	 * @param tiersId   le numéro de tiers
+	 * @param tiersId le numéro de tiers
 	 * @return les informations nécessaire à l'affichage d'une page de parentés du contribuable.
-	 * @throws ch.vd.unireg.security.AccessDeniedException
-	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
+	 * @throws ch.vd.unireg.security.AccessDeniedException si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/parentes.do", method = RequestMethod.GET)
@@ -630,8 +628,7 @@ public class RapportController {
 	 *
 	 * @param tiersId le numéro de tiers
 	 * @return une liste de liens vers les débiteurs associés sous format JSON
-	 * @throws ch.vd.unireg.security.AccessDeniedException
-	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
+	 * @throws ch.vd.unireg.security.AccessDeniedException si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/debiteurs.do", method = RequestMethod.GET)
@@ -657,18 +654,17 @@ public class RapportController {
 	 *
 	 * @param tiersId le numéro de tiers
 	 * @return une liste de liens vers les établissements sous format JSON
-	 * @throws ch.vd.unireg.security.AccessDeniedException
-	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
+	 * @throws ch.vd.unireg.security.AccessDeniedException si l'utilisateur ne possède les droits de visualisation suffisants.
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/etablissements.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public RapportsPage etablissements(@RequestParam("tiers") long tiersId,
-	                             @RequestParam(value = "showHisto", required = false, defaultValue = "false") boolean showHisto,
-	                             @RequestParam(value = "sortField", required = false) String sortField,
-	                             @RequestParam(value = "sortOrder", required = false) String sortOrder,
-	                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-	                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
+	                                   @RequestParam(value = "showHisto", required = false, defaultValue = "false") boolean showHisto,
+	                                   @RequestParam(value = "sortField", required = false) String sortField,
+	                                   @RequestParam(value = "sortOrder", required = false) String sortOrder,
+	                                   @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+	                                   @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les établissements d'un tiers");
@@ -728,7 +724,7 @@ public class RapportController {
 		// On ne peuple dans la vue que les rapports concernés par la page courante
 		List<RapportEntreTiers> currentRapports = new ArrayList<>(rapports);
 		if (currentRapports.size() > pagination.getSqlMaxResults()) {
-			int toIndex = (pagination.getSqlMaxResults()*pagination.getNumeroPage() > rapports.size()) ? rapports.size() : pagination.getSqlMaxResults()*pagination.getNumeroPage();
+			int toIndex = (pagination.getSqlMaxResults() * pagination.getNumeroPage() > rapports.size()) ? rapports.size() : pagination.getSqlMaxResults() * pagination.getNumeroPage();
 			currentRapports = rapports.subList(pagination.getSqlFirstResult(), toIndex);
 		}
 
