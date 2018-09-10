@@ -27,6 +27,7 @@ import ch.vd.unireg.common.URLHelper;
 import ch.vd.unireg.common.pagination.WebParamPagination;
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.TooManyResultsIndexerException;
+import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rapport.manager.RapportEditManager;
 import ch.vd.unireg.rt.manager.RapportPrestationEditManager;
 import ch.vd.unireg.rt.view.DebiteurListView;
@@ -78,6 +79,7 @@ public class RapportPrestationController {
 
 		final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
 		final TiersEditView view = rapportEditManager.getRapportsPrestationView(id, pagination, true);
+		view.getContribuablesAssocies().forEach(rapport -> rapport.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET));
 		final int rapportCount = rapportPrestationEditManager.countRapportsPrestationImposable(id, true);
 		model.addAttribute("resultSize", rapportCount);
 		model.addAttribute("command", view);
