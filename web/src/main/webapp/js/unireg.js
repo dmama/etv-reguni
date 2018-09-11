@@ -2967,7 +2967,7 @@ var Decl = {
 		if (delais) {
 			html = '<fieldset><legend><span>Délais</span></legend>';
 			html +=
-				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Délai accordé</th><th>Confirmation écrite</th><th>Date traitement</th><th></th></tr></thead><tbody>';
+				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Date traitement</th><th>Décision</th><th>Délai accordé</th><th>Confirmation écrite</th><th></th></tr></thead><tbody>';
 			for (var i in delais) {
 				//noinspection JSUnfilteredForInLoop
 				var d = delais[i];
@@ -2976,25 +2976,30 @@ var Decl = {
 				/** @namespace d.confirmationEcrite */
 				/** @namespace d.urlVisualisationExterneDocument */
 				/** @namespace d.dateTraitement */
-				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
-				html += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
+				/** @namespace d.etat */
+				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
+				html += '<td>' + RegDate.format(d.dateDemande) + '</td>';
+				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
+				html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';
+				html += '<td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
 				html += '<td>';
 
-				if (d.urlVisualisationExterneDocument != null) {
-					html += '<input type="checkbox" checked="checked" disabled="disabled">';
-					html += '<a href="#" class="pdf" title="Visualisation du courrier émis" onclick="VisuExterneDoc.openWindow(\x27' + d.urlVisualisationExterneDocument + '\x27);">&nbsp;</a>';
-				}
-				else if (d.confirmationEcrite) {
-					html += '<input type="checkbox" checked="checked" disabled="disabled">';
-					html += '<a href="' + App.curl('/declaration/copie-conforme-delai.do?idDelai=') + d.id + '&url_memorize=false" class="pdf" id="print-delai-' + d.id +
-						'" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
-					html += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
-				}
-				else {
-					html += '<input type="checkbox" disabled="disabled">';
+				if (d.etat !== 'DEMANDE') {
+					if (d.urlVisualisationExterneDocument != null) {
+						html += '<input type="checkbox" checked="checked" disabled="disabled">';
+						html += '<a href="#" class="pdf" title="Visualisation du courrier émis" onclick="VisuExterneDoc.openWindow(\x27' + d.urlVisualisationExterneDocument + '\x27);">&nbsp;</a>';
+					}
+					else if (d.confirmationEcrite) {
+						html += '<input type="checkbox" checked="checked" disabled="disabled">';
+						html += '<a href="' + App.curl('/declaration/copie-conforme-delai.do?idDelai=') + d.id + '&url_memorize=false" class="pdf" id="print-delai-' + d.id +
+							'" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
+						html += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
+					}
+					else {
+						html += '<input type="checkbox" disabled="disabled">';
+					}
 				}
 				html += '</td>';
-				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
 				html += '<td>' + Link.consulterLog('DelaiDocumentFiscal', d.id) + '</td></tr>';
 			}
 			html += '</tbody></table></fieldset>\n';
@@ -3010,7 +3015,7 @@ var Decl = {
 			if (avecDecision) {
 				html += '<th>Décision</th>';
 			}
-			html += '<th>Confirmation écrite</th><th>Délai accordé</th><th></th></tr></thead><tbody>';
+			html += '<th>Délai accordé</th><th>Confirmation écrite</th><th></th></tr></thead><tbody>';
 			for (var i in delais) {
 				//noinspection JSUnfilteredForInLoop
 				var d = delais[i];
@@ -3020,14 +3025,23 @@ var Decl = {
 				/** @namespace d.urlVisualisationExterneDocument */
 				/** @namespace d.dateTraitement */
 				/** @namespace d.etat */
-				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
+				/** @namespace d.sursis */
+				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(d.dateDemande) + '</td>';
 				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
 				if (avecDecision) {
 					html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';
 				}
+
+				if (d.sursis) {
+					html += '<td>' + RegDate.format(d.delaiAccordeAu) + ' (Sursis)</td>';
+				}
+				else {
+					html += '<td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
+				}
+
 				html += '<td>';
-				if (d.etat != 'DEMANDE') {
+				if (d.etat !== 'DEMANDE') {
 					if (d.urlVisualisationExterneDocument != null) {
 						html += '<a href="#" class="pdf" title="Visualisation du courrier émis" onclick="VisuExterneDoc.openWindow(\x27' + d.urlVisualisationExterneDocument + '\x27);">&nbsp;</a>';
 					}
@@ -3038,12 +3052,6 @@ var Decl = {
 					}
 				}
 				html += '</td>';
-				if (d.sursis) {
-					html += '<td>' + RegDate.format(d.delaiAccordeAu) + ' (Sursis)</td>';
-				}
-				else {
-					html += '<td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
-				}
 				html += '<td>' + Link.consulterLog('DelaiDocumentFiscal', d.id) + '</td></tr>';
 			}
 			html += '</tbody></table></fieldset>\n';
