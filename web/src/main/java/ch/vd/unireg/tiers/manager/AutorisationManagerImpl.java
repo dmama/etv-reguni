@@ -20,6 +20,8 @@ import ch.vd.unireg.interfaces.service.ServiceCivilService;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.mandataire.AccesMandatairesView;
 import ch.vd.unireg.mandataire.ConfigurationMandataire;
+import ch.vd.unireg.metier.assujettissement.Assujettissement;
+import ch.vd.unireg.metier.assujettissement.TypeAssujettissement;
 import ch.vd.unireg.security.Role;
 import ch.vd.unireg.security.SecurityHelper;
 import ch.vd.unireg.security.SecurityProviderInterface;
@@ -178,7 +180,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			return isEditAllowedDPI();
-		}else if(tiers instanceof AutreCommunaute){
+		}
+		else if (tiers instanceof AutreCommunaute) {
 			//SIFISC-29391, Edition des autres Communautés sans plus de vérification pour être conforme à la 18R2.
 			return true;
 		}
@@ -590,6 +593,17 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {
 				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
+			}
+			//SIFISC-13335
+			final Assujettissement assujettissement = tiersService.getAssujettissement((PersonnePhysique) tiers, null);
+			final boolean isNonAssujettit = assujettissement == null || TypeAssujettissement.NON_ASSUJETTI.equals(assujettissement.getType());
+			final boolean isHabitant = ((PersonnePhysique) tiers).isHabitantVD();
+			boolean allowed = (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_DEBPUR, visa, oid) && !isHabitant) ||
+					(SecurityHelper.isGranted(securityProvider, Role.MODIF_HAB_DEBPUR, visa, oid) && isHabitant);
+			if (isNonAssujettit && allowed) {
+				map.put(MODIF_CIVIL, Boolean.TRUE);
+				map.put(MODIF_FISCAL, Boolean.TRUE);
+				map.put(FISCAL_SIT_FAMILLLE, Boolean.TRUE);
 			}
 
 			map.put(MODIF_QSNC, Boolean.FALSE);
