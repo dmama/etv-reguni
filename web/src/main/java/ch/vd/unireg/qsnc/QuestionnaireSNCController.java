@@ -572,7 +572,7 @@ public class QuestionnaireSNCController {
 			return "redirect:/qsnc/editer.do?id=" + id;
 		}
 
-		final RegDate delaiAccorde = delaisService.getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(questionnaire.getDelaiAccordeAu());
+		final RegDate delaiAccorde = delaisService.getDateFinDelaiDemandeDelai(questionnaire.getDelaiAccordeAu());
 		model.addAttribute(AJOUTER_DELAI, new QuestionnaireSNCAjouterDelaiView(questionnaire, delaiAccorde, EtatDelaiDocumentFiscal.ACCORDE));
 		model.addAttribute(DECISIONS_DELAI, tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "qsnc/delai/ajouter-snc";
@@ -685,7 +685,7 @@ public class QuestionnaireSNCController {
 		final Contribuable ctb = qsnc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(qsnc.getDelaiAccordeAu());
+		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiDemandeDelai(qsnc.getDelaiAccordeAu());
 		model.addAttribute(MODIFIER_DELAI, new ModifierEtatDelaiQSNCView(delai, delaiAccordeAu));
 		model.addAttribute(DECISIONS_DELAI, tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "qsnc/delai/editer-snc";

@@ -1,5 +1,7 @@
 package ch.vd.unireg.parametrage;
 
+import org.hibernate.cfg.NotYetImplementedException;
+
 import ch.vd.registre.base.date.RegDate;
 
 public class MockDelaisService implements DelaisService {
@@ -22,6 +24,11 @@ public class MockDelaisService implements DelaisService {
 	@Override
 	public RegDate getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(RegDate dateDebut) {
 		throw new IllegalArgumentException("no meant to be called");
+	}
+
+	@Override
+	public RegDate getDateFinDelaiDemandeDelai(RegDate dateDebut) {
+		throw new NotYetImplementedException("getDateFinDelaiDemandeDelai");
 	}
 
 	@Override

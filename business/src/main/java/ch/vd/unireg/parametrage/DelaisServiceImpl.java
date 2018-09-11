@@ -110,6 +110,11 @@ public class DelaisServiceImpl implements DelaisService {
 	}
 
 	@Override
+	public RegDate getDateFinDelaiDemandeDelai(RegDate dateDebut) {
+		return getFinDelai(dateDebut, parametreAppService.getDateFinDelaiDemandeDelai());
+	}
+
+	@Override
 	public RegDate getDateFinDelaiEcheanceRappelQSNC(RegDate dateRappel) {
 		return getFinDelai(dateRappel, parametreAppService.getDelaiRetourQuestionnaireSNCRappele());
 	}

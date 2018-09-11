@@ -302,6 +302,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public Integer getDateFinDelaiDemandeDelai() {
+		return container.getDateFinDelaiDemandeDelai();
+	}
+
+	@Override
 	public Integer getDelaiRetourQuestionnaireSNCRappele() {
 		return container.getDelaiRetourQuestionnaireSNCRappele();
 	}

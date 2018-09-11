@@ -39,6 +39,7 @@ public enum ParametreEnum {
 	delaiEnvoiRappelQuestionnaireSNC("15", Type.delaisEnJour, true),
 	delaiCadevImpressionQuestionnaireSNC("3", Type.delaisEnJour, true),
 	delaiRetourQuestionnaireSNCRappele("30", Type.delaisEnJour, true),
+	delaiAccordeDemandeDelai("30", Type.delaisEnJour, true),
 
 	dateDebutEnvoiLettresBienvenue("11.06.2016", Type.date, true),
 	delaiRetourLettreBienvenue("30", Type.delaisEnJour, true),

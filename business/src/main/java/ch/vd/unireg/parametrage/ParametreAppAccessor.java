@@ -34,6 +34,8 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiRetourQuestionnaireSNCEmisManuellement();
 
+	Integer getDateFinDelaiDemandeDelai();
+
 	Integer getDelaiRetourQuestionnaireSNCRappele();
 
 	Integer getDelaiEnvoiRappelQuestionnaireSNC();

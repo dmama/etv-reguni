@@ -58,6 +58,8 @@ public interface DelaisService {
 	 */
 	RegDate getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(RegDate dateDebut);
 
+	RegDate getDateFinDelaiDemandeDelai(RegDate dateDebut);
+
 	/**
 	 * Détermine la date d'échéance du rappel pour un questionnaire SNC.
 	 * <br>
