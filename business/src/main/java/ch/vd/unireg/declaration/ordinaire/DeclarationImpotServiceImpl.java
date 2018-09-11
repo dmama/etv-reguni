@@ -83,6 +83,7 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
@@ -491,7 +492,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @NotNull RegDate dateDelai) throws AjoutDelaiDeclarationException {
+	public void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @Nullable RegDate dateDelai, @NotNull EtatDelaiDocumentFiscal etatDelai, @Nullable DemandeDelaisMandataire demandeMandataire) throws AjoutDelaiDeclarationException {
 
 		final RegDate aujourdhui = RegDate.get();
 
@@ -508,22 +509,29 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throw new AjoutDelaiDeclarationException(DATE_OBTENTION_INVALIDE, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");
 		}
 
-		if (RegDateHelper.isBefore(dateDelai, aujourdhui, NullDateBehavior.LATEST)) {
-			throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
-		}
+		if (etatDelai == EtatDelaiDocumentFiscal.ACCORDE) {
+			if (dateDelai == null) {
+				throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "La date de délai est nulle");
+			}
 
-		final RegDate delaiActuel = declaration.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
-		if (RegDateHelper.isBeforeOrEqual(dateDelai, delaiActuel, NullDateBehavior.LATEST)) {
-			throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un délai plus lointain existe déjà.");
+			if (RegDateHelper.isBefore(dateDelai, aujourdhui, NullDateBehavior.LATEST)) {
+				throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
+			}
+
+			final RegDate delaiActuel = declaration.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
+			if (RegDateHelper.isBeforeOrEqual(dateDelai, delaiActuel, NullDateBehavior.LATEST)) {
+				throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un délai plus lointain existe déjà.");
+			}
 		}
 
 		// on ajoute le délai
 		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		delai.setEtat(etatDelai);
 		delai.setDateTraitement(aujourdhui);
 		delai.setCleArchivageCourrier(null);
 		delai.setDateDemande(dateObtention);
-		delai.setDelaiAccordeAu(dateDelai);
+		delai.setDelaiAccordeAu(etatDelai == EtatDelaiDocumentFiscal.ACCORDE ? dateDelai : null);
+		delai.setDemandeMandataire(demandeMandataire);
 		declaration.addDelai(delai);
 	}
 

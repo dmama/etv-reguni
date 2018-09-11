@@ -7,6 +7,7 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,6 +24,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -30,6 +32,7 @@ import ch.vd.unireg.common.HibernateEntity;
 import ch.vd.unireg.common.LengthConstants;
 import ch.vd.unireg.common.linkedentity.LinkedEntity;
 import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
+import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
 import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 
 @Entity
@@ -47,6 +50,8 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 	private String cleDocument;
 	private DocumentFiscal documentFiscal;
 	private boolean sursis;
+	@Nullable
+	private DemandeDelaisMandataire demandeMandataire;
 
 	@Transient
 	@Override
@@ -151,6 +156,20 @@ public abstract class DelaiDocumentFiscal extends HibernateEntity implements Com
 
 	public void setDocumentFiscal(DocumentFiscal theDocumentFiscal) {
 		documentFiscal = theDocumentFiscal;
+	}
+
+	// configuration hibernate : le délai ne possède pas les demandes mandataires
+	@Nullable
+	@ManyToOne(fetch = FetchType.LAZY)  // fetch lazy pour ne pas pénaliser les performances de chargement des déclarations (WS, entre autres)
+	@JoinColumn(name = "DEMANDE_MANDATAIRE_ID")
+	@ForeignKey(name = "FK_DELAI_DEM_MAND_ID")
+	@Index(name = "IDX_DELAI_DEM_MAND_ID", columnNames = "DEMANDE_MANDATAIRE_ID")
+	public DemandeDelaisMandataire getDemandeMandataire() {
+		return demandeMandataire;
+	}
+
+	public void setDemandeMandataire(@Nullable DemandeDelaisMandataire demandeMandataire) {
+		this.demandeMandataire = demandeMandataire;
 	}
 
 	@Transient

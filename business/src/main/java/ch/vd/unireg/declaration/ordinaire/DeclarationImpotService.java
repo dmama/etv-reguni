@@ -35,10 +35,12 @@ import ch.vd.unireg.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiqueResultat;
 import ch.vd.unireg.editique.ModeleFeuilleDocumentEditique;
+import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.unireg.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.Entreprise;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.TypeDocument;
 
 public interface DeclarationImpotService {
@@ -196,12 +198,14 @@ public interface DeclarationImpotService {
 	/**
 	 * Ajoute un délai sur une déclaration d'impôt.
 	 *
-	 * @param declaration   une déclaration d'impôt.
-	 * @param dateObtention la date d'obtention de délai
-	 * @param dateDelai     la date du délai lui-même
+	 * @param declaration       une déclaration d'impôt.
+	 * @param dateObtention     la date d'obtention de délai
+	 * @param dateDelai         la date du délai lui-même (seulement pour état = ACCORDE)
+	 * @param etatDelai         l'état du délai à ajouter
+	 * @param demandeMandataire la demande du mandataire liée (optionnelle)
 	 * @throws AjoutDelaiDeclarationException en cas d'erreur qui empêche l'ajout d'un délai
 	 */
-	void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @NotNull RegDate dateDelai) throws AjoutDelaiDeclarationException;
+	void ajouterDelaiDI(@NotNull DeclarationImpotOrdinaire declaration, @NotNull RegDate dateObtention, @Nullable RegDate dateDelai, EtatDelaiDocumentFiscal etatDelai, DemandeDelaisMandataire demandeMandataire) throws AjoutDelaiDeclarationException;
 
 	/**
 	 * Envoie à l'impression la sommation pour la déclaration spécifiée, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est committée,

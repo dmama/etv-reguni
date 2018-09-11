@@ -113,6 +113,7 @@ import ch.vd.unireg.tiers.TiersCriteria;
 import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.type.CategorieImpotSource;
+import ch.vd.unireg.type.EtatDelaiDocumentFiscal;
 import ch.vd.unireg.type.Niveau;
 import ch.vd.unireg.type.TypeContribuable;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
@@ -593,7 +594,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 					try {
 						// on ajoute le délai
-						context.diService.ajouterDelaiDI(di, dateObtention, nouveauDelai);
+						context.diService.ajouterDelaiDI(di, dateObtention, nouveauDelai, EtatDelaiDocumentFiscal.ACCORDE, null);
 						return new DeadlineResponse(DeadlineStatus.OK, null);
 					}
 					catch (AjoutDelaiDeclarationException e) {

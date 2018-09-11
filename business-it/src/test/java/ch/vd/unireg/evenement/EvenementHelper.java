@@ -3,8 +3,10 @@ package ch.vd.unireg.evenement;
 import javax.jms.ConnectionFactory;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -13,7 +15,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.jms.EsbMessageHelper;
 import ch.vd.unireg.utils.UniregProperties;
 import ch.vd.unireg.utils.UniregPropertiesImpl;
 
@@ -83,6 +87,20 @@ public abstract class EvenementHelper {
 		finally {
 			esbTemplate.setReceiveTimeout(timeout);
 		}
+	}
+
+	public static void sendTextMessage(EsbJmsTemplate esbTemplate, String queueName, String texte, String businessId, @Nullable Map<String, String> customAttributes, PlatformTransactionManager transactionManager) throws Exception {
+		final EsbMessage m = EsbMessageFactory.createMessage();
+		final String myBusinessId = businessId == null ? String.valueOf(m.hashCode()) : businessId;
+		m.setBusinessUser("EvenementTest");
+		m.setBusinessId(myBusinessId);
+		m.setContext("test");
+		m.setServiceDestination(queueName);
+		m.setBody(texte);
+		if (customAttributes != null) {
+			EsbMessageHelper.setHeaders(m, customAttributes, true);
+		}
+		sendMessage(esbTemplate, m, transactionManager);
 	}
 
 	public static void sendMessage(EsbJmsTemplate esbTemplate, EsbMessage message, PlatformTransactionManager transactionManager) throws Exception {

@@ -39,6 +39,7 @@ import ch.vd.unireg.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor
 import ch.vd.unireg.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.unireg.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.unireg.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
+import ch.vd.unireg.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.unireg.editique.EditiqueCompositionService;
 import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 import ch.vd.unireg.evenement.di.EvenementDeclarationPPSender;
@@ -94,6 +95,7 @@ import ch.vd.unireg.validation.ValidationService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -2465,13 +2467,13 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testAjouterDelaiDIAnnulee() {
+	public void testAjouterDelaiAccordeDIAnnulee() {
 
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.setAnnule(true);
 
 		try {
-			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addMonths(2));
+			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addMonths(2), EtatDelaiDocumentFiscal.ACCORDE, null);
 			fail();
 		}
 		catch (AjoutDelaiDeclarationException e) {
@@ -2481,14 +2483,30 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testAjouterDelaiDIMauvaisEtat() {
+	public void testAjouterDelaiRefuseDIAnnulee() {
+
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+		di.setAnnule(true);
+
+		try {
+			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addMonths(2), EtatDelaiDocumentFiscal.REFUSE, null);
+			fail();
+		}
+		catch (AjoutDelaiDeclarationException e) {
+			assertEquals(Raison.DECLARATION_ANNULEE, e.getRaison());
+			assertEquals("La déclaration est annulée.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAjouterDelaiAccordeDIMauvaisEtat() {
 
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.addEtat(new EtatDeclarationEmise());
 		di.addEtat(new EtatDeclarationSommee());
 
 		try {
-			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addMonths(2));
+			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addMonths(2), EtatDelaiDocumentFiscal.ACCORDE, null);
 			fail();
 		}
 		catch (AjoutDelaiDeclarationException e) {
@@ -2498,13 +2516,30 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testAjouterDelaiDIDateObtentionInvalide() {
+	public void testAjouterDelaiRefuseDIMauvaisEtat() {
+
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+		di.addEtat(new EtatDeclarationEmise());
+		di.addEtat(new EtatDeclarationSommee());
+
+		try {
+			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addMonths(2), EtatDelaiDocumentFiscal.REFUSE, null);
+			fail();
+		}
+		catch (AjoutDelaiDeclarationException e) {
+			assertEquals(Raison.MAUVAIS_ETAT_DECLARATION, e.getRaison());
+			assertEquals("La déclaration n'est pas dans l'état 'EMIS'.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAjouterDelaiAccordeDIDateObtentionInvalide() {
 
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.addEtat(new EtatDeclarationEmise());
 
 		try {
-			service.ajouterDelaiDI(di, RegDate.get().addMonths(2), RegDate.get().addMonths(6));
+			service.ajouterDelaiDI(di, RegDate.get().addMonths(2), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE, null);
 			fail();
 		}
 		catch (AjoutDelaiDeclarationException e) {
@@ -2514,13 +2549,29 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testAjouterDelaiDIDateDelaiAvantAujourdhui() {
+	public void testAjouterDelaiRefuseDIDateObtentionInvalide() {
 
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.addEtat(new EtatDeclarationEmise());
 
 		try {
-			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addDays(-10));
+			service.ajouterDelaiDI(di, RegDate.get().addMonths(2), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.REFUSE, null);
+			fail();
+		}
+		catch (AjoutDelaiDeclarationException e) {
+			assertEquals(Raison.DATE_OBTENTION_INVALIDE, e.getRaison());
+			assertEquals("La date d'obtention du délai ne peut pas être dans le futur de la date du jour.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAjouterDelaiAccordeDIDateDelaiAvantAujourdhui() {
+
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+		di.addEtat(new EtatDeclarationEmise());
+
+		try {
+			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addDays(-10), EtatDelaiDocumentFiscal.ACCORDE, null);
 			fail();
 		}
 		catch (AjoutDelaiDeclarationException e) {
@@ -2530,7 +2581,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testAjouterDelaiDIDateDelaiAvantDelaiExistant() {
+	public void testAjouterDelaiAccordeDIDateDelaiAvantDelaiExistant() {
 
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.addEtat(new EtatDeclarationEmise());
@@ -2542,7 +2593,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		di.addDelai(delai);
 
 		try {
-			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addDays(1));
+			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addDays(1), EtatDelaiDocumentFiscal.ACCORDE, null);
 			fail();
 		}
 		catch (AjoutDelaiDeclarationException e) {
@@ -2552,7 +2603,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testAjouterDelaiDICasPassant() throws AjoutDelaiDeclarationException {
+	public void testAjouterDelaiAccordeDICasPassant() throws AjoutDelaiDeclarationException {
 
 		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.addEtat(new EtatDeclarationEmise());
@@ -2563,12 +2614,36 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		delai.setDelaiAccordeAu(RegDate.get().addDays(1));
 		di.addDelai(delai);
 
-		service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addDays(10));
+		service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addDays(10), EtatDelaiDocumentFiscal.ACCORDE, null);
 
 		final DelaiDeclaration dernier = di.getDernierDelaiDeclarationAccorde();
 		assertNotNull(dernier);
 		assertEquals(EtatDelaiDocumentFiscal.ACCORDE, dernier.getEtat());
 		assertEquals(RegDate.get().addDays(10), dernier.getDelaiAccordeAu());
+		assertEquals(RegDate.get(), dernier.getDateTraitement());
+	}
+
+	@Test
+	public void testAjouterDelaiRefuseDICasPassant() throws AjoutDelaiDeclarationException {
+
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+		di.addEtat(new EtatDeclarationEmise());
+
+		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		delai.setDateDemande(RegDate.get().addMonths(-1));
+		delai.setDelaiAccordeAu(RegDate.get().addDays(1));
+		di.addDelai(delai);
+
+		service.ajouterDelaiDI(di, RegDate.get(), null, EtatDelaiDocumentFiscal.REFUSE, null);
+
+		final List<DelaiDocumentFiscal> delais = di.getDelaisSorted();
+		assertEquals(2, delais.size());
+
+		final DelaiDeclaration dernier = (DelaiDeclaration) delais.get(1);
+		assertNotNull(dernier);
+		assertEquals(EtatDelaiDocumentFiscal.REFUSE, dernier.getEtat());
+		assertNull(dernier.getDelaiAccordeAu());
 		assertEquals(RegDate.get(), dernier.getDateTraitement());
 	}
 }

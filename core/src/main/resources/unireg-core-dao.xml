@@ -79,6 +79,8 @@
 	<bean id="etatDeclarationDAO" class="ch.vd.unireg.declaration.EtatDeclarationDAOImpl" parent="hibernateDao"/>
 	<bean id="etatAutreDocumentFiscalDAO" class="ch.vd.unireg.documentfiscal.EtatAutreDocumentFiscalDAOImpl" parent="hibernateDao"/>
 
+	<bean id="demandeDelaisMandataireDAO" class="ch.vd.unireg.mandataire.DemandeDelaisMandataireDAOImpl" parent="hibernateDao"/>
+
 	<bean id="reqdesEvenementDAO" class="ch.vd.unireg.reqdes.EvenementReqDesDAOImpl" parent="hibernateDao"/>
 	<bean id="reqdesUniteTraitementDAO" class="ch.vd.unireg.reqdes.UniteTraitementDAOImpl" parent="hibernateDao"/>
 

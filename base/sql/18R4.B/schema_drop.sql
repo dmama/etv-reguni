@@ -14,6 +14,8 @@ drop table DOCUMENT_FISCAL cascade constraints;
 
 drop table DELAI_DOCUMENT_FISCAL cascade constraints;
 
+drop table DEMANDE_MANDATAIRE cascade constraints;
+
 drop table DOC_INDEX cascade constraints;
 
 drop table DROIT_ACCES cascade constraints;

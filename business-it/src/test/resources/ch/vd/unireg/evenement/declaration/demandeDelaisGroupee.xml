@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:demandeDelai xmlns:ns="http://www.vd.ch/fiscalite/dematerialisation/demande-delai/1">
+	<ns:supervision>
+		<ns:horodatageReception>2017-05-29T03:49:45</ns:horodatageReception>
+		<ns:horodatagePublication>2017-05-19T01:18:33</ns:horodatagePublication>
+		<ns:businessId>businessId</ns:businessId>
+		<ns:idReference>referenceId</ns:idReference>
+	</ns:supervision>
+	<ns:caracteristiques>
+		<ns:typeDocument>DEM-DELAI</ns:typeDocument>
+		<ns:sousTypeDocument>DEM-DELAI_GROUP</ns:sousTypeDocument>
+		<ns:support>ELECTRONIQUE</ns:support>
+		<ns:emetteur>test</ns:emetteur>
+	</ns:caracteristiques>
+	<ns:donneesMetier>
+		<ns:periodeFiscale>2016</ns:periodeFiscale>
+		<ns:demandeGroupee>
+			<ns:mandataire>
+				<ns:numeroIde>CHE123456789</ns:numeroIde>
+				<ns:raisonSociale>Ma petit fiduciaire</ns:raisonSociale>
+				<ns:numeroContribuable>201</ns:numeroContribuable>
+			</ns:mandataire>
+			<ns:delais>
+				<ns:numeroContribuable>10000010</ns:numeroContribuable>
+				<ns:date>2025-06-30+02:00</ns:date>
+				<ns:statut>OK</ns:statut>
+			</ns:delais>
+			<ns:delais>
+				<ns:numeroContribuable>10000011</ns:numeroContribuable>
+				<ns:numeroSequenceDi>1</ns:numeroSequenceDi>
+				<ns:date>2025-06-30+02:00</ns:date>
+				<ns:statut>OK</ns:statut>
+			</ns:delais>
+			<ns:delais>
+				<ns:numeroContribuable>10000012</ns:numeroContribuable>
+				<ns:date>2025-06-30+02:00</ns:date>
+				<ns:statut>OK</ns:statut>
+			</ns:delais>
+		</ns:demandeGroupee>
+	</ns:donneesMetier>
+</ns:demandeDelai>

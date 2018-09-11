@@ -1,6 +1,6 @@
 -- table VERSION
 CREATE TABLE VERSION_DB (VERSION_NB NVARCHAR2(10) NOT NULL, SCRIPT_ID NVARCHAR2(50) NOT NULL, TS TIMESTAMP DEFAULT SYSDATE);
-INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('18R4.A', 'create');
+INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('18R4.B', 'create');
 
 create table ADRESSE_TIERS (ADR_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0), USAGE_TYPE nvarchar2(14) not null, AUTRE_TIERS_ID number(19,0), AUTRE_TYPE nvarchar2(14), STYPE nvarchar2(10), COMPLEMENT nvarchar2(100), NUMERO_APPARTEMENT nvarchar2(35), NUMERO_CASE_POSTALE number(10,0), NUMERO_MAISON nvarchar2(12), PERMANENTE number(1,0), RUE nvarchar2(100), TEXTE_CASE_POSTALE nvarchar2(15), COMPLEMENT_LOCALITE nvarchar2(100), NUMERO_OFS_PAYS number(10,0), NUMERO_POSTAL_LOCALITE nvarchar2(35), TYPE_PM nvarchar2(11), NPA_CASE_POSTALE number(10,0), NUMERO_ORDRE_POSTE number(10,0), NUMERO_RUE number(10,0), TIERS_ID number(19,0) not null, primary key (id));
 
@@ -44,9 +44,48 @@ create table BORDEREAU_MVT_DOSSIER (id number(19,0) not null, ANNULATION_DATE ti
 
 create table DOCUMENT_FISCAL (DOCUMENT_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEBUT number(10,0), DATE_FIN number(10,0), CODE_CONTROLE nvarchar2(6), CODE_SEGMENT number(10,0), DATE_IMPR_CHEMISE_TO timestamp, DELAI_RETOUR_IMPRIME number(10,0), LIBRE number(1,0), NUMERO number(10,0), NO_OFS_FOR_GESTION number(10,0), QUALIFICATION nvarchar2(16), RETOUR_COLL_ADMIN_ID number(19,0), TYPE_CTB nvarchar2(17), MODE_COM nvarchar2(12), PERIODICITE nvarchar2(11), SANS_RAPPEL number(1,0), MODELE_DOC_ID number(19,0), PERIODE_ID number(19,0), DATE_DEBUT_EXERCICE NUMBER(10, 0), DATE_FIN_EXERCICE NUMBER(10, 0), TIERS_ID number(19,0) not null, LB_TYPE NVARCHAR2(20), AR_DATE_DEMANDE NUMBER(10,0), DBF_PERIODE_FISCALE NUMBER(10,0), DBF_DATE_REQ_RADIATION NUMBER(10,0), DD_PERIODE_FISCALE NUMBER(10), DD_IMMEUBLE_ID NUMBER(19), DD_NUMERO_SEQUENCE NUMBER(10), DD_CODE_CONTROLE NVARCHAR2(6), CONSTRAINT FK_DD_RF_IMMEUBLE_ID FOREIGN KEY (DD_IMMEUBLE_ID) REFERENCES RF_IMMEUBLE, primary key (id));
 
-create table DELAI_DOCUMENT_FISCAL (DELAI_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEMANDE number(10,0), DATE_TRAITEMENT number(10,0), DELAI_ACCORDE_AU number(10,0), ETAT nvarchar2(10) not null, SURSIS number(1,0) not null, CLE_ARCHIVAGE_COURRIER nvarchar2(40), CLE_DOCUMENT nvarchar2(256), DOCUMENT_FISCAL_ID number(19,0) not null, primary key (id));
+create table DEMANDE_MANDATAIRE
+(
+	ID NUMBER(19) not null,
+	ANNULATION_DATE TIMESTAMP(6),
+	ANNULATION_USER NVARCHAR2(65),
+	LOG_CDATE TIMESTAMP(6),
+	LOG_CUSER NVARCHAR2(65),
+	LOG_MDATE TIMESTAMP(6),
+	LOG_MUSER NVARCHAR2(65),
+	BUSINESS_ID NVARCHAR2(255) not null,
+	NUMERO_CTB_MANDATAIRE NUMBER(19),
+	NUMERO_IDE_MANDATAIRE NVARCHAR2(255) not null,
+	RAISON_SOCIALE_MANDATAIRE NVARCHAR2(255) not null,
+	REFERENCE_ID NVARCHAR2(255),
+	primary key (ID)
+);
+
+create table DELAI_DOCUMENT_FISCAL (
+	ID                     number(19, 0) not null,
+	DELAI_TYPE             nvarchar2(31) not null,
+	ANNULATION_DATE        timestamp,
+	ANNULATION_USER        nvarchar2(65),
+	LOG_CDATE              timestamp,
+	LOG_CUSER              nvarchar2(65),
+	LOG_MDATE              timestamp,
+	LOG_MUSER              nvarchar2(65),
+	DATE_DEMANDE           number(10, 0),
+	DATE_TRAITEMENT        number(10, 0),
+	DELAI_ACCORDE_AU       number(10, 0),
+	ETAT                   nvarchar2(10) not null,
+	SURSIS                 number(1, 0)  not null,
+	CLE_ARCHIVAGE_COURRIER nvarchar2(40),
+	CLE_DOCUMENT           nvarchar2(256),
+	DOCUMENT_FISCAL_ID     number(19, 0) not null,
+	DEMANDE_MANDATAIRE_ID  NUMBER(19),
+	primary key (ID)
+);
 
 create table DOC_INDEX (DOC_TYPE nvarchar2(50) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DESCRIPTION nvarchar2(255), FILE_EXT nvarchar2(255) not null, FILE_NAME nvarchar2(255) not null, FILE_SIZE number(19,0) not null, NOM nvarchar2(100) not null, SUB_PATH nvarchar2(255) not null, NB_TIERS number(10,0), primary key (id));
+
+alter table DELAI_DOCUMENT_FISCAL add constraint FK_DELAI_DEM_MAND_ID foreign key (DEMANDE_MANDATAIRE_ID) references DEMANDE_MANDATAIRE;
+create index IDX_DELAI_DEM_MAND_ID on DELAI_DOCUMENT_FISCAL (DEMANDE_MANDATAIRE_ID);
 
 create table DROIT_ACCES (
 	id              number(19, 0)  not null,

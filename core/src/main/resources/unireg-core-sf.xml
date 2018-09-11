@@ -329,6 +329,7 @@
 		<value>ch.vd.unireg.etiquette.Etiquette</value>
 		<value>ch.vd.unireg.etiquette.EtiquetteTiers</value>
 		<value>ch.vd.unireg.efacture.DocumentEFacture</value>
+		<value>ch.vd.unireg.mandataire.DemandeDelaisMandataire</value>
 	</util:list>
 
 	<!-- La session factory -->
