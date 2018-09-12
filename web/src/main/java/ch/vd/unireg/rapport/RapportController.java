@@ -164,8 +164,6 @@ public class RapportController {
 		}
 		else {
 			types = RapportHelper.ALLOWED_VISU_COMPLETE;
-				types = types.stream().filter(type -> type.getType() != TypeRapportEntreTiers.LIENS_ASSOCIES_ET_SNC).collect(Collectors.toSet());
-
 		}
 		return types;
 	}
