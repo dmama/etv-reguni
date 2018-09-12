@@ -93,7 +93,7 @@ public interface EditiqueService {
 	 * @param archive      indicateur d'archivage
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException;
+	String creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException;
 
 	/**
 	 * Obitent un document pdf, sous forme binaire, identifié par les différents paramètres.

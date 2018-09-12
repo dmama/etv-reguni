@@ -254,10 +254,10 @@ public interface EditiqueCompositionService {
 	 * Imprime la lettre de décision d'accord/refus de délai pour le {@link DelaiDeclaration}, pour un {@link QuestionnaireSNC}
 	 *
 	 * @param delai le délai accordé/refusé
-	 * @return la clé d'archivage du document
+	 * @return idDocument, la clé d'archivage du document
 	 * @throws EditiqueException en cas de souci
 	 */
-	String imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai) throws EditiqueException;
+	Pair<String, String> imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai) throws EditiqueException;
 
 	/**
 	 * Imprime la lettre de décision d'accord/refus de délai pour le {@link DelaiDeclaration}, pour un {@link QuestionnaireSNC}

@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
@@ -345,7 +344,6 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 		try {
 			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
-			final QuestionnaireSNC qsnc = (QuestionnaireSNC) delai.getDeclaration();
 			final Pair<EditiqueResultat, String> resultat;
 			switch (delai.getEtat()) {
 			case ACCORDE:
@@ -358,6 +356,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 				throw new IllegalArgumentException(message);
 			}
 			delai.setCleArchivageCourrier(resultat.getRight());
+			delai.setCleDocument(resultat.getLeft().getIdDocument());
 			return resultat.getLeft();
 		}
 		catch (Exception e) {
@@ -373,20 +372,20 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		try {
 
 			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
-			final QuestionnaireSNC qsnc = (QuestionnaireSNC) delai.getDeclaration();
-			final String cleArchivageDocument;
+			final Pair<String, String> resultat;
 			switch (delai.getEtat()) {
 			case ACCORDE:
 			case REFUSE:
-				cleArchivageDocument = editiqueCompositionService.imprimeLettreDecisionDelaiQSNCBatch(delai);
+				resultat = editiqueCompositionService.imprimeLettreDecisionDelaiQSNCBatch(delai);
 				break;
 			default:
 				final String message = String.format("Type de lettre non-supporté, etat du délai  : %s", delai.getEtat());
 				LOGGER.error(message);
 				throw new IllegalArgumentException(message);
 			}
-			delai.setCleArchivageCourrier(cleArchivageDocument);
-			return cleArchivageDocument;
+			delai.setCleArchivageCourrier(resultat.getRight());
+			delai.setCleDocument(resultat.getLeft());
+			return resultat.getRight();
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage());

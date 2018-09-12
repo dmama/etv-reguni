@@ -38,7 +38,8 @@ public class MockEditiqueService implements EditiqueService {
 	}
 
 	@Override
-	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException {
+	public String creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException {
+		return nomDocument;
 	}
 
 	@Override
