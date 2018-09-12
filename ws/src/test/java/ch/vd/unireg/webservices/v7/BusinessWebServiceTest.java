@@ -5190,7 +5190,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "03", "Il n'existe aucune déclaration sur la période 2017.", results);
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "01", "Il n'existe aucune déclaration sur la période 2017.", results);
 			return null;
 		});
 	}
@@ -5219,7 +5219,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "01", "La déclaration existante sur la période 2017 est annulée.", results);
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "02", "La déclaration existante sur la période 2017 est annulée.", results);
 			return null;
 		});
 	}
@@ -5284,7 +5284,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "02", "Il y a déjà un délai accordé au 01.11.2018.",
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "09", "Il y a déjà un délai accordé au 01.11.2018.",
 			                      date(2017, 1, 1), date(2017, 12, 31), 1, results);
 			return null;
 		});
@@ -5388,7 +5388,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// il ne doit pas être possible de demander un délai
 		doInNewTransaction(status -> {
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
-			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "TODO", "Il existe plusieurs déclarations sur la période 2017.", results);
+			assertValidationError(ctbId, PartyType.NATURAL_PERSON, "05", "Il existe plusieurs déclarations sur la période 2017.", results);
 			return null;
 		});
 	}

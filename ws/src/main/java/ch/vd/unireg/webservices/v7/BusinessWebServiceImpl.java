@@ -174,6 +174,16 @@ import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.AUCUNE_DECLARATION;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_ANNULEE;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_ECHUE;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_RAPPELEE;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_RETOURNEE;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_SOMMEE;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DECLARATION_SUSPENDUE;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.DELAI_DEJA_ACCORDE;
+import static ch.vd.unireg.webservices.v7.DeadlineExtensionError.PLUSIEURS_DECLARATIONS;
+
 @SuppressWarnings("Duplicates")
 public class BusinessWebServiceImpl implements BusinessWebService {
 
@@ -706,7 +716,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		// vérification sur les déclarations
 		final List<DeclarationImpotOrdinaire> declaration = tiers.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, periodeFiscale, true);
 		if (declaration.isEmpty()) {
-			return buildRejectedDeadlineResult(ctbId, tiers, true, "03", "Il n'existe aucune déclaration sur la période " + periodeFiscale + ".");
+			return buildRejectedDeadlineResult(ctbId, tiers, true, AUCUNE_DECLARATION.getCode(), "Il n'existe aucune déclaration sur la période " + periodeFiscale + ".");
 		}
 
 		final List<DeclarationImpotOrdinaire> declarationValides = declaration.stream() // déclarations non-annulées et triées par ordre chronologique croissant
@@ -715,10 +725,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		if (declarationValides.isEmpty()) {
 			// il n'y a pas de déclaration non-annulée
-			return buildRejectedDeadlineResult(ctbId, tiers, true, "01", "La déclaration existante sur la période " + periodeFiscale + " est annulée.");
+			return buildRejectedDeadlineResult(ctbId, tiers, true, DECLARATION_ANNULEE.getCode(), "La déclaration existante sur la période " + periodeFiscale + " est annulée.");
 		}
 		if (declarationValides.size() > 1) {
-			return buildRejectedDeadlineResult(ctbId, tiers, true, "TODO", "Il existe plusieurs déclarations sur la période " + periodeFiscale + ".");
+			return buildRejectedDeadlineResult(ctbId, tiers, true, PLUSIEURS_DECLARATIONS.getCode(), "Il existe plusieurs déclarations sur la période " + periodeFiscale + ".");
 		}
 
 		// on détermine un résultat pour la déclaration valide
@@ -750,7 +760,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			result.setRejectionReason(buildRejectionReasonPourDeclarationNonEmise(etat, periodeFiscale));
 		}
 		else if (dateDelai.isAfter(RegDate.get(periodeFiscale + 1, 10, 31))) {                                  // FIXME (msi) rendre ce délai paramètrable
-			result.setRejectionReason(new RejectionReason("02", "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(dateDelai) + ".", null));
+			result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(dateDelai) + ".", null));
 		}
 		else {
 			result.getProposedDeadlines().add(DataHelper.coreToWeb(RegDate.get(periodeFiscale + 1, 6, 30)));    // FIXME (msi) calculer correctement cette date
@@ -800,19 +810,19 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		final RejectionReason reason;
 		switch (etat) {
 		case RETOURNE:
-			reason = new RejectionReason("04", "La déclaration est déjà retournée sur la période " + periodeFiscale + ".", null);
+			reason = new RejectionReason(DECLARATION_RETOURNEE.getCode(), "La déclaration est déjà retournée sur la période " + periodeFiscale + ".", null);
 			break;
 		case RAPPELE:
-			reason = new RejectionReason("TODO", "La déclaration est déjà rappelée sur la période " + periodeFiscale + ".", null);
+			reason = new RejectionReason(DECLARATION_RAPPELEE.getCode(), "La déclaration est déjà rappelée sur la période " + periodeFiscale + ".", null);
 			break;
 		case SOMME:
-			reason = new RejectionReason("05", "La déclaration est déjà sommée sur la période " + periodeFiscale + ".", null);
+			reason = new RejectionReason(DECLARATION_SOMMEE.getCode(), "La déclaration est déjà sommée sur la période " + periodeFiscale + ".", null);
 			break;
 		case SUSPENDU:
-			reason = new RejectionReason("TODO", "La déclaration est suspendue sur la période " + periodeFiscale + ".", null);
+			reason = new RejectionReason(DECLARATION_SUSPENDUE.getCode(), "La déclaration est suspendue sur la période " + periodeFiscale + ".", null);
 			break;
 		case ECHU:
-			reason = new RejectionReason("06", "La déclaration est échue sur la période " + periodeFiscale + ".", null);
+			reason = new RejectionReason(DECLARATION_ECHUE.getCode(), "La déclaration est échue sur la période " + periodeFiscale + ".", null);
 			break;
 		default:
 			throw new ProgrammingException("On ne devrait jamais arriver ici");
