@@ -797,7 +797,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public String imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai) throws EditiqueException {
+	public Pair<String, String> imprimeLettreDecisionDelaiQSNCBatch(DelaiDeclaration delai) throws EditiqueException {
 		final FichierImpression root = new FichierImpression();
 		final String cleArchivageDocument = impressionDelaiQSNCHelper.construitCleArchivageDocument(delai);
 		final FichierImpression.Document original = impressionDelaiQSNCHelper.buildDocument(delai, cleArchivageDocument);
@@ -813,9 +813,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 		final TypeDocumentEditique typeDocument = impressionDelaiQSNCHelper.getTypeDocumentEditique(delai);
 		final String nomDocument = impressionDelaiQSNCHelper.getIdDocument(delai);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, original.getInfoArchivage() != null);
-
-		return cleArchivageDocument;
+		final String idDocument = editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, original.getInfoArchivage() != null);
+		return Pair.of(idDocument, cleArchivageDocument);
 	}
 
 	@Override

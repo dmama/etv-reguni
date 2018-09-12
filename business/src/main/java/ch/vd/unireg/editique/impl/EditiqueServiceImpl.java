@@ -212,8 +212,8 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	}
 
 	@Override
-	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException {
-		sender.envoyerDocument(nomDocument, typeDocument, document, null, archive);
+	public String creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException {
+		return sender.envoyerDocument(nomDocument, typeDocument, document, null, archive);
 	}
 
 	@Override
