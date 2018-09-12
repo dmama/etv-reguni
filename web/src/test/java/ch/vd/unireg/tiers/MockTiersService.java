@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.hibernate.cfg.NotYetImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1353,5 +1354,15 @@ public class MockTiersService implements TiersService {
 	@Override
 	public @NotNull Map<Long, CommunauteHeritiers> getCommunautesHeritiers(@NotNull Collection<Long> tiersIds) {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public boolean isHabitant(Contribuable ctb) {
+		throw new NotYetImplementedException("isHabitant");
+	}
+
+	@Override
+	public Contribuable getContribuableAssujettissable(Contribuable ctb) {
+		throw new NotYetImplementedException("getContribuableAssujettissable");
 	}
 }
