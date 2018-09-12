@@ -36,6 +36,7 @@ import ch.vd.unireg.declaration.EtatDeclarationRetournee;
 import ch.vd.unireg.declaration.ModeleDocumentDAO;
 import ch.vd.unireg.declaration.ModeleFeuilleDocument;
 import ch.vd.unireg.declaration.PeriodeFiscaleDAO;
+import ch.vd.unireg.declaration.QuestionnaireSNC;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveProcessor;
 import ch.vd.unireg.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
 import ch.vd.unireg.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProcessor;
@@ -777,6 +778,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		if (declaration instanceof DeclarationImpotOrdinairePP || declaration instanceof DeclarationImpotSource) {
 			return TypeDocumentEditique.CONFIRMATION_DELAI;
 		}
+
+		if (declaration instanceof QuestionnaireSNC) {
+			return delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE ? TypeDocumentEditique.ACCORD_DELAI_QSNC : TypeDocumentEditique.REFUS_DELAI_QSNC;
+		}
+
 		if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
 			throw new IllegalArgumentException("Délai " + delai.getId() + " sur une déclaration non-supportée : " + declaration.getClass().getName());
 		}
