@@ -284,8 +284,8 @@ public class TiersAdresseValidator implements Validator {
 			}
 			else if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
 				final Contribuable ctb = (Contribuable) tiers;
-				final boolean isHabitant = isHabitant(ctb);
-				final Contribuable assujettissable = getContribuableAssujettissable(ctb);
+				final boolean isHabitant = tiersService.isHabitant(ctb);
+				final Contribuable assujettissable = tiersService.getContribuableAssujettissable(ctb);
 				final List<Assujettissement> assujettissement = assujettissementService.determine(assujettissable);
 				final Assujettissement assujettissementCourant = assujettissement != null ? DateRangeHelper.rangeAt(assujettissement, RegDate.get()) : null;
 				if (assujettissementCourant == null) {
@@ -315,42 +315,5 @@ public class TiersAdresseValidator implements Validator {
 		}
 	}
 
-	/**
-	 * N'a de sens que sur des personnes physiques ou des ménages communs
-	 * @param ctb le contribuable sur lequel on s'interroge
-	 * @return <code>true</code> si le contribuble est habitant, <code>false</code> sinon
-	 */
-	private boolean isHabitant(Contribuable ctb) {
-		final boolean isHabitant;
-		if (ctb instanceof PersonnePhysique) {
-			isHabitant = ((PersonnePhysique) ctb).isHabitantVD();
-		}
-		else if (ctb instanceof MenageCommun) {
-			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, RegDate.get());
-			final PersonnePhysique principal = couple.getPrincipal();
-			final PersonnePhysique conjoint = couple.getConjoint();
-			isHabitant = (principal != null && principal.isHabitantVD()) || (conjoint != null && conjoint.isHabitantVD());
-		}
-		else {
-			isHabitant = false;
-		}
-		return isHabitant;
-	}
 
-	private Contribuable getContribuableAssujettissable(Contribuable ctb) {
-		final Contribuable assujettissable;
-		if (ctb instanceof PersonnePhysique) {
-			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((PersonnePhysique) ctb, RegDate.get());
-			if (couple != null && couple.getMenage() != null) {
-				assujettissable = couple.getMenage();
-			}
-			else {
-				assujettissable = ctb;
-			}
-		}
-		else {
-			assujettissable = ctb;
-		}
-		return assujettissable;
-	}
 }

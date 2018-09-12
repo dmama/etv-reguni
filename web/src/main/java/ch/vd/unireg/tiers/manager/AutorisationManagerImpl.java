@@ -595,9 +595,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
 			}
 			//SIFISC-13335
-			final Assujettissement assujettissement = tiersService.getAssujettissement((PersonnePhysique) tiers, null);
+			final Assujettissement assujettissement = tiersService.getAssujettissement((Contribuable) tiers, null);
 			final boolean isNonAssujettit = assujettissement == null || TypeAssujettissement.NON_ASSUJETTI.equals(assujettissement.getType());
-			final boolean isHabitant = ((PersonnePhysique) tiers).isHabitantVD();
+			final boolean isHabitant = tiersService.isHabitant((Contribuable) tiers);
 			boolean allowed = (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_DEBPUR, visa, oid) && !isHabitant) ||
 					(SecurityHelper.isGranted(securityProvider, Role.MODIF_HAB_DEBPUR, visa, oid) && isHabitant);
 			if (isNonAssujettit && allowed) {

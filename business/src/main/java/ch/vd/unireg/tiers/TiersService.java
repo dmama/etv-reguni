@@ -2468,5 +2468,18 @@ public interface TiersService {
 	 */
 	@NotNull
 	Map<Long, CommunauteHeritiers> getCommunautesHeritiers(@NotNull Collection<Long> tiersIds);
+
+	/**
+	 * N'a de sens que sur des personnes physiques ou des ménages communs
+	 * @param ctb le contribuable sur lequel on s'interroge
+	 * @return <code>true</code> si le contribuble est habitant, <code>false</code> sinon
+	 */
+	boolean isHabitant(Contribuable ctb);
+
+	/**
+	 * Renvoi le contribuable soumis à assujettisement.
+	 * @param ctb Contribuable.
+	 */
+	Contribuable getContribuableAssujettissable(Contribuable ctb);
 }
 
