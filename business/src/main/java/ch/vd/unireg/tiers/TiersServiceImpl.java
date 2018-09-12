@@ -7545,4 +7545,48 @@ public class TiersServiceImpl implements TiersService {
 		}
 		return Boolean.FALSE;
 	}
+
+
+	/**
+	 * N'a de sens que sur des personnes physiques ou des ménages communs
+	 *
+	 * @param ctb le contribuable sur lequel on s'interroge
+	 * @return <code>true</code> si le contribuble est habitant, <code>false</code> sinon
+	 */
+	@Override
+	public boolean isHabitant(@NotNull Contribuable ctb) {
+		final boolean isHabitant;
+		if (ctb instanceof PersonnePhysique) {
+			isHabitant = ((PersonnePhysique) ctb).isHabitantVD();
+		}
+		else if (ctb instanceof MenageCommun) {
+			final EnsembleTiersCouple couple = getEnsembleTiersCouple((MenageCommun) ctb, RegDate.get());
+			final PersonnePhysique principal = couple.getPrincipal();
+			final PersonnePhysique conjoint = couple.getConjoint();
+			isHabitant = (principal != null && principal.isHabitantVD()) || (conjoint != null && conjoint.isHabitantVD());
+		}
+		else {
+			isHabitant = false;
+		}
+		return isHabitant;
+	}
+
+
+	@Override
+	public Contribuable getContribuableAssujettissable(Contribuable ctb) {
+		final Contribuable assujettissable;
+		if (ctb instanceof PersonnePhysique) {
+			final EnsembleTiersCouple couple = getEnsembleTiersCouple((PersonnePhysique) ctb, RegDate.get());
+			if (couple != null && couple.getMenage() != null) {
+				assujettissable = couple.getMenage();
+			}
+			else {
+				assujettissable = ctb;
+			}
+		}
+		else {
+			assujettissable = ctb;
+		}
+		return assujettissable;
+	}
 }
