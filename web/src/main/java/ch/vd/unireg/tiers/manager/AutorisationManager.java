@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.security.SecurityProviderInterface;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.Entreprise;
@@ -14,6 +15,8 @@ import ch.vd.unireg.type.MotifRattachement;
 import ch.vd.unireg.type.TypeAutoriteFiscale;
 
 public interface AutorisationManager {
+
+	void setSecurityProvider(SecurityProviderInterface securityProvider);
 
 	/**
 	 * Vérifie si l'utilisateur est autorisé à voir le tiers spécifié.
