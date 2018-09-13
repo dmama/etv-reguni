@@ -1,26 +1,14 @@
 package ch.vd.unireg.indexer.tiers;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.NumericRangeQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -28,18 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.simpleindexer.LuceneException;
 import ch.vd.unireg.adresse.AdresseService;
-import ch.vd.unireg.audit.Audit;
 import ch.vd.unireg.avatar.AvatarService;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
-import ch.vd.unireg.common.BatchIterator;
-import ch.vd.unireg.common.LoggingStatusManager;
-import ch.vd.unireg.common.ProgrammingException;
-import ch.vd.unireg.common.StandardBatchIterator;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.Switchable;
 import ch.vd.unireg.common.ThreadSwitch;
@@ -47,10 +27,9 @@ import ch.vd.unireg.indexer.GlobalIndexInterface;
 import ch.vd.unireg.indexer.IndexableData;
 import ch.vd.unireg.indexer.IndexerBatchException;
 import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.indexer.async.MassTiersIndexer;
 import ch.vd.unireg.indexer.async.OnTheFlyTiersIndexer;
-import ch.vd.unireg.indexer.async.TiersIndexerWorker;
-import ch.vd.unireg.indexer.lucene.LuceneHelper;
+import ch.vd.unireg.indexer.jobs.DatabaseIndexationProcessor;
+import ch.vd.unireg.indexer.jobs.DatabaseIndexationResults;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
@@ -60,7 +39,6 @@ import ch.vd.unireg.load.BasicLoadMonitor;
 import ch.vd.unireg.load.LoadAverager;
 import ch.vd.unireg.metier.assujettissement.AssujettissementService;
 import ch.vd.unireg.stats.LoadMonitorable;
-import ch.vd.unireg.stats.ServiceStats;
 import ch.vd.unireg.stats.StatsService;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
@@ -78,17 +56,16 @@ import ch.vd.unireg.tiers.TiersHelper;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.TypeTiers;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
-import ch.vd.unireg.utils.LogLevel;
 
 public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingBean, DisposableBean {
 
-	private static final int NANO_TO_MILLI = 1000000;
+	public static final int NANO_TO_MILLI = 1000000;
 
 	private static final String ON_THE_FLY_SERVICE_NAME = "OnTheFlyIndexerQueueSize";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalTiersIndexerImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalTiersIndexerImpl.class);
 
-    private GlobalIndexInterface globalIndex;
+	private GlobalIndexInterface globalIndex;
     private GlobalTiersSearcher tiersSearcher;
     private TiersDAO tiersDAO;
     private PlatformTransactionManager transactionManager;
@@ -99,9 +76,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	private ServiceEntreprise serviceEntreprise;
 	private AssujettissementService assujettissementService;
 	private AvatarService avatarService;
-	private Dialect dialect;
 	private StatsService statsService;
-	private String serviceName;
 
 	private OnTheFlyTiersIndexer onTheFlyTiersIndexer;
 	private LoadAverager onTheFlyLoadAverager;
@@ -120,111 +95,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         globalIndex.overwriteIndex();
     }
 
-    private class TimeLog {
-        public long startTime;
-        public long startTimeInfra;
-	    public long startTimeCivil;
-	    public long startTimeEntreprise;
-	    public long startTimeIndex;
-        public long endTime;
-        public long endTimeInfra;
-	    public long endTimeCivil;
-	    public long endTimeEntreprise;
-	    public long endTimeIndex;
-        public long indexerCpuTime;
-        public long indexerExecTime;
-
-	    public void start() {
-		    startTime = System.nanoTime() / NANO_TO_MILLI;
-		    startTimeInfra = getNanoInfra() / NANO_TO_MILLI;
-		    startTimeCivil = getNanoCivil() / NANO_TO_MILLI;
-		    startTimeEntreprise = getNanoEntreprise() / NANO_TO_MILLI;
-		    startTimeIndex = getNanoIndex() / NANO_TO_MILLI;
-	    }
-
-	    public void end(MassTiersIndexer asyncIndexer) {
-		    endTime = System.nanoTime() / NANO_TO_MILLI;
-		    endTimeInfra = getNanoInfra() / NANO_TO_MILLI;
-		    endTimeCivil = getNanoCivil() / NANO_TO_MILLI;
-		    endTimeEntreprise = getNanoEntreprise() / NANO_TO_MILLI;
-		    endTimeIndex = getNanoIndex() / NANO_TO_MILLI;
-		    indexerCpuTime = asyncIndexer.getTotalCpuTime() / NANO_TO_MILLI;
-		    indexerExecTime = asyncIndexer.getTotalExecTime() / NANO_TO_MILLI;
-	    }
-
-	    public void logStats() {
-
-            // détermine les différents statistiques de temps en millisecondes
-            long timeTotal = endTime - startTime;
-            long timeWait = indexerExecTime - indexerCpuTime;
-            long timeWaitInfra = endTimeInfra - startTimeInfra;
-            long timeWaitCivil = endTimeCivil - startTimeCivil;
-            long timeWaitEntreprise = endTimeEntreprise - startTimeEntreprise;
-            long timeWaitIndex = endTimeIndex - startTimeIndex;
-            long timeWaitAutres = timeWait - timeWaitInfra - timeWaitCivil - timeWaitEntreprise - timeWaitIndex;
-
-            if (indexerExecTime == 0 || timeWait == 0) {
-                LOGGER.debug("Statistiques d'indexation indisponibles !");
-                return;
-            }
-
-            int percentCpu = (int) (100 * indexerCpuTime / indexerExecTime);
-            int percentWait = 100 - percentCpu;
-            int percentWaitInfra = (int) (100 * timeWaitInfra / timeWait);
-            int percentWaitCivil = (int) (100 * timeWaitCivil / timeWait);
-            int percentWaitEntreprise = (int) (100 * timeWaitEntreprise / timeWait);
-            int percentWaitIndex = (int) (100 * timeWaitIndex / timeWait);
-            int percentWaitAutres = 100 - percentWaitInfra - percentWaitCivil - percentWaitEntreprise - percentWaitIndex;
-
-	        String log = "Temps total d'exécution         : " + timeTotal + " ms\n";
-	        log += "Temps 'exec' threads indexation : " + indexerExecTime + " ms\n";
-	        log += "Temps 'cpu' threads indexation  : " + indexerCpuTime + " ms" + " (" + percentCpu + "%)\n";
-	        log += "Temps 'wait' threads indexation : " + timeWait + " ms" + " (" + percentWait + "%)\n";
-	        log += " - service infrastructure       : " + (timeWaitInfra == 0 ? "<indisponible>\n" : timeWaitInfra + " ms" + " (" + percentWaitInfra + "%)\n");
-	        log += " - service civil                : " + (timeWaitCivil == 0 ? "<indisponible>\n" : timeWaitCivil + " ms" + " (" + percentWaitCivil + "%)\n");
-	        log += " - service entrepise            : " + (timeWaitEntreprise == 0 ? "<indisponible>\n" : timeWaitEntreprise + " ms" + " (" + percentWaitEntreprise + "%)\n");
-	        log += " - indexer                      : " + (timeWaitIndex == 0 ? "<indisponible>\n" : timeWaitIndex + " ms" + " (" + percentWaitIndex + "%)\n");
-	        log += " - autre (scheduler, jdbc, ...) : " + timeWaitAutres + " ms" + " (" + percentWaitAutres + "%)";
-	        LOGGER.info(log);
-        }
-
-        private long getNanoCivil() {
-            long timecivil = 0;
-	        final ServiceStats stats = statsService.getServiceStats(ServiceCivilService.SERVICE_NAME);
-            if (stats != null) {
-                timecivil = stats.getTotalTime();
-            }
-            return timecivil;
-        }
-
-        private long getNanoEntreprise() {
-            long timecivil = 0;
-	        final ServiceStats stats = statsService.getServiceStats(ServiceEntreprise.SERVICE_NAME);
-            if (stats != null) {
-                timecivil = stats.getTotalTime();
-            }
-            return timecivil;
-        }
-
-        private long getNanoInfra() {
-            long timeinfra = 0;
-	        final ServiceStats stats = statsService.getServiceStats(ServiceInfrastructureService.SERVICE_NAME);
-            if (stats != null) {
-                timeinfra = stats.getTotalTime();
-            }
-            return timeinfra;
-        }
-
-        private long getNanoIndex() {
-            long timeindex = 0;
-	        final ServiceStats stats = statsService.getServiceStats(serviceName);
-            if (stats != null) {
-                timeindex = stats.getTotalTime();
-            }
-            return timeindex;
-        }
-    }
-
 	@Override
 	public int indexAllDatabase() throws IndexerException {
 		return indexAllDatabase(Mode.FULL, 1, null);
@@ -233,330 +103,15 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	@Override
 	public int indexAllDatabase(@NotNull Mode mode, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException {
     	// on prends en compte toute la population
-		return indexAllDatabase(mode, EnumSet.allOf(TypeTiers.class), nbThreads, statusManager);
+		final EnumSet<TypeTiers> typesTiers = EnumSet.allOf(TypeTiers.class);
+
+		final DatabaseIndexationProcessor processor = new DatabaseIndexationProcessor(tiersDAO, serviceCivilCacheWarmer, statsService, tiersSearcher, this, globalIndex, sessionFactory, transactionManager);
+		final DatabaseIndexationResults results = processor.run(mode, typesTiers, nbThreads, statusManager);
+		return results.getIndexes().size();
 	}
 
 	@Override
-	public int indexAllDatabase(@NotNull GlobalTiersIndexer.Mode mode, @NotNull Set<TypeTiers> typesTiers, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException {
-
-		if (statusManager == null) {
-			statusManager = new LoggingStatusManager(LOGGER, LogLevel.Level.DEBUG);
-		}
-
-		Audit.info("Réindexation de la base de données (mode = " + mode + ", typesTiers = " + typesTiers + ")");
-		final Date indexationStart = DateHelper.getCurrentDate();
-
-		if (mode == Mode.FULL) {
-			// Ecrase l'indexe lucene sur le disque local
-			statusManager.setMessage("Effacement du répertoire d'indexation...");
-			overwriteIndex();
-		}
-
-		statusManager.setMessage("Récupération des tiers à indexer...");
-		final DeltaIds deltaIds = getIdsToIndex(mode, typesTiers);
-
-		try {
-			int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, statusManager);
-			remove(deltaIds.toRemove, statusManager);
-
-			if (mode == Mode.FULL_INCREMENTAL) {
-				// on supprime les tiers non-indexés dans la phase incrémentale (car cela veut dire qu'ils n'existent plus)
-				statusManager.setMessage("Nettoyage des tiers surnuméraires...");
-				deleteTiersIndexedBefore(indexationStart, typesTiers);
-			}
-
-			// [SIFISC-1184] on détecte et supprime les doublons une fois l'indexation effectuée
-			statusManager.setMessage("Suppression des doublons...");
-			globalIndex.deleteDuplicate();
-
-			return nbIndexed;
-		}
-		catch (Exception e) {
-			Audit.error("Erreur lors de l'indexation: " + e.getMessage());
-			throw new IndexerException(e);
-		}
-	}
-
-	/**
-	 * Supprime de l'indexe les éléments dont la date d'indexation est antérieure à la date spécifiée.
-	 *
-	 * @param date       une date
-	 * @param typesTiers les types de tiers à prendre en compte
-	 */
-	void deleteTiersIndexedBefore(@NotNull Date date, @NotNull Set<TypeTiers> typesTiers) {
-
-		final Set<String> subTypes = typesTiers.stream()
-				.map(GlobalTiersIndexerImpl::getIndexSubTypes)
-				.flatMap(Collection::stream)
-				.collect(Collectors.toSet());
-
-		try {
-			// critère de recherche sur la date d'indexation (qui doit tomber dans le range [0..date[ )
-			final Query dateQuery = NumericRangeQuery.newLongRange(TiersIndexableData.INDEXATION_DATE,
-			                                                   null,
-			                                                   date.getTime(),
-			                                                   false,
-			                                                   false);
-
-			// critère de recherche sur le ou les types de contribuables
-			final BooleanQuery typeQuery = new BooleanQuery();
-			for (String s : subTypes) {
-				typeQuery.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, s)), BooleanClause.Occur.SHOULD);
-			}
-
-			// les deux critères doivent être respectés
-			final BooleanQuery fullQuery = new BooleanQuery();
-			fullQuery.add(dateQuery, BooleanClause.Occur.MUST);
-			fullQuery.add(typeQuery, BooleanClause.Occur.MUST);
-
-			// on efface les tiers qui correspondent au critère complet
-			globalIndex.deleteEntitiesMatching(fullQuery);
-		}
-		catch (LuceneException e) {
-			throw new IndexerException(e);
-		}
-	}
-
-	/**
-	 * @param type un type de tiers
-	 * @return le ou less sous-type d'indexation qui correspondent au type de tiers spécifié.
-	 */
-	@NotNull
-	private static List<String> getIndexSubTypes(@NotNull TypeTiers type) {
-		final List<String> sub = new ArrayList<>(2);
-		switch (type) {
-		case AUTRE_COMMUNAUTE:
-			sub.add(AutreCommunauteIndexable.SUB_TYPE);
-			break;
-		case COLLECTIVITE_ADMINISTRATIVE:
-			sub.add(CollectiviteAdministrativeIndexable.SUB_TYPE);
-			break;
-		case DEBITEUR_PRESTATION_IMPOSABLE:
-			sub.add(DebiteurPrestationImposableIndexable.SUB_TYPE);
-			break;
-		case ENTREPRISE:
-			sub.add(EntrepriseIndexable.SUB_TYPE);
-			break;
-		case ETABLISSEMENT:
-			sub.add(EtablissementIndexable.SUB_TYPE);
-			break;
-		case MENAGE_COMMUN:
-			sub.add(MenageCommunIndexable.SUB_TYPE);
-			break;
-		case PERSONNE_PHYSIQUE:
-			sub.add(HabitantIndexable.SUB_TYPE);
-			sub.add(NonHabitantIndexable.SUB_TYPE);
-			break;
-		default:
-			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
-		}
-		return sub;
-	}
-
-	private DeltaIds getIdsToIndex(final Mode mode, @NotNull Set<TypeTiers> typesTiers) {
-
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-		return template.execute(status -> {
-
-			final DeltaIds deltaIds;
-			switch (mode) {
-			case FULL:
-			case FULL_INCREMENTAL:
-			{
-				// JDE : on traite les identifiants dans l'ordre décroissant pour traiter les PP d'abord...
-				final List<Long> allIds = new ArrayList<>(tiersDAO.getAllIdsFor(true, typesTiers));
-				allIds.sort(Collections.reverseOrder());
-				deltaIds = new DeltaIds(allIds);
-				break;
-			}
-
-			case DIRTY_ONLY:
-				deltaIds = new DeltaIds(tiersDAO.getDirtyIds());
-				break;
-
-			case MISSING_ONLY:
-				deltaIds = getIncrementalIds();
-				break;
-
-			default:
-				throw new ProgrammingException("Mode d'indexation inconnu = " + mode);
-			}
-			return deltaIds;
-		});
-	}
-
-	/**
-	 * [UNIREG-1988] Supprime les tiers spécifiés de l'indexeur.
-	 *
-	 * @param ids           les ids des tiers à supprimer
-	 * @param statusManager un status manager
-	 */
-	private void remove(List<Long> ids, StatusManager statusManager) {
-
-		LOGGER.info("Suppression de l'indexeur de " + ids.size() + " tiers");
-
-		final int size = ids.size();
-		int i = 0;
-		
-		for (Long id : ids) {
-			statusManager.setMessage("Suppression du tiers " + id, (100 * i) / size);
-			removeEntity(id);
-			i++;
-		}
-	}
-
-	private int indexMultithreads(List<Long> list, int nbThreads, @NotNull Mode mode, StatusManager statusManager) throws Exception {
-
-		LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode);
-
-		final TimeLog timeLog = new TimeLog();
-		timeLog.start();
-
-		final int queueSizeByThread = TiersIndexerWorker.BATCH_SIZE;
-		final MassTiersIndexer asyncIndexer = createMassTiersIndexer(nbThreads, mode, queueSizeByThread);
-
-		final int size = list.size();
-
-		// variables pour le log
-		int i = 0;
-
-		// période de la boucle d'attente lors du remplissage complet de la queue de traitement
-		final Duration offerTimeout = getOfferTimeout();
-
-		// sera mis à "true" si on détecte que tous les threads sont morts prématurément
-		boolean deadThreads = false;
-
-		final BatchIterator<Long> iter = new StandardBatchIterator<>(list, 100);
-		while (iter.hasNext() && !statusManager.isInterrupted() && !deadThreads) {
-
-			final Set<Long> ids = new HashSet<>(iter.next());
-
-			statusManager.setMessage("Indexation du tiers " + i + " sur " + size, (100 * i) / size);
-
-			// Dispatching des tiers à indexer
-			for (Long id : ids) {
-				if (statusManager.isInterrupted()) {
-					asyncIndexer.clearQueue();
-					break;
-				}
-
-				// insère l'id dans la queue à indexer, mais de manière à pouvoir interrompre le processus si
-				// plus personne ne prélève de tiers dans la queue (p.a. si tous les threads d'indexations sont morts).
-				while (!asyncIndexer.offerTiersForIndexation(id, offerTimeout) && !statusManager.isInterrupted()) {
-
-					// si tous les threads sont morts, il est temps de tout arrêter...
-					if (!asyncIndexer.isAlive()) {
-						LOGGER.debug("Détecté que tous les threads d'indexation sont morts avant la demande d'arrêt.");
-						deadThreads = true;
-						break;
-					}
-
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug(String.format("La queue d'indexation est pleine, attente de %d milli-secondes...", offerTimeout.toMillis()));
-					}
-				}
-
-				if (deadThreads) {
-					break;
-				}
-
-				++i;
-			}
-		}
-
-		deadThreads = asyncIndexer.terminate() || deadThreads;
-
-		timeLog.end(asyncIndexer);
-		timeLog.logStats();
-
-		if (deadThreads) {
-			final String msg = String.format("Les threads d'indexation se sont tous arrêtés. Nombre de tiers réindexés/total = %d/%d", i, size);
-			Audit.error(msg);
-			throw new IndexerException(msg);
-		}
-		else if (statusManager.isInterrupted()) {
-			Audit.warn("L'indexation a été interrompue. Nombre de tiers réindexés/total = " + i + '/' + size);
-		}
-		else {
-			Audit.success("L'indexation s'est terminée avec succès. Nombre de tiers réindexés = " + size);
-		}
-
-		return size;
-	}
-
-	/**
-	 * Surchargeable dans les tests pour provoquer des situations spéciales
-	 *
-	 * @param nbThreads                 le nombre de threads pour l'indexation en parallèle
-	 * @param mode                      le mode d'indexation
-	 * @param queueSizeByThread         la taille maximale de la queue par thread
-	 * @return l'indexer de la classe {@link MassTiersIndexer}
-	 */
-	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, @NotNull Mode mode, int queueSizeByThread) {
-		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, serviceCivilCacheWarmer);
-	}
-
-	/**
-	 * Surchargeable dans les tests pour avoir des temps de latence plus faibles
-	 * @return le délai d'attente, quand la queue est pleine
-	 */
-	protected Duration getOfferTimeout() {
-		return Duration.ofSeconds(10);
-	}
-
-	private static class DeltaIds {
-		public final List<Long> toAdd;
-		public final List<Long> toRemove ;
-
-		private DeltaIds() {
-			this.toAdd = new ArrayList<>();
-			this.toRemove = new ArrayList<>();
-		}
-
-		private DeltaIds(List<Long> toAdd) {
-			this.toAdd = toAdd;
-			this.toRemove = Collections.emptyList();
-		}
-	}
-
-	/**
-	 * @return la liste des ids non-indexés, ainsi que ceux indexés à tord
-	 */
-	private DeltaIds getIncrementalIds() {
-
-		final Set<Long> idsDb = new HashSet<>(tiersDAO.getAllIds());
-		final Set<Long> idsIndex = tiersSearcher.getAllIds();
-
-		DeltaIds ids = new DeltaIds();
-
-		for (Long id : idsDb) {
-			if (!idsIndex.contains(id)) {
-				ids.toAdd.add(id);
-			}
-		}
-		for (Long id : idsIndex) {
-			if (!idsDb.contains(id)) {
-				ids.toRemove.add(id);
-			}
-		}
-
-		return ids;
-	}
-
-	/**
-	 * Index les tiers spécifié.
-	 *
-	 * @param tiers            les tiers à indexer
-	 * @param removeBefore     si <b>vrai</b> les données du tiers seront supprimée de l'index avant d'être réinsérée; si <b>false</b> les données seront simplement ajoutées.
-	 * @param followDependents si <b>vrai</b> les tiers liés (ménage commun, ...) seront aussi indexées.
-	 * @throws IndexerBatchException en cas d'exception lors de l'indexation d'un ou plusieurs tiers. La méthode essaie d'indexer tous les tiers dans tous les cas, ce qui veut dire que si le premier
-	 *                               tiers lève une exception, les tiers suivants seront quand même indexés.
-	 */
-    public void indexTiers(List<Tiers> tiers, boolean removeBefore, boolean followDependents) throws IndexerBatchException {
-	    if (tiers == null) {
-		    throw new IllegalArgumentException();
-	    }
+	public void indexTiers(@NotNull List<Tiers> tiers, boolean removeBefore, boolean followDependents) throws IndexerBatchException {
 
         // Note : en cas d'exception, on continue le processing, on stocke les exceptions et on les lèves d'un seul coup à la fin
         IndexerBatchException exception = null;
@@ -820,7 +375,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		onTheFlyTiersIndexer = new OnTheFlyTiersIndexer(this, transactionManager, sessionFactory, dialect);
+		onTheFlyTiersIndexer = new OnTheFlyTiersIndexer(this, transactionManager, sessionFactory, tiersDAO);
 		if (statsService != null) {
 
 			// façade de monitoring sur la queue d'indexation on-the-fly, où la charge est définie comme le nombre de tiers en attente d'indexation
@@ -920,14 +475,5 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	public void setServiceEntreprise(ServiceEntreprise serviceEntreprise) {
 		this.serviceEntreprise = serviceEntreprise;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDialect(Dialect dialect) {
-		this.dialect = dialect;
-	}
-
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
 	}
 }

@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -418,6 +419,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public boolean setFlagBlocageRemboursementAutomatique(long tiersId, boolean newFlag) {
 		return target.setFlagBlocageRemboursementAutomatique(tiersId, newFlag);
+	}
+
+	@Override
+	public void setDirtyFlag(@Nullable Collection<Long> ids, boolean flag, @NotNull Session session) {
+		target.setDirtyFlag(ids, flag, session);
 	}
 
 	private static final String poppins = "Supercalifragilisticexpialidocious";

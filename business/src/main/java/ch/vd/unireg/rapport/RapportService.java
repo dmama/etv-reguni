@@ -40,6 +40,7 @@ import ch.vd.unireg.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.unireg.document.ComparerSituationFamilleRapport;
 import ch.vd.unireg.document.CorrectionEtatDeclarationRapport;
 import ch.vd.unireg.document.CorrectionFlagHabitantRapport;
+import ch.vd.unireg.document.DatabaseIndexationRapport;
 import ch.vd.unireg.document.DemandeDelaiCollectiveRapport;
 import ch.vd.unireg.document.DeterminationDIsPMRapport;
 import ch.vd.unireg.document.DeterminationDIsPPRapport;
@@ -119,6 +120,7 @@ import ch.vd.unireg.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.unireg.foncier.migration.mandataire.MigrationMandatImporterResults;
 import ch.vd.unireg.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.unireg.identification.contribuable.IdentifierContribuableResults;
+import ch.vd.unireg.indexer.jobs.DatabaseIndexationResults;
 import ch.vd.unireg.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.unireg.listes.afc.pm.ExtractionDonneesRptPMResults;
 import ch.vd.unireg.listes.assujettis.AssujettisParSubstitutionResults;
@@ -830,4 +832,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	RattraperEmissionDIPourCyberContexteRapport generateRapport(RattraperEmissionDIPourCyberContexteResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch d'indexation des tiers.
+	 *
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	DatabaseIndexationRapport generateRapport(DatabaseIndexationResults results, StatusManager status);
 }

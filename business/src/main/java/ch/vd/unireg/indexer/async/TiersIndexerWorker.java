@@ -2,17 +2,14 @@ package ch.vd.unireg.indexer.async;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -22,14 +19,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.cache.ServiceCivilCacheWarmer;
 import ch.vd.unireg.common.Switchable;
 import ch.vd.unireg.indexer.IndexerBatchException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexerImpl;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.tiers.Tiers;
+import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersDAOImpl;
 import ch.vd.unireg.worker.BatchWorker;
 
@@ -40,10 +37,10 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 
 	public static final int BATCH_SIZE = 20;
 
+	private final TiersDAO tiersDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final GlobalTiersIndexerImpl indexer;
 	private final SessionFactory sessionFactory;
-	private final Dialect dialect;
 	private final boolean followDependents;
 	private final boolean removeBefore;
 
@@ -60,22 +57,16 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	 * @param globalTiersIndexer      l'indexer des tiers
 	 * @param sessionFactory          la session factory hibernate
 	 * @param transactionManager      le transaction manager
-	 * @param dialect                 le dialect hibernate utilisé
 	 * @param name                    le nom du thread
 	 * @param serviceCivilCacheWarmer le warmer du cache du service civil
+	 * @param tiersDAO                le tiers DAO
 	 */
-	public TiersIndexerWorker(boolean followDependentsTiers,
-	                          boolean removeBeforeIndexing,
-	                          @NotNull GlobalTiersIndexerImpl globalTiersIndexer,
-	                          @NotNull SessionFactory sessionFactory,
-	                          @NotNull PlatformTransactionManager transactionManager,
-	                          Dialect dialect,
-	                          String name,
-	                          @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+	public TiersIndexerWorker(boolean followDependentsTiers, boolean removeBeforeIndexing, @NotNull GlobalTiersIndexerImpl globalTiersIndexer, @NotNull SessionFactory sessionFactory, @NotNull PlatformTransactionManager transactionManager,
+	                          String name, @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer, TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
 		this.indexer = globalTiersIndexer;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
-		this.dialect = dialect;
 		this.name = name;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.followDependents = followDependentsTiers;
@@ -172,7 +163,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		try {
 			// on index le tiers
 			indexer.indexTiers(tiers, removeBefore, followDependents);
-			setDirtyFlag(extractIds(tiers), false, session);
+			tiersDAO.setDirtyFlag(extractIds(tiers), false, session);
 		}
 		catch (IndexerBatchException e) {
 			// 1 ou plusieurs tiers n'ont pas pu être indexés (selon la liste fournie par l'exception)
@@ -195,8 +186,10 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 			}
 			indexedIds.removeAll(inErrorIds);
 
-			setDirtyFlag(indexedIds, false, session); // reset le flag dirty de tous les tiers qui ont été indexés
-			setDirtyFlag(inErrorIds, true, session); // flag tous les tiers qui n'ont pas pu être indexés comme dirty, notamment ceux qui ne l'étaient pas avant
+			// reset le flag dirty de tous les tiers qui ont été indexés
+			tiersDAO.setDirtyFlag(indexedIds, false, session);
+			// flag tous les tiers qui n'ont pas pu être indexés comme dirty, notamment ceux qui ne l'étaient pas avant
+			tiersDAO.setDirtyFlag(inErrorIds, true, session);
 		}
 		catch (Exception e) {
 			// potentiellement aucun des tiers n'a pu être indexés
@@ -205,26 +198,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 				LOGGER.debug(e.getMessage(), e);
 			}
 
-			setDirtyFlag(extractIds(tiers), true, session);
-		}
-	}
-
-	private void setDirtyFlag(Collection<Long> ids, boolean flag, Session session) {
-
-		if (ids == null || ids.isEmpty()) {
-			return;
-		}
-
-		final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(flag) + " where NUMERO in (:ids)");
-		query.setParameterList("ids", ids);
-		query.executeUpdate();
-
-		if (!flag) {
-			// [UNIREG-1979] On remet aussi à zéro tous les tiers dont la date 'reindex_on' est atteinte aujourd'hui
-			final SQLQuery q = session.createSQLQuery("update TIERS set REINDEX_ON = null where REINDEX_ON is not null and REINDEX_ON <= :today and NUMERO in (:ids)");
-			q.setParameter("today", RegDate.get().index());
-			q.setParameterList("ids", ids);
-			q.executeUpdate();
+			tiersDAO.setDirtyFlag(extractIds(tiers), true, session);
 		}
 	}
 

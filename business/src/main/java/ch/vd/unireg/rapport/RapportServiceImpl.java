@@ -52,6 +52,7 @@ import ch.vd.unireg.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.unireg.document.ComparerSituationFamilleRapport;
 import ch.vd.unireg.document.CorrectionEtatDeclarationRapport;
 import ch.vd.unireg.document.CorrectionFlagHabitantRapport;
+import ch.vd.unireg.document.DatabaseIndexationRapport;
 import ch.vd.unireg.document.DemandeDelaiCollectiveRapport;
 import ch.vd.unireg.document.DeterminationDIsPMRapport;
 import ch.vd.unireg.document.DeterminationDIsPPRapport;
@@ -132,6 +133,7 @@ import ch.vd.unireg.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.unireg.foncier.migration.mandataire.MigrationMandatImporterResults;
 import ch.vd.unireg.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.unireg.identification.contribuable.IdentifierContribuableResults;
+import ch.vd.unireg.indexer.jobs.DatabaseIndexationResults;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.unireg.listes.afc.pm.ExtractionDonneesRptPMResults;
@@ -1978,6 +1980,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(RattraperEmissionDIPourCyberContexteRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfRattraperEmissionDIPourCyberContexteRapport document = new PdfRattraperEmissionDIPourCyberContexteRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public DatabaseIndexationRapport generateRapport(DatabaseIndexationResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapporDatabaseIndexation" + results.getDateTraitement().index();
+		final String description = "Rapport d'exécution du job d'indexation des tiers. Date de traitement = " + RegDateHelper.dateToDisplayString(results.getDateTraitement()) + ".";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(DatabaseIndexationRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfDatabaseIndexationRapport document = new PdfDatabaseIndexationRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

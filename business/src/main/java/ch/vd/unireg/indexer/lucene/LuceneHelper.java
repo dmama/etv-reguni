@@ -5,6 +5,7 @@ import java.io.StringReader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -332,5 +333,10 @@ public abstract class LuceneHelper {
 
 	private static Analyzer getStandardAnalyzer() {
 		return new OurOwnStandardAnalyzer();
+	}
+
+	public static long extractTiersId(final Document doc) {
+		final String idAsString = doc.get(F_ENTITYID);
+		return Long.parseLong(idAsString);
 	}
 }

@@ -1951,6 +1951,26 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 	}
 
+	@Override
+	public void setDirtyFlag(@Nullable Collection<Long> ids, boolean flag, @NotNull Session session) {
+
+		if (ids == null || ids.isEmpty()) {
+			return;
+		}
+
+		final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(flag) + " where NUMERO in (:ids)");
+		query.setParameterList("ids", ids);
+		query.executeUpdate();
+
+		if (!flag) {
+			// [UNIREG-1979] On remet aussi à zéro tous les tiers dont la date 'reindex_on' est atteinte aujourd'hui
+			final SQLQuery q = session.createSQLQuery("update TIERS set REINDEX_ON = null where REINDEX_ON is not null and REINDEX_ON <= :today and NUMERO in (:ids)");
+			q.setParameter("today", RegDate.get().index());
+			q.setParameterList("ids", ids);
+			q.executeUpdate();
+		}
+	}
+
 	private static class ForFiscalAccessor<T extends ForFiscal> implements AddAndSaveHelper.EntityAccessor<Tiers, T> {
 		@Override
 		public Collection<ForFiscal> getEntities(Tiers tiers) {

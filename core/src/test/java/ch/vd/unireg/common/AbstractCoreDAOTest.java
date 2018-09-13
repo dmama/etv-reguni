@@ -224,6 +224,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		super.onSetUp();
 
 		sessionFactoryBean = getBean(DescriptiveSessionFactoryBean.class, "&sessionFactory");
+		sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 		setDataSource(getBean(DataSource.class, "dataSource"));
 		dialect = getBean(Dialect.class, "hibernateDialect");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");

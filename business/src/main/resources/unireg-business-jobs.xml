@@ -21,7 +21,19 @@
     <bean id="databaseIndexingJob" parent="schedulerJob" class="ch.vd.unireg.indexer.jobs.DatabaseIndexerJob">
         <constructor-arg value="100"/>
         <constructor-arg value="Réindexer tout ou partie des tiers de la base de données"/>
-        <property name="globalTiersIndexer" ref="globalTiersIndexer"/>
+	    <property name="rapportService" ref="rapportService"/>
+	    <property name="processor">
+		    <bean class="ch.vd.unireg.indexer.jobs.DatabaseIndexationProcessor">
+			    <constructor-arg ref="tiersDAO" />
+			    <constructor-arg ref="serviceCivilCacheWarmer" />
+			    <constructor-arg ref="statsService" />
+			    <constructor-arg ref="globalTiersSearcher" />
+			    <constructor-arg ref="globalTiersIndexer" />
+			    <constructor-arg ref="globalTiersIndex" />
+			    <constructor-arg ref="sessionFactory" />
+			    <constructor-arg ref="transactionManager" />
+		    </bean>
+	    </property>
     </bean>
 
     <bean id="optimizeIndexJob" parent="schedulerJob" class="ch.vd.unireg.indexer.OptimizeIndexJob">

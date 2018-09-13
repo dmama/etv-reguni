@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -453,5 +454,10 @@ public class MockTiersDAO implements TiersDAO {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void setDirtyFlag(@Nullable Collection<Long> ids, boolean flag, @NotNull Session session) {
+		throw new NotImplementedException();
 	}
 }

@@ -1,15 +1,15 @@
 package ch.vd.unireg.indexer.tiers;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.indexer.IndexerBatchException;
 import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.tiers.Tiers;
 
 public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 
@@ -24,8 +24,8 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 	}
 
 	@Override
-	public int indexAllDatabase(@NotNull GlobalTiersIndexer.Mode mode, @NotNull Set<TypeTiers> typesTiers, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException {
-		return 0;
+	public void indexTiers(@NotNull List<Tiers> tiers, boolean removeBefore, boolean followDependents) throws IndexerBatchException {
+
 	}
 
 	@Override
