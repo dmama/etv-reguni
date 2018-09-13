@@ -479,6 +479,47 @@ var Dialog = {
 	},
 
 	/**
+	 * Ouvre une boîte de dialog modale qui affiches les détails d'une demande de délai faite par un mandataire.
+	 *
+	 * @param id l'id de la demande
+	 */
+	open_demande_mandataire: function(id) {
+
+		// charge le contenu de la boîte de dialogue
+		$.getJSON(App.curl('/di/demande-mandataire.do?id=') + id + '&' + new Date().getTime(), function(view) {
+
+			/** @namespace view.numeroIDE*/
+			/** @namespace view.raisonSociale*/
+
+			var dialog = Dialog.create_dialog_div('demande-mandataire-dialog');
+
+			var numeroIDE = view.numeroIDE ? StringUtils.escapeHTML(view.numeroIDE) : '';
+			var raisonSociale = view.raisonSociale ? StringUtils.escapeHTML(view.raisonSociale) : '';
+
+			dialog.html('<table>' +
+				'<tr class="odd"><td width="25%">Numéro IDE&nbsp;:</td><td width="75%">' + numeroIDE + '</td></tr>' +
+				'<tr class="even"><td width="15%">Raison sociale&nbsp;:</td><td width="55%">' +  raisonSociale + '</td></tr>' +
+				'</table>');
+
+			dialog.dialog({
+				              title: 'Mandataire ayant fait la demande de délai ',
+				              height: 150,
+				              width: 800,
+				              modal: true,
+				              buttons: {
+					              Ok: function() {
+						              dialog.dialog("close");
+					              }
+				              }
+			              });
+		});
+
+		//prevent the browser to follow the link
+		return false;
+	},
+
+
+	/**
 	 * Récupère ou crée à la demande un élément div pour contenir une boîte de dialogue
 	 */
 	create_dialog_div: function(id) {
@@ -1072,6 +1113,16 @@ var Link = {
 	consulterLog:function (nature, id) {
 		var onclick = "return Dialog.open_consulter_log('" + nature + "', " + id + ");";
 		return '<a href="#" class="consult" title="Consultation des logs" onclick="' + onclick + '">&nbsp;</a>';
+	},
+
+	/**
+	 * Génère le code html qui va bien pour afficher une icône de visualisation du mandataire ayant fait une demande de délai.
+	 * @param demandeId l'id de la demande de délai faite par le mandataire
+	 * @return {String} le code html qui va bien.
+	 */
+	consulterMandataire:function (demandeId) {
+		var onclick = 'return Dialog.open_demande_mandataire(' + demandeId + ');';
+		return '<a href="#" class="consult_mandataire" title="Délai demandé par un mandataire" onclick="' + onclick + '">&nbsp;</a>';
 	},
 
 	/**
@@ -2973,12 +3024,17 @@ var Decl = {
 				var d = delais[i];
 				/** @namespace d.delaiAccordeAu */
 				/** @namespace d.dateDemande */
+				/** @namespace d.demandeDelaisMandataireId */
 				/** @namespace d.confirmationEcrite */
 				/** @namespace d.urlVisualisationExterneDocument */
 				/** @namespace d.dateTraitement */
 				/** @namespace d.etat */
 				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
-				html += '<td>' + RegDate.format(d.dateDemande) + '</td>';
+				html += '<td>' + RegDate.format(d.dateDemande);
+				if (d.demandeDelaisMandataireId) {
+					html += ' ' + Link.consulterMandataire(d.demandeDelaisMandataireId);
+				}
+				html += '</td>';
 				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
 				html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';
 				html += '<td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
@@ -3021,13 +3077,17 @@ var Decl = {
 				var d = delais[i];
 				/** @namespace d.delaiAccordeAu */
 				/** @namespace d.dateDemande */
+				/** @namespace d.demandeDelaisMandataireId */
 				/** @namespace d.confirmationEcrite */
 				/** @namespace d.urlVisualisationExterneDocument */
 				/** @namespace d.dateTraitement */
 				/** @namespace d.etat */
 				/** @namespace d.sursis */
 				html += '<tr class="' + (i % 2 === 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
-				html += '<td>' + RegDate.format(d.dateDemande) + '</td>';
+				html += '<td>' + RegDate.format(d.dateDemande);
+				if (d.demandeDelaisMandataireId) {
+					html += ' ' + Link.consulterMandataire(d.demandeDelaisMandataireId);
+				}
 				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
 				if (avecDecision) {
 					html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';

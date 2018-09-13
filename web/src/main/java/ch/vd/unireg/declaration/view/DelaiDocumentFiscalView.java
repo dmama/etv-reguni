@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
@@ -37,6 +38,8 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 	private boolean annule;
 	private boolean first;
 	private boolean lastOfState;
+	@Nullable
+	private Long demandeDelaisMandataireId;
 
 	public DelaiDocumentFiscalView() {
 	}
@@ -59,6 +62,7 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 		this.etat = delai.getEtat();
 		this.etatMessage = messageHelper.getMessage("option.etat.delai." + this.etat.name());
 		this.sursis = delai.isSursis();
+		this.demandeDelaisMandataireId = delai.getDemandeMandataire() == null ? null : delai.getDemandeMandataire().getId();
 	}
 
 	public Long getId() {
@@ -209,6 +213,12 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 	public void setLastOfState(boolean lastOfState) {
 		this.lastOfState = lastOfState;
 	}
+
+	@Nullable
+	public Long getDemandeDelaisMandataireId() {
+		return demandeDelaisMandataireId;
+	}
+
 
 	/**
 	 * Compare d'apres la date de DelaiDeclarationView

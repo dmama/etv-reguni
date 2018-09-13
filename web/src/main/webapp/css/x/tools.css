@@ -36,6 +36,7 @@ a.copy,
 a.detail,
 a.extlink,
 a.consult,
+a.consult_mandataire,
 a.infotraitement,
 a.alert,
 a.historique,
@@ -79,6 +80,7 @@ a.copy:hover,
 a.detail:hover,
 a.extlink:hover,
 a.consult:hover,
+a.consult_mandataire:hover,
 a.alert:hover,
 a.historique:hover,
 a.download:hover,
@@ -225,6 +227,10 @@ a.infotraitement {
 
 a.consult:hover {
 	background-image: url(consult_on.gif);
+}
+
+a.consult_mandataire {
+	background-image: url(consult_mandataire.png);
 }
 
 a.alert {

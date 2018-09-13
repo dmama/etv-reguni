@@ -2,11 +2,15 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <c:set var="page" value="${param.page}" />
 <c:set var="depuisTache" value="${param.depuisTache}" />
+<%--@elvariable id="command" type="ch.vd.unireg.di.view.EditerDeclarationImpotView"--%>
 <c:if test="${not empty command.delais}">
 
 	<display:table name="command.delais" id="delai" pagesize="10" requestURI="editer.do" class="display" decorator="ch.vd.unireg.decorator.TableEntityDecorator">
 		<display:column titleKey="label.date.demande">
 			<unireg:regdate regdate="${delai.dateDemande}" />
+			<c:if test="${delai.demandeDelaisMandataireId != null}">
+				<unireg:consulterDemandeMandataire demandeId="${delai.demandeDelaisMandataireId}"/>
+			</c:if>
 		</display:column>
 		<display:column titleKey="label.date.traitement">
 			<unireg:regdate regdate="${delai.dateTraitement}" />

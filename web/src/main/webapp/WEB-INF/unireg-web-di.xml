@@ -33,6 +33,7 @@
 		<property name="liberationSender" ref="evenementLiberationDeclarationImpotSender"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="messageHelper" ref="messageHelper"/>
+		<property name="demandeDelaisMandataireDAO" ref="demandeDelaisMandataireDAO"/>
 	</bean>
 
 	<bean id="diEditManager" class="ch.vd.unireg.di.manager.DeclarationImpotEditManagerImpl" >

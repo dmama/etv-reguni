@@ -1074,6 +1074,19 @@
 		</attribute>
 	</tag>
 	<tag>
+		<description>Affiche une icône de consultation d'une demande mandataire</description>
+		<name>consulterDemandeMandataire</name>
+		<tag-class>ch.vd.unireg.taglibs.JspTagConsulterDemandeMandataire</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>Id de la demande mandataire</description>
+			<name>demandeId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<description>Affiche une icône d'alerte</description>
 		<name>raccourciAlerter</name>
 		<tag-class>ch.vd.unireg.taglibs.JspTagRaccourci$Alerter</tag-class>

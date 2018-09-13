@@ -66,6 +66,7 @@ import ch.vd.unireg.di.view.AjouterDelaiDeclarationPPView;
 import ch.vd.unireg.di.view.ChoixDeclarationImpotView;
 import ch.vd.unireg.di.view.DeclarationImpotListView;
 import ch.vd.unireg.di.view.DeclarationImpotView;
+import ch.vd.unireg.di.view.DemandeDelaisMandataireView;
 import ch.vd.unireg.di.view.EditerDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.unireg.di.view.ImprimerNouvelleDeclarationImpotView;
@@ -82,6 +83,8 @@ import ch.vd.unireg.evenement.declaration.EvenementDeclarationException;
 import ch.vd.unireg.evenement.di.EvenementLiberationDeclarationImpotSender;
 import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.mandataire.DemandeDelaisMandataire;
+import ch.vd.unireg.mandataire.DemandeDelaisMandataireDAO;
 import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.metier.assujettissement.PeriodeImposition;
 import ch.vd.unireg.metier.assujettissement.PeriodeImpositionPersonnesMorales;
@@ -131,6 +134,7 @@ public class DeclarationImpotController {
 	private Set<String> sourcesQuittancementAvecLiberationPossible = Collections.emptySet();
 	private EvenementLiberationDeclarationImpotSender liberationSender;
 	private ServiceInfrastructureService infraService;
+	private DemandeDelaisMandataireDAO demandeDelaisMandataireDAO;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -210,6 +214,10 @@ public class DeclarationImpotController {
 
 	public void setMessageHelper(MessageHelper messageHelper) {
 		this.messageHelper = messageHelper;
+	}
+
+	public void setDemandeDelaisMandataireDAO(DemandeDelaisMandataireDAO demandeDelaisMandataireDAO) {
+		this.demandeDelaisMandataireDAO = demandeDelaisMandataireDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -1694,5 +1702,16 @@ public class DeclarationImpotController {
 		catch (EvenementDeclarationException e) {
 			throw new ActionException(e.getMessage(), e);
 		}
+	}
+
+	@ResponseBody
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	@RequestMapping(value = "/di/demande-mandataire.do", method = RequestMethod.GET)
+	public DemandeDelaisMandataireView demandeMandataire(@RequestParam("id") final long id) {
+		final DemandeDelaisMandataire demande = demandeDelaisMandataireDAO.get(id);
+		if (demande == null) {
+			return null;
+		}
+		return new DemandeDelaisMandataireView(demande);
 	}
 }
