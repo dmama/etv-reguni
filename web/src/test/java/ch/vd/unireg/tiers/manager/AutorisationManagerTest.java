@@ -22,15 +22,15 @@ import static org.junit.Assert.assertTrue;
 
 public class AutorisationManagerTest extends WebTest {
 
-	private AutorisationManager autorisationManager;
+	private ConfigurationMandataire configurationMandataire;
+
+	// Tests sur RetourModeImpositionAllowed.INTERDIT
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		autorisationManager = getBean(AutorisationManagerImpl.class, "autorisationManager");
+		configurationMandataire = getBean(ConfigurationMandataire.class, "configurationMandataire");
 	}
-
-	// Tests sur RetourModeImpositionAllowed.INTERDIT
 
 	@Test
 	public void testIsModeImpositionAllowedInterditOrdinaire() {
@@ -305,7 +305,12 @@ public class AutorisationManagerTest extends WebTest {
 
 		final Role[] roles = {Role.MODIF_NONHAB_DEBPUR, Role.MODIF_HAB_DEBPUR, Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		//AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+
+		// on crée un autorisation manager local avec un mock comme sécurity provider pour ne pas polluer le contexte Spring des tests Web
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setInfrastructureService(serviceInfra);
+		autorisationManager.setTiersService(tiersService);
+		autorisationManager.setConfigurationMandataire(configurationMandataire);
 		autorisationManager.setSecurityProvider(provider);
 		//
 		final ConfigurationMandataire configurationMandataireMock = Mockito.mock(ConfigurationMandataire.class);

@@ -112,7 +112,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		this.serviceCivil = serviceCivil;
 	}
 
-	@Override
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
 	}
