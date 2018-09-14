@@ -51,6 +51,7 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 				}
 			}
 			utilisateurView.setOfficeImpot(officeImpot);
+			utilisateurView.setNumeroIndividu(operateur.getIndividuNoTechnique());
 		}
 
 		return utilisateurView;
