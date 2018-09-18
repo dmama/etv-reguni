@@ -187,7 +187,7 @@ public class MutationsRFDetector {
 
 		// l'import doit être le prochain à traiter dans la suite chronologique des dates
 		final EvenementRFImport nextToProcess = getNextImportToProcess(event.getType());
-		if (!Objects.equals(importId, nextToProcess.getId())) {
+		if (nextToProcess != null && !Objects.equals(importId, nextToProcess.getId())) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
 			updateEvent(importId, event.getEtat(), exception);  // on ne change pas l'état pour permettre de le lancer plus tard
 			throw exception;
@@ -201,14 +201,35 @@ public class MutationsRFDetector {
 			throw exception;
 		}
 
-		if (event.getType() == TypeImportRF.SERVITUDES) {
-			try {
+		try {
+			if (event.getType() == TypeImportRF.PRINCIPAL) {
+				checkPreconditionsPrincipal(event);
+			}
+			else if (event.getType() == TypeImportRF.SERVITUDES) {
 				checkPreconditionsServitudes(event);
 			}
-			catch (IllegalArgumentException e) {
-				updateEvent(importId, event.getEtat(), e);  // on ne change pas l'état pour permettre de le lancer plus tard
-				throw e;
-			}
+		}
+		catch (IllegalArgumentException e) {
+			updateEvent(importId, event.getEtat(), e);  // on ne change pas l'état pour permettre de le lancer plus tard
+			throw e;
+		}
+	}
+
+	/**
+	 * [SIFISC-29606] un import principal ne doit passer s'il existe un import de servitudes plus ancien non-traité.
+	 */
+	private void checkPreconditionsPrincipal(@NotNull EvenementRFImport event) {
+
+		// l'import doit être le prochain à traiter dans la suite chronologique des dates
+		final EvenementRFImport nextToProcess = getNextImportToProcess(TypeImportRF.SERVITUDES);
+		if (nextToProcess != null && nextToProcess.getDateEvenement().isBefore(event.getDateEvenement())) {
+			throw new IllegalArgumentException("L'import RF avec l'id = [" + event.getId() + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
+		}
+
+		// il ne doit pas y avoir des mutations non-traitées d'un import précédent
+		final Long unprocessedImport = findOldestImportWithUnprocessedMutations(event.getId(), TypeImportRF.SERVITUDES);
+		if (unprocessedImport != null) {
+			throw new IllegalArgumentException("L'import RF avec l'id = [" + event.getId() + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + unprocessedImport + "] n'ont pas été traitées.");
 		}
 	}
 
@@ -378,7 +399,7 @@ public class MutationsRFDetector {
 		template.setReadOnly(true);
 		return template.execute(new TxCallback<EvenementRFImport>() {
 			@Override
-			public EvenementRFImport execute(TransactionStatus status) throws Exception {
+			public EvenementRFImport execute(TransactionStatus status) {
 				return evenementRFImportDAO.get(eventId);
 			}
 		});
@@ -388,20 +409,11 @@ public class MutationsRFDetector {
 	 * @param type le type d'import considéré
 	 * @return le prochain import qui doit être processé en respectant les états et les dates chronologiques d'import.
 	 */
-	@NotNull
+	@Nullable
 	private EvenementRFImport getNextImportToProcess(TypeImportRF type) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TxCallback<EvenementRFImport>() {
-			@Override
-			public EvenementRFImport execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport next = evenementRFImportDAO.findNextImportToProcess(type);
-				if (next == null) {
-					throw new IllegalArgumentException("Il n'y a pas de prochain rapport à processer.");
-				}
-				return next;
-			}
-		});
+		return template.execute(s -> evenementRFImportDAO.findNextImportToProcess(type));
 	}
 
 	/**
@@ -427,7 +439,7 @@ public class MutationsRFDetector {
 		template.setReadOnly(true);
 		return template.execute(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				final EvenementRFImport previous = evenementRFImportDAO.findOldestImportWithUnprocessedMutations(importId, type);
 				return previous == null ? null : previous.getId();
 			}
@@ -445,7 +457,7 @@ public class MutationsRFDetector {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.execute(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final EvenementRFImport event = evenementRFImportDAO.get(eventId);
 				if (event == null) {
 					throw new ObjectNotFoundException("L'événement d'import RF avec l'id = [" + eventId + "] n'existe pas.");

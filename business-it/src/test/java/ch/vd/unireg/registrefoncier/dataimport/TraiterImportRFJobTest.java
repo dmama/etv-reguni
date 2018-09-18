@@ -69,12 +69,14 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + importId + "] a déjà été traité.", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + importId + "] a déjà été traité."));
+				final String callstack = importEvent.getCallstack();
+				assertNotNull(callstack);
+				assertTrue(callstack.contains("L'import RF avec l'id = [" + importId + "] a déjà été traité."));
 			}
 		});
 	}
@@ -104,12 +106,14 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "].", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "]."));
+				final String callstack = importEvent.getCallstack();
+				assertNotNull(callstack);
+				assertTrue(callstack.contains("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "]."));
 			}
 		});
 	}
@@ -139,12 +143,14 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01].", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
+				final String callstack = importEvent.getCallstack();
+				assertNotNull(callstack);
+				assertTrue(callstack.contains("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
 			}
 		});
 	}
@@ -174,12 +180,14 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01].", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
+				final String callstack = importEvent.getCallstack();
+				assertNotNull(callstack);
+				assertTrue(callstack.contains("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
 			}
 		});
 	}
@@ -276,7 +284,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		// on insère les données de l'import dans la base
 		final Long importId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				EvenementRFImport importEvent = new EvenementRFImport();
 				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
@@ -343,7 +351,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		// on vérifie que l'import est bien passé au statut TRAITE
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
@@ -353,7 +361,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		// on vérifie que les mutations attendues sont bien dans la DB (et que les mutations pré-existantes ont été supprimées)
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(3, mutations.size());    // il y a 3 ayants-droits dans le fichier d'import et la DB était vide
 				mutations.sort(new MutationComparator());
@@ -430,7 +438,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		// on insère les données d'un import précédent dans la base
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				EvenementRFImport importEvent = new EvenementRFImport();
 				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 9, 1));
@@ -493,7 +501,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		// on insère les données de l'import dans la base
 		final Long importId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) {
 				EvenementRFImport importEvent = new EvenementRFImport();
 				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
@@ -521,12 +529,163 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			public void execute(TransactionStatus status) {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(ids.suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées.", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées."));
+				final String callstack = importEvent.getCallstack();
+				assertNotNull(callstack);
+				assertTrue(callstack.contains("L'import RF avec l'id = [" + ids.suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées."));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-29606] Ce test vérifie que le démarrage du job d'import principal n'est pas autorisé alors qu'il existe un import de servitudes à une date de valeur plus récente.
+	 */
+	@Test
+	public void testImportPrincipalAvecImportServitudeDateAnterieureATraite() throws Exception {
+
+		// on va chercher un fichier d'import (vide, mais ça n'a pas d'importance)
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_servitudes_vide_rf.xml");
+		assertNotNull(importFile);
+
+		// on l'upload dans Raft
+		final String raftUrl;
+		try (FileInputStream is = new FileInputStream(importFile)) {
+			raftUrl = zipRaftEsbStore.store("Fiscalite", "UnitTest", "Unireg", is);
+		}
+		assertNotNull(raftUrl);
+
+		// un import principal déjà processé + un import des servitudes à processer
+		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 3, 1), EtatEvenementRF.TRAITE, "http://turlututu");
+		final long precedent = insertImport(TypeImportRF.SERVITUDES, RegDate.get(2016, 3, 1), EtatEvenementRF.A_TRAITER, "http://turlututu");
+
+		// un nouvel import principal à processer + un import des servitudes à processer aussi
+		final long suivant = insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.A_TRAITER, raftUrl);
+		insertImport(TypeImportRF.SERVITUDES, RegDate.get(2016, 9, 1), EtatEvenementRF.A_TRAITER, "http://turlututu");
+
+		// on déclenche le démarrage du job sur le nouvel import principal
+		final Map<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, suivant);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job ne doit pas démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
+				assertEquals("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "].", importEvent.getErrorMessage());
+				final String callstack = importEvent.getCallstack();
+				assertNotNull(callstack);
+				assertTrue(callstack.contains("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "]."));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-29606] Ce test vérifie que le démarrage du job d'import principal n'est pas autorisé alors qu'il existe un import de servitudes avec des mutations non-traitées à une date de valeur plus récente.
+	 */
+	@Test
+	public void testImportPrincipalAvecImportServitudeDateAnterieureAvecMutationsATraite() throws Exception {
+
+		// on va chercher un fichier d'import (vide, mais ça n'a pas d'importance)
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/unireg/registrefoncier/export_servitudes_vide_rf.xml");
+		assertNotNull(importFile);
+
+		// on l'upload dans Raft
+		final String raftUrl;
+		try (FileInputStream is = new FileInputStream(importFile)) {
+			raftUrl = zipRaftEsbStore.store("Fiscalite", "UnitTest", "Unireg", is);
+		}
+		assertNotNull(raftUrl);
+
+		// un import principal déjà processé
+		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 3, 1), EtatEvenementRF.TRAITE, "http://turlututu");
+
+		// on insère un import des servitudes avec des mutations encore à processer
+		final Long precedent = insertImport(TypeImportRF.SERVITUDES, RegDate.get(2016, 3, 1), EtatEvenementRF.TRAITE, "http://turlututu");
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) {
+				final EvenementRFImport importServitude = evenementRFImportDAO.get(precedent);
+
+				// on insère deux mutations non traitées pour simuler une exécution partielle antérieure
+				final EvenementRFMutation mut0 = new EvenementRFMutation();
+				mut0.setParentImport(importServitude);
+				mut0.setEtat(EtatEvenementRF.A_TRAITER);
+				mut0.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut0.setTypeMutation(TypeMutationRF.CREATION);
+				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						                   " <NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "     <PersonstammID>1</PersonstammID>\n" +
+						                   "     <Name>Nom</Name>\n" +
+						                   "     <Gueltig>false</Gueltig>\n" +
+						                   "     <NoRF>3727</NoRF>\n" +
+						                   "     <Vorname>Prénom</Vorname>\n" +
+						                   "     <Geburtsdatum>\n" +
+						                   "         <Tag>23</Tag>\n" +
+						                   "         <Monat>1</Monat>\n" +
+						                   "         <Jahr>1956</Jahr>\n" +
+						                   "     </Geburtsdatum>\n" +
+						                   "     <NrIROLE>827288022</NrIROLE>\n" +
+						                   " </NatuerlichePersonstamm>\n\n");
+				evenementRFMutationDAO.save(mut0);
+
+				final EvenementRFMutation mut1 = new EvenementRFMutation();
+				mut1.setParentImport(importServitude);
+				mut1.setEtat(EtatEvenementRF.A_TRAITER);
+				mut1.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut1.setTypeMutation(TypeMutationRF.CREATION);
+				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						                   "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "    <PersonstammID>2</PersonstammID>\n" +
+						                   "    <Name>Raison sociale</Name>\n" +
+						                   "    <Gueltig>false</Gueltig>\n" +
+						                   "    <NrACI>827288022</NrACI>\n" +
+						                   "    <NoRF>3727</NoRF>\n" +
+						                   "    <Unterart>SchweizerischeJuristischePerson</Unterart>\n" +
+						                   "</JuristischePersonstamm>\n");
+				evenementRFMutationDAO.save(mut1);
+			}
+		});
+
+		final long suivant = insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.A_TRAITER, raftUrl);
+		insertImport(TypeImportRF.SERVITUDES, RegDate.get(2016, 9, 1), EtatEvenementRF.A_TRAITER, "http://turlututu");
+
+		// on déclenche le démarrage du job
+		final Map<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, suivant);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job doit bien démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
+				assertEquals("L'import RF avec l'id = [" + suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + precedent + "] n'ont pas été traitées.", importEvent.getErrorMessage());
+				final String callstack = importEvent.getCallstack();
+				assertNotNull(callstack);
+				assertTrue(callstack.contains("L'import RF avec l'id = [" + suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + precedent + "] n'ont pas été traitées."));
 			}
 		});
 	}
