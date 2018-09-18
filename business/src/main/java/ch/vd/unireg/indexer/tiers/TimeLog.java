@@ -39,14 +39,18 @@ public class TimeLog {
 		startTimeIndex = getNanoIndex() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
 	}
 
-	public void end() {
-		endTime = System.nanoTime() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
-		endTimeInfra = getNanoInfra() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
-		endTimeCivil = getNanoCivil() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
-		endTimeEntreprise = getNanoEntreprise() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
-		endTimeIndex = getNanoIndex() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
-		indexerCpuTime = 0;     // TODO (msi) trouver un moyen de déterminer ce temps
-		indexerExecTime = 0;    // TODO (msi) trouver un moyen de déterminer ce temps
+	/**
+	 * @param indexerCpuTime  le temps CPU en nanosecondes
+	 * @param indexerExecTime le temps d'exécution (wall clock) en nanosecondes
+	 */
+	public void end(long indexerCpuTime, long indexerExecTime) {
+		this.endTime = System.nanoTime() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
+		this.endTimeInfra = getNanoInfra() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
+		this.endTimeCivil = getNanoCivil() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
+		this.endTimeEntreprise = getNanoEntreprise() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
+		this.endTimeIndex = getNanoIndex() / GlobalTiersIndexerImpl.NANO_TO_MILLI;
+		this.indexerCpuTime = indexerCpuTime / GlobalTiersIndexerImpl.NANO_TO_MILLI;
+		this.indexerExecTime = indexerExecTime / GlobalTiersIndexerImpl.NANO_TO_MILLI;
 	}
 
 	public static class Stats {
@@ -80,7 +84,7 @@ public class TimeLog {
 			this.timeWaitCivil = timeLog.endTimeCivil - timeLog.startTimeCivil;
 			this.timeWaitEntreprise = timeLog.endTimeEntreprise - timeLog.startTimeEntreprise;
 			this.timeWaitIndex = timeLog.endTimeIndex - timeLog.startTimeIndex;
-			this.timeWaitAutres = this.timeWait - this.timeWaitInfra - this.timeWaitCivil - this.timeWaitEntreprise - this.timeWaitIndex;
+			this.timeWaitAutres = Math.max(this.timeWait - this.timeWaitInfra - this.timeWaitCivil - this.timeWaitEntreprise - this.timeWaitIndex, 0);
 
 			if (this.indexerExecTime == 0 || this.timeWait == 0) {
 				this.percentCpu = -1;
@@ -98,7 +102,7 @@ public class TimeLog {
 				this.percentWaitCivil = (int) (100 * this.timeWaitCivil / this.timeWait);
 				this.percentWaitEntreprise = (int) (100 * this.timeWaitEntreprise / this.timeWait);
 				this.percentWaitIndex = (int) (100 * this.timeWaitIndex / this.timeWait);
-				this.percentWaitAutres = 100 - this.percentWaitInfra - this.percentWaitCivil - this.percentWaitEntreprise - this.percentWaitIndex;
+				this.percentWaitAutres = (int) (100 * this.timeWaitAutres / this.timeWait);
 			}
 		}
 

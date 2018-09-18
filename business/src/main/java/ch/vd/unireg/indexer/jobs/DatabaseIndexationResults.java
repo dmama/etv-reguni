@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.shared.batchtemplate.ThreadStats;
 import ch.vd.unireg.common.JobResults;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.unireg.indexer.tiers.TimeLog;
@@ -57,10 +58,9 @@ public class DatabaseIndexationResults extends JobResults<Long, DatabaseIndexati
 		this.timeLog.start();
 	}
 
-	@Override
-	public void end() {
+	public void end(@NotNull ThreadStats threadStats) {
 		super.end();
-		timeLog.end();
+		timeLog.end(threadStats.getCpuTime(), threadStats.getExecTime());
 	}
 
 	public void setInterrompu(boolean interrompu) {

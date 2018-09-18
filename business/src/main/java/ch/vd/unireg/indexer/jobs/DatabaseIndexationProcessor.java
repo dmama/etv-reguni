@@ -149,7 +149,7 @@ public class DatabaseIndexationProcessor {
 		}
 
 		rapportFinal.setInterrompu(status.isInterrupted());
-		rapportFinal.end();
+		rapportFinal.end(template.getThreadStats());
 		rapportFinal.getTimeLog().logStats(LOGGER);
 		Audit.info("Indexation terminée.");
 

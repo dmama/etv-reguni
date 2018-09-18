@@ -64,16 +64,16 @@ public class PdfDatabaseIndexationRapport extends PdfRapport {
 
 		final TimeLog.Stats stats = results.getTimeLog().createStats();
 		if (stats.isDispo()) {
-			addEntete1("Statistiques");
+			addEntete1("Statistiques approximatives");
 			{
 				addTableSimple(2, table -> {
 					table.addLigne("Temps 'exec' threads indexation :", stats.indexerExecTime + " ms");
-					table.addLigne("Temps 'cpu' threads indexation  :", stats.indexerCpuTime + " ms");
+					table.addLigne("Temps 'cpu' threads indexation :", stats.indexerCpuTime + " ms");
 					table.addLigne("Temps 'wait' threads indexation :", stats.timeWait + " ms" + " (" + stats.percentWait + "%)");
-					table.addLigne(" - service infrastructure       :", (stats.timeWaitInfra == 0 ? "<indisponible>" : stats.timeWaitInfra + " ms" + " (" + stats.percentWaitInfra + "%)"));
-					table.addLigne(" - service civil                :", (stats.timeWaitCivil == 0 ? "<indisponible>" : stats.timeWaitCivil + " ms" + " (" + stats.percentWaitCivil + "%)"));
-					table.addLigne(" - service entreprise           :", (stats.timeWaitEntreprise == 0 ? "<indisponible>" : stats.timeWaitEntreprise + " ms" + " (" + stats.percentWaitEntreprise + "%)"));
-					table.addLigne(" - indexer                      :", (stats.timeWaitIndex == 0 ? "<indisponible>" : stats.timeWaitIndex + " ms" + " (" + stats.percentWaitIndex + "%)"));
+					table.addLigne(" - service infrastructure :", (stats.timeWaitInfra == 0 ? "<indisponible>" : stats.timeWaitInfra + " ms" + " (" + stats.percentWaitInfra + "%)"));
+					table.addLigne(" - service civil :", (stats.timeWaitCivil == 0 ? "<indisponible>" : stats.timeWaitCivil + " ms" + " (" + stats.percentWaitCivil + "%)"));
+					table.addLigne(" - service entreprise :", (stats.timeWaitEntreprise == 0 ? "<indisponible>" : stats.timeWaitEntreprise + " ms" + " (" + stats.percentWaitEntreprise + "%)"));
+					table.addLigne(" - indexer :", (stats.timeWaitIndex == 0 ? "<indisponible>" : stats.timeWaitIndex + " ms" + " (" + stats.percentWaitIndex + "%)"));
 					table.addLigne(" - autre (scheduler, jdbc, ...) :", stats.timeWaitAutres + " ms" + " (" + stats.percentWaitAutres + "%)");
 				});
 			}
