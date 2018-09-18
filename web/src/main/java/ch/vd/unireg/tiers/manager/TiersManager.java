@@ -260,6 +260,7 @@ public class TiersManager implements MessageSourceAware {
 					debiteurView.setNumero(dpi.getNumero());
 					debiteurView.setCategorieImpotSource(dpi.getCategorieImpotSource());
 					debiteurView.setPersonneContact(dpi.getPersonneContact());
+					debiteurView.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);
 					try {
 						final List<String> nomCourrier = getAdresseService().getNomCourrier(dpi, null, false);
 						debiteurView.setNomCourrier(nomCourrier);

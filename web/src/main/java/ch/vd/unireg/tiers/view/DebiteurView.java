@@ -8,6 +8,7 @@ import org.springframework.context.MessageSource;
 import ch.vd.unireg.adresse.AdresseException;
 import ch.vd.unireg.adresse.AdresseService;
 import ch.vd.unireg.common.Annulable;
+import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.tiers.ContactImpotSource;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.type.CategorieImpotSource;
@@ -29,6 +30,7 @@ public class DebiteurView implements Annulable {
 	private Long id;
 
 	private boolean annule;
+	private SensRapportEntreTiers sensRapportEntreTiers;
 
 	public DebiteurView() {
 	}
@@ -120,4 +122,11 @@ public class DebiteurView implements Annulable {
 		this.annule = annule;
 	}
 
+	public void setSensRapportEntreTiers(SensRapportEntreTiers sensRapportEntreTiers) {
+		this.sensRapportEntreTiers = sensRapportEntreTiers;
+	}
+
+	public SensRapportEntreTiers getSensRapportEntreTiers() {
+		return sensRapportEntreTiers;
+	}
 }
