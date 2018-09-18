@@ -5,8 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.unireg.audit.Audit;
+import ch.vd.unireg.common.StatusManager;
+import ch.vd.unireg.document.DatabaseIndexationRapport;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.unireg.rapport.RapportService;
 import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
@@ -26,7 +29,8 @@ public class DatabaseIndexerJob extends JobDefinition {
 	public static final String MODE = "mode";
 	public static final String POPULATION = "population";
 
-	private GlobalTiersIndexer globalTiersIndexer;
+	private DatabaseIndexationProcessor processor;
+	private RapportService rapportService;
 
 	public DatabaseIndexerJob(int sortOrder, String description) {
 		super(NAME, JobCategory.INDEXEUR, sortOrder, description);
@@ -58,11 +62,23 @@ public class DatabaseIndexerJob extends JobDefinition {
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
 		final Set<TypeTiers> typesTiers = new HashSet<>(getMultiSelectEnumValue(params, POPULATION, TypeTiers.class));
-		globalTiersIndexer.indexAllDatabase(mode, typesTiers, nbThreads, getStatusManager());
+		final StatusManager status = getStatusManager();
+
+		Audit.info("Indexation de la base de données (mode = " + mode + ", typesTiers = " + typesTiers + ")");
+
+		final DatabaseIndexationResults results = processor.run(mode, typesTiers, nbThreads, status);
+		final DatabaseIndexationRapport rapport = rapportService.generateRapport(results, status);
+
+		setLastRunReport(rapport);
+
+		Audit.success("L'indexation de la base de données est terminée", rapport);
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setGlobalTiersIndexer(GlobalTiersIndexer globalTiersIndexer) {
-		this.globalTiersIndexer = globalTiersIndexer;
+	public void setProcessor(DatabaseIndexationProcessor processor) {
+		this.processor = processor;
+	}
+
+	public void setRapportService(RapportService rapportService) {
+		this.rapportService = rapportService;
 	}
 }

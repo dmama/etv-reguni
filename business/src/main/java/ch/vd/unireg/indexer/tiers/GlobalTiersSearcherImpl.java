@@ -344,7 +344,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			@Override
 			public void handle(int docId, DocGetter docGetter) throws Exception {
 				final Document doc = docGetter.get(docId);
-				final long id = extractTiersId(doc);
+				final long id = LuceneHelper.extractTiersId(doc);
 				ids.add(id);
 			}
 		});
@@ -373,7 +373,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 					}
 
 					final Document doc = docGetter.get(h.doc);
-					final long id = extractTiersId(doc);
+					final long id = LuceneHelper.extractTiersId(doc);
 
 					if (!existingIds.contains(id)) {
 						final String message = "Le tiers n° " + id + " existe dans l'indexeur mais pas dans la base.";
@@ -402,11 +402,6 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 				callback.onWarning(id, message);
 			}
 		}
-	}
-
-	private static long extractTiersId(final Document doc) {
-		final String idAsString = doc.get(LuceneHelper.F_ENTITYID);
-		return Long.parseLong(idAsString);
 	}
 
 	@Override

@@ -9,6 +9,9 @@
 		<property name="password" value="${extprop.remoting.unireg.web.password}" />
 		<property name="maxConnectionsPerRoute" value="${extprop.remoting.unireg.web.maxConnectionsPerHost}" />
 		<property name="maxTotalConnections" value="${extprop.remoting.unireg.web.maxTotalConnections}" />
+		<property name="connectTimeout" value="${extprop.remoting.unireg.web.connectTimeout:5000}" />
+		<property name="connectionRequestTimeout" value="${extprop.remoting.unireg.web.connectionRequestTimeout:5000}" />
+		<property name="socketTimeout" value="${extprop.remoting.unireg.web.socketTimeout:60000}" />
 		<property name="braveHttpTracing" ref="braveHttpTracing"/>
 		<property name="preAuthHosts">
 			<list>

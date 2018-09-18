@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -480,4 +481,13 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return <code>true</code> si le tiers a été modifié, <code>false</code> sinon
 	 */
 	boolean setFlagBlocageRemboursementAutomatique(long tiersId, boolean newFlag);
+
+	/**
+	 * Met-à-jour le flag <i>dirty</i> sur les tiers spécifié. Cette méthode doit être appelée dans un contexte spécial où les intercepteurs sont désactivés.
+	 *
+	 * @param ids     les ids des tiers à mdifier
+	 * @param flag    le flag à setter
+	 * @param session une session hibernate où les intercepteurs sont désactivés.
+	 */
+	void setDirtyFlag(@Nullable Collection<Long> ids, boolean flag, @NotNull Session session);
 }

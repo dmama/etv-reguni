@@ -1,20 +1,23 @@
 package ch.vd.unireg.indexer.tiers;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.Switchable;
+import ch.vd.unireg.indexer.IndexerBatchException;
 import ch.vd.unireg.indexer.IndexerException;
-import ch.vd.unireg.tiers.TypeTiers;
+import ch.vd.unireg.tiers.Tiers;
 
 /**
  * Service spécialisé pour la mise-à-jour de l'indexe Lucene par rapport aux Tiers.
  */
 public interface GlobalTiersIndexer {
+
+	String SERVICE_NAME = "GlobalTiersIndex";
 
 	/**
 	 * Efface l'index.
@@ -62,7 +65,7 @@ public interface GlobalTiersIndexer {
 		/**
 		 * Réindexe les tiers flaggés comme <i>dirty</i> dans la DB.
 		 */
-		DIRTY_ONLY
+		DIRTY_ONLY;
 	}
 
 	/**
@@ -86,16 +89,15 @@ public interface GlobalTiersIndexer {
 	int indexAllDatabase(@NotNull Mode mode, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException;
 
 	/**
-	 * Indexe ou réindexe tout ou partie de la base de données.
+	 * Indexe les tiers spécifié.
 	 *
-	 * @param mode          le mode d'indexation voulu.
-	 * @param typesTiers    la population à indexer en cas d'indexation complète (mode = FULL ou FULL_INCREMENTAL). Sans effet en mode = MISSING_ONLY ou DIRTY_ONLY.
-	 * @param nbThreads     le nombre de threads simultanés utilisés pour indexer la base
-	 * @param statusManager un status manager pour suivre l'évolution de l'indexation (peut être nul)
-	 * @return le nombre de tiers indexés
-	 * @throws ch.vd.unireg.indexer.IndexerException si l'indexation n'a pas pu être faite.
+	 * @param tiers            les tiers à indexer
+	 * @param removeBefore     si <b>vrai</b> les données du tiers seront supprimée de l'index avant d'être réinsérée; si <b>false</b> les données seront simplement ajoutées.
+	 * @param followDependents si <b>vrai</b> les tiers liés (ménage commun, ...) seront aussi indexées.
+	 * @throws IndexerBatchException en cas d'exception lors de l'indexation d'un ou plusieurs tiers. La méthode essaie d'indexer tous les tiers dans tous les cas, ce qui veut dire que si le premier tiers lève une exception, les tiers suivants seront
+	 *                               quand même indexés.
 	 */
-	int indexAllDatabase(@NotNull Mode mode, @NotNull Set<TypeTiers> typesTiers, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException;
+	void indexTiers(@NotNull List<Tiers> tiers, boolean removeBefore, boolean followDependents) throws IndexerBatchException;
 
 	/**
 	 * <b>Note :</b> le switch n'est actif que sur le thread courant

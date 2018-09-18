@@ -171,6 +171,7 @@
 		<value>ch.vd.unireg.document.ChangementRegimesFiscauxRapport</value>
 		<value>ch.vd.unireg.document.Document</value>
 		<value>ch.vd.unireg.document.DatabaseDump</value>
+		<value>ch.vd.unireg.document.DatabaseIndexationRapport</value>
 		<value>ch.vd.unireg.document.ImportCodesSegmentRapport</value>
 		<value>ch.vd.unireg.document.ImportImmeublesRapport</value>
 		<value>ch.vd.unireg.document.DeterminationDIsPPRapport</value>

@@ -5,7 +5,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.unireg.indexer.IndexerException;
 import ch.vd.unireg.indexer.tiers.GlobalTiersIndexerImpl;
+import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.worker.DeadThreadException;
 import ch.vd.unireg.worker.WorkingQueue;
 
@@ -33,18 +33,18 @@ public class OnTheFlyTiersIndexer {
 	private final GlobalTiersIndexerImpl indexer;
 	private final PlatformTransactionManager transactionManager;
 	private final SessionFactory sessionFactory;
-	private final Dialect dialect;
+	private TiersDAO tiersDAO;
 
 	private final WorkingQueue<Long> queue;
 
 	private final Timer timer = new Timer();
 
-	public OnTheFlyTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, Dialect dialect) {
+	public OnTheFlyTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, TiersDAO tiersDAO) {
 
 		this.indexer = indexer;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
-		this.dialect = dialect;
+		this.tiersDAO = tiersDAO;
 
 		// Un queue bloquante de longueur illimitée
 		this.queue = new WorkingQueue<>(MIN_THREADS, newTiersIndexerWorker());
@@ -170,7 +170,7 @@ public class OnTheFlyTiersIndexer {
 
 	@NotNull
 	private TiersIndexerWorker newTiersIndexerWorker() {
-		return new TiersIndexerWorker(true, true, indexer, sessionFactory, transactionManager, dialect, "OnTheFly", null);
+		return new TiersIndexerWorker(true, true, indexer, sessionFactory, transactionManager, "OnTheFly", null, tiersDAO);
 	}
 
 	public int getQueueSize() {
