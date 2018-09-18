@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,7 +28,7 @@ import ch.vd.unireg.common.linkedentity.LinkedEntityContext;
  * Représente un lien entre un ayant-droit bénéficiaire de servitude et cette servitude, valide sur une certaine période.
  */
 @Entity
-@Table(name = "RF_SERVITUDE_AYANT_DROIT", uniqueConstraints = @UniqueConstraint(name = "IDX_SERVITUDE_AYANT_DROIT_ID", columnNames = {"DROIT_ID", "AYANT_DROIT_ID"}))
+@Table(name = "RF_SERVITUDE_AYANT_DROIT")
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT")),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
