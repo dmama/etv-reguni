@@ -77,7 +77,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 
 		// ajout du délai
 		doInNewTransaction(status -> {
-			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, "OK", 2016, "businessId", "referenceId");
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, null, 2016, "businessId", "referenceId");
 
 			try {
 				handler.handle(demandeDelai);
@@ -130,7 +130,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 
 		// ajout du délai
 		doInNewTransaction(status -> {
-			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, "PAS_OK", 2016, "businessId", "referenceId");
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, 1, 2016, "businessId", "referenceId");
 
 			try {
 				handler.handle(demandeDelai);
@@ -184,7 +184,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 
 		// ajout du délai
 		doInNewTransaction(status -> {
-			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, "OK", 2016, "businessId", "referenceId");
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, null, 2016, "businessId", "referenceId");
 
 			try {
 				handler.handle(demandeDelai);
@@ -250,9 +250,9 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		doInNewTransaction(status -> {
 
 			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
-			                                                    new DelaiData(ids.pp1, RegDate.get().addMonths(1), "OK"),
-			                                                    new DelaiData(ids.pp2, RegDate.get().addMonths(2), "OK"),
-			                                                    new DelaiData(ids.pp3, RegDate.get().addMonths(3), "OK"));
+			                                                    new DelaiData(ids.pp1, RegDate.get().addMonths(1), null),
+			                                                    new DelaiData(ids.pp2, RegDate.get().addMonths(2), null),
+			                                                    new DelaiData(ids.pp3, RegDate.get().addMonths(3), null));
 			try {
 				handler.handle(demandeDelai);
 			}
@@ -368,15 +368,15 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		doInNewTransaction(status -> {
 
 			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
-			                                                    new DelaiData(ids.pp1, RegDate.get().addMonths(1), "OK"),
-			                                                    new DelaiData(ids.pp2, RegDate.get().addMonths(2), "Pas OK"),
-			                                                    new DelaiData(ids.pp3, RegDate.get().addMonths(3), "OK"));
+			                                                    new DelaiData(ids.pp1, RegDate.get().addMonths(1), null),
+			                                                    new DelaiData(ids.pp2, RegDate.get().addMonths(2), 12),
+			                                                    new DelaiData(ids.pp3, RegDate.get().addMonths(3), null));
 			try {
 				handler.handle(demandeDelai);
 				fail();
 			}
 			catch (EsbBusinessException e) {
-				assertEquals("Le statut du délai n'est pas valide (Pas OK) sur le contribuable n°" + ids.pp2, e.getMessage());
+				assertEquals("Le statut du délai n'est pas valide (12/null) sur le contribuable n°" + ids.pp2, e.getMessage());
 				assertEquals(EsbBusinessCode.DELAI_INVALIDE, e.getCode());
 			}
 			return null;
@@ -436,9 +436,9 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		doInNewTransaction(status -> {
 
 			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
-			                                                    new DelaiData(ids.pp1, RegDate.get().addMonths(1), "OK"),
-			                                                    new DelaiData(ids.pp2, RegDate.get().addMonths(2), "OK"),
-			                                                    new DelaiData(ids.pp3, RegDate.get().addMonths(3), "OK"));
+			                                                    new DelaiData(ids.pp1, RegDate.get().addMonths(1), null),
+			                                                    new DelaiData(ids.pp2, RegDate.get().addMonths(2), null),
+			                                                    new DelaiData(ids.pp3, RegDate.get().addMonths(3), null));
 			try {
 				handler.handle(demandeDelai);
 				fail();
@@ -624,12 +624,12 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 	static class DelaiData {
 		int ctbId;
 		RegDate delai;
-		String statut;
+		Integer codeRefus;
 
-		public DelaiData(Long ctbId, RegDate delai, String statut) {
+		public DelaiData(Long ctbId, RegDate delai, Integer codeRefus) {
 			this.ctbId = ctbId.intValue();
 			this.delai = delai;
-			this.statut = statut;
+			this.codeRefus = codeRefus;
 		}
 	}
 
@@ -640,7 +640,7 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 		final DemandeGroupee demandeGroupee = new DemandeGroupee();
 		demandeGroupee.setMandataire(new Mandataire(numeroIde, raisonSociale, mandataireId));
 		Arrays.stream(delais)
-				.forEach(d -> demandeGroupee.getDelais().add(new Delai(d.ctbId, null, XmlUtils.regdate2xmlcal(d.delai), d.statut)));
+				.forEach(d -> demandeGroupee.getDelais().add(new Delai(d.ctbId, null, XmlUtils.regdate2xmlcal(d.delai), d.codeRefus, null)));
 
 		final DonneesMetier donneesMetier = new DonneesMetier();
 		donneesMetier.setPeriodeFiscale(periodeFiscale);
@@ -653,13 +653,13 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 	}
 
 	@NotNull
-	private static DemandeDelai newDemandeUnitaire(Long ctbId, RegDate nouveauDelai, RegDate dateObtention, String statut, int periodeFiscale, String businessId, String referenceId) {
+	private static DemandeDelai newDemandeUnitaire(Long ctbId, RegDate nouveauDelai, RegDate dateObtention, Integer codeRefus, int periodeFiscale, String businessId, String referenceId) {
 
 		final XMLGregorianCalendar calObtention = XmlUtils.regdate2xmlcal(dateObtention);
 		final XMLGregorianCalendar calDelai = XmlUtils.regdate2xmlcal(nouveauDelai);
 
 		final DemandeUnitaire demandeUnitaire = new DemandeUnitaire();
-		demandeUnitaire.setDelai(new Delai(ctbId.intValue(), null, calDelai, statut));
+		demandeUnitaire.setDelai(new Delai(ctbId.intValue(), null, calDelai, codeRefus, null));
 
 		final DonneesMetier donneesMetier = new DonneesMetier();
 		donneesMetier.setPeriodeFiscale(periodeFiscale);

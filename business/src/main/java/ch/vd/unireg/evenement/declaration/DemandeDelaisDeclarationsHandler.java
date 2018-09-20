@@ -174,10 +174,10 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 	 */
 	private void handleDemandeUnitaire(int periodeFiscale, @NotNull RegDate dateObtention, Delai demandeDelai) throws EsbBusinessException {
 
-		final RegDate nouveauDelai = XmlUtils.xmlcal2regdate(demandeDelai.getDate());
+		final RegDate nouveauDelai = XmlUtils.xmlcal2regdate(demandeDelai.getDateAccordee());
 		final Integer numeroSequence = demandeDelai.getNumeroSequenceDi();
 		final long numeroContribuable = demandeDelai.getNumeroContribuable();
-		final EtatDelaiDocumentFiscal etatDelai = Objects.equals(DELAI_OK, demandeDelai.getStatut()) ? EtatDelaiDocumentFiscal.ACCORDE : EtatDelaiDocumentFiscal.REFUSE;
+		final EtatDelaiDocumentFiscal etatDelai = demandeDelai.getCodeRefus() == null ? EtatDelaiDocumentFiscal.ACCORDE : EtatDelaiDocumentFiscal.REFUSE;
 
 		// on récupère la déclaration
 		final DeclarationImpotOrdinaire declaration = findDeclaration(numeroContribuable, periodeFiscale, numeroSequence);
@@ -218,13 +218,13 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 		// on traite les délais
 		for (Delai delai : demandeGroupee.getDelais()) {
 
-			final RegDate nouveauDelai = XmlUtils.xmlcal2regdate(delai.getDate());
+			final RegDate nouveauDelai = XmlUtils.xmlcal2regdate(delai.getDateAccordee());
 			final Integer numeroSequence = delai.getNumeroSequenceDi();
 			final long numeroContribuable = delai.getNumeroContribuable();
 
-			if (!Objects.equals(DELAI_OK, delai.getStatut())) {
+			if (delai.getCodeRefus() != null) {
 				// par spécification, seuls les délais acceptés peuvent être demandé sur une demande groupée
-				throw new EsbBusinessException(EsbBusinessCode.DELAI_INVALIDE, "Le statut du délai n'est pas valide (" + delai.getStatut() + ") sur le contribuable n°" + numeroContribuable, null);
+				throw new EsbBusinessException(EsbBusinessCode.DELAI_INVALIDE, "Le statut du délai n'est pas valide (" + delai.getCodeRefus() + "/" + delai.getMotif() + ") sur le contribuable n°" + numeroContribuable, null);
 			}
 
 			final EtatDelaiDocumentFiscal etatDelai = EtatDelaiDocumentFiscal.ACCORDE;

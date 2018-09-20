@@ -17,8 +17,7 @@
 		<ns:demandeUnitaire>
 			<ns:delai>
 				<ns:numeroContribuable>10000010</ns:numeroContribuable>
-				<ns:date>2025-06-30</ns:date>
-				<ns:statut>OK</ns:statut>
+				<ns:dateAccordee>2025-06-30</ns:dateAccordee>
 			</ns:delai>
 		</ns:demandeUnitaire>
 	</ns:donneesMetier>

@@ -22,19 +22,16 @@
 			</ns:mandataire>
 			<ns:delais>
 				<ns:numeroContribuable>10000010</ns:numeroContribuable>
-				<ns:date>2025-06-30+02:00</ns:date>
-				<ns:statut>OK</ns:statut>
+				<ns:dateAccordee>2025-06-30+02:00</ns:dateAccordee>
 			</ns:delais>
 			<ns:delais>
 				<ns:numeroContribuable>10000011</ns:numeroContribuable>
 				<ns:numeroSequenceDi>1</ns:numeroSequenceDi>
-				<ns:date>2025-06-30+02:00</ns:date>
-				<ns:statut>OK</ns:statut>
+				<ns:dateAccordee>2025-06-30+02:00</ns:dateAccordee>
 			</ns:delais>
 			<ns:delais>
 				<ns:numeroContribuable>10000012</ns:numeroContribuable>
-				<ns:date>2025-06-30+02:00</ns:date>
-				<ns:statut>OK</ns:statut>
+				<ns:dateAccordee>2025-06-30+02:00</ns:dateAccordee>
 			</ns:delais>
 		</ns:demandeGroupee>
 	</ns:donneesMetier>
