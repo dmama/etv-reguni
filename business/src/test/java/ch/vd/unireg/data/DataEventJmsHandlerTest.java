@@ -2,14 +2,14 @@ package ch.vd.unireg.data;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.openpojo.reflection.PojoClass;
-import com.openpojo.reflection.impl.PojoClassFactory;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import ch.vd.unireg.common.BusinessTest;
 import ch.vd.unireg.evenement.fiscal.MockEvenementFiscalSender;
@@ -30,13 +30,16 @@ public class DataEventJmsHandlerTest extends BusinessTest {
 		handler.afterPropertiesSet();
 	}
 
-	private static <T> Set<Class<? extends T>> getAllSubclasses(Class<T> superclass) {
-		final List<PojoClass> pojoClasses = PojoClassFactory.enumerateClassesByExtendingType("ch.vd", superclass, null);
-		final Set<Class<? extends T>> subclasses = new HashSet<>(pojoClasses.size());
-		for (PojoClass pojoClass : pojoClasses) {
+	private static <T> Set<Class<? extends T>> getAllSubclasses(Class<T> superclass) throws ClassNotFoundException {
+		final ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+		provider.addIncludeFilter(new AssignableTypeFilter(superclass));
+
+		final Set<BeanDefinition> components = provider.findCandidateComponents("ch/vd");
+		final Set<Class<? extends T>> subclasses = new HashSet<>();
+		for (BeanDefinition component : components) {
 			//noinspection unchecked
-			final Class<? extends T> subclass = (Class<? extends T>) pojoClass.getClazz();
-			subclasses.add(subclass);
+			final Class<? extends T> cls = (Class<? extends T>) Class.forName(component.getBeanClassName());
+			subclasses.add(cls);
 		}
 		return subclasses;
 	}
