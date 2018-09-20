@@ -655,6 +655,7 @@ public class AdresseServiceImpl implements AdresseService {
 			salutations = getFormulePolitesse(ensemble, null);
 		}
 		else {
+			// TODO (msi) ajouter la formule politesse pour les entreprises et les établissements (voir le UNIREG-2302 ailleurs dans cette classe)
 			// pas de formule de politesse pour les autres types de tiers
 			salutations = null;
 		}
