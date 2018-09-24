@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.ControllerUtils;
 import ch.vd.unireg.common.FormatNumeroHelper;
+import ch.vd.unireg.common.URLHelper;
 import ch.vd.unireg.contribuableAssocie.view.ContribuableAssocieEditView;
 import ch.vd.unireg.contribuableAssocie.view.ContribuableAssocieListView;
 import ch.vd.unireg.indexer.IndexerException;
@@ -151,7 +152,6 @@ public class ContribuableAssocieController {
 		final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi);
 		final Contribuable contribuable = (Contribuable) tiersService.getTiers(numeroContribuable);
 		tiersService.addContactImpotSource(debiteur, contribuable);
-
-		return "redirect:/tiers/visu.do?id=" + numeroContribuable;
+		return URLHelper.navigateBackTo("/tiers/visu.do").defaultTo("/tiers/visu.do", "id=" + numeroContribuable);
 	}
 }
