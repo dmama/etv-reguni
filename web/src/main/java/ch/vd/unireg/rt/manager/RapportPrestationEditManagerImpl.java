@@ -101,10 +101,17 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		rapportView.setProvenance(provenance);
 
-		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(numeroSrc);
-		if (sourcier == null) {
+		final Tiers tiers = tiersService.getTiers(numeroSrc);
+
+		if (tiers == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.sourcier.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
+
+		if (!(tiers instanceof PersonnePhysique)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.personne.physique.attendu", null, WebContextUtils.getDefaultLocale()));
+		}
+		final PersonnePhysique sourcier = (PersonnePhysique) tiers;
+
 		TiersGeneralView sourcierView = tiersGeneralManager.getPersonnePhysique(sourcier, true);
 		rapportView.setSourcier(sourcierView);
 
