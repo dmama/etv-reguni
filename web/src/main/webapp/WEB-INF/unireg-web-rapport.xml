@@ -21,6 +21,7 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="messageHelper" ref="messageHelper" />
 	</bean>
 
 	<bean id="rapportPrestationValidator" class="ch.vd.unireg.rt.validator.RapportPrestationEditValidator" />

@@ -12,8 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -32,6 +30,7 @@ import ch.vd.unireg.hibernate.HibernateTemplate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.service.ServiceCivilService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.rapport.SensRapportEntreTiers;
 import ch.vd.unireg.rt.view.RapportPrestationView;
 import ch.vd.unireg.security.Role;
@@ -47,9 +46,8 @@ import ch.vd.unireg.tiers.TiersDAO;
 import ch.vd.unireg.tiers.TiersService;
 import ch.vd.unireg.tiers.view.RapportsPrestationView;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
-import ch.vd.unireg.utils.WebContextUtils;
 
-public class RapportPrestationEditManagerImpl implements RapportPrestationEditManager, MessageSourceAware{
+public class RapportPrestationEditManagerImpl implements RapportPrestationEditManager{
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(RapportPrestationEditManagerImpl.class);
 
@@ -60,7 +58,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	private ServiceCivilService serviceCivilService;
 	private TiersGeneralManager tiersGeneralManager;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
-	private MessageSource messageSource;
+	private MessageHelper messageHelper;
 	private SecurityProviderInterface securityProvider;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
@@ -104,11 +102,11 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		final Tiers tiers = tiersService.getTiers(numeroSrc);
 
 		if (tiers == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.sourcier.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.sourcier.inexistant"));
 		}
 
 		if (!(tiers instanceof PersonnePhysique)) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.personne.physique.attendu", null, WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.personne.physique.attendu"));
 		}
 		final PersonnePhysique sourcier = (PersonnePhysique) tiers;
 
@@ -117,7 +115,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi);
 		if (dpi == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.debiteur.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.debiteur.inexistant"));
 		}
 		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		rapportView.setDebiteur(dpiView);
@@ -133,7 +131,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		RapportEntreTiers rapportEntreTiers	= rapportEntreTiersDAO.get(idRapport);
 		if (rapportEntreTiers == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.rapport.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageHelper.getMessage("error.rapport.inexistant"));
 		}
 
 		rapportView.setSensRapportEntreTiers(sensRapportEntreTiers);
@@ -424,8 +422,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		return nomPrenom;
 	}
 
-	@Override
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 }
