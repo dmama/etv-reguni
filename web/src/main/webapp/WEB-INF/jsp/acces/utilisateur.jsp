@@ -16,10 +16,6 @@
 			<td width="75%">${utilisateur.visaOperateur}</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.numero.registre.habitant" />&nbsp;:</td>
-			<td width="75%">${utilisateur.numeroIndividu}</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.prenom.nom" />&nbsp;:</td>
 			<td width="75%">${utilisateur.prenomNom}</td>
 		</tr>

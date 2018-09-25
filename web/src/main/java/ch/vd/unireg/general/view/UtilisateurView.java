@@ -2,12 +2,14 @@ package ch.vd.unireg.general.view;
 
 import java.io.Serializable;
 
+/**
+ * Donnée d'un utilisateur (= opérateur) d'Unireg.
+ */
 public class UtilisateurView implements Serializable {
 
-	private static final long serialVersionUID = -1181597556095764613L;
+	private static final long serialVersionUID = 268658459889280729L;
 
 	private String visaOperateur;
-	private Long numeroIndividu;
 	private String prenomNom;
 	private String officeImpot;
 
@@ -17,14 +19,6 @@ public class UtilisateurView implements Serializable {
 
 	public void setVisaOperateur(String visaOperateur) {
 		this.visaOperateur = visaOperateur;
-	}
-
-	public Long getNumeroIndividu() {
-		return numeroIndividu;
-	}
-
-	public void setNumeroIndividu(Long numeroIndividu) {
-		this.numeroIndividu = numeroIndividu;
 	}
 
 	public String getPrenomNom() {
