@@ -14,7 +14,7 @@
 	</tiles:put>
   	<tiles:put name="body">
 	    <form:form method="post" id="formRecherchePP">
-		    <jsp:include page="../../general/utilisateur.jsp">
+		    <jsp:include page="../utilisateur.jsp">
 				<jsp:param name="path" value="utilisateurView" />
 				<jsp:param name="titleKey" value="title.droits.operateur" />
 			</jsp:include>

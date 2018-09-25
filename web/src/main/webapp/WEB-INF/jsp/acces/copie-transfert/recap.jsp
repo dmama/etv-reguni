@@ -33,11 +33,11 @@
 
 		<unireg:nextRowClass reset="1"/>
 
-		<jsp:include page="../../general/utilisateur.jsp">
+		<jsp:include page="../utilisateur.jsp">
 			<jsp:param name="path" value="utilisateurReferenceView" />
 			<jsp:param name="titleKey" value="label.caracteristiques.utilisateur.reference" />
 		</jsp:include>
-		<jsp:include page="../../general/utilisateur.jsp">
+		<jsp:include page="../utilisateur.jsp">
 			<jsp:param name="path" value="utilisateurDestinationView" />
 			<jsp:param name="titleKey" value="label.caracteristiques.utilisateur.destination" />
 		</jsp:include>

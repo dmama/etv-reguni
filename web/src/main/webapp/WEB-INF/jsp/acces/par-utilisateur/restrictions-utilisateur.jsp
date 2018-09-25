@@ -15,7 +15,7 @@
 		<input type="hidden" value="false" name="annuleTout" id="annuleTout"/>
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
-		<jsp:include page="../../general/utilisateur.jsp">
+		<jsp:include page="../utilisateur.jsp">
 			<jsp:param name="path" value="utilisateur" />
 			<jsp:param name="titleKey" value="title.droits.operateur" />
 		</jsp:include>
