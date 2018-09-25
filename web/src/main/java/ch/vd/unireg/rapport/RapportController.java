@@ -532,7 +532,7 @@ public class RapportController {
 			Flash.error("Impossible d'annuler le rapport n°" + rapportId + " pour la raison suivante: " + e.getMessage());
 		}
 
-		return URLHelper.navigateBackTo("/rapport/list.do").defaultTo("/rapport/list.do", "id=" + sujetId);
+		return URLHelper.navigateBackTo("rapports-prestation/edit.do").defaultTo("/rapport/list.do", "id=" + sujetId);
 	}
 
 	/**
