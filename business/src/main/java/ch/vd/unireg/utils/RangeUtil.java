@@ -1,6 +1,7 @@
 package ch.vd.unireg.utils;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
@@ -20,6 +21,19 @@ public class RangeUtil {
 	 * @throws RangeUtilException en cas d'erreur de données ou de paramètre
 	 */
 	public static <T extends DateRange> T getAssertLast(List<T> entites, RegDate date) throws RangeUtilException {
+		return getAssertLast(entites, date, () -> String.format("La période valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
+	}
+
+	/**
+	 * Même comportement que {@link RangeUtil#getAssertLast(List, RegDate)}, mais avec la possibilité de spécifier un message d'erreur spécifique si le range trouvé n'est pas le dernier.
+	 *
+	 * @param entites        des entités
+	 * @param date           une date de référence
+	 * @param notLastMessage un supplier de message d'erreur si le range trouvé n'est pas le dernier
+	 * @return le dernier range
+	 * @throws RangeUtilException en cas d'erreur de données ou de paramètre
+	 */
+	public static <T extends DateRange> T getAssertLast(List<T> entites, RegDate date, Supplier<String> notLastMessage) throws RangeUtilException {
 		if (entites != null && !entites.isEmpty()) {
 			T lastRange = CollectionsUtils.getLastElement(entites);
 			if (lastRange == null) {
@@ -29,7 +43,7 @@ public class RangeUtil {
 				throw new RangeUtilException("Erreur de données: la date de début de la dernière période est nulle");
 			}
 			if (lastRange.getDateDebut().isAfter(date)) {
-				throw new RangeUtilException(String.format("La période valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
+				throw new RangeUtilException(notLastMessage.get());
 			}
 			return lastRange;
 		}

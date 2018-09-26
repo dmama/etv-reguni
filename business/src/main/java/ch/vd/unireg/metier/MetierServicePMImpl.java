@@ -154,7 +154,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		/*
 			Détection du début effectif des données fiscales. Règle de la date + 1 lors d'une fondation d'entreprise VD.
 		 */
-		RegDate dateDebutFiscal = null;
+		RegDate dateDebutFiscal;
 		final ForFiscalPrincipalPM premierForFiscalPrincipal = entreprise.getPremierForFiscalPrincipal();
 		if (premierForFiscalPrincipal != null) {
 			dateDebutFiscal = premierForFiscalPrincipal.getDateDebut();
@@ -189,17 +189,20 @@ public class MetierServicePMImpl implements MetierServicePM {
 		entreprise.setNumeroEntreprise(entrepriseCivile.getNumeroEntreprise());
 		entreprise.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
-		final RaisonSocialeFiscaleEntreprise raisonSociale = RangeUtil.getAssertLast(entreprise.getRaisonsSocialesNonAnnuleesTriees(), date);
+		final RaisonSocialeFiscaleEntreprise raisonSociale = RangeUtil.getAssertLast(entreprise.getRaisonsSocialesNonAnnuleesTriees(), date,
+		                                                                             () -> "Appariement impossible car il existe une raison sociale saisie sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
 		if (raisonSociale != null && raisonSociale.getDateFin() == null) {
 			tiersService.closeRaisonSocialeFiscale(raisonSociale, date.getOneDayBefore());
 		}
 
-		final FormeJuridiqueFiscaleEntreprise formeJuridique = RangeUtil.getAssertLast(entreprise.getFormesJuridiquesNonAnnuleesTriees(), date);
+		final FormeJuridiqueFiscaleEntreprise formeJuridique = RangeUtil.getAssertLast(entreprise.getFormesJuridiquesNonAnnuleesTriees(), date,
+		                                                                               () -> "Appariement impossible car il existe une forme juridique saisie sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
 		if (formeJuridique != null && formeJuridique.getDateFin() == null) {
 			tiersService.closeFormeJuridiqueFiscale(formeJuridique, date.getOneDayBefore());
 		}
 
-		final CapitalFiscalEntreprise capital = RangeUtil.getAssertLast(entreprise.getCapitauxNonAnnulesTries(), date);
+		final CapitalFiscalEntreprise capital = RangeUtil.getAssertLast(entreprise.getCapitauxNonAnnulesTries(), date,
+		                                                                () -> "Appariement impossible car il existe un capital saisi sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
 		if (capital != null && capital.getDateFin() == null) {
 			tiersService.closeCapitalFiscal(capital, date.getOneDayBefore());
 		}
@@ -209,21 +212,20 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// Rapprochement de l'établissement principal
 		EtablissementCivil etablissementCivilPrincipal = entrepriseCivile.getEtablissementPrincipal(date).getPayload();
 		final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
-		if (etablissementsPrincipauxEntreprise.isEmpty() || DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, date) == null) {
+		final DateRanged<Etablissement> etablissementPrincipalRange = DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, date);
+		if (etablissementsPrincipauxEntreprise.isEmpty() || etablissementPrincipalRange == null) {
 			throw new MetierServiceException(String.format("L'entreprise %s ne possède pas d'établissement principal!", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 		}
-		DateRanged<Etablissement> etablissementPrincipalRange = DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, date);
 		if (etablissementPrincipalRange.getDateDebut().isAfter(date)) {
 			throw new MetierServiceException(String.format("L'établissement principal %d commence à une date postérieure à la tentative de rapprochement du %s. Impossible de continuer.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(date)));
 		}
 
 		final Etablissement etablissementPrincipal = etablissementPrincipalRange.getPayload();
-
-		final List<DomicileEtablissement> sortedDomiciles = etablissementPrincipal.getSortedDomiciles(false);
-		if (sortedDomiciles.isEmpty()) {
+		final DomicileEtablissement domicile = RangeUtil.getAssertLast(etablissementPrincipal.getSortedDomiciles(false), date,
+		                                                               () -> "Appariement impossible car il existe un domicile saisi sur l'établissement principal fiscal n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissementPrincipal.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
+		if (domicile == null) {
 			throw new MetierServiceException(String.format("L'établissement principal %d n'a pas de domicile en date du %s. Impossible de continuer le rapprochement.", entrepriseCivile.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(date)));
 		}
-		final DomicileEtablissement domicile = RangeUtil.getAssertLast(sortedDomiciles, date);
 
 		etablissementPrincipal.setNumeroEtablissement(etablissementCivilPrincipal.getNumeroEtablissement());
 		etablissementPrincipal.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
@@ -232,7 +234,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		result.addEtablissementRattache(etablissementPrincipal);
 
 		// Eliminer les établissements secondaires déjà rattachés des listes.
-		Map<Long, EtablissementCivil> etablissementsToMatch = new HashMap<>();
+		final Map<Long, EtablissementCivil> etablissementsToMatch = new HashMap<>();
 		final List<Etablissement> etablissementsNonEncoreRattaches = new ArrayList<>();
 
 		for (EtablissementCivil etablissementsCivilsSecondaire : entrepriseCivile.getEtablissementsSecondaires(date)) {
@@ -279,11 +281,12 @@ public class MetierServicePMImpl implements MetierServicePM {
 			Etablissement etablissementForKey = etabEntry.getValue().get(0);
 			EtablissementCivil etablissementCivilForKey = etablissementsCivilsForKey.get(0);
 
-			// Si on a un numéro IDE dans l'établissement et qu'il ne correspond pas à notre établissement civil candidat, c'est qu'il y a un soucis.
+			// Si on a un numéro IDE dans l'établissement fiscal et qu'il ne correspond pas à notre établissement civil candidat, c'est qu'il y a un soucis.
 			final Set<IdentificationEntreprise> identificationsEntreprise = etablissementForKey.getIdentificationsEntreprise();
 			if (identificationsEntreprise != null && !identificationsEntreprise.isEmpty()) {
 				String noIdeEtablissement = identificationsEntreprise.iterator().next().getNumeroIde();
-				final DateRanged<String> noIdeEtablissementsRange = RangeUtil.getAssertLast(etablissementCivilForKey.getNumeroIDE(), date);
+				final DateRanged<String> noIdeEtablissementsRange = RangeUtil.getAssertLast(etablissementCivilForKey.getNumeroIDE(), date,
+				                                                                            () -> "Appariement impossible car il existe un numéro IDE sur l'établissement civil n°" + etablissementCivilForKey.getNumeroEtablissement() + " après le " + RegDateHelper.dateToDisplayString(date));
 				if (noIdeEtablissement != null && noIdeEtablissementsRange != null && !noIdeEtablissement.equals(noIdeEtablissementsRange.getPayload())) {
 					continue;
 				}
@@ -320,7 +323,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		return result;
 	}
 
-	private Map<DomicileStatutKey, List<Etablissement>> buildKeyedEtablissements(RegDate date, List<Etablissement> etablissements) throws MetierServiceException {
+	private Map<DomicileStatutKey, List<Etablissement>> buildKeyedEtablissements(RegDate date, List<Etablissement> etablissements) {
 		final Map<DomicileStatutKey, List<Etablissement>> map = new HashMap<>();
 		for (Etablissement etablissement : etablissements) {
 			final DomicileStatutKey key = createEtablissementKey(date, etablissement);
@@ -352,7 +355,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		return domicile == null ? null : new DomicileStatutKey(domicile.getNumeroOfsAutoriteFiscale(), domicile.getTypeAutoriteFiscale(), etablissement.isActif(date));
 	}
 
-	private DomicileStatutKey createEtablissementKey(RegDate date, Etablissement etablissement) throws MetierServiceException {
+	private DomicileStatutKey createEtablissementKey(RegDate date, Etablissement etablissement) {
 		/* Déterminer le dernier domicile */
 		final DomicileEtablissement domicileEtablissement = extractDernierDomicileFiscal(etablissement, date);
 		if (domicileEtablissement == null) {
@@ -414,10 +417,11 @@ public class MetierServicePMImpl implements MetierServicePM {
 		}
 	}
 
-	private static DomicileEtablissement extractDernierDomicileFiscal(Etablissement etablissement, RegDate date) throws MetierServiceException {
-		final ArrayList<DomicileEtablissement> domicileEtablissements = new ArrayList<>();
-		domicileEtablissements.addAll(etablissement.getDomiciles());
-		return RangeUtil.getAssertLast(domicileEtablissements, date);
+	private static DomicileEtablissement extractDernierDomicileFiscal(Etablissement etablissement, RegDate date) {
+		final List<DomicileEtablissement> domicileEtablissements = new ArrayList<>(etablissement.getDomiciles());
+		domicileEtablissements.sort(DateRangeComparator::compareRanges);
+		return RangeUtil.getAssertLast(domicileEtablissements, date,
+		                               () -> "Appariement impossible car il existe un domicile saisi sur l'établissement fiscal n°" + FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()) + " après le " + RegDateHelper.dateToDisplayString(date));
 	}
 
 
@@ -820,7 +824,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 			}
 		}
 
-		toAdd.stream().forEach(am -> entreprise.addAdresseMandataire(am));
+		toAdd.forEach(entreprise::addAdresseMandataire);
 	}
 
 	@Override
@@ -1012,7 +1016,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 	}
 
 	@Override
-	public void scinde(Entreprise scindee, List<Entreprise> resultantes, RegDate dateContratScission) throws MetierServiceException {
+	public void scinde(Entreprise scindee, List<Entreprise> resultantes, RegDate dateContratScission) {
 
 		// création de rapports entre tiers de type scission
 		for (Entreprise resultante : resultantes) {
@@ -1072,7 +1076,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 	}
 
 	@Override
-	public void transferePatrimoine(Entreprise emettrice, List<Entreprise> receptrices, RegDate dateTransfert) throws MetierServiceException {
+	public void transferePatrimoine(Entreprise emettrice, List<Entreprise> receptrices, RegDate dateTransfert) {
 
 		// création de rapports entre tiers de type transfert de patrimoine
 		for (Entreprise receptrice : receptrices) {

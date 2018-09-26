@@ -45,6 +45,7 @@ import ch.vd.unireg.interfaces.entreprise.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.data.TypeEntrepriseRegistreIDE;
 import ch.vd.unireg.interfaces.entreprise.mock.MockServiceEntreprise;
 import ch.vd.unireg.interfaces.entreprise.mock.data.MockEntrepriseCivile;
+import ch.vd.unireg.interfaces.entreprise.mock.data.MockEtablissementCivil;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEntrepriseFactory;
 import ch.vd.unireg.interfaces.entreprise.mock.data.builder.MockEtablissementCivilFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -79,6 +80,8 @@ import ch.vd.unireg.type.TypeEtatEntreprise;
 import ch.vd.unireg.type.TypeGenerationEtatEntreprise;
 import ch.vd.unireg.type.TypeMandat;
 import ch.vd.unireg.type.TypeRapportEntreTiers;
+
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("Duplicates")
 public class MetierServicePMTest extends BusinessTest {
@@ -187,6 +190,65 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertEquals(1, result.getEtablissementsCivilsNonRattaches().size());
 				Assert.assertEquals(noEtablissement2.longValue(), result.getEtablissementsCivilsNonRattaches().get(0).getNumeroEtablissement());
 			}
+		});
+	}
+
+	/**
+	 * [SIFISC-28556] Ce test vérifie que le rapprochement initial entre une entreprise civile et une entreprise fiscale lève bien d'exception dans le cas où l'événement est traité tardivement et qu'il existe des données plus récentes dans
+	 * les données Unireg.
+	 */
+	@Test
+	public void testRattacheEntreprisesCivileEtFiscaleEvenementProcesseTardivement() throws Exception {
+
+		final RegDate dateCreation = date(2003, 1, 29);
+		final RegDate dateEvenement = date(2016, 11, 1);
+		final RegDate dateChangementNom = date(2017, 2, 9);
+		final String nom = "Donato Lauria Sàrl";
+		final String nouveauNom = "Donato Lauria Sàrl en liquidation";
+		final Long noEntrepriseCivile = 101654661L;
+		final Long noEtablissement = noEntrepriseCivile + 1000000;
+
+		// une entreprise civile avec un changement de raison sociale en 2017
+		final MockEntrepriseCivile entrepriseCivile = MockEntrepriseFactory.createEntreprise(noEntrepriseCivile, noEtablissement, nom, dateCreation, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+		                                                                                     TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
+		                                                                                     dateCreation, StatusRegistreIDE.DEFINITIF, TypeEntrepriseRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+		final MockEtablissementCivil etablissementPrincipal = (MockEtablissementCivil) entrepriseCivile.getEtablissementPrincipal(dateCreation).getPayload();
+		etablissementPrincipal.changeNom(dateChangementNom, nouveauNom);
+
+		serviceEntreprise.setUp(new MockServiceEntreprise() {
+			@Override
+			protected void init() {
+				addEntreprise(entrepriseCivile);
+			}
+		});
+
+		// l'entreprise fiscale avec le changement de nom déjà saisi
+		final long entrepriseId = doInNewTransactionAndSession(status -> {
+			final Etablissement etablissement = addEtablissement();
+			etablissement.setRaisonSociale(nom);
+			addDomicileEtablissement(etablissement, dateCreation, null, MockCommune.Lausanne);
+
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateCreation, dateChangementNom.getOneDayBefore(), nom);
+			addRaisonSocialeFiscaleEntreprise(entreprise, dateChangementNom, null, nouveauNom);
+			addFormeJuridique(entreprise, dateCreation, null, FormeJuridiqueEntreprise.SARL);
+			addCapitalEntreprise(entreprise, dateCreation, null, new MontantMonetaire(25000L, "CHF"));
+			tiersService.addActiviteEconomique(etablissement, entreprise, dateCreation, true);
+
+			return entreprise.getNumero();
+		});
+
+		// le rattachement ne peut pas être fait automatiquement parce qu'on ne veut pas tenter de réconcilier les deux historiques potentiellement divergents (même si là, les deux sont cohérents).
+		doInNewTransactionAndSession(transactionStatus -> {
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(entrepriseId);
+			try {
+				metierServicePM.rattacheEntreprisesCivileEtFiscal(entrepriseCivile, entreprise, dateEvenement);
+				fail();
+			}
+			catch (Exception e) {
+				Assert.assertEquals("Appariement impossible car il existe une raison sociale saisie sur l'entreprise fiscale n°" + FormatNumeroHelper.numeroCTBToDisplay(entrepriseId) + " après le 01.11.2016", e.getMessage());
+			}
+			return null;
 		});
 	}
 
@@ -1049,7 +1111,7 @@ public class MetierServicePMTest extends BusinessTest {
 						ouvertureTrouvee = true;
 					}
 					else {
-						Assert.fail("Type inattendu : " + eff.getType());
+						fail("Type inattendu : " + eff.getType());
 					}
 				}
 				Assert.assertTrue(annulationTrouvee);
@@ -1883,7 +1945,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// attention, l'entreprise 2 a été mise là par erreur ou malveillance... on doit sauter!
 				try {
 					metierServicePM.annuleFusionEntreprises(absorbante, Arrays.asList(absorbee1, absorbee2), dateContratFusion1, dateBilanFusion);
-					Assert.fail("Aurait-dû sauter car l'entreprise absorbee2 n'a pas la bonne date de contrat de fusion");
+					fail("Aurait-dû sauter car l'entreprise absorbee2 n'a pas la bonne date de contrat de fusion");
 				}
 				catch (MetierServiceException e) {
 					Assert.assertEquals(String.format("L'entreprise %s n'est pas associée à une absorption par l'entreprise %s avec une date de contrat de fusion au %s.",
@@ -2565,7 +2627,7 @@ public class MetierServicePMTest extends BusinessTest {
 						ouvertureTrouvee = true;
 					}
 					else {
-						Assert.fail("Type inattendu : " + eff.getType());
+						fail("Type inattendu : " + eff.getType());
 					}
 				}
 				Assert.assertTrue(annulationTrouvee);
@@ -2899,7 +2961,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// attention, l'entreprise 2 a été mise là par erreur ou malveillance... on doit sauter!
 				try {
 					metierServicePM.annuleScission(scindee, Arrays.asList(resultante1, resultante2), dateContratScission1);
-					Assert.fail("Aurait-dû sauter car l'entreprise resultante2 n'a pas la bonne date du contrat de scission");
+					fail("Aurait-dû sauter car l'entreprise resultante2 n'a pas la bonne date du contrat de scission");
 				}
 				catch (MetierServiceException e) {
 					Assert.assertEquals(String.format("L'entreprise %s n'est pas associée à une scission depuis l'entreprise %s avec une date de contrat de scission au %s.",
@@ -3394,7 +3456,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// attention, l'entreprise 2 a été mise là par erreur ou malveillance... on doit sauter!
 				try {
 					metierServicePM.annuleTransfertPatrimoine(emettrice, Arrays.asList(receptrice1, receptrice2), dateTransfert1);
-					Assert.fail("Aurait-dû sauter car l'entreprise receptrice2 n'a pas la bonne date du contrat de scission");
+					fail("Aurait-dû sauter car l'entreprise receptrice2 n'a pas la bonne date du contrat de scission");
 				}
 				catch (MetierServiceException e) {
 					Assert.assertEquals(String.format("L'entreprise %s n'est pas associée à un transfert de patrimoine depuis l'entreprise %s au %s.",
