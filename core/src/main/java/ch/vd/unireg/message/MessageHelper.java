@@ -2,6 +2,7 @@ package ch.vd.unireg.message;
 
 import java.util.Locale;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -12,7 +13,7 @@ public class MessageHelper {
 
 	private MessageSource messageSource;
 
-	private Locale localeDefinie = Locale.forLanguageTag("fr_CH");
+	private Locale localeDefinie = LocaleUtils.toLocale("fr_CH");
 
 	private Locale getLocaleDefinie() {
 		if (localeDefinie == null) {

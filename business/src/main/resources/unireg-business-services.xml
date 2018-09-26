@@ -301,7 +301,9 @@
 	
 	<bean id="impressionSommationDIPMHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl"/>
 
-	<bean id="impressionRappelQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.snc.ImpressionRappelQuestionnaireSNCHelperImpl"/>
+	<bean id="impressionRappelQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.unireg.declaration.snc.ImpressionRappelQuestionnaireSNCHelperImpl">
+		<property name="messageHelper" ref="messageHelper"/>
+	</bean>
 
     <bean id="impressionConfirmationDelaiPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.unireg.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelperImpl">
 	    <property name="infraService" ref="serviceInfrastructureService"/>

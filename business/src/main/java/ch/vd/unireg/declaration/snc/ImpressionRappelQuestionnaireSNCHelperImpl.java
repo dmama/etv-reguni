@@ -28,6 +28,7 @@ import ch.vd.unireg.editique.EditiqueException;
 import ch.vd.unireg.editique.EditiquePrefixeHelper;
 import ch.vd.unireg.editique.TypeDocumentEditique;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
+import ch.vd.unireg.message.MessageHelper;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.ForFiscalPrincipal;
 import ch.vd.unireg.type.GenreImpot;
@@ -35,6 +36,7 @@ import ch.vd.unireg.type.GenreImpot;
 public class ImpressionRappelQuestionnaireSNCHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionRappelQuestionnaireSNCHelper {
 
 	private static final String CODE_DOCUMENT_RQSNC = TypeDocumentEditique.RAPPEL_SQNC.getCodeDocumentEditique().substring(0, 4);
+	private MessageHelper messageHelper;
 
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique(QuestionnaireSNC questionnaire) {
@@ -48,7 +50,7 @@ public class ImpressionRappelQuestionnaireSNCHelperImpl extends EditiqueAbstract
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(pm), pm);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(TypeDocumentEditique.RAPPEL_SQNC, construitCleArchivageDocument(questionnaire), pm.getNumero(), dateRappel);
 
-			final String titre = String.format("INVITATION À DÉPOSER LE QUESTIONNAIRE %d SNC/SC - RAPPEL", questionnaire.getPeriode().getAnnee());
+			final String titre = messageHelper.getMessage("editique.titre.lettre.rappel.qsnc", questionnaire.getPeriode().getAnnee());
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(pm, dateEnvoiCourrier, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final CTypeQuestSNCRappel rappel = buildDocumentRappel(questionnaire);
 
@@ -130,5 +132,9 @@ public class ImpressionRappelQuestionnaireSNCHelperImpl extends EditiqueAbstract
 		                     questionnaire.getNumero(),
 		                     StringUtils.rightPad("Rappel QSNC", 19, ' '),
 		                     new SimpleDateFormat("MMddHHmmssSSS").format(questionnaire.getLogCreationDate()));
+	}
+
+	public void setMessageHelper(MessageHelper messageHelper) {
+		this.messageHelper = messageHelper;
 	}
 }
