@@ -87,7 +87,13 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			TiersGeneralView tiersLieView = tiersGeneralManager.getTiers(tiersLie, true);
 			rapportView.setTiersLie(tiersLieView);
 		}
-		rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
+
+		if (tiers instanceof Entreprise && ((Entreprise) tiers).isSNC()) {
+			rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);
+		}
+		else {
+			rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
+		}
 
 		return rapportView;
 	}
