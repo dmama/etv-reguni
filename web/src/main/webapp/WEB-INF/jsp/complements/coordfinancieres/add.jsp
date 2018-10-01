@@ -37,6 +37,7 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
+						    <span class="mandatory">*</span>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
@@ -51,7 +52,8 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.numeroCompteBancaire" />&nbsp;:</td>
 						<td>
-							<form:input path="iban" cssErrorClass="input-with-errors" size ="${lengthnumcompte}" tabindex="1" maxlength="${lengthnumcompte}"/>
+							<form:input path="iban" cssErrorClass="input-with-errors" size ="${lengthnumcompte}"  maxlength="${lengthnumcompte}"/>
+							<span class="mandatory">*</span>
 							<span class="jTip formInfo" title="<c:url value="/htm/iban.htm?width=375"/>" id="tipIban">?</span>
 							<form:errors path="iban" cssClass="error"/>
 							<form:hidden path="oldIban"/>
@@ -60,7 +62,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.titulaireCompte" />&nbsp;:</td>
 						<td>
-							<form:input path="titulaireCompteBancaire" cssErrorClass="input-with-errors" size ="30" tabindex="2" maxlength="${lengthpersonne}" />
+							<form:input path="titulaireCompteBancaire" cssErrorClass="input-with-errors" size ="30"  maxlength="${lengthpersonne}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/titulaireCompte.htm?width=375"/>" id="titulaireCompte">?</span>
 							<form:errors path="titulaireCompteBancaire" cssClass="error"/>
 						</td>
@@ -68,7 +70,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.bicSwift" />&nbsp;:</td>
 						<td>
-							<form:input path="adresseBicSwift" cssErrorClass="input-with-errors" size ="26" tabindex="3" maxlength="${lengthbic}" />
+							<form:input path="adresseBicSwift" cssErrorClass="input-with-errors" size ="26"  maxlength="${lengthbic}" />
 							<span class="jTip formInfo" title="<c:url value="/htm/bic.htm?width=375"/>" id="bic">?</span>
 							<form:errors path="adresseBicSwift" cssClass="error"/>
 						</td>
