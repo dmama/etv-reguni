@@ -1,7 +1,8 @@
 package ch.vd.unireg.indexer.jobs;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 		final JobParam param2 = new JobParam();
 		param2.setDescription("Population");
 		param2.setName(POPULATION);
-		param2.setMandatory(true);
+		param2.setMandatory(false);
 		param2.setType(new JobParamMultiSelectEnum(TypeTiers.class));
 		addParameterDefinition(param2, Arrays.asList(TypeTiers.values()));
 	}
@@ -61,7 +62,8 @@ public class DatabaseIndexerJob extends JobDefinition {
 	public void doExecute(Map<String, Object> params) throws Exception {
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
-		final Set<TypeTiers> typesTiers = new HashSet<>(getMultiSelectEnumValue(params, POPULATION, TypeTiers.class));
+		final List<TypeTiers> population = getMultiSelectEnumValue(params, POPULATION, TypeTiers.class);
+		final Set<TypeTiers> typesTiers = population.isEmpty() ? EnumSet.allOf(TypeTiers.class) : EnumSet.copyOf(population);    // [SIFISC-29781] pas de population spécifique renseignée -> on prends toute la population
 		final StatusManager status = getStatusManager();
 
 		Audit.info("Indexation de la base de données (mode = " + mode + ", typesTiers = " + typesTiers + ")");

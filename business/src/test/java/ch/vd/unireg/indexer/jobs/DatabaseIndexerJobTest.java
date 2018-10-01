@@ -6,7 +6,6 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.BusinessTest;
@@ -110,48 +109,45 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		final Ids ids;
 		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		try {
-			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-				@Override
-				public Ids doInTransaction(TransactionStatus status) {
-					final Entreprise nestle = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
-					addRegimeFiscalVD(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Vevey);
+			ids = doInNewTransactionAndSession(status -> {
+				final Entreprise nestle = addEntrepriseConnueAuCivil(MockEntrepriseFactory.NESTLE.getNumeroEntreprise());
+				addRegimeFiscalVD(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(nestle, MockEntrepriseFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Vevey);
 
-					final Entreprise bcv = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
-					addRegimeFiscalVD(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				final Entreprise bcv = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BCV.getNumeroEntreprise());
+				addRegimeFiscalVD(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(bcv, MockEntrepriseFactory.BCV.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
-					final Entreprise kpmg = addEntrepriseConnueAuCivil(MockEntrepriseFactory.KPMG.getNumeroEntreprise());
-					addRegimeFiscalVD(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Zurich);
+				final Entreprise kpmg = addEntrepriseConnueAuCivil(MockEntrepriseFactory.KPMG.getNumeroEntreprise());
+				addRegimeFiscalVD(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(kpmg, MockEntrepriseFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Zurich);
 
-					final Entreprise curiaTreuhand = addEntrepriseConnueAuCivil(MockEntrepriseFactory.CURIA_TREUHAND.getNumeroEntreprise());
-					addRegimeFiscalVD(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Chur);
+				final Entreprise curiaTreuhand = addEntrepriseConnueAuCivil(MockEntrepriseFactory.CURIA_TREUHAND.getNumeroEntreprise());
+				addRegimeFiscalVD(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(curiaTreuhand, MockEntrepriseFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Chur);
 
-					final Entreprise jalHolding = addEntrepriseConnueAuCivil(MockEntrepriseFactory.JAL_HOLDING.getNumeroEntreprise());
-					addRegimeFiscalVD(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				final Entreprise jalHolding = addEntrepriseConnueAuCivil(MockEntrepriseFactory.JAL_HOLDING.getNumeroEntreprise());
+				addRegimeFiscalVD(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(jalHolding, MockEntrepriseFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
-					final Entreprise banqueCoop = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
-					addRegimeFiscalVD(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addRegimeFiscalCH(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-					addForPrincipal(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bale);
+				final Entreprise banqueCoop = addEntrepriseConnueAuCivil(MockEntrepriseFactory.BANQUE_COOP.getNumeroEntreprise());
+				addRegimeFiscalVD(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(banqueCoop, MockEntrepriseFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bale);
 
-					final Ids ids = new Ids();
-					ids.idNestle = nestle.getNumero();
-					ids.idBcv = bcv.getNumero();
-					ids.idKpmg = kpmg.getNumero();
-					ids.idCuriaTreuhand = curiaTreuhand.getNumero();
-					ids.idJalHolding = jalHolding.getNumero();
-					ids.idBanqueCoop = banqueCoop.getNumero();
-					return ids;
-				}
+				final Ids ids1 = new Ids();
+				ids1.idNestle = nestle.getNumero();
+				ids1.idBcv = bcv.getNumero();
+				ids1.idKpmg = kpmg.getNumero();
+				ids1.idCuriaTreuhand = curiaTreuhand.getNumero();
+				ids1.idJalHolding = jalHolding.getNumero();
+				ids1.idBanqueCoop = banqueCoop.getNumero();
+				return ids1;
 			});
 		}
 		finally {
@@ -163,7 +159,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Object execute(TransactionStatus status) {
 				// Ajout d'un Habitant qui ne se reindexe pas
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(12345678L);
@@ -231,12 +227,12 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		// Nombre de tiers indexés
 		{
 			final Set<Long> allIds = globalTiersSearcher.getAllIds();
-			assertTrue(allIds.contains(Long.valueOf(ids.idBanqueCoop)));
-			assertTrue(allIds.contains(Long.valueOf(ids.idBcv)));
-			assertTrue(allIds.contains(Long.valueOf(ids.idCuriaTreuhand)));
-			assertTrue(allIds.contains(Long.valueOf(ids.idJalHolding)));
-			assertTrue(allIds.contains(Long.valueOf(ids.idKpmg)));
-			assertTrue(allIds.contains(Long.valueOf(ids.idNestle)));
+			assertTrue(allIds.contains(ids.idBanqueCoop));
+			assertTrue(allIds.contains(ids.idBcv));
+			assertTrue(allIds.contains(ids.idCuriaTreuhand));
+			assertTrue(allIds.contains(ids.idJalHolding));
+			assertTrue(allIds.contains(ids.idKpmg));
+			assertTrue(allIds.contains(ids.idNestle));
 
 			int nb = globalTiersSearcher.getExactDocCount();
 			assertEquals(6 + MockCollectiviteAdministrative.getAll().size(), nb);

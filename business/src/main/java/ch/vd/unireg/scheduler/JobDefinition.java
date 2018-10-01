@@ -815,7 +815,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 					}
 				}
 			}
-			else {
+			else if (v != null) {
 				//noinspection unchecked
 				values.add((T) v);
 			}
