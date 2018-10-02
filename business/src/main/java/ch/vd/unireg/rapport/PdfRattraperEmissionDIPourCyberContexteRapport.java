@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.itextpdf.text.pdf.PdfWriter;
 
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.CsvHelper;
 import ch.vd.unireg.common.StatusManager;
 import ch.vd.unireg.common.TemporaryFile;
@@ -36,8 +35,8 @@ public class PdfRattraperEmissionDIPourCyberContexteRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, table -> {
+				table.addLigne("Première période fiscale :", String.valueOf(results.periodeDebut));
 				table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}
 

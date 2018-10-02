@@ -3,7 +3,6 @@ package ch.vd.unireg.declaration.ordinaire.common;
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.JobResults;
 
 public class RattraperEmissionDIPourCyberContexteResults extends JobResults<Long, RattraperEmissionDIPourCyberContexteResults> {
@@ -55,7 +54,7 @@ public class RattraperEmissionDIPourCyberContexteResults extends JobResults<Long
 	}
 
 	// paramètre d'entrée
-	public final RegDate dateTraitement;
+	public final int periodeDebut;
 	public final int nbThreads;
 
 	// données de sortie
@@ -65,9 +64,9 @@ public class RattraperEmissionDIPourCyberContexteResults extends JobResults<Long
 	public final List<Erreur> errors = new LinkedList<>();
 	public boolean interrompu;
 
-	public RattraperEmissionDIPourCyberContexteResults(RegDate dateTraitement, int nbThreads) {
+	public RattraperEmissionDIPourCyberContexteResults(int periodeDebut, int nbThreads) {
 		super(null, null);
-		this.dateTraitement = dateTraitement;
+		this.periodeDebut = periodeDebut;
 		this.nbThreads = nbThreads;
 	}
 

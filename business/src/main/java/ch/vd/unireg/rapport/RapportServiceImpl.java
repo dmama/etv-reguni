@@ -1973,8 +1973,8 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 	public RattraperEmissionDIPourCyberContexteRapport generateRapport(RattraperEmissionDIPourCyberContexteResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RapporRattraperEmissionDIPourCyberContexte" + results.dateTraitement.index();
-		final String description = "Rapport d'exécution du job de réémission des événements de mise-à-disposition des DIs dans le contexte de la cyberfiscalité. Date de traitement = " + RegDateHelper.dateToDisplayString(results.dateTraitement) + ".";
+		final String nom = "RapporRattraperEmissionDIPourCyberContexte" + results.periodeDebut;
+		final String description = "Rapport d'exécution du job de réémission des événements de mise-à-disposition des DIs dans le contexte de la cyberfiscalité.";
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {

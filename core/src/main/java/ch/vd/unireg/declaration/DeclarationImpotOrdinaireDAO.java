@@ -2,10 +2,6 @@ package ch.vd.unireg.declaration;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
-import ch.vd.registre.base.date.RegDate;
-
 public interface DeclarationImpotOrdinaireDAO extends DeclarationDAO<DeclarationImpotOrdinaire> {
 
 	/**
@@ -23,11 +19,11 @@ public interface DeclarationImpotOrdinaireDAO extends DeclarationDAO<Declaration
 	/**
 	 * Retourne le dernier EtatPeriodeDeclaration retournee
 	 */
-	EtatDeclaration findDerniereDiEnvoyee(Long numeroCtb) ;
+	EtatDeclaration findDerniereDiEnvoyee(Long numeroCtb);
 
 	/**
-	 * @param date une date
-	 * @return les ids des déclarations d'impôts <i>ordinaires</i> émises (non-annulées) jusqu'à la date spécifiée.
+	 * @param periodeDebut la première période fiscale considérée
+	 * @return les ids des déclarations d'impôts <i>ordinaires</i> émises (non-annulées) depuis la période fiscale spécifiée.
 	 */
-	List<Long> findIdsDeclarationsOrdinairesEmisesUntil(@NotNull RegDate date);
+	List<Long> findIdsDeclarationsOrdinairesEmisesFrom(int periodeDebut);
 }

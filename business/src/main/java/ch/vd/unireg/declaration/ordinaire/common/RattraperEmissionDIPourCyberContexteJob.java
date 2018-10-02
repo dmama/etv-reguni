@@ -27,7 +27,6 @@ import ch.vd.unireg.scheduler.JobCategory;
 import ch.vd.unireg.scheduler.JobDefinition;
 import ch.vd.unireg.scheduler.JobParam;
 import ch.vd.unireg.scheduler.JobParamInteger;
-import ch.vd.unireg.scheduler.JobParamRegDate;
 import ch.vd.unireg.tiers.Contribuable;
 
 /**
@@ -37,6 +36,7 @@ public class RattraperEmissionDIPourCyberContexteJob extends JobDefinition {
 
 	public static final String NAME = "RattraperEmissionDIPourCyberContexteJob";
 
+	private static final String PERIODE_DEBUT = "PERIODE_DEBUT";
 	private static final String NB_THREADS = "NB_THREADS";
 	private static final int BATCH_SIZE = 100;
 
@@ -49,11 +49,11 @@ public class RattraperEmissionDIPourCyberContexteJob extends JobDefinition {
 		super(NAME, JobCategory.DI, sortOrder, description);
 		{
 			final JobParam param = new JobParam();
-			param.setDescription("Date de traitement");
-			param.setName(DATE_TRAITEMENT);
-			param.setMandatory(false);
-			param.setType(new JobParamRegDate());
-			addParameterDefinition(param, RegDate.get());
+			param.setDescription("Première période fiscale");
+			param.setName(PERIODE_DEBUT);
+			param.setMandatory(true);
+			param.setType(new JobParamInteger());
+			addParameterDefinition(param, 2017);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -69,11 +69,11 @@ public class RattraperEmissionDIPourCyberContexteJob extends JobDefinition {
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
-		final RegDate dateTraitement = getDateTraitement(params);
+		final int periodeDebut = getStrictlyPositiveIntegerValue(params, PERIODE_DEBUT);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final StatusManager status = getStatusManager();
 
-		final RattraperEmissionDIPourCyberContexteResults results = emmettreEvenements(dateTraitement, nbThreads, status);
+		final RattraperEmissionDIPourCyberContexteResults results = emmettreEvenements(periodeDebut, nbThreads, status);
 		final RattraperEmissionDIPourCyberContexteRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
@@ -83,20 +83,19 @@ public class RattraperEmissionDIPourCyberContexteJob extends JobDefinition {
 	/**
 	 * Chercher les déclarations d'impôts émises et envoie un événement d'émission de déclaration d'impôt dans le contexte Cyber.
 	 *
-	 * @param dateTraitement la date de traitement (les DIs émises après cette date ne sont pas prises en compte)
-	 * @param nbThreads      le nombre de threads
-	 * @param statusManager  un status manager
+	 * @param periodeDebut  la période fiscale minimale à prendre en compte (= les périodes précédentes ne seront pas considérées)
+	 * @param nbThreads     le nombre de threads
+	 * @param statusManager un status manager
 	 * @return les résultats du traitement
 	 */
-	@NotNull
-	private RattraperEmissionDIPourCyberContexteResults emmettreEvenements(@NotNull RegDate dateTraitement, int nbThreads, @NotNull StatusManager statusManager) {
+	private RattraperEmissionDIPourCyberContexteResults emmettreEvenements(int periodeDebut, int nbThreads, @NotNull StatusManager statusManager) {
 
 		// on va chercher les ids des déclarations émises
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final List<Long> diIds = template.execute(status -> declarationImpotOrdinaireDAO.findIdsDeclarationsOrdinairesEmisesUntil(dateTraitement));
+		final List<Long> diIds = template.execute(status -> declarationImpotOrdinaireDAO.findIdsDeclarationsOrdinairesEmisesFrom(periodeDebut));
 
-		final RattraperEmissionDIPourCyberContexteResults rapportFinal = new RattraperEmissionDIPourCyberContexteResults(dateTraitement, nbThreads);
+		final RattraperEmissionDIPourCyberContexteResults rapportFinal = new RattraperEmissionDIPourCyberContexteResults(periodeDebut, nbThreads);
 
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 		final ParallelBatchTransactionTemplateWithResults<Long, RattraperEmissionDIPourCyberContexteResults> batchTemplate =
@@ -109,13 +108,13 @@ public class RattraperEmissionDIPourCyberContexteJob extends JobDefinition {
 			@Override
 			public boolean doInTransaction(List<Long> batchIds, RattraperEmissionDIPourCyberContexteResults rapport) {
 				statusManager.setMessage("Envoi des messages dans le contexte Cyber ...", progressMonitor.getProgressInPercent());
-				batchIds.forEach(id -> emettreEvenementCyber(id, dateTraitement, rapport));
+				batchIds.forEach(id -> emettreEvenementCyber(id, rapport));
 				return true;
 			}
 
 			@Override
 			public RattraperEmissionDIPourCyberContexteResults createSubRapport() {
-				return new RattraperEmissionDIPourCyberContexteResults(dateTraitement, nbThreads);
+				return new RattraperEmissionDIPourCyberContexteResults(periodeDebut, nbThreads);
 			}
 		}, progressMonitor);
 
@@ -127,11 +126,10 @@ public class RattraperEmissionDIPourCyberContexteJob extends JobDefinition {
 	/**
 	 * Emet un événement d'émission de déclaration d'impôt dans le contexte Cyber.
 	 *
-	 * @param idDI           l'id d'une déclaration d'impôt
-	 * @param dateTraitement la date de traitement
-	 * @param rapport        le rapport à compléter
+	 * @param idDI    l'id d'une déclaration d'impôt
+	 * @param rapport le rapport à compléter
 	 */
-	private void emettreEvenementCyber(@NotNull Long idDI, @NotNull RegDate dateTraitement, @NotNull RattraperEmissionDIPourCyberContexteResults rapport) {
+	private void emettreEvenementCyber(@NotNull Long idDI, @NotNull RattraperEmissionDIPourCyberContexteResults rapport) {
 
 		rapport.addDiTrouvee();
 
@@ -156,7 +154,7 @@ public class RattraperEmissionDIPourCyberContexteJob extends JobDefinition {
 
 		// on envoie l'événement d'émission de la DI dans le contexte Cyber
 		try {
-			evenementCyberContexteSender.sendEmissionDeclarationEvent(ctbId, periodeFiscale, numeroSequence, codeControle, dateTraitement);
+			evenementCyberContexteSender.sendEmissionDeclarationEvent(ctbId, periodeFiscale, numeroSequence, codeControle, RegDate.get());
 			rapport.addDiTraitee(idDI, ctbId, periodeFiscale, numeroSequence);
 		}
 		catch (EvenementCyberContexteException e) {

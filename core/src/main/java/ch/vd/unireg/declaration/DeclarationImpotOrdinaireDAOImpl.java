@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,16 +132,16 @@ public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<Declara
 	}
 
 	@Override
-	public List<Long> findIdsDeclarationsOrdinairesEmisesUntil(@NotNull RegDate date) {
+	public List<Long> findIdsDeclarationsOrdinairesEmisesFrom(int periodeDebut) {
 		final Query query = getCurrentSession().createQuery("select etat.documentFiscal.id " +
 				                                                    "from EtatDeclarationEmise etat " +
 				                                                    "where etat.annulationDate is null " +
-				                                                    "and etat.dateObtention <= :date " +
 				                                                    "and etat.documentFiscal.annulationDate is null " +
 				                                                    "and etat.documentFiscal.class in ('DI', 'DIPM') " +
+				                                                    "and etat.documentFiscal.periode.annee >= :periode " +
 				                                                    "and etat.documentFiscal.tiers.annulationDate is null " +
 				                                                    "order by etat.documentFiscal.tiers.id, etat.documentFiscal.id");
-		query.setParameter("date", date);
+		query.setParameter("periode", periodeDebut);
 
 		//noinspection unchecked
 		final List<Object> list = query.list();

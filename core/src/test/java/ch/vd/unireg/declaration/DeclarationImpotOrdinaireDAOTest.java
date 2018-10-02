@@ -117,7 +117,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	public void testFindIdsDeclarationsEmisesUntil() throws Exception {
+	public void testFindIdsDeclarationsOrdinairesEmisesFrom() throws Exception {
 
 		class Ids {
 			Long di1pp1;
@@ -167,7 +167,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 			addEtatDeclarationEmise(di1pm1, RegDate.get(2006, 1, 15));
 			addEtatDeclarationRetournee(di1pm1, RegDate.get(2006, 4, 4));
 
-			final DeclarationImpotOrdinairePM di2pm1 = addDeclarationImpot(pm1, periode2005, date(2006, 1, 1), date(2006, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, modelePM2006);
+			final DeclarationImpotOrdinairePM di2pm1 = addDeclarationImpot(pm1, periode2006, date(2006, 1, 1), date(2006, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, modelePM2006);
 			addEtatDeclarationEmise(di2pm1, RegDate.get(2007, 1, 15));
 			addEtatDeclarationEchue(di2pm1, RegDate.get(2007, 4, 4));
 
@@ -194,7 +194,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 
 		// toutes les DIs émises valides
 		doInNewTransaction(status -> {
-			final List<Long> diIds = diDao.findIdsDeclarationsOrdinairesEmisesUntil(date(2010, 1, 1));
+			final List<Long> diIds = diDao.findIdsDeclarationsOrdinairesEmisesFrom(2000);
 			assertTrue(diIds.contains(ids.di1pp1));
 			assertFalse(diIds.contains(ids.di2pp1));    // la di2pp1 est annulée
 			assertTrue(diIds.contains(ids.di3pp1));
@@ -207,24 +207,24 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 			return null;
 		});
 
-		// toutes les DIs émises valides avant le 1er janvier 2007
+		// toutes les DIs émises pour les PFs >= 2007
 		doInNewTransaction(status -> {
-			final List<Long> diIds = diDao.findIdsDeclarationsOrdinairesEmisesUntil(date(2006, 12, 31));
-			assertTrue(diIds.contains(ids.di1pp1));
+			final List<Long> diIds = diDao.findIdsDeclarationsOrdinairesEmisesFrom(2006);
+			assertFalse(diIds.contains(ids.di1pp1));    // émise pour 2005
 			assertFalse(diIds.contains(ids.di2pp1));    // la di2pp1 est annulée
-			assertFalse(diIds.contains(ids.di3pp1));    // émise après le 1er janvier 2017
+			assertTrue(diIds.contains(ids.di3pp1));     // émise pour 2006
 			assertFalse(diIds.contains(ids.di1pp2));    // la pp2 est annulée
-			assertTrue(diIds.contains(ids.di1pm1));
-			assertFalse(diIds.contains(ids.di2pm1));    // émise après le 1er janvier 2017
+			assertFalse(diIds.contains(ids.di1pm1));    // émise pour 2005
+			assertTrue(diIds.contains(ids.di2pm1));     // émise pour 2006
 			assertFalse(diIds.contains(ids.snc1pm2));   // un questionnaire SNC n'est pas une déclaration d'impôt ordinaire
 			assertFalse(diIds.contains(ids.snc2pm2));   // un questionnaire SNC n'est pas une déclaration d'impôt ordinaire
 			assertEquals(2, diIds.size());
 			return null;
 		});
 
-		// toutes les DIs émises valides avant le 1er janvier 2000
+		// toutes les DIs émises pour les PF >= 2010
 		doInNewTransaction(status -> {
-			final List<Long> diIds = diDao.findIdsDeclarationsOrdinairesEmisesUntil(date(1999, 12, 31));
+			final List<Long> diIds = diDao.findIdsDeclarationsOrdinairesEmisesFrom(2010);
 			assertEmpty(diIds);
 			return null;
 		});
