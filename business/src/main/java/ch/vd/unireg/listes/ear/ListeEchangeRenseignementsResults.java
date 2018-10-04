@@ -64,7 +64,7 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 	}
 
 
-	public static class InfoIdentifiantCtb extends InfoCtb<InfoIdentifiantCtb>{
+	public static class InfoIdentifiantCtb extends InfoCtb<InfoIdentifiantCtb> {
 
 		public final String identifiant;
 
@@ -82,6 +82,7 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 		ABSENCE_DOMICILE_VAUDOIS("Pas de Domicile vaudois sur la période pour le ctb source"),
 		ABSENCE_NAVS("Pas de numéro AVS trouvé pour ce contribuable"),
 		ABSENCE_IDE("Pas de numéro IDE trouvé pour cette entreprise");
+
 		public String getDescription() {
 			return description;
 		}
@@ -102,7 +103,8 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 		}
 	}
 
-	public ListeEchangeRenseignementsResults(RegDate dateTraitement, int nombreThreads, int anneeFiscale,final boolean avecContribuablesPP, final boolean avecContribuablesPM, TiersService tiersService,                                         AssujettissementService assujettissementService, AdresseService adresseService) {
+	public ListeEchangeRenseignementsResults(RegDate dateTraitement, int nombreThreads, int anneeFiscale, final boolean avecContribuablesPP, final boolean avecContribuablesPM, TiersService tiersService,
+	                                         AssujettissementService assujettissementService, AdresseService adresseService) {
 		super(dateTraitement, nombreThreads, tiersService, adresseService);
 		this.anneeFiscale = anneeFiscale;
 		this.assujettissementService = assujettissementService;
@@ -118,7 +120,8 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 		if (causeIgnorance != null) {
 			if (ctb instanceof PersonnePhysique || ctb instanceof MenageCommun) {
 				ppIgnores.add(new InfoCtbIgnore(ctb.getNumero(), causeIgnorance));
-			}else if(ctb instanceof Entreprise){
+			}
+			else if (ctb instanceof Entreprise) {
 				pmIgnores.add(new InfoCtbIgnore(ctb.getNumero(), causeIgnorance));
 			}
 
@@ -131,15 +134,15 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 
 	private void sauvegarderIdentifiant(Contribuable ctb) {
 		if (ctb instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique)ctb;
+			final PersonnePhysique pp = (PersonnePhysique) ctb;
 			traiterPersonnePhysique(pp);
 		}
 		else if (ctb instanceof MenageCommun) {
-			final MenageCommun mc = (MenageCommun)ctb;
+			final MenageCommun mc = (MenageCommun) ctb;
 			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(mc, anneeFiscale);
 			if (ensembleTiersCouple != null) {
-				final PersonnePhysique principal = (PersonnePhysique) ensembleTiersCouple.getPrincipal();
-				final PersonnePhysique conjoint = (PersonnePhysique) ensembleTiersCouple.getConjoint();
+				final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
+				final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 				traiterPersonnePhysique(principal);
 				if (conjoint != null) {
 					traiterPersonnePhysique(conjoint);
@@ -151,14 +154,15 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 
 		}
 		else if (ctb instanceof Entreprise) {
-			final Entreprise entreprise = (Entreprise)ctb;
+			final Entreprise entreprise = (Entreprise) ctb;
 			final String numeroIDE = tiersService.getNumeroIDE(entreprise);
-			if (numeroIDE!= null) {
+			if (numeroIDE != null) {
 				++nbCtbPmIdentifies;
-				pmIdentifies.add(new InfoIdentifiantCtb(entreprise.getNumero(),StringUtils.remove(numeroIDE, "CHE")));
+				pmIdentifies.add(new InfoIdentifiantCtb(entreprise.getNumero(), StringUtils.remove(numeroIDE, "CHE")));
 
-			}else{
-				pmIgnores.add(new InfoCtbIgnore(entreprise.getNumero(),CauseIgnorance.ABSENCE_IDE));
+			}
+			else {
+				pmIgnores.add(new InfoCtbIgnore(entreprise.getNumero(), CauseIgnorance.ABSENCE_IDE));
 			}
 		}
 	}
@@ -167,13 +171,13 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 		final String numeroAssureSocial = tiersService.getNumeroAssureSocial(pp);
 		if (numeroAssureSocial != null) {
 			++nbCtbPpIdentifies;
-			ppIdentifies.add(new InfoIdentifiantCtb(pp.getNumero(),numeroAssureSocial));
+			ppIdentifies.add(new InfoIdentifiantCtb(pp.getNumero(), numeroAssureSocial));
 
-		}else{
-			ppIgnores.add(new InfoCtbIgnore(pp.getNumero(),CauseIgnorance.ABSENCE_NAVS));
+		}
+		else {
+			ppIgnores.add(new InfoCtbIgnore(pp.getNumero(), CauseIgnorance.ABSENCE_NAVS));
 		}
 	}
-
 
 
 	public CauseIgnorance determineCauseIgnorance(Contribuable ctb) throws AssujettissementException, DonneesCivilesException {
@@ -182,11 +186,11 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 
 		//Presence d'un assujetissement sur la PF
 		if (assujettissements == null || assujettissements.isEmpty()) {
-			return  CauseIgnorance.NON_ASSUJETTI;
+			return CauseIgnorance.NON_ASSUJETTI;
 		}
 		//On va trier les assujettissements pour choper la date de fin du dernier qui peut être null
 		assujettissements.sort(DateRangeComparator::compareRanges);
-		final Assujettissement lastAssujetissement = assujettissements.get(assujettissements.size()-1);
+		final Assujettissement lastAssujetissement = assujettissements.get(assujettissements.size() - 1);
 		//vérifcation de la présence d'un for en date de fin de l'assujetissement, peut être null
 		List<ForFiscal> forValides = ctb.getForsFiscauxValidAt(lastAssujetissement.getDateFin());
 		if (absenceForVaudois(forValides)) {
@@ -199,7 +203,7 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 				return CauseIgnorance.ABSENCE_RAPPORT_TRAVAIL_SOURCIER;
 			}
 
-			if(absenceDomicileVaudois(ctb,anneeFiscale)){
+			if (absenceDomicileVaudois(ctb, anneeFiscale)) {
 				return CauseIgnorance.ABSENCE_DOMICILE_VAUDOIS;
 			}
 
@@ -211,23 +215,23 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 
 	private boolean absenceForVaudois(List<ForFiscal> forValides) {
 		return forValides.stream()
-				.noneMatch(f->f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				.noneMatch(f -> f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 
 	}
 
 	private boolean absenceDomicileVaudois(Contribuable ctb, int anneeFiscale) throws DonneesCivilesException {
 		if (ctb instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique)ctb;
+			final PersonnePhysique pp = (PersonnePhysique) ctb;
 			return absencePeriodeDeResidence(pp, anneeFiscale);
 		}
 		if (ctb instanceof MenageCommun) {
-			final MenageCommun mc = (MenageCommun)ctb;
+			final MenageCommun mc = (MenageCommun) ctb;
 			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(mc, anneeFiscale);
 			if (ensembleTiersCouple == null) {
 				return true;
 			}
-			final PersonnePhysique principal = (PersonnePhysique) ensembleTiersCouple.getPrincipal();
-			final PersonnePhysique conjoint = (PersonnePhysique) ensembleTiersCouple.getConjoint();
+			final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
+			final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 
 			return absencePeriodeDeResidence(principal, anneeFiscale) && absencePeriodeDeResidence(conjoint, anneeFiscale);
 		}
@@ -237,17 +241,17 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 
 	private boolean absenceRapportTravail(Contribuable ctb, int anneeFiscale) {
 		if (ctb instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique)ctb;
+			final PersonnePhysique pp = (PersonnePhysique) ctb;
 			return absencePrestationImposable(pp, anneeFiscale);
 		}
 		if (ctb instanceof MenageCommun) {
-			final MenageCommun mc = (MenageCommun)ctb;
+			final MenageCommun mc = (MenageCommun) ctb;
 			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(mc, anneeFiscale);
 			if (ensembleTiersCouple == null) {
 				return true;
 			}
-			final PersonnePhysique principal = (PersonnePhysique) ensembleTiersCouple.getPrincipal();
-			final PersonnePhysique conjoint = (PersonnePhysique) ensembleTiersCouple.getConjoint();
+			final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
+			final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 
 			return absencePrestationImposable(principal, anneeFiscale) && absencePrestationImposable(conjoint, anneeFiscale);
 		}
@@ -262,9 +266,9 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 		}
 		final RegDate debut = RegDate.get(pf, 1, 1);
 		final RegDate fin = RegDate.get(pf, 12, 31);
-		final DateRange rangePeriode= new DateRangeHelper.Range(debut, fin);
+		final DateRange rangePeriode = new DateRangeHelper.Range(debut, fin);
 		final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
-		return rapports==null || !rapports.stream()
+		return rapports == null || !rapports.stream()
 				.filter(r -> r instanceof RapportPrestationImposable)
 				.findFirst().filter(prestation -> DateRangeHelper.intersect(prestation, rangePeriode)).isPresent();
 
@@ -276,7 +280,7 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 		}
 		final RegDate debut = RegDate.get(pf, 1, 1);
 		final RegDate fin = RegDate.get(pf, 12, 31);
-		final DateRange rangePeriode= new DateRangeHelper.Range(debut, fin);
+		final DateRange rangePeriode = new DateRangeHelper.Range(debut, fin);
 		final List<DateRange> periodesDeResidence = tiersService.getPeriodesDeResidence(pp, false);
 		return !DateRangeHelper.intersect(rangePeriode, periodesDeResidence);
 	}
@@ -307,16 +311,15 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 	}
 
 
-	private boolean isAssujettissementSourcier(Assujettissement a){
+	private boolean isAssujettissementSourcier(Assujettissement a) {
 		return a.getType() == TypeAssujettissement.SOURCE_PURE ||
 				a.getType() == TypeAssujettissement.MIXTE_137_1 ||
-				a.getType() ==TypeAssujettissement.MIXTE_137_2;
+				a.getType() == TypeAssujettissement.MIXTE_137_2;
 	}
 
 	public int getAnneeFiscale() {
 		return anneeFiscale;
 	}
-
 
 
 	public int getNbCtbPpIdentifies() {
@@ -338,7 +341,7 @@ public class ListeEchangeRenseignementsResults extends ListesResults<ListeEchang
 	}
 
 	public int getNbContribuablesInspectes() {
-		return nbCtbPpIdentifies + nbCtbPmIdentifies+ getNbCtbPpIgnores() +getNbCtbPmIgnores()+ getListeErreurs().size();
+		return nbCtbPpIdentifies + nbCtbPmIdentifies + getNbCtbPpIgnores() + getNbCtbPmIgnores() + getListeErreurs().size();
 	}
 
 

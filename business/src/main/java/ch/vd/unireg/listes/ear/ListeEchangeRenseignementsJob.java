@@ -75,7 +75,7 @@ public class ListeEchangeRenseignementsJob extends JobDefinition {
 		param4.setMandatory(true);
 		param4.setType(new JobParamBoolean());
 		addParameterDefinition(param4, Boolean.TRUE);
-}
+	}
 
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
@@ -89,7 +89,7 @@ public class ListeEchangeRenseignementsJob extends JobDefinition {
 		final boolean avecContribuablesPM = getBooleanValue(params, B_CONTRIBUABLES_PM);
 
 		final ListeEchangeRenseignementsProcessor proc = new ListeEchangeRenseignementsProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService, adresseService);
-		final ListeEchangeRenseignementsResults results = proc.run(dateTraitement, nbThreads, pf,avecContribuablesPP,avecContribuablesPM, statusManager);
+		final ListeEchangeRenseignementsResults results = proc.run(dateTraitement, nbThreads, pf, avecContribuablesPP, avecContribuablesPM, statusManager);
 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

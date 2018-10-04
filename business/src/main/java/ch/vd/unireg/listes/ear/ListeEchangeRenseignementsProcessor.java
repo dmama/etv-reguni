@@ -47,7 +47,7 @@ public class ListeEchangeRenseignementsProcessor extends ListesProcessor<ListeEc
 		this.adresseService = adresseService;
 	}
 
-	public  ListeEchangeRenseignementsResults run(RegDate dateTraitement,final int nbThreads, final int anneeFiscale,final boolean avecContribuablesPP, final boolean avecContribuablesPM, StatusManager s) {
+	public ListeEchangeRenseignementsResults run(RegDate dateTraitement, final int nbThreads, final int anneeFiscale, final boolean avecContribuablesPP, final boolean avecContribuablesPM, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -55,52 +55,53 @@ public class ListeEchangeRenseignementsProcessor extends ListesProcessor<ListeEc
 
 			@Override
 			public Iterator<Long> getIdIterator(Session session) {
-				return getIteratorOnCtbs(session, anneeFiscale,avecContribuablesPP,avecContribuablesPM);
+				return getIteratorOnCtbs(session, anneeFiscale, avecContribuablesPP, avecContribuablesPM);
 			}
 
 			@Override
 			public ListeEchangeRenseignementsResults createResults(RegDate dateTraitement) {
-				return new ListeEchangeRenseignementsResults(dateTraitement, nbThreads, anneeFiscale, avecContribuablesPP,avecContribuablesPM,tiersService, assujettissementService, adresseService);
+				return new ListeEchangeRenseignementsResults(dateTraitement, nbThreads, anneeFiscale, avecContribuablesPP, avecContribuablesPM, tiersService, assujettissementService, adresseService);
 			}
 
 			@Override
 			public ListeEchangeRenseignementsThreads createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, Interruptible interruptible, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
-				return new ListeEchangeRenseignementsThreads(queue, interruptible, compteur, dateTraitement, nbThreads, anneeFiscale,avecContribuablesPP,avecContribuablesPM,serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate, assujettissementService, adresseService);
+				return new ListeEchangeRenseignementsThreads(queue, interruptible, compteur, dateTraitement, nbThreads, anneeFiscale, avecContribuablesPP, avecContribuablesPM, serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO,
+				                                             hibernateTemplate, assujettissementService, adresseService);
 			}
 		});
 	}
 
 	/**
-	 * @param session session hibernate à utiliser
+	 * @param session      session hibernate à utiliser
 	 * @param anneeFiscale période fiscale
 	 * @return un itérateur sur tous les contribuables avec un for vaudois actif sur au moins une partie de la période fiscale donnée
 	 */
 	@SuppressWarnings({"unchecked"})
-	private Iterator<Long> getIteratorOnCtbs(Session session, int anneeFiscale,final boolean avecContribuablesPP, final boolean avecContribuablesPM) {
+	private Iterator<Long> getIteratorOnCtbs(Session session, int anneeFiscale, final boolean avecContribuablesPP, final boolean avecContribuablesPM) {
 
-			final String ppPart = "PersonnePhysique, MenageCommun";
-			final String pmPart = "Entreprise";
+		final String ppPart = "PersonnePhysique, MenageCommun";
+		final String pmPart = "Entreprise";
 
-			final List<String> type = new ArrayList<>(2);
-			if (avecContribuablesPP) {
-				type.add(ppPart);
+		final List<String> type = new ArrayList<>(2);
+		if (avecContribuablesPP) {
+			type.add(ppPart);
+		}
+		if (avecContribuablesPM) {
+			type.add(pmPart);
+		}
+
+
+		final StringBuilder sb = new StringBuilder();
+		final Iterator<String> wherePartIterator = type.iterator();
+		while (wherePartIterator.hasNext()) {
+			final String part = wherePartIterator.next();
+			sb.append(part);
+			if (wherePartIterator.hasNext()) {
+				sb.append(", ");
 			}
-			if (avecContribuablesPM) {
-				type.add(pmPart);
-			}
+		}
 
-
-			final StringBuilder sb = new StringBuilder();
-			final Iterator<String> wherePartIterator = type.iterator();
-			while (wherePartIterator.hasNext()) {
-				final String part = wherePartIterator.next();
-				sb.append(part);
-				if (wherePartIterator.hasNext()) {
-					sb.append(", ");
-				}
-			}
-
-			final String inPart = sb.toString();
+		final String inPart = sb.toString();
 
 		final StringBuilder b = new StringBuilder();
 		b.append("SELECT DISTINCT ctb.id FROM Contribuable AS ctb");

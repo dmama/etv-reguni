@@ -18,11 +18,12 @@ import ch.vd.unireg.tiers.TiersService;
 
 public class ListeEchangeRenseignementsThreads extends ListesThread<ListeEchangeRenseignementsResults> {
 
-    public ListeEchangeRenseignementsThreads(BlockingQueue<List<Long>> queue, Interruptible interruptible, AtomicInteger compteur, RegDate dateTraitement, int nbThreads, int anneeFiscale, final boolean avecContribuablesPP, final boolean avecContribuablesPM,ServiceCivilCacheWarmer serviceCivilCacheWarmer, TiersService tiersService,
-                                             PlatformTransactionManager transactionManager, TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, AssujettissementService assujettissementService,
-                                             AdresseService adresseService) {
+	public ListeEchangeRenseignementsThreads(BlockingQueue<List<Long>> queue, Interruptible interruptible, AtomicInteger compteur, RegDate dateTraitement, int nbThreads, int anneeFiscale, final boolean avecContribuablesPP,
+	                                         final boolean avecContribuablesPM, ServiceCivilCacheWarmer serviceCivilCacheWarmer, TiersService tiersService,
+	                                         PlatformTransactionManager transactionManager, TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, AssujettissementService assujettissementService,
+	                                         AdresseService adresseService) {
 
 		super(queue, interruptible, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
-		      new ListeEchangeRenseignementsResults(dateTraitement, nbThreads, anneeFiscale,avecContribuablesPP,avecContribuablesPM, tiersService, assujettissementService, adresseService));
+		      new ListeEchangeRenseignementsResults(dateTraitement, nbThreads, anneeFiscale, avecContribuablesPP, avecContribuablesPM, tiersService, assujettissementService, adresseService));
 	}
 }
