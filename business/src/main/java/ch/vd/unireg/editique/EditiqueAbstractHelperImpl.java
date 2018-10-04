@@ -27,16 +27,6 @@ import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.adresse.AdressesFiscalesHisto;
-import ch.vd.unireg.common.CollectionsUtils;
-import ch.vd.unireg.common.DonneesCivilesException;
-import ch.vd.unireg.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelperImpl;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.adresse.AdresseEnvoi;
 import ch.vd.unireg.adresse.AdresseEnvoiDetaillee;
 import ch.vd.unireg.adresse.AdresseException;
@@ -44,11 +34,21 @@ import ch.vd.unireg.adresse.AdresseGenerique;
 import ch.vd.unireg.adresse.AdresseMandataire;
 import ch.vd.unireg.adresse.AdresseMandataireAdapter;
 import ch.vd.unireg.adresse.AdresseService;
+import ch.vd.unireg.adresse.AdressesFiscalesHisto;
 import ch.vd.unireg.adresse.LigneAdresse;
 import ch.vd.unireg.adresse.TypeAdresseFiscale;
+import ch.vd.unireg.common.CollectionsUtils;
+import ch.vd.unireg.common.DonneesCivilesException;
 import ch.vd.unireg.common.FormatNumeroHelper;
 import ch.vd.unireg.common.NumeroIDEHelper;
 import ch.vd.unireg.declaration.DeclarationAvecNumeroSequence;
+import ch.vd.unireg.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelperImpl;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.service.ServiceInfrastructureService;
 import ch.vd.unireg.tiers.Contribuable;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
@@ -86,8 +86,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	/**
 	 * @param liste liste de valeurs datées, supposées triées chronologiquement
-	 * @param date date de référence
-	 * @param <T> type des éléments dans la liste
+	 * @param date  date de référence
+	 * @param <T>   type des éléments dans la liste
 	 * @return l'élément de la liste valide à la date de référence ou, s'il n'y en a pas, le dernier connu avant cette date
 	 */
 	@Nullable
@@ -123,9 +123,9 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	}
 
 	/**
-	 * @param adresseEnvoi l'adresse à laquelle on veut envoyer un document
+	 * @param adresseEnvoi      l'adresse à laquelle on veut envoyer un document
 	 * @param idEnvoiSiEtranger <code>true</code> si une adresse à l'étranger doit être en fait traitée par un idEnvoi
-	 * @param valeurIdEnvoi valeur à utiliser
+	 * @param valeurIdEnvoi     valeur à utiliser
 	 * @return un type d'affranchissement et, éventuellement, un idEnvoi à utiliser pour l'envoi du courrier
 	 */
 	@NotNull
@@ -163,8 +163,9 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	/**
 	 * Construit un code-à-barres compatible avec les nouveaux documents éditiques
-	 * @param declaration une déclaration
-	 * @param modele le modèle de document choisi
+	 *
+	 * @param declaration    une déclaration
+	 * @param modele         le modèle de document choisi
 	 * @param noCollectivite le numéro de la collectivité administrative qui doit faire partie du code-à-barres
 	 * @return le code à barres
 	 */
@@ -181,11 +182,12 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	/**
 	 * Assigne la valeur du champ idEnvoi dans la structure {@link CTypeInfoDocument} passée en paramètre selon les critères suivants :
 	 * <ul>
-	 *     <li>si l'IdEnvoi dans les informations d'affranchissement est renseigné, c'est lui</li>
-	 *     <li>sinon, si le contribuable a son dernier for principal fermé pour motif "FAILLITE", alors on y met la valeur de l'OIPM (21)</li>
+	 * <li>si l'IdEnvoi dans les informations d'affranchissement est renseigné, c'est lui</li>
+	 * <li>sinon, si le contribuable a son dernier for principal fermé pour motif "FAILLITE", alors on y met la valeur de l'OIPM (21)</li>
 	 * </ul>
-	 * @param infoDocument structure qui va recevoir la valeur de l'IdEnvoi
-	 * @param contribuable contribuable concerné par le document envoyé
+	 *
+	 * @param infoDocument         structure qui va recevoir la valeur de l'IdEnvoi
+	 * @param contribuable         contribuable concerné par le document envoyé
 	 * @param infoAffranchissement information calculée préalablement par un appel à {@link #getInformationsAffranchissement(AdresseEnvoiDetaillee, boolean, int)}
 	 * @return la valeur de la zone d'affranchissement à utiliser (= toujours NA si l'IdEnvoi est rempli...)
 	 */
@@ -209,6 +211,9 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	}
 
 	protected CTypeAdresse buildAdresse(CollectiviteAdministrative coll) throws AdresseException {
+		if (coll.getNoColAdm() == ServiceInfrastructureService.noCEDI) {
+			return buildAdresseCEDI(ServiceInfrastructureService.noOIPM);
+		}
 		final Tiers colAdm = tiersService.getCollectiviteAdministrative(coll.getNoColAdm());
 		return buildAdresse(colAdm);
 	}
@@ -418,7 +423,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		                                      original.getLettreLiquidation(),
 		                                      original.getLettreDegrevementImm(),
 		                                      original.getLettreDegrevementImmRappel(),
-											  original.getFourreNeutre(),
+		                                      original.getFourreNeutre(),
 		                                      original.getAccordDelaiSNC(),
 		                                      original.getRefusDelaiSNC(),
 		                                      original.getInfoRoutage());
@@ -449,7 +454,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	private static String concat(LigneAdresse[] source, int inclusiveFrom, int exclusiveTo) {
 		final StringBuilder b = new StringBuilder();
-		for (int i = inclusiveFrom ; i < exclusiveTo ; ++ i) {
+		for (int i = inclusiveFrom; i < exclusiveTo; ++i) {
 			final LigneAdresse ligne = source[i];
 			if (ligne != null) {
 				if (b.length() > 0) {
@@ -503,7 +508,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	/**
 	 * Remplissage de l'adresse légale (en fait, adresse fiscale de domicile) et de la raison sociale
-	 * @param entreprise l'entreprise qui nous intéresse
+	 *
+	 * @param entreprise     l'entreprise qui nous intéresse
 	 * @param dateFinPeriode la date de fin de la période d'imposition correspondant à la déclaration
 	 * @return une adresse (au format 'éditique') correspondant à l'adresse de domicile de l'entreprise, si elle est connue
 	 */
