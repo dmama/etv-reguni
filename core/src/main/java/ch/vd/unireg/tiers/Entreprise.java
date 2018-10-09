@@ -538,4 +538,10 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		final ForFiscalPrincipal dernierForSnc = this.getDernierForFiscalPrincipal();
 		return dernierForSnc.getGenreImpot() == GenreImpot.REVENU_FORTUNE;
 	}
+
+	@Transient
+	public RegDate getDateDebutForFiscalSnc(RegDate dateDebut) {
+		return isSNC() && this.getDernierForFiscalPrincipal().getDateDebut() != null && this.getDernierForFiscalPrincipal().getDateDebut().isAfter(dateDebut) ? this.getDernierForFiscalPrincipal().getDateDebut() : dateDebut;
+	}
+
 }

@@ -63,6 +63,8 @@ public class ImportLienAssociesSNCEnMasseProcessor {
 						continue;
 					}
 
+					//FISCPROJ-710
+					donneeBatch.setDateDebut(((Entreprise) snc).getDateDebutForFiscalSnc(donneeBatch.getDateDebut()));
 
 					final Contribuable associe = hibernateTemplate.get(Contribuable.class, donneeBatch.getNoContribuableAssocie());
 					if (associe == null) {

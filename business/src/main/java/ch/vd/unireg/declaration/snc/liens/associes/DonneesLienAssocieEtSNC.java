@@ -25,7 +25,7 @@ public class DonneesLienAssocieEtSNC {
 	private static final String OBJECT = "Tiers object ID";
 	public static final List<String> HEADERS = Arrays.asList(SUJET, OBJECT);
 	/**
-	 * Date début des liens pour toutes les relations
+	 * Date début du liens pour la relation initiale, cette date sera celle du for de gestion de la SNC
 	 */
 	static final String DATE_DEBUT_LIEN = "01.01.2018";
 	private static final RegDateHelper.StringFormat format = RegDateHelper.StringFormat.DISPLAY;
