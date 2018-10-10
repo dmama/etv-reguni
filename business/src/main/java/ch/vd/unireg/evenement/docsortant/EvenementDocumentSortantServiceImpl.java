@@ -221,7 +221,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 				                       TypeDocumentSortant.ACCORD_DELAI_QSNC,
 				                       delai.getDocumentFiscal().getTiers(),
 				                       local,
-				                       delai.getDateDemande().year(),
+				                       delai.getDocumentFiscal().getAnneePeriodeFiscale(),
 				                       null,
 				                       String.valueOf(delai.getId()),
 				                       infoArchivage);
@@ -232,7 +232,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 				                       TypeDocumentSortant.REFUS_DELAI_QSNC,
 				                       delai.getDocumentFiscal().getTiers(),
 				                       local,
-				                       delai.getDateDemande().year(),
+				                       delai.getDocumentFiscal().getAnneePeriodeFiscale(),
 				                       null,
 				                       String.valueOf(delai.getId()),
 				                       infoArchivage);
