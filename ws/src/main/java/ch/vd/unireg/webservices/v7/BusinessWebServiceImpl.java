@@ -624,6 +624,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			return DeadlineStatus.ERROR_CANCELLED_DECLARATION;
 		case DATE_OBTENTION_INVALIDE:
 			return DeadlineStatus.ERROR_INVALID_GRANTED_ON;
+		case DELAI_DEJA_EXISTANT:
 		case DATE_DELAI_INVALIDE:
 			return DeadlineStatus.ERROR_INVALID_DEADLINE;
 		case MAUVAIS_ETAT_DECLARATION:

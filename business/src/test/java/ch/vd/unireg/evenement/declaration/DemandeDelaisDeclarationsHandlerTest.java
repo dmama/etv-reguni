@@ -39,6 +39,7 @@ import ch.vd.unireg.xml.event.di.cyber.demandedelai.v1.Supervision;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
@@ -105,6 +106,61 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 			assertEquals(2, delais.size());
 			assertDelai(date(2017, 1, 15), date(2017, 3, 15), EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
 			assertDelai(dateObtention, nouveauDelai, EtatDelaiDocumentFiscal.ACCORDE, delais.get(1));
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-754] Teste le cas passant d'ajout d'un délai sur une déclaration avec un délai identique qui existe déjà.
+	 */
+	@Test
+	public void testHandleDemandeUnitaireDelaiAvecDelaiIdentiqueDejaExistant() throws Exception {
+
+		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
+
+		// mise en place
+		final Long ctbId = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+			addEtatDeclarationEmise(di, date(2017, 1, 15));
+			addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);
+			return pp.getNumero();
+		});
+
+		//noinspection UnnecessaryLocalVariable
+		final RegDate nouveauDelai = dateDelaiExistant;
+		final RegDate dateObtention = RegDate.get();
+
+		// ajout du délai
+		doInNewTransaction(status -> {
+			final DemandeDelai demandeDelai = newDemandeUnitaire(ctbId, nouveauDelai, dateObtention, null, 2016, "businessId", "referenceId");
+
+			try {
+				handler.handle(demandeDelai);
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
+		});
+
+		// vérification que le délai existant est toujours là
+		doInNewTransaction(status -> {
+			final Tiers tiers = tiersDAO.get(ctbId);
+			assertNotNull(tiers);
+
+			final List<DeclarationImpotOrdinairePP> declarations = tiers.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, 2016, false);
+			assertEquals(1, declarations.size());
+
+			final DeclarationImpotOrdinairePP declaration2016 = declarations.get(0);
+			assertNotNull(declaration2016);
+
+			final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
+			assertEquals(1, delais.size());
+			assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
 			return null;
 		});
 	}
@@ -314,6 +370,76 @@ public class DemandeDelaisDeclarationsHandlerTest extends BusinessTest {
 				assertDelai(dateObtention, RegDate.get().addMonths(3), EtatDelaiDocumentFiscal.ACCORDE, delais.get(1));
 				assertDemandeMandataire(1234567L, "CHE1", "Fiduciaire pas futée", "businessId", "referenceId", delais.get(1).getDemandeMandataire());
 			}
+			return null;
+		});
+	}
+
+
+	/**
+	 * [FISCPROJ-754] Teste le cas passant d'ajout d'un délai sur une déclaration avec un délai identique qui existe déjà.
+	 */
+	@Test
+	public void testHandleDemandeGroupeeAvecDelaiIdentiqueDejaExistant() throws Exception {
+
+		final RegDate dateDelaiExistant = RegDate.get().addMonths(1);
+
+		class Ids {
+			Long pp1;
+
+			public Ids(Long pp1) {
+				this.pp1 = pp1;
+			}
+		}
+
+		// mise en place, 3 pp avec chacun une déclaration
+		final Ids ids = doInNewTransaction(status -> {
+			final PeriodeFiscale periode2016 = addPeriodeFiscale(2016);
+			final ModeleDocument modele2016 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2016);
+
+			final PersonnePhysique pp1 = addNonHabitant("Rodolf", "Frigo", date(1970, 1, 1), Sexe.MASCULIN);
+			{
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp1, periode2016, date(2016, 1, 1), date(2016, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2016);
+				addEtatDeclarationEmise(di, date(2017, 1, 15));
+				addDelaiDeclaration(di, date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE);
+			}
+
+			return new Ids(pp1.getNumero());
+		});
+
+		final RegDate dateObtention = RegDate.get();
+
+		// traitement de la demande
+		doInNewTransaction(status -> {
+
+			final DemandeDelai demandeDelai = newDemandeGroupee(2016, dateObtention, "CHE1", "Fiduciaire pas futée", 1234567, "businessId", "referenceId",
+			                                                    new DelaiData(ids.pp1, dateDelaiExistant, null));
+			try {
+				handler.handle(demandeDelai);
+			}
+			catch (EsbBusinessException e) {
+				throw new RuntimeException(e);
+			}
+			return null;
+		});
+
+		// vérification que le délai a été accepté, mais comme c'est le même que le délai existant, rien n'a changé.
+		doInNewTransaction(status -> {
+
+			final Tiers tiers1 = tiersDAO.get(ids.pp1);
+			assertNotNull(tiers1);
+			{
+				final List<DeclarationImpotOrdinairePP> declarations = tiers1.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, 2016, false);
+				assertEquals(1, declarations.size());
+
+				final DeclarationImpotOrdinairePP declaration2016 = declarations.get(0);
+				assertNotNull(declaration2016);
+
+				final List<DelaiDocumentFiscal> delais = declaration2016.getDelaisSorted();
+				assertEquals(1, delais.size());
+				assertDelai(date(2017, 1, 15), dateDelaiExistant, EtatDelaiDocumentFiscal.ACCORDE, delais.get(0));
+				assertNull(delais.get(0).getDemandeMandataire());   // le délai existait déjà -> pas de référence sur la demande du mandataire
+			}
+
 			return null;
 		});
 	}

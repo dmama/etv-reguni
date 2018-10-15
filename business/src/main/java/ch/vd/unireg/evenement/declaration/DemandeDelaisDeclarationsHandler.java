@@ -187,6 +187,10 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 			declarationImpotService.ajouterDelaiDI(declaration, dateObtention, nouveauDelai, etatDelai, null);
 		}
 		catch (AjoutDelaiDeclarationException e) {
+			if (e.getRaison() == AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT) {
+				// [FISCPROJ-754] le délai existe déjà à la date demandée, rien à faire
+				return;
+			}
 			throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), e.getMessage(), e);
 		}
 	}
@@ -237,6 +241,10 @@ public class DemandeDelaisDeclarationsHandler implements EsbMessageHandler, Init
 				declarationImpotService.ajouterDelaiDI(declaration, dateObtention, nouveauDelai, etatDelai, demandeMandataire);
 			}
 			catch (AjoutDelaiDeclarationException e) {
+				if (e.getRaison() == AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT) {
+					// [FISCPROJ-754] le délai existe déjà à la date demandée, rien à faire
+					return;
+				}
 				throw new EsbBusinessException(getEsbBusinessCode(e.getRaison()), "Contribuable n°" + numeroContribuable + " : " + e.getMessage(), e);
 			}
 		}

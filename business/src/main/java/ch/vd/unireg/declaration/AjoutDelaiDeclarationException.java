@@ -8,6 +8,7 @@ public class AjoutDelaiDeclarationException extends DeclarationException {
 		DECLARATION_ANNULEE,
 		MAUVAIS_ETAT_DECLARATION,
 		DATE_OBTENTION_INVALIDE,
+		DELAI_DEJA_EXISTANT,
 		DATE_DELAI_INVALIDE
 	}
 

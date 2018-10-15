@@ -113,6 +113,7 @@ import ch.vd.unireg.validation.ValidationService;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DATE_DELAI_INVALIDE;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DATE_OBTENTION_INVALIDE;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DECLARATION_ANNULEE;
+import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.DELAI_DEJA_EXISTANT;
 import static ch.vd.unireg.declaration.AjoutDelaiDeclarationException.Raison.MAUVAIS_ETAT_DECLARATION;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_EXONEREE;
 import static ch.vd.unireg.declaration.ordinaire.EnumCodeRoutageDI.APM_NON_EXONEREE;
@@ -520,7 +521,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			final RegDate delaiActuel = declaration.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
-			if (RegDateHelper.isBeforeOrEqual(dateDelai, delaiActuel, NullDateBehavior.LATEST)) {
+			if (dateDelai == delaiActuel) {
+				throw new AjoutDelaiDeclarationException(DELAI_DEJA_EXISTANT, "Un délai à la date demandée existe déjà.");
+			}
+
+			if (RegDateHelper.isBefore(dateDelai, delaiActuel, NullDateBehavior.LATEST)) {
 				throw new AjoutDelaiDeclarationException(DATE_DELAI_INVALIDE, "Un délai plus lointain existe déjà.");
 			}
 		}

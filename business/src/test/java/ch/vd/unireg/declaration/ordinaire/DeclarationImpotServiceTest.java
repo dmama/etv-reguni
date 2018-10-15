@@ -2580,6 +2580,31 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * [FISCPROJ-754]
+	 */
+	@Test
+	public void testAjouterDelaiAccordeDIDateDelaiIdentiqueDelaiExistant() {
+
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+		di.addEtat(new EtatDeclarationEmise());
+
+		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		delai.setDateDemande(RegDate.get());
+		delai.setDelaiAccordeAu(RegDate.get().addDays(10));
+		di.addDelai(delai);
+
+		try {
+			service.ajouterDelaiDI(di, RegDate.get(), RegDate.get().addDays(10), EtatDelaiDocumentFiscal.ACCORDE, null);
+			fail();
+		}
+		catch (AjoutDelaiDeclarationException e) {
+			assertEquals(Raison.DELAI_DEJA_EXISTANT, e.getRaison());
+			assertEquals("Un délai à la date demandée existe déjà.", e.getMessage());
+		}
+	}
+
 	@Test
 	public void testAjouterDelaiAccordeDIDateDelaiAvantDelaiExistant() {
 
