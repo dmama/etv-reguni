@@ -101,7 +101,6 @@ import ch.vd.unireg.situationfamille.SituationFamilleService;
 import ch.vd.unireg.tiers.AutreCommunaute;
 import ch.vd.unireg.tiers.CollectiviteAdministrative;
 import ch.vd.unireg.tiers.Contribuable;
-import ch.vd.unireg.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.unireg.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.unireg.tiers.DebiteurPrestationImposable;
 import ch.vd.unireg.tiers.Entreprise;
@@ -664,7 +663,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		if (tiers == null) {
 			return buildIneligibleCtbResult(ctbId, null, "Le contribuable n'existe pas.");
 		}
-		if (!(tiers instanceof Contribuable)) {
+		if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques) && !(tiers instanceof Entreprise)) {
 			return buildIneligibleCtbResult(ctbId, tiers, "Le tiers n'est pas un contribuable (" + tiers.getType().getDescription() + ").");
 		}
 		if (tiers.isAnnule()) {
@@ -673,8 +672,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		if (!context.validationService.validate(tiers).getErrorsList().isEmpty()) {
 			return buildIneligibleCtbResult(ctbId, tiers, "Une incohérence de données sur le contribuable empêche sa modification (validation).");
 		}
-
-		// TODO (msi) faut-il ajouter un check sur la sécurité (role + dossier protégé) ?
 
 		// on vérifie si le contribuable est éligible
 		final List<PeriodeImposition> periodeImpositions;
@@ -699,15 +696,17 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est pas assujetti au rôle de manière illimitée en " + periodeFiscale + " (" + typeContribuable.description() + ").");
 		}
 
+		final RegDate dateProchainBouclement;
 		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+			dateProchainBouclement = null;  // par définition, les PPs n'ont pas de date de bouclement
 			final RegDate finPeriode = RegDate.get(periodeFiscale, 12, 31);
 			if (periodeImposition.getDateFin().isBefore(finPeriode)) {
 				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé en fin de période fiscale " + periodeFiscale + ".");
 			}
 		}
-		else if (tiers instanceof ContribuableImpositionPersonnesMorales) {
+		else {
 			final Entreprise entreprise = (Entreprise) tiers;
-			final RegDate dateProchainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), periodeImposition.getDateFin(), true);
+			dateProchainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), periodeImposition.getDateFin(), true);
 			if (periodeImposition.getDateFin().isBefore(dateProchainBouclement)) {
 				return buildIneligibleCtbResult(ctbId, tiers, "Le contribuable n'est pas éligible car il n'est plus imposé à la date de son prochain bouclement pour la période fiscale " + periodeFiscale + ".");
 			}
@@ -733,19 +732,20 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		// on détermine un résultat pour la déclaration valide
 		final DeclarationImpotOrdinaire declarationValide = declarationValides.get(declarationValides.size() - 1);
-		return validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide);
+		return validateDeadlineForDeclaration(periodeFiscale, tiers, declarationValide, dateProchainBouclement);
 	}
 
 	/**
 	 * Valide la demande de délai pour la déclaration spécifiée.
 	 *
-	 * @param periodeFiscale la période fiscale considérée
-	 * @param tiers          le tiers qui possède la déclaration
-	 * @param declaration    la déclaration considérée
+	 * @param periodeFiscale         la période fiscale considérée
+	 * @param tiers                  le tiers qui possède la déclaration
+	 * @param declaration            la déclaration considérée
+	 * @param dateProchainBouclement la date de prochain bouclement (par rapport à la période d'imposition de la déclaration). Obligatoire pour les PMs, null pour les PPs.
 	 * @return le résultat de la validation
 	 */
 	@NotNull
-	private ValidationResult validateDeadlineForDeclaration(int periodeFiscale, @NotNull Tiers tiers, @NotNull DeclarationImpotOrdinaire declaration) {
+	private ValidationResult validateDeadlineForDeclaration(int periodeFiscale, @NotNull Tiers tiers, @NotNull DeclarationImpotOrdinaire declaration, @Nullable RegDate dateProchainBouclement) {
 
 		final ValidationResult result = new ValidationResult();
 		result.setTaxPayerNumber(tiers.getNumero().intValue());
@@ -759,11 +759,24 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		if (etat != TypeEtatDocumentFiscal.EMIS) {
 			result.setRejectionReason(buildRejectionReasonPourDeclarationNonEmise(etat, periodeFiscale));
 		}
-		else if (dateDelai.isAfter(RegDate.get(periodeFiscale + 1, 10, 31))) {                                  // FIXME (msi) rendre ce délai paramètrable
+		else if (dateDelai.isAfter(RegDate.get(periodeFiscale + 1, 6, 30))) {                                  // FIXME (msi) rendre ce délai paramètrable
 			result.setRejectionReason(new RejectionReason(DELAI_DEJA_ACCORDE.getCode(), "Il y a déjà un délai accordé au " + RegDateHelper.dateToDisplayString(dateDelai) + ".", null));
 		}
 		else {
-			result.getProposedDeadlines().add(DataHelper.coreToWeb(RegDate.get(periodeFiscale + 1, 6, 30)));    // FIXME (msi) calculer correctement cette date
+			final RegDate delai;
+			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+				delai = RegDate.get(periodeFiscale + 1, 6, 30);
+			}
+			else if (tiers instanceof Entreprise) {
+				if (dateProchainBouclement == null) {
+					throw new IllegalArgumentException("La date de prochain bouclement n'est pas renseignée sur le PM n°" + tiers.getNumero());
+				}
+				delai = dateProchainBouclement.addDays(255);
+			}
+			else {
+				throw new IllegalArgumentException("Type de tiers non supporté [" + tiers.getClass() + "]");
+			}
+			result.getProposedDeadlines().add(DataHelper.coreToWeb(delai));
 		}
 
 		return result;

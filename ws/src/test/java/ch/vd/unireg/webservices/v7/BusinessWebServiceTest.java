@@ -35,6 +35,7 @@ import ch.vd.unireg.common.WebserviceTest;
 import ch.vd.unireg.common.XmlUtils;
 import ch.vd.unireg.declaration.Declaration;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinaire;
+import ch.vd.unireg.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.unireg.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.unireg.declaration.DeclarationImpotSource;
 import ch.vd.unireg.declaration.DelaiDeclaration;
@@ -5291,7 +5292,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	@Test
-	public void testValidateDeadlineRequestContribuableAvecUneDeclarationEmise() throws Exception {
+	public void testValidateDeadlineRequestPPAvecUneDeclarationEmise() throws Exception {
 
 		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
 		service.setTiersDAO(tiersDAO);
@@ -5317,6 +5318,46 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		doInNewTransaction(status -> {
 			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
 			assertValidationSuccess(ctbId, PartyType.NATURAL_PERSON, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(date(2018, 6, 30)), results);
+			return null;
+		});
+	}
+
+	/**
+	 * [FISCPROJ-753] Ce test vérifie que le délai accordé pour une PM est : date de bouclement + 255 jours calendaires.
+	 */
+	@Test
+	public void testValidateDeadlineRequestPMAvecUneDeclarationEmise() throws Exception {
+
+		final BusinessWebServiceImpl service = new BusinessWebServiceImpl();
+		service.setTiersDAO(tiersDAO);
+		service.setValidationService(validationService);
+		service.setPeriodeImpositionService(periodeImpositionService);
+		service.setBouclementService(bouclementService);
+
+		// on crée un contribuable PM vaudois
+		final long ctbId = doInNewTransaction(status -> {
+			final Entreprise pm = addEntrepriseInconnueAuCivil("Ma petite entreprise", date(2000, 2, 1));
+			addBouclement(pm, date(2000, 2, 1), DayMonth.get(12, 31), 12);              // tous les 31.12 depuis 2000
+			addRegimeFiscalVD(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(pm, date(2000, 2, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addForPrincipal(pm, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+
+			final PeriodeFiscale periode2017 = addPeriodeFiscale(2017);
+			final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode2017);
+
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(pm, periode2017, date(2017, 1, 1), date(2017, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+			di.addEtat(new EtatDeclarationEmise(date(2018, 1, 15)));
+			di.addDelai(newDelaiDeclaration(date(2018, 1, 15), date(2018, 6, 30)));
+
+			return pm.getNumero();
+		});
+
+		// il doit être possible de demander un délai
+		doInNewTransaction(status -> {
+			final ValidationResult results = service.validateDeadlineRequest(2017, (int) ctbId);
+			final RegDate dateBouclement = RegDate.get(2017, 12, 31);
+			assertValidationSuccess(ctbId, PartyType.CORPORATION, date(2017, 1, 1), date(2017, 12, 31), 1, Collections.singletonList(dateBouclement.addDays(255)), results);
 			return null;
 		});
 	}
